@@ -687,10 +687,6 @@ int main(void) {
   printf("long-double torture: PASS (%d checks)\n", checks);
   return 0;
 }
-// REWRITES-X86_64-GNU-DAG: fn ext_store(_0: *mut LongDouble, _1: LongDouble);
-// REWRITES-X86_64-GNU-DAG: fn ext_load(_0: *const LongDouble) -> LongDouble;
-// REWRITES-X86_64-GNU-DAG: fn __slate_ext_store__rv_pf80_f80(_0: *mut LongDouble
-// REWRITES-X86_64-GNU-DAG: fn __slate_ext_load__rf80_pf80(_0: *const LongDouble
 
 // SLATE-FILECHECK-BEGIN lowering-x86_64-gnu
 // LOWERING-X86_64-GNU: #![feature(c_variadic)]
@@ -6729,7 +6725,22 @@ int main(void) {
 // LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = a10;
 // LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = b2;
 // LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = unsafe {
-// LOWERING-X86_64-GNU-NEXT:                         __slate_ext_call_cb__rf80_x_f80_f80(Some(local_cb), {{_v[0-9]+}}, {{_v[0-9]+}})
+// LOWERING-X86_64-GNU-NEXT:                         __slate_ext_call_cb__rf80_x_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                             unsafe {
+// LOWERING-X86_64-GNU-NEXT:                                 std::mem::transmute::<
+// LOWERING-X86_64-GNU-NEXT:                                     *const (),
+// LOWERING-X86_64-GNU-NEXT:                                     Option<
+// LOWERING-X86_64-GNU-NEXT:                                         unsafe extern "C-unwind" fn(
+// LOWERING-X86_64-GNU-NEXT:                                             LongDouble,
+// LOWERING-X86_64-GNU-NEXT:                                             LongDouble,
+// LOWERING-X86_64-GNU-NEXT:                                         )
+// LOWERING-X86_64-GNU-NEXT:                                             -> LongDouble,
+// LOWERING-X86_64-GNU-NEXT:                                     >,
+// LOWERING-X86_64-GNU-NEXT:                                 >(__slate_ld_local_cb as *const ())
+// LOWERING-X86_64-GNU-NEXT:                             },
+// LOWERING-X86_64-GNU-NEXT:                             {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                         )
 // LOWERING-X86_64-GNU-NEXT:                     };
 // LOWERING-X86_64-GNU-NEXT:                     check_got_5 = {{_v[0-9]+}};
 // LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = a10;
@@ -8867,3 +8878,4771 @@ int main(void) {
 // LOWERING-X86_64-GNU-NEXT:     ) -> LongDouble;
 // LOWERING-X86_64-GNU-NEXT: }
 // SLATE-FILECHECK-END lowering-x86_64-gnu
+
+// SLATE-FILECHECK-BEGIN rewrites-x86_64-gnu
+// REWRITES-X86_64-GNU: #![feature(c_variadic)]
+// REWRITES-X86_64-GNU-NEXT: #![allow(
+// REWRITES-X86_64-GNU-NEXT:     dead_code,
+// REWRITES-X86_64-GNU-NEXT:     unused,
+// REWRITES-X86_64-GNU-NEXT:     non_camel_case_types,
+// REWRITES-X86_64-GNU-NEXT:     non_snake_case,
+// REWRITES-X86_64-GNU-NEXT:     non_upper_case_globals,
+// REWRITES-X86_64-GNU-NEXT:     arithmetic_overflow,
+// REWRITES-X86_64-GNU-NEXT:     unconditional_panic,
+// REWRITES-X86_64-GNU-NEXT:     suspicious_runtime_symbol_definitions,
+// REWRITES-X86_64-GNU-NEXT:     unpredictable_function_pointer_comparisons,
+// REWRITES-X86_64-GNU-NEXT:     unused_comparisons
+// REWRITES-X86_64-GNU-NEXT: )]
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: #[repr(C, align(16))]
+// REWRITES-X86_64-GNU-NEXT: #[derive(Clone, Copy)]
+// REWRITES-X86_64-GNU-NEXT: struct LongDouble([u8; 10]);
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: impl core::ops::Add for LongDouble {
+// REWRITES-X86_64-GNU-NEXT:     type Output = LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn add(self, o: LongDouble) -> LongDouble {
+// REWRITES-X86_64-GNU-NEXT:         __slate_f80_add(self, o)
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: impl core::ops::Sub for LongDouble {
+// REWRITES-X86_64-GNU-NEXT:     type Output = LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn sub(self, o: LongDouble) -> LongDouble {
+// REWRITES-X86_64-GNU-NEXT:         __slate_f80_sub(self, o)
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: impl core::ops::Mul for LongDouble {
+// REWRITES-X86_64-GNU-NEXT:     type Output = LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn mul(self, o: LongDouble) -> LongDouble {
+// REWRITES-X86_64-GNU-NEXT:         __slate_f80_mul(self, o)
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: impl core::ops::Div for LongDouble {
+// REWRITES-X86_64-GNU-NEXT:     type Output = LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn div(self, o: LongDouble) -> LongDouble {
+// REWRITES-X86_64-GNU-NEXT:         __slate_f80_div(self, o)
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: impl core::ops::AddAssign for LongDouble {
+// REWRITES-X86_64-GNU-NEXT:     fn add_assign(&mut self, o: LongDouble) {
+// REWRITES-X86_64-GNU-NEXT:         {
+// REWRITES-X86_64-GNU-NEXT:             *self = __slate_f80_add(*self, o);
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: impl core::ops::SubAssign for LongDouble {
+// REWRITES-X86_64-GNU-NEXT:     fn sub_assign(&mut self, o: LongDouble) {
+// REWRITES-X86_64-GNU-NEXT:         {
+// REWRITES-X86_64-GNU-NEXT:             *self = __slate_f80_sub(*self, o);
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: impl core::ops::MulAssign for LongDouble {
+// REWRITES-X86_64-GNU-NEXT:     fn mul_assign(&mut self, o: LongDouble) {
+// REWRITES-X86_64-GNU-NEXT:         {
+// REWRITES-X86_64-GNU-NEXT:             *self = __slate_f80_mul(*self, o);
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: impl core::ops::DivAssign for LongDouble {
+// REWRITES-X86_64-GNU-NEXT:     fn div_assign(&mut self, o: LongDouble) {
+// REWRITES-X86_64-GNU-NEXT:         {
+// REWRITES-X86_64-GNU-NEXT:             *self = __slate_f80_div(*self, o);
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: impl core::ops::Neg for LongDouble {
+// REWRITES-X86_64-GNU-NEXT:     type Output = LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn neg(self) -> LongDouble {
+// REWRITES-X86_64-GNU-NEXT:         __slate_f80_neg(self)
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: impl core::cmp::PartialEq for LongDouble {
+// REWRITES-X86_64-GNU-NEXT:     fn eq(&self, other: &LongDouble) -> bool {
+// REWRITES-X86_64-GNU-NEXT:         __slate_f80_eq(*self, *other)
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: impl core::cmp::PartialOrd for LongDouble {
+// REWRITES-X86_64-GNU-NEXT:     fn partial_cmp(&self, other: &LongDouble) -> Option<std::cmp::Ordering> {
+// REWRITES-X86_64-GNU-NEXT:         if __slate_f80_lt(*self, *other) {
+// REWRITES-X86_64-GNU-NEXT:             Some(std::cmp::Ordering::Less)
+// REWRITES-X86_64-GNU-NEXT:         } else {
+// REWRITES-X86_64-GNU-NEXT:             if __slate_f80_gt(*self, *other) {
+// REWRITES-X86_64-GNU-NEXT:                 Some(std::cmp::Ordering::Greater)
+// REWRITES-X86_64-GNU-NEXT:             } else {
+// REWRITES-X86_64-GNU-NEXT:                 if __slate_f80_eq(*self, *other) {
+// REWRITES-X86_64-GNU-NEXT:                     Some(std::cmp::Ordering::Equal)
+// REWRITES-X86_64-GNU-NEXT:                 } else {
+// REWRITES-X86_64-GNU-NEXT:                     None
+// REWRITES-X86_64-GNU-NEXT:                 }
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: #[repr(C)]
+// REWRITES-X86_64-GNU-NEXT: #[derive(Clone, Copy)]
+// REWRITES-X86_64-GNU-NEXT: struct ld_box {
+// REWRITES-X86_64-GNU-NEXT:     tag: u8,
+// REWRITES-X86_64-GNU-NEXT:     x: LongDouble,
+// REWRITES-X86_64-GNU-NEXT:     tail: u32,
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: #[repr(C)]
+// REWRITES-X86_64-GNU-NEXT: #[derive(Clone, Copy)]
+// REWRITES-X86_64-GNU-NEXT: struct ld_nested {
+// REWRITES-X86_64-GNU-NEXT:     head: u16,
+// REWRITES-X86_64-GNU-NEXT:     pair: ld_pair,
+// REWRITES-X86_64-GNU-NEXT:     bytes: [u8; 3],
+// REWRITES-X86_64-GNU-NEXT:     z: LongDouble,
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: #[repr(C)]
+// REWRITES-X86_64-GNU-NEXT: #[derive(Clone, Copy)]
+// REWRITES-X86_64-GNU-NEXT: struct ld_pair {
+// REWRITES-X86_64-GNU-NEXT:     a: LongDouble,
+// REWRITES-X86_64-GNU-NEXT:     b: LongDouble,
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: #[repr(C)]
+// REWRITES-X86_64-GNU-NEXT: #[derive(Clone, Copy)]
+// REWRITES-X86_64-GNU-NEXT: union ld_union {
+// REWRITES-X86_64-GNU-NEXT:     ld: LongDouble,
+// REWRITES-X86_64-GNU-NEXT:     bytes: [u8; 16],
+// REWRITES-X86_64-GNU-NEXT:     u64: u64,
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: static mut checks: i32 = 0;
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: static mut failures: i32 = 0;
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: unsafe extern "C" {
+// REWRITES-X86_64-GNU-NEXT:     static mut ext_global_ld: LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     static mut stderr: *mut libc::FILE;
+// REWRITES-X86_64-GNU-NEXT:     fn fprintf(_0: *mut libc::FILE, _1: *const core::ffi::c_char, ...) -> i32;
+// REWRITES-X86_64-GNU-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
+// REWRITES-X86_64-GNU-NEXT:     fn ext_sizeof_ld() -> usize;
+// REWRITES-X86_64-GNU-NEXT:     fn ext_alignof_ld() -> usize;
+// REWRITES-X86_64-GNU-NEXT:     fn ext_sizeof_box() -> usize;
+// REWRITES-X86_64-GNU-NEXT:     fn ext_alignof_box() -> usize;
+// REWRITES-X86_64-GNU-NEXT:     fn ext_offset_box_x() -> usize;
+// REWRITES-X86_64-GNU-NEXT:     fn ext_offset_box_tail() -> usize;
+// REWRITES-X86_64-GNU-NEXT:     fn ext_sizeof_pair() -> usize;
+// REWRITES-X86_64-GNU-NEXT:     fn ext_alignof_pair() -> usize;
+// REWRITES-X86_64-GNU-NEXT:     fn ext_sizeof_nested() -> usize;
+// REWRITES-X86_64-GNU-NEXT:     fn ext_alignof_nested() -> usize;
+// REWRITES-X86_64-GNU-NEXT:     fn ext_offset_nested_pair() -> usize;
+// REWRITES-X86_64-GNU-NEXT:     fn ext_offset_nested_z() -> usize;
+// REWRITES-X86_64-GNU-NEXT:     fn ext_sizeof_union() -> usize;
+// REWRITES-X86_64-GNU-NEXT:     fn ext_alignof_union() -> usize;
+// REWRITES-X86_64-GNU-NEXT:     fn nextafterl(_0: LongDouble, _1: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn strtold(_0: *const core::ffi::c_char, _1: *mut *mut core::ffi::c_char) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn ext_add(_0: LongDouble, _1: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn ext_sub(_0: LongDouble, _1: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn ext_mul(_0: LongDouble, _1: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn ext_div(_0: LongDouble, _1: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn ext_neg(_0: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn ext_from_i64(_0: i64) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn ext_from_u64(_0: u64) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn ext_to_i64(_0: LongDouble) -> i64;
+// REWRITES-X86_64-GNU-NEXT:     fn ext_to_u64(_0: LongDouble) -> u64;
+// REWRITES-X86_64-GNU-NEXT:     fn ext_from_double(_0: f64) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn ext_from_float(_0: f32) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn ext_to_double(_0: LongDouble) -> f64;
+// REWRITES-X86_64-GNU-NEXT:     fn ext_to_float(_0: LongDouble) -> f32;
+// REWRITES-X86_64-GNU-NEXT:     fn nanl(_0: *const core::ffi::c_char) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn ext_identity(_0: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn ext_eq(_0: LongDouble, _1: LongDouble) -> i32;
+// REWRITES-X86_64-GNU-NEXT:     fn ext_lt(_0: LongDouble, _1: LongDouble) -> i32;
+// REWRITES-X86_64-GNU-NEXT:     fn ext_le(_0: LongDouble, _1: LongDouble) -> i32;
+// REWRITES-X86_64-GNU-NEXT:     fn __errno_location() -> *mut i32;
+// REWRITES-X86_64-GNU-NEXT:     fn strcmp(_0: *const core::ffi::c_char, _1: *const core::ffi::c_char) -> i32;
+// REWRITES-X86_64-GNU-NEXT:     fn snprintf(_0: *mut core::ffi::c_char, _1: usize, _2: *const core::ffi::c_char, ...) -> i32;
+// REWRITES-X86_64-GNU-NEXT:     fn frexpl(_0: LongDouble, _1: *mut i32) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn ldexpl(_0: LongDouble, _1: i32) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn sqrtl(_0: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn powl(_0: LongDouble, _1: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn fmodl(_0: LongDouble, _1: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn remainderl(_0: LongDouble, _1: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn ext_sum10(
+// REWRITES-X86_64-GNU-NEXT:         _0: LongDouble,
+// REWRITES-X86_64-GNU-NEXT:         _1: LongDouble,
+// REWRITES-X86_64-GNU-NEXT:         _2: LongDouble,
+// REWRITES-X86_64-GNU-NEXT:         _3: LongDouble,
+// REWRITES-X86_64-GNU-NEXT:         _4: LongDouble,
+// REWRITES-X86_64-GNU-NEXT:         _5: LongDouble,
+// REWRITES-X86_64-GNU-NEXT:         _6: LongDouble,
+// REWRITES-X86_64-GNU-NEXT:         _7: LongDouble,
+// REWRITES-X86_64-GNU-NEXT:         _8: LongDouble,
+// REWRITES-X86_64-GNU-NEXT:         _9: LongDouble,
+// REWRITES-X86_64-GNU-NEXT:     ) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn ext_mix_abi(
+// REWRITES-X86_64-GNU-NEXT:         _0: i64,
+// REWRITES-X86_64-GNU-NEXT:         _1: f64,
+// REWRITES-X86_64-GNU-NEXT:         _2: LongDouble,
+// REWRITES-X86_64-GNU-NEXT:         _3: u32,
+// REWRITES-X86_64-GNU-NEXT:         _4: LongDouble,
+// REWRITES-X86_64-GNU-NEXT:         _5: f32,
+// REWRITES-X86_64-GNU-NEXT:         _6: LongDouble,
+// REWRITES-X86_64-GNU-NEXT:         _7: i32,
+// REWRITES-X86_64-GNU-NEXT:         _8: f64,
+// REWRITES-X86_64-GNU-NEXT:         _9: LongDouble,
+// REWRITES-X86_64-GNU-NEXT:     ) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn ext_call_cb(
+// REWRITES-X86_64-GNU-NEXT:         _0: Option<unsafe extern "C-unwind" fn(LongDouble, LongDouble) -> LongDouble>,
+// REWRITES-X86_64-GNU-NEXT:         _1: LongDouble,
+// REWRITES-X86_64-GNU-NEXT:         _2: LongDouble,
+// REWRITES-X86_64-GNU-NEXT:     ) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn ext_box_roundtrip(_0: ld_box) -> ld_box;
+// REWRITES-X86_64-GNU-NEXT:     fn ext_pair_make(_0: LongDouble, _1: LongDouble) -> ld_pair;
+// REWRITES-X86_64-GNU-NEXT:     fn memset(_0: *mut core::ffi::c_void, _1: i32, _2: usize) -> *mut core::ffi::c_void;
+// REWRITES-X86_64-GNU-NEXT:     fn ext_nested_roundtrip(_0: ld_nested) -> ld_nested;
+// REWRITES-X86_64-GNU-NEXT:     fn ext_array_sum(_0: *const LongDouble, _1: usize) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn ext_store(_0: *mut LongDouble, _1: LongDouble);
+// REWRITES-X86_64-GNU-NEXT:     fn ext_load(_0: *const LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn memcpy(
+// REWRITES-X86_64-GNU-NEXT:         _0: *mut core::ffi::c_void,
+// REWRITES-X86_64-GNU-NEXT:         _1: *const core::ffi::c_void,
+// REWRITES-X86_64-GNU-NEXT:         _2: usize,
+// REWRITES-X86_64-GNU-NEXT:     ) -> *mut core::ffi::c_void;
+// REWRITES-X86_64-GNU-NEXT:     fn ext_vsum(_0: i32, ...) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn ext_global_get() -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn ext_global_set(_0: LongDouble);
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: struct __SlateVaArg {
+// REWRITES-X86_64-GNU-NEXT:     value: Box<dyn std::any::Any>,
+// REWRITES-X86_64-GNU-NEXT:     size: usize,
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: impl __SlateVaArg {
+// REWRITES-X86_64-GNU-NEXT:     fn new<T: 'static>(value: T) -> Self {
+// REWRITES-X86_64-GNU-NEXT:         Self {
+// REWRITES-X86_64-GNU-NEXT:             value: Box::new(value),
+// REWRITES-X86_64-GNU-NEXT:             size: std::mem::size_of::<T>(),
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT:     fn read<T: Copy + 'static>(&self) -> T {
+// REWRITES-X86_64-GNU-NEXT:         if let Some(value) = self.value.downcast_ref::<T>() {
+// REWRITES-X86_64-GNU-NEXT:             return *value;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         assert!(self.size >= std::mem::size_of::<T>());
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             std::ptr::read_unaligned(
+// REWRITES-X86_64-GNU-NEXT:                 (self.value.as_ref() as *const dyn std::any::Any) as *const () as *const T,
+// REWRITES-X86_64-GNU-NEXT:             )
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: #[derive(Clone)]
+// REWRITES-X86_64-GNU-NEXT: struct __SlateVaArgs {
+// REWRITES-X86_64-GNU-NEXT:     args: Option<std::rc::Rc<Vec<__SlateVaArg>>>,
+// REWRITES-X86_64-GNU-NEXT:     index: usize,
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: impl __SlateVaArgs {
+// REWRITES-X86_64-GNU-NEXT:     fn new(args: Vec<__SlateVaArg>) -> Self {
+// REWRITES-X86_64-GNU-NEXT:         Self {
+// REWRITES-X86_64-GNU-NEXT:             args: Some(std::rc::Rc::new(args)),
+// REWRITES-X86_64-GNU-NEXT:             index: 0,
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT:     const fn empty() -> Self {
+// REWRITES-X86_64-GNU-NEXT:         Self {
+// REWRITES-X86_64-GNU-NEXT:             args: None,
+// REWRITES-X86_64-GNU-NEXT:             index: 0,
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT:     fn next_arg<T: Copy + 'static>(&mut self) -> T {
+// REWRITES-X86_64-GNU-NEXT:         let index = self.index;
+// REWRITES-X86_64-GNU-NEXT:         self.index += 1;
+// REWRITES-X86_64-GNU-NEXT:         if std::mem::size_of::<T>() == 0 {
+// REWRITES-X86_64-GNU-NEXT:             return unsafe { std::mem::zeroed() };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let args = self.args.as_ref().expect("va_arg with no arguments");
+// REWRITES-X86_64-GNU-NEXT:         args[index].read::<T>()
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: fn main() {
+// REWRITES-X86_64-GNU-NEXT:     let mut __retval: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:     test_format_and_layout();
+// REWRITES-X86_64-GNU-NEXT:     test_literals_and_precision_boundaries();
+// REWRITES-X86_64-GNU-NEXT:     test_arithmetic_and_temporaries();
+// REWRITES-X86_64-GNU-NEXT:     test_casts_and_usual_conversions();
+// REWRITES-X86_64-GNU-NEXT:     test_special_values_and_comparisons();
+// REWRITES-X86_64-GNU-NEXT:     test_libc_and_libm_externs();
+// REWRITES-X86_64-GNU-NEXT:     test_extern_function_abi();
+// REWRITES-X86_64-GNU-NEXT:     test_struct_union_array_and_pointer_abi();
+// REWRITES-X86_64-GNU-NEXT:     test_varargs();
+// REWRITES-X86_64-GNU-NEXT:     test_extern_global();
+// REWRITES-X86_64-GNU-NEXT:     test_control_flow_and_spills();
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: bool = (unsafe { failures }) != 0;
+// REWRITES-X86_64-GNU-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             fprintf(
+// REWRITES-X86_64-GNU-NEXT:                 (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                 c"long-double torture: %d/%d checks FAILED\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                 unsafe { failures },
+// REWRITES-X86_64-GNU-NEXT:                 unsafe { checks },
+// REWRITES-X86_64-GNU-NEXT:             )
+// REWRITES-X86_64-GNU-NEXT:         };
+// REWRITES-X86_64-GNU-NEXT:         __retval = 1;
+// REWRITES-X86_64-GNU-NEXT:         std::process::exit(__retval as i32);
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     unsafe {
+// REWRITES-X86_64-GNU-NEXT:         printf(
+// REWRITES-X86_64-GNU-NEXT:             c"long-double torture: PASS (%d checks)\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:             unsafe { checks },
+// REWRITES-X86_64-GNU-NEXT:         )
+// REWRITES-X86_64-GNU-NEXT:     };
+// REWRITES-X86_64-GNU-NEXT:     __retval = 0;
+// REWRITES-X86_64-GNU-NEXT:     std::process::exit(__retval as i32);
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: fn test_format_and_layout() {
+// REWRITES-X86_64-GNU-NEXT:     unsafe {
+// REWRITES-X86_64-GNU-NEXT:         printf(
+// REWRITES-X86_64-GNU-NEXT:             c"long double: kind=%s sizeof=%zu align=%zu mant=%d max_exp=%d\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:             ld_kind(),
+// REWRITES-X86_64-GNU-NEXT:             16 as u64,
+// REWRITES-X86_64-GNU-NEXT:             16 as u64,
+// REWRITES-X86_64-GNU-NEXT:             64 as i32,
+// REWRITES-X86_64-GNU-NEXT:             16384 as i32,
+// REWRITES-X86_64-GNU-NEXT:         )
+// REWRITES-X86_64-GNU-NEXT:     };
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 53;
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = if 64 == {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 1024;
+// REWRITES-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = 16384 == {{_v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:             {{_v[0-9]+}}
+// REWRITES-X86_64-GNU-NEXT:         } else {
+// REWRITES-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = false;
+// REWRITES-X86_64-GNU-NEXT:             {{_v[0-9]+}}
+// REWRITES-X86_64-GNU-NEXT:         };
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = true;
+// REWRITES-X86_64-GNU-NEXT:             {{_v[0-9]+}}
+// REWRITES-X86_64-GNU-NEXT:         } else {
+// REWRITES-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 64;
+// REWRITES-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = if 64 == {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = 16384;
+// REWRITES-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: bool = 16384 == {{_v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:                 {{_v[0-9]+}}
+// REWRITES-X86_64-GNU-NEXT:             } else {
+// REWRITES-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: bool = false;
+// REWRITES-X86_64-GNU-NEXT:                 {{_v[0-9]+}}
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             {{_v[0-9]+}}
+// REWRITES-X86_64-GNU-NEXT:         };
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = true;
+// REWRITES-X86_64-GNU-NEXT:             {{_v[0-9]+}}
+// REWRITES-X86_64-GNU-NEXT:         } else {
+// REWRITES-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 113;
+// REWRITES-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = if 64 == {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = 16384;
+// REWRITES-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: bool = 16384 == {{_v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:                 {{_v[0-9]+}}
+// REWRITES-X86_64-GNU-NEXT:             } else {
+// REWRITES-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: bool = false;
+// REWRITES-X86_64-GNU-NEXT:                 {{_v[0-9]+}}
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             {{_v[0-9]+}}
+// REWRITES-X86_64-GNU-NEXT:         };
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf((unsafe { stderr }) as *mut libc::FILE, c"FAIL line %d: %s\n".as_ptr(), 192 as i32, c"(LDBL_MANT_DIG == 53 && LDBL_MAX_EXP == 1024) || (LDBL_MANT_DIG == 64 && LDBL_MAX_EXP == 16384) || (LDBL_MANT_DIG == 113 && LDBL_MAX_EXP == 16384)".as_ptr() as *mut i8)
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: u64 = 16;
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: u64 = (unsafe { ext_sizeof_ld() }) as u64;
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !({{_v[0-9]+}} == {{_v[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     194 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"sizeof(long double) == ext_sizeof_ld()".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: u64 = 16;
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: u64 = (unsafe { ext_alignof_ld() }) as u64;
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !({{_v[0-9]+}} == {{_v[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     195 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"(size_t)ALIGNOF(long double) == ext_alignof_ld()".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: u64 = std::mem::size_of::<ld_box>() as u64;
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: u64 = (unsafe { ext_sizeof_box() }) as u64;
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !({{_v[0-9]+}} == {{_v[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     197 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"sizeof(struct ld_box) == ext_sizeof_box()".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: u64 = std::mem::align_of::<ld_box>() as u64;
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: u64 = (unsafe { ext_alignof_box() }) as u64;
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !({{_v[0-9]+}} == {{_v[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     198 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"(size_t)ALIGNOF(struct ld_box) == ext_alignof_box()".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: u64 = 16;
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: u64 = (unsafe { ext_offset_box_x() }) as u64;
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !({{_v[0-9]+}} == {{_v[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     199 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"offsetof(struct ld_box, x) == ext_offset_box_x()".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: u64 = std::mem::size_of::<ld_pair>() as u64;
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: u64 = (unsafe { ext_offset_box_tail() }) as u64;
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !({{_v[0-9]+}} == {{_v[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     200 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"offsetof(struct ld_box, tail) == ext_offset_box_tail()".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: u64 = 32;
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: u64 = (unsafe { ext_sizeof_pair() }) as u64;
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !({{_v[0-9]+}} == {{_v[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     202 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"sizeof(struct ld_pair) == ext_sizeof_pair()".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: u64 = std::mem::align_of::<ld_pair>() as u64;
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: u64 = (unsafe { ext_alignof_pair() }) as u64;
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !({{_v[0-9]+}} == {{_v[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     203 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"(size_t)ALIGNOF(struct ld_pair) == ext_alignof_pair()".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: u64 = std::mem::size_of::<ld_nested>() as u64;
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: u64 = (unsafe { ext_sizeof_nested() }) as u64;
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !({{_v[0-9]+}} == {{_v[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     205 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"sizeof(struct ld_nested) == ext_sizeof_nested()".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: u64 = std::mem::align_of::<ld_nested>() as u64;
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: u64 = (unsafe { ext_alignof_nested() }) as u64;
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !({{_v[0-9]+}} == {{_v[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     206 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"(size_t)ALIGNOF(struct ld_nested) == ext_alignof_nested()".as_ptr()
+// REWRITES-X86_64-GNU-NEXT:                         as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: u64 = std::mem::size_of::<ld_union>() as u64;
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: u64 = (unsafe { ext_offset_nested_pair() }) as u64;
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !({{_v[0-9]+}} == {{_v[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     207 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"offsetof(struct ld_nested, pair) == ext_offset_nested_pair()".as_ptr()
+// REWRITES-X86_64-GNU-NEXT:                         as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: u64 = 64;
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: u64 = (unsafe { ext_offset_nested_z() }) as u64;
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !({{_v[0-9]+}} == {{_v[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     208 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"offsetof(struct ld_nested, z) == ext_offset_nested_z()".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: u64 = std::mem::align_of::<ld_union>() as u64;
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: u64 = (unsafe { ext_sizeof_union() }) as u64;
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !({{_v[0-9]+}} == {{_v[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     210 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"sizeof(union ld_union) == ext_sizeof_union()".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: u64 = 16;
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: u64 = (unsafe { ext_alignof_union() }) as u64;
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !({{_v[0-9]+}} == {{_v[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     211 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"(size_t)ALIGNOF(union ld_union) == ext_alignof_union()".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     return;
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: /// 2^53 + 1
+// REWRITES-X86_64-GNU-NEXT: fn test_literals_and_precision_boundaries() {
+// REWRITES-X86_64-GNU-NEXT:     let mut one: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// REWRITES-X86_64-GNU-NEXT:     let mut eps: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 192, 63]);
+// REWRITES-X86_64-GNU-NEXT:     let mut n1: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:     let mut n2: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:     let mut via_parse_64: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:     let mut via_parse_113: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:     let mut end: *mut i8 = std::ptr::null_mut();
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: u64 = 9007199254740993u64;
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(one + eps != one);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     224 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"one + eps != one".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let mut check_got_: LongDouble = one + eps - one;
+// REWRITES-X86_64-GNU-NEXT:         let mut check_expected_: LongDouble = eps;
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(check_got_ == check_expected_);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s != %s (got=%La expected=%La)\n".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     225 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"(one + eps) - one".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     c"eps".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     check_got_,
+// REWRITES-X86_64-GNU-NEXT:                     check_expected_,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let mut check_got_2: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:         let mut check_expected_2: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]);
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = unsafe { __slate_nextafterl__rf80_f80_f80(one, {{_v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:         check_got_2 = {{_v[0-9]+}} - one;
+// REWRITES-X86_64-GNU-NEXT:         check_expected_2 = eps;
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(check_got_2 == check_expected_2);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s != %s (got=%La expected=%La)\n".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     226 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"nextafterl(one, 2.0L) - one".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     c"eps".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     check_got_2,
+// REWRITES-X86_64-GNU-NEXT:                     check_expected_2,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     n1 = __slate_f80_from_u64({{_v[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: u64 = 9007199254740992u64;
+// REWRITES-X86_64-GNU-NEXT:     n2 = __slate_f80_from_u64({{_v[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(n1 != n2);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     233 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"n1 != n2".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     via_parse_64 = unsafe {
+// REWRITES-X86_64-GNU-NEXT:         __slate_strtold__rf80_pc_ppc(
+// REWRITES-X86_64-GNU-NEXT:             c"0x1.0000000000000002p0".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:             std::ptr::addr_of_mut!(end) as *mut *mut core::ffi::c_char,
+// REWRITES-X86_64-GNU-NEXT:         )
+// REWRITES-X86_64-GNU-NEXT:     };
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = if end != std::ptr::null_mut() {
+// REWRITES-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = ((unsafe { *end }) as i32) == 0;
+// REWRITES-X86_64-GNU-NEXT:             {{_v[0-9]+}}
+// REWRITES-X86_64-GNU-NEXT:         } else {
+// REWRITES-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = false;
+// REWRITES-X86_64-GNU-NEXT:             {{_v[0-9]+}}
+// REWRITES-X86_64-GNU-NEXT:         };
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     238 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"end != NULL && *end == '\\0'".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(via_parse_64 != LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]));
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     240 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"via_parse_64 != 1.0L".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let mut check_got_3: LongDouble = via_parse_64;
+// REWRITES-X86_64-GNU-NEXT:         let mut check_expected_3: LongDouble = LongDouble([1, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(check_got_3 == check_expected_3);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s != %s (got=%La expected=%La)\n".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     241 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"via_parse_64".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     c"0x1.0000000000000002p0L".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     check_got_3,
+// REWRITES-X86_64-GNU-NEXT:                     check_expected_3,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     end = std::ptr::null_mut();
+// REWRITES-X86_64-GNU-NEXT:     via_parse_113 = unsafe {
+// REWRITES-X86_64-GNU-NEXT:         __slate_strtold__rf80_pc_ppc(
+// REWRITES-X86_64-GNU-NEXT:             c"0x1.0000000000000000000000000001p0".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:             std::ptr::addr_of_mut!(end) as *mut *mut core::ffi::c_char,
+// REWRITES-X86_64-GNU-NEXT:         )
+// REWRITES-X86_64-GNU-NEXT:     };
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = if end != std::ptr::null_mut() {
+// REWRITES-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = ((unsafe { *end }) as i32) == 0;
+// REWRITES-X86_64-GNU-NEXT:             {{_v[0-9]+}}
+// REWRITES-X86_64-GNU-NEXT:         } else {
+// REWRITES-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = false;
+// REWRITES-X86_64-GNU-NEXT:             {{_v[0-9]+}}
+// REWRITES-X86_64-GNU-NEXT:         };
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     248 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"end != NULL && *end == '\\0'".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(via_parse_113 == LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]));
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     253 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"via_parse_113 == 1.0L".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     let mut wide: LongDouble = LongDouble([1, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// REWRITES-X86_64-GNU-NEXT:     let mut through_double: LongDouble = __slate_f80_from_f64(1.0 as f64);
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(wide != through_double);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     261 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"wide != through_double".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     let mut huge_but_finite: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 207, 71]);
+// REWRITES-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(huge_but_finite), {{_v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble =
+// REWRITES-X86_64-GNU-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(huge_but_finite)) };
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = __slate_f80_is_fp_class({{_v[0-9]+}}, 504);
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     268 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"isfinite(huge_but_finite)".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble =
+// REWRITES-X86_64-GNU-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(huge_but_finite)) };
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f64(179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026184124858368.0 as f64);
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !({{_v[0-9]+}} > {{_v[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     269 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"huge_but_finite > (long double)DBL_MAX".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     return;
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: /// Conditional operator and comma operator force long-double temporaries.
+// REWRITES-X86_64-GNU-NEXT: /// Conditional operator and comma operator force long-double temporaries.
+// REWRITES-X86_64-GNU-NEXT: fn test_arithmetic_and_temporaries() {
+// REWRITES-X86_64-GNU-NEXT:     let mut a: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:     let mut b: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:     let mut c: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:     let mut x: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:     let mut y: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([128, 247, 230, 213, 196, 179, 162, 145, 19, 64]);
+// REWRITES-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(a), {{_v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 42, 59, 76, 93, 110, 127, 128, 248, 191]);
+// REWRITES-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(b), {{_v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([255, 255, 255, 255, 255, 255, 255, 255, 2, 64]);
+// REWRITES-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(c), {{_v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let mut check_got_: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:         let mut check_expected_: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(a)) };
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(b)) };
+// REWRITES-X86_64-GNU-NEXT:         check_got_ = {{_v[0-9]+}} + {{_v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(a)) };
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(b)) };
+// REWRITES-X86_64-GNU-NEXT:         check_expected_ = unsafe { __slate_ext_add__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(check_got_ == check_expected_);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s != %s (got=%La expected=%La)\n".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     281 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"a + b".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     c"ext_add(a, b)".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     check_got_,
+// REWRITES-X86_64-GNU-NEXT:                     check_expected_,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let mut check_got_2: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:         let mut check_expected_2: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(a)) };
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(b)) };
+// REWRITES-X86_64-GNU-NEXT:         check_got_2 = {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(a)) };
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(b)) };
+// REWRITES-X86_64-GNU-NEXT:         check_expected_2 = unsafe { __slate_ext_sub__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(check_got_2 == check_expected_2);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s != %s (got=%La expected=%La)\n".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     282 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"a - b".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     c"ext_sub(a, b)".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     check_got_2,
+// REWRITES-X86_64-GNU-NEXT:                     check_expected_2,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let mut check_got_3: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:         let mut check_expected_3: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(a)) };
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(b)) };
+// REWRITES-X86_64-GNU-NEXT:         check_got_3 = {{_v[0-9]+}} * {{_v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(a)) };
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(b)) };
+// REWRITES-X86_64-GNU-NEXT:         check_expected_3 = unsafe { __slate_ext_mul__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(check_got_3 == check_expected_3);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s != %s (got=%La expected=%La)\n".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     283 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"a * b".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     c"ext_mul(a, b)".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     check_got_3,
+// REWRITES-X86_64-GNU-NEXT:                     check_expected_3,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let mut check_got_4: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:         let mut check_expected_4: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(a)) };
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(c)) };
+// REWRITES-X86_64-GNU-NEXT:         check_got_4 = {{_v[0-9]+}} / {{_v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(a)) };
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(c)) };
+// REWRITES-X86_64-GNU-NEXT:         check_expected_4 = unsafe { __slate_ext_div__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(check_got_4 == check_expected_4);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s != %s (got=%La expected=%La)\n".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     284 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"a / c".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     c"ext_div(a, c)".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     check_got_4,
+// REWRITES-X86_64-GNU-NEXT:                     check_expected_4,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let mut check_got_5: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:         let mut check_expected_5: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(a)) };
+// REWRITES-X86_64-GNU-NEXT:         check_got_5 = -{{_v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(a)) };
+// REWRITES-X86_64-GNU-NEXT:         check_expected_5 = unsafe { __slate_ext_neg__rf80_f80({{_v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(check_got_5 == check_expected_5);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s != %s (got=%La expected=%La)\n".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     285 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"-a".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     c"ext_neg(a)".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     check_got_5,
+// REWRITES-X86_64-GNU-NEXT:                     check_expected_5,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(a)) };
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(b)) };
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} + {{_v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(c)) };
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} * {{_v[0-9]+}} / LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 1, 64]);
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(c)) };
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(b)) };
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 128, 128, 244, 63]);
+// REWRITES-X86_64-GNU-NEXT:     x = __slate_f80_fma(
+// REWRITES-X86_64-GNU-NEXT:         -(({{_v[0-9]+}} - {{_v[0-9]+}}) / LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 252, 63])),
+// REWRITES-X86_64-GNU-NEXT:         {{_v[0-9]+}},
+// REWRITES-X86_64-GNU-NEXT:         {{_v[0-9]+}},
+// REWRITES-X86_64-GNU-NEXT:     );
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(a)) };
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(b)) };
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { __slate_ext_add__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(c)) };
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { __slate_ext_mul__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 1, 64]);
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { __slate_ext_div__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(c)) };
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(b)) };
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { __slate_ext_sub__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 252, 63]);
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { __slate_ext_div__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 128, 128, 244, 63]);
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { __slate_ext_mul__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:     y = unsafe { __slate_ext_sub__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let mut check_got_6: LongDouble = x;
+// REWRITES-X86_64-GNU-NEXT:         let mut check_expected_6: LongDouble = y;
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(check_got_6 == check_expected_6);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s != %s (got=%La expected=%La)\n".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     291 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"x".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     c"y".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     check_got_6,
+// REWRITES-X86_64-GNU-NEXT:                     check_expected_6,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     let mut q: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// REWRITES-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(q), {{_v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 254, 63]);
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(q)) };
+// REWRITES-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(q), {{_v[0-9]+}} + {{_v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]);
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(q)) };
+// REWRITES-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(q), {{_v[0-9]+}} * {{_v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 253, 63]);
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(q)) };
+// REWRITES-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(q), {{_v[0-9]+}} - {{_v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]);
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(q)) };
+// REWRITES-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(q), {{_v[0-9]+}} / {{_v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let mut check_got_7: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(q)) };
+// REWRITES-X86_64-GNU-NEXT:         let mut check_expected_7: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 136, 0, 64]);
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(check_got_7 == check_expected_7);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s != %s (got=%La expected=%La)\n".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     299 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"q".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     c"2.125L".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     check_got_7,
+// REWRITES-X86_64-GNU-NEXT:                     check_expected_7,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(q)) };
+// REWRITES-X86_64-GNU-NEXT:     todo!("long double constant without Clang AST value");
+// REWRITES-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(q), {{_v[0-9]+}} + _200) };
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let mut check_got_8: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(q)) };
+// REWRITES-X86_64-GNU-NEXT:         let mut check_expected_8: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 200, 0, 64]);
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(check_got_8 == check_expected_8);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s != %s (got=%La expected=%La)\n".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     301 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"q".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     c"3.125L".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     check_got_8,
+// REWRITES-X86_64-GNU-NEXT:                     check_expected_8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(q)) };
+// REWRITES-X86_64-GNU-NEXT:     todo!("long double constant without Clang AST value");
+// REWRITES-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(q), {{_v[0-9]+}} - _203) };
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let mut check_got_9: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(q)) };
+// REWRITES-X86_64-GNU-NEXT:         let mut check_expected_9: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 136, 0, 64]);
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(check_got_9 == check_expected_9);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s != %s (got=%La expected=%La)\n".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     303 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"q".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     c"2.125L".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     check_got_9,
+// REWRITES-X86_64-GNU-NEXT:                     check_expected_9,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let mut check_got_10: LongDouble =
+// REWRITES-X86_64-GNU-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(a)) };
+// REWRITES-X86_64-GNU-NEXT:         let mut check_expected_10: LongDouble =
+// REWRITES-X86_64-GNU-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(a)) };
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(check_got_10 == check_expected_10);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s != %s (got=%La expected=%La)\n".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     307 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"(1 ? a : (double)b)".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     c"a".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     check_got_10,
+// REWRITES-X86_64-GNU-NEXT:                     check_expected_10,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let mut check_got_11: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:         let mut check_expected_11: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:         x = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(b)) };
+// REWRITES-X86_64-GNU-NEXT:         check_got_11 = x + LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(b)) };
+// REWRITES-X86_64-GNU-NEXT:         check_expected_11 = {{_v[0-9]+}} + LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(check_got_11 == check_expected_11);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s != %s (got=%La expected=%La)\n".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     308 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"(x = b, x + 1.0L)".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     c"b + 1.0L".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     check_got_11,
+// REWRITES-X86_64-GNU-NEXT:                     check_expected_11,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     return;
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: fn test_casts_and_usual_conversions() {
+// REWRITES-X86_64-GNU-NEXT:     let mut si: aligned::Aligned<aligned::A16, [i64; 7]> = aligned::Aligned([0; 7]);
+// REWRITES-X86_64-GNU-NEXT:     let mut ui: aligned::Aligned<aligned::A16, [u64; 6]> = aligned::Aligned([0; 6]);
+// REWRITES-X86_64-GNU-NEXT:     let mut i: u64 = 0;
+// REWRITES-X86_64-GNU-NEXT:     *si = [
+// REWRITES-X86_64-GNU-NEXT:         0,
+// REWRITES-X86_64-GNU-NEXT:         1,
+// REWRITES-X86_64-GNU-NEXT:         -1,
+// REWRITES-X86_64-GNU-NEXT:         2147483647,
+// REWRITES-X86_64-GNU-NEXT:         -2147483647,
+// REWRITES-X86_64-GNU-NEXT:         9007199254740991,
+// REWRITES-X86_64-GNU-NEXT:         -9007199254740991,
+// REWRITES-X86_64-GNU-NEXT:     ];
+// REWRITES-X86_64-GNU-NEXT:     *ui = [
+// REWRITES-X86_64-GNU-NEXT:         0,
+// REWRITES-X86_64-GNU-NEXT:         1,
+// REWRITES-X86_64-GNU-NEXT:         4294967295,
+// REWRITES-X86_64-GNU-NEXT:         9007199254740991,
+// REWRITES-X86_64-GNU-NEXT:         9007199254740993,
+// REWRITES-X86_64-GNU-NEXT:         18446744073709551615,
+// REWRITES-X86_64-GNU-NEXT:     ];
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: u64 = 8;
+// REWRITES-X86_64-GNU-NEXT:         if !(i < 56 / {{_v[0-9]+}}) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         loop {
+// REWRITES-X86_64-GNU-NEXT:             let mut check_got_: LongDouble = __slate_f80_from_i64(si[(i as usize)]);
+// REWRITES-X86_64-GNU-NEXT:             let mut check_expected_: LongDouble =
+// REWRITES-X86_64-GNU-NEXT:                 unsafe { __slate_ext_from_i64__rf80_i64(si[(i as usize)] as i64) };
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = !(check_got_ == check_expected_);
+// REWRITES-X86_64-GNU-NEXT:             if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:                 unsafe {
+// REWRITES-X86_64-GNU-NEXT:                     failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:                 }
+// REWRITES-X86_64-GNU-NEXT:                 unsafe {
+// REWRITES-X86_64-GNU-NEXT:                     __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:                         (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                         c"FAIL line %d: %s != %s (got=%La expected=%La)\n".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                         328 as i32,
+// REWRITES-X86_64-GNU-NEXT:                         c"(long double)si[i]".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                         c"ext_from_i64(si[i])".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                         check_got_,
+// REWRITES-X86_64-GNU-NEXT:                         check_expected_,
+// REWRITES-X86_64-GNU-NEXT:                     )
+// REWRITES-X86_64-GNU-NEXT:                 };
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:             if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:                 break;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         i += 1;
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     i = 0;
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: u64 = 8;
+// REWRITES-X86_64-GNU-NEXT:         if !(i < 48 / {{_v[0-9]+}}) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         loop {
+// REWRITES-X86_64-GNU-NEXT:             let mut check_got_2: LongDouble = __slate_f80_from_u64(ui[(i as usize)]);
+// REWRITES-X86_64-GNU-NEXT:             let mut check_expected_2: LongDouble =
+// REWRITES-X86_64-GNU-NEXT:                 unsafe { __slate_ext_from_u64__rf80_u64(ui[(i as usize)] as u64) };
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = !(check_got_2 == check_expected_2);
+// REWRITES-X86_64-GNU-NEXT:             if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:                 unsafe {
+// REWRITES-X86_64-GNU-NEXT:                     failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:                 }
+// REWRITES-X86_64-GNU-NEXT:                 unsafe {
+// REWRITES-X86_64-GNU-NEXT:                     __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:                         (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                         c"FAIL line %d: %s != %s (got=%La expected=%La)\n".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                         331 as i32,
+// REWRITES-X86_64-GNU-NEXT:                         c"(long double)ui[i]".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                         c"ext_from_u64(ui[i])".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                         check_got_2,
+// REWRITES-X86_64-GNU-NEXT:                         check_expected_2,
+// REWRITES-X86_64-GNU-NEXT:                     )
+// REWRITES-X86_64-GNU-NEXT:                 };
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:             if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:                 break;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         i += 1;
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 63, 180, 150, 19, 64]);
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i64 = __slate_f80_to_i64({{_v[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 63, 180, 150, 19, 64]);
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i64 = unsafe { __slate_ext_to_i64__ri64_f80({{_v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !({{_v[0-9]+}} == {{_v[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     333 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"(int64_t)1234567.875L == ext_to_i64(1234567.875L)".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 63, 180, 150, 19, 192]);
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i64 = __slate_f80_to_i64({{_v[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 63, 180, 150, 19, 192]);
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i64 = unsafe { __slate_ext_to_i64__ri64_f80({{_v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !({{_v[0-9]+}} == {{_v[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     334 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"(int64_t)-1234567.875L == ext_to_i64(-1234567.875L)".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 63, 180, 150, 19, 64]);
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: u64 = __slate_f80_to_u64({{_v[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 63, 180, 150, 19, 64]);
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: u64 = unsafe { __slate_ext_to_u64__ru64_f80({{_v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !({{_v[0-9]+}} == {{_v[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     335 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"(uint64_t)1234567.875L == ext_to_u64(1234567.875L)".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 224, 254, 191]);
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i64 = __slate_f80_to_i64({{_v[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !({{_v[0-9]+}} == 0);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     336 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"(int64_t)-0.875L == 0".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     let mut d: f64 = 0.0;
+// REWRITES-X86_64-GNU-NEXT:     let mut f: f32 = 0.0;
+// REWRITES-X86_64-GNU-NEXT:     let mut ld1: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:     let mut ld2: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(d), 1048576.0000000002 as f64) };
+// REWRITES-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(f), 1024.00012 as f32) };
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(d)) };
+// REWRITES-X86_64-GNU-NEXT:     ld1 = __slate_f80_from_f64({{_v[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: f32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(f)) };
+// REWRITES-X86_64-GNU-NEXT:     ld2 = __slate_f80_from_f32({{_v[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let mut check_got_3: LongDouble = ld1;
+// REWRITES-X86_64-GNU-NEXT:         let mut check_expected_3: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(d)) };
+// REWRITES-X86_64-GNU-NEXT:         check_expected_3 = unsafe { __slate_ext_from_double__rf80_f64({{_v[0-9]+}} as f64) };
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(check_got_3 == check_expected_3);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s != %s (got=%La expected=%La)\n".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     343 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"ld1".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     c"ext_from_double(d)".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     check_got_3,
+// REWRITES-X86_64-GNU-NEXT:                     check_expected_3,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let mut check_got_4: LongDouble = ld2;
+// REWRITES-X86_64-GNU-NEXT:         let mut check_expected_4: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: f32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(f)) };
+// REWRITES-X86_64-GNU-NEXT:         check_expected_4 = unsafe { __slate_ext_from_float__rf80_f32({{_v[0-9]+}} as f32) };
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(check_got_4 == check_expected_4);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s != %s (got=%La expected=%La)\n".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     344 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"ld2".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     c"ext_from_float(f)".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     check_got_4,
+// REWRITES-X86_64-GNU-NEXT:                     check_expected_4,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: f64 = __slate_f80_to_f64(ld1);
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: f64 = unsafe { __slate_ext_to_double__rf64_f80(ld1) };
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !({{_v[0-9]+}} == {{_v[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     345 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"(double)ld1 == ext_to_double(ld1)".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: f32 = __slate_f80_to_f32(ld2);
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: f32 = unsafe { __slate_ext_to_float__rf32_f80(ld2) };
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !({{_v[0-9]+}} == {{_v[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     346 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"(float)ld2 == ext_to_float(ld2)".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     let mut i32: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:     let mut u64: u64 = 0;
+// REWRITES-X86_64-GNU-NEXT:     let mut f2: f32 = 0.0;
+// REWRITES-X86_64-GNU-NEXT:     let mut d2: f64 = 0.0;
+// REWRITES-X86_64-GNU-NEXT:     let mut ld: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(i32), -17 as i32) };
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: u64 = 9007199254740993u64;
+// REWRITES-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(u64), {{_v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(f2), 0.25 as f32) };
+// REWRITES-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(d2), -0.125 as f64) };
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]);
+// REWRITES-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(ld), {{_v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let mut check_got_5: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:         let mut check_expected_5: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ld)) };
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(i32)) };
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = __slate_f80_from_i32({{_v[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:         check_got_5 = {{_v[0-9]+}} + {{_v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ld)) };
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(i32)) };
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = __slate_f80_from_i32({{_v[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:         check_expected_5 = unsafe { __slate_ext_add__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(check_got_5 == check_expected_5);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s != %s (got=%La expected=%La)\n".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     357 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"ld + i32".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     c"ext_add(ld, (long double)i32)".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     check_got_5,
+// REWRITES-X86_64-GNU-NEXT:                     check_expected_5,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let mut check_got_6: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:         let mut check_expected_6: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ld)) };
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: u64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(u64)) };
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = __slate_f80_from_u64({{_v[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:         check_got_6 = {{_v[0-9]+}} + {{_v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ld)) };
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: u64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(u64)) };
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = __slate_f80_from_u64({{_v[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:         check_expected_6 = unsafe { __slate_ext_add__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(check_got_6 == check_expected_6);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s != %s (got=%La expected=%La)\n".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     358 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"ld + u64".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     c"ext_add(ld, (long double)u64)".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     check_got_6,
+// REWRITES-X86_64-GNU-NEXT:                     check_expected_6,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let mut check_got_7: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:         let mut check_expected_7: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ld)) };
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: f32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(f2)) };
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f32({{_v[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:         check_got_7 = {{_v[0-9]+}} + {{_v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ld)) };
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: f32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(f2)) };
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f32({{_v[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:         check_expected_7 = unsafe { __slate_ext_add__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(check_got_7 == check_expected_7);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s != %s (got=%La expected=%La)\n".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     359 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"ld + f".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     c"ext_add(ld, (long double)f)".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     check_got_7,
+// REWRITES-X86_64-GNU-NEXT:                     check_expected_7,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let mut check_got_8: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:         let mut check_expected_8: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ld)) };
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(d2)) };
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f64({{_v[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:         check_got_8 = {{_v[0-9]+}} + {{_v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ld)) };
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(d2)) };
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f64({{_v[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:         check_expected_8 = unsafe { __slate_ext_add__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(check_got_8 == check_expected_8);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s != %s (got=%La expected=%La)\n".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     360 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"ld + d".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     c"ext_add(ld, (long double)d)".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     check_got_8,
+// REWRITES-X86_64-GNU-NEXT:                     check_expected_8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     return;
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: fn test_special_values_and_comparisons() {
+// REWRITES-X86_64-GNU-NEXT:     let mut pz: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// REWRITES-X86_64-GNU-NEXT:     let mut nz: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
+// REWRITES-X86_64-GNU-NEXT:     let mut inf: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:     let mut ninf: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:     let mut nan: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: f32 = f32::from_bits(0x7f800000);
+// REWRITES-X86_64-GNU-NEXT:     inf = __slate_f80_from_f32({{_v[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: f32 = f32::from_bits(0xff800000);
+// REWRITES-X86_64-GNU-NEXT:     ninf = __slate_f80_from_f32({{_v[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:     nan = unsafe { __slate_nanl__rf80_pc(c"".as_ptr()) };
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(pz == nz);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     371 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"pz == nz".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = __slate_f80_signbit(pz);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     372 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"!signbit(pz)".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = __slate_f80_signbit(nz);
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     373 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"signbit(nz)".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let mut check_got_: LongDouble = unsafe { __slate_ext_identity__rf80_f80(pz) };
+// REWRITES-X86_64-GNU-NEXT:         let mut check_expected_: LongDouble = pz;
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = check_got_ == check_expected_;
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = __slate_f80_signbit(check_got_);
+// REWRITES-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
+// REWRITES-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = __slate_f80_signbit(check_expected_);
+// REWRITES-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == ({{_v[0-9]+}} as i32);
+// REWRITES-X86_64-GNU-NEXT:             {{_v[0-9]+}}
+// REWRITES-X86_64-GNU-NEXT:         } else {
+// REWRITES-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = false;
+// REWRITES-X86_64-GNU-NEXT:             {{_v[0-9]+}}
+// REWRITES-X86_64-GNU-NEXT:         };
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: signed-zero mismatch\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     374 as i32,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let mut check_got_2: LongDouble = unsafe { __slate_ext_identity__rf80_f80(nz) };
+// REWRITES-X86_64-GNU-NEXT:         let mut check_expected_2: LongDouble = nz;
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = check_got_2 == check_expected_2;
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = __slate_f80_signbit(check_got_2);
+// REWRITES-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
+// REWRITES-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = __slate_f80_signbit(check_expected_2);
+// REWRITES-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == ({{_v[0-9]+}} as i32);
+// REWRITES-X86_64-GNU-NEXT:             {{_v[0-9]+}}
+// REWRITES-X86_64-GNU-NEXT:         } else {
+// REWRITES-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = false;
+// REWRITES-X86_64-GNU-NEXT:             {{_v[0-9]+}}
+// REWRITES-X86_64-GNU-NEXT:         };
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: signed-zero mismatch\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     375 as i32,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let mut check_got_3: LongDouble = unsafe { __slate_ext_neg__rf80_f80(pz) };
+// REWRITES-X86_64-GNU-NEXT:         let mut check_expected_3: LongDouble = nz;
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = check_got_3 == check_expected_3;
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = __slate_f80_signbit(check_got_3);
+// REWRITES-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
+// REWRITES-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = __slate_f80_signbit(check_expected_3);
+// REWRITES-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == ({{_v[0-9]+}} as i32);
+// REWRITES-X86_64-GNU-NEXT:             {{_v[0-9]+}}
+// REWRITES-X86_64-GNU-NEXT:         } else {
+// REWRITES-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = false;
+// REWRITES-X86_64-GNU-NEXT:             {{_v[0-9]+}}
+// REWRITES-X86_64-GNU-NEXT:         };
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: signed-zero mismatch\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     376 as i32,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let mut check_got_4: LongDouble = unsafe { __slate_ext_neg__rf80_f80(nz) };
+// REWRITES-X86_64-GNU-NEXT:         let mut check_expected_4: LongDouble = pz;
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = check_got_4 == check_expected_4;
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = __slate_f80_signbit(check_got_4);
+// REWRITES-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
+// REWRITES-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = __slate_f80_signbit(check_expected_4);
+// REWRITES-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == ({{_v[0-9]+}} as i32);
+// REWRITES-X86_64-GNU-NEXT:             {{_v[0-9]+}}
+// REWRITES-X86_64-GNU-NEXT:         } else {
+// REWRITES-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = false;
+// REWRITES-X86_64-GNU-NEXT:             {{_v[0-9]+}}
+// REWRITES-X86_64-GNU-NEXT:         };
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: signed-zero mismatch\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     377 as i32,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = __slate_f80_is_fp_class(inf, 516);
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = inf > LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// REWRITES-X86_64-GNU-NEXT:             {{_v[0-9]+}}
+// REWRITES-X86_64-GNU-NEXT:         } else {
+// REWRITES-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = false;
+// REWRITES-X86_64-GNU-NEXT:             {{_v[0-9]+}}
+// REWRITES-X86_64-GNU-NEXT:         };
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     379 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"isinf(inf) && inf > 0.0L".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = __slate_f80_is_fp_class(ninf, 516);
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = ninf < LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// REWRITES-X86_64-GNU-NEXT:             {{_v[0-9]+}}
+// REWRITES-X86_64-GNU-NEXT:         } else {
+// REWRITES-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = false;
+// REWRITES-X86_64-GNU-NEXT:             {{_v[0-9]+}}
+// REWRITES-X86_64-GNU-NEXT:         };
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     380 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"isinf(ninf) && ninf < 0.0L".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = __slate_f80_is_fp_class(nan, 3);
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     381 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"isnan(nan)".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = nan == nan;
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     382 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"!(nan == nan)".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = nan < LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     383 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"!(nan < 0.0L)".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = nan > LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     384 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"!(nan > 0.0L)".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = nan <= LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     385 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"!(nan <= 0.0L)".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = nan >= LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     386 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"!(nan >= 0.0L)".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(nan != nan);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     387 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"nan != nan".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { __slate_ext_eq__ri32_f80_f80(pz, nz) };
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !({{_v[0-9]+}} != 0);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     389 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"ext_eq(pz, nz)".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 191]);
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { __slate_ext_lt__ri32_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !({{_v[0-9]+}} != 0);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     390 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"ext_lt(-1.0L, 1.0L)".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { __slate_ext_le__ri32_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !({{_v[0-9]+}} != 0);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     391 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"ext_le(1.0L, 1.0L)".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { __slate_ext_eq__ri32_f80_f80(nan, nan) };
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     392 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"!ext_eq(nan, nan)".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { __slate_ext_lt__ri32_f80_f80(nan, {{_v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     393 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"!ext_lt(nan, 0.0L)".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = __slate_f80_copysign({{_v[0-9]+}}, nz);
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = __slate_f80_signbit({{_v[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     395 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"signbit(copysignl(1.0L, nz))".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = __slate_f80_copysign({{_v[0-9]+}}, pz);
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = __slate_f80_signbit({{_v[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     396 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"!signbit(copysignl(1.0L, pz))".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     return;
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: fn test_libc_and_libm_externs() {
+// REWRITES-X86_64-GNU-NEXT:     let mut end: *mut i8 = std::ptr::null_mut();
+// REWRITES-X86_64-GNU-NEXT:     let mut x: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:     let mut ip: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:     let mut fp: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:     let mut fr: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:     let mut e: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:     let mut buf: aligned::Aligned<aligned::A16, [i8; 256]> = aligned::Aligned([0; 256]);
+// REWRITES-X86_64-GNU-NEXT:     let mut end2: *mut i8 = std::ptr::null_mut();
+// REWRITES-X86_64-GNU-NEXT:     let mut n: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"  -0x1.23456789abcdef0123456789p+17tail".as_ptr() as *mut i8;
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { __errno_location() };
+// REWRITES-X86_64-GNU-NEXT:     unsafe {
+// REWRITES-X86_64-GNU-NEXT:         *{{_v[0-9]+}} = {{_v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     x = unsafe {
+// REWRITES-X86_64-GNU-NEXT:         __slate_strtold__rf80_pc_ppc(
+// REWRITES-X86_64-GNU-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_char,
+// REWRITES-X86_64-GNU-NEXT:             std::ptr::addr_of_mut!(end) as *mut *mut core::ffi::c_char,
+// REWRITES-X86_64-GNU-NEXT:         )
+// REWRITES-X86_64-GNU-NEXT:     };
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(end != std::ptr::null_mut());
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     413 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"end != NULL".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { strcmp(end as *const core::ffi::c_char, c"tail".as_ptr()) };
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !({{_v[0-9]+}} == 0);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     414 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"strcmp(end, \"tail\") == 0".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: *mut i32 = unsafe { __errno_location() };
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !((unsafe { *{{_v[0-9]+}} }) == 0);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     415 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"errno == 0".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(x < LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]));
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     416 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"x < 0.0L".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: *mut i8 = buf.as_mut_ptr() as *mut i8;
+// REWRITES-X86_64-GNU-NEXT:     n = unsafe {
+// REWRITES-X86_64-GNU-NEXT:         __slate_snprintf__ri32_pi8_u64_pi8_f80(
+// REWRITES-X86_64-GNU-NEXT:             {{_v[0-9]+}} as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:             256 as u64,
+// REWRITES-X86_64-GNU-NEXT:             c"%La".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:             x,
+// REWRITES-X86_64-GNU-NEXT:         )
+// REWRITES-X86_64-GNU-NEXT:     };
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = if n > 0 {
+// REWRITES-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = (n as u64) < 256;
+// REWRITES-X86_64-GNU-NEXT:             {{_v[0-9]+}}
+// REWRITES-X86_64-GNU-NEXT:         } else {
+// REWRITES-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = false;
+// REWRITES-X86_64-GNU-NEXT:             {{_v[0-9]+}}
+// REWRITES-X86_64-GNU-NEXT:         };
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     420 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"n > 0 && (size_t)n < sizeof(buf)".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let mut check_got_: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:         let mut check_expected_: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: *mut i8 = buf.as_mut_ptr() as *mut i8;
+// REWRITES-X86_64-GNU-NEXT:         check_got_ = unsafe {
+// REWRITES-X86_64-GNU-NEXT:             __slate_strtold__rf80_pc_ppc(
+// REWRITES-X86_64-GNU-NEXT:                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// REWRITES-X86_64-GNU-NEXT:                 std::ptr::addr_of_mut!(end2) as *mut *mut core::ffi::c_char,
+// REWRITES-X86_64-GNU-NEXT:             )
+// REWRITES-X86_64-GNU-NEXT:         };
+// REWRITES-X86_64-GNU-NEXT:         check_expected_ = x;
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(check_got_ == check_expected_);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s != %s (got=%La expected=%La)\n".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     421 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"strtold(buf, &end2)".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     c"x".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     check_got_,
+// REWRITES-X86_64-GNU-NEXT:                     check_expected_,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = if end2 != std::ptr::null_mut() {
+// REWRITES-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = ((unsafe { *end2 }) as i32) == 0;
+// REWRITES-X86_64-GNU-NEXT:             {{_v[0-9]+}}
+// REWRITES-X86_64-GNU-NEXT:         } else {
+// REWRITES-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = false;
+// REWRITES-X86_64-GNU-NEXT:             {{_v[0-9]+}}
+// REWRITES-X86_64-GNU-NEXT:         };
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     422 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"end2 != NULL && *end2 == '\\0'".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 231, 192, 12, 192]);
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_fract({{_v[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:     ip = __slate_f80_trunc({{_v[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:     fp = {{_v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let mut check_got_2: LongDouble = ip;
+// REWRITES-X86_64-GNU-NEXT:         let mut check_expected_2: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 228, 192, 12, 192]);
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(check_got_2 == check_expected_2);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s != %s (got=%La expected=%La)\n".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     425 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"ip".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     c"-12345.0L".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     check_got_2,
+// REWRITES-X86_64-GNU-NEXT:                     check_expected_2,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let mut check_got_3: LongDouble = fp;
+// REWRITES-X86_64-GNU-NEXT:         let mut check_expected_3: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 254, 191]);
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(check_got_3 == check_expected_3);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s != %s (got=%La expected=%La)\n".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     426 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"fp".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     c"-0.75L".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     check_got_3,
+// REWRITES-X86_64-GNU-NEXT:                     check_expected_3,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 9, 64]);
+// REWRITES-X86_64-GNU-NEXT:     fr = unsafe { __slate_frexpl__rf80_f80_pi32({{_v[0-9]+}}, std::ptr::addr_of_mut!(e) as *mut i32) };
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let mut check_got_4: LongDouble = fr;
+// REWRITES-X86_64-GNU-NEXT:         let mut check_expected_4: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 254, 63]);
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(check_got_4 == check_expected_4);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s != %s (got=%La expected=%La)\n".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     429 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"fr".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     c"0.75L".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     check_got_4,
+// REWRITES-X86_64-GNU-NEXT:                     check_expected_4,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(e == 11);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     430 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"e == 11".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let mut check_got_5: LongDouble = unsafe { __slate_ldexpl__rf80_f80_i32(fr, e as i32) };
+// REWRITES-X86_64-GNU-NEXT:         let mut check_expected_5: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 9, 64]);
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(check_got_5 == check_expected_5);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s != %s (got=%La expected=%La)\n".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     431 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"ldexpl(fr, e)".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     c"0x1.8p+10L".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     check_got_5,
+// REWRITES-X86_64-GNU-NEXT:                     check_expected_5,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let mut check_got_6: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:         let mut check_expected_6: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 64]);
+// REWRITES-X86_64-GNU-NEXT:         check_got_6 = unsafe { __slate_sqrtl__rf80_f80({{_v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:         check_expected_6 = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]);
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(check_got_6 == check_expected_6);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s != %s (got=%La expected=%La)\n".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     433 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"sqrtl(4.0L)".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     c"2.0L".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     check_got_6,
+// REWRITES-X86_64-GNU-NEXT:                     check_expected_6,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let mut check_got_7: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:         let mut check_expected_7: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 63]);
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]);
+// REWRITES-X86_64-GNU-NEXT:         check_got_7 = unsafe { __slate_powl__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:         check_expected_7 = LongDouble([0, 0, 0, 0, 0, 0, 0, 216, 0, 64]);
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(check_got_7 == check_expected_7);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s != %s (got=%La expected=%La)\n".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     434 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"powl(1.5L, 3.0L)".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     c"3.375L".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     check_got_7,
+// REWRITES-X86_64-GNU-NEXT:                     check_expected_7,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let mut check_got_8: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:         let mut check_expected_8: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]);
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]);
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 64]);
+// REWRITES-X86_64-GNU-NEXT:         check_got_8 = __slate_f80_fma({{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:         check_expected_8 = LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 2, 64]);
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(check_got_8 == check_expected_8);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s != %s (got=%La expected=%La)\n".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     435 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"fmal(2.0L, 3.0L, 4.0L)".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     c"10.0L".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     check_got_8,
+// REWRITES-X86_64-GNU-NEXT:                     check_expected_8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let mut check_got_9: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:         let mut check_expected_9: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 140, 3, 64]);
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]);
+// REWRITES-X86_64-GNU-NEXT:         check_got_9 = unsafe { __slate_fmodl__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:         check_expected_9 = LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 0, 64]);
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(check_got_9 == check_expected_9);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s != %s (got=%La expected=%La)\n".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     436 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"fmodl(17.5L, 3.0L)".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     c"2.5L".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     check_got_9,
+// REWRITES-X86_64-GNU-NEXT:                     check_expected_9,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let mut check_got_10: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:         let mut check_expected_10: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 176, 1, 64]);
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]);
+// REWRITES-X86_64-GNU-NEXT:         check_got_10 = unsafe { __slate_remainderl__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:         check_expected_10 = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 254, 191]);
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(check_got_10 == check_expected_10);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s != %s (got=%La expected=%La)\n".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     437 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"remainderl(5.5L, 2.0L)".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     c"-0.5L".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     check_got_10,
+// REWRITES-X86_64-GNU-NEXT:                     check_expected_10,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let mut check_got_11: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:         let mut check_expected_11: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 255, 191]);
+// REWRITES-X86_64-GNU-NEXT:         check_got_11 = __slate_f80_floor({{_v[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:         check_expected_11 = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 192]);
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(check_got_11 == check_expected_11);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s != %s (got=%La expected=%La)\n".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     438 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"floorl(-1.25L)".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     c"-2.0L".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     check_got_11,
+// REWRITES-X86_64-GNU-NEXT:                     check_expected_11,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let mut check_got_12: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:         let mut check_expected_12: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 255, 191]);
+// REWRITES-X86_64-GNU-NEXT:         check_got_12 = __slate_f80_ceil({{_v[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:         check_expected_12 = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 191]);
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(check_got_12 == check_expected_12);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s != %s (got=%La expected=%La)\n".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     439 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"ceill(-1.25L)".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     c"-1.0L".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     check_got_12,
+// REWRITES-X86_64-GNU-NEXT:                     check_expected_12,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let mut check_got_13: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:         let mut check_expected_13: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 224, 255, 191]);
+// REWRITES-X86_64-GNU-NEXT:         check_got_13 = __slate_f80_trunc({{_v[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:         check_expected_13 = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 191]);
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(check_got_13 == check_expected_13);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s != %s (got=%La expected=%La)\n".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     440 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"truncl(-1.75L)".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     c"-1.0L".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     check_got_13,
+// REWRITES-X86_64-GNU-NEXT:                     check_expected_13,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     let mut toward: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]);
+// REWRITES-X86_64-GNU-NEXT:     toward = unsafe { __slate_nextafterl__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(toward > LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]));
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     444 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"toward > 1.0L".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let mut check_got_14: LongDouble = toward - LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// REWRITES-X86_64-GNU-NEXT:         let mut check_expected_14: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 192, 63]);
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(check_got_14 == check_expected_14);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s != %s (got=%La expected=%La)\n".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     445 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"toward - 1.0L".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     c"LDBL_EPSILON".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     check_got_14,
+// REWRITES-X86_64-GNU-NEXT:                     check_expected_14,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     let mut tiny: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// REWRITES-X86_64-GNU-NEXT:     tiny = unsafe { __slate_nextafterl__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(tiny > LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]));
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     450 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"tiny > 0.0L".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(tiny < LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 0]));
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     451 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"tiny < LDBL_MIN".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = tiny;
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = __slate_f80_is_fp_class({{_v[0-9]+}}, 96);
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 2;
+// REWRITES-X86_64-GNU-NEXT:             {{_v[0-9]+}}
+// REWRITES-X86_64-GNU-NEXT:         } else {
+// REWRITES-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = __slate_f80_is_fp_class({{_v[0-9]+}}, 3);
+// REWRITES-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:                 {{_v[0-9]+}}
+// REWRITES-X86_64-GNU-NEXT:             } else {
+// REWRITES-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: bool = __slate_f80_is_fp_class({{_v[0-9]+}}, 516);
+// REWRITES-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-X86_64-GNU-NEXT:                     {{_v[0-9]+}}
+// REWRITES-X86_64-GNU-NEXT:                 } else {
+// REWRITES-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = __slate_f80_is_fp_class({{_v[0-9]+}}, 264);
+// REWRITES-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = 4;
+// REWRITES-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = 3;
+// REWRITES-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// REWRITES-X86_64-GNU-NEXT:                     {{_v[0-9]+}}
+// REWRITES-X86_64-GNU-NEXT:                 };
+// REWRITES-X86_64-GNU-NEXT:                 {{_v[0-9]+}}
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             {{_v[0-9]+}}
+// REWRITES-X86_64-GNU-NEXT:         };
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !({{_v[0-9]+}} == 3);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     452 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"fpclassify(tiny) == FP_SUBNORMAL".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     return;
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: fn test_extern_function_abi() {
+// REWRITES-X86_64-GNU-NEXT:     let mut a0: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// REWRITES-X86_64-GNU-NEXT:     let mut a1: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 254, 63]);
+// REWRITES-X86_64-GNU-NEXT:     let mut a2: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 253, 63]);
+// REWRITES-X86_64-GNU-NEXT:     let mut a3: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 252, 63]);
+// REWRITES-X86_64-GNU-NEXT:     let mut a4: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 251, 63]);
+// REWRITES-X86_64-GNU-NEXT:     let mut a5: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 250, 63]);
+// REWRITES-X86_64-GNU-NEXT:     let mut a6: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 249, 63]);
+// REWRITES-X86_64-GNU-NEXT:     let mut a7: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 248, 63]);
+// REWRITES-X86_64-GNU-NEXT:     let mut a8: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 247, 63]);
+// REWRITES-X86_64-GNU-NEXT:     let mut a9: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 246, 63]);
+// REWRITES-X86_64-GNU-NEXT:     let mut expected: LongDouble = a0 + a1 + a2 + a3 + a4 + (a5 + a6 + a7 + a8 + a9);
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let mut check_got_: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:         let mut check_expected_: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = LongDouble([120, 111, 94, 77, 60, 43, 26, 137, 39, 64]);
+// REWRITES-X86_64-GNU-NEXT:         check_got_ = unsafe { __slate_ext_identity__rf80_f80({{_v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:         check_expected_ = LongDouble([120, 111, 94, 77, 60, 43, 26, 137, 39, 64]);
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(check_got_ == check_expected_);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s != %s (got=%La expected=%La)\n".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     471 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"ext_identity(0x1.123456789abcdef012345678p+40L)".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     c"0x1.123456789abcdef012345678p+40L".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     check_got_,
+// REWRITES-X86_64-GNU-NEXT:                     check_expected_,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let mut check_got_2: LongDouble = unsafe {
+// REWRITES-X86_64-GNU-NEXT:             __slate_ext_sum10__rf80_f80_f80_f80_f80_f80_f80_f80_f80_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:                 a0, a1, a2, a3, a4, a5, a6, a7, a8, a9,
+// REWRITES-X86_64-GNU-NEXT:             )
+// REWRITES-X86_64-GNU-NEXT:         };
+// REWRITES-X86_64-GNU-NEXT:         let mut check_expected_2: LongDouble = expected;
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(check_got_2 == check_expected_2);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s != %s (got=%La expected=%La)\n".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     472 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"ext_sum10(a0, a1, a2, a3, a4, a5, a6, a7, a8, a9)".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     c"expected".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     check_got_2,
+// REWRITES-X86_64-GNU-NEXT:                     check_expected_2,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     let mut i0: i64 = -123456789;
+// REWRITES-X86_64-GNU-NEXT:     let mut d0: f64 = 0.0;
+// REWRITES-X86_64-GNU-NEXT:     let mut a: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:     let mut u0: u32 = 12345;
+// REWRITES-X86_64-GNU-NEXT:     let mut b: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:     let mut f0: f32 = 0.0;
+// REWRITES-X86_64-GNU-NEXT:     let mut c: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:     let mut i1: i32 = -77;
+// REWRITES-X86_64-GNU-NEXT:     let mut d1: f64 = 0.0;
+// REWRITES-X86_64-GNU-NEXT:     let mut d: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:     let mut local: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:     d0 = 192.0;
+// REWRITES-X86_64-GNU-NEXT:     a = LongDouble([120, 111, 94, 77, 60, 43, 26, 137, 4, 64]);
+// REWRITES-X86_64-GNU-NEXT:     b = LongDouble([0, 0, 0, 8, 25, 42, 59, 204, 252, 191]);
+// REWRITES-X86_64-GNU-NEXT:     f0 = 0.75;
+// REWRITES-X86_64-GNU-NEXT:     c = LongDouble([0, 0, 0, 0, 0, 0, 128, 128, 8, 64]);
+// REWRITES-X86_64-GNU-NEXT:     d1 = -0.125;
+// REWRITES-X86_64-GNU-NEXT:     d = LongDouble([0, 0, 0, 0, 0, 128, 255, 255, 244, 63]);
+// REWRITES-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(local), a) };
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(local)) };
+// REWRITES-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(local), {{_v[0-9]+}} + b) };
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(local)) };
+// REWRITES-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(local), {{_v[0-9]+}} - c) };
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(local)) };
+// REWRITES-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(local), {{_v[0-9]+}} + d) };
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(local)) };
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_i64(i0);
+// REWRITES-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(local), {{_v[0-9]+}} + {{_v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(local)) };
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_u32(u0);
+// REWRITES-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(local), {{_v[0-9]+}} - {{_v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(local)) };
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f64(d0);
+// REWRITES-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(local), {{_v[0-9]+}} + {{_v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(local)) };
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f32(f0);
+// REWRITES-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(local), {{_v[0-9]+}} - {{_v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(local)) };
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_i32(i1);
+// REWRITES-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(local), {{_v[0-9]+}} + {{_v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(local)) };
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f64(d1);
+// REWRITES-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(local), {{_v[0-9]+}} - {{_v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let mut check_got_3: LongDouble = unsafe {
+// REWRITES-X86_64-GNU-NEXT:             __slate_ext_mix_abi__rf80_i64_f64_f80_u32_f80_f32_f80_i32_f64_f80(
+// REWRITES-X86_64-GNU-NEXT:                 i0 as i64, d0 as f64, a, u0 as u32, b, f0 as f32, c, i1 as i32, d1 as f64, d,
+// REWRITES-X86_64-GNU-NEXT:             )
+// REWRITES-X86_64-GNU-NEXT:         };
+// REWRITES-X86_64-GNU-NEXT:         let mut check_expected_3: LongDouble =
+// REWRITES-X86_64-GNU-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(local)) };
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(check_got_3 == check_expected_3);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s != %s (got=%La expected=%La)\n".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     497 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"ext_mix_abi(i0, d0, a, u0, b, f0, c, i1, d1, d)".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     c"local".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     check_got_3,
+// REWRITES-X86_64-GNU-NEXT:                     check_expected_3,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     let mut fp: Option<unsafe extern "C-unwind" fn(LongDouble, LongDouble) -> LongDouble> = None;
+// REWRITES-X86_64-GNU-NEXT:     unsafe {
+// REWRITES-X86_64-GNU-NEXT:         std::ptr::write_volatile(std::ptr::addr_of_mut!(fp), unsafe {
+// REWRITES-X86_64-GNU-NEXT:             std::mem::transmute::<
+// REWRITES-X86_64-GNU-NEXT:                 *const (),
+// REWRITES-X86_64-GNU-NEXT:                 Option<unsafe extern "C-unwind" fn(LongDouble, LongDouble) -> LongDouble>,
+// REWRITES-X86_64-GNU-NEXT:             >(__slate_ext_add__rf80_f80_f80 as *const ())
+// REWRITES-X86_64-GNU-NEXT:         })
+// REWRITES-X86_64-GNU-NEXT:     };
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let mut check_got_4: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:         let mut check_expected_4: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(LongDouble, LongDouble) -> LongDouble> =
+// REWRITES-X86_64-GNU-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(fp)) };
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 128, 145, 3, 64]);
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 144, 248, 191]);
+// REWRITES-X86_64-GNU-NEXT:         check_got_4 = unsafe { {{_v[0-9]+}}.unwrap()({{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:         check_expected_4 = LongDouble([0, 0, 0, 0, 0, 0, 128, 145, 3, 64])
+// REWRITES-X86_64-GNU-NEXT:             + LongDouble([0, 0, 0, 0, 0, 0, 0, 144, 248, 191]);
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(check_got_4 == check_expected_4);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s != %s (got=%La expected=%La)\n".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     504 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"fp(0x1.23p+4L, -0x1.2p-7L)".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     c"0x1.23p+4L + -0x1.2p-7L".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     check_got_4,
+// REWRITES-X86_64-GNU-NEXT:                     check_expected_4,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     let mut a10: LongDouble = LongDouble([0, 0, 0, 128, 196, 179, 162, 145, 7, 64]);
+// REWRITES-X86_64-GNU-NEXT:     let mut b2: LongDouble = LongDouble([0, 0, 0, 0, 0, 240, 230, 213, 251, 191]);
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let mut check_got_5: LongDouble = unsafe {
+// REWRITES-X86_64-GNU-NEXT:             __slate_ext_call_cb__rf80_x_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:                 unsafe {
+// REWRITES-X86_64-GNU-NEXT:                     std::mem::transmute::<
+// REWRITES-X86_64-GNU-NEXT:                         *const (),
+// REWRITES-X86_64-GNU-NEXT:                         Option<unsafe extern "C-unwind" fn(LongDouble, LongDouble) -> LongDouble>,
+// REWRITES-X86_64-GNU-NEXT:                     >(__slate_ld_local_cb as *const ())
+// REWRITES-X86_64-GNU-NEXT:                 },
+// REWRITES-X86_64-GNU-NEXT:                 a10,
+// REWRITES-X86_64-GNU-NEXT:                 b2,
+// REWRITES-X86_64-GNU-NEXT:             )
+// REWRITES-X86_64-GNU-NEXT:         };
+// REWRITES-X86_64-GNU-NEXT:         let mut check_expected_5: LongDouble = local_cb(a10, b2);
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(check_got_5 == check_expected_5);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s != %s (got=%La expected=%La)\n".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     511 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"ext_call_cb(local_cb, a, b)".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     c"local_cb(a, b)".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     check_got_5,
+// REWRITES-X86_64-GNU-NEXT:                     check_expected_5,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     return;
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: fn test_struct_union_array_and_pointer_abi() {
+// REWRITES-X86_64-GNU-NEXT:     let mut b: ld_box = ld_box {
+// REWRITES-X86_64-GNU-NEXT:         tag: 0,
+// REWRITES-X86_64-GNU-NEXT:         x: LongDouble([0; 10]),
+// REWRITES-X86_64-GNU-NEXT:         tail: 0,
+// REWRITES-X86_64-GNU-NEXT:     };
+// REWRITES-X86_64-GNU-NEXT:     let mut r: ld_box = ld_box {
+// REWRITES-X86_64-GNU-NEXT:         tag: 0,
+// REWRITES-X86_64-GNU-NEXT:         x: LongDouble([0; 10]),
+// REWRITES-X86_64-GNU-NEXT:         tail: 0,
+// REWRITES-X86_64-GNU-NEXT:     };
+// REWRITES-X86_64-GNU-NEXT:     let mut p: ld_pair = ld_pair {
+// REWRITES-X86_64-GNU-NEXT:         a: LongDouble([0; 10]),
+// REWRITES-X86_64-GNU-NEXT:         b: LongDouble([0; 10]),
+// REWRITES-X86_64-GNU-NEXT:     };
+// REWRITES-X86_64-GNU-NEXT:     let mut n: ld_nested = ld_nested {
+// REWRITES-X86_64-GNU-NEXT:         head: 0,
+// REWRITES-X86_64-GNU-NEXT:         pair: ld_pair {
+// REWRITES-X86_64-GNU-NEXT:             a: LongDouble([0; 10]),
+// REWRITES-X86_64-GNU-NEXT:             b: LongDouble([0; 10]),
+// REWRITES-X86_64-GNU-NEXT:         },
+// REWRITES-X86_64-GNU-NEXT:         bytes: [0; 3],
+// REWRITES-X86_64-GNU-NEXT:         z: LongDouble([0; 10]),
+// REWRITES-X86_64-GNU-NEXT:     };
+// REWRITES-X86_64-GNU-NEXT:     let mut nr: ld_nested = ld_nested {
+// REWRITES-X86_64-GNU-NEXT:         head: 0,
+// REWRITES-X86_64-GNU-NEXT:         pair: ld_pair {
+// REWRITES-X86_64-GNU-NEXT:             a: LongDouble([0; 10]),
+// REWRITES-X86_64-GNU-NEXT:             b: LongDouble([0; 10]),
+// REWRITES-X86_64-GNU-NEXT:         },
+// REWRITES-X86_64-GNU-NEXT:         bytes: [0; 3],
+// REWRITES-X86_64-GNU-NEXT:         z: LongDouble([0; 10]),
+// REWRITES-X86_64-GNU-NEXT:     };
+// REWRITES-X86_64-GNU-NEXT:     let mut arr: [LongDouble; 7] = [LongDouble([0; 10]); 7];
+// REWRITES-X86_64-GNU-NEXT:     let mut copy: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:     let mut raw: aligned::Aligned<aligned::A16, [u8; 16]> = aligned::Aligned([0; 16]);
+// REWRITES-X86_64-GNU-NEXT:     b.tag = 49;
+// REWRITES-X86_64-GNU-NEXT:     b.x = LongDouble([128, 247, 230, 213, 196, 179, 162, 145, 11, 64]);
+// REWRITES-X86_64-GNU-NEXT:     b.tail = 305419896;
+// REWRITES-X86_64-GNU-NEXT:     r = unsafe { __slate_ext_box_roundtrip__rx_x(b as ld_box) };
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !((r.tag as i32) == ((((b.tag as u32) ^ 90) as u8) as i32));
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     530 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"r.tag == (unsigned char)(b.tag ^ 0x5aU)".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let mut check_got_: LongDouble = r.x;
+// REWRITES-X86_64-GNU-NEXT:         let mut check_expected_: LongDouble = b.x + LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 246, 63]);
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(check_got_ == check_expected_);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s != %s (got=%La expected=%La)\n".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     531 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"r.x".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     c"b.x + 0x1p-9L".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     check_got_,
+// REWRITES-X86_64-GNU-NEXT:                     check_expected_,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(r.tail == b.tail ^ 2779077210u32);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     532 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"r.tail == (b.tail ^ UINT32_C(0xa5a55a5a))".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([136, 136, 136, 136, 136, 136, 136, 136, 2, 192]);
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([16, 17, 17, 17, 17, 17, 17, 145, 252, 63]);
+// REWRITES-X86_64-GNU-NEXT:     p = unsafe { __slate_ext_pair_make__rcf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let mut check_got_2: LongDouble = p.a;
+// REWRITES-X86_64-GNU-NEXT:         let mut check_expected_2: LongDouble =
+// REWRITES-X86_64-GNU-NEXT:             LongDouble([136, 136, 136, 136, 136, 136, 136, 136, 2, 192]);
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(check_got_2 == check_expected_2);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s != %s (got=%La expected=%La)\n".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     535 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"p.a".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     c"-0x1.111111111111111p+3L".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     check_got_2,
+// REWRITES-X86_64-GNU-NEXT:                     check_expected_2,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let mut check_got_3: LongDouble = p.b;
+// REWRITES-X86_64-GNU-NEXT:         let mut check_expected_3: LongDouble =
+// REWRITES-X86_64-GNU-NEXT:             LongDouble([16, 17, 17, 17, 17, 17, 17, 145, 252, 63]);
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(check_got_3 == check_expected_3);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s != %s (got=%La expected=%La)\n".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     536 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"p.b".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     c"0x1.222222222222222p-3L".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     check_got_3,
+// REWRITES-X86_64-GNU-NEXT:                     check_expected_3,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(n) as *mut core::ffi::c_void;
+// REWRITES-X86_64-GNU-NEXT:     unsafe { std::ptr::write_bytes({{_v[0-9]+}} as *mut u8, (0 as i32) as u8, (80 as u64) as usize) };
+// REWRITES-X86_64-GNU-NEXT:     n.head = 4660;
+// REWRITES-X86_64-GNU-NEXT:     n.pair.a = LongDouble([0, 0, 0, 0, 0, 0, 0, 144, 2, 64]);
+// REWRITES-X86_64-GNU-NEXT:     n.pair.b = LongDouble([0, 0, 0, 0, 0, 0, 0, 176, 2, 192]);
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: i64 = 0;
+// REWRITES-X86_64-GNU-NEXT:     n.bytes[({{_v[0-9]+}} as usize)] = 16;
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: i64 = 1;
+// REWRITES-X86_64-GNU-NEXT:     n.bytes[({{_v[0-9]+}} as usize)] = 32;
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-X86_64-GNU-NEXT:     n.bytes[({{_v[0-9]+}} as usize)] = 64;
+// REWRITES-X86_64-GNU-NEXT:     n.z = LongDouble([0, 0, 0, 0, 0, 0, 0, 240, 1, 64]);
+// REWRITES-X86_64-GNU-NEXT:     nr = unsafe { __slate_ext_nested_roundtrip__rx_x(n as ld_nested) };
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !((nr.head as i32) == ((((n.head as i32) ^ 21930) as u16) as i32));
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     547 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"nr.head == (uint16_t)(n.head ^ UINT16_C(0x55aa))".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let mut check_got_4: LongDouble = nr.pair.a;
+// REWRITES-X86_64-GNU-NEXT:         let mut check_expected_4: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 2, 64]);
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(check_got_4 == check_expected_4);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s != %s (got=%La expected=%La)\n".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     548 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"nr.pair.a".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     c"10.0L".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     check_got_4,
+// REWRITES-X86_64-GNU-NEXT:                     check_expected_4,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let mut check_got_5: LongDouble = nr.pair.b;
+// REWRITES-X86_64-GNU-NEXT:         let mut check_expected_5: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 208, 2, 192]);
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(check_got_5 == check_expected_5);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s != %s (got=%La expected=%La)\n".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     549 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"nr.pair.b".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     c"-13.0L".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     check_got_5,
+// REWRITES-X86_64-GNU-NEXT:                     check_expected_5,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !((nr.bytes[0] as i32) == ((((n.bytes[0] as u32) ^ 1) as u8) as i32));
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     550 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"nr.bytes[0] == (unsigned char)(n.bytes[0] ^ 1U)".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !((nr.bytes[1] as i32) == ((((n.bytes[1] as u32) ^ 2) as u8) as i32));
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     551 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"nr.bytes[1] == (unsigned char)(n.bytes[1] ^ 2U)".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !((nr.bytes[2] as i32) == ((((n.bytes[2] as u32) ^ 4) as u8) as i32));
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     552 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"nr.bytes[2] == (unsigned char)(n.bytes[2] ^ 4U)".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let mut check_got_6: LongDouble = nr.z;
+// REWRITES-X86_64-GNU-NEXT:         let mut check_expected_6: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 240, 0, 64]);
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(check_got_6 == check_expected_6);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s != %s (got=%La expected=%La)\n".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     553 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"nr.z".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     c"3.75L".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     check_got_6,
+// REWRITES-X86_64-GNU-NEXT:                     check_expected_6,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     for i in 0..(112 / 16) {
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: u64 = i + 1;
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = __slate_f80_from_u64({{_v[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:         arr[(i as usize)] = {{_v[0-9]+}} / LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 2, 64]);
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let mut check_got_7: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:         let mut check_expected_7: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: *mut LongDouble = arr.as_mut_ptr() as *mut LongDouble;
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: u64 = 16;
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: u64 = 112 / {{_v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:         check_got_7 = unsafe { __slate_ext_array_sum__rf80_pf80_usize({{_v[0-9]+}}, {{_v[0-9]+}} as usize) };
+// REWRITES-X86_64-GNU-NEXT:         check_expected_7 = LongDouble([0, 0, 0, 0, 0, 0, 0, 224, 0, 64]);
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(check_got_7 == check_expected_7);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s != %s (got=%La expected=%La)\n".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     557 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"ext_array_sum(arr, sizeof(arr) / sizeof(arr[0]))".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     c"3.5L".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     check_got_7,
+// REWRITES-X86_64-GNU-NEXT:                     check_expected_7,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     copy = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([192, 179, 162, 145, 128, 247, 230, 213, 32, 192]);
+// REWRITES-X86_64-GNU-NEXT:     unsafe { __slate_ext_store__rv_pf80_f80(std::ptr::addr_of_mut!(copy), {{_v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let mut check_got_8: LongDouble = copy;
+// REWRITES-X86_64-GNU-NEXT:         let mut check_expected_8: LongDouble =
+// REWRITES-X86_64-GNU-NEXT:             LongDouble([192, 179, 162, 145, 128, 247, 230, 213, 32, 192]);
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(check_got_8 == check_expected_8);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s != %s (got=%La expected=%La)\n".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     561 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"copy".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     c"-0x1.abcdef012345678p+33L".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     check_got_8,
+// REWRITES-X86_64-GNU-NEXT:                     check_expected_8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let mut check_got_9: LongDouble =
+// REWRITES-X86_64-GNU-NEXT:             unsafe { __slate_ext_load__rf80_pf80(std::ptr::addr_of_mut!(copy)) };
+// REWRITES-X86_64-GNU-NEXT:         let mut check_expected_9: LongDouble = copy;
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(check_got_9 == check_expected_9);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s != %s (got=%La expected=%La)\n".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     562 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"ext_load(&copy)".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     c"copy".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     check_got_9,
+// REWRITES-X86_64-GNU-NEXT:                     check_expected_9,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     copy = LongDouble([112, 86, 52, 146, 239, 205, 171, 137, 235, 63]);
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: *mut u8 = raw.as_mut_ptr() as *mut u8;
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(copy) as *mut core::ffi::c_void;
+// REWRITES-X86_64-GNU-NEXT:     unsafe {
+// REWRITES-X86_64-GNU-NEXT:         std::ptr::copy_nonoverlapping({{_v[0-9]+}} as *const u8, {{_v[0-9]+}} as *mut u8, (16 as u64) as usize)
+// REWRITES-X86_64-GNU-NEXT:     };
+// REWRITES-X86_64-GNU-NEXT:     copy = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(copy) as *mut core::ffi::c_void;
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: *mut u8 = raw.as_mut_ptr() as *mut u8;
+// REWRITES-X86_64-GNU-NEXT:     unsafe {
+// REWRITES-X86_64-GNU-NEXT:         std::ptr::copy_nonoverlapping({{_v[0-9]+}} as *const u8, {{_v[0-9]+}} as *mut u8, (16 as u64) as usize)
+// REWRITES-X86_64-GNU-NEXT:     };
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let mut check_got_10: LongDouble = copy;
+// REWRITES-X86_64-GNU-NEXT:         let mut check_expected_10: LongDouble =
+// REWRITES-X86_64-GNU-NEXT:             LongDouble([112, 86, 52, 146, 239, 205, 171, 137, 235, 63]);
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(check_got_10 == check_expected_10);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s != %s (got=%La expected=%La)\n".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     570 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"copy".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     c"0x1.13579bdf2468acep-20L".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     check_got_10,
+// REWRITES-X86_64-GNU-NEXT:                     check_expected_10,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     let mut u: ld_union = unsafe { std::mem::zeroed::<ld_union>() };
+// REWRITES-X86_64-GNU-NEXT:     let mut v: ld_union = unsafe { std::mem::zeroed::<ld_union>() };
+// REWRITES-X86_64-GNU-NEXT:     unsafe {
+// REWRITES-X86_64-GNU-NEXT:         u.ld = LongDouble([248, 222, 188, 154, 112, 86, 52, 146, 18, 192]);
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(v) as *mut core::ffi::c_void;
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(u) as *mut core::ffi::c_void;
+// REWRITES-X86_64-GNU-NEXT:     unsafe {
+// REWRITES-X86_64-GNU-NEXT:         std::ptr::copy_nonoverlapping({{_v[0-9]+}} as *const u8, {{_v[0-9]+}} as *mut u8, (16 as u64) as usize)
+// REWRITES-X86_64-GNU-NEXT:     };
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let mut check_got_11: LongDouble = unsafe { v.ld };
+// REWRITES-X86_64-GNU-NEXT:         let mut check_expected_11: LongDouble = unsafe { u.ld };
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(check_got_11 == check_expected_11);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s != %s (got=%La expected=%La)\n".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     577 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"v.ld".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     c"u.ld".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     check_got_11,
+// REWRITES-X86_64-GNU-NEXT:                     check_expected_11,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     return;
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: /// Translated va_arg(long double).
+// REWRITES-X86_64-GNU-NEXT: /// Translated va_arg(long double).
+// REWRITES-X86_64-GNU-NEXT: /// Translated caller -> native C variadic callee.
+// REWRITES-X86_64-GNU-NEXT: /// Translated caller -> native C variadic callee.
+// REWRITES-X86_64-GNU-NEXT: fn test_varargs() {
+// REWRITES-X86_64-GNU-NEXT:     let mut a: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// REWRITES-X86_64-GNU-NEXT:     let mut b: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 253, 63]);
+// REWRITES-X86_64-GNU-NEXT:     let mut c: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 251, 191]);
+// REWRITES-X86_64-GNU-NEXT:     let mut d: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 247, 63]);
+// REWRITES-X86_64-GNU-NEXT:     let mut expected: LongDouble = a + b + c + d;
+// REWRITES-X86_64-GNU-NEXT:     let mut buf: aligned::Aligned<aligned::A16, [i8; 128]> = aligned::Aligned([0; 128]);
+// REWRITES-X86_64-GNU-NEXT:     let mut end: *mut i8 = std::ptr::null_mut();
+// REWRITES-X86_64-GNU-NEXT:     let mut n: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let mut check_got_: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:         let mut check_expected_: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = a;
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = b;
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = c;
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = d;
+// REWRITES-X86_64-GNU-NEXT:         check_got_ = unsafe {
+// REWRITES-X86_64-GNU-NEXT:             local_vsum(
+// REWRITES-X86_64-GNU-NEXT:                 4 as i32,
+// REWRITES-X86_64-GNU-NEXT:                 __SlateVaArgs::new(vec![
+// REWRITES-X86_64-GNU-NEXT:                     __SlateVaArg::new({{_v[0-9]+}}),
+// REWRITES-X86_64-GNU-NEXT:                     __SlateVaArg::new({{_v[0-9]+}}),
+// REWRITES-X86_64-GNU-NEXT:                     __SlateVaArg::new({{_v[0-9]+}}),
+// REWRITES-X86_64-GNU-NEXT:                     __SlateVaArg::new({{_v[0-9]+}}),
+// REWRITES-X86_64-GNU-NEXT:                 ]),
+// REWRITES-X86_64-GNU-NEXT:             )
+// REWRITES-X86_64-GNU-NEXT:         };
+// REWRITES-X86_64-GNU-NEXT:         check_expected_ = expected;
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(check_got_ == check_expected_);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s != %s (got=%La expected=%La)\n".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     592 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"local_vsum(4, a, b, c, d)".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     c"expected".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     check_got_,
+// REWRITES-X86_64-GNU-NEXT:                     check_expected_,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let mut check_got_2: LongDouble =
+// REWRITES-X86_64-GNU-NEXT:             unsafe { __slate_ext_vsum__rf80_i32_f80_f80_f80_f80(4 as i32, a, b, c, d) };
+// REWRITES-X86_64-GNU-NEXT:         let mut check_expected_2: LongDouble = expected;
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(check_got_2 == check_expected_2);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s != %s (got=%La expected=%La)\n".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     595 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"ext_vsum(4, a, b, c, d)".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     c"expected".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     check_got_2,
+// REWRITES-X86_64-GNU-NEXT:                     check_expected_2,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: *mut i8 = buf.as_mut_ptr() as *mut i8;
+// REWRITES-X86_64-GNU-NEXT:     n = unsafe {
+// REWRITES-X86_64-GNU-NEXT:         __slate_snprintf__ri32_pi8_u64_pi8_f80(
+// REWRITES-X86_64-GNU-NEXT:             {{_v[0-9]+}} as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:             128 as u64,
+// REWRITES-X86_64-GNU-NEXT:             c"%.21La".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:             expected,
+// REWRITES-X86_64-GNU-NEXT:         )
+// REWRITES-X86_64-GNU-NEXT:     };
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = if n > 0 {
+// REWRITES-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = (n as u64) < 128;
+// REWRITES-X86_64-GNU-NEXT:             {{_v[0-9]+}}
+// REWRITES-X86_64-GNU-NEXT:         } else {
+// REWRITES-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = false;
+// REWRITES-X86_64-GNU-NEXT:             {{_v[0-9]+}}
+// REWRITES-X86_64-GNU-NEXT:         };
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     599 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"n > 0 && (size_t)n < sizeof(buf)".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let mut check_got_3: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:         let mut check_expected_3: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: *mut i8 = buf.as_mut_ptr() as *mut i8;
+// REWRITES-X86_64-GNU-NEXT:         check_got_3 = unsafe {
+// REWRITES-X86_64-GNU-NEXT:             __slate_strtold__rf80_pc_ppc(
+// REWRITES-X86_64-GNU-NEXT:                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// REWRITES-X86_64-GNU-NEXT:                 std::ptr::addr_of_mut!(end) as *mut *mut core::ffi::c_char,
+// REWRITES-X86_64-GNU-NEXT:             )
+// REWRITES-X86_64-GNU-NEXT:         };
+// REWRITES-X86_64-GNU-NEXT:         check_expected_3 = expected;
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(check_got_3 == check_expected_3);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s != %s (got=%La expected=%La)\n".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     601 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"strtold(buf, &end)".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     c"expected".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     check_got_3,
+// REWRITES-X86_64-GNU-NEXT:                     check_expected_3,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = if end != std::ptr::null_mut() {
+// REWRITES-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = ((unsafe { *end }) as i32) == 0;
+// REWRITES-X86_64-GNU-NEXT:             {{_v[0-9]+}}
+// REWRITES-X86_64-GNU-NEXT:         } else {
+// REWRITES-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = false;
+// REWRITES-X86_64-GNU-NEXT:             {{_v[0-9]+}}
+// REWRITES-X86_64-GNU-NEXT:         };
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 fprintf(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s\n".as_ptr(),
+// REWRITES-X86_64-GNU-NEXT:                     602 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"end != NULL && *end == '\\0'".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     return;
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: fn test_extern_global() {
+// REWRITES-X86_64-GNU-NEXT:     let mut old: LongDouble = unsafe { ext_global_ld };
+// REWRITES-X86_64-GNU-NEXT:     let mut a: LongDouble = LongDouble([196, 179, 162, 145, 128, 247, 230, 213, 26, 192]);
+// REWRITES-X86_64-GNU-NEXT:     let mut b: LongDouble = LongDouble([132, 3, 131, 2, 130, 1, 129, 128, 224, 63]);
+// REWRITES-X86_64-GNU-NEXT:     unsafe {
+// REWRITES-X86_64-GNU-NEXT:         ext_global_ld = a;
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let mut check_got_: LongDouble = unsafe { __slate_ext_global_get__rf80() };
+// REWRITES-X86_64-GNU-NEXT:         let mut check_expected_: LongDouble = a;
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(check_got_ == check_expected_);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s != %s (got=%La expected=%La)\n".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     611 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"ext_global_get()".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     c"a".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     check_got_,
+// REWRITES-X86_64-GNU-NEXT:                     check_expected_,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     unsafe { __slate_ext_global_set__rv_f80(b) };
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let mut check_got_2: LongDouble = unsafe { ext_global_ld };
+// REWRITES-X86_64-GNU-NEXT:         let mut check_expected_2: LongDouble = b;
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(check_got_2 == check_expected_2);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s != %s (got=%La expected=%La)\n".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     614 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"ext_global_ld".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     c"b".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     check_got_2,
+// REWRITES-X86_64-GNU-NEXT:                     check_expected_2,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     unsafe { __slate_ext_global_set__rv_f80(old) };
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let mut check_got_3: LongDouble = unsafe { ext_global_ld };
+// REWRITES-X86_64-GNU-NEXT:         let mut check_expected_3: LongDouble = old;
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(check_got_3 == check_expected_3);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s != %s (got=%La expected=%La)\n".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     617 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"ext_global_ld".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     c"old".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     check_got_3,
+// REWRITES-X86_64-GNU-NEXT:                     check_expected_3,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     return;
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: fn test_control_flow_and_spills() {
+// REWRITES-X86_64-GNU-NEXT:     let mut seed: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:     let mut x: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:     let mut i: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([248, 230, 213, 196, 179, 162, 145, 128, 3, 64]);
+// REWRITES-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(seed), {{_v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:     x = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(seed)) };
+// REWRITES-X86_64-GNU-NEXT:     while i < 200 {
+// REWRITES-X86_64-GNU-NEXT:         let mut t: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = i % 17 - 8;
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = __slate_f80_from_i32({{_v[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:         t = {{_v[0-9]+}} * LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 243, 63]);
+// REWRITES-X86_64-GNU-NEXT:         if i & 3 == 0 {
+// REWRITES-X86_64-GNU-NEXT:             x += t;
+// REWRITES-X86_64-GNU-NEXT:         } else {
+// REWRITES-X86_64-GNU-NEXT:             if i & 3 == 1 {
+// REWRITES-X86_64-GNU-NEXT:                 x -= t;
+// REWRITES-X86_64-GNU-NEXT:             } else {
+// REWRITES-X86_64-GNU-NEXT:                 if i & 3 == 2 {
+// REWRITES-X86_64-GNU-NEXT:                     x *= LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63])
+// REWRITES-X86_64-GNU-NEXT:                         + LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 235, 63]);
+// REWRITES-X86_64-GNU-NEXT:                 } else {
+// REWRITES-X86_64-GNU-NEXT:                     x /= LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63])
+// REWRITES-X86_64-GNU-NEXT:                         + LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 235, 63]);
+// REWRITES-X86_64-GNU-NEXT:                 }
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = i % 19 == 0;
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             x = local_identity(x);
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = i % 31 == 0;
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             x = unsafe { __slate_ext_identity__rf80_f80(x) };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         i += 1;
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     let mut y: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(seed)) };
+// REWRITES-X86_64-GNU-NEXT:     i = 0;
+// REWRITES-X86_64-GNU-NEXT:     while i < 200 {
+// REWRITES-X86_64-GNU-NEXT:         let mut t2: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = i % 17 - 8;
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = __slate_f80_from_i32({{_v[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 243, 63]);
+// REWRITES-X86_64-GNU-NEXT:         t2 = unsafe { __slate_ext_mul__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = i & 3 == 0;
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             y = unsafe { __slate_ext_add__rf80_f80_f80(y, t2) };
+// REWRITES-X86_64-GNU-NEXT:         } else {
+// REWRITES-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = i & 3 == 1;
+// REWRITES-X86_64-GNU-NEXT:             if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:                 y = unsafe { __slate_ext_sub__rf80_f80_f80(y, t2) };
+// REWRITES-X86_64-GNU-NEXT:             } else {
+// REWRITES-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: bool = i & 3 == 2;
+// REWRITES-X86_64-GNU-NEXT:                 if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = y;
+// REWRITES-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// REWRITES-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 235, 63]);
+// REWRITES-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = unsafe { __slate_ext_add__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:                     y = unsafe { __slate_ext_mul__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:                 } else {
+// REWRITES-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = y;
+// REWRITES-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// REWRITES-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 235, 63]);
+// REWRITES-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = unsafe { __slate_ext_add__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:                     y = unsafe { __slate_ext_div__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:                 }
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = i % 19 == 0;
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             y = unsafe { __slate_ext_identity__rf80_f80(y) };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = i % 31 == 0;
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             y = unsafe { __slate_ext_identity__rf80_f80(y) };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         i += 1;
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let mut check_got_: LongDouble = x;
+// REWRITES-X86_64-GNU-NEXT:         let mut check_expected_: LongDouble = y;
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = !(check_got_ == check_expected_);
+// REWRITES-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             unsafe {
+// REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:                     c"FAIL line %d: %s != %s (got=%La expected=%La)\n".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     664 as i32,
+// REWRITES-X86_64-GNU-NEXT:                     c"x".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     c"y".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:                     check_got_,
+// REWRITES-X86_64-GNU-NEXT:                     check_expected_,
+// REWRITES-X86_64-GNU-NEXT:                 )
+// REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:         if !({{_v[0-9]+}} != 0) {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     return;
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: fn ld_kind() -> *mut i8 {
+// REWRITES-X86_64-GNU-NEXT:     c"x87-extended".as_ptr() as *mut i8
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: #[unsafe(no_mangle)]
+// REWRITES-X86_64-GNU-NEXT: #[inline(never)]
+// REWRITES-X86_64-GNU-NEXT: extern "C-unwind" fn local_cb({{arg[0-9]+}}: LongDouble, {{arg[0-9]+}}: LongDouble) -> LongDouble {
+// REWRITES-X86_64-GNU-NEXT:     let mut x: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:     let mut y: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(x), {{arg[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(y), {{arg[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(x)) };
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]);
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(y)) };
+// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_fma(
+// REWRITES-X86_64-GNU-NEXT:         {{_v[0-9]+}},
+// REWRITES-X86_64-GNU-NEXT:         {{_v[0-9]+}},
+// REWRITES-X86_64-GNU-NEXT:         -({{_v[0-9]+}} / LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64])),
+// REWRITES-X86_64-GNU-NEXT:     );
+// REWRITES-X86_64-GNU-NEXT:     {{_v[0-9]+}} + LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 238, 63])
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: #[inline(never)]
+// REWRITES-X86_64-GNU-NEXT: unsafe fn local_vsum(mut n: i32, mut __slate_va_args: __SlateVaArgs) -> LongDouble {
+// REWRITES-X86_64-GNU-NEXT:     let mut ap: __SlateVaArgs = __SlateVaArgs::empty();
+// REWRITES-X86_64-GNU-NEXT:     let mut r: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// REWRITES-X86_64-GNU-NEXT:     unsafe {
+// REWRITES-X86_64-GNU-NEXT:         ap = __slate_va_args.clone();
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     for i in 0..n {
+// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = unsafe { ap.next_arg::<LongDouble>() };
+// REWRITES-X86_64-GNU-NEXT:         r += {{_v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     r
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: #[inline(never)]
+// REWRITES-X86_64-GNU-NEXT: fn local_identity({{arg[0-9]+}}: LongDouble) -> LongDouble {
+// REWRITES-X86_64-GNU-NEXT:     let mut y: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(y), {{arg[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:     unsafe { std::ptr::read_volatile(std::ptr::addr_of!(y)) }
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: unsafe extern "C" {
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_cf80_div(
+// REWRITES-X86_64-GNU-NEXT:         a: num_complex::Complex<LongDouble>,
+// REWRITES-X86_64-GNU-NEXT:         b: num_complex::Complex<LongDouble>,
+// REWRITES-X86_64-GNU-NEXT:     ) -> num_complex::Complex<LongDouble>;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_cf80_mul(
+// REWRITES-X86_64-GNU-NEXT:         a: num_complex::Complex<LongDouble>,
+// REWRITES-X86_64-GNU-NEXT:         b: num_complex::Complex<LongDouble>,
+// REWRITES-X86_64-GNU-NEXT:     ) -> num_complex::Complex<LongDouble>;
+// REWRITES-X86_64-GNU-NEXT:     fn __slate_ext_add__rf80_f80_f80(_0: LongDouble, _1: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn __slate_ext_array_sum__rf80_pf80_usize(_0: *const LongDouble, _1: usize) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn __slate_ext_box_roundtrip__rx_x(_0: ld_box) -> ld_box;
+// REWRITES-X86_64-GNU-NEXT:     fn __slate_ext_call_cb__rf80_x_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:         _0: Option<unsafe extern "C-unwind" fn(LongDouble, LongDouble) -> LongDouble>,
+// REWRITES-X86_64-GNU-NEXT:         _1: LongDouble,
+// REWRITES-X86_64-GNU-NEXT:         _2: LongDouble,
+// REWRITES-X86_64-GNU-NEXT:     ) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn __slate_ext_div__rf80_f80_f80(_0: LongDouble, _1: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn __slate_ext_eq__ri32_f80_f80(_0: LongDouble, _1: LongDouble) -> i32;
+// REWRITES-X86_64-GNU-NEXT:     fn __slate_ext_from_double__rf80_f64(_0: f64) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn __slate_ext_from_float__rf80_f32(_0: f32) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn __slate_ext_from_i64__rf80_i64(_0: i64) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn __slate_ext_from_u64__rf80_u64(_0: u64) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn __slate_ext_global_get__rf80() -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn __slate_ext_global_set__rv_f80(_0: LongDouble);
+// REWRITES-X86_64-GNU-NEXT:     fn __slate_ext_identity__rf80_f80(_0: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn __slate_ext_le__ri32_f80_f80(_0: LongDouble, _1: LongDouble) -> i32;
+// REWRITES-X86_64-GNU-NEXT:     fn __slate_ext_load__rf80_pf80(_0: *const LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn __slate_ext_lt__ri32_f80_f80(_0: LongDouble, _1: LongDouble) -> i32;
+// REWRITES-X86_64-GNU-NEXT:     fn __slate_ext_mix_abi__rf80_i64_f64_f80_u32_f80_f32_f80_i32_f64_f80(
+// REWRITES-X86_64-GNU-NEXT:         _0: i64,
+// REWRITES-X86_64-GNU-NEXT:         _1: f64,
+// REWRITES-X86_64-GNU-NEXT:         _2: LongDouble,
+// REWRITES-X86_64-GNU-NEXT:         _3: u32,
+// REWRITES-X86_64-GNU-NEXT:         _4: LongDouble,
+// REWRITES-X86_64-GNU-NEXT:         _5: f32,
+// REWRITES-X86_64-GNU-NEXT:         _6: LongDouble,
+// REWRITES-X86_64-GNU-NEXT:         _7: i32,
+// REWRITES-X86_64-GNU-NEXT:         _8: f64,
+// REWRITES-X86_64-GNU-NEXT:         _9: LongDouble,
+// REWRITES-X86_64-GNU-NEXT:     ) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn __slate_ext_mul__rf80_f80_f80(_0: LongDouble, _1: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn __slate_ext_neg__rf80_f80(_0: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn __slate_ext_nested_roundtrip__rx_x(_0: ld_nested) -> ld_nested;
+// REWRITES-X86_64-GNU-NEXT:     fn __slate_ext_pair_make__rcf80_f80_f80(_0: LongDouble, _1: LongDouble) -> ld_pair;
+// REWRITES-X86_64-GNU-NEXT:     fn __slate_ext_store__rv_pf80_f80(_0: *mut LongDouble, _1: LongDouble);
+// REWRITES-X86_64-GNU-NEXT:     fn __slate_ext_sub__rf80_f80_f80(_0: LongDouble, _1: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn __slate_ext_sum10__rf80_f80_f80_f80_f80_f80_f80_f80_f80_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:         _0: LongDouble,
+// REWRITES-X86_64-GNU-NEXT:         _1: LongDouble,
+// REWRITES-X86_64-GNU-NEXT:         _2: LongDouble,
+// REWRITES-X86_64-GNU-NEXT:         _3: LongDouble,
+// REWRITES-X86_64-GNU-NEXT:         _4: LongDouble,
+// REWRITES-X86_64-GNU-NEXT:         _5: LongDouble,
+// REWRITES-X86_64-GNU-NEXT:         _6: LongDouble,
+// REWRITES-X86_64-GNU-NEXT:         _7: LongDouble,
+// REWRITES-X86_64-GNU-NEXT:         _8: LongDouble,
+// REWRITES-X86_64-GNU-NEXT:         _9: LongDouble,
+// REWRITES-X86_64-GNU-NEXT:     ) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn __slate_ext_to_double__rf64_f80(_0: LongDouble) -> f64;
+// REWRITES-X86_64-GNU-NEXT:     fn __slate_ext_to_float__rf32_f80(_0: LongDouble) -> f32;
+// REWRITES-X86_64-GNU-NEXT:     fn __slate_ext_to_i64__ri64_f80(_0: LongDouble) -> i64;
+// REWRITES-X86_64-GNU-NEXT:     fn __slate_ext_to_u64__ru64_f80(_0: LongDouble) -> u64;
+// REWRITES-X86_64-GNU-NEXT:     fn __slate_ext_vsum__rf80_i32_f80_f80_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:         _0: i32,
+// REWRITES-X86_64-GNU-NEXT:         _1: LongDouble,
+// REWRITES-X86_64-GNU-NEXT:         _2: LongDouble,
+// REWRITES-X86_64-GNU-NEXT:         _3: LongDouble,
+// REWRITES-X86_64-GNU-NEXT:         _4: LongDouble,
+// REWRITES-X86_64-GNU-NEXT:     ) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_abs(a: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_add(a: LongDouble, b: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_ceil(a: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_copysign(a: LongDouble, b: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_div(a: LongDouble, b: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_eq(a: LongDouble, b: LongDouble) -> bool;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_floor(a: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_fma(a: LongDouble, b: LongDouble, c: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_fmax(a: LongDouble, b: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_fmin(a: LongDouble, b: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_fract(a: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_from_bool(a: bool) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_from_f32(a: f32) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_from_f64(a: f64) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_from_i128(a: i128) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_from_i16(a: i16) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_from_i32(a: i32) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_from_i64(a: i64) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_from_i8(a: i8) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_from_u128(a: u128) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_from_u16(a: u16) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_from_u32(a: u32) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_from_u64(a: u64) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_from_u8(a: u8) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_ge(a: LongDouble, b: LongDouble) -> bool;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_gt(a: LongDouble, b: LongDouble) -> bool;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_is_fp_class(a: LongDouble, flags: i32) -> bool;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_le(a: LongDouble, b: LongDouble) -> bool;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_lt(a: LongDouble, b: LongDouble) -> bool;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_mul(a: LongDouble, b: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_ne(a: LongDouble, b: LongDouble) -> bool;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_neg(a: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_rint(a: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_round(a: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_signbit(a: LongDouble) -> bool;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_sub(a: LongDouble, b: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_to_bool(a: LongDouble) -> bool;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_to_f32(a: LongDouble) -> f32;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_to_f64(a: LongDouble) -> f64;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_to_i128(a: LongDouble) -> i128;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_to_i16(a: LongDouble) -> i16;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_to_i32(a: LongDouble) -> i32;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_to_i64(a: LongDouble) -> i64;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_to_i8(a: LongDouble) -> i8;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_to_u128(a: LongDouble) -> u128;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_to_u16(a: LongDouble) -> u16;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_to_u32(a: LongDouble) -> u32;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_to_u64(a: LongDouble) -> u64;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_to_u8(a: LongDouble) -> u8;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_trunc(a: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn __slate_fmodl__rf80_f80_f80(_0: LongDouble, _1: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:         _0: *mut libc::FILE,
+// REWRITES-X86_64-GNU-NEXT:         _1: *mut i8,
+// REWRITES-X86_64-GNU-NEXT:         _2: i32,
+// REWRITES-X86_64-GNU-NEXT:         _3: *mut i8,
+// REWRITES-X86_64-GNU-NEXT:         _4: *mut i8,
+// REWRITES-X86_64-GNU-NEXT:         _5: LongDouble,
+// REWRITES-X86_64-GNU-NEXT:         _6: LongDouble,
+// REWRITES-X86_64-GNU-NEXT:     ) -> i32;
+// REWRITES-X86_64-GNU-NEXT:     fn __slate_frexpl__rf80_f80_pi32(_0: LongDouble, _1: *mut i32) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_ld_local_cb(_0: LongDouble, _1: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn __slate_ldexpl__rf80_f80_i32(_0: LongDouble, _1: i32) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn __slate_nanl__rf80_pc(_0: *const core::ffi::c_char) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn __slate_nextafterl__rf80_f80_f80(_0: LongDouble, _1: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn __slate_powl__rf80_f80_f80(_0: LongDouble, _1: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn __slate_remainderl__rf80_f80_f80(_0: LongDouble, _1: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn __slate_snprintf__ri32_pi8_u64_pi8_f80(
+// REWRITES-X86_64-GNU-NEXT:         _0: *mut i8,
+// REWRITES-X86_64-GNU-NEXT:         _1: u64,
+// REWRITES-X86_64-GNU-NEXT:         _2: *mut i8,
+// REWRITES-X86_64-GNU-NEXT:         _3: LongDouble,
+// REWRITES-X86_64-GNU-NEXT:     ) -> i32;
+// REWRITES-X86_64-GNU-NEXT:     fn __slate_sqrtl__rf80_f80(_0: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn __slate_strtold__rf80_pc_ppc(
+// REWRITES-X86_64-GNU-NEXT:         _0: *const core::ffi::c_char,
+// REWRITES-X86_64-GNU-NEXT:         _1: *mut *mut core::ffi::c_char,
+// REWRITES-X86_64-GNU-NEXT:     ) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT: }
+// SLATE-FILECHECK-END rewrites-x86_64-gnu
