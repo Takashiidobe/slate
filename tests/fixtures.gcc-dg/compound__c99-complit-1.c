@@ -122,1020 +122,1020 @@ main (void)
 // LOWERING-DAG:     let mut _compoundliteral2: s = s { a: 0, b: 0 };
 // LOWERING-DAG:     let mut _compoundliteral3: u = unsafe { std::mem::zeroed::<u>() };
 // LOWERING-DAG:     let mut _compoundliteral4: [i32; 2] = [0; 2];
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-DAG:     {
-// LOWERING-DAG:         let {{_v[0-9]+}}: *mut i32 = unsafe { i0a };
-// LOWERING-DAG:         let {{_v[0-9]+}}: *mut i32 = unsafe { i0b };
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { i0a };
+// LOWERING-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { i0b };
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut i32 = unsafe { i0a };
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut i32 = unsafe { i0c };
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut i32 = unsafe { i0a };
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut i32 = unsafe { i0c };
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut i32 = unsafe { i0b };
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut i32 = unsafe { i0c };
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut i32 = unsafe { i0b };
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut i32 = unsafe { i0c };
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         if {{_v[0-9]+}} {
+// LOWERING-DAG:         if {{__v[0-9]+}} {
 // LOWERING-DAG:             unsafe { abort() };
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
 // LOWERING-DAG:     {
-// LOWERING-DAG:         let {{_v[0-9]+}}: *mut i32 = unsafe { i1a };
-// LOWERING-DAG:         let {{_v[0-9]+}}: *mut i32 = unsafe { i1b };
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
-// LOWERING-DAG:         if {{_v[0-9]+}} {
+// LOWERING-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { i1a };
+// LOWERING-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { i1b };
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
+// LOWERING-DAG:         if {{__v[0-9]+}} {
 // LOWERING-DAG:             unsafe { abort() };
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
 // LOWERING-DAG:     {
-// LOWERING-DAG:         let {{_v[0-9]+}}: *mut i32 = unsafe { i0a };
-// LOWERING-DAG:         let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-DAG:         let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { i0a };
+// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut i32 = unsafe { i0b };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut i32 = unsafe { i0b };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut i32 = unsafe { i1a };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut i32 = unsafe { i1a };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut i32 = unsafe { i1b };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut i32 = unsafe { i1b };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut i32 = unsafe { i0c };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut i32 = unsafe { i0c };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         if {{_v[0-9]+}} {
+// LOWERING-DAG:         if {{__v[0-9]+}} {
 // LOWERING-DAG:             unsafe { abort() };
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-DAG:     let {{_v[0-9]+}}: *mut i32 = unsafe { i0a };
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-DAG:     let {{__v[0-9]+}}: *mut i32 = unsafe { i0a };
 // LOWERING-DAG:     unsafe {
-// LOWERING-DAG:         *{{_v[0-9]+}} = {{_v[0-9]+}};
+// LOWERING-DAG:         *{{__v[0-9]+}} = {{__v[0-9]+}};
 // LOWERING-DAG:     }
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:     let {{_v[0-9]+}}: *mut i32 = unsafe { i1a };
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:     let {{__v[0-9]+}}: *mut i32 = unsafe { i1a };
 // LOWERING-DAG:     unsafe {
-// LOWERING-DAG:         *{{_v[0-9]+}} = {{_v[0-9]+}};
+// LOWERING-DAG:         *{{__v[0-9]+}} = {{__v[0-9]+}};
 // LOWERING-DAG:     }
 // LOWERING-DAG:     {
-// LOWERING-DAG:         let {{_v[0-9]+}}: *mut i32 = unsafe { i0a };
-// LOWERING-DAG:         let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-DAG:         let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { i0a };
+// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut i32 = unsafe { i0b };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut i32 = unsafe { i0b };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut i32 = unsafe { i1a };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut i32 = unsafe { i1a };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut i32 = unsafe { i1b };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut i32 = unsafe { i1b };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut i32 = unsafe { i0c };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut i32 = unsafe { i0c };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         if {{_v[0-9]+}} {
+// LOWERING-DAG:         if {{__v[0-9]+}} {
 // LOWERING-DAG:             unsafe { abort() };
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
 // LOWERING-DAG:     {
-// LOWERING-DAG:         let {{_v[0-9]+}}: *mut s = unsafe { s0 };
-// LOWERING-DAG:         let {{_v[0-9]+}}: *mut s = unsafe { s1 };
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: *mut s = unsafe { s0 };
+// LOWERING-DAG:         let {{__v[0-9]+}}: *mut s = unsafe { s1 };
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut s = unsafe { s1 };
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut s = unsafe { s2 };
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut s = unsafe { s1 };
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut s = unsafe { s2 };
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut s = unsafe { s2 };
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut s = unsafe { s0 };
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut s = unsafe { s2 };
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut s = unsafe { s0 };
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         if {{_v[0-9]+}} {
+// LOWERING-DAG:         if {{__v[0-9]+}} {
 // LOWERING-DAG:             unsafe { abort() };
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
 // LOWERING-DAG:     {
-// LOWERING-DAG:         let {{_v[0-9]+}}: *mut s = unsafe { s0 };
-// LOWERING-DAG:         let {{_v[0-9]+}}: i32 = unsafe { (*{{_v[0-9]+}}).a };
-// LOWERING-DAG:         let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: *mut s = unsafe { s0 };
+// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = unsafe { (*{{__v[0-9]+}}).a };
+// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut s = unsafe { s0 };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = unsafe { (*{{_v[0-9]+}}).b };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = 2;
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut s = unsafe { s0 };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = unsafe { (*{{__v[0-9]+}}).b };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = 2;
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut s = unsafe { s1 };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = unsafe { (*{{_v[0-9]+}}).a };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut s = unsafe { s1 };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = unsafe { (*{{__v[0-9]+}}).a };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut s = unsafe { s1 };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = unsafe { (*{{_v[0-9]+}}).b };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = 2;
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut s = unsafe { s1 };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = unsafe { (*{{__v[0-9]+}}).b };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = 2;
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut s = unsafe { s2 };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = unsafe { (*{{_v[0-9]+}}).a };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut s = unsafe { s2 };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = unsafe { (*{{__v[0-9]+}}).a };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut s = unsafe { s2 };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = unsafe { (*{{_v[0-9]+}}).b };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = 2;
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut s = unsafe { s2 };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = unsafe { (*{{__v[0-9]+}}).b };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = 2;
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         if {{_v[0-9]+}} {
+// LOWERING-DAG:         if {{__v[0-9]+}} {
 // LOWERING-DAG:             unsafe { abort() };
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 2;
-// LOWERING-DAG:     let {{_v[0-9]+}}: *mut s = unsafe { s0 };
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 2;
+// LOWERING-DAG:     let {{__v[0-9]+}}: *mut s = unsafe { s0 };
 // LOWERING-DAG:     unsafe {
-// LOWERING-DAG:         (*{{_v[0-9]+}}).a = {{_v[0-9]+}};
+// LOWERING-DAG:         (*{{__v[0-9]+}}).a = {{__v[0-9]+}};
 // LOWERING-DAG:     }
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-DAG:     let {{_v[0-9]+}}: *mut s = unsafe { s1 };
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-DAG:     let {{__v[0-9]+}}: *mut s = unsafe { s1 };
 // LOWERING-DAG:     unsafe {
-// LOWERING-DAG:         (*{{_v[0-9]+}}).b = {{_v[0-9]+}};
+// LOWERING-DAG:         (*{{__v[0-9]+}}).b = {{__v[0-9]+}};
 // LOWERING-DAG:     }
 // LOWERING-DAG:     {
-// LOWERING-DAG:         let {{_v[0-9]+}}: *mut s = unsafe { s0 };
-// LOWERING-DAG:         let {{_v[0-9]+}}: i32 = unsafe { (*{{_v[0-9]+}}).a };
-// LOWERING-DAG:         let {{_v[0-9]+}}: i32 = 2;
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: *mut s = unsafe { s0 };
+// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = unsafe { (*{{__v[0-9]+}}).a };
+// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 2;
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut s = unsafe { s0 };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = unsafe { (*{{_v[0-9]+}}).b };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = 2;
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut s = unsafe { s0 };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = unsafe { (*{{__v[0-9]+}}).b };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = 2;
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut s = unsafe { s1 };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = unsafe { (*{{_v[0-9]+}}).a };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut s = unsafe { s1 };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = unsafe { (*{{__v[0-9]+}}).a };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut s = unsafe { s1 };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = unsafe { (*{{_v[0-9]+}}).b };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut s = unsafe { s1 };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = unsafe { (*{{__v[0-9]+}}).b };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut s = unsafe { s2 };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = unsafe { (*{{_v[0-9]+}}).a };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut s = unsafe { s2 };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = unsafe { (*{{__v[0-9]+}}).a };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut s = unsafe { s2 };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = unsafe { (*{{_v[0-9]+}}).b };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = 2;
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut s = unsafe { s2 };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = unsafe { (*{{__v[0-9]+}}).b };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = 2;
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         if {{_v[0-9]+}} {
+// LOWERING-DAG:         if {{__v[0-9]+}} {
 // LOWERING-DAG:             unsafe { abort() };
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
 // LOWERING-DAG:     {
-// LOWERING-DAG:         let {{_v[0-9]+}}: *mut u = unsafe { u0 };
-// LOWERING-DAG:         let {{_v[0-9]+}}: *mut u = unsafe { u1 };
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: *mut u = unsafe { u0 };
+// LOWERING-DAG:         let {{__v[0-9]+}}: *mut u = unsafe { u1 };
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut u = unsafe { u1 };
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut u = unsafe { u2 };
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut u = unsafe { u1 };
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut u = unsafe { u2 };
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut u = unsafe { u2 };
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut u = unsafe { u0 };
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut u = unsafe { u2 };
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut u = unsafe { u0 };
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         if {{_v[0-9]+}} {
+// LOWERING-DAG:         if {{__v[0-9]+}} {
 // LOWERING-DAG:             unsafe { abort() };
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
 // LOWERING-DAG:     {
-// LOWERING-DAG:         let {{_v[0-9]+}}: *mut u = unsafe { u0 };
-// LOWERING-DAG:         let {{_v[0-9]+}}: i32 = unsafe { (*{{_v[0-9]+}}).c };
-// LOWERING-DAG:         let {{_v[0-9]+}}: i32 = 3;
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: *mut u = unsafe { u0 };
+// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = unsafe { (*{{__v[0-9]+}}).c };
+// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 3;
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut u = unsafe { u1 };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = unsafe { (*{{_v[0-9]+}}).c };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = 3;
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut u = unsafe { u1 };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = unsafe { (*{{__v[0-9]+}}).c };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = 3;
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut u = unsafe { u2 };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = unsafe { (*{{_v[0-9]+}}).c };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = 3;
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut u = unsafe { u2 };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = unsafe { (*{{__v[0-9]+}}).c };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = 3;
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         if {{_v[0-9]+}} {
+// LOWERING-DAG:         if {{__v[0-9]+}} {
 // LOWERING-DAG:             unsafe { abort() };
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 2;
-// LOWERING-DAG:     let {{_v[0-9]+}}: *mut u = unsafe { u0 };
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 2;
+// LOWERING-DAG:     let {{__v[0-9]+}}: *mut u = unsafe { u0 };
 // LOWERING-DAG:     unsafe {
-// LOWERING-DAG:         (*{{_v[0-9]+}}).d = {{_v[0-9]+}};
+// LOWERING-DAG:         (*{{__v[0-9]+}}).d = {{__v[0-9]+}};
 // LOWERING-DAG:     }
 // LOWERING-DAG:     {
-// LOWERING-DAG:         let {{_v[0-9]+}}: *mut u = unsafe { u0 };
-// LOWERING-DAG:         let {{_v[0-9]+}}: i32 = unsafe { (*{{_v[0-9]+}}).d };
-// LOWERING-DAG:         let {{_v[0-9]+}}: i32 = 2;
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: *mut u = unsafe { u0 };
+// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = unsafe { (*{{__v[0-9]+}}).d };
+// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 2;
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut u = unsafe { u1 };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = unsafe { (*{{_v[0-9]+}}).c };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = 3;
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut u = unsafe { u1 };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = unsafe { (*{{__v[0-9]+}}).c };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = 3;
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut u = unsafe { u2 };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = unsafe { (*{{_v[0-9]+}}).c };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = 3;
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut u = unsafe { u2 };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = unsafe { (*{{__v[0-9]+}}).c };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = 3;
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         if {{_v[0-9]+}} {
+// LOWERING-DAG:         if {{__v[0-9]+}} {
 // LOWERING-DAG:             unsafe { abort() };
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
 // LOWERING-DAG:     {
-// LOWERING-DAG:         let {{_v[0-9]+}}: *mut i32 = unsafe { a0 };
-// LOWERING-DAG:         let {{_v[0-9]+}}: *mut i32 = unsafe { a1 };
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
-// LOWERING-DAG:         if {{_v[0-9]+}} {
+// LOWERING-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { a0 };
+// LOWERING-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { a1 };
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
+// LOWERING-DAG:         if {{__v[0-9]+}} {
 // LOWERING-DAG:             unsafe { abort() };
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
 // LOWERING-DAG:     {
-// LOWERING-DAG:         let {{_v[0-9]+}}: i64 = 0;
-// LOWERING-DAG:         let {{_v[0-9]+}}: *mut i32 = unsafe { a0 };
-// LOWERING-DAG:         let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(0) };
-// LOWERING-DAG:         let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-DAG:         let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: i64 = 0;
+// LOWERING-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { a0 };
+// LOWERING-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(0) };
+// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: i64 = 1;
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut i32 = unsafe { a0 };
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(1) };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = 2;
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: i64 = 1;
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut i32 = unsafe { a0 };
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(1) };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = 2;
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: i64 = 2;
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut i32 = unsafe { a0 };
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(2) };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = 3;
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: i64 = 2;
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut i32 = unsafe { a0 };
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(2) };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = 3;
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: i64 = 0;
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut i32 = unsafe { a1 };
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(0) };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: i64 = 0;
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut i32 = unsafe { a1 };
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(0) };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: i64 = 1;
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut i32 = unsafe { a1 };
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(1) };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = 2;
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: i64 = 1;
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut i32 = unsafe { a1 };
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(1) };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = 2;
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: i64 = 2;
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut i32 = unsafe { a1 };
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(2) };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = 3;
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: i64 = 2;
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut i32 = unsafe { a1 };
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(2) };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = 3;
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         if {{_v[0-9]+}} {
+// LOWERING-DAG:         if {{__v[0-9]+}} {
 // LOWERING-DAG:             unsafe { abort() };
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 3;
-// LOWERING-DAG:     let {{_v[0-9]+}}: i64 = 0;
-// LOWERING-DAG:     let {{_v[0-9]+}}: *mut i32 = unsafe { a0 };
-// LOWERING-DAG:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(0) };
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 3;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i64 = 0;
+// LOWERING-DAG:     let {{__v[0-9]+}}: *mut i32 = unsafe { a0 };
+// LOWERING-DAG:     let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(0) };
 // LOWERING-DAG:     unsafe {
-// LOWERING-DAG:         *{{_v[0-9]+}} = {{_v[0-9]+}};
+// LOWERING-DAG:         *{{__v[0-9]+}} = {{__v[0-9]+}};
 // LOWERING-DAG:     }
 // LOWERING-DAG:     {
-// LOWERING-DAG:         let {{_v[0-9]+}}: i64 = 0;
-// LOWERING-DAG:         let {{_v[0-9]+}}: *mut i32 = unsafe { a0 };
-// LOWERING-DAG:         let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(0) };
-// LOWERING-DAG:         let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-DAG:         let {{_v[0-9]+}}: i32 = 3;
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: i64 = 0;
+// LOWERING-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { a0 };
+// LOWERING-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(0) };
+// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 3;
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: i64 = 1;
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut i32 = unsafe { a0 };
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(1) };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = 2;
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: i64 = 1;
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut i32 = unsafe { a0 };
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(1) };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = 2;
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: i64 = 2;
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut i32 = unsafe { a0 };
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(2) };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = 3;
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: i64 = 2;
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut i32 = unsafe { a0 };
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(2) };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = 3;
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: i64 = 0;
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut i32 = unsafe { a1 };
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(0) };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: i64 = 0;
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut i32 = unsafe { a1 };
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(0) };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: i64 = 1;
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut i32 = unsafe { a1 };
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(1) };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = 2;
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: i64 = 1;
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut i32 = unsafe { a1 };
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(1) };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = 2;
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: i64 = 2;
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut i32 = unsafe { a1 };
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(2) };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = 3;
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: i64 = 2;
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut i32 = unsafe { a1 };
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(2) };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = 3;
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         if {{_v[0-9]+}} {
+// LOWERING-DAG:         if {{__v[0-9]+}} {
 // LOWERING-DAG:             unsafe { abort() };
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
 // LOWERING-DAG:     {
-// LOWERING-DAG:         let {{_v[0-9]+}}: i64 = 0;
-// LOWERING-DAG:         let {{_v[0-9]+}}: *mut i8 = unsafe { p };
-// LOWERING-DAG:         let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(0) };
-// LOWERING-DAG:         let {{_v[0-9]+}}: i8 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-DAG:         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-DAG:         let {{_v[0-9]+}}: i32 = 102;
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: i64 = 0;
+// LOWERING-DAG:         let {{__v[0-9]+}}: *mut i8 = unsafe { p };
+// LOWERING-DAG:         let {{__v[0-9]+}}: *mut i8 = unsafe { {{__v[0-9]+}}.add(0) };
+// LOWERING-DAG:         let {{__v[0-9]+}}: i8 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 102;
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: i64 = 1;
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut i8 = unsafe { p };
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(1) };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i8 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = 111;
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: i64 = 1;
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut i8 = unsafe { p };
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut i8 = unsafe { {{__v[0-9]+}}.add(1) };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i8 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = 111;
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: i64 = 2;
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut i8 = unsafe { p };
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(2) };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i8 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = 111;
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: i64 = 2;
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut i8 = unsafe { p };
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut i8 = unsafe { {{__v[0-9]+}}.add(2) };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i8 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = 111;
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: i64 = 3;
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut i8 = unsafe { p };
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(3) };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i8 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: i64 = 3;
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut i8 = unsafe { p };
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut i8 = unsafe { {{__v[0-9]+}}.add(3) };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i8 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         if {{_v[0-9]+}} {
+// LOWERING-DAG:         if {{__v[0-9]+}} {
 // LOWERING-DAG:             unsafe { abort() };
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
-// LOWERING-DAG:     let {{_v[0-9]+}}: i8 = 103;
-// LOWERING-DAG:     let {{_v[0-9]+}}: i64 = 0;
-// LOWERING-DAG:     let {{_v[0-9]+}}: *mut i8 = unsafe { p };
-// LOWERING-DAG:     let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(0) };
+// LOWERING-DAG:     let {{__v[0-9]+}}: i8 = 103;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i64 = 0;
+// LOWERING-DAG:     let {{__v[0-9]+}}: *mut i8 = unsafe { p };
+// LOWERING-DAG:     let {{__v[0-9]+}}: *mut i8 = unsafe { {{__v[0-9]+}}.add(0) };
 // LOWERING-DAG:     unsafe {
-// LOWERING-DAG:         *{{_v[0-9]+}} = {{_v[0-9]+}};
+// LOWERING-DAG:         *{{__v[0-9]+}} = {{__v[0-9]+}};
 // LOWERING-DAG:     }
 // LOWERING-DAG:     {
-// LOWERING-DAG:         let {{_v[0-9]+}}: i64 = 0;
-// LOWERING-DAG:         let {{_v[0-9]+}}: *mut i8 = unsafe { p };
-// LOWERING-DAG:         let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(0) };
-// LOWERING-DAG:         let {{_v[0-9]+}}: i8 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-DAG:         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-DAG:         let {{_v[0-9]+}}: i32 = 103;
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: i64 = 0;
+// LOWERING-DAG:         let {{__v[0-9]+}}: *mut i8 = unsafe { p };
+// LOWERING-DAG:         let {{__v[0-9]+}}: *mut i8 = unsafe { {{__v[0-9]+}}.add(0) };
+// LOWERING-DAG:         let {{__v[0-9]+}}: i8 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 103;
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: i64 = 1;
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut i8 = unsafe { p };
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(1) };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i8 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = 111;
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: i64 = 1;
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut i8 = unsafe { p };
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut i8 = unsafe { {{__v[0-9]+}}.add(1) };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i8 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = 111;
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: i64 = 2;
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut i8 = unsafe { p };
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(2) };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i8 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = 111;
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: i64 = 2;
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut i8 = unsafe { p };
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut i8 = unsafe { {{__v[0-9]+}}.add(2) };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i8 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = 111;
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: i64 = 3;
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut i8 = unsafe { p };
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(3) };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i8 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: i64 = 3;
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut i8 = unsafe { p };
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut i8 = unsafe { {{__v[0-9]+}}.add(3) };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i8 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         if {{_v[0-9]+}} {
+// LOWERING-DAG:         if {{__v[0-9]+}} {
 // LOWERING-DAG:             unsafe { abort() };
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
 // LOWERING-DAG:     {
-// LOWERING-DAG:         let {{_v[0-9]+}}: u64 = 12;
-// LOWERING-DAG:         let {{_v[0-9]+}}: u64 = 3;
-// LOWERING-DAG:         let {{_v[0-9]+}}: u64 = 4;
-// LOWERING-DAG:         let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} * {{_v[0-9]+}};
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:         if {{_v[0-9]+}} {
+// LOWERING-DAG:         let {{__v[0-9]+}}: u64 = 12;
+// LOWERING-DAG:         let {{__v[0-9]+}}: u64 = 3;
+// LOWERING-DAG:         let {{__v[0-9]+}}: u64 = 4;
+// LOWERING-DAG:         let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} * {{__v[0-9]+}};
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:         if {{__v[0-9]+}} {
 // LOWERING-DAG:             unsafe { abort() };
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
 // LOWERING-DAG:     {
-// LOWERING-DAG:         let {{_v[0-9]+}}: u64 = 16;
-// LOWERING-DAG:         let {{_v[0-9]+}}: u64 = 4;
-// LOWERING-DAG:         let {{_v[0-9]+}}: u64 = 4;
-// LOWERING-DAG:         let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} * {{_v[0-9]+}};
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:         if {{_v[0-9]+}} {
+// LOWERING-DAG:         let {{__v[0-9]+}}: u64 = 16;
+// LOWERING-DAG:         let {{__v[0-9]+}}: u64 = 4;
+// LOWERING-DAG:         let {{__v[0-9]+}}: u64 = 4;
+// LOWERING-DAG:         let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} * {{__v[0-9]+}};
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:         if {{__v[0-9]+}} {
 // LOWERING-DAG:             unsafe { abort() };
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
 // LOWERING-DAG:     {
 // LOWERING-DAG:         let mut i: i32 = 0;
-// LOWERING-DAG:         let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:         i = {{_v[0-9]+}};
+// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:         i = {{__v[0-9]+}};
 // LOWERING-DAG:         loop {
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = i;
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = 3;
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < {{_v[0-9]+}};
-// LOWERING-DAG:             if !{{_v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = i;
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = 3;
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
+// LOWERING-DAG:             if !{{__v[0-9]+}} {
 // LOWERING-DAG:                 break;
 // LOWERING-DAG:             }
 // LOWERING-DAG:             {
 // LOWERING-DAG:                 let mut x: *mut s = std::ptr::null_mut();
 // LOWERING-DAG:                 let mut _compoundliteral5: s = s { a: 0, b: 0 };
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-DAG:                 _compoundliteral5.a = {{_v[0-9]+}};
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i32 = i;
-// LOWERING-DAG:                 _compoundliteral5.b = {{_v[0-9]+}};
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-DAG:                 _compoundliteral5.a = {{__v[0-9]+}};
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = i;
+// LOWERING-DAG:                 _compoundliteral5.b = {{__v[0-9]+}};
 // LOWERING-DAG:                 x = std::ptr::addr_of_mut!(_compoundliteral5);
 // LOWERING-DAG:                 {
-// LOWERING-DAG:                     let {{_v[0-9]+}}: *mut s = x;
-// LOWERING-DAG:                     let {{_v[0-9]+}}: i32 = unsafe { (*{{_v[0-9]+}}).a };
-// LOWERING-DAG:                     let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-DAG:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:                     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:                         let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:                         {{_v[0-9]+}}
+// LOWERING-DAG:                     let {{__v[0-9]+}}: *mut s = x;
+// LOWERING-DAG:                     let {{__v[0-9]+}}: i32 = unsafe { (*{{__v[0-9]+}}).a };
+// LOWERING-DAG:                     let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-DAG:                     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:                     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:                         let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:                         {{__v[0-9]+}}
 // LOWERING-DAG:                     } else {
-// LOWERING-DAG:                         let {{_v[0-9]+}}: *mut s = x;
-// LOWERING-DAG:                         let {{_v[0-9]+}}: i32 = unsafe { (*{{_v[0-9]+}}).b };
-// LOWERING-DAG:                         let {{_v[0-9]+}}: i32 = i;
-// LOWERING-DAG:                         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:                         {{_v[0-9]+}}
+// LOWERING-DAG:                         let {{__v[0-9]+}}: *mut s = x;
+// LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = unsafe { (*{{__v[0-9]+}}).b };
+// LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = i;
+// LOWERING-DAG:                         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:                         {{__v[0-9]+}}
 // LOWERING-DAG:                     };
-// LOWERING-DAG:                     if {{_v[0-9]+}} {
+// LOWERING-DAG:                     if {{__v[0-9]+}} {
 // LOWERING-DAG:                         unsafe { abort() };
 // LOWERING-DAG:                     }
 // LOWERING-DAG:                 }
-// LOWERING-DAG:                 let {{_v[0-9]+}}: *mut s = x;
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i32 = unsafe { (*{{_v[0-9]+}}).a };
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-DAG:                 let {{__v[0-9]+}}: *mut s = x;
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = unsafe { (*{{__v[0-9]+}}).a };
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + 1;
 // LOWERING-DAG:                 unsafe {
-// LOWERING-DAG:                     (*{{_v[0-9]+}}).a = {{_v[0-9]+}};
+// LOWERING-DAG:                     (*{{__v[0-9]+}}).a = {{__v[0-9]+}};
 // LOWERING-DAG:                 }
-// LOWERING-DAG:                 let {{_v[0-9]+}}: *mut s = x;
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i32 = unsafe { (*{{_v[0-9]+}}).b };
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} - 1;
+// LOWERING-DAG:                 let {{__v[0-9]+}}: *mut s = x;
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = unsafe { (*{{__v[0-9]+}}).b };
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} - 1;
 // LOWERING-DAG:                 unsafe {
-// LOWERING-DAG:                     (*{{_v[0-9]+}}).b = {{_v[0-9]+}};
+// LOWERING-DAG:                     (*{{__v[0-9]+}}).b = {{__v[0-9]+}};
 // LOWERING-DAG:                 }
 // LOWERING-DAG:                 {
-// LOWERING-DAG:                     let {{_v[0-9]+}}: *mut s = x;
-// LOWERING-DAG:                     let {{_v[0-9]+}}: i32 = unsafe { (*{{_v[0-9]+}}).a };
-// LOWERING-DAG:                     let {{_v[0-9]+}}: i32 = 2;
-// LOWERING-DAG:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:                     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:                         let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:                         {{_v[0-9]+}}
+// LOWERING-DAG:                     let {{__v[0-9]+}}: *mut s = x;
+// LOWERING-DAG:                     let {{__v[0-9]+}}: i32 = unsafe { (*{{__v[0-9]+}}).a };
+// LOWERING-DAG:                     let {{__v[0-9]+}}: i32 = 2;
+// LOWERING-DAG:                     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:                     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:                         let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:                         {{__v[0-9]+}}
 // LOWERING-DAG:                     } else {
-// LOWERING-DAG:                         let {{_v[0-9]+}}: *mut s = x;
-// LOWERING-DAG:                         let {{_v[0-9]+}}: i32 = unsafe { (*{{_v[0-9]+}}).b };
-// LOWERING-DAG:                         let {{_v[0-9]+}}: i32 = i;
-// LOWERING-DAG:                         let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-DAG:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} - {{_v[0-9]+}};
-// LOWERING-DAG:                         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:                         {{_v[0-9]+}}
+// LOWERING-DAG:                         let {{__v[0-9]+}}: *mut s = x;
+// LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = unsafe { (*{{__v[0-9]+}}).b };
+// LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = i;
+// LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} - {{__v[0-9]+}};
+// LOWERING-DAG:                         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:                         {{__v[0-9]+}}
 // LOWERING-DAG:                     };
-// LOWERING-DAG:                     if {{_v[0-9]+}} {
+// LOWERING-DAG:                     if {{__v[0-9]+}} {
 // LOWERING-DAG:                         unsafe { abort() };
 // LOWERING-DAG:                     }
 // LOWERING-DAG:                 }
 // LOWERING-DAG:                 {
-// LOWERING-DAG:                     let {{_v[0-9]+}}: i32 = i;
-// LOWERING-DAG:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// LOWERING-DAG:                     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:                         let {{_v[0-9]+}}: *mut s = y;
-// LOWERING-DAG:                         let {{_v[0-9]+}}: *mut s = x;
-// LOWERING-DAG:                         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:                         {{_v[0-9]+}}
+// LOWERING-DAG:                     let {{__v[0-9]+}}: i32 = i;
+// LOWERING-DAG:                     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
+// LOWERING-DAG:                     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:                         let {{__v[0-9]+}}: *mut s = y;
+// LOWERING-DAG:                         let {{__v[0-9]+}}: *mut s = x;
+// LOWERING-DAG:                         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:                         {{__v[0-9]+}}
 // LOWERING-DAG:                     } else {
-// LOWERING-DAG:                         let {{_v[0-9]+}}: bool = false;
-// LOWERING-DAG:                         {{_v[0-9]+}}
+// LOWERING-DAG:                         let {{__v[0-9]+}}: bool = false;
+// LOWERING-DAG:                         {{__v[0-9]+}}
 // LOWERING-DAG:                     };
-// LOWERING-DAG:                     if {{_v[0-9]+}} {
+// LOWERING-DAG:                     if {{__v[0-9]+}} {
 // LOWERING-DAG:                         unsafe { abort() };
 // LOWERING-DAG:                     }
 // LOWERING-DAG:                 }
-// LOWERING-DAG:                 let {{_v[0-9]+}}: *mut s = x;
-// LOWERING-DAG:                 y = {{_v[0-9]+}};
+// LOWERING-DAG:                 let {{__v[0-9]+}}: *mut s = x;
+// LOWERING-DAG:                 y = {{__v[0-9]+}};
 // LOWERING-DAG:             }
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = i;
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
-// LOWERING-DAG:             i = {{_v[0-9]+}};
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = i;
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + 1;
+// LOWERING-DAG:             i = {{__v[0-9]+}};
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
 // LOWERING-DAG:     {
 // LOWERING-DAG:         let mut i2: i32 = 0;
-// LOWERING-DAG:         let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:         i2 = {{_v[0-9]+}};
+// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:         i2 = {{__v[0-9]+}};
 // LOWERING-DAG:         loop {
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = i2;
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = 4;
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < {{_v[0-9]+}};
-// LOWERING-DAG:             if !{{_v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = i2;
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = 4;
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
+// LOWERING-DAG:             if !{{__v[0-9]+}} {
 // LOWERING-DAG:                 break;
 // LOWERING-DAG:             }
 // LOWERING-DAG:             {
 // LOWERING-DAG:                 let mut x2: *mut i32 = std::ptr::null_mut();
 // LOWERING-DAG:                 let mut _compoundliteral6: [i32; 4] = [0; 4];
-// LOWERING-DAG:                 let {{_v[0-9]+}}: *mut i32 = _compoundliteral6.as_mut_ptr() as *mut i32;
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:                 let {{__v[0-9]+}}: *mut i32 = _compoundliteral6.as_mut_ptr() as *mut i32;
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-DAG:                 unsafe {
-// LOWERING-DAG:                     *{{_v[0-9]+}} = {{_v[0-9]+}};
+// LOWERING-DAG:                     *{{__v[0-9]+}} = {{__v[0-9]+}};
 // LOWERING-DAG:                 }
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i64 = 1;
-// LOWERING-DAG:                 let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(1) };
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i32 = i2;
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i64 = 1;
+// LOWERING-DAG:                 let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(1) };
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = i2;
 // LOWERING-DAG:                 unsafe {
-// LOWERING-DAG:                     *{{_v[0-9]+}} = {{_v[0-9]+}};
+// LOWERING-DAG:                     *{{__v[0-9]+}} = {{__v[0-9]+}};
 // LOWERING-DAG:                 }
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i64 = 2;
-// LOWERING-DAG:                 let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(2) };
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i32 = i2;
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i32 = 2;
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i64 = 2;
+// LOWERING-DAG:                 let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(2) };
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = i2;
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = 2;
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
 // LOWERING-DAG:                 unsafe {
-// LOWERING-DAG:                     *{{_v[0-9]+}} = {{_v[0-9]+}};
+// LOWERING-DAG:                     *{{__v[0-9]+}} = {{__v[0-9]+}};
 // LOWERING-DAG:                 }
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i64 = 3;
-// LOWERING-DAG:                 let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(3) };
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i32 = i2;
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i32 = 3;
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} - {{_v[0-9]+}};
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i64 = 3;
+// LOWERING-DAG:                 let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(3) };
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = i2;
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = 3;
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} - {{__v[0-9]+}};
 // LOWERING-DAG:                 unsafe {
-// LOWERING-DAG:                     *{{_v[0-9]+}} = {{_v[0-9]+}};
+// LOWERING-DAG:                     *{{__v[0-9]+}} = {{__v[0-9]+}};
 // LOWERING-DAG:                 }
-// LOWERING-DAG:                 let {{_v[0-9]+}}: *mut i32 = _compoundliteral6.as_mut_ptr() as *mut i32;
-// LOWERING-DAG:                 x2 = {{_v[0-9]+}};
+// LOWERING-DAG:                 let {{__v[0-9]+}}: *mut i32 = _compoundliteral6.as_mut_ptr() as *mut i32;
+// LOWERING-DAG:                 x2 = {{__v[0-9]+}};
 // LOWERING-DAG:                 {
-// LOWERING-DAG:                     let {{_v[0-9]+}}: i64 = 0;
-// LOWERING-DAG:                     let {{_v[0-9]+}}: *mut i32 = x2;
-// LOWERING-DAG:                     let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(0) };
-// LOWERING-DAG:                     let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-DAG:                     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:                     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:                         let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:                         {{_v[0-9]+}}
+// LOWERING-DAG:                     let {{__v[0-9]+}}: i64 = 0;
+// LOWERING-DAG:                     let {{__v[0-9]+}}: *mut i32 = x2;
+// LOWERING-DAG:                     let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(0) };
+// LOWERING-DAG:                     let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-DAG:                     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:                     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:                     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:                         let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:                         {{__v[0-9]+}}
 // LOWERING-DAG:                     } else {
-// LOWERING-DAG:                         let {{_v[0-9]+}}: i64 = 1;
-// LOWERING-DAG:                         let {{_v[0-9]+}}: *mut i32 = x2;
-// LOWERING-DAG:                         let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(1) };
-// LOWERING-DAG:                         let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-DAG:                         let {{_v[0-9]+}}: i32 = i2;
-// LOWERING-DAG:                         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:                         {{_v[0-9]+}}
+// LOWERING-DAG:                         let {{__v[0-9]+}}: i64 = 1;
+// LOWERING-DAG:                         let {{__v[0-9]+}}: *mut i32 = x2;
+// LOWERING-DAG:                         let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(1) };
+// LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = i2;
+// LOWERING-DAG:                         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:                         {{__v[0-9]+}}
 // LOWERING-DAG:                     };
-// LOWERING-DAG:                     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:                         let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:                         {{_v[0-9]+}}
+// LOWERING-DAG:                     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:                         let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:                         {{__v[0-9]+}}
 // LOWERING-DAG:                     } else {
-// LOWERING-DAG:                         let {{_v[0-9]+}}: i64 = 2;
-// LOWERING-DAG:                         let {{_v[0-9]+}}: *mut i32 = x2;
-// LOWERING-DAG:                         let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(2) };
-// LOWERING-DAG:                         let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-DAG:                         let {{_v[0-9]+}}: i32 = i2;
-// LOWERING-DAG:                         let {{_v[0-9]+}}: i32 = 2;
-// LOWERING-DAG:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-DAG:                         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:                         {{_v[0-9]+}}
+// LOWERING-DAG:                         let {{__v[0-9]+}}: i64 = 2;
+// LOWERING-DAG:                         let {{__v[0-9]+}}: *mut i32 = x2;
+// LOWERING-DAG:                         let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(2) };
+// LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = i2;
+// LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = 2;
+// LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-DAG:                         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:                         {{__v[0-9]+}}
 // LOWERING-DAG:                     };
-// LOWERING-DAG:                     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:                         let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:                         {{_v[0-9]+}}
+// LOWERING-DAG:                     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:                         let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:                         {{__v[0-9]+}}
 // LOWERING-DAG:                     } else {
-// LOWERING-DAG:                         let {{_v[0-9]+}}: i64 = 3;
-// LOWERING-DAG:                         let {{_v[0-9]+}}: *mut i32 = x2;
-// LOWERING-DAG:                         let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(3) };
-// LOWERING-DAG:                         let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-DAG:                         let {{_v[0-9]+}}: i32 = i2;
-// LOWERING-DAG:                         let {{_v[0-9]+}}: i32 = 3;
-// LOWERING-DAG:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} - {{_v[0-9]+}};
-// LOWERING-DAG:                         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:                         {{_v[0-9]+}}
+// LOWERING-DAG:                         let {{__v[0-9]+}}: i64 = 3;
+// LOWERING-DAG:                         let {{__v[0-9]+}}: *mut i32 = x2;
+// LOWERING-DAG:                         let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(3) };
+// LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = i2;
+// LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = 3;
+// LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} - {{__v[0-9]+}};
+// LOWERING-DAG:                         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:                         {{__v[0-9]+}}
 // LOWERING-DAG:                     };
-// LOWERING-DAG:                     if {{_v[0-9]+}} {
+// LOWERING-DAG:                     if {{__v[0-9]+}} {
 // LOWERING-DAG:                         unsafe { abort() };
 // LOWERING-DAG:                     }
 // LOWERING-DAG:                 }
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i64 = 1;
-// LOWERING-DAG:                 let {{_v[0-9]+}}: *mut i32 = x2;
-// LOWERING-DAG:                 let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(1) };
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i64 = 0;
-// LOWERING-DAG:                 let {{_v[0-9]+}}: *mut i32 = x2;
-// LOWERING-DAG:                 let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(0) };
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i64 = 1;
+// LOWERING-DAG:                 let {{__v[0-9]+}}: *mut i32 = x2;
+// LOWERING-DAG:                 let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(1) };
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i64 = 0;
+// LOWERING-DAG:                 let {{__v[0-9]+}}: *mut i32 = x2;
+// LOWERING-DAG:                 let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(0) };
 // LOWERING-DAG:                 unsafe {
-// LOWERING-DAG:                     *{{_v[0-9]+}} = {{_v[0-9]+}};
+// LOWERING-DAG:                     *{{__v[0-9]+}} = {{__v[0-9]+}};
 // LOWERING-DAG:                 }
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i64 = 2;
-// LOWERING-DAG:                 let {{_v[0-9]+}}: *mut i32 = x2;
-// LOWERING-DAG:                 let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(2) };
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i64 = 1;
-// LOWERING-DAG:                 let {{_v[0-9]+}}: *mut i32 = x2;
-// LOWERING-DAG:                 let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(1) };
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} * {{_v[0-9]+}};
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i64 = 2;
+// LOWERING-DAG:                 let {{__v[0-9]+}}: *mut i32 = x2;
+// LOWERING-DAG:                 let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(2) };
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i64 = 1;
+// LOWERING-DAG:                 let {{__v[0-9]+}}: *mut i32 = x2;
+// LOWERING-DAG:                 let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(1) };
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} * {{__v[0-9]+}};
 // LOWERING-DAG:                 unsafe {
-// LOWERING-DAG:                     *{{_v[0-9]+}} = {{_v[0-9]+}};
+// LOWERING-DAG:                     *{{__v[0-9]+}} = {{__v[0-9]+}};
 // LOWERING-DAG:                 }
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i64 = 3;
-// LOWERING-DAG:                 let {{_v[0-9]+}}: *mut i32 = x2;
-// LOWERING-DAG:                 let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(3) };
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i64 = 2;
-// LOWERING-DAG:                 let {{_v[0-9]+}}: *mut i32 = x2;
-// LOWERING-DAG:                 let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(2) };
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} - {{_v[0-9]+}};
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i64 = 3;
+// LOWERING-DAG:                 let {{__v[0-9]+}}: *mut i32 = x2;
+// LOWERING-DAG:                 let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(3) };
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i64 = 2;
+// LOWERING-DAG:                 let {{__v[0-9]+}}: *mut i32 = x2;
+// LOWERING-DAG:                 let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(2) };
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} - {{__v[0-9]+}};
 // LOWERING-DAG:                 unsafe {
-// LOWERING-DAG:                     *{{_v[0-9]+}} = {{_v[0-9]+}};
+// LOWERING-DAG:                     *{{__v[0-9]+}} = {{__v[0-9]+}};
 // LOWERING-DAG:                 }
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i32 = 7;
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i64 = 3;
-// LOWERING-DAG:                 let {{_v[0-9]+}}: *mut i32 = x2;
-// LOWERING-DAG:                 let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(3) };
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = 7;
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i64 = 3;
+// LOWERING-DAG:                 let {{__v[0-9]+}}: *mut i32 = x2;
+// LOWERING-DAG:                 let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(3) };
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
 // LOWERING-DAG:                 unsafe {
-// LOWERING-DAG:                     *{{_v[0-9]+}} = {{_v[0-9]+}};
+// LOWERING-DAG:                     *{{__v[0-9]+}} = {{__v[0-9]+}};
 // LOWERING-DAG:                 }
 // LOWERING-DAG:                 {
-// LOWERING-DAG:                     let {{_v[0-9]+}}: i64 = 0;
-// LOWERING-DAG:                     let {{_v[0-9]+}}: *mut i32 = x2;
-// LOWERING-DAG:                     let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(0) };
-// LOWERING-DAG:                     let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-DAG:                     let {{_v[0-9]+}}: i32 = i2;
-// LOWERING-DAG:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:                     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:                         let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:                         {{_v[0-9]+}}
+// LOWERING-DAG:                     let {{__v[0-9]+}}: i64 = 0;
+// LOWERING-DAG:                     let {{__v[0-9]+}}: *mut i32 = x2;
+// LOWERING-DAG:                     let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(0) };
+// LOWERING-DAG:                     let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-DAG:                     let {{__v[0-9]+}}: i32 = i2;
+// LOWERING-DAG:                     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:                     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:                         let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:                         {{__v[0-9]+}}
 // LOWERING-DAG:                     } else {
-// LOWERING-DAG:                         let {{_v[0-9]+}}: i64 = 1;
-// LOWERING-DAG:                         let {{_v[0-9]+}}: *mut i32 = x2;
-// LOWERING-DAG:                         let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(1) };
-// LOWERING-DAG:                         let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-DAG:                         let {{_v[0-9]+}}: i32 = i2;
-// LOWERING-DAG:                         let {{_v[0-9]+}}: i32 = i2;
-// LOWERING-DAG:                         let {{_v[0-9]+}}: i32 = 2;
-// LOWERING-DAG:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-DAG:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} * {{_v[0-9]+}};
-// LOWERING-DAG:                         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:                         {{_v[0-9]+}}
+// LOWERING-DAG:                         let {{__v[0-9]+}}: i64 = 1;
+// LOWERING-DAG:                         let {{__v[0-9]+}}: *mut i32 = x2;
+// LOWERING-DAG:                         let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(1) };
+// LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = i2;
+// LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = i2;
+// LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = 2;
+// LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} * {{__v[0-9]+}};
+// LOWERING-DAG:                         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:                         {{__v[0-9]+}}
 // LOWERING-DAG:                     };
-// LOWERING-DAG:                     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:                         let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:                         {{_v[0-9]+}}
+// LOWERING-DAG:                     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:                         let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:                         {{__v[0-9]+}}
 // LOWERING-DAG:                     } else {
-// LOWERING-DAG:                         let {{_v[0-9]+}}: i64 = 2;
-// LOWERING-DAG:                         let {{_v[0-9]+}}: *mut i32 = x2;
-// LOWERING-DAG:                         let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(2) };
-// LOWERING-DAG:                         let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-DAG:                         let {{_v[0-9]+}}: i32 = 5;
-// LOWERING-DAG:                         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:                         {{_v[0-9]+}}
+// LOWERING-DAG:                         let {{__v[0-9]+}}: i64 = 2;
+// LOWERING-DAG:                         let {{__v[0-9]+}}: *mut i32 = x2;
+// LOWERING-DAG:                         let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(2) };
+// LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = 5;
+// LOWERING-DAG:                         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:                         {{__v[0-9]+}}
 // LOWERING-DAG:                     };
-// LOWERING-DAG:                     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:                         let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:                         {{_v[0-9]+}}
+// LOWERING-DAG:                     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:                         let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:                         {{__v[0-9]+}}
 // LOWERING-DAG:                     } else {
-// LOWERING-DAG:                         let {{_v[0-9]+}}: i64 = 3;
-// LOWERING-DAG:                         let {{_v[0-9]+}}: *mut i32 = x2;
-// LOWERING-DAG:                         let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(3) };
-// LOWERING-DAG:                         let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-DAG:                         let {{_v[0-9]+}}: i32 = i2;
-// LOWERING-DAG:                         let {{_v[0-9]+}}: i32 = 4;
-// LOWERING-DAG:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-DAG:                         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:                         {{_v[0-9]+}}
+// LOWERING-DAG:                         let {{__v[0-9]+}}: i64 = 3;
+// LOWERING-DAG:                         let {{__v[0-9]+}}: *mut i32 = x2;
+// LOWERING-DAG:                         let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(3) };
+// LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = i2;
+// LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = 4;
+// LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-DAG:                         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:                         {{__v[0-9]+}}
 // LOWERING-DAG:                     };
-// LOWERING-DAG:                     if {{_v[0-9]+}} {
+// LOWERING-DAG:                     if {{__v[0-9]+}} {
 // LOWERING-DAG:                         unsafe { abort() };
 // LOWERING-DAG:                     }
 // LOWERING-DAG:                 }
 // LOWERING-DAG:                 {
-// LOWERING-DAG:                     let {{_v[0-9]+}}: i32 = i2;
-// LOWERING-DAG:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// LOWERING-DAG:                     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:                         let {{_v[0-9]+}}: *mut i32 = z;
-// LOWERING-DAG:                         let {{_v[0-9]+}}: *mut i32 = x2;
-// LOWERING-DAG:                         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:                         {{_v[0-9]+}}
+// LOWERING-DAG:                     let {{__v[0-9]+}}: i32 = i2;
+// LOWERING-DAG:                     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
+// LOWERING-DAG:                     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:                         let {{__v[0-9]+}}: *mut i32 = z;
+// LOWERING-DAG:                         let {{__v[0-9]+}}: *mut i32 = x2;
+// LOWERING-DAG:                         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:                         {{__v[0-9]+}}
 // LOWERING-DAG:                     } else {
-// LOWERING-DAG:                         let {{_v[0-9]+}}: bool = false;
-// LOWERING-DAG:                         {{_v[0-9]+}}
+// LOWERING-DAG:                         let {{__v[0-9]+}}: bool = false;
+// LOWERING-DAG:                         {{__v[0-9]+}}
 // LOWERING-DAG:                     };
-// LOWERING-DAG:                     if {{_v[0-9]+}} {
+// LOWERING-DAG:                     if {{__v[0-9]+}} {
 // LOWERING-DAG:                         unsafe { abort() };
 // LOWERING-DAG:                     }
 // LOWERING-DAG:                 }
-// LOWERING-DAG:                 let {{_v[0-9]+}}: *mut i32 = x2;
-// LOWERING-DAG:                 z = {{_v[0-9]+}};
+// LOWERING-DAG:                 let {{__v[0-9]+}}: *mut i32 = x2;
+// LOWERING-DAG:                 z = {{__v[0-9]+}};
 // LOWERING-DAG:             }
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = i2;
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
-// LOWERING-DAG:             i2 = {{_v[0-9]+}};
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = i2;
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + 1;
+// LOWERING-DAG:             i2 = {{__v[0-9]+}};
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 3;
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:     _compoundliteral2.a = {{_v[0-9]+}};
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-DAG:     _compoundliteral2.b = {{_v[0-9]+}};
-// LOWERING-DAG:     _compoundliteral2.a = {{_v[0-9]+}};
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 4;
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 3;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 3;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:     _compoundliteral2.a = {{__v[0-9]+}};
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-DAG:     _compoundliteral2.b = {{__v[0-9]+}};
+// LOWERING-DAG:     _compoundliteral2.a = {{__v[0-9]+}};
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 4;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 3;
 // LOWERING-DAG:     unsafe {
-// LOWERING-DAG:         _compoundliteral3.c = {{_v[0-9]+}};
+// LOWERING-DAG:         _compoundliteral3.c = {{__v[0-9]+}};
 // LOWERING-DAG:     }
 // LOWERING-DAG:     unsafe {
-// LOWERING-DAG:         _compoundliteral3.c = {{_v[0-9]+}};
+// LOWERING-DAG:         _compoundliteral3.c = {{__v[0-9]+}};
 // LOWERING-DAG:     }
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:     let {{_v[0-9]+}}: i64 = 0;
-// LOWERING-DAG:     let {{_v[0-9]+}}: *mut i32 = _compoundliteral4.as_mut_ptr() as *mut i32;
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 1;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i64 = 0;
+// LOWERING-DAG:     let {{__v[0-9]+}}: *mut i32 = _compoundliteral4.as_mut_ptr() as *mut i32;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 1;
 // LOWERING-DAG:     unsafe {
-// LOWERING-DAG:         *{{_v[0-9]+}} = {{_v[0-9]+}};
+// LOWERING-DAG:         *{{__v[0-9]+}} = {{__v[0-9]+}};
 // LOWERING-DAG:     }
-// LOWERING-DAG:     let {{_v[0-9]+}}: i64 = 1;
-// LOWERING-DAG:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(1) };
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 2;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i64 = 1;
+// LOWERING-DAG:     let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(1) };
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 2;
 // LOWERING-DAG:     unsafe {
-// LOWERING-DAG:         *{{_v[0-9]+}} = {{_v[0-9]+}};
+// LOWERING-DAG:         *{{__v[0-9]+}} = {{__v[0-9]+}};
 // LOWERING-DAG:     }
-// LOWERING-DAG:     _compoundliteral4[({{_v[0-9]+}} as usize)] = {{_v[0-9]+}};
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:     unsafe { exit({{_v[0-9]+}} as i32) };
-// LOWERING-DAG:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-DAG:     _compoundliteral4[({{__v[0-9]+}} as usize)] = {{__v[0-9]+}};
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:     unsafe { exit({{__v[0-9]+}} as i32) };
+// LOWERING-DAG:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-DAG: }
 // SLATE-FILECHECK-END lowering
 
@@ -1146,639 +1146,922 @@ main (void)
 // REWRITES-DAG:     let mut _compoundliteral2: s = s { a: 0, b: 0 };
 // REWRITES-DAG:     let mut _compoundliteral3: u = unsafe { std::mem::zeroed::<u>() };
 // REWRITES-DAG:     let mut _compoundliteral4: [i32; 2] = [0; 2];
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if (unsafe { i0a }) == unsafe { i0b } {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut i32 = unsafe { i0a };
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut i32 = unsafe { i0b };
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = (unsafe { i0a }) == unsafe { i0c };
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { i0a };
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { i0c };
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = (unsafe { i0b }) == unsafe { i0c };
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { i0b };
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { i0c };
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     if {{_v[0-9]+}} {
+// REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = (unsafe { i1a }) == unsafe { i1b };
-// REWRITES-DAG:     if {{_v[0-9]+}} {
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut i32 = unsafe { i1a };
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut i32 = unsafe { i1b };
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
+// REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if (unsafe { *unsafe { i0a } }) != 0 {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut i32 = unsafe { i0a };
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = (unsafe { *unsafe { i0b } }) != 0;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { i0b };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 0;
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = (unsafe { *unsafe { i1a } }) != 1;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { i1a };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 1;
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = (unsafe { *unsafe { i1b } }) != 1;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { i1b };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 1;
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = (unsafe { *unsafe { i0c } }) != 0;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { i0c };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 0;
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     if {{_v[0-9]+}} {
+// REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 1;
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut i32 = unsafe { i0a };
 // REWRITES-DAG:     unsafe {
-// REWRITES-DAG:         *unsafe { i0a } = 1;
+// REWRITES-DAG:         *{{__v[0-9]+}} = {{__v[0-9]+}};
 // REWRITES-DAG:     }
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut i32 = unsafe { i1a };
 // REWRITES-DAG:     unsafe {
-// REWRITES-DAG:         *unsafe { i1a } = 0;
+// REWRITES-DAG:         *{{__v[0-9]+}} = {{__v[0-9]+}};
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if (unsafe { *unsafe { i0a } }) != 1 {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut i32 = unsafe { i0a };
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 1;
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = (unsafe { *unsafe { i0b } }) != 0;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { i0b };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 0;
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = (unsafe { *unsafe { i1a } }) != 0;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { i1a };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 0;
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = (unsafe { *unsafe { i1b } }) != 1;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { i1b };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 1;
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = (unsafe { *unsafe { i0c } }) != 0;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { i0c };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 0;
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     if {{_v[0-9]+}} {
+// REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if (unsafe { s0 }) == unsafe { s1 } {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut s = unsafe { s0 };
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut s = unsafe { s1 };
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = (unsafe { s1 }) == unsafe { s2 };
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut s = unsafe { s1 };
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut s = unsafe { s2 };
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = (unsafe { s2 }) == unsafe { s0 };
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut s = unsafe { s2 };
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut s = unsafe { s0 };
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     if {{_v[0-9]+}} {
+// REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if (unsafe { (*unsafe { s0 }).a }) != 1 {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut s = unsafe { s0 };
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = unsafe { (*{{__v[0-9]+}}).a };
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 1;
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = (unsafe { (*unsafe { s0 }).b }) != 2;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut s = unsafe { s0 };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = unsafe { (*{{__v[0-9]+}}).b };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 2;
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = (unsafe { (*unsafe { s1 }).a }) != 1;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut s = unsafe { s1 };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = unsafe { (*{{__v[0-9]+}}).a };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 1;
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = (unsafe { (*unsafe { s1 }).b }) != 2;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut s = unsafe { s1 };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = unsafe { (*{{__v[0-9]+}}).b };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 2;
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = (unsafe { (*unsafe { s2 }).a }) != 1;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut s = unsafe { s2 };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = unsafe { (*{{__v[0-9]+}}).a };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 1;
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = (unsafe { (*unsafe { s2 }).b }) != 2;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut s = unsafe { s2 };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = unsafe { (*{{__v[0-9]+}}).b };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 2;
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     if {{_v[0-9]+}} {
+// REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 2;
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut s = unsafe { s0 };
 // REWRITES-DAG:     unsafe {
-// REWRITES-DAG:         (*unsafe { s0 }).a = 2;
+// REWRITES-DAG:         (*{{__v[0-9]+}}).a = {{__v[0-9]+}};
 // REWRITES-DAG:     }
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 1;
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut s = unsafe { s1 };
 // REWRITES-DAG:     unsafe {
-// REWRITES-DAG:         (*unsafe { s1 }).b = 1;
+// REWRITES-DAG:         (*{{__v[0-9]+}}).b = {{__v[0-9]+}};
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if (unsafe { (*unsafe { s0 }).a }) != 2 {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut s = unsafe { s0 };
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = unsafe { (*{{__v[0-9]+}}).a };
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 2;
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = (unsafe { (*unsafe { s0 }).b }) != 2;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut s = unsafe { s0 };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = unsafe { (*{{__v[0-9]+}}).b };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 2;
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = (unsafe { (*unsafe { s1 }).a }) != 1;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut s = unsafe { s1 };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = unsafe { (*{{__v[0-9]+}}).a };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 1;
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = (unsafe { (*unsafe { s1 }).b }) != 1;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut s = unsafe { s1 };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = unsafe { (*{{__v[0-9]+}}).b };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 1;
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = (unsafe { (*unsafe { s2 }).a }) != 1;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut s = unsafe { s2 };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = unsafe { (*{{__v[0-9]+}}).a };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 1;
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = (unsafe { (*unsafe { s2 }).b }) != 2;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut s = unsafe { s2 };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = unsafe { (*{{__v[0-9]+}}).b };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 2;
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     if {{_v[0-9]+}} {
+// REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if (unsafe { u0 }) == unsafe { u1 } {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut u = unsafe { u0 };
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut u = unsafe { u1 };
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = (unsafe { u1 }) == unsafe { u2 };
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut u = unsafe { u1 };
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut u = unsafe { u2 };
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = (unsafe { u2 }) == unsafe { u0 };
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut u = unsafe { u2 };
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut u = unsafe { u0 };
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     if {{_v[0-9]+}} {
+// REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if (unsafe { (*unsafe { u0 }).c }) != 3 {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut u = unsafe { u0 };
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = unsafe { (*{{__v[0-9]+}}).c };
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 3;
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = (unsafe { (*unsafe { u1 }).c }) != 3;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut u = unsafe { u1 };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = unsafe { (*{{__v[0-9]+}}).c };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 3;
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = (unsafe { (*unsafe { u2 }).c }) != 3;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut u = unsafe { u2 };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = unsafe { (*{{__v[0-9]+}}).c };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 3;
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     if {{_v[0-9]+}} {
+// REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 2;
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut u = unsafe { u0 };
 // REWRITES-DAG:     unsafe {
-// REWRITES-DAG:         (*unsafe { u0 }).d = 2;
+// REWRITES-DAG:         (*{{__v[0-9]+}}).d = {{__v[0-9]+}};
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if (unsafe { (*unsafe { u0 }).d }) != 2 {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut u = unsafe { u0 };
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = unsafe { (*{{__v[0-9]+}}).d };
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 2;
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = (unsafe { (*unsafe { u1 }).c }) != 3;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut u = unsafe { u1 };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = unsafe { (*{{__v[0-9]+}}).c };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 3;
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = (unsafe { (*unsafe { u2 }).c }) != 3;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut u = unsafe { u2 };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = unsafe { (*{{__v[0-9]+}}).c };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 3;
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     if {{_v[0-9]+}} {
+// REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = (unsafe { a0 }) == unsafe { a1 };
-// REWRITES-DAG:     if {{_v[0-9]+}} {
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut i32 = unsafe { a0 };
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut i32 = unsafe { a1 };
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
+// REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{_v[0-9]+}}: *mut i32 = unsafe { a0 };
-// REWRITES-DAG:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(0) };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = (unsafe { *{{_v[0-9]+}} }) != 1;
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut i32 = unsafe { a0 };
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(0) };
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 1;
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = unsafe { a0 };
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(1) };
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = (unsafe { *{{_v[0-9]+}} }) != 2;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { a0 };
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(1) };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 2;
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = unsafe { a0 };
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(2) };
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = (unsafe { *{{_v[0-9]+}} }) != 3;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { a0 };
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(2) };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 3;
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = unsafe { a1 };
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(0) };
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = (unsafe { *{{_v[0-9]+}} }) != 1;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { a1 };
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(0) };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 1;
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = unsafe { a1 };
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(1) };
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = (unsafe { *{{_v[0-9]+}} }) != 2;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { a1 };
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(1) };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 2;
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = unsafe { a1 };
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(2) };
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = (unsafe { *{{_v[0-9]+}} }) != 3;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { a1 };
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(2) };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 3;
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     if {{_v[0-9]+}} {
+// REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{_v[0-9]+}}: i32 = 3;
-// REWRITES-DAG:     let {{_v[0-9]+}}: *mut i32 = unsafe { a0 };
-// REWRITES-DAG:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(0) };
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 3;
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut i32 = unsafe { a0 };
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(0) };
 // REWRITES-DAG:     unsafe {
-// REWRITES-DAG:         *{{_v[0-9]+}} = {{_v[0-9]+}};
+// REWRITES-DAG:         *{{__v[0-9]+}} = {{__v[0-9]+}};
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{_v[0-9]+}}: *mut i32 = unsafe { a0 };
-// REWRITES-DAG:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(0) };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = (unsafe { *{{_v[0-9]+}} }) != 3;
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut i32 = unsafe { a0 };
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(0) };
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 3;
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = unsafe { a0 };
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(1) };
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = (unsafe { *{{_v[0-9]+}} }) != 2;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { a0 };
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(1) };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 2;
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = unsafe { a0 };
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(2) };
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = (unsafe { *{{_v[0-9]+}} }) != 3;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { a0 };
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(2) };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 3;
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = unsafe { a1 };
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(0) };
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = (unsafe { *{{_v[0-9]+}} }) != 1;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { a1 };
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(0) };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 1;
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = unsafe { a1 };
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(1) };
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = (unsafe { *{{_v[0-9]+}} }) != 2;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { a1 };
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(1) };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 2;
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = unsafe { a1 };
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(2) };
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = (unsafe { *{{_v[0-9]+}} }) != 3;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { a1 };
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(2) };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 3;
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     if {{_v[0-9]+}} {
+// REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{_v[0-9]+}}: *mut i8 = unsafe { p };
-// REWRITES-DAG:     let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(0) };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = ((unsafe { *{{_v[0-9]+}} }) as i32) != 102;
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut i8 = unsafe { p };
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut i8 = unsafe { {{__v[0-9]+}}.add(0) };
+// REWRITES-DAG:     let {{__v[0-9]+}}: i8 = unsafe { *{{__v[0-9]+}} };
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 102;
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i8 = unsafe { p };
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(1) };
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = ((unsafe { *{{_v[0-9]+}} }) as i32) != 111;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i8 = unsafe { p };
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i8 = unsafe { {{__v[0-9]+}}.add(1) };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i8 = unsafe { *{{__v[0-9]+}} };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 111;
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i8 = unsafe { p };
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(2) };
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = ((unsafe { *{{_v[0-9]+}} }) as i32) != 111;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i8 = unsafe { p };
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i8 = unsafe { {{__v[0-9]+}}.add(2) };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i8 = unsafe { *{{__v[0-9]+}} };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 111;
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i8 = unsafe { p };
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(3) };
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = ((unsafe { *{{_v[0-9]+}} }) as i32) != 0;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i8 = unsafe { p };
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i8 = unsafe { {{__v[0-9]+}}.add(3) };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i8 = unsafe { *{{__v[0-9]+}} };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 0;
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     if {{_v[0-9]+}} {
+// REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{_v[0-9]+}}: i8 = 103;
-// REWRITES-DAG:     let {{_v[0-9]+}}: *mut i8 = unsafe { p };
-// REWRITES-DAG:     let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(0) };
+// REWRITES-DAG:     let {{__v[0-9]+}}: i8 = 103;
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut i8 = unsafe { p };
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut i8 = unsafe { {{__v[0-9]+}}.add(0) };
 // REWRITES-DAG:     unsafe {
-// REWRITES-DAG:         *{{_v[0-9]+}} = {{_v[0-9]+}};
+// REWRITES-DAG:         *{{__v[0-9]+}} = {{__v[0-9]+}};
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{_v[0-9]+}}: *mut i8 = unsafe { p };
-// REWRITES-DAG:     let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(0) };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = ((unsafe { *{{_v[0-9]+}} }) as i32) != 103;
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut i8 = unsafe { p };
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut i8 = unsafe { {{__v[0-9]+}}.add(0) };
+// REWRITES-DAG:     let {{__v[0-9]+}}: i8 = unsafe { *{{__v[0-9]+}} };
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 103;
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i8 = unsafe { p };
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(1) };
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = ((unsafe { *{{_v[0-9]+}} }) as i32) != 111;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i8 = unsafe { p };
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i8 = unsafe { {{__v[0-9]+}}.add(1) };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i8 = unsafe { *{{__v[0-9]+}} };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 111;
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i8 = unsafe { p };
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(2) };
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = ((unsafe { *{{_v[0-9]+}} }) as i32) != 111;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i8 = unsafe { p };
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i8 = unsafe { {{__v[0-9]+}}.add(2) };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i8 = unsafe { *{{__v[0-9]+}} };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 111;
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i8 = unsafe { p };
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(3) };
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = ((unsafe { *{{_v[0-9]+}} }) as i32) != 0;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i8 = unsafe { p };
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i8 = unsafe { {{__v[0-9]+}}.add(3) };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i8 = unsafe { *{{__v[0-9]+}} };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 0;
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     if {{_v[0-9]+}} {
+// REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{_v[0-9]+}}: u64 = 4;
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = 12 != 3 * {{_v[0-9]+}};
-// REWRITES-DAG:     if {{_v[0-9]+}} {
+// REWRITES-DAG:     let {{__v[0-9]+}}: u64 = 12;
+// REWRITES-DAG:     let {{__v[0-9]+}}: u64 = 3;
+// REWRITES-DAG:     let {{__v[0-9]+}}: u64 = 4;
+// REWRITES-DAG:     let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} * {{__v[0-9]+}};
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{_v[0-9]+}}: u64 = 4;
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = 16 != 4 * {{_v[0-9]+}};
-// REWRITES-DAG:     if {{_v[0-9]+}} {
+// REWRITES-DAG:     let {{__v[0-9]+}}: u64 = 16;
+// REWRITES-DAG:     let {{__v[0-9]+}}: u64 = 4;
+// REWRITES-DAG:     let {{__v[0-9]+}}: u64 = 4;
+// REWRITES-DAG:     let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} * {{__v[0-9]+}};
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
-// REWRITES-DAG:     for i in 0..3 {
+// REWRITES-DAG:     let mut i: i32 = 0;
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// REWRITES-DAG:     i = {{__v[0-9]+}};
+// REWRITES-DAG:     loop {
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = i;
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 3;
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
+// REWRITES-DAG:         if !{{__v[0-9]+}} {
+// REWRITES-DAG:             break;
+// REWRITES-DAG:         }
 // REWRITES-DAG:         let mut x: *mut s = std::ptr::null_mut();
 // REWRITES-DAG:         let mut _compoundliteral5: s = s { a: 0, b: 0 };
-// REWRITES-DAG:         _compoundliteral5.a = 1;
-// REWRITES-DAG:         _compoundliteral5.b = i;
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 1;
+// REWRITES-DAG:         _compoundliteral5.a = {{__v[0-9]+}};
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = i;
+// REWRITES-DAG:         _compoundliteral5.b = {{__v[0-9]+}};
 // REWRITES-DAG:         x = std::ptr::addr_of_mut!(_compoundliteral5);
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = if (unsafe { (*x).a }) != 1 {
-// REWRITES-DAG:             let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:             {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut s = x;
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = unsafe { (*{{__v[0-9]+}}).a };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 1;
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:             let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:             {{__v[0-9]+}}
 // REWRITES-DAG:         } else {
-// REWRITES-DAG:             let {{_v[0-9]+}}: bool = (unsafe { (*x).b }) != i;
-// REWRITES-DAG:             {{_v[0-9]+}}
+// REWRITES-DAG:             let {{__v[0-9]+}}: *mut s = x;
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = unsafe { (*{{__v[0-9]+}}).b };
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = i;
+// REWRITES-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:             {{__v[0-9]+}}
 // REWRITES-DAG:         };
-// REWRITES-DAG:         if {{_v[0-9]+}} {
+// REWRITES-DAG:         if {{__v[0-9]+}} {
 // REWRITES-DAG:             unsafe { abort() };
 // REWRITES-DAG:         }
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut s = x;
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut s = x;
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = unsafe { (*{{__v[0-9]+}}).a };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + 1;
 // REWRITES-DAG:         unsafe {
-// REWRITES-DAG:             (*{{_v[0-9]+}}).a = (unsafe { (*{{_v[0-9]+}}).a }) + 1;
+// REWRITES-DAG:             (*{{__v[0-9]+}}).a = {{__v[0-9]+}};
 // REWRITES-DAG:         }
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut s = x;
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut s = x;
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = unsafe { (*{{__v[0-9]+}}).b };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} - 1;
 // REWRITES-DAG:         unsafe {
-// REWRITES-DAG:             (*{{_v[0-9]+}}).b = (unsafe { (*{{_v[0-9]+}}).b }) - 1;
+// REWRITES-DAG:             (*{{__v[0-9]+}}).b = {{__v[0-9]+}};
 // REWRITES-DAG:         }
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = if (unsafe { (*x).a }) != 2 {
-// REWRITES-DAG:             let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:             {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut s = x;
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = unsafe { (*{{__v[0-9]+}}).a };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 2;
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:             let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:             {{__v[0-9]+}}
 // REWRITES-DAG:         } else {
-// REWRITES-DAG:             let {{_v[0-9]+}}: bool = (unsafe { (*x).b }) != i - 1;
-// REWRITES-DAG:             {{_v[0-9]+}}
+// REWRITES-DAG:             let {{__v[0-9]+}}: *mut s = x;
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = unsafe { (*{{__v[0-9]+}}).b };
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = i;
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 1;
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} - {{__v[0-9]+}};
+// REWRITES-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:             {{__v[0-9]+}}
 // REWRITES-DAG:         };
-// REWRITES-DAG:         if {{_v[0-9]+}} {
+// REWRITES-DAG:         if {{__v[0-9]+}} {
 // REWRITES-DAG:             unsafe { abort() };
 // REWRITES-DAG:         }
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = if i != 0 {
-// REWRITES-DAG:             let {{_v[0-9]+}}: bool = y != x;
-// REWRITES-DAG:             {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = i;
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:             let {{__v[0-9]+}}: *mut s = y;
+// REWRITES-DAG:             let {{__v[0-9]+}}: *mut s = x;
+// REWRITES-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:             {{__v[0-9]+}}
 // REWRITES-DAG:         } else {
-// REWRITES-DAG:             let {{_v[0-9]+}}: bool = false;
-// REWRITES-DAG:             {{_v[0-9]+}}
+// REWRITES-DAG:             let {{__v[0-9]+}}: bool = false;
+// REWRITES-DAG:             {{__v[0-9]+}}
 // REWRITES-DAG:         };
-// REWRITES-DAG:         if {{_v[0-9]+}} {
+// REWRITES-DAG:         if {{__v[0-9]+}} {
 // REWRITES-DAG:             unsafe { abort() };
 // REWRITES-DAG:         }
-// REWRITES-DAG:         y = x;
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut s = x;
+// REWRITES-DAG:         y = {{__v[0-9]+}};
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = i;
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + 1;
+// REWRITES-DAG:         i = {{__v[0-9]+}};
 // REWRITES-DAG:     }
-// REWRITES-DAG:     for i2 in 0..4 {
+// REWRITES-DAG:     let mut i2: i32 = 0;
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// REWRITES-DAG:     i2 = {{__v[0-9]+}};
+// REWRITES-DAG:     loop {
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = i2;
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 4;
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
+// REWRITES-DAG:         if !{{__v[0-9]+}} {
+// REWRITES-DAG:             break;
+// REWRITES-DAG:         }
 // REWRITES-DAG:         let mut x2: *mut i32 = std::ptr::null_mut();
 // REWRITES-DAG:         let mut _compoundliteral6: [i32; 4] = [0; 4];
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = _compoundliteral6.as_mut_ptr() as *mut i32;
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = _compoundliteral6.as_mut_ptr() as *mut i32;
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-DAG:         unsafe {
-// REWRITES-DAG:             *{{_v[0-9]+}} = 0;
+// REWRITES-DAG:             *{{__v[0-9]+}} = {{__v[0-9]+}};
 // REWRITES-DAG:         }
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(1) };
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(1) };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = i2;
 // REWRITES-DAG:         unsafe {
-// REWRITES-DAG:             *{{_v[0-9]+}} = i2;
+// REWRITES-DAG:             *{{__v[0-9]+}} = {{__v[0-9]+}};
 // REWRITES-DAG:         }
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(2) };
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(2) };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = i2;
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 2;
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
 // REWRITES-DAG:         unsafe {
-// REWRITES-DAG:             *{{_v[0-9]+}} = i2 + 2;
+// REWRITES-DAG:             *{{__v[0-9]+}} = {{__v[0-9]+}};
 // REWRITES-DAG:         }
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(3) };
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(3) };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = i2;
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 3;
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} - {{__v[0-9]+}};
 // REWRITES-DAG:         unsafe {
-// REWRITES-DAG:             *{{_v[0-9]+}} = i2 - 3;
+// REWRITES-DAG:             *{{__v[0-9]+}} = {{__v[0-9]+}};
 // REWRITES-DAG:         }
-// REWRITES-DAG:         x2 = _compoundliteral6.as_mut_ptr() as *mut i32;
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = x2;
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(0) };
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = (unsafe { *{{_v[0-9]+}} }) != 0;
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:             let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:             {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = _compoundliteral6.as_mut_ptr() as *mut i32;
+// REWRITES-DAG:         x2 = {{__v[0-9]+}};
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = x2;
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(0) };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 0;
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:             let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:             {{__v[0-9]+}}
 // REWRITES-DAG:         } else {
-// REWRITES-DAG:             let {{_v[0-9]+}}: *mut i32 = x2;
-// REWRITES-DAG:             let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(1) };
-// REWRITES-DAG:             let {{_v[0-9]+}}: bool = (unsafe { *{{_v[0-9]+}} }) != i2;
-// REWRITES-DAG:             {{_v[0-9]+}}
+// REWRITES-DAG:             let {{__v[0-9]+}}: *mut i32 = x2;
+// REWRITES-DAG:             let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(1) };
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = i2;
+// REWRITES-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:             {{__v[0-9]+}}
 // REWRITES-DAG:         };
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:             let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:             {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:             let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:             {{__v[0-9]+}}
 // REWRITES-DAG:         } else {
-// REWRITES-DAG:             let {{_v[0-9]+}}: *mut i32 = x2;
-// REWRITES-DAG:             let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(2) };
-// REWRITES-DAG:             let {{_v[0-9]+}}: bool = (unsafe { *{{_v[0-9]+}} }) != i2 + 2;
-// REWRITES-DAG:             {{_v[0-9]+}}
+// REWRITES-DAG:             let {{__v[0-9]+}}: *mut i32 = x2;
+// REWRITES-DAG:             let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(2) };
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = i2;
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 2;
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// REWRITES-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:             {{__v[0-9]+}}
 // REWRITES-DAG:         };
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:             let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:             {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:             let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:             {{__v[0-9]+}}
 // REWRITES-DAG:         } else {
-// REWRITES-DAG:             let {{_v[0-9]+}}: *mut i32 = x2;
-// REWRITES-DAG:             let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(3) };
-// REWRITES-DAG:             let {{_v[0-9]+}}: bool = (unsafe { *{{_v[0-9]+}} }) != i2 - 3;
-// REWRITES-DAG:             {{_v[0-9]+}}
+// REWRITES-DAG:             let {{__v[0-9]+}}: *mut i32 = x2;
+// REWRITES-DAG:             let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(3) };
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = i2;
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 3;
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} - {{__v[0-9]+}};
+// REWRITES-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:             {{__v[0-9]+}}
 // REWRITES-DAG:         };
-// REWRITES-DAG:         if {{_v[0-9]+}} {
+// REWRITES-DAG:         if {{__v[0-9]+}} {
 // REWRITES-DAG:             unsafe { abort() };
 // REWRITES-DAG:         }
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = x2;
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(1) };
-// REWRITES-DAG:         let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = x2;
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(0) };
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = x2;
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(1) };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = x2;
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(0) };
 // REWRITES-DAG:         unsafe {
-// REWRITES-DAG:             *{{_v[0-9]+}} = {{_v[0-9]+}};
+// REWRITES-DAG:             *{{__v[0-9]+}} = {{__v[0-9]+}};
 // REWRITES-DAG:         }
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = x2;
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(2) };
-// REWRITES-DAG:         let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = x2;
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(1) };
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = x2;
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(2) };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = x2;
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(1) };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} * {{__v[0-9]+}};
 // REWRITES-DAG:         unsafe {
-// REWRITES-DAG:             *{{_v[0-9]+}} = (unsafe { *{{_v[0-9]+}} }) * {{_v[0-9]+}};
+// REWRITES-DAG:             *{{__v[0-9]+}} = {{__v[0-9]+}};
 // REWRITES-DAG:         }
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = x2;
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(3) };
-// REWRITES-DAG:         let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = x2;
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(2) };
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = x2;
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(3) };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = x2;
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(2) };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} - {{__v[0-9]+}};
 // REWRITES-DAG:         unsafe {
-// REWRITES-DAG:             *{{_v[0-9]+}} = (unsafe { *{{_v[0-9]+}} }) - {{_v[0-9]+}};
+// REWRITES-DAG:             *{{__v[0-9]+}} = {{__v[0-9]+}};
 // REWRITES-DAG:         }
-// REWRITES-DAG:         let {{_v[0-9]+}}: i32 = 7;
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = x2;
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(3) };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 7;
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = x2;
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(3) };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
 // REWRITES-DAG:         unsafe {
-// REWRITES-DAG:             *{{_v[0-9]+}} = (unsafe { *{{_v[0-9]+}} }) + {{_v[0-9]+}};
+// REWRITES-DAG:             *{{__v[0-9]+}} = {{__v[0-9]+}};
 // REWRITES-DAG:         }
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = x2;
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(0) };
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = (unsafe { *{{_v[0-9]+}} }) != i2;
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:             let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:             {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = x2;
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(0) };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = i2;
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:             let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:             {{__v[0-9]+}}
 // REWRITES-DAG:         } else {
-// REWRITES-DAG:             let {{_v[0-9]+}}: *mut i32 = x2;
-// REWRITES-DAG:             let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(1) };
-// REWRITES-DAG:             let {{_v[0-9]+}}: bool = (unsafe { *{{_v[0-9]+}} }) != i2 * (i2 + 2);
-// REWRITES-DAG:             {{_v[0-9]+}}
+// REWRITES-DAG:             let {{__v[0-9]+}}: *mut i32 = x2;
+// REWRITES-DAG:             let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(1) };
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = i2;
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = i2;
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 2;
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} * {{__v[0-9]+}};
+// REWRITES-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:             {{__v[0-9]+}}
 // REWRITES-DAG:         };
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:             let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:             {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:             let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:             {{__v[0-9]+}}
 // REWRITES-DAG:         } else {
-// REWRITES-DAG:             let {{_v[0-9]+}}: *mut i32 = x2;
-// REWRITES-DAG:             let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(2) };
-// REWRITES-DAG:             let {{_v[0-9]+}}: bool = (unsafe { *{{_v[0-9]+}} }) != 5;
-// REWRITES-DAG:             {{_v[0-9]+}}
+// REWRITES-DAG:             let {{__v[0-9]+}}: *mut i32 = x2;
+// REWRITES-DAG:             let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(2) };
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 5;
+// REWRITES-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:             {{__v[0-9]+}}
 // REWRITES-DAG:         };
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:             let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:             {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:             let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:             {{__v[0-9]+}}
 // REWRITES-DAG:         } else {
-// REWRITES-DAG:             let {{_v[0-9]+}}: *mut i32 = x2;
-// REWRITES-DAG:             let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(3) };
-// REWRITES-DAG:             let {{_v[0-9]+}}: bool = (unsafe { *{{_v[0-9]+}} }) != i2 + 4;
-// REWRITES-DAG:             {{_v[0-9]+}}
+// REWRITES-DAG:             let {{__v[0-9]+}}: *mut i32 = x2;
+// REWRITES-DAG:             let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(3) };
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = i2;
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 4;
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// REWRITES-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:             {{__v[0-9]+}}
 // REWRITES-DAG:         };
-// REWRITES-DAG:         if {{_v[0-9]+}} {
+// REWRITES-DAG:         if {{__v[0-9]+}} {
 // REWRITES-DAG:             unsafe { abort() };
 // REWRITES-DAG:         }
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = if i2 != 0 {
-// REWRITES-DAG:             let {{_v[0-9]+}}: bool = z != x2;
-// REWRITES-DAG:             {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = i2;
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:             let {{__v[0-9]+}}: *mut i32 = z;
+// REWRITES-DAG:             let {{__v[0-9]+}}: *mut i32 = x2;
+// REWRITES-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:             {{__v[0-9]+}}
 // REWRITES-DAG:         } else {
-// REWRITES-DAG:             let {{_v[0-9]+}}: bool = false;
-// REWRITES-DAG:             {{_v[0-9]+}}
+// REWRITES-DAG:             let {{__v[0-9]+}}: bool = false;
+// REWRITES-DAG:             {{__v[0-9]+}}
 // REWRITES-DAG:         };
-// REWRITES-DAG:         if {{_v[0-9]+}} {
+// REWRITES-DAG:         if {{__v[0-9]+}} {
 // REWRITES-DAG:             unsafe { abort() };
 // REWRITES-DAG:         }
-// REWRITES-DAG:         z = x2;
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = x2;
+// REWRITES-DAG:         z = {{__v[0-9]+}};
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = i2;
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + 1;
+// REWRITES-DAG:         i2 = {{__v[0-9]+}};
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{_v[0-9]+}}: i32 = 3;
-// REWRITES-DAG:     _compoundliteral2.a = 0;
-// REWRITES-DAG:     _compoundliteral2.b = 1;
-// REWRITES-DAG:     _compoundliteral2.a = {{_v[0-9]+}};
-// REWRITES-DAG:     let {{_v[0-9]+}}: i32 = 4;
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 3;
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// REWRITES-DAG:     _compoundliteral2.a = {{__v[0-9]+}};
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 1;
+// REWRITES-DAG:     _compoundliteral2.b = {{__v[0-9]+}};
+// REWRITES-DAG:     _compoundliteral2.a = {{__v[0-9]+}};
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 4;
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 3;
 // REWRITES-DAG:     unsafe {
-// REWRITES-DAG:         _compoundliteral3.c = 3;
+// REWRITES-DAG:         _compoundliteral3.c = {{__v[0-9]+}};
 // REWRITES-DAG:     }
 // REWRITES-DAG:     unsafe {
-// REWRITES-DAG:         _compoundliteral3.c = {{_v[0-9]+}};
+// REWRITES-DAG:         _compoundliteral3.c = {{__v[0-9]+}};
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:     let {{_v[0-9]+}}: i64 = 0;
-// REWRITES-DAG:     let {{_v[0-9]+}}: *mut i32 = _compoundliteral4.as_mut_ptr() as *mut i32;
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// REWRITES-DAG:     let {{__v[0-9]+}}: i64 = 0;
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut i32 = _compoundliteral4.as_mut_ptr() as *mut i32;
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 1;
 // REWRITES-DAG:     unsafe {
-// REWRITES-DAG:         *{{_v[0-9]+}} = 1;
+// REWRITES-DAG:         *{{__v[0-9]+}} = {{__v[0-9]+}};
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(1) };
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(1) };
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 2;
 // REWRITES-DAG:     unsafe {
-// REWRITES-DAG:         *{{_v[0-9]+}} = 2;
+// REWRITES-DAG:         *{{__v[0-9]+}} = {{__v[0-9]+}};
 // REWRITES-DAG:     }
-// REWRITES-DAG:     _compoundliteral4[({{_v[0-9]+}} as usize)] = {{_v[0-9]+}};
-// REWRITES-DAG:     unsafe { exit(0 as i32) };
-// REWRITES-DAG:     std::process::exit(0 as i32);
+// REWRITES-DAG:     _compoundliteral4[({{__v[0-9]+}} as usize)] = {{__v[0-9]+}};
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// REWRITES-DAG:     unsafe { exit({{__v[0-9]+}} as i32) };
+// REWRITES-DAG:     std::process::exit({{__v[0-9]+}} as i32);
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

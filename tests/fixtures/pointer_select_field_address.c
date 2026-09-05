@@ -54,35 +54,35 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 3;
-// LOWERING-NEXT:     add({{_v[0-9]+}}, {{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 5;
-// LOWERING-NEXT:     add({{_v[0-9]+}}, {{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 7;
-// LOWERING-NEXT:     add({{_v[0-9]+}}, {{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%llu %llu\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = unsafe { acc.direct };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = unsafe { acc.indirect };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = 3;
+// LOWERING-NEXT:     add({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = 5;
+// LOWERING-NEXT:     add({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = 7;
+// LOWERING-NEXT:     add({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%llu %llu\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = unsafe { acc.direct };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = unsafe { acc.indirect };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn add({{arg[0-9]+}}: i32, {{arg[0-9]+}}: u64) {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u64 = if {{_v[0-9]+}} {
+// LOWERING-NEXT:     let {{__v[0-9]+}}: bool = {{arg[0-9]+}} != 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut u64 = if {{__v[0-9]+}} {
 // LOWERING-NEXT:         unsafe { std::ptr::addr_of_mut!(acc.direct) }
 // LOWERING-NEXT:     } else {
 // LOWERING-NEXT:         unsafe { std::ptr::addr_of_mut!(acc.indirect) }
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} + {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} + {{arg[0-9]+}};
 // LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         *{{_v[0-9]+}} = {{_v[0-9]+}};
+// LOWERING-NEXT:         *{{__v[0-9]+}} = {{__v[0-9]+}};
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     return;
 // LOWERING-NEXT: }
@@ -123,20 +123,20 @@ int main(void) {
 // REWRITES-NEXT:     add(1, 3);
 // REWRITES-NEXT:     add(0, 5);
 // REWRITES-NEXT:     add(1, 7);
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = unsafe { acc.direct };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = unsafe { acc.indirect };
-// REWRITES-NEXT:     unsafe { printf(c"%llu %llu\n".as_ptr(), {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: u64 = unsafe { acc.direct };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: u64 = unsafe { acc.indirect };
+// REWRITES-NEXT:     unsafe { printf(c"%llu %llu\n".as_ptr(), {{__v[0-9]+}}, {{__v[0-9]+}}) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn add({{arg[0-9]+}}: i32, {{arg[0-9]+}}: u64) {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut u64 = if {{arg[0-9]+}} != 0 {
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut u64 = if {{arg[0-9]+}} != 0 {
 // REWRITES-NEXT:         unsafe { std::ptr::addr_of_mut!(acc.direct) }
 // REWRITES-NEXT:     } else {
 // REWRITES-NEXT:         unsafe { std::ptr::addr_of_mut!(acc.indirect) }
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         *{{_v[0-9]+}} = (unsafe { *{{_v[0-9]+}} }) + {{arg[0-9]+}};
+// REWRITES-NEXT:         *{{__v[0-9]+}} = (unsafe { *{{__v[0-9]+}} }) + {{arg[0-9]+}};
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     return;
 // REWRITES-NEXT: }

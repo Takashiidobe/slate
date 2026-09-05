@@ -49,8 +49,8 @@ int main(void)
 
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: fn nexttowardf128({{arg[0-9]+}}: f128, {{arg[0-9]+}}: f128) -> f128 {
-// LOWERING-DAG:     let {{_v[0-9]+}}: f128 = unsafe { nextafterf128({{arg[0-9]+}} as f128, {{arg[0-9]+}} as f128) };
-// LOWERING-DAG:     return {{_v[0-9]+}};
+// LOWERING-DAG:     let {{__v[0-9]+}}: f128 = unsafe { nextafterf128({{arg[0-9]+}} as f128, {{arg[0-9]+}} as f128) };
+// LOWERING-DAG:     return {{__v[0-9]+}};
 // LOWERING-DAG: }
 // SLATE-FILECHECK-END lowering
 

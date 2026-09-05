@@ -168,7 +168,7 @@ int main(void) { return 0; }
 // LOWERING-BIONIC-AARCH64-NEXT:     {{arg[0-9]+}}: u32,
 // LOWERING-BIONIC-AARCH64-NEXT:     {{arg[0-9]+}}: f128,
 // LOWERING-BIONIC-AARCH64-NEXT: ) -> i64 {
-// LOWERING-BIONIC-AARCH64-NEXT:     let {{_v[0-9]+}}: i64 = unsafe {
+// LOWERING-BIONIC-AARCH64-NEXT:     let {{__v[0-9]+}}: i64 = unsafe {
 // LOWERING-BIONIC-AARCH64-NEXT:         bionic_import(
 // LOWERING-BIONIC-AARCH64-NEXT:             {{arg[0-9]+}} as usize,
 // LOWERING-BIONIC-AARCH64-NEXT:             {{arg[0-9]+}} as isize,
@@ -179,7 +179,7 @@ int main(void) { return 0; }
 // LOWERING-BIONIC-AARCH64-NEXT:             {{arg[0-9]+}} as f128,
 // LOWERING-BIONIC-AARCH64-NEXT:         )
 // LOWERING-BIONIC-AARCH64-NEXT:     };
-// LOWERING-BIONIC-AARCH64-NEXT:     return {{_v[0-9]+}};
+// LOWERING-BIONIC-AARCH64-NEXT:     return {{__v[0-9]+}};
 // LOWERING-BIONIC-AARCH64-NEXT: }
 // LOWERING-BIONIC-AARCH64-EMPTY:
 // LOWERING-BIONIC-AARCH64-NEXT: unsafe fn bionic_variadic_count({{arg[0-9]+}}: i32, mut __slate_va_args: __SlateVaArgs) -> i32 {
@@ -187,39 +187,39 @@ int main(void) { return 0; }
 // LOWERING-BIONIC-AARCH64-NEXT:     let mut values: __SlateVaArgs = __SlateVaArgs::empty();
 // LOWERING-BIONIC-AARCH64-NEXT:     let mut total: i32 = 0;
 // LOWERING-BIONIC-AARCH64-NEXT:     count = {{arg[0-9]+}};
-// LOWERING-BIONIC-AARCH64-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-BIONIC-AARCH64-NEXT:     total = {{_v[0-9]+}};
+// LOWERING-BIONIC-AARCH64-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-BIONIC-AARCH64-NEXT:     total = {{__v[0-9]+}};
 // LOWERING-BIONIC-AARCH64-NEXT:     unsafe {
 // LOWERING-BIONIC-AARCH64-NEXT:         values = __slate_va_args.clone();
 // LOWERING-BIONIC-AARCH64-NEXT:     }
 // LOWERING-BIONIC-AARCH64-NEXT:     {
 // LOWERING-BIONIC-AARCH64-NEXT:         let mut i: i32 = 0;
-// LOWERING-BIONIC-AARCH64-NEXT:         let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-BIONIC-AARCH64-NEXT:         i = {{_v[0-9]+}};
+// LOWERING-BIONIC-AARCH64-NEXT:         let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-BIONIC-AARCH64-NEXT:         i = {{__v[0-9]+}};
 // LOWERING-BIONIC-AARCH64-NEXT:         loop {
-// LOWERING-BIONIC-AARCH64-NEXT:             let {{_v[0-9]+}}: i32 = i;
-// LOWERING-BIONIC-AARCH64-NEXT:             let {{_v[0-9]+}}: i32 = count;
-// LOWERING-BIONIC-AARCH64-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < {{_v[0-9]+}};
-// LOWERING-BIONIC-AARCH64-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-BIONIC-AARCH64-NEXT:             let {{__v[0-9]+}}: i32 = i;
+// LOWERING-BIONIC-AARCH64-NEXT:             let {{__v[0-9]+}}: i32 = count;
+// LOWERING-BIONIC-AARCH64-NEXT:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
+// LOWERING-BIONIC-AARCH64-NEXT:             if !{{__v[0-9]+}} {
 // LOWERING-BIONIC-AARCH64-NEXT:                 break;
 // LOWERING-BIONIC-AARCH64-NEXT:             }
-// LOWERING-BIONIC-AARCH64-NEXT:             let {{_v[0-9]+}}: i32 = unsafe { values.next_arg::<i32>() };
-// LOWERING-BIONIC-AARCH64-NEXT:             let {{_v[0-9]+}}: i32 = total;
-// LOWERING-BIONIC-AARCH64-NEXT:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-BIONIC-AARCH64-NEXT:             total = {{_v[0-9]+}};
-// LOWERING-BIONIC-AARCH64-NEXT:             let {{_v[0-9]+}}: i32 = i;
-// LOWERING-BIONIC-AARCH64-NEXT:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
-// LOWERING-BIONIC-AARCH64-NEXT:             i = {{_v[0-9]+}};
+// LOWERING-BIONIC-AARCH64-NEXT:             let {{__v[0-9]+}}: i32 = unsafe { values.next_arg::<i32>() };
+// LOWERING-BIONIC-AARCH64-NEXT:             let {{__v[0-9]+}}: i32 = total;
+// LOWERING-BIONIC-AARCH64-NEXT:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-BIONIC-AARCH64-NEXT:             total = {{__v[0-9]+}};
+// LOWERING-BIONIC-AARCH64-NEXT:             let {{__v[0-9]+}}: i32 = i;
+// LOWERING-BIONIC-AARCH64-NEXT:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + 1;
+// LOWERING-BIONIC-AARCH64-NEXT:             i = {{__v[0-9]+}};
 // LOWERING-BIONIC-AARCH64-NEXT:         }
 // LOWERING-BIONIC-AARCH64-NEXT:     }
-// LOWERING-BIONIC-AARCH64-NEXT:     let {{_v[0-9]+}}: i32 = total;
-// LOWERING-BIONIC-AARCH64-NEXT:     return {{_v[0-9]+}};
+// LOWERING-BIONIC-AARCH64-NEXT:     let {{__v[0-9]+}}: i32 = total;
+// LOWERING-BIONIC-AARCH64-NEXT:     return {{__v[0-9]+}};
 // LOWERING-BIONIC-AARCH64-NEXT: }
 // LOWERING-BIONIC-AARCH64-EMPTY:
 // LOWERING-BIONIC-AARCH64-NEXT: fn main() {
-// LOWERING-BIONIC-AARCH64-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-BIONIC-AARCH64-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-BIONIC-AARCH64-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-BIONIC-AARCH64-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-BIONIC-AARCH64-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-BIONIC-AARCH64-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-BIONIC-AARCH64-NEXT: }
 // SLATE-FILECHECK-END lowering-bionic-aarch64
 
@@ -310,7 +310,7 @@ int main(void) { return 0; }
 // LOWERING-BIONIC-X86_64-NEXT:     {{arg[0-9]+}}: u32,
 // LOWERING-BIONIC-X86_64-NEXT:     {{arg[0-9]+}}: f128,
 // LOWERING-BIONIC-X86_64-NEXT: ) -> i64 {
-// LOWERING-BIONIC-X86_64-NEXT:     let {{_v[0-9]+}}: i64 = unsafe {
+// LOWERING-BIONIC-X86_64-NEXT:     let {{__v[0-9]+}}: i64 = unsafe {
 // LOWERING-BIONIC-X86_64-NEXT:         bionic_import(
 // LOWERING-BIONIC-X86_64-NEXT:             {{arg[0-9]+}} as usize,
 // LOWERING-BIONIC-X86_64-NEXT:             {{arg[0-9]+}} as isize,
@@ -321,7 +321,7 @@ int main(void) { return 0; }
 // LOWERING-BIONIC-X86_64-NEXT:             {{arg[0-9]+}} as f128,
 // LOWERING-BIONIC-X86_64-NEXT:         )
 // LOWERING-BIONIC-X86_64-NEXT:     };
-// LOWERING-BIONIC-X86_64-NEXT:     return {{_v[0-9]+}};
+// LOWERING-BIONIC-X86_64-NEXT:     return {{__v[0-9]+}};
 // LOWERING-BIONIC-X86_64-NEXT: }
 // LOWERING-BIONIC-X86_64-EMPTY:
 // LOWERING-BIONIC-X86_64-NEXT: unsafe fn bionic_variadic_count({{arg[0-9]+}}: i32, mut __slate_va_args: __SlateVaArgs) -> i32 {
@@ -329,38 +329,38 @@ int main(void) { return 0; }
 // LOWERING-BIONIC-X86_64-NEXT:     let mut values: __SlateVaArgs = __SlateVaArgs::empty();
 // LOWERING-BIONIC-X86_64-NEXT:     let mut total: i32 = 0;
 // LOWERING-BIONIC-X86_64-NEXT:     count = {{arg[0-9]+}};
-// LOWERING-BIONIC-X86_64-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-BIONIC-X86_64-NEXT:     total = {{_v[0-9]+}};
+// LOWERING-BIONIC-X86_64-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-BIONIC-X86_64-NEXT:     total = {{__v[0-9]+}};
 // LOWERING-BIONIC-X86_64-NEXT:     unsafe {
 // LOWERING-BIONIC-X86_64-NEXT:         values = __slate_va_args.clone();
 // LOWERING-BIONIC-X86_64-NEXT:     }
 // LOWERING-BIONIC-X86_64-NEXT:     {
 // LOWERING-BIONIC-X86_64-NEXT:         let mut i: i32 = 0;
-// LOWERING-BIONIC-X86_64-NEXT:         let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-BIONIC-X86_64-NEXT:         i = {{_v[0-9]+}};
+// LOWERING-BIONIC-X86_64-NEXT:         let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-BIONIC-X86_64-NEXT:         i = {{__v[0-9]+}};
 // LOWERING-BIONIC-X86_64-NEXT:         loop {
-// LOWERING-BIONIC-X86_64-NEXT:             let {{_v[0-9]+}}: i32 = i;
-// LOWERING-BIONIC-X86_64-NEXT:             let {{_v[0-9]+}}: i32 = count;
-// LOWERING-BIONIC-X86_64-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < {{_v[0-9]+}};
-// LOWERING-BIONIC-X86_64-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-BIONIC-X86_64-NEXT:             let {{__v[0-9]+}}: i32 = i;
+// LOWERING-BIONIC-X86_64-NEXT:             let {{__v[0-9]+}}: i32 = count;
+// LOWERING-BIONIC-X86_64-NEXT:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
+// LOWERING-BIONIC-X86_64-NEXT:             if !{{__v[0-9]+}} {
 // LOWERING-BIONIC-X86_64-NEXT:                 break;
 // LOWERING-BIONIC-X86_64-NEXT:             }
-// LOWERING-BIONIC-X86_64-NEXT:             let {{_v[0-9]+}}: i32 = unsafe { values.next_arg::<i32>() };
-// LOWERING-BIONIC-X86_64-NEXT:             let {{_v[0-9]+}}: i32 = total;
-// LOWERING-BIONIC-X86_64-NEXT:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-BIONIC-X86_64-NEXT:             total = {{_v[0-9]+}};
-// LOWERING-BIONIC-X86_64-NEXT:             let {{_v[0-9]+}}: i32 = i;
-// LOWERING-BIONIC-X86_64-NEXT:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
-// LOWERING-BIONIC-X86_64-NEXT:             i = {{_v[0-9]+}};
+// LOWERING-BIONIC-X86_64-NEXT:             let {{__v[0-9]+}}: i32 = unsafe { values.next_arg::<i32>() };
+// LOWERING-BIONIC-X86_64-NEXT:             let {{__v[0-9]+}}: i32 = total;
+// LOWERING-BIONIC-X86_64-NEXT:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-BIONIC-X86_64-NEXT:             total = {{__v[0-9]+}};
+// LOWERING-BIONIC-X86_64-NEXT:             let {{__v[0-9]+}}: i32 = i;
+// LOWERING-BIONIC-X86_64-NEXT:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + 1;
+// LOWERING-BIONIC-X86_64-NEXT:             i = {{__v[0-9]+}};
 // LOWERING-BIONIC-X86_64-NEXT:         }
 // LOWERING-BIONIC-X86_64-NEXT:     }
-// LOWERING-BIONIC-X86_64-NEXT:     let {{_v[0-9]+}}: i32 = total;
-// LOWERING-BIONIC-X86_64-NEXT:     return {{_v[0-9]+}};
+// LOWERING-BIONIC-X86_64-NEXT:     let {{__v[0-9]+}}: i32 = total;
+// LOWERING-BIONIC-X86_64-NEXT:     return {{__v[0-9]+}};
 // LOWERING-BIONIC-X86_64-NEXT: }
 // LOWERING-BIONIC-X86_64-EMPTY:
 // LOWERING-BIONIC-X86_64-NEXT: fn main() {
-// LOWERING-BIONIC-X86_64-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-BIONIC-X86_64-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-BIONIC-X86_64-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-BIONIC-X86_64-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-BIONIC-X86_64-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-BIONIC-X86_64-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-BIONIC-X86_64-NEXT: }
 // SLATE-FILECHECK-END lowering-bionic-x86_64

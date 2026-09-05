@@ -52,61 +52,61 @@ int main(void) {
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let mut left: i32 = 0;
 // LOWERING-NEXT:     let mut right: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 7;
-// LOWERING-NEXT:     left = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 11;
-// LOWERING-NEXT:     right = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 2;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = add_const_param({{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 =
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 7;
+// LOWERING-NEXT:     left = {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 11;
+// LOWERING-NEXT:     right = {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 2;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = add_const_param({{__v[0-9]+}});
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 =
 // LOWERING-NEXT:         add_restrict_pointers(std::ptr::addr_of_mut!(left), std::ptr::addr_of_mut!(right));
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 6;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = add_atomic_value({{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 6;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = add_atomic_value({{__v[0-9]+}});
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn add_const_param({{arg[0-9]+}}: i32) -> i32 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 5;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{arg[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { global_bias };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 5;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{arg[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { global_bias };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-NEXT:     return {{__v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn add_restrict_pointers({{arg[0-9]+}}: *mut i32, {{arg[0-9]+}}: *mut i32) -> i32 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{arg[0-9]+}} };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{arg[0-9]+}} };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { *{{arg[0-9]+}} };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { *{{arg[0-9]+}} };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-NEXT:     return {{__v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn add_atomic_value({{arg[0-9]+}}: i32) -> i32 {
 // LOWERING-NEXT:     let mut value: i32 = 0;
 // LOWERING-NEXT:     let mut local: i32 = 0;
 // LOWERING-NEXT:     value = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe {
 // LOWERING-NEXT:         std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(value))
 // LOWERING-NEXT:             .load(std::sync::atomic::Ordering::SeqCst)
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe {
 // LOWERING-NEXT:         std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(atomic_counter))
 // LOWERING-NEXT:             .load(std::sync::atomic::Ordering::SeqCst)
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     local = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-NEXT:     local = {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe {
 // LOWERING-NEXT:         std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(local))
 // LOWERING-NEXT:             .load(std::sync::atomic::Ordering::SeqCst)
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT:     return {{__v[0-9]+}};
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -159,19 +159,19 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn add_atomic_value(mut value: i32) -> i32 {
 // REWRITES-NEXT:     let mut local: i32 = 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe {
 // REWRITES-NEXT:         std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(value))
 // REWRITES-NEXT:             .load(std::sync::atomic::Ordering::SeqCst)
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe {
 // REWRITES-NEXT:         std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(atomic_counter))
 // REWRITES-NEXT:             .load(std::sync::atomic::Ordering::SeqCst)
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     local = {{_v[0-9]+}} + {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {
+// REWRITES-NEXT:     local = {{__v[0-9]+}} + {{__v[0-9]+}};
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe {
 // REWRITES-NEXT:         std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(local))
 // REWRITES-NEXT:             .load(std::sync::atomic::Ordering::SeqCst)
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     {{_v[0-9]+}}
+// REWRITES-NEXT:     {{__v[0-9]+}}
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

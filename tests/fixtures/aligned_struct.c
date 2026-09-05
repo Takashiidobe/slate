@@ -91,107 +91,115 @@ int main(void) {
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let mut s: aligned::Aligned<aligned::A16, Aligned> = aligned::Aligned(Aligned { a: 0, b: 0 });
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i8 = 5;
-// LOWERING-NEXT:     s.a = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 4660;
-// LOWERING-NEXT:     s.b = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%zu %zu\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = std::mem::size_of::<Aligned>() as u64;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = std::mem::align_of::<Aligned>() as u64;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%zu %zu\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = std::mem::offset_of!(Aligned, a) as u64;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = std::mem::offset_of!(Aligned, b) as u64;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %x\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i8 = s.a;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = s.b;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d %d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = effectful_case();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = repeated_case();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = dependent_case();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = interrupted_case();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i8 = 5;
+// LOWERING-NEXT:     s.a = {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 4660;
+// LOWERING-NEXT:     s.b = {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%zu %zu\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = std::mem::size_of::<Aligned>() as u64;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = std::mem::align_of::<Aligned>() as u64;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%zu %zu\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = std::mem::offset_of!(Aligned, a) as u64;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = std::mem::offset_of!(Aligned, b) as u64;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d %x\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i8 = s.a;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = s.b;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d %d %d %d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = effectful_case();
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = repeated_case();
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = dependent_case();
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = interrupted_case();
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe {
+// LOWERING-NEXT:         printf(
+// LOWERING-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:         )
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn effectful_case() -> i32 {
 // LOWERING-NEXT:     let mut effectful: aligned::Aligned<aligned::A16, Aligned> =
 // LOWERING-NEXT:         aligned::Aligned(Aligned { a: 0, b: 0 });
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = next_value();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i8 = {{_v[0-9]+}} as i8;
-// LOWERING-NEXT:     effectful.a = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 7;
-// LOWERING-NEXT:     effectful.b = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i8 = effectful.a;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = effectful.b;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = next_value();
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i8 = {{__v[0-9]+}} as i8;
+// LOWERING-NEXT:     effectful.a = {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 7;
+// LOWERING-NEXT:     effectful.b = {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i8 = effectful.a;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = effectful.b;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-NEXT:     return {{__v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn repeated_case() -> i32 {
 // LOWERING-NEXT:     let mut repeated: aligned::Aligned<aligned::A16, Aligned> =
 // LOWERING-NEXT:         aligned::Aligned(Aligned { a: 0, b: 0 });
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i8 = 1;
-// LOWERING-NEXT:     repeated.a = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i8 = 2;
-// LOWERING-NEXT:     repeated.a = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 3;
-// LOWERING-NEXT:     repeated.b = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i8 = repeated.a;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = repeated.b;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i8 = 1;
+// LOWERING-NEXT:     repeated.a = {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i8 = 2;
+// LOWERING-NEXT:     repeated.a = {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 3;
+// LOWERING-NEXT:     repeated.b = {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i8 = repeated.a;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = repeated.b;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-NEXT:     return {{__v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn dependent_case() -> i32 {
 // LOWERING-NEXT:     let mut dependent: aligned::Aligned<aligned::A16, Aligned> =
 // LOWERING-NEXT:         aligned::Aligned(Aligned { a: 0, b: 0 });
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 8;
-// LOWERING-NEXT:     dependent.b = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = dependent.b;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i8 = {{_v[0-9]+}} as i8;
-// LOWERING-NEXT:     dependent.a = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i8 = dependent.a;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = dependent.b;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 8;
+// LOWERING-NEXT:     dependent.b = {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = dependent.b;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i8 = {{__v[0-9]+}} as i8;
+// LOWERING-NEXT:     dependent.a = {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i8 = dependent.a;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = dependent.b;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-NEXT:     return {{__v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn interrupted_case() -> i32 {
 // LOWERING-NEXT:     let mut interrupted: aligned::Aligned<aligned::A16, Aligned> =
 // LOWERING-NEXT:         aligned::Aligned(Aligned { a: 0, b: 0 });
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i8 = 4;
-// LOWERING-NEXT:     interrupted.a = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i8 = 4;
+// LOWERING-NEXT:     interrupted.a = {{__v[0-9]+}};
 // LOWERING-NEXT:     touch();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 6;
-// LOWERING-NEXT:     interrupted.b = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i8 = interrupted.a;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = interrupted.b;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { counter };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 6;
+// LOWERING-NEXT:     interrupted.b = {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i8 = interrupted.a;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = interrupted.b;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { counter };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-NEXT:     return {{__v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn next_value() -> i32 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 9;
-// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 9;
+// LOWERING-NEXT:     return {{__v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn touch() {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { counter };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { counter };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + 1;
 // LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         counter = {{_v[0-9]+}};
+// LOWERING-NEXT:         counter = {{__v[0-9]+}};
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     return;
 // LOWERING-NEXT: }

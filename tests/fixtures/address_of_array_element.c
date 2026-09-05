@@ -27,46 +27,49 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: fn read_array_element_through_call() -> i32 {
 // LOWERING-DAG:     let mut values: [i32; 1] = [0; 1];
-// LOWERING-DAG:     let {{_v[0-9]+}}: [i32; 1] = [10];
-// LOWERING-DAG:     values = {{_v[0-9]+}};
-// LOWERING-DAG:     let {{_v[0-9]+}}: i64 = 0;
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = unsafe { read_pointer(std::ptr::addr_of_mut!(values[({{_v[0-9]+}} as usize)])) };
-// LOWERING-DAG:     return {{_v[0-9]+}};
+// LOWERING-DAG:     let {{__v[0-9]+}}: [i32; 1] = [10];
+// LOWERING-DAG:     values = {{__v[0-9]+}};
+// LOWERING-DAG:     let {{__v[0-9]+}}: i64 = 0;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = unsafe { read_pointer(std::ptr::addr_of_mut!(values[({{__v[0-9]+}} as usize)])) };
+// LOWERING-DAG:     return {{__v[0-9]+}};
 // LOWERING-DAG: }
-// LOWERING-DAG: let {{_v[0-9]+}}: [i32; 4] = [2, 4, 6, 8];
-// LOWERING-DAG: *values = {{_v[0-9]+}};
-// LOWERING-DAG: let {{_v[0-9]+}}: i64 = 1;
-// LOWERING-DAG: let {{_v[0-9]+}}: i64 = 3;
-// LOWERING-DAG: let {{_v[0-9]+}}: *mut i8 = b"%d %ld %d\n\0".as_ptr() as *mut i8;
-// LOWERING-DAG: let {{_v[0-9]+}}: i32 = values[({{_v[0-9]+}} as usize)];
-// LOWERING-DAG: let {{_v[0-9]+}}: i32 = values[({{_v[0-9]+}} as usize)];
-// LOWERING-DAG: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-DAG: let {{_v[0-9]+}}: i64 = unsafe {
-// LOWERING-DAG:     std::ptr::addr_of_mut!(values[({{_v[0-9]+}} as usize)])
-// LOWERING-DAG:         .offset_from(std::ptr::addr_of_mut!(values[({{_v[0-9]+}} as usize)])) as i64
+// LOWERING-DAG: let {{__v[0-9]+}}: [i32; 4] = [2, 4, 6, 8];
+// LOWERING-DAG: *values = {{__v[0-9]+}};
+// LOWERING-DAG: let {{__v[0-9]+}}: i64 = 1;
+// LOWERING-DAG: let {{__v[0-9]+}}: i64 = 3;
+// LOWERING-DAG: let {{__v[0-9]+}}: *mut i8 = b"%d %ld %d\n\0".as_ptr() as *mut i8;
+// LOWERING-DAG: let {{__v[0-9]+}}: i32 = values[({{__v[0-9]+}} as usize)];
+// LOWERING-DAG: let {{__v[0-9]+}}: i32 = values[({{__v[0-9]+}} as usize)];
+// LOWERING-DAG: let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-DAG: let {{__v[0-9]+}}: i64 = unsafe {
+// LOWERING-DAG:     std::ptr::addr_of_mut!(values[({{__v[0-9]+}} as usize)])
+// LOWERING-DAG:         .offset_from(std::ptr::addr_of_mut!(values[({{__v[0-9]+}} as usize)])) as i64
 // LOWERING-DAG: };
-// LOWERING-DAG: let {{_v[0-9]+}}: i32 = read_array_element_through_call();
-// LOWERING-DAG: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-DAG: let {{__v[0-9]+}}: i32 = read_array_element_through_call();
+// LOWERING-DAG: let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: fn read_array_element_through_call() -> i32 {
-// REWRITES-DAG:     let mut values: [i32; 1] = [10];
-// REWRITES-DAG:     unsafe { read_pointer(std::ptr::addr_of_mut!(values[0])) }
+// REWRITES-DAG:     let mut values: [i32; 1] = [0; 1];
+// REWRITES-DAG:     let {{__v[0-9]+}}: [i32; 1] = [10];
+// REWRITES-DAG:     values = {{__v[0-9]+}};
+// REWRITES-DAG:     let {{__v[0-9]+}}: i64 = 0;
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = unsafe { read_pointer(std::ptr::addr_of_mut!(values[({{__v[0-9]+}} as usize)])) };
+// REWRITES-DAG:     {{__v[0-9]+}}
 // REWRITES-DAG: }
-// REWRITES-DAG: *values = [2, 4, 6, 8];
-// REWRITES-DAG: let {{_v[0-9]+}}: i64 = 1;
-// REWRITES-DAG: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-DAG: unsafe {
-// REWRITES-DAG:     printf(
-// REWRITES-DAG:         c"%d %ld %d\n".as_ptr(),
-// REWRITES-DAG:         values[({{_v[0-9]+}} as usize)] + values[({{_v[0-9]+}} as usize)],
-// REWRITES-DAG:         unsafe {
-// REWRITES-DAG:             std::ptr::addr_of_mut!(values[({{_v[0-9]+}} as usize)])
-// REWRITES-DAG:                 .offset_from(std::ptr::addr_of_mut!(values[({{_v[0-9]+}} as usize)]))
-// REWRITES-DAG:                 as i64
-// REWRITES-DAG:         },
-// REWRITES-DAG:         read_array_element_through_call(),
-// REWRITES-DAG:     )
+// REWRITES-DAG: let {{__v[0-9]+}}: [i32; 4] = [2, 4, 6, 8];
+// REWRITES-DAG: *values = {{__v[0-9]+}};
+// REWRITES-DAG: let {{__v[0-9]+}}: i64 = 1;
+// REWRITES-DAG: let {{__v[0-9]+}}: i64 = 3;
+// REWRITES-DAG: let {{__v[0-9]+}}: *mut i8 = c"%d %ld %d\n".as_ptr() as *mut i8;
+// REWRITES-DAG: let {{__v[0-9]+}}: i32 = values[({{__v[0-9]+}} as usize)];
+// REWRITES-DAG: let {{__v[0-9]+}}: i32 = values[({{__v[0-9]+}} as usize)];
+// REWRITES-DAG: let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// REWRITES-DAG: let {{__v[0-9]+}}: i64 = unsafe {
+// REWRITES-DAG:     std::ptr::addr_of_mut!(values[({{__v[0-9]+}} as usize)])
+// REWRITES-DAG:         .offset_from(std::ptr::addr_of_mut!(values[({{__v[0-9]+}} as usize)])) as i64
 // REWRITES-DAG: };
+// REWRITES-DAG: let {{__v[0-9]+}}: i32 = read_array_element_through_call();
+// REWRITES-DAG: unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
 // SLATE-FILECHECK-END rewrites

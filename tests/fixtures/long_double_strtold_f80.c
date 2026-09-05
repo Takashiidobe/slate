@@ -26,26 +26,26 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: fn main() {
 // LOWERING-DAG:     let mut end: *mut i8 = std::ptr::null_mut();
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:     let {{_v[0-9]+}}: *mut i8 = b"0x1.0000000000000002p0\0".as_ptr() as *mut i8;
-// LOWERING-DAG:     let {{_v[0-9]+}}: LongDouble = unsafe {
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:     let {{__v[0-9]+}}: *mut i8 = b"0x1.0000000000000002p0\0".as_ptr() as *mut i8;
+// LOWERING-DAG:     let {{__v[0-9]+}}: LongDouble = unsafe {
 // LOWERING-DAG:         __slate_strtold__rf80_pc_ppc(
-// LOWERING-DAG:             {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-DAG:             {{__v[0-9]+}} as *const core::ffi::c_char,
 // LOWERING-DAG:             std::ptr::addr_of_mut!(end) as *mut *mut core::ffi::c_char,
 // LOWERING-DAG:         )
 // LOWERING-DAG:     };
-// LOWERING-DAG:     let {{_v[0-9]+}}: *mut i8 = b"strtold\0".as_ptr() as *mut i8;
-// LOWERING-DAG:     dump80({{_v[0-9]+}}, {{_v[0-9]+}});
-// LOWERING-DAG:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// LOWERING-DAG:     let {{_v[0-9]+}}: *mut i8 = end;
-// LOWERING-DAG:     let {{_v[0-9]+}}: i8 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-DAG:     let {{__v[0-9]+}}: *mut i8 = b"strtold\0".as_ptr() as *mut i8;
+// LOWERING-DAG:     dump80({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-DAG:     let {{__v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// LOWERING-DAG:     let {{__v[0-9]+}}: *mut i8 = end;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i8 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-DAG: }
 // SLATE-FILECHECK-END lowering
 

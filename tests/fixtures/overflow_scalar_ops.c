@@ -43,54 +43,54 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 2147483647;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:     let {{_v[0-9]+}} = {{_v[0-9]+}}.overflowing_add({{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}}.0 as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}}.1 || ({{_v[0-9]+}}.0 < -2147483648 || {{_v[0-9]+}}.0 > 2147483647);
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = -2147483647;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} - {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:     let {{_v[0-9]+}} = {{_v[0-9]+}}.overflowing_sub({{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}}.0 as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}}.1 || ({{_v[0-9]+}}.0 < -2147483648 || {{_v[0-9]+}}.0 > 2147483647);
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1073741824;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 2;
-// LOWERING-NEXT:     let {{_v[0-9]+}} = {{_v[0-9]+}}.overflowing_mul({{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}}.0 as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}}.1 || ({{_v[0-9]+}}.0 < -2147483648 || {{_v[0-9]+}}.0 > 2147483647);
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = 4294967295u32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = 1;
-// LOWERING-NEXT:     let {{_v[0-9]+}} = {{_v[0-9]+}}.overflowing_add({{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}}.0 as u32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}}.1 || {{_v[0-9]+}}.0 > 4294967295;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %u\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 3037000500i64;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 3037000500i64;
-// LOWERING-NEXT:     let {{_v[0-9]+}} = {{_v[0-9]+}}.overflowing_mul({{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = {{_v[0-9]+}}.0 as i64;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}}.1 || ({{_v[0-9]+}}.0 < -9223372036854775808 || {{_v[0-9]+}}.0 > 9223372036854775807);
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %lld\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 2147483647;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-NEXT:     let {{__v[0-9]+}} = {{__v[0-9]+}}.overflowing_add({{__v[0-9]+}});
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}}.0 as i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.1 || ({{__v[0-9]+}}.0 < -2147483648 || {{__v[0-9]+}}.0 > 2147483647);
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d %d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = -2147483647;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} - {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-NEXT:     let {{__v[0-9]+}} = {{__v[0-9]+}}.overflowing_sub({{__v[0-9]+}});
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}}.0 as i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.1 || ({{__v[0-9]+}}.0 < -2147483648 || {{__v[0-9]+}}.0 > 2147483647);
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d %d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 1073741824;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 2;
+// LOWERING-NEXT:     let {{__v[0-9]+}} = {{__v[0-9]+}}.overflowing_mul({{__v[0-9]+}});
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}}.0 as i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.1 || ({{__v[0-9]+}}.0 < -2147483648 || {{__v[0-9]+}}.0 > 2147483647);
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d %d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = 4294967295u32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = 1;
+// LOWERING-NEXT:     let {{__v[0-9]+}} = {{__v[0-9]+}}.overflowing_add({{__v[0-9]+}});
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}}.0 as u32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.1 || {{__v[0-9]+}}.0 > 4294967295;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d %u\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = 3037000500i64;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = 3037000500i64;
+// LOWERING-NEXT:     let {{__v[0-9]+}} = {{__v[0-9]+}}.overflowing_mul({{__v[0-9]+}});
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = {{__v[0-9]+}}.0 as i64;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.1 || ({{__v[0-9]+}}.0 < -9223372036854775808 || {{__v[0-9]+}}.0 > 9223372036854775807);
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d %lld\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -114,51 +114,51 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 2147483647;
-// REWRITES-NEXT:     let {{_v[0-9]+}} = {{_v[0-9]+}}.overflowing_add(1 as i32);
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 2147483647;
+// REWRITES-NEXT:     let {{__v[0-9]+}} = {{__v[0-9]+}}.overflowing_add(1 as i32);
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             c"%d %d\n".as_ptr(),
-// REWRITES-NEXT:             ({{_v[0-9]+}}.1 || ({{_v[0-9]+}}.0 < -2147483648 || {{_v[0-9]+}}.0 > 2147483647)) as i32,
-// REWRITES-NEXT:             {{_v[0-9]+}}.0 as i32,
+// REWRITES-NEXT:             ({{__v[0-9]+}}.1 || ({{__v[0-9]+}}.0 < -2147483648 || {{__v[0-9]+}}.0 > 2147483647)) as i32,
+// REWRITES-NEXT:             {{__v[0-9]+}}.0 as i32,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = -2147483647 - {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}} = {{_v[0-9]+}}.overflowing_sub(1 as i32);
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = -2147483647 - {{__v[0-9]+}};
+// REWRITES-NEXT:     let {{__v[0-9]+}} = {{__v[0-9]+}}.overflowing_sub(1 as i32);
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             c"%d %d\n".as_ptr(),
-// REWRITES-NEXT:             ({{_v[0-9]+}}.1 || ({{_v[0-9]+}}.0 < -2147483648 || {{_v[0-9]+}}.0 > 2147483647)) as i32,
-// REWRITES-NEXT:             {{_v[0-9]+}}.0 as i32,
+// REWRITES-NEXT:             ({{__v[0-9]+}}.1 || ({{__v[0-9]+}}.0 < -2147483648 || {{__v[0-9]+}}.0 > 2147483647)) as i32,
+// REWRITES-NEXT:             {{__v[0-9]+}}.0 as i32,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1073741824;
-// REWRITES-NEXT:     let {{_v[0-9]+}} = {{_v[0-9]+}}.overflowing_mul(2 as i32);
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 1073741824;
+// REWRITES-NEXT:     let {{__v[0-9]+}} = {{__v[0-9]+}}.overflowing_mul(2 as i32);
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             c"%d %d\n".as_ptr(),
-// REWRITES-NEXT:             ({{_v[0-9]+}}.1 || ({{_v[0-9]+}}.0 < -2147483648 || {{_v[0-9]+}}.0 > 2147483647)) as i32,
-// REWRITES-NEXT:             {{_v[0-9]+}}.0 as i32,
+// REWRITES-NEXT:             ({{__v[0-9]+}}.1 || ({{__v[0-9]+}}.0 < -2147483648 || {{__v[0-9]+}}.0 > 2147483647)) as i32,
+// REWRITES-NEXT:             {{__v[0-9]+}}.0 as i32,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u32 = 4294967295u32;
-// REWRITES-NEXT:     let {{_v[0-9]+}} = {{_v[0-9]+}}.overflowing_add(1 as u32);
+// REWRITES-NEXT:     let {{__v[0-9]+}}: u32 = 4294967295u32;
+// REWRITES-NEXT:     let {{__v[0-9]+}} = {{__v[0-9]+}}.overflowing_add(1 as u32);
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             c"%d %u\n".as_ptr(),
-// REWRITES-NEXT:             ({{_v[0-9]+}}.1 || {{_v[0-9]+}}.0 > 4294967295) as i32,
-// REWRITES-NEXT:             {{_v[0-9]+}}.0 as u32,
+// REWRITES-NEXT:             ({{__v[0-9]+}}.1 || {{__v[0-9]+}}.0 > 4294967295) as i32,
+// REWRITES-NEXT:             {{__v[0-9]+}}.0 as u32,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3037000500i64;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3037000500i64;
-// REWRITES-NEXT:     let {{_v[0-9]+}} = {{_v[0-9]+}}.overflowing_mul({{_v[0-9]+}});
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i64 = 3037000500i64;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i64 = 3037000500i64;
+// REWRITES-NEXT:     let {{__v[0-9]+}} = {{__v[0-9]+}}.overflowing_mul({{__v[0-9]+}});
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             c"%d %lld\n".as_ptr(),
-// REWRITES-NEXT:             ({{_v[0-9]+}}.1 || ({{_v[0-9]+}}.0 < -9223372036854775808 || {{_v[0-9]+}}.0 > 9223372036854775807)) as i32,
-// REWRITES-NEXT:             {{_v[0-9]+}}.0 as i64,
+// REWRITES-NEXT:             ({{__v[0-9]+}}.1 || ({{__v[0-9]+}}.0 < -9223372036854775808 || {{__v[0-9]+}}.0 > 9223372036854775807)) as i32,
+// REWRITES-NEXT:             {{__v[0-9]+}}.0 as i64,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     std::process::exit(0 as i32);

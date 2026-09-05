@@ -59,30 +59,30 @@ int main(void) {
 // LOWERING-NEXT:         start: std::ptr::null_mut(),
 // LOWERING-NEXT:         top: std::ptr::null_mut(),
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: [u32; 3] = [0, 1, 2];
-// LOWERING-NEXT:     data = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u32 = data.as_mut_ptr() as *mut u32;
-// LOWERING-NEXT:     p.start = {{_v[0-9]+}} as *mut color_t;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u32 = data.as_mut_ptr() as *mut u32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 3;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u32 = unsafe { {{_v[0-9]+}}.add(3) };
-// LOWERING-NEXT:     p.top = {{_v[0-9]+}} as *mut color_t;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u32 = p.start as *mut u32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u32 = unsafe { {{_v[0-9]+}}.add(1) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u32 = p.top as *mut u32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u32 = p.start as *mut u32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = unsafe { {{_v[0-9]+}}.offset_from({{_v[0-9]+}}) as i64 };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: [u32; 3] = [0, 1, 2];
+// LOWERING-NEXT:     data = {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut u32 = data.as_mut_ptr() as *mut u32;
+// LOWERING-NEXT:     p.start = {{__v[0-9]+}} as *mut color_t;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut u32 = data.as_mut_ptr() as *mut u32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 3;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut u32 = unsafe { {{__v[0-9]+}}.add(3) };
+// LOWERING-NEXT:     p.top = {{__v[0-9]+}} as *mut color_t;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut u32 = p.start as *mut u32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut u32 = unsafe { {{__v[0-9]+}}.add(1) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut u32 = p.top as *mut u32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut u32 = p.start as *mut u32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = unsafe { {{__v[0-9]+}}.offset_from({{__v[0-9]+}}) as i64 };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -128,19 +128,19 @@ int main(void) {
 // REWRITES-NEXT:         top: std::ptr::null_mut(),
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     data = [0, 1, 2];
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut u32 = data.as_mut_ptr() as *mut u32;
-// REWRITES-NEXT:     p.start = {{_v[0-9]+}} as *mut color_t;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut u32 = data.as_mut_ptr() as *mut u32;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut u32 = unsafe { {{_v[0-9]+}}.add(3) };
-// REWRITES-NEXT:     p.top = {{_v[0-9]+}} as *mut color_t;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut u32 = p.start as *mut u32;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut u32 = unsafe { {{_v[0-9]+}}.add(1) };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), (unsafe { *{{_v[0-9]+}} }) as i32) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut u32 = p.top as *mut u32;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut u32 = data.as_mut_ptr() as *mut u32;
+// REWRITES-NEXT:     p.start = {{__v[0-9]+}} as *mut color_t;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut u32 = data.as_mut_ptr() as *mut u32;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut u32 = unsafe { {{__v[0-9]+}}.add(3) };
+// REWRITES-NEXT:     p.top = {{__v[0-9]+}} as *mut color_t;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut u32 = p.start as *mut u32;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut u32 = unsafe { {{__v[0-9]+}}.add(1) };
+// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), (unsafe { *{{__v[0-9]+}} }) as i32) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut u32 = p.top as *mut u32;
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             c"%d\n".as_ptr(),
-// REWRITES-NEXT:             (unsafe { {{_v[0-9]+}}.offset_from(p.start as *mut u32) as i64 }) as i32,
+// REWRITES-NEXT:             (unsafe { {{__v[0-9]+}}.offset_from(p.start as *mut u32) as i64 }) as i32,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     std::process::exit(0 as i32);

@@ -39,16 +39,16 @@ int main(void) {
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let mut values: aligned::Aligned<aligned::A16, [i32; 4]> = aligned::Aligned([0; 4]);
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: [i32; 4] = [2, 4, 6, 8];
-// LOWERING-NEXT:     *values = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = values.as_mut_ptr() as *mut i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 4;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = sum_items({{_v[0-9]+}}, {{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: [i32; 4] = [2, 4, 6, 8];
+// LOWERING-NEXT:     *values = {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i32 = values.as_mut_ptr() as *mut i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 4;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = sum_items({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn sum_items({{arg[0-9]+}}: *mut i32, {{arg[0-9]+}}: i32) -> i32 {
@@ -57,35 +57,35 @@ int main(void) {
 // LOWERING-NEXT:     let mut total: i32 = 0;
 // LOWERING-NEXT:     items = {{arg[0-9]+}};
 // LOWERING-NEXT:     len = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     total = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     total = {{__v[0-9]+}};
 // LOWERING-NEXT:     {
 // LOWERING-NEXT:         let mut i: i32 = 0;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:         i = {{_v[0-9]+}};
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:         i = {{__v[0-9]+}};
 // LOWERING-NEXT:         loop {
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = i;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = len;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < {{_v[0-9]+}};
-// LOWERING-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = i;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = len;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
+// LOWERING-NEXT:             if !{{__v[0-9]+}} {
 // LOWERING-NEXT:                 break;
 // LOWERING-NEXT:             }
 // LOWERING-NEXT:             {
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = i;
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} as i64;
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: *mut i32 = items;
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.offset({{_v[0-9]+}} as isize) };
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = total;
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:                 total = {{_v[0-9]+}};
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = i;
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: i64 = {{__v[0-9]+}} as i64;
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: *mut i32 = items;
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.offset({{__v[0-9]+}} as isize) };
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = total;
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-NEXT:                 total = {{__v[0-9]+}};
 // LOWERING-NEXT:             }
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = i;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
-// LOWERING-NEXT:             i = {{_v[0-9]+}};
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = i;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + 1;
+// LOWERING-NEXT:             i = {{__v[0-9]+}};
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = total;
-// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = total;
+// LOWERING-NEXT:     return {{__v[0-9]+}};
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering

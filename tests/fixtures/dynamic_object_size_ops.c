@@ -52,42 +52,42 @@ int main(void) {
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let mut local: aligned::Aligned<aligned::A16, [i32; 6]> = aligned::Aligned([0; 6]);
 // LOWERING-NEXT:     let mut v: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = local.as_mut_ptr() as *mut i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 3;
-// LOWERING-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(v), {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(v)) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 24;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 16;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 16;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = u64::MAX;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 37;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = runtime_alloc_size({{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%lu %lu %lu %lu %lu %lu\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i32 = local.as_mut_ptr() as *mut i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 3;
+// LOWERING-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(v), {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(v)) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = 24;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = 16;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = 16;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = {{__v[0-9]+}} as *mut core::ffi::c_void;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = u64::MAX;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = {{__v[0-9]+}} as *mut core::ffi::c_void;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 37;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = runtime_alloc_size({{__v[0-9]+}});
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%lu %lu %lu %lu %lu %lu\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe {
 // LOWERING-NEXT:         printf(
-// LOWERING-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_char,
-// LOWERING-NEXT:             {{_v[0-9]+}},
-// LOWERING-NEXT:             {{_v[0-9]+}},
-// LOWERING-NEXT:             {{_v[0-9]+}},
-// LOWERING-NEXT:             {{_v[0-9]+}},
-// LOWERING-NEXT:             {{_v[0-9]+}},
-// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:             {{__v[0-9]+}},
 // LOWERING-NEXT:         )
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn runtime_alloc_size({{arg[0-9]+}}: i32) -> u64 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = {{arg[0-9]+}} as u64;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc({{_v[0-9]+}} as usize) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = u64::MAX;
-// LOWERING-NEXT:     unsafe { free({{_v[0-9]+}} as *mut core::ffi::c_void) };
-// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = {{arg[0-9]+}} as u64;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc({{__v[0-9]+}} as usize) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = u64::MAX;
+// LOWERING-NEXT:     unsafe { free({{__v[0-9]+}} as *mut core::ffi::c_void) };
+// LOWERING-NEXT:     return {{__v[0-9]+}};
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -118,14 +118,14 @@ int main(void) {
 // REWRITES-NEXT:     local.as_mut_ptr() as *mut i32;
 // REWRITES-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(v), 3 as i32) };
 // REWRITES-NEXT:     unsafe { std::ptr::read_volatile(std::ptr::addr_of!(v)) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = u64::MAX;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: u64 = u64::MAX;
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             c"%lu %lu %lu %lu %lu %lu\n".as_ptr(),
 // REWRITES-NEXT:             24 as u64,
 // REWRITES-NEXT:             16 as u64,
 // REWRITES-NEXT:             16 as u64,
-// REWRITES-NEXT:             {{_v[0-9]+}},
+// REWRITES-NEXT:             {{__v[0-9]+}},
 // REWRITES-NEXT:             0 as u64,
 // REWRITES-NEXT:             runtime_alloc_size(37),
 // REWRITES-NEXT:         )
@@ -134,8 +134,8 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn runtime_alloc_size({{arg[0-9]+}}: i32) -> u64 {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = u64::MAX;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: u64 = u64::MAX;
 // REWRITES-NEXT:     unsafe { free((unsafe { malloc(({{arg[0-9]+}} as u64) as usize) }) as *mut core::ffi::c_void) };
-// REWRITES-NEXT:     {{_v[0-9]+}}
+// REWRITES-NEXT:     {{__v[0-9]+}}
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

@@ -24,16 +24,17 @@ int main(void) {
 }
 
 // SLATE-FILECHECK-BEGIN lowering
-// LOWERING-DAG: let {{_v[0-9]+}}: i32 = 9;
-// LOWERING-DAG: let {{_v[0-9]+}}: i64 = 1;
+// LOWERING-DAG: let {{__v[0-9]+}}: i32 = 9;
+// LOWERING-DAG: let {{__v[0-9]+}}: i64 = 1;
 // LOWERING-DAG: unsafe {
-// LOWERING-DAG:     (*{{arg[0-9]+}}).cells[({{_v[0-9]+}} as usize)] = {{_v[0-9]+}};
+// LOWERING-DAG:     (*{{arg[0-9]+}}).cells[({{__v[0-9]+}} as usize)] = {{__v[0-9]+}};
 // LOWERING-DAG: }
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: let {{_v[0-9]+}}: i64 = 1;
+// REWRITES-DAG: let {{__v[0-9]+}}: i32 = 9;
+// REWRITES-DAG: let {{__v[0-9]+}}: i64 = 1;
 // REWRITES-DAG: unsafe {
-// REWRITES-DAG:     (*({{arg[0-9]+}} as *mut Row)).cells[({{_v[0-9]+}} as usize)] = 9;
+// REWRITES-DAG:     (*({{arg[0-9]+}} as *mut Row)).cells[({{__v[0-9]+}} as usize)] = {{__v[0-9]+}};
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

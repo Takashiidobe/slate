@@ -29,94 +29,94 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: fn main() {
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:     let {{_v[0-9]+}}: u32 = 305419896;
-// LOWERING-DAG:     let {{_v[0-9]+}}: u32 = 0;
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = -12345;
-// LOWERING-DAG:     let {{_v[0-9]+}}: u32 = 5;
-// LOWERING-DAG:     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}}.reverse_bits();
-// LOWERING-DAG:     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}}.swap_bytes();
-// LOWERING-DAG:     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}}.leading_zeros() as u32;
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-DAG:     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}}.trailing_zeros() as u32;
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} == 0 {
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:     let {{__v[0-9]+}}: u32 = 305419896;
+// LOWERING-DAG:     let {{__v[0-9]+}}: u32 = 0;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = -12345;
+// LOWERING-DAG:     let {{__v[0-9]+}}: u32 = 5;
+// LOWERING-DAG:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}}.reverse_bits();
+// LOWERING-DAG:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}}.swap_bytes();
+// LOWERING-DAG:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}}.leading_zeros() as u32;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-DAG:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}}.trailing_zeros() as u32;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = if {{__v[0-9]+}} == 0 {
 // LOWERING-DAG:         0
 // LOWERING-DAG:     } else {
-// LOWERING-DAG:         ({{_v[0-9]+}}.trailing_zeros() as i32) + 1
+// LOWERING-DAG:         ({{__v[0-9]+}}.trailing_zeros() as i32) + 1
 // LOWERING-DAG:     };
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} == 0 {
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = if {{__v[0-9]+}} == 0 {
 // LOWERING-DAG:         0
 // LOWERING-DAG:     } else {
-// LOWERING-DAG:         ({{_v[0-9]+}}.trailing_zeros() as i32) + 1
+// LOWERING-DAG:         ({{__v[0-9]+}}.trailing_zeros() as i32) + 1
 // LOWERING-DAG:     };
-// LOWERING-DAG:     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}}.count_ones() as u32;
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-DAG:     let {{_v[0-9]+}}: u32 = ({{_v[0-9]+}}.count_ones() as u32) & 1;
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = (if {{_v[0-9]+}} < 0 { !{{_v[0-9]+}} } else { {{_v[0-9]+}} }.leading_zeros() as i32) - 1;
-// LOWERING-DAG:     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}}.rotate_left({{_v[0-9]+}} as u32);
-// LOWERING-DAG:     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}}.rotate_right({{_v[0-9]+}} as u32);
-// LOWERING-DAG:     let {{_v[0-9]+}}: *mut i8 = b"%u %u %d %d %d %d %d %d %d %u %u\n\0".as_ptr() as *mut i8;
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-DAG:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}}.count_ones() as u32;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-DAG:     let {{__v[0-9]+}}: u32 = ({{__v[0-9]+}}.count_ones() as u32) & 1;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = (if {{__v[0-9]+}} < 0 { !{{__v[0-9]+}} } else { {{__v[0-9]+}} }.leading_zeros() as i32) - 1;
+// LOWERING-DAG:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}}.rotate_left({{__v[0-9]+}} as u32);
+// LOWERING-DAG:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}}.rotate_right({{__v[0-9]+}} as u32);
+// LOWERING-DAG:     let {{__v[0-9]+}}: *mut i8 = b"%u %u %d %d %d %d %d %d %d %u %u\n\0".as_ptr() as *mut i8;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = unsafe {
 // LOWERING-DAG:         printf(
-// LOWERING-DAG:             {{_v[0-9]+}} as *const core::ffi::c_char,
-// LOWERING-DAG:             {{_v[0-9]+}},
-// LOWERING-DAG:             {{_v[0-9]+}},
-// LOWERING-DAG:             {{_v[0-9]+}},
-// LOWERING-DAG:             {{_v[0-9]+}},
-// LOWERING-DAG:             {{_v[0-9]+}},
-// LOWERING-DAG:             {{_v[0-9]+}},
-// LOWERING-DAG:             {{_v[0-9]+}},
-// LOWERING-DAG:             {{_v[0-9]+}},
-// LOWERING-DAG:             {{_v[0-9]+}},
-// LOWERING-DAG:             {{_v[0-9]+}},
-// LOWERING-DAG:             {{_v[0-9]+}},
+// LOWERING-DAG:             {{__v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-DAG:             {{__v[0-9]+}},
+// LOWERING-DAG:             {{__v[0-9]+}},
+// LOWERING-DAG:             {{__v[0-9]+}},
+// LOWERING-DAG:             {{__v[0-9]+}},
+// LOWERING-DAG:             {{__v[0-9]+}},
+// LOWERING-DAG:             {{__v[0-9]+}},
+// LOWERING-DAG:             {{__v[0-9]+}},
+// LOWERING-DAG:             {{__v[0-9]+}},
+// LOWERING-DAG:             {{__v[0-9]+}},
+// LOWERING-DAG:             {{__v[0-9]+}},
+// LOWERING-DAG:             {{__v[0-9]+}},
 // LOWERING-DAG:         )
 // LOWERING-DAG:     };
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-DAG: }
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: fn main() {
-// REWRITES-DAG:     let {{_v[0-9]+}}: u32 = 305419896;
-// REWRITES-DAG:     let {{_v[0-9]+}}: i32 = -12345;
-// REWRITES-DAG:     let {{_v[0-9]+}}: u32 = 5;
-// REWRITES-DAG:     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}}.reverse_bits();
-// REWRITES-DAG:     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}}.swap_bytes();
-// REWRITES-DAG:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// REWRITES-DAG:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} == 0 {
+// REWRITES-DAG:     let {{__v[0-9]+}}: u32 = 305419896;
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = -12345;
+// REWRITES-DAG:     let {{__v[0-9]+}}: u32 = 5;
+// REWRITES-DAG:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}}.reverse_bits();
+// REWRITES-DAG:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}}.swap_bytes();
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = if {{__v[0-9]+}} == 0 {
 // REWRITES-DAG:         0
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         ({{_v[0-9]+}}.trailing_zeros() as i32) + 1
+// REWRITES-DAG:         ({{__v[0-9]+}}.trailing_zeros() as i32) + 1
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: i32 = (0 as u32) as i32;
-// REWRITES-DAG:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} == 0 {
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = (0 as u32) as i32;
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = if {{__v[0-9]+}} == 0 {
 // REWRITES-DAG:         0
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         ({{_v[0-9]+}}.trailing_zeros() as i32) + 1
+// REWRITES-DAG:         ({{__v[0-9]+}}.trailing_zeros() as i32) + 1
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: i32 = (if {{_v[0-9]+}} < 0 { !{{_v[0-9]+}} } else { {{_v[0-9]+}} }.leading_zeros() as i32) - 1;
-// REWRITES-DAG:     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}}.rotate_left({{_v[0-9]+}} as u32);
-// REWRITES-DAG:     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}}.rotate_right({{_v[0-9]+}} as u32);
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = (if {{__v[0-9]+}} < 0 { !{{__v[0-9]+}} } else { {{__v[0-9]+}} }.leading_zeros() as i32) - 1;
+// REWRITES-DAG:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}}.rotate_left({{__v[0-9]+}} as u32);
+// REWRITES-DAG:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}}.rotate_right({{__v[0-9]+}} as u32);
 // REWRITES-DAG:     unsafe {
 // REWRITES-DAG:         printf(
 // REWRITES-DAG:             c"%u %u %d %d %d %d %d %d %d %u %u\n".as_ptr(),
-// REWRITES-DAG:             {{_v[0-9]+}},
-// REWRITES-DAG:             {{_v[0-9]+}},
-// REWRITES-DAG:             ({{_v[0-9]+}}.leading_zeros() as u32) as i32,
-// REWRITES-DAG:             ({{_v[0-9]+}}.trailing_zeros() as u32) as i32,
-// REWRITES-DAG:             {{_v[0-9]+}},
-// REWRITES-DAG:             {{_v[0-9]+}},
-// REWRITES-DAG:             ({{_v[0-9]+}}.count_ones() as u32) as i32,
-// REWRITES-DAG:             (({{_v[0-9]+}}.count_ones() as u32) & 1) as i32,
-// REWRITES-DAG:             {{_v[0-9]+}},
-// REWRITES-DAG:             {{_v[0-9]+}},
-// REWRITES-DAG:             {{_v[0-9]+}},
+// REWRITES-DAG:             {{__v[0-9]+}},
+// REWRITES-DAG:             {{__v[0-9]+}},
+// REWRITES-DAG:             ({{__v[0-9]+}}.leading_zeros() as u32) as i32,
+// REWRITES-DAG:             ({{__v[0-9]+}}.trailing_zeros() as u32) as i32,
+// REWRITES-DAG:             {{__v[0-9]+}},
+// REWRITES-DAG:             {{__v[0-9]+}},
+// REWRITES-DAG:             ({{__v[0-9]+}}.count_ones() as u32) as i32,
+// REWRITES-DAG:             (({{__v[0-9]+}}.count_ones() as u32) & 1) as i32,
+// REWRITES-DAG:             {{__v[0-9]+}},
+// REWRITES-DAG:             {{__v[0-9]+}},
+// REWRITES-DAG:             {{__v[0-9]+}},
 // REWRITES-DAG:         )
 // REWRITES-DAG:     };
 // REWRITES-DAG:     std::process::exit(0 as i32);

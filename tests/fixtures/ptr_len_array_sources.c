@@ -79,34 +79,34 @@ int main(void) {
 // LOWERING-DAG:     let mut sum: i32 = 0;
 // LOWERING-DAG:     values = {{arg[0-9]+}};
 // LOWERING-DAG:     len = {{arg[0-9]+}};
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:     sum = {{_v[0-9]+}};
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:     sum = {{__v[0-9]+}};
 // LOWERING-DAG:     {
 // LOWERING-DAG:         let mut i: i32 = 0;
-// LOWERING-DAG:         let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:         i = {{_v[0-9]+}};
+// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:         i = {{__v[0-9]+}};
 // LOWERING-DAG:         loop {
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = i;
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = len;
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < {{_v[0-9]+}};
-// LOWERING-DAG:             if !{{_v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = i;
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = len;
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
+// LOWERING-DAG:             if !{{__v[0-9]+}} {
 // LOWERING-DAG:                 break;
 // LOWERING-DAG:             }
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = i;
-// LOWERING-DAG:             let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} as i64;
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut i32 = values;
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.offset({{_v[0-9]+}} as isize) };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = sum;
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-DAG:             sum = {{_v[0-9]+}};
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = i;
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
-// LOWERING-DAG:             i = {{_v[0-9]+}};
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = i;
+// LOWERING-DAG:             let {{__v[0-9]+}}: i64 = {{__v[0-9]+}} as i64;
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut i32 = values;
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.offset({{__v[0-9]+}} as isize) };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = sum;
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-DAG:             sum = {{__v[0-9]+}};
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = i;
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + 1;
+// LOWERING-DAG:             i = {{__v[0-9]+}};
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = sum;
-// LOWERING-DAG:     return {{_v[0-9]+}};
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = sum;
+// LOWERING-DAG:     return {{__v[0-9]+}};
 // LOWERING-DAG: }
 // LOWERING-DAG: fn bump_values({{arg[0-9]+}}: *mut i32, {{arg[0-9]+}}: i32) {
 // LOWERING-DAG:     let mut values: *mut i32 = std::ptr::null_mut();
@@ -115,28 +115,28 @@ int main(void) {
 // LOWERING-DAG:     len = {{arg[0-9]+}};
 // LOWERING-DAG:     {
 // LOWERING-DAG:         let mut i: i32 = 0;
-// LOWERING-DAG:         let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:         i = {{_v[0-9]+}};
+// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:         i = {{__v[0-9]+}};
 // LOWERING-DAG:         loop {
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = i;
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = len;
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < {{_v[0-9]+}};
-// LOWERING-DAG:             if !{{_v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = i;
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = len;
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
+// LOWERING-DAG:             if !{{__v[0-9]+}} {
 // LOWERING-DAG:                 break;
 // LOWERING-DAG:             }
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = i;
-// LOWERING-DAG:             let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} as i64;
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut i32 = values;
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.offset({{_v[0-9]+}} as isize) };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = i;
+// LOWERING-DAG:             let {{__v[0-9]+}}: i64 = {{__v[0-9]+}} as i64;
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut i32 = values;
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.offset({{__v[0-9]+}} as isize) };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
 // LOWERING-DAG:             unsafe {
-// LOWERING-DAG:                 *{{_v[0-9]+}} = {{_v[0-9]+}};
+// LOWERING-DAG:                 *{{__v[0-9]+}} = {{__v[0-9]+}};
 // LOWERING-DAG:             }
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = i;
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
-// LOWERING-DAG:             i = {{_v[0-9]+}};
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = i;
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + 1;
+// LOWERING-DAG:             i = {{__v[0-9]+}};
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
 // LOWERING-DAG:     return;
@@ -147,34 +147,34 @@ int main(void) {
 // LOWERING-DAG:     let mut sum: i32 = 0;
 // LOWERING-DAG:     values = {{arg[0-9]+}};
 // LOWERING-DAG:     len = {{arg[0-9]+}};
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:     sum = {{_v[0-9]+}};
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:     sum = {{__v[0-9]+}};
 // LOWERING-DAG:     {
 // LOWERING-DAG:         let mut i: i32 = 0;
-// LOWERING-DAG:         let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:         i = {{_v[0-9]+}};
+// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:         i = {{__v[0-9]+}};
 // LOWERING-DAG:         loop {
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = i;
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = len;
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < {{_v[0-9]+}};
-// LOWERING-DAG:             if !{{_v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = i;
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = len;
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
+// LOWERING-DAG:             if !{{__v[0-9]+}} {
 // LOWERING-DAG:                 break;
 // LOWERING-DAG:             }
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = i;
-// LOWERING-DAG:             let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} as i64;
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut i32 = values;
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.offset({{_v[0-9]+}} as isize) };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = sum;
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-DAG:             sum = {{_v[0-9]+}};
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = i;
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
-// LOWERING-DAG:             i = {{_v[0-9]+}};
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = i;
+// LOWERING-DAG:             let {{__v[0-9]+}}: i64 = {{__v[0-9]+}} as i64;
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut i32 = values;
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.offset({{__v[0-9]+}} as isize) };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = sum;
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-DAG:             sum = {{__v[0-9]+}};
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = i;
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + 1;
+// LOWERING-DAG:             i = {{__v[0-9]+}};
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = sum;
-// LOWERING-DAG:     return {{_v[0-9]+}};
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = sum;
+// LOWERING-DAG:     return {{__v[0-9]+}};
 // LOWERING-DAG: }
 // LOWERING-DAG: fn score_text({{arg[0-9]+}}: *mut u8, {{arg[0-9]+}}: i32) -> i32 {
 // LOWERING-DAG:     let mut text: *mut u8 = std::ptr::null_mut();
@@ -182,38 +182,38 @@ int main(void) {
 // LOWERING-DAG:     let mut score: i32 = 0;
 // LOWERING-DAG:     text = {{arg[0-9]+}};
 // LOWERING-DAG:     len = {{arg[0-9]+}};
-// LOWERING-DAG:     let {{_v[0-9]+}}: *mut u8 = text;
-// LOWERING-DAG:     let {{_v[0-9]+}}: *mut i8 = {{_v[0-9]+}} as *mut i8;
-// LOWERING-DAG:     let {{_v[0-9]+}}: u64 = (unsafe { strlen({{_v[0-9]+}} as *const core::ffi::c_char) }) as u64;
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:     score = {{_v[0-9]+}};
+// LOWERING-DAG:     let {{__v[0-9]+}}: *mut u8 = text;
+// LOWERING-DAG:     let {{__v[0-9]+}}: *mut i8 = {{__v[0-9]+}} as *mut i8;
+// LOWERING-DAG:     let {{__v[0-9]+}}: u64 = (unsafe { strlen({{__v[0-9]+}} as *const core::ffi::c_char) }) as u64;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:     score = {{__v[0-9]+}};
 // LOWERING-DAG:     {
 // LOWERING-DAG:         let mut i: i32 = 0;
-// LOWERING-DAG:         let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:         i = {{_v[0-9]+}};
+// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:         i = {{__v[0-9]+}};
 // LOWERING-DAG:         loop {
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = i;
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = len;
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < {{_v[0-9]+}};
-// LOWERING-DAG:             if !{{_v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = i;
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = len;
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
+// LOWERING-DAG:             if !{{__v[0-9]+}} {
 // LOWERING-DAG:                 break;
 // LOWERING-DAG:             }
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = i;
-// LOWERING-DAG:             let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} as i64;
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut u8 = text;
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut u8 = unsafe { {{_v[0-9]+}}.offset({{_v[0-9]+}} as isize) };
-// LOWERING-DAG:             let {{_v[0-9]+}}: u8 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = score;
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-DAG:             score = {{_v[0-9]+}};
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = i;
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
-// LOWERING-DAG:             i = {{_v[0-9]+}};
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = i;
+// LOWERING-DAG:             let {{__v[0-9]+}}: i64 = {{__v[0-9]+}} as i64;
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut u8 = text;
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut u8 = unsafe { {{__v[0-9]+}}.offset({{__v[0-9]+}} as isize) };
+// LOWERING-DAG:             let {{__v[0-9]+}}: u8 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = score;
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-DAG:             score = {{__v[0-9]+}};
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = i;
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + 1;
+// LOWERING-DAG:             i = {{__v[0-9]+}};
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = score;
-// LOWERING-DAG:     return {{_v[0-9]+}};
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = score;
+// LOWERING-DAG:     return {{__v[0-9]+}};
 // LOWERING-DAG: }
 // LOWERING-DAG: fn maybe_consume({{arg[0-9]+}}: *mut i32, {{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
 // LOWERING-DAG:     let mut values: *mut i32 = std::ptr::null_mut();
@@ -223,43 +223,43 @@ int main(void) {
 // LOWERING-DAG:     values = {{arg[0-9]+}};
 // LOWERING-DAG:     len = {{arg[0-9]+}};
 // LOWERING-DAG:     release = {{arg[0-9]+}};
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:     sum = {{_v[0-9]+}};
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:     sum = {{__v[0-9]+}};
 // LOWERING-DAG:     {
 // LOWERING-DAG:         let mut i: i32 = 0;
-// LOWERING-DAG:         let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:         i = {{_v[0-9]+}};
+// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:         i = {{__v[0-9]+}};
 // LOWERING-DAG:         loop {
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = i;
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = len;
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < {{_v[0-9]+}};
-// LOWERING-DAG:             if !{{_v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = i;
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = len;
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
+// LOWERING-DAG:             if !{{__v[0-9]+}} {
 // LOWERING-DAG:                 break;
 // LOWERING-DAG:             }
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = i;
-// LOWERING-DAG:             let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} as i64;
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut i32 = values;
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.offset({{_v[0-9]+}} as isize) };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = sum;
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-DAG:             sum = {{_v[0-9]+}};
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = i;
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
-// LOWERING-DAG:             i = {{_v[0-9]+}};
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = i;
+// LOWERING-DAG:             let {{__v[0-9]+}}: i64 = {{__v[0-9]+}} as i64;
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut i32 = values;
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.offset({{__v[0-9]+}} as isize) };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = sum;
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-DAG:             sum = {{__v[0-9]+}};
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = i;
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + 1;
+// LOWERING-DAG:             i = {{__v[0-9]+}};
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
 // LOWERING-DAG:     {
-// LOWERING-DAG:         let {{_v[0-9]+}}: i32 = release;
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// LOWERING-DAG:         if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut i32 = values;
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
-// LOWERING-DAG:             unsafe { free({{_v[0-9]+}} as *mut core::ffi::c_void) };
+// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = release;
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
+// LOWERING-DAG:         if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut i32 = values;
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut core::ffi::c_void = {{__v[0-9]+}} as *mut core::ffi::c_void;
+// LOWERING-DAG:             unsafe { free({{__v[0-9]+}} as *mut core::ffi::c_void) };
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = sum;
-// LOWERING-DAG:     return {{_v[0-9]+}};
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = sum;
+// LOWERING-DAG:     return {{__v[0-9]+}};
 // LOWERING-DAG: }
 // SLATE-FILECHECK-END lowering
 
@@ -269,9 +269,9 @@ int main(void) {
 // REWRITES-DAG:     let mut len: i32 = {{arg[0-9]+}}.len() as i32;
 // REWRITES-DAG:     let mut sum: i32 = 0;
 // REWRITES-DAG:     for i in 0..len {
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = values;
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.offset((i as i64) as isize) };
-// REWRITES-DAG:         sum += unsafe { *{{_v[0-9]+}} };
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = values;
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.offset((i as i64) as isize) };
+// REWRITES-DAG:         sum += unsafe { *{{__v[0-9]+}} };
 // REWRITES-DAG:     }
 // REWRITES-DAG:     sum
 // REWRITES-DAG: }
@@ -279,11 +279,11 @@ int main(void) {
 // REWRITES-DAG:     let mut values: *mut i32 = {{arg[0-9]+}}.as_mut_ptr() as *mut i32;
 // REWRITES-DAG:     let mut len: i32 = {{arg[0-9]+}}.len() as i32;
 // REWRITES-DAG:     for i in 0..len {
-// REWRITES-DAG:         let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = values;
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.offset((i as i64) as isize) };
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 1;
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = values;
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.offset((i as i64) as isize) };
 // REWRITES-DAG:         unsafe {
-// REWRITES-DAG:             *{{_v[0-9]+}} = (unsafe { *{{_v[0-9]+}} }) + {{_v[0-9]+}};
+// REWRITES-DAG:             *{{__v[0-9]+}} = (unsafe { *{{__v[0-9]+}} }) + {{__v[0-9]+}};
 // REWRITES-DAG:         }
 // REWRITES-DAG:     }
 // REWRITES-DAG:     return;
@@ -295,8 +295,8 @@ int main(void) {
 // REWRITES-DAG:     let mut sum: i32 = 0;
 // REWRITES-DAG:     let mut i: i32 = 0;
 // REWRITES-DAG:     while i < len {
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = values;
-// REWRITES-DAG:         unsafe { {{_v[0-9]+}}.offset((i as i64) as isize) };
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = values;
+// REWRITES-DAG:         unsafe { {{__v[0-9]+}}.offset((i as i64) as isize) };
 // REWRITES-DAG:         sum += unsafe { __arg0_view[(i as usize)] };
 // REWRITES-DAG:         i += 1;
 // REWRITES-DAG:     }
@@ -308,21 +308,21 @@ int main(void) {
 // REWRITES-DAG:     let mut score: i32 = 0;
 // REWRITES-DAG:     (unsafe { {{arg[0-9]+}}.len() as u64 }) as u64;
 // REWRITES-DAG:     for i in 0..len {
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut u8 = text;
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut u8 = unsafe { {{_v[0-9]+}}.offset((i as i64) as isize) };
-// REWRITES-DAG:         score += (unsafe { *{{_v[0-9]+}} }) as i32;
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut u8 = text;
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut u8 = unsafe { {{__v[0-9]+}}.offset((i as i64) as isize) };
+// REWRITES-DAG:         score += (unsafe { *{{__v[0-9]+}} }) as i32;
 // REWRITES-DAG:     }
 // REWRITES-DAG:     score
 // REWRITES-DAG: }
-// REWRITES-DAG: fn maybe_consume(mut values: *mut i32, mut len: i32, mut {{_v[0-9]+}}: i32) -> i32 {
+// REWRITES-DAG: fn maybe_consume(mut values: *mut i32, mut len: i32, mut {{__v[0-9]+}}: i32) -> i32 {
 // REWRITES-DAG:     let mut sum: i32 = 0;
 // REWRITES-DAG:     for i in 0..len {
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = values;
-// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.offset((i as i64) as isize) };
-// REWRITES-DAG:         sum += unsafe { *{{_v[0-9]+}} };
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = values;
+// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.offset((i as i64) as isize) };
+// REWRITES-DAG:         sum += unsafe { *{{__v[0-9]+}} };
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// REWRITES-DAG:     if {{_v[0-9]+}} {
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
+// REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { free(values as *mut core::ffi::c_void) };
 // REWRITES-DAG:     }
 // REWRITES-DAG:     sum

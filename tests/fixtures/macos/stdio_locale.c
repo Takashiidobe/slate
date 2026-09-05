@@ -134,14 +134,14 @@ int classify_wide(wint_t value, locale_t locale) {
 // LOWERING-MACOS-NEXT: }
 // LOWERING-MACOS-EMPTY:
 // LOWERING-MACOS-NEXT: fn standard_input() -> *mut __sFILE {
-// LOWERING-MACOS-NEXT:     let {{_v[0-9]+}}: *mut __sFILE = unsafe { __stdinp };
-// LOWERING-MACOS-NEXT:     return {{_v[0-9]+}};
+// LOWERING-MACOS-NEXT:     let {{__v[0-9]+}}: *mut __sFILE = unsafe { __stdinp };
+// LOWERING-MACOS-NEXT:     return {{__v[0-9]+}};
 // LOWERING-MACOS-NEXT: }
 // LOWERING-MACOS-EMPTY:
 // LOWERING-MACOS-NEXT: fn classify_wide({{arg[0-9]+}}: i32, {{arg[0-9]+}}: *mut _xlocale) -> i32 {
-// LOWERING-MACOS-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"alpha\0".as_ptr() as *mut i8;
-// LOWERING-MACOS-NEXT:     let {{_v[0-9]+}}: u32 = unsafe { wctype({{_v[0-9]+}} as *const core::ffi::c_char) };
-// LOWERING-MACOS-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { iswctype_l({{arg[0-9]+}} as i32, {{_v[0-9]+}} as u32, {{arg[0-9]+}} as *mut _xlocale) };
-// LOWERING-MACOS-NEXT:     return {{_v[0-9]+}};
+// LOWERING-MACOS-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"alpha\0".as_ptr() as *mut i8;
+// LOWERING-MACOS-NEXT:     let {{__v[0-9]+}}: u32 = unsafe { wctype({{__v[0-9]+}} as *const core::ffi::c_char) };
+// LOWERING-MACOS-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { iswctype_l({{arg[0-9]+}} as i32, {{__v[0-9]+}} as u32, {{arg[0-9]+}} as *mut _xlocale) };
+// LOWERING-MACOS-NEXT:     return {{__v[0-9]+}};
 // LOWERING-MACOS-NEXT: }
 // SLATE-FILECHECK-END lowering-macos

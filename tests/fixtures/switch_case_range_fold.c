@@ -46,9 +46,9 @@ int main(void) {
 // LOWERING-DAG:     let mut __retval: i32 = 0;
 // LOWERING-DAG:     c = {{arg[0-9]+}};
 // LOWERING-DAG:     {
-// LOWERING-DAG:         let {{_v[0-9]+}}: i32 = c;
+// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = c;
 // LOWERING-DAG:         {
-// LOWERING-DAG:             let __switch_value0 = {{_v[0-9]+}};
+// LOWERING-DAG:             let __switch_value0 = {{__v[0-9]+}};
 // LOWERING-DAG:             let mut __switch_case0: i32 = match __switch_value0 {
 // LOWERING-DAG:                 48 => 0,
 // LOWERING-DAG:                 49 => 1,
@@ -110,10 +110,10 @@ int main(void) {
 // LOWERING-DAG:                         continue '__switch0;
 // LOWERING-DAG:                     }
 // LOWERING-DAG:                     9 => {
-// LOWERING-DAG:                         let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-DAG:                         __retval = {{_v[0-9]+}};
-// LOWERING-DAG:                         let {{_v[0-9]+}}: i32 = __retval;
-// LOWERING-DAG:                         return {{_v[0-9]+}};
+// LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-DAG:                         __retval = {{__v[0-9]+}};
+// LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = __retval;
+// LOWERING-DAG:                         return {{__v[0-9]+}};
 // LOWERING-DAG:                     }
 // LOWERING-DAG:                     10 => {
 // LOWERING-DAG:                         __switch_case0 = 11;
@@ -124,20 +124,20 @@ int main(void) {
 // LOWERING-DAG:                         continue '__switch0;
 // LOWERING-DAG:                     }
 // LOWERING-DAG:                     12 => {
-// LOWERING-DAG:                         let {{_v[0-9]+}}: i32 = 2;
-// LOWERING-DAG:                         __retval = {{_v[0-9]+}};
-// LOWERING-DAG:                         let {{_v[0-9]+}}: i32 = __retval;
-// LOWERING-DAG:                         return {{_v[0-9]+}};
+// LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = 2;
+// LOWERING-DAG:                         __retval = {{__v[0-9]+}};
+// LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = __retval;
+// LOWERING-DAG:                         return {{__v[0-9]+}};
 // LOWERING-DAG:                     }
 // LOWERING-DAG:                     13 => {
 // LOWERING-DAG:                         __switch_case0 = 14;
 // LOWERING-DAG:                         continue '__switch0;
 // LOWERING-DAG:                     }
 // LOWERING-DAG:                     14 => {
-// LOWERING-DAG:                         let {{_v[0-9]+}}: i32 = 3;
-// LOWERING-DAG:                         __retval = {{_v[0-9]+}};
-// LOWERING-DAG:                         let {{_v[0-9]+}}: i32 = __retval;
-// LOWERING-DAG:                         return {{_v[0-9]+}};
+// LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = 3;
+// LOWERING-DAG:                         __retval = {{__v[0-9]+}};
+// LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = __retval;
+// LOWERING-DAG:                         return {{__v[0-9]+}};
 // LOWERING-DAG:                     }
 // LOWERING-DAG:                     15 => {
 // LOWERING-DAG:                         __switch_case0 = 16;
@@ -152,16 +152,16 @@ int main(void) {
 // LOWERING-DAG:                         continue '__switch0;
 // LOWERING-DAG:                     }
 // LOWERING-DAG:                     18 => {
-// LOWERING-DAG:                         let {{_v[0-9]+}}: i32 = 4;
-// LOWERING-DAG:                         __retval = {{_v[0-9]+}};
-// LOWERING-DAG:                         let {{_v[0-9]+}}: i32 = __retval;
-// LOWERING-DAG:                         return {{_v[0-9]+}};
+// LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = 4;
+// LOWERING-DAG:                         __retval = {{__v[0-9]+}};
+// LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = __retval;
+// LOWERING-DAG:                         return {{__v[0-9]+}};
 // LOWERING-DAG:                     }
 // LOWERING-DAG:                     19 => {
-// LOWERING-DAG:                         let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:                         __retval = {{_v[0-9]+}};
-// LOWERING-DAG:                         let {{_v[0-9]+}}: i32 = __retval;
-// LOWERING-DAG:                         return {{_v[0-9]+}};
+// LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:                         __retval = {{__v[0-9]+}};
+// LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = __retval;
+// LOWERING-DAG:                         return {{__v[0-9]+}};
 // LOWERING-DAG:                     }
 // LOWERING-DAG:                     _ => {
 // LOWERING-DAG:                         break '__switch0;
@@ -170,31 +170,47 @@ int main(void) {
 // LOWERING-DAG:             }
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = __retval;
-// LOWERING-DAG:     return {{_v[0-9]+}};
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = __retval;
+// LOWERING-DAG:     return {{__v[0-9]+}};
 // LOWERING-DAG: }
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: fn classify(mut {{_v[0-9]+}}: i32) -> i32 {
+// REWRITES-DAG: fn classify(mut {{__v[0-9]+}}: i32) -> i32 {
 // REWRITES-DAG:     let mut __retval: i32 = 0;
-// REWRITES-DAG:     match {{_v[0-9]+}} {
+// REWRITES-DAG:     match {{__v[0-9]+}} {
 // REWRITES-DAG:         48..=57 => {
-// REWRITES-DAG:             return 1;
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 1;
+// REWRITES-DAG:             __retval = {{__v[0-9]+}};
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = __retval;
+// REWRITES-DAG:             return {{__v[0-9]+}};
 // REWRITES-DAG:         }
 // REWRITES-DAG:         97..=99 => {
-// REWRITES-DAG:             return 2;
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 2;
+// REWRITES-DAG:             __retval = {{__v[0-9]+}};
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = __retval;
+// REWRITES-DAG:             return {{__v[0-9]+}};
 // REWRITES-DAG:         }
 // REWRITES-DAG:         100 | 200 => {
-// REWRITES-DAG:             return 3;
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 3;
+// REWRITES-DAG:             __retval = {{__v[0-9]+}};
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = __retval;
+// REWRITES-DAG:             return {{__v[0-9]+}};
 // REWRITES-DAG:         }
 // REWRITES-DAG:         -3..=-1 | 7 => {
-// REWRITES-DAG:             return 4;
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 4;
+// REWRITES-DAG:             __retval = {{__v[0-9]+}};
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = __retval;
+// REWRITES-DAG:             return {{__v[0-9]+}};
 // REWRITES-DAG:         }
 // REWRITES-DAG:         _ => {
-// REWRITES-DAG:             return 0;
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 0;
+// REWRITES-DAG:             __retval = {{__v[0-9]+}};
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = __retval;
+// REWRITES-DAG:             return {{__v[0-9]+}};
 // REWRITES-DAG:         }
 // REWRITES-DAG:     }
-// REWRITES-DAG:     __retval
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = __retval;
+// REWRITES-DAG:     {{__v[0-9]+}}
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

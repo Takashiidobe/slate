@@ -89,109 +89,109 @@ int main(void) {
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let mut captured: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = -1;
-// LOWERING-NEXT:     captured = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(captured) as *mut core::ffi::c_void;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { on_exit(Some(handle_exit), {{_v[0-9]+}} as *mut core::ffi::c_void) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(i32)> = None;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { mcheck({{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 16;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc({{_v[0-9]+}} as usize) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { mprobe({{_v[0-9]+}} as *mut core::ffi::c_void) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"mcheck:%d %d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = mcheck_status::MCHECK_OK as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     unsafe { free({{_v[0-9]+}} as *mut core::ffi::c_void) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = -1;
+// LOWERING-NEXT:     captured = {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(captured) as *mut core::ffi::c_void;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { on_exit(Some(handle_exit), {{__v[0-9]+}} as *mut core::ffi::c_void) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: Option<unsafe extern "C-unwind" fn(i32)> = None;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { mcheck({{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = 16;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc({{__v[0-9]+}} as usize) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { mprobe({{__v[0-9]+}} as *mut core::ffi::c_void) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"mcheck:%d %d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = mcheck_status::MCHECK_OK as i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// LOWERING-NEXT:     unsafe { free({{__v[0-9]+}} as *mut core::ffi::c_void) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         error_one_per_line = {{_v[0-9]+}};
+// LOWERING-NEXT:         error_one_per_line = {{__v[0-9]+}};
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"first message\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     unsafe { error({{_v[0-9]+}} as i32, {{_v[0-9]+}} as i32, {{_v[0-9]+}} as *const core::ffi::c_char) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"second message\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     unsafe { error({{_v[0-9]+}} as i32, {{_v[0-9]+}} as i32, {{_v[0-9]+}} as *const core::ffi::c_char) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"count_after_two:%u\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = unsafe { error_message_count };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"first message\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     unsafe { error({{__v[0-9]+}} as i32, {{__v[0-9]+}} as i32, {{__v[0-9]+}} as *const core::ffi::c_char) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"second message\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     unsafe { error({{__v[0-9]+}} as i32, {{__v[0-9]+}} as i32, {{__v[0-9]+}} as *const core::ffi::c_char) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"count_after_two:%u\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = unsafe { error_message_count };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 1;
 // LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         error_one_per_line = {{_v[0-9]+}};
+// LOWERING-NEXT:         error_one_per_line = {{__v[0-9]+}};
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"sample.c\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = 42;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"deduped message\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"sample.c\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = 42;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"deduped message\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     unsafe {
 // LOWERING-NEXT:         error_at_line(
-// LOWERING-NEXT:             {{_v[0-9]+}} as i32,
-// LOWERING-NEXT:             {{_v[0-9]+}} as i32,
-// LOWERING-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_char,
-// LOWERING-NEXT:             {{_v[0-9]+}} as u32,
-// LOWERING-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-NEXT:             {{__v[0-9]+}} as i32,
+// LOWERING-NEXT:             {{__v[0-9]+}} as i32,
+// LOWERING-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-NEXT:             {{__v[0-9]+}} as u32,
+// LOWERING-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
 // LOWERING-NEXT:         )
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"sample.c\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = 42;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"deduped message\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"sample.c\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = 42;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"deduped message\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     unsafe {
 // LOWERING-NEXT:         error_at_line(
-// LOWERING-NEXT:             {{_v[0-9]+}} as i32,
-// LOWERING-NEXT:             {{_v[0-9]+}} as i32,
-// LOWERING-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_char,
-// LOWERING-NEXT:             {{_v[0-9]+}} as u32,
-// LOWERING-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-NEXT:             {{__v[0-9]+}} as i32,
+// LOWERING-NEXT:             {{__v[0-9]+}} as i32,
+// LOWERING-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-NEXT:             {{__v[0-9]+}} as u32,
+// LOWERING-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
 // LOWERING-NEXT:         )
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"count_after_dedup:%u\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = unsafe { error_message_count };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"sample.c\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = 43;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"different line\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"count_after_dedup:%u\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = unsafe { error_message_count };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"sample.c\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = 43;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"different line\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     unsafe {
 // LOWERING-NEXT:         error_at_line(
-// LOWERING-NEXT:             {{_v[0-9]+}} as i32,
-// LOWERING-NEXT:             {{_v[0-9]+}} as i32,
-// LOWERING-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_char,
-// LOWERING-NEXT:             {{_v[0-9]+}} as u32,
-// LOWERING-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-NEXT:             {{__v[0-9]+}} as i32,
+// LOWERING-NEXT:             {{__v[0-9]+}} as i32,
+// LOWERING-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-NEXT:             {{__v[0-9]+}} as u32,
+// LOWERING-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
 // LOWERING-NEXT:         )
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"count_after_new_line:%u\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = unsafe { error_message_count };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 5;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"fatal message\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     unsafe { error({{_v[0-9]+}} as i32, {{_v[0-9]+}} as i32, {{_v[0-9]+}} as *const core::ffi::c_char) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"unreachable\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"count_after_new_line:%u\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = unsafe { error_message_count };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 5;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"fatal message\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     unsafe { error({{__v[0-9]+}} as i32, {{__v[0-9]+}} as i32, {{__v[0-9]+}} as *const core::ffi::c_char) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"unreachable\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: extern "C-unwind" fn handle_exit({{arg[0-9]+}}: i32, {{arg[0-9]+}}: *mut core::ffi::c_void) {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = {{arg[0-9]+}} as *mut i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i32 = {{arg[0-9]+}} as *mut i32;
 // LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         *{{_v[0-9]+}} = {{arg[0-9]+}};
+// LOWERING-NEXT:         *{{__v[0-9]+}} = {{arg[0-9]+}};
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"on_exit:%d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{arg[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"on_exit:%d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{arg[0-9]+}}) };
 // LOWERING-NEXT:     return;
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
@@ -248,17 +248,17 @@ int main(void) {
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut captured: i32 = 0;
 // REWRITES-NEXT:     captured = -1;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(captured) as *mut core::ffi::c_void;
-// REWRITES-NEXT:     unsafe { on_exit(Some(handle_exit), {{_v[0-9]+}} as *mut core::ffi::c_void) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(i32)> = None;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { mcheck({{_v[0-9]+}}) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = ({{_v[0-9]+}} == 0) as i32;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc((16 as u64) as usize) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { mprobe({{_v[0-9]+}} as *mut core::ffi::c_void) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"mcheck:%d %d\n".as_ptr() as *mut i8;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = mcheck_status::MCHECK_OK as i32;
-// REWRITES-NEXT:     unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, ({{_v[0-9]+}} == {{_v[0-9]+}}) as i32) };
-// REWRITES-NEXT:     unsafe { free({{_v[0-9]+}} as *mut core::ffi::c_void) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(captured) as *mut core::ffi::c_void;
+// REWRITES-NEXT:     unsafe { on_exit(Some(handle_exit), {{__v[0-9]+}} as *mut core::ffi::c_void) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: Option<unsafe extern "C-unwind" fn(i32)> = None;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { mcheck({{__v[0-9]+}}) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = ({{__v[0-9]+}} == 0) as i32;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc((16 as u64) as usize) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { mprobe({{__v[0-9]+}} as *mut core::ffi::c_void) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i8 = c"mcheck:%d %d\n".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = mcheck_status::MCHECK_OK as i32;
+// REWRITES-NEXT:     unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, ({{__v[0-9]+}} == {{__v[0-9]+}}) as i32) };
+// REWRITES-NEXT:     unsafe { free({{__v[0-9]+}} as *mut core::ffi::c_void) };
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         error_one_per_line = 0;
 // REWRITES-NEXT:     }

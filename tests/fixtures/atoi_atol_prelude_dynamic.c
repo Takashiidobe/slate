@@ -42,45 +42,45 @@ int main(void) {
 // LOWERING-NEXT:     let mut a: aligned::Aligned<aligned::A16, [i8; 32]> = aligned::Aligned([0; 32]);
 // LOWERING-NEXT:     let mut b: aligned::Aligned<aligned::A16, [i8; 32]> = aligned::Aligned([0; 32]);
 // LOWERING-NEXT:     let mut c: aligned::Aligned<aligned::A16, [i8; 32]> = aligned::Aligned([0; 32]);
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = a.as_mut_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"  -42abc\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = (unsafe {
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = a.as_mut_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"  -42abc\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = (unsafe {
 // LOWERING-NEXT:         strcpy(
-// LOWERING-NEXT:             {{_v[0-9]+}} as *mut core::ffi::c_char,
-// LOWERING-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-NEXT:             {{__v[0-9]+}} as *mut core::ffi::c_char,
+// LOWERING-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
 // LOWERING-NEXT:         )
 // LOWERING-NEXT:     }) as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b.as_mut_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"+1000000000000zzz\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = (unsafe {
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b.as_mut_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"+1000000000000zzz\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = (unsafe {
 // LOWERING-NEXT:         strcpy(
-// LOWERING-NEXT:             {{_v[0-9]+}} as *mut core::ffi::c_char,
-// LOWERING-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-NEXT:             {{__v[0-9]+}} as *mut core::ffi::c_char,
+// LOWERING-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
 // LOWERING-NEXT:         )
 // LOWERING-NEXT:     }) as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = c.as_mut_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"9000000000000\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = (unsafe {
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = c.as_mut_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"9000000000000\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = (unsafe {
 // LOWERING-NEXT:         strcpy(
-// LOWERING-NEXT:             {{_v[0-9]+}} as *mut core::ffi::c_char,
-// LOWERING-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-NEXT:             {{__v[0-9]+}} as *mut core::ffi::c_char,
+// LOWERING-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
 // LOWERING-NEXT:         )
 // LOWERING-NEXT:     }) as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = a.as_mut_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { atoi({{_v[0-9]+}} as *const core::ffi::c_char) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%ld\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b.as_mut_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = unsafe { atol({{_v[0-9]+}} as *const core::ffi::c_char) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%lld\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = c.as_mut_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = unsafe { atoll({{_v[0-9]+}} as *const core::ffi::c_char) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = a.as_mut_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { atoi({{__v[0-9]+}} as *const core::ffi::c_char) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%ld\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b.as_mut_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = unsafe { atol({{__v[0-9]+}} as *const core::ffi::c_char) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%lld\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = c.as_mut_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = unsafe { atoll({{__v[0-9]+}} as *const core::ffi::c_char) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -159,45 +159,43 @@ int main(void) {
 // REWRITES-NEXT:     let mut a: aligned::Aligned<aligned::A16, [i8; 32]> = aligned::Aligned([0; 32]);
 // REWRITES-NEXT:     let mut b: aligned::Aligned<aligned::A16, [i8; 32]> = aligned::Aligned([0; 32]);
 // REWRITES-NEXT:     let mut c: aligned::Aligned<aligned::A16, [i8; 32]> = aligned::Aligned([0; 32]);
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i8 = a.as_mut_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i8 = c"  -42abc".as_ptr() as *mut i8;
 // REWRITES-NEXT:     (unsafe {
 // REWRITES-NEXT:         strcpy(
-// REWRITES-NEXT:             a.as_mut_ptr() as *mut core::ffi::c_char,
-// REWRITES-NEXT:             c"  -42abc".as_ptr(),
+// REWRITES-NEXT:             {{__v[0-9]+}} as *mut core::ffi::c_char,
+// REWRITES-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     }) as *mut i8;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i8 = b.as_mut_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i8 = c"+1000000000000zzz".as_ptr() as *mut i8;
 // REWRITES-NEXT:     (unsafe {
 // REWRITES-NEXT:         strcpy(
-// REWRITES-NEXT:             b.as_mut_ptr() as *mut core::ffi::c_char,
-// REWRITES-NEXT:             c"+1000000000000zzz".as_ptr(),
+// REWRITES-NEXT:             {{__v[0-9]+}} as *mut core::ffi::c_char,
+// REWRITES-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     }) as *mut i8;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i8 = c.as_mut_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i8 = c"9000000000000".as_ptr() as *mut i8;
 // REWRITES-NEXT:     (unsafe {
 // REWRITES-NEXT:         strcpy(
-// REWRITES-NEXT:             c.as_mut_ptr() as *mut core::ffi::c_char,
-// REWRITES-NEXT:             c"9000000000000".as_ptr(),
+// REWRITES-NEXT:             {{__v[0-9]+}} as *mut core::ffi::c_char,
+// REWRITES-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     }) as *mut i8;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"%d\n".as_ptr() as *mut i8;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = a.as_mut_ptr() as *mut i8;
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf({{_v[0-9]+}} as *const core::ffi::c_char, unsafe {
-// REWRITES-NEXT:             __slate_atoi({{_v[0-9]+}} as *const i8)
-// REWRITES-NEXT:         })
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"%ld\n".as_ptr() as *mut i8;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b.as_mut_ptr() as *mut i8;
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf({{_v[0-9]+}} as *const core::ffi::c_char, unsafe {
-// REWRITES-NEXT:             __slate_atol({{_v[0-9]+}} as *const i8)
-// REWRITES-NEXT:         })
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"%lld\n".as_ptr() as *mut i8;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c.as_mut_ptr() as *mut i8;
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf({{_v[0-9]+}} as *const core::ffi::c_char, unsafe {
-// REWRITES-NEXT:             __slate_atol({{_v[0-9]+}} as *const i8)
-// REWRITES-NEXT:         })
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i8 = c"%d\n".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i8 = a.as_mut_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { __slate_atoi({{__v[0-9]+}} as *const i8) };
+// REWRITES-NEXT:     unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i8 = c"%ld\n".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i8 = b.as_mut_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i64 = unsafe { __slate_atol({{__v[0-9]+}} as *const i8) };
+// REWRITES-NEXT:     unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i8 = c"%lld\n".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i8 = c.as_mut_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i64 = unsafe { __slate_atol({{__v[0-9]+}} as *const i8) };
+// REWRITES-NEXT:     unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

@@ -19,19 +19,24 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: fn add({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = {{arg[0-9]+}} + {{arg[0-9]+}};
-// LOWERING-DAG:     return {{_v[0-9]+}};
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = {{arg[0-9]+}} + {{arg[0-9]+}};
+// LOWERING-DAG:     return {{__v[0-9]+}};
 // LOWERING-DAG: }
-// LOWERING-DAG: let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// LOWERING-DAG: let {{_v[0-9]+}}: i32 = 2;
-// LOWERING-DAG: let {{_v[0-9]+}}: i32 = 3;
-// LOWERING-DAG: let {{_v[0-9]+}}: i32 = add({{_v[0-9]+}}, {{_v[0-9]+}});
-// LOWERING-DAG: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
+// LOWERING-DAG: let {{__v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// LOWERING-DAG: let {{__v[0-9]+}}: i32 = 2;
+// LOWERING-DAG: let {{__v[0-9]+}}: i32 = 3;
+// LOWERING-DAG: let {{__v[0-9]+}}: i32 = add({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-DAG: let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: fn add({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-DAG:     {{arg[0-9]+}} + {{arg[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{arg[0-9]+}} + {{arg[0-9]+}};
+// REWRITES-DAG:     {{__v[0-9]+}}
 // REWRITES-DAG: }
-// REWRITES-DAG: unsafe { printf(c"%d\n".as_ptr(), add(2, 3)) };
+// REWRITES-DAG: let {{__v[0-9]+}}: *mut i8 = c"%d\n".as_ptr() as *mut i8;
+// REWRITES-DAG: let {{__v[0-9]+}}: i32 = 2;
+// REWRITES-DAG: let {{__v[0-9]+}}: i32 = 3;
+// REWRITES-DAG: let {{__v[0-9]+}}: i32 = add({{__v[0-9]+}}, {{__v[0-9]+}});
+// REWRITES-DAG: unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
 // SLATE-FILECHECK-END rewrites

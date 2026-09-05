@@ -78,42 +78,42 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: fn main() {
 // REWRITES-DAG:     let mut m: *mut i32 = maybe(2);
-// REWRITES-DAG:     let {{_v[0-9]+}}: *mut i32 = Box::into_raw(make(4)).cast::<i32>();
-// REWRITES-DAG:     let {{_v[0-9]+}}: *mut i32 = Box::into_raw(make8()).cast::<i32>();
-// REWRITES-DAG:     let {{_v[0-9]+}}: *mut i32 = allocfree(3);
-// REWRITES-DAG:     let {{_v[0-9]+}}: *mut i32 = Box::into_raw(make_raw(2)).cast::<i32>();
-// REWRITES-DAG:     let {{_v[0-9]+}}: *mut i32 = Box::into_raw(make_raw(2)).cast::<i32>();
-// REWRITES-DAG:     let {{_v[0-9]+}}: *mut i8 = c"%d %d %d %d %d %d\n".as_ptr() as *mut i8;
-// REWRITES-DAG:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(3) };
-// REWRITES-DAG:     let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// REWRITES-DAG:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(7) };
-// REWRITES-DAG:     let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// REWRITES-DAG:     let {{_v[0-9]+}}: i32 = (m != std::ptr::null_mut()) as i32;
-// REWRITES-DAG:     let {{_v[0-9]+}}: i32 = ({{_v[0-9]+}} != std::ptr::null_mut()) as i32;
-// REWRITES-DAG:     let {{_v[0-9]+}}: i32 = read_first({{_v[0-9]+}});
-// REWRITES-DAG:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(1) };
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut i32 = Box::into_raw(make(4)).cast::<i32>();
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut i32 = Box::into_raw(make8()).cast::<i32>();
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut i32 = allocfree(3);
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut i32 = Box::into_raw(make_raw(2)).cast::<i32>();
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut i32 = Box::into_raw(make_raw(2)).cast::<i32>();
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut i8 = c"%d %d %d %d %d %d\n".as_ptr() as *mut i8;
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(3) };
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(7) };
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = (m != std::ptr::null_mut()) as i32;
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = ({{__v[0-9]+}} != std::ptr::null_mut()) as i32;
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = read_first({{__v[0-9]+}});
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(1) };
 // REWRITES-DAG:     unsafe {
 // REWRITES-DAG:         printf(
-// REWRITES-DAG:             {{_v[0-9]+}} as *const core::ffi::c_char,
-// REWRITES-DAG:             {{_v[0-9]+}},
-// REWRITES-DAG:             {{_v[0-9]+}},
-// REWRITES-DAG:             {{_v[0-9]+}},
-// REWRITES-DAG:             {{_v[0-9]+}},
-// REWRITES-DAG:             {{_v[0-9]+}},
-// REWRITES-DAG:             unsafe { *{{_v[0-9]+}} },
+// REWRITES-DAG:             {{__v[0-9]+}} as *const core::ffi::c_char,
+// REWRITES-DAG:             {{__v[0-9]+}},
+// REWRITES-DAG:             {{__v[0-9]+}},
+// REWRITES-DAG:             {{__v[0-9]+}},
+// REWRITES-DAG:             {{__v[0-9]+}},
+// REWRITES-DAG:             {{__v[0-9]+}},
+// REWRITES-DAG:             unsafe { *{{__v[0-9]+}} },
 // REWRITES-DAG:         )
 // REWRITES-DAG:     };
-// REWRITES-DAG:     unsafe { free({{_v[0-9]+}} as *mut core::ffi::c_void) };
-// REWRITES-DAG:     unsafe { free({{_v[0-9]+}} as *mut core::ffi::c_void) };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = m != std::ptr::null_mut();
-// REWRITES-DAG:     if {{_v[0-9]+}} {
+// REWRITES-DAG:     unsafe { free({{__v[0-9]+}} as *mut core::ffi::c_void) };
+// REWRITES-DAG:     unsafe { free({{__v[0-9]+}} as *mut core::ffi::c_void) };
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = m != std::ptr::null_mut();
+// REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { free(m as *mut core::ffi::c_void) };
 // REWRITES-DAG:     }
-// REWRITES-DAG:     unsafe { free({{_v[0-9]+}} as *mut core::ffi::c_void) };
-// REWRITES-DAG:     unsafe { free({{_v[0-9]+}} as *mut core::ffi::c_void) };
-// REWRITES-DAG:     unsafe { free({{_v[0-9]+}} as *mut core::ffi::c_void) };
-// REWRITES-DAG:     let {{_v[0-9]+}}: *mut i32 = Box::into_raw(make_shadow(1)).cast::<i32>();
-// REWRITES-DAG:     unsafe { Some(custom_free).unwrap()({{_v[0-9]+}} as *mut core::ffi::c_void) };
+// REWRITES-DAG:     unsafe { free({{__v[0-9]+}} as *mut core::ffi::c_void) };
+// REWRITES-DAG:     unsafe { free({{__v[0-9]+}} as *mut core::ffi::c_void) };
+// REWRITES-DAG:     unsafe { free({{__v[0-9]+}} as *mut core::ffi::c_void) };
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut i32 = Box::into_raw(make_shadow(1)).cast::<i32>();
+// REWRITES-DAG:     unsafe { Some(custom_free).unwrap()({{__v[0-9]+}} as *mut core::ffi::c_void) };
 // REWRITES-DAG:     std::process::exit(0 as i32);
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

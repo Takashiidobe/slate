@@ -9,14 +9,15 @@ int call_root_helper(void) { return root_helper(); }
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: #[unsafe(no_mangle)]
 // LOWERING-DAG: pub extern "C-unwind" fn call_root_helper() -> i32 {
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = root_helper();
-// LOWERING-DAG:     return {{_v[0-9]+}};
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = root_helper();
+// LOWERING-DAG:     return {{__v[0-9]+}};
 // LOWERING-DAG: }
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: #[unsafe(no_mangle)]
 // REWRITES-DAG: pub extern "C-unwind" fn call_root_helper() -> i32 {
-// REWRITES-DAG:     root_helper()
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = root_helper();
+// REWRITES-DAG:     {{__v[0-9]+}}
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

@@ -60,82 +60,82 @@ int main(void) {
 // LOWERING-NEXT:     let mut b: num_complex::Complex<f64> = num_complex::Complex { re: 0.0, im: 0.0 };
 // LOWERING-NEXT:     let mut product: num_complex::Complex<f64> = num_complex::Complex { re: 0.0, im: 0.0 };
 // LOWERING-NEXT:     let mut quotient: num_complex::Complex<f64> = num_complex::Complex { re: 0.0, im: 0.0 };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 0.5;
-// LOWERING-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(real), {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = -0.25;
-// LOWERING-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(imaginary), {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(real)) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(imaginary)) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} };
-// LOWERING-NEXT:     a = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(real)) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(imaginary)) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = -{{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} };
-// LOWERING-NEXT:     b = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = 0.5;
+// LOWERING-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(real), {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = -0.25;
+// LOWERING-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(imaginary), {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(real)) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(imaginary)) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex { re: {{__v[0-9]+}}, im: {{__v[0-9]+}} };
+// LOWERING-NEXT:     a = {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(real)) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(imaginary)) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = -{{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex { re: {{__v[0-9]+}}, im: {{__v[0-9]+}} };
+// LOWERING-NEXT:     b = {{__v[0-9]+}};
 // LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: num_complex::Complex<f64> = a;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: num_complex::Complex<f64> = b;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: num_complex::Complex<f64> =
-// LOWERING-NEXT:             unsafe { __muldc3({{_v[0-9]+}}.re, {{_v[0-9]+}}.im, {{_v[0-9]+}}.re, {{_v[0-9]+}}.im) };
-// LOWERING-NEXT:         product = {{_v[0-9]+}};
+// LOWERING-NEXT:         let {{__v[0-9]+}}: num_complex::Complex<f64> = a;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: num_complex::Complex<f64> = b;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: num_complex::Complex<f64> =
+// LOWERING-NEXT:             unsafe { __muldc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
+// LOWERING-NEXT:         product = {{__v[0-9]+}};
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: num_complex::Complex<f64> = a;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: num_complex::Complex<f64> = b;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: num_complex::Complex<f64> =
-// LOWERING-NEXT:             unsafe { __divdc3({{_v[0-9]+}}.re, {{_v[0-9]+}}.im, {{_v[0-9]+}}.re, {{_v[0-9]+}}.im) };
-// LOWERING-NEXT:         quotient = {{_v[0-9]+}};
+// LOWERING-NEXT:         let {{__v[0-9]+}}: num_complex::Complex<f64> = a;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: num_complex::Complex<f64> = b;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: num_complex::Complex<f64> =
+// LOWERING-NEXT:             unsafe { __divdc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
+// LOWERING-NEXT:         quotient = {{__v[0-9]+}};
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%.4f %.4f %.4f %.4f\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f64> = product;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.re;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f64> = product;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.im;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f64> = quotient;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.re;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f64> = quotient;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.im;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f64> = product;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.re;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 0.3125;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: num_complex::Complex<f64> = product;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.im;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: f64 = 0.0;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
-// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%.4f %.4f %.4f %.4f\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: num_complex::Complex<f64> = product;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = {{__v[0-9]+}}.re;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: num_complex::Complex<f64> = product;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = {{__v[0-9]+}}.im;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: num_complex::Complex<f64> = quotient;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = {{__v[0-9]+}}.re;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: num_complex::Complex<f64> = quotient;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = {{__v[0-9]+}}.im;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: num_complex::Complex<f64> = product;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = {{__v[0-9]+}}.re;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = 0.3125;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-NEXT:         let {{__v[0-9]+}}: num_complex::Complex<f64> = product;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: f64 = {{__v[0-9]+}}.im;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: f64 = 0.0;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
+// LOWERING-NEXT:         {{__v[0-9]+}}
 // LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
-// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:         let {{__v[0-9]+}}: bool = false;
+// LOWERING-NEXT:         {{__v[0-9]+}}
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: num_complex::Complex<f64> = quotient;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.re;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: f64 = 0.6;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
-// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-NEXT:         let {{__v[0-9]+}}: num_complex::Complex<f64> = quotient;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: f64 = {{__v[0-9]+}}.re;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: f64 = 0.6;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
+// LOWERING-NEXT:         {{__v[0-9]+}}
 // LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
-// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:         let {{__v[0-9]+}}: bool = false;
+// LOWERING-NEXT:         {{__v[0-9]+}}
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: num_complex::Complex<f64> = quotient;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.im;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: f64 = -0.8;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
-// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-NEXT:         let {{__v[0-9]+}}: num_complex::Complex<f64> = quotient;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: f64 = {{__v[0-9]+}}.im;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: f64 = -0.8;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
+// LOWERING-NEXT:         {{__v[0-9]+}}
 // LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
-// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:         let {{__v[0-9]+}}: bool = false;
+// LOWERING-NEXT:         {{__v[0-9]+}}
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = if {{__v[0-9]+}} { {{__v[0-9]+}} } else { {{__v[0-9]+}} };
+// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -174,55 +174,55 @@ int main(void) {
 // REWRITES-NEXT:     let mut quotient: num_complex::Complex<f64> = num_complex::Complex { re: 0.0, im: 0.0 };
 // REWRITES-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(real), 0.5 as f64) };
 // REWRITES-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(imaginary), -0.25 as f64) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(real)) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(imaginary)) };
-// REWRITES-NEXT:     a = num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(real)) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(imaginary)) };
-// REWRITES-NEXT:     b = num_complex::Complex { re: {{_v[0-9]+}}, im: -{{_v[0-9]+}} };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f64> = a;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f64> = b;
-// REWRITES-NEXT:     product = unsafe { __muldc3({{_v[0-9]+}}.re, {{_v[0-9]+}}.im, {{_v[0-9]+}}.re, {{_v[0-9]+}}.im) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f64> = a;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f64> = b;
-// REWRITES-NEXT:     quotient = unsafe { __divdc3({{_v[0-9]+}}.re, {{_v[0-9]+}}.im, {{_v[0-9]+}}.re, {{_v[0-9]+}}.im) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f64> = product;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.re;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f64> = product;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.im;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f64> = quotient;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.re;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f64> = quotient;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.im;
-// REWRITES-NEXT:     unsafe { printf(c"%.4f %.4f %.4f %.4f\n".as_ptr(), {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f64> = product;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}}.re == 0.3125 {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: num_complex::Complex<f64> = product;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}}.im == 0.0;
-// REWRITES-NEXT:         {{_v[0-9]+}}
+// REWRITES-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(real)) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(imaginary)) };
+// REWRITES-NEXT:     a = num_complex::Complex { re: {{__v[0-9]+}}, im: {{__v[0-9]+}} };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(real)) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(imaginary)) };
+// REWRITES-NEXT:     b = num_complex::Complex { re: {{__v[0-9]+}}, im: -{{__v[0-9]+}} };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: num_complex::Complex<f64> = a;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: num_complex::Complex<f64> = b;
+// REWRITES-NEXT:     product = unsafe { __muldc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: num_complex::Complex<f64> = a;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: num_complex::Complex<f64> = b;
+// REWRITES-NEXT:     quotient = unsafe { __divdc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: num_complex::Complex<f64> = product;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: f64 = {{__v[0-9]+}}.re;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: num_complex::Complex<f64> = product;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: f64 = {{__v[0-9]+}}.im;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: num_complex::Complex<f64> = quotient;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: f64 = {{__v[0-9]+}}.re;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: num_complex::Complex<f64> = quotient;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: f64 = {{__v[0-9]+}}.im;
+// REWRITES-NEXT:     unsafe { printf(c"%.4f %.4f %.4f %.4f\n".as_ptr(), {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: num_complex::Complex<f64> = product;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}}.re == 0.3125 {
+// REWRITES-NEXT:         let {{__v[0-9]+}}: num_complex::Complex<f64> = product;
+// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.im == 0.0;
+// REWRITES-NEXT:         {{__v[0-9]+}}
 // REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{_v[0-9]+}}
+// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
+// REWRITES-NEXT:         {{__v[0-9]+}}
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: num_complex::Complex<f64> = quotient;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}}.re == 0.6;
-// REWRITES-NEXT:         {{_v[0-9]+}}
+// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-NEXT:         let {{__v[0-9]+}}: num_complex::Complex<f64> = quotient;
+// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.re == 0.6;
+// REWRITES-NEXT:         {{__v[0-9]+}}
 // REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{_v[0-9]+}}
+// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
+// REWRITES-NEXT:         {{__v[0-9]+}}
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: num_complex::Complex<f64> = quotient;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}}.im == -0.8;
-// REWRITES-NEXT:         {{_v[0-9]+}}
+// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-NEXT:         let {{__v[0-9]+}}: num_complex::Complex<f64> = quotient;
+// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.im == -0.8;
+// REWRITES-NEXT:         {{__v[0-9]+}}
 // REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{_v[0-9]+}}
+// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
+// REWRITES-NEXT:         {{__v[0-9]+}}
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// REWRITES-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = if {{__v[0-9]+}} { {{__v[0-9]+}} } else { {{__v[0-9]+}} };
+// REWRITES-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

@@ -33,15 +33,15 @@ int main(void) { return 0; }
 // LOWERING-MACOS-NEXT: fn probe() -> f64 {
 // LOWERING-MACOS-NEXT:     let mut value: f64 = 0.0;
 // LOWERING-MACOS-NEXT:     unsafe { store_long_double(std::ptr::addr_of_mut!(value) as *mut f64) };
-// LOWERING-MACOS-NEXT:     let {{_v[0-9]+}}: *mut f64 =
+// LOWERING-MACOS-NEXT:     let {{__v[0-9]+}}: *mut f64 =
 // LOWERING-MACOS-NEXT:         (unsafe { load_long_double(std::ptr::addr_of_mut!(value) as *const f64) }) as *mut f64;
-// LOWERING-MACOS-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-MACOS-NEXT:     return {{_v[0-9]+}};
+// LOWERING-MACOS-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-MACOS-NEXT:     return {{__v[0-9]+}};
 // LOWERING-MACOS-NEXT: }
 // LOWERING-MACOS-EMPTY:
 // LOWERING-MACOS-NEXT: fn main() {
-// LOWERING-MACOS-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-MACOS-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-MACOS-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-MACOS-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-MACOS-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-MACOS-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-MACOS-NEXT: }
 // SLATE-FILECHECK-END lowering-macos

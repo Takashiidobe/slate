@@ -27,13 +27,13 @@ int main(void) {
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let mut a: aligned::Aligned<aligned::A16, [i32; 5]> = aligned::Aligned([0; 5]);
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: [i32; 5] = [1, 2, 3, 4, 5];
-// LOWERING-NEXT:     *a = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = a.as_mut_ptr() as *mut i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 5;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = sum_n({{_v[0-9]+}}, {{_v[0-9]+}});
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: [i32; 5] = [1, 2, 3, 4, 5];
+// LOWERING-NEXT:     *a = {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i32 = a.as_mut_ptr() as *mut i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 5;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = sum_n({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn sum_n({{arg[0-9]+}}: *mut i32, {{arg[0-9]+}}: i32) -> i32 {
@@ -42,36 +42,36 @@ int main(void) {
 // LOWERING-NEXT:     let mut s: i32 = 0;
 // LOWERING-NEXT:     p = {{arg[0-9]+}};
 // LOWERING-NEXT:     n = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     s = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     s = {{__v[0-9]+}};
 // LOWERING-NEXT:     {
 // LOWERING-NEXT:         let mut i: i32 = 0;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:         i = {{_v[0-9]+}};
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:         i = {{__v[0-9]+}};
 // LOWERING-NEXT:         loop {
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = i;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = n;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < {{_v[0-9]+}};
-// LOWERING-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = i;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = n;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
+// LOWERING-NEXT:             if !{{__v[0-9]+}} {
 // LOWERING-NEXT:                 break;
 // LOWERING-NEXT:             }
 // LOWERING-NEXT:             {
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = i;
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} as i64;
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: *mut i32 = p;
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.offset({{_v[0-9]+}} as isize) };
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = s;
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:                 s = {{_v[0-9]+}};
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = i;
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: i64 = {{__v[0-9]+}} as i64;
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: *mut i32 = p;
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.offset({{__v[0-9]+}} as isize) };
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = s;
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-NEXT:                 s = {{__v[0-9]+}};
 // LOWERING-NEXT:             }
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = i;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
-// LOWERING-NEXT:             i = {{_v[0-9]+}};
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = i;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + 1;
+// LOWERING-NEXT:             i = {{__v[0-9]+}};
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = s;
-// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = s;
+// LOWERING-NEXT:     return {{__v[0-9]+}};
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -91,22 +91,43 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut a: aligned::Aligned<aligned::A16, [i32; 5]> = aligned::Aligned([0; 5]);
-// REWRITES-NEXT:     *a = [1, 2, 3, 4, 5];
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = a.as_mut_ptr() as *mut i32;
-// REWRITES-NEXT:     std::process::exit(sum_n(unsafe {
-// REWRITES-NEXT:         std::slice::from_raw_parts({{_v[0-9]+}} as *const i32, (5 as i32) as usize)
-// REWRITES-NEXT:     }) as i32);
+// REWRITES-NEXT:     let {{__v[0-9]+}}: [i32; 5] = [1, 2, 3, 4, 5];
+// REWRITES-NEXT:     *a = {{__v[0-9]+}};
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i32 = a.as_mut_ptr() as *mut i32;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 5;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = sum_n(unsafe { std::slice::from_raw_parts({{__v[0-9]+}} as *const i32, {{__v[0-9]+}} as usize) });
+// REWRITES-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn sum_n({{arg[0-9]+}}: &[i32]) -> i32 {
 // REWRITES-NEXT:     let mut p: *mut i32 = {{arg[0-9]+}}.as_ptr() as *mut i32;
 // REWRITES-NEXT:     let mut n: i32 = {{arg[0-9]+}}.len() as i32;
 // REWRITES-NEXT:     let mut s: i32 = 0;
-// REWRITES-NEXT:     for i in 0..n {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i32 = p;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.offset((i as i64) as isize) };
-// REWRITES-NEXT:         s += unsafe { *{{_v[0-9]+}} };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT:     s = {{__v[0-9]+}};
+// REWRITES-NEXT:     let mut i: i32 = 0;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT:     i = {{__v[0-9]+}};
+// REWRITES-NEXT:     loop {
+// REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = i;
+// REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = n;
+// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
+// REWRITES-NEXT:         if !{{__v[0-9]+}} {
+// REWRITES-NEXT:             break;
+// REWRITES-NEXT:         }
+// REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = i;
+// REWRITES-NEXT:         let {{__v[0-9]+}}: i64 = {{__v[0-9]+}} as i64;
+// REWRITES-NEXT:         let {{__v[0-9]+}}: *mut i32 = p;
+// REWRITES-NEXT:         let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.offset({{__v[0-9]+}} as isize) };
+// REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = s;
+// REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// REWRITES-NEXT:         s = {{__v[0-9]+}};
+// REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = i;
+// REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + 1;
+// REWRITES-NEXT:         i = {{__v[0-9]+}};
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     s
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = s;
+// REWRITES-NEXT:     {{__v[0-9]+}}
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

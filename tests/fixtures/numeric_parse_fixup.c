@@ -46,73 +46,73 @@ int main(void) {
 // REWRITES-DAG:     ];
 // REWRITES-DAG:     flt = [32, 32, 45, 51, 46, 53, 101, 50, 114, 101, 115, 116, 0];
 // REWRITES-DAG:     end_source = [49, 50, 116, 97, 105, 108, 0];
-// REWRITES-DAG:     let {{_v[0-9]+}}: *mut i8 = c"%d %ld %lu %ld %ld %lu %.1f\n".as_ptr() as *mut i8;
-// REWRITES-DAG:     let {{_v[0-9]+}}: *mut i8 = whole.as_mut_ptr() as *mut i8;
-// REWRITES-DAG:     let {{_v[0-9]+}}: i32 = unsafe { __slate_atoi({{_v[0-9]+}} as *const i8) };
-// REWRITES-DAG:     let {{_v[0-9]+}}: *mut i8 = whole_long.as_mut_ptr() as *mut i8;
-// REWRITES-DAG:     let {{_v[0-9]+}}: *mut *mut i8 = std::ptr::null_mut();
-// REWRITES-DAG:     let {{_v[0-9]+}}: i64 = unsafe {
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut i8 = c"%d %ld %lu %ld %ld %lu %.1f\n".as_ptr() as *mut i8;
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut i8 = whole.as_mut_ptr() as *mut i8;
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = unsafe { __slate_atoi({{__v[0-9]+}} as *const i8) };
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut i8 = whole_long.as_mut_ptr() as *mut i8;
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut *mut i8 = std::ptr::null_mut();
+// REWRITES-DAG:     let {{__v[0-9]+}}: i64 = unsafe {
 // REWRITES-DAG:         strtol(
-// REWRITES-DAG:             {{_v[0-9]+}} as *const core::ffi::c_char,
-// REWRITES-DAG:             {{_v[0-9]+}} as *mut *mut core::ffi::c_char,
+// REWRITES-DAG:             {{__v[0-9]+}} as *const core::ffi::c_char,
+// REWRITES-DAG:             {{__v[0-9]+}} as *mut *mut core::ffi::c_char,
 // REWRITES-DAG:             10 as i32,
 // REWRITES-DAG:         )
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: *mut i8 = whole_unsigned.as_mut_ptr() as *mut i8;
-// REWRITES-DAG:     let {{_v[0-9]+}}: *mut *mut i8 = std::ptr::null_mut();
-// REWRITES-DAG:     let {{_v[0-9]+}}: u64 = unsafe {
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut i8 = whole_unsigned.as_mut_ptr() as *mut i8;
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut *mut i8 = std::ptr::null_mut();
+// REWRITES-DAG:     let {{__v[0-9]+}}: u64 = unsafe {
 // REWRITES-DAG:         strtoul(
-// REWRITES-DAG:             {{_v[0-9]+}} as *const core::ffi::c_char,
-// REWRITES-DAG:             {{_v[0-9]+}} as *mut *mut core::ffi::c_char,
+// REWRITES-DAG:             {{__v[0-9]+}} as *const core::ffi::c_char,
+// REWRITES-DAG:             {{__v[0-9]+}} as *mut *mut core::ffi::c_char,
 // REWRITES-DAG:             10 as i32,
 // REWRITES-DAG:         )
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: *mut i8 = leading.as_mut_ptr() as *mut i8;
-// REWRITES-DAG:     let {{_v[0-9]+}}: i64 = unsafe { __slate_atol({{_v[0-9]+}} as *const i8) };
-// REWRITES-DAG:     let {{_v[0-9]+}}: *mut i8 = large.as_mut_ptr() as *mut i8;
-// REWRITES-DAG:     let {{_v[0-9]+}}: *mut *mut i8 = std::ptr::null_mut();
-// REWRITES-DAG:     let {{_v[0-9]+}}: i64 = unsafe {
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut i8 = leading.as_mut_ptr() as *mut i8;
+// REWRITES-DAG:     let {{__v[0-9]+}}: i64 = unsafe { __slate_atol({{__v[0-9]+}} as *const i8) };
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut i8 = large.as_mut_ptr() as *mut i8;
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut *mut i8 = std::ptr::null_mut();
+// REWRITES-DAG:     let {{__v[0-9]+}}: i64 = unsafe {
 // REWRITES-DAG:         strtol(
-// REWRITES-DAG:             {{_v[0-9]+}} as *const core::ffi::c_char,
-// REWRITES-DAG:             {{_v[0-9]+}} as *mut *mut core::ffi::c_char,
+// REWRITES-DAG:             {{__v[0-9]+}} as *const core::ffi::c_char,
+// REWRITES-DAG:             {{__v[0-9]+}} as *mut *mut core::ffi::c_char,
 // REWRITES-DAG:             10 as i32,
 // REWRITES-DAG:         )
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: *mut i8 = empty.as_mut_ptr() as *mut i8;
-// REWRITES-DAG:     let {{_v[0-9]+}}: *mut *mut i8 = std::ptr::null_mut();
-// REWRITES-DAG:     let {{_v[0-9]+}}: u64 = unsafe {
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut i8 = empty.as_mut_ptr() as *mut i8;
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut *mut i8 = std::ptr::null_mut();
+// REWRITES-DAG:     let {{__v[0-9]+}}: u64 = unsafe {
 // REWRITES-DAG:         strtoul(
-// REWRITES-DAG:             {{_v[0-9]+}} as *const core::ffi::c_char,
-// REWRITES-DAG:             {{_v[0-9]+}} as *mut *mut core::ffi::c_char,
+// REWRITES-DAG:             {{__v[0-9]+}} as *const core::ffi::c_char,
+// REWRITES-DAG:             {{__v[0-9]+}} as *mut *mut core::ffi::c_char,
 // REWRITES-DAG:             10 as i32,
 // REWRITES-DAG:         )
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: *mut i8 = flt.as_mut_ptr() as *mut i8;
-// REWRITES-DAG:     let {{_v[0-9]+}}: *mut *mut i8 = std::ptr::null_mut();
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut i8 = flt.as_mut_ptr() as *mut i8;
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut *mut i8 = std::ptr::null_mut();
 // REWRITES-DAG:     unsafe {
 // REWRITES-DAG:         printf(
-// REWRITES-DAG:             {{_v[0-9]+}} as *const core::ffi::c_char,
-// REWRITES-DAG:             {{_v[0-9]+}},
-// REWRITES-DAG:             {{_v[0-9]+}},
-// REWRITES-DAG:             {{_v[0-9]+}},
-// REWRITES-DAG:             {{_v[0-9]+}},
-// REWRITES-DAG:             {{_v[0-9]+}},
-// REWRITES-DAG:             {{_v[0-9]+}},
+// REWRITES-DAG:             {{__v[0-9]+}} as *const core::ffi::c_char,
+// REWRITES-DAG:             {{__v[0-9]+}},
+// REWRITES-DAG:             {{__v[0-9]+}},
+// REWRITES-DAG:             {{__v[0-9]+}},
+// REWRITES-DAG:             {{__v[0-9]+}},
+// REWRITES-DAG:             {{__v[0-9]+}},
+// REWRITES-DAG:             {{__v[0-9]+}},
 // REWRITES-DAG:             unsafe {
 // REWRITES-DAG:                 strtod(
-// REWRITES-DAG:                     {{_v[0-9]+}} as *const core::ffi::c_char,
-// REWRITES-DAG:                     {{_v[0-9]+}} as *mut *mut core::ffi::c_char,
+// REWRITES-DAG:                     {{__v[0-9]+}} as *const core::ffi::c_char,
+// REWRITES-DAG:                     {{__v[0-9]+}} as *mut *mut core::ffi::c_char,
 // REWRITES-DAG:                 )
 // REWRITES-DAG:             },
 // REWRITES-DAG:         )
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: *mut i8 = end_source.as_mut_ptr() as *mut i8;
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut i8 = end_source.as_mut_ptr() as *mut i8;
 // REWRITES-DAG:     unsafe {
 // REWRITES-DAG:         printf(
 // REWRITES-DAG:             c"%ld %c\n".as_ptr(),
 // REWRITES-DAG:             unsafe {
 // REWRITES-DAG:                 strtol(
-// REWRITES-DAG:                     {{_v[0-9]+}} as *const core::ffi::c_char,
+// REWRITES-DAG:                     {{__v[0-9]+}} as *const core::ffi::c_char,
 // REWRITES-DAG:                     std::ptr::addr_of_mut!(end) as *mut *mut core::ffi::c_char,
 // REWRITES-DAG:                     10 as i32,
 // REWRITES-DAG:                 )

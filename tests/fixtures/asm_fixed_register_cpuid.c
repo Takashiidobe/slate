@@ -14,21 +14,21 @@ static int cpuid_leaf1_nonzero(void) {
 int main(void) { return cpuid_leaf1_nonzero(); }
 
 // SLATE-FILECHECK-BEGIN lowering
-// LOWERING-DAG: let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-DAG: let {{_v[0-9]+}}: u32;
-// LOWERING-DAG: let {{_v[0-9]+}}: u32;
-// LOWERING-DAG: let {{_v[0-9]+}}: u32;
+// LOWERING-DAG: let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-DAG: let {{__v[0-9]+}}: u32;
+// LOWERING-DAG: let {{__v[0-9]+}}: u32;
+// LOWERING-DAG: let {{__v[0-9]+}}: u32;
 // LOWERING-DAG: unsafe {
-// LOWERING-DAG:     core::arch::asm!("cpuid\n\t", lateout("eax") {{_v[0-9]+}}, lateout("ecx") {{_v[0-9]+}}, lateout("edx") {{_v[0-9]+}}, in("eax") {{_v[0-9]+}}, options(att_syntax));
+// LOWERING-DAG:     core::arch::asm!("cpuid\n\t", lateout("eax") {{__v[0-9]+}}, lateout("ecx") {{__v[0-9]+}}, lateout("edx") {{__v[0-9]+}}, in("eax") {{__v[0-9]+}}, options(att_syntax));
 // LOWERING-DAG: }
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-DAG: let {{_v[0-9]+}}: u32;
-// REWRITES-DAG: let {{_v[0-9]+}}: u32;
-// REWRITES-DAG: let {{_v[0-9]+}}: u32;
+// REWRITES-DAG: let {{__v[0-9]+}}: i32 = 1;
+// REWRITES-DAG: let {{__v[0-9]+}}: u32;
+// REWRITES-DAG: let {{__v[0-9]+}}: u32;
+// REWRITES-DAG: let {{__v[0-9]+}}: u32;
 // REWRITES-DAG: unsafe {
-// REWRITES-DAG:     core::arch::asm!("cpuid\n\t", lateout("eax") {{_v[0-9]+}}, lateout("ecx") {{_v[0-9]+}}, lateout("edx") {{_v[0-9]+}}, in("eax") {{_v[0-9]+}}, options(att_syntax));
+// REWRITES-DAG:     core::arch::asm!("cpuid\n\t", lateout("eax") {{__v[0-9]+}}, lateout("ecx") {{__v[0-9]+}}, lateout("edx") {{__v[0-9]+}}, in("eax") {{__v[0-9]+}}, options(att_syntax));
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

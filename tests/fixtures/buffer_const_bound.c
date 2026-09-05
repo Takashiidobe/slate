@@ -62,62 +62,62 @@ int main(void) {
 // LOWERING-DAG:     let mut arr: aligned::Aligned<aligned::A16, [i32; 4]> = aligned::Aligned([0; 4]);
 // LOWERING-DAG:     let mut a: [i32; 3] = [0; 3];
 // LOWERING-DAG:     let mut big: aligned::Aligned<aligned::A16, [i32; 6]> = aligned::Aligned([0; 6]);
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:     let {{_v[0-9]+}}: [i32; 4] = [10, 20, 30, 40];
-// LOWERING-DAG:     *arr = {{_v[0-9]+}};
-// LOWERING-DAG:     let {{_v[0-9]+}}: *mut i32 = arr.as_mut_ptr() as *mut i32;
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = sum_fixed({{_v[0-9]+}});
-// LOWERING-DAG:     let {{_v[0-9]+}}: [i32; 3] = [1, 2, 3];
-// LOWERING-DAG:     a = {{_v[0-9]+}};
-// LOWERING-DAG:     let {{_v[0-9]+}}: *mut i32 = a.as_mut_ptr() as *mut i32;
-// LOWERING-DAG:     scale_fixed({{_v[0-9]+}});
-// LOWERING-DAG:     let {{_v[0-9]+}}: u64 = 3;
-// LOWERING-DAG:     let {{_v[0-9]+}}: u64 = 4;
-// LOWERING-DAG:     let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} * {{_v[0-9]+}};
-// LOWERING-DAG:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc({{_v[0-9]+}} as usize) };
-// LOWERING-DAG:     let {{_v[0-9]+}}: *mut i32 = {{_v[0-9]+}} as *mut i32;
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 5;
-// LOWERING-DAG:     let {{_v[0-9]+}}: i64 = 0;
-// LOWERING-DAG:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(0) };
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:     let {{__v[0-9]+}}: [i32; 4] = [10, 20, 30, 40];
+// LOWERING-DAG:     *arr = {{__v[0-9]+}};
+// LOWERING-DAG:     let {{__v[0-9]+}}: *mut i32 = arr.as_mut_ptr() as *mut i32;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = sum_fixed({{__v[0-9]+}});
+// LOWERING-DAG:     let {{__v[0-9]+}}: [i32; 3] = [1, 2, 3];
+// LOWERING-DAG:     a = {{__v[0-9]+}};
+// LOWERING-DAG:     let {{__v[0-9]+}}: *mut i32 = a.as_mut_ptr() as *mut i32;
+// LOWERING-DAG:     scale_fixed({{__v[0-9]+}});
+// LOWERING-DAG:     let {{__v[0-9]+}}: u64 = 3;
+// LOWERING-DAG:     let {{__v[0-9]+}}: u64 = 4;
+// LOWERING-DAG:     let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} * {{__v[0-9]+}};
+// LOWERING-DAG:     let {{__v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc({{__v[0-9]+}} as usize) };
+// LOWERING-DAG:     let {{__v[0-9]+}}: *mut i32 = {{__v[0-9]+}} as *mut i32;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 5;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i64 = 0;
+// LOWERING-DAG:     let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(0) };
 // LOWERING-DAG:     unsafe {
-// LOWERING-DAG:         *{{_v[0-9]+}} = {{_v[0-9]+}};
+// LOWERING-DAG:         *{{__v[0-9]+}} = {{__v[0-9]+}};
 // LOWERING-DAG:     }
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 6;
-// LOWERING-DAG:     let {{_v[0-9]+}}: i64 = 1;
-// LOWERING-DAG:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(1) };
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 6;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i64 = 1;
+// LOWERING-DAG:     let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(1) };
 // LOWERING-DAG:     unsafe {
-// LOWERING-DAG:         *{{_v[0-9]+}} = {{_v[0-9]+}};
+// LOWERING-DAG:         *{{__v[0-9]+}} = {{__v[0-9]+}};
 // LOWERING-DAG:     }
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 7;
-// LOWERING-DAG:     let {{_v[0-9]+}}: i64 = 2;
-// LOWERING-DAG:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(2) };
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 7;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i64 = 2;
+// LOWERING-DAG:     let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(2) };
 // LOWERING-DAG:     unsafe {
-// LOWERING-DAG:         *{{_v[0-9]+}} = {{_v[0-9]+}};
+// LOWERING-DAG:         *{{__v[0-9]+}} = {{__v[0-9]+}};
 // LOWERING-DAG:     }
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = sum3({{_v[0-9]+}});
-// LOWERING-DAG:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
-// LOWERING-DAG:     unsafe { free({{_v[0-9]+}} as *mut core::ffi::c_void) };
-// LOWERING-DAG:     let {{_v[0-9]+}}: [i32; 6] = [1, 2, 3, 4, 5, 6];
-// LOWERING-DAG:     *big = {{_v[0-9]+}};
-// LOWERING-DAG:     let {{_v[0-9]+}}: *mut i32 = big.as_mut_ptr() as *mut i32;
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = mix({{_v[0-9]+}});
-// LOWERING-DAG:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d %d %d\n\0".as_ptr() as *mut i8;
-// LOWERING-DAG:     let {{_v[0-9]+}}: i64 = 0;
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = a[({{_v[0-9]+}} as usize)];
-// LOWERING-DAG:     let {{_v[0-9]+}}: i64 = 2;
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = a[({{_v[0-9]+}} as usize)];
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = sum3({{__v[0-9]+}});
+// LOWERING-DAG:     let {{__v[0-9]+}}: *mut core::ffi::c_void = {{__v[0-9]+}} as *mut core::ffi::c_void;
+// LOWERING-DAG:     unsafe { free({{__v[0-9]+}} as *mut core::ffi::c_void) };
+// LOWERING-DAG:     let {{__v[0-9]+}}: [i32; 6] = [1, 2, 3, 4, 5, 6];
+// LOWERING-DAG:     *big = {{__v[0-9]+}};
+// LOWERING-DAG:     let {{__v[0-9]+}}: *mut i32 = big.as_mut_ptr() as *mut i32;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = mix({{__v[0-9]+}});
+// LOWERING-DAG:     let {{__v[0-9]+}}: *mut i8 = b"%d %d %d %d %d\n\0".as_ptr() as *mut i8;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i64 = 0;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = a[({{__v[0-9]+}} as usize)];
+// LOWERING-DAG:     let {{__v[0-9]+}}: i64 = 2;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = a[({{__v[0-9]+}} as usize)];
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = unsafe {
 // LOWERING-DAG:         printf(
-// LOWERING-DAG:             {{_v[0-9]+}} as *const core::ffi::c_char,
-// LOWERING-DAG:             {{_v[0-9]+}},
-// LOWERING-DAG:             {{_v[0-9]+}},
-// LOWERING-DAG:             {{_v[0-9]+}},
-// LOWERING-DAG:             {{_v[0-9]+}},
-// LOWERING-DAG:             {{_v[0-9]+}},
+// LOWERING-DAG:             {{__v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-DAG:             {{__v[0-9]+}},
+// LOWERING-DAG:             {{__v[0-9]+}},
+// LOWERING-DAG:             {{__v[0-9]+}},
+// LOWERING-DAG:             {{__v[0-9]+}},
+// LOWERING-DAG:             {{__v[0-9]+}},
 // LOWERING-DAG:         )
 // LOWERING-DAG:     };
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-DAG: }
 // SLATE-FILECHECK-END lowering
 
@@ -127,42 +127,42 @@ int main(void) {
 // REWRITES-DAG:     let mut a: [i32; 3] = [0; 3];
 // REWRITES-DAG:     let mut big: aligned::Aligned<aligned::A16, [i32; 6]> = aligned::Aligned([0; 6]);
 // REWRITES-DAG:     *arr = [10, 20, 30, 40];
-// REWRITES-DAG:     let {{_v[0-9]+}}: *mut i32 = arr.as_mut_ptr() as *mut i32;
-// REWRITES-DAG:     let {{_v[0-9]+}}: i32 = sum_fixed(unsafe { std::slice::from_raw_parts({{_v[0-9]+}} as *const i32, 4usize) });
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut i32 = arr.as_mut_ptr() as *mut i32;
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = sum_fixed(unsafe { std::slice::from_raw_parts({{__v[0-9]+}} as *const i32, 4usize) });
 // REWRITES-DAG:     a = [1, 2, 3];
-// REWRITES-DAG:     let {{_v[0-9]+}}: *mut i32 = a.as_mut_ptr() as *mut i32;
-// REWRITES-DAG:     scale_fixed(unsafe { std::slice::from_raw_parts_mut({{_v[0-9]+}} as *mut i32, 3usize) });
-// REWRITES-DAG:     let {{_v[0-9]+}}: u64 = 4;
-// REWRITES-DAG:     let {{_v[0-9]+}}: u64 = 3 * {{_v[0-9]+}};
-// REWRITES-DAG:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc({{_v[0-9]+}} as usize) };
-// REWRITES-DAG:     let {{_v[0-9]+}}: *mut i32 = {{_v[0-9]+}} as *mut i32;
-// REWRITES-DAG:     let {{_v[0-9]+}}: i32 = 5;
-// REWRITES-DAG:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(0) };
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut i32 = a.as_mut_ptr() as *mut i32;
+// REWRITES-DAG:     scale_fixed(unsafe { std::slice::from_raw_parts_mut({{__v[0-9]+}} as *mut i32, 3usize) });
+// REWRITES-DAG:     let {{__v[0-9]+}}: u64 = 4;
+// REWRITES-DAG:     let {{__v[0-9]+}}: u64 = 3 * {{__v[0-9]+}};
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc({{__v[0-9]+}} as usize) };
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut i32 = {{__v[0-9]+}} as *mut i32;
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 5;
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(0) };
 // REWRITES-DAG:     unsafe {
-// REWRITES-DAG:         *{{_v[0-9]+}} = {{_v[0-9]+}};
+// REWRITES-DAG:         *{{__v[0-9]+}} = {{__v[0-9]+}};
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{_v[0-9]+}}: i32 = 6;
-// REWRITES-DAG:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(1) };
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 6;
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(1) };
 // REWRITES-DAG:     unsafe {
-// REWRITES-DAG:         *{{_v[0-9]+}} = {{_v[0-9]+}};
+// REWRITES-DAG:         *{{__v[0-9]+}} = {{__v[0-9]+}};
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{_v[0-9]+}}: i32 = 7;
-// REWRITES-DAG:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(2) };
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 7;
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(2) };
 // REWRITES-DAG:     unsafe {
-// REWRITES-DAG:         *{{_v[0-9]+}} = {{_v[0-9]+}};
+// REWRITES-DAG:         *{{__v[0-9]+}} = {{__v[0-9]+}};
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{_v[0-9]+}}: i32 = sum3(unsafe { std::slice::from_raw_parts({{_v[0-9]+}} as *const i32, 3usize) });
-// REWRITES-DAG:     unsafe { free({{_v[0-9]+}} as *mut core::ffi::c_void) };
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = sum3(unsafe { std::slice::from_raw_parts({{__v[0-9]+}} as *const i32, 3usize) });
+// REWRITES-DAG:     unsafe { free({{__v[0-9]+}} as *mut core::ffi::c_void) };
 // REWRITES-DAG:     *big = [1, 2, 3, 4, 5, 6];
-// REWRITES-DAG:     let {{_v[0-9]+}}: *mut i32 = big.as_mut_ptr() as *mut i32;
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut i32 = big.as_mut_ptr() as *mut i32;
 // REWRITES-DAG:     unsafe {
 // REWRITES-DAG:         printf(
 // REWRITES-DAG:             c"%d %d %d %d %d\n".as_ptr(),
-// REWRITES-DAG:             {{_v[0-9]+}},
+// REWRITES-DAG:             {{__v[0-9]+}},
 // REWRITES-DAG:             a[0],
 // REWRITES-DAG:             a[2],
-// REWRITES-DAG:             {{_v[0-9]+}},
-// REWRITES-DAG:             mix({{_v[0-9]+}}),
+// REWRITES-DAG:             {{__v[0-9]+}},
+// REWRITES-DAG:             mix({{__v[0-9]+}}),
 // REWRITES-DAG:         )
 // REWRITES-DAG:     };
 // REWRITES-DAG:     std::process::exit(0 as i32);

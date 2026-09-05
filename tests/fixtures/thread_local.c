@@ -69,72 +69,72 @@ int main(void) {
 // LOWERING-NEXT:     let mut thread: u64 = 0;
 // LOWERING-NEXT:     let mut values: [i32; 2] = [0; 2];
 // LOWERING-NEXT:     let mut worker_result: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: [i32; 2] = [11, 13];
-// LOWERING-NEXT:     values = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 17;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 19;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = update_values({{_v[0-9]+}}, {{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     worker_result = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = values.as_mut_ptr() as *mut i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: [i32; 2] = [11, 13];
+// LOWERING-NEXT:     values = {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 17;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 19;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = update_values({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     worker_result = {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i32 = values.as_mut_ptr() as *mut i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = {{__v[0-9]+}} as *mut core::ffi::c_void;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe {
 // LOWERING-NEXT:         thrd_create(
 // LOWERING-NEXT:             std::ptr::addr_of_mut!(thread) as *mut u64,
 // LOWERING-NEXT:             Some(worker),
-// LOWERING-NEXT:             {{_v[0-9]+}} as *mut core::ffi::c_void,
+// LOWERING-NEXT:             {{__v[0-9]+}} as *mut core::ffi::c_void,
 // LOWERING-NEXT:         )
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: u64 = thread;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = if {{__v[0-9]+}} {
+// LOWERING-NEXT:         let {{__v[0-9]+}}: u64 = thread;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = unsafe {
 // LOWERING-NEXT:             thrd_join(
-// LOWERING-NEXT:                 {{_v[0-9]+}} as u64,
+// LOWERING-NEXT:                 {{__v[0-9]+}} as u64,
 // LOWERING-NEXT:                 std::ptr::addr_of_mut!(worker_result) as *mut i32,
 // LOWERING-NEXT:             )
 // LOWERING-NEXT:         };
-// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:         {{__v[0-9]+}}
 // LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = -1;
-// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = -1;
+// LOWERING-NEXT:         {{__v[0-9]+}}
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 23;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 29;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = update_values({{_v[0-9]+}}, {{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d %d %d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = worker_result;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 23;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 29;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = update_values({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d %d %d %d %d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = worker_result;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn update_values({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { file_value };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 100;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} * {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { update_values_block_value };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { file_value };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 100;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} * {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { update_values_block_value };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
 // LOWERING-NEXT:     unsafe {
 // LOWERING-NEXT:         file_value = {{arg[0-9]+}};
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     unsafe {
 // LOWERING-NEXT:         update_values_block_value = {{arg[0-9]+}};
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT:     return {{__v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: extern "C-unwind" fn worker({{arg[0-9]+}}: *mut core::ffi::c_void) -> i32 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = {{arg[0-9]+}} as *mut i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(0) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 1;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(1) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = update_values({{_v[0-9]+}}, {{_v[0-9]+}});
-// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i32 = {{arg[0-9]+}} as *mut i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(0) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = 1;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(1) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = update_values({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-NEXT:     return {{__v[0-9]+}};
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering

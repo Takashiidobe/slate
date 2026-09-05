@@ -38,26 +38,26 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn classify({{arg[0-9]+}}: i8) -> i32 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{arg[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { isalpha({{_v[0-9]+}} as i32) };
-// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{arg[0-9]+}} as i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { isalpha({{__v[0-9]+}} as i32) };
+// LOWERING-NEXT:     return {{__v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i8 = 65;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = classify({{_v[0-9]+}});
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// LOWERING-NEXT:         if {{_v[0-9]+}} {
-// LOWERING-NEXT:             let {{_v[0-9]+}}: *mut i8 = b"yes\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char) };
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i8 = 65;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = classify({{__v[0-9]+}});
+// LOWERING-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
+// LOWERING-NEXT:         if {{__v[0-9]+}} {
+// LOWERING-NEXT:             let {{__v[0-9]+}}: *mut i8 = b"yes\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char) };
 // LOWERING-NEXT:         } else {
-// LOWERING-NEXT:             let {{_v[0-9]+}}: *mut i8 = b"no\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char) };
+// LOWERING-NEXT:             let {{__v[0-9]+}}: *mut i8 = b"no\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char) };
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering

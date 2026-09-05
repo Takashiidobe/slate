@@ -61,8 +61,8 @@ int main(void) {
 // LOWERING-NEXT:         }; 2],
 // LOWERING-NEXT:     );
 // LOWERING-NEXT:     let mut actual: aligned::Aligned<aligned::A4, Status> = aligned::Aligned(Status::E_OK);
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: [CaseData; 2] = [
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: [CaseData; 2] = [
 // LOWERING-NEXT:         CaseData {
 // LOWERING-NEXT:             input: 1,
 // LOWERING-NEXT:             expected: Status::E_OK,
@@ -72,45 +72,47 @@ int main(void) {
 // LOWERING-NEXT:             expected: Status::E_FAIL,
 // LOWERING-NEXT:         },
 // LOWERING-NEXT:     ];
-// LOWERING-NEXT:     *cases = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = 0;
+// LOWERING-NEXT:     *cases = {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = 0;
 // LOWERING-NEXT:     *actual = Status::E_OK;
 // LOWERING-NEXT:     {
 // LOWERING-NEXT:         let mut i: i32 = 0;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:         i = {{_v[0-9]+}};
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:         i = {{__v[0-9]+}};
 // LOWERING-NEXT:         loop {
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = i;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = 2;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < {{_v[0-9]+}};
-// LOWERING-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = i;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = 2;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
+// LOWERING-NEXT:             if !{{__v[0-9]+}} {
 // LOWERING-NEXT:                 break;
 // LOWERING-NEXT:             }
 // LOWERING-NEXT:             {
 // LOWERING-NEXT:                 {
-// LOWERING-NEXT:                     let {{_v[0-9]+}}: u32 = *actual as u32;
-// LOWERING-NEXT:                     let {{_v[0-9]+}}: i32 = i;
-// LOWERING-NEXT:                     let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} as i64;
-// LOWERING-NEXT:                     let {{_v[0-9]+}}: u32 = cases[({{_v[0-9]+}} as usize)].expected as u32;
-// LOWERING-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-NEXT:                     if {{_v[0-9]+}} {
-// LOWERING-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"mismatch %d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:                         let {{_v[0-9]+}}: i32 = i;
-// LOWERING-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
+// LOWERING-NEXT:                     let {{__v[0-9]+}}: u32 = *actual as u32;
+// LOWERING-NEXT:                     let {{__v[0-9]+}}: i32 = i;
+// LOWERING-NEXT:                     let {{__v[0-9]+}}: i64 = {{__v[0-9]+}} as i64;
+// LOWERING-NEXT:                     let {{__v[0-9]+}}: u32 = cases[({{__v[0-9]+}} as usize)].expected as u32;
+// LOWERING-NEXT:                     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-NEXT:                     if {{__v[0-9]+}} {
+// LOWERING-NEXT:                         let {{__v[0-9]+}}: *mut i8 = b"mismatch %d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = i;
+// LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 =
+// LOWERING-NEXT:                             unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
 // LOWERING-NEXT:                     } else {
-// LOWERING-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"match %d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:                         let {{_v[0-9]+}}: i32 = i;
-// LOWERING-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
+// LOWERING-NEXT:                         let {{__v[0-9]+}}: *mut i8 = b"match %d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = i;
+// LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 =
+// LOWERING-NEXT:                             unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                 }
 // LOWERING-NEXT:             }
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = i;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
-// LOWERING-NEXT:             i = {{_v[0-9]+}};
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = i;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + 1;
+// LOWERING-NEXT:             i = {{__v[0-9]+}};
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -156,7 +158,7 @@ int main(void) {
 // REWRITES-NEXT:         }; 2],
 // REWRITES-NEXT:     );
 // REWRITES-NEXT:     let mut actual: aligned::Aligned<aligned::A4, Status> = aligned::Aligned(Status::E_OK);
-// REWRITES-NEXT:     let {{_v[0-9]+}}: [CaseData; 2] = [
+// REWRITES-NEXT:     let {{__v[0-9]+}}: [CaseData; 2] = [
 // REWRITES-NEXT:         CaseData {
 // REWRITES-NEXT:             input: 1,
 // REWRITES-NEXT:             expected: Status::E_OK,
@@ -166,18 +168,37 @@ int main(void) {
 // REWRITES-NEXT:             expected: Status::E_FAIL,
 // REWRITES-NEXT:         },
 // REWRITES-NEXT:     ];
-// REWRITES-NEXT:     *cases = {{_v[0-9]+}};
+// REWRITES-NEXT:     *cases = {{__v[0-9]+}};
 // REWRITES-NEXT:     *actual = Status::E_OK;
 // REWRITES-NEXT:     let mut i: i32 = 0;
-// REWRITES-NEXT:     while i < 2 {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = (*actual as u32) != (cases[((i as i64) as usize)].expected as u32);
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             unsafe { printf(c"mismatch %d\n".as_ptr(), i) };
-// REWRITES-NEXT:         } else {
-// REWRITES-NEXT:             unsafe { printf(c"match %d\n".as_ptr(), i) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT:     i = {{__v[0-9]+}};
+// REWRITES-NEXT:     loop {
+// REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = i;
+// REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 2;
+// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
+// REWRITES-NEXT:         if !{{__v[0-9]+}} {
+// REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         i += 1;
+// REWRITES-NEXT:         let {{__v[0-9]+}}: u32 = *actual as u32;
+// REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = i;
+// REWRITES-NEXT:         let {{__v[0-9]+}}: i64 = {{__v[0-9]+}} as i64;
+// REWRITES-NEXT:         let {{__v[0-9]+}}: u32 = cases[({{__v[0-9]+}} as usize)].expected as u32;
+// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-NEXT:         if {{__v[0-9]+}} {
+// REWRITES-NEXT:             let {{__v[0-9]+}}: *mut i8 = c"mismatch %d\n".as_ptr() as *mut i8;
+// REWRITES-NEXT:             let {{__v[0-9]+}}: i32 = i;
+// REWRITES-NEXT:             unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
+// REWRITES-NEXT:         } else {
+// REWRITES-NEXT:             let {{__v[0-9]+}}: *mut i8 = c"match %d\n".as_ptr() as *mut i8;
+// REWRITES-NEXT:             let {{__v[0-9]+}}: i32 = i;
+// REWRITES-NEXT:             unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
+// REWRITES-NEXT:         }
+// REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = i;
+// REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + 1;
+// REWRITES-NEXT:         i = {{__v[0-9]+}};
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

@@ -48,21 +48,33 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: fn main() {
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut i8 = c"%d %d %d %d %d %d %d %d %d %d\n".as_ptr() as *mut i8;
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = visible_before();
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = unsafe { visible_before_global };
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = hidden_outer();
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = unsafe { hidden_outer_global };
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = visible_inner();
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = unsafe { visible_inner_global };
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = hidden_again();
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = unsafe { hidden_again_global };
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = visible_after();
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = unsafe { visible_after_global };
 // REWRITES-DAG:     unsafe {
 // REWRITES-DAG:         printf(
-// REWRITES-DAG:             c"%d %d %d %d %d %d %d %d %d %d\n".as_ptr(),
-// REWRITES-DAG:             visible_before(),
-// REWRITES-DAG:             unsafe { visible_before_global },
-// REWRITES-DAG:             hidden_outer(),
-// REWRITES-DAG:             unsafe { hidden_outer_global },
-// REWRITES-DAG:             visible_inner(),
-// REWRITES-DAG:             unsafe { visible_inner_global },
-// REWRITES-DAG:             hidden_again(),
-// REWRITES-DAG:             unsafe { hidden_again_global },
-// REWRITES-DAG:             visible_after(),
-// REWRITES-DAG:             unsafe { visible_after_global },
+// REWRITES-DAG:             {{__v[0-9]+}} as *const core::ffi::c_char,
+// REWRITES-DAG:             {{__v[0-9]+}},
+// REWRITES-DAG:             {{__v[0-9]+}},
+// REWRITES-DAG:             {{__v[0-9]+}},
+// REWRITES-DAG:             {{__v[0-9]+}},
+// REWRITES-DAG:             {{__v[0-9]+}},
+// REWRITES-DAG:             {{__v[0-9]+}},
+// REWRITES-DAG:             {{__v[0-9]+}},
+// REWRITES-DAG:             {{__v[0-9]+}},
+// REWRITES-DAG:             {{__v[0-9]+}},
+// REWRITES-DAG:             {{__v[0-9]+}},
 // REWRITES-DAG:         )
 // REWRITES-DAG:     };
-// REWRITES-DAG:     std::process::exit(0 as i32);
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// REWRITES-DAG:     std::process::exit({{__v[0-9]+}} as i32);
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

@@ -19,28 +19,38 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: {
-// LOWERING-DAG:     let {{_v[0-9]+}}: u64 = p;
-// LOWERING-DAG:     let {{_v[0-9]+}}: *mut core::ffi::c_void = src;
-// LOWERING-DAG:     let {{_v[0-9]+}}: *mut u8 = {{_v[0-9]+}} as *mut u8;
-// LOWERING-DAG:     let {{_v[0-9]+}}: *mut u8 = unsafe { {{_v[0-9]+}}.add({{_v[0-9]+}} as usize) };
-// LOWERING-DAG:     let {{_v[0-9]+}}: u8 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-DAG:     let {{_v[0-9]+}}: u8 = b;
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-DAG:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:     if {{_v[0-9]+}} {
-// LOWERING-DAG:         let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:         __retval = {{_v[0-9]+}};
-// LOWERING-DAG:         let {{_v[0-9]+}}: i32 = __retval;
-// LOWERING-DAG:         return {{_v[0-9]+}};
+// LOWERING-DAG:     let {{__v[0-9]+}}: u64 = p;
+// LOWERING-DAG:     let {{__v[0-9]+}}: *mut core::ffi::c_void = src;
+// LOWERING-DAG:     let {{__v[0-9]+}}: *mut u8 = {{__v[0-9]+}} as *mut u8;
+// LOWERING-DAG:     let {{__v[0-9]+}}: *mut u8 = unsafe { {{__v[0-9]+}}.add({{__v[0-9]+}} as usize) };
+// LOWERING-DAG:     let {{__v[0-9]+}}: u8 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-DAG:     let {{__v[0-9]+}}: u8 = b;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:     if {{__v[0-9]+}} {
+// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:         __retval = {{__v[0-9]+}};
+// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = __retval;
+// LOWERING-DAG:         return {{__v[0-9]+}};
 // LOWERING-DAG:     }
 // LOWERING-DAG: }
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: let {{_v[0-9]+}}: *mut u8 = src as *mut u8;
-// REWRITES-DAG: unsafe { {{_v[0-9]+}}.add(p as usize) };
-// REWRITES-DAG: if ((unsafe { __arg0_view[(p as usize)] }) as i32) != (b as i32) {
-// REWRITES-DAG:     return 0;
+// REWRITES-DAG: let {{__v[0-9]+}}: u64 = p;
+// REWRITES-DAG: let {{__v[0-9]+}}: *mut core::ffi::c_void = src;
+// REWRITES-DAG: let {{__v[0-9]+}}: *mut u8 = {{__v[0-9]+}} as *mut u8;
+// REWRITES-DAG: unsafe { {{__v[0-9]+}}.add({{__v[0-9]+}} as usize) };
+// REWRITES-DAG: let {{__v[0-9]+}}: u8 = unsafe { __arg0_view[(p as usize)] };
+// REWRITES-DAG: let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// REWRITES-DAG: let {{__v[0-9]+}}: u8 = b;
+// REWRITES-DAG: let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// REWRITES-DAG: let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG: if {{__v[0-9]+}} {
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// REWRITES-DAG:     __retval = {{__v[0-9]+}};
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = __retval;
+// REWRITES-DAG:     return {{__v[0-9]+}};
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

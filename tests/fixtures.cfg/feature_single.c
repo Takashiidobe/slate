@@ -17,6 +17,7 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: fn feature_code() -> i32 {
-// REWRITES-DAG:     20
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 20;
+// REWRITES-DAG:     {{__v[0-9]+}}
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

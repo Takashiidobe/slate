@@ -30,18 +30,18 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 300;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = -5;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = 400;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%.2hhd %.3hd %#hhx %08hhx\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%.4hho %.2hhx %hhu\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%.5hd %#hx\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 300;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = -5;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = 400;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%.2hhd %.3hd %#hhx %08hhx\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%.4hho %.2hhx %hhu\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%.5hd %#hx\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -65,12 +65,12 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 300;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = -5;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u32 = 400;
-// REWRITES-NEXT:     unsafe { printf(c"%.2hhd %.3hd %#hhx %08hhx\n".as_ptr(), {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// REWRITES-NEXT:     unsafe { printf(c"%.4hho %.2hhx %hhu\n".as_ptr(), {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// REWRITES-NEXT:     unsafe { printf(c"%.5hd %#hx\n".as_ptr(), {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 300;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = -5;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: u32 = 400;
+// REWRITES-NEXT:     unsafe { printf(c"%.2hhd %.3hd %#hhx %08hhx\n".as_ptr(), {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// REWRITES-NEXT:     unsafe { printf(c"%.4hho %.2hhx %hhu\n".as_ptr(), {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// REWRITES-NEXT:     unsafe { printf(c"%.5hd %#hx\n".as_ptr(), {{__v[0-9]+}}, {{__v[0-9]+}}) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

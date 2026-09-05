@@ -17,10 +17,10 @@ int main(void) {
 }
 
 // SLATE-FILECHECK-BEGIN lowering
-// LOWERING-DAG: let {{_v[0-9]+}}: u32 = 1;
-// LOWERING-DAG: let {{_v[0-9]+}}: u32 = ({{_v[0-9]+}} as u32) << 31 >> 31;
+// LOWERING-DAG: let {{__v[0-9]+}}: u32 = 1;
+// LOWERING-DAG: let {{__v[0-9]+}}: u32 = ({{__v[0-9]+}} as u32) << 31 >> 31;
 // LOWERING-DAG: unsafe {
-// LOWERING-DAG:     value.bits.__bitfield_0.set_second(({{_v[0-9]+}} as u32) << 31 >> 31);
+// LOWERING-DAG:     value.bits.__bitfield_0.set_second(({{__v[0-9]+}} as u32) << 31 >> 31);
 // LOWERING-DAG: }
 // SLATE-FILECHECK-END lowering
 

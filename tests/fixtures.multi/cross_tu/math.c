@@ -9,13 +9,13 @@ int cube(int x) { return square(x) * x; }
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: #[unsafe(no_mangle)]
 // LOWERING-DAG: pub extern "C-unwind" fn square({{arg[0-9]+}}: i32) -> i32 {
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = {{arg[0-9]+}} * {{arg[0-9]+}};
-// LOWERING-DAG:     return {{_v[0-9]+}};
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = {{arg[0-9]+}} * {{arg[0-9]+}};
+// LOWERING-DAG:     return {{__v[0-9]+}};
 // LOWERING-DAG: }
 // LOWERING-DAG: #[unsafe(no_mangle)]
 // LOWERING-DAG: pub extern "C-unwind" fn cube({{arg[0-9]+}}: i32) -> i32 {
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = square({{arg[0-9]+}});
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} * {{arg[0-9]+}};
-// LOWERING-DAG:     return {{_v[0-9]+}};
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = square({{arg[0-9]+}});
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} * {{arg[0-9]+}};
+// LOWERING-DAG:     return {{__v[0-9]+}};
 // LOWERING-DAG: }
 // SLATE-FILECHECK-END lowering

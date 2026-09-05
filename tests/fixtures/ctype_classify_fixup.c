@@ -119,193 +119,193 @@ int main(void) {
 // LOWERING-NEXT:     let mut space: i8 = 0;
 // LOWERING-NEXT:     let mut vtab: i8 = 0;
 // LOWERING-NEXT:     let mut punct: i8 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i8 = 65;
-// LOWERING-NEXT:     alpha = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i8 = 53;
-// LOWERING-NEXT:     digit = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i8 = 32;
-// LOWERING-NEXT:     space = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i8 = 11;
-// LOWERING-NEXT:     vtab = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i8 = 33;
-// LOWERING-NEXT:     punct = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i8 = 65;
+// LOWERING-NEXT:     alpha = {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i8 = 53;
+// LOWERING-NEXT:     digit = {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i8 = 32;
+// LOWERING-NEXT:     space = {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i8 = 11;
+// LOWERING-NEXT:     vtab = {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i8 = 33;
+// LOWERING-NEXT:     punct = {{__v[0-9]+}};
 // LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i8 = alpha;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { isalpha({{_v[0-9]+}} as i32) };
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// LOWERING-NEXT:         if {{_v[0-9]+}} {
-// LOWERING-NEXT:             let {{_v[0-9]+}}: *mut i8 = b"alpha-yes\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char) };
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i8 = alpha;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = unsafe { isalpha({{__v[0-9]+}} as i32) };
+// LOWERING-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
+// LOWERING-NEXT:         if {{__v[0-9]+}} {
+// LOWERING-NEXT:             let {{__v[0-9]+}}: *mut i8 = b"alpha-yes\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char) };
 // LOWERING-NEXT:         } else {
-// LOWERING-NEXT:             let {{_v[0-9]+}}: *mut i8 = b"alpha-no\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char) };
+// LOWERING-NEXT:             let {{__v[0-9]+}}: *mut i8 = b"alpha-no\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char) };
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i8 = digit;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { isalpha({{_v[0-9]+}} as i32) };
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
-// LOWERING-NEXT:         if {{_v[0-9]+}} {
-// LOWERING-NEXT:             let {{_v[0-9]+}}: *mut i8 = b"not-alpha-yes\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char) };
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i8 = digit;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = unsafe { isalpha({{__v[0-9]+}} as i32) };
+// LOWERING-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: bool = !{{__v[0-9]+}};
+// LOWERING-NEXT:         if {{__v[0-9]+}} {
+// LOWERING-NEXT:             let {{__v[0-9]+}}: *mut i8 = b"not-alpha-yes\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char) };
 // LOWERING-NEXT:         } else {
-// LOWERING-NEXT:             let {{_v[0-9]+}}: *mut i8 = b"not-alpha-no\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char) };
+// LOWERING-NEXT:             let {{__v[0-9]+}}: *mut i8 = b"not-alpha-no\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char) };
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i8 = digit;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { isdigit({{_v[0-9]+}} as i32) };
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// LOWERING-NEXT:         if {{_v[0-9]+}} {
-// LOWERING-NEXT:             let {{_v[0-9]+}}: *mut i8 = b"digit-yes\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char) };
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i8 = digit;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = unsafe { isdigit({{__v[0-9]+}} as i32) };
+// LOWERING-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
+// LOWERING-NEXT:         if {{__v[0-9]+}} {
+// LOWERING-NEXT:             let {{__v[0-9]+}}: *mut i8 = b"digit-yes\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char) };
 // LOWERING-NEXT:         } else {
-// LOWERING-NEXT:             let {{_v[0-9]+}}: *mut i8 = b"digit-no\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char) };
+// LOWERING-NEXT:             let {{__v[0-9]+}}: *mut i8 = b"digit-no\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char) };
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i8 = alpha;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { isupper({{_v[0-9]+}} as i32) };
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// LOWERING-NEXT:         if {{_v[0-9]+}} {
-// LOWERING-NEXT:             let {{_v[0-9]+}}: *mut i8 = b"upper-yes\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char) };
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i8 = alpha;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = unsafe { isupper({{__v[0-9]+}} as i32) };
+// LOWERING-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
+// LOWERING-NEXT:         if {{__v[0-9]+}} {
+// LOWERING-NEXT:             let {{__v[0-9]+}}: *mut i8 = b"upper-yes\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char) };
 // LOWERING-NEXT:         } else {
-// LOWERING-NEXT:             let {{_v[0-9]+}}: *mut i8 = b"upper-no\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char) };
+// LOWERING-NEXT:             let {{__v[0-9]+}}: *mut i8 = b"upper-no\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char) };
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i8 = alpha;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { islower({{_v[0-9]+}} as i32) };
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// LOWERING-NEXT:         if {{_v[0-9]+}} {
-// LOWERING-NEXT:             let {{_v[0-9]+}}: *mut i8 = b"lower-yes\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char) };
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i8 = alpha;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = unsafe { islower({{__v[0-9]+}} as i32) };
+// LOWERING-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
+// LOWERING-NEXT:         if {{__v[0-9]+}} {
+// LOWERING-NEXT:             let {{__v[0-9]+}}: *mut i8 = b"lower-yes\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char) };
 // LOWERING-NEXT:         } else {
-// LOWERING-NEXT:             let {{_v[0-9]+}}: *mut i8 = b"lower-no\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char) };
+// LOWERING-NEXT:             let {{__v[0-9]+}}: *mut i8 = b"lower-no\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char) };
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i8 = punct;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { isalnum({{_v[0-9]+}} as i32) };
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// LOWERING-NEXT:         if {{_v[0-9]+}} {
-// LOWERING-NEXT:             let {{_v[0-9]+}}: *mut i8 = b"alnum-yes\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char) };
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i8 = punct;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = unsafe { isalnum({{__v[0-9]+}} as i32) };
+// LOWERING-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
+// LOWERING-NEXT:         if {{__v[0-9]+}} {
+// LOWERING-NEXT:             let {{__v[0-9]+}}: *mut i8 = b"alnum-yes\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char) };
 // LOWERING-NEXT:         } else {
-// LOWERING-NEXT:             let {{_v[0-9]+}}: *mut i8 = b"alnum-no\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char) };
+// LOWERING-NEXT:             let {{__v[0-9]+}}: *mut i8 = b"alnum-no\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char) };
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i8 = alpha;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { isxdigit({{_v[0-9]+}} as i32) };
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// LOWERING-NEXT:         if {{_v[0-9]+}} {
-// LOWERING-NEXT:             let {{_v[0-9]+}}: *mut i8 = b"xdigit-yes\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char) };
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i8 = alpha;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = unsafe { isxdigit({{__v[0-9]+}} as i32) };
+// LOWERING-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
+// LOWERING-NEXT:         if {{__v[0-9]+}} {
+// LOWERING-NEXT:             let {{__v[0-9]+}}: *mut i8 = b"xdigit-yes\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char) };
 // LOWERING-NEXT:         } else {
-// LOWERING-NEXT:             let {{_v[0-9]+}}: *mut i8 = b"xdigit-no\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char) };
+// LOWERING-NEXT:             let {{__v[0-9]+}}: *mut i8 = b"xdigit-no\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char) };
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i8 = punct;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { ispunct({{_v[0-9]+}} as i32) };
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// LOWERING-NEXT:         if {{_v[0-9]+}} {
-// LOWERING-NEXT:             let {{_v[0-9]+}}: *mut i8 = b"punct-yes\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char) };
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i8 = punct;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = unsafe { ispunct({{__v[0-9]+}} as i32) };
+// LOWERING-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
+// LOWERING-NEXT:         if {{__v[0-9]+}} {
+// LOWERING-NEXT:             let {{__v[0-9]+}}: *mut i8 = b"punct-yes\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char) };
 // LOWERING-NEXT:         } else {
-// LOWERING-NEXT:             let {{_v[0-9]+}}: *mut i8 = b"punct-no\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char) };
+// LOWERING-NEXT:             let {{__v[0-9]+}}: *mut i8 = b"punct-no\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char) };
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i8 = vtab;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { iscntrl({{_v[0-9]+}} as i32) };
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// LOWERING-NEXT:         if {{_v[0-9]+}} {
-// LOWERING-NEXT:             let {{_v[0-9]+}}: *mut i8 = b"cntrl-yes\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char) };
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i8 = vtab;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = unsafe { iscntrl({{__v[0-9]+}} as i32) };
+// LOWERING-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
+// LOWERING-NEXT:         if {{__v[0-9]+}} {
+// LOWERING-NEXT:             let {{__v[0-9]+}}: *mut i8 = b"cntrl-yes\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char) };
 // LOWERING-NEXT:         } else {
-// LOWERING-NEXT:             let {{_v[0-9]+}}: *mut i8 = b"cntrl-no\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char) };
+// LOWERING-NEXT:             let {{__v[0-9]+}}: *mut i8 = b"cntrl-no\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char) };
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i8 = punct;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { isgraph({{_v[0-9]+}} as i32) };
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// LOWERING-NEXT:         if {{_v[0-9]+}} {
-// LOWERING-NEXT:             let {{_v[0-9]+}}: *mut i8 = b"graph-yes\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char) };
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i8 = punct;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = unsafe { isgraph({{__v[0-9]+}} as i32) };
+// LOWERING-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
+// LOWERING-NEXT:         if {{__v[0-9]+}} {
+// LOWERING-NEXT:             let {{__v[0-9]+}}: *mut i8 = b"graph-yes\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char) };
 // LOWERING-NEXT:         } else {
-// LOWERING-NEXT:             let {{_v[0-9]+}}: *mut i8 = b"graph-no\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char) };
+// LOWERING-NEXT:             let {{__v[0-9]+}}: *mut i8 = b"graph-no\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char) };
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i8 = space;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { isprint({{_v[0-9]+}} as i32) };
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// LOWERING-NEXT:         if {{_v[0-9]+}} {
-// LOWERING-NEXT:             let {{_v[0-9]+}}: *mut i8 = b"print-yes\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char) };
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i8 = space;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = unsafe { isprint({{__v[0-9]+}} as i32) };
+// LOWERING-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
+// LOWERING-NEXT:         if {{__v[0-9]+}} {
+// LOWERING-NEXT:             let {{__v[0-9]+}}: *mut i8 = b"print-yes\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char) };
 // LOWERING-NEXT:         } else {
-// LOWERING-NEXT:             let {{_v[0-9]+}}: *mut i8 = b"print-no\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char) };
+// LOWERING-NEXT:             let {{__v[0-9]+}}: *mut i8 = b"print-no\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char) };
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i8 = space;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { isspace({{_v[0-9]+}} as i32) };
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// LOWERING-NEXT:         if {{_v[0-9]+}} {
-// LOWERING-NEXT:             let {{_v[0-9]+}}: *mut i8 = b"space-yes\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char) };
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i8 = space;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = unsafe { isspace({{__v[0-9]+}} as i32) };
+// LOWERING-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
+// LOWERING-NEXT:         if {{__v[0-9]+}} {
+// LOWERING-NEXT:             let {{__v[0-9]+}}: *mut i8 = b"space-yes\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char) };
 // LOWERING-NEXT:         } else {
-// LOWERING-NEXT:             let {{_v[0-9]+}}: *mut i8 = b"space-no\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char) };
+// LOWERING-NEXT:             let {{__v[0-9]+}}: *mut i8 = b"space-no\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char) };
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i8 = vtab;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { isspace({{_v[0-9]+}} as i32) };
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// LOWERING-NEXT:         if {{_v[0-9]+}} {
-// LOWERING-NEXT:             let {{_v[0-9]+}}: *mut i8 = b"vtab-space-yes\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char) };
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i8 = vtab;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = unsafe { isspace({{__v[0-9]+}} as i32) };
+// LOWERING-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
+// LOWERING-NEXT:         if {{__v[0-9]+}} {
+// LOWERING-NEXT:             let {{__v[0-9]+}}: *mut i8 = b"vtab-space-yes\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char) };
 // LOWERING-NEXT:         } else {
-// LOWERING-NEXT:             let {{_v[0-9]+}}: *mut i8 = b"vtab-space-no\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char) };
+// LOWERING-NEXT:             let {{__v[0-9]+}}: *mut i8 = b"vtab-space-no\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char) };
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i8 = alpha;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { isalpha({{_v[0-9]+}} as i32) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i8 = alpha;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { isalpha({{__v[0-9]+}} as i32) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering

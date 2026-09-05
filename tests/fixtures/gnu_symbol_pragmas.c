@@ -56,9 +56,9 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"%d %d %d\n".as_ptr() as *mut i8;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { pragma_weak_alias(29 as i32) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = (unsafe {
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i8 = c"%d %d %d\n".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { pragma_weak_alias(29 as i32) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = (unsafe {
 // REWRITES-NEXT:         std::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(i32) -> i32>>(
 // REWRITES-NEXT:             pragma_weak_alias as *const (),
 // REWRITES-NEXT:         )
@@ -67,9 +67,9 @@ int main(void) {
 // REWRITES-NEXT:         == (Some(pragma_weak_target).unwrap() as *const u8);
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_char,
-// REWRITES-NEXT:             {{_v[0-9]+}},
-// REWRITES-NEXT:             {{_v[0-9]+}} as i32,
+// REWRITES-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
+// REWRITES-NEXT:             {{__v[0-9]+}},
+// REWRITES-NEXT:             {{__v[0-9]+}} as i32,
 // REWRITES-NEXT:             pragma_actual(13),
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };

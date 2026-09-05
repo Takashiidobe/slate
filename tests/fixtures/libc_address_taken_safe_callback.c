@@ -64,19 +64,19 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: Option<
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: Option<
 // LOWERING-NEXT:         unsafe extern "C-unwind" fn(*mut core::ffi::c_void, u64) -> *mut core::ffi::c_void,
 // LOWERING-NEXT:     > = unsafe { alloc.realloc_fn };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { {{_v[0-9]+}}.unwrap()({{_v[0-9]+}}, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(*mut core::ffi::c_void)> = unsafe { alloc.free_fn };
-// LOWERING-NEXT:     unsafe { {{_v[0-9]+}}.unwrap()({{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"ok\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = 8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = unsafe { {{__v[0-9]+}}.unwrap()({{__v[0-9]+}}, {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: Option<unsafe extern "C-unwind" fn(*mut core::ffi::c_void)> = unsafe { alloc.free_fn };
+// LOWERING-NEXT:     unsafe { {{__v[0-9]+}}.unwrap()({{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"ok\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -126,10 +126,10 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void =
-// REWRITES-NEXT:         unsafe { unsafe { alloc.realloc_fn }.unwrap()({{_v[0-9]+}}, 8 as u64) };
-// REWRITES-NEXT:     unsafe { unsafe { alloc.free_fn }.unwrap()({{_v[0-9]+}}) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void =
+// REWRITES-NEXT:         unsafe { unsafe { alloc.realloc_fn }.unwrap()({{__v[0-9]+}}, 8 as u64) };
+// REWRITES-NEXT:     unsafe { unsafe { alloc.free_fn }.unwrap()({{__v[0-9]+}}) };
 // REWRITES-NEXT:     unsafe { printf(c"ok\n".as_ptr()) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }

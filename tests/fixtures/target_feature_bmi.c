@@ -10,9 +10,9 @@ int main(void) { return bmi_probe(41); }
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: #[target_feature(enable = "bmi1")]
 // LOWERING-DAG: unsafe fn bmi_probe({{arg[0-9]+}}: i32) -> i32 {
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = {{arg[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-DAG:     return {{_v[0-9]+}};
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = {{arg[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-DAG:     return {{__v[0-9]+}};
 // LOWERING-DAG: }
 // SLATE-FILECHECK-END lowering
 

@@ -213,7 +213,7 @@ int main(void) { return printf("%d\n", errno == 0); }
 // LOWERING-MACOS-NEXT:     {{arg[0-9]+}}: u64,
 // LOWERING-MACOS-NEXT:     {{arg[0-9]+}}: f64,
 // LOWERING-MACOS-NEXT: ) -> i64 {
-// LOWERING-MACOS-NEXT:     let {{_v[0-9]+}}: i64 = unsafe {
+// LOWERING-MACOS-NEXT:     let {{__v[0-9]+}}: i64 = unsafe {
 // LOWERING-MACOS-NEXT:         darwin_import(
 // LOWERING-MACOS-NEXT:             {{arg[0-9]+}} as usize,
 // LOWERING-MACOS-NEXT:             {{arg[0-9]+}} as isize,
@@ -225,7 +225,7 @@ int main(void) { return printf("%d\n", errno == 0); }
 // LOWERING-MACOS-NEXT:             {{arg[0-9]+}} as f64,
 // LOWERING-MACOS-NEXT:         )
 // LOWERING-MACOS-NEXT:     };
-// LOWERING-MACOS-NEXT:     return {{_v[0-9]+}};
+// LOWERING-MACOS-NEXT:     return {{__v[0-9]+}};
 // LOWERING-MACOS-NEXT: }
 // LOWERING-MACOS-EMPTY:
 // LOWERING-MACOS-NEXT: unsafe fn darwin_variadic_count({{arg[0-9]+}}: i32, mut __slate_va_args: __SlateVaArgs) -> i32 {
@@ -233,44 +233,44 @@ int main(void) { return printf("%d\n", errno == 0); }
 // LOWERING-MACOS-NEXT:     let mut values: __SlateVaArgs = __SlateVaArgs::empty();
 // LOWERING-MACOS-NEXT:     let mut total: i32 = 0;
 // LOWERING-MACOS-NEXT:     count = {{arg[0-9]+}};
-// LOWERING-MACOS-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-MACOS-NEXT:     total = {{_v[0-9]+}};
+// LOWERING-MACOS-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-MACOS-NEXT:     total = {{__v[0-9]+}};
 // LOWERING-MACOS-NEXT:     unsafe {
 // LOWERING-MACOS-NEXT:         values = __slate_va_args.clone();
 // LOWERING-MACOS-NEXT:     }
 // LOWERING-MACOS-NEXT:     {
 // LOWERING-MACOS-NEXT:         let mut i: i32 = 0;
-// LOWERING-MACOS-NEXT:         let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-MACOS-NEXT:         i = {{_v[0-9]+}};
+// LOWERING-MACOS-NEXT:         let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-MACOS-NEXT:         i = {{__v[0-9]+}};
 // LOWERING-MACOS-NEXT:         loop {
-// LOWERING-MACOS-NEXT:             let {{_v[0-9]+}}: i32 = i;
-// LOWERING-MACOS-NEXT:             let {{_v[0-9]+}}: i32 = count;
-// LOWERING-MACOS-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < {{_v[0-9]+}};
-// LOWERING-MACOS-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-MACOS-NEXT:             let {{__v[0-9]+}}: i32 = i;
+// LOWERING-MACOS-NEXT:             let {{__v[0-9]+}}: i32 = count;
+// LOWERING-MACOS-NEXT:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
+// LOWERING-MACOS-NEXT:             if !{{__v[0-9]+}} {
 // LOWERING-MACOS-NEXT:                 break;
 // LOWERING-MACOS-NEXT:             }
-// LOWERING-MACOS-NEXT:             let {{_v[0-9]+}}: i32 = unsafe { values.next_arg::<i32>() };
-// LOWERING-MACOS-NEXT:             let {{_v[0-9]+}}: i32 = total;
-// LOWERING-MACOS-NEXT:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-MACOS-NEXT:             total = {{_v[0-9]+}};
-// LOWERING-MACOS-NEXT:             let {{_v[0-9]+}}: i32 = i;
-// LOWERING-MACOS-NEXT:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
-// LOWERING-MACOS-NEXT:             i = {{_v[0-9]+}};
+// LOWERING-MACOS-NEXT:             let {{__v[0-9]+}}: i32 = unsafe { values.next_arg::<i32>() };
+// LOWERING-MACOS-NEXT:             let {{__v[0-9]+}}: i32 = total;
+// LOWERING-MACOS-NEXT:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-MACOS-NEXT:             total = {{__v[0-9]+}};
+// LOWERING-MACOS-NEXT:             let {{__v[0-9]+}}: i32 = i;
+// LOWERING-MACOS-NEXT:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + 1;
+// LOWERING-MACOS-NEXT:             i = {{__v[0-9]+}};
 // LOWERING-MACOS-NEXT:         }
 // LOWERING-MACOS-NEXT:     }
-// LOWERING-MACOS-NEXT:     let {{_v[0-9]+}}: i32 = total;
-// LOWERING-MACOS-NEXT:     return {{_v[0-9]+}};
+// LOWERING-MACOS-NEXT:     let {{__v[0-9]+}}: i32 = total;
+// LOWERING-MACOS-NEXT:     return {{__v[0-9]+}};
 // LOWERING-MACOS-NEXT: }
 // LOWERING-MACOS-EMPTY:
 // LOWERING-MACOS-NEXT: fn main() {
-// LOWERING-MACOS-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-MACOS-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// LOWERING-MACOS-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { __error() };
-// LOWERING-MACOS-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-MACOS-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-MACOS-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
-// LOWERING-MACOS-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-MACOS-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
-// LOWERING-MACOS-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-MACOS-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-MACOS-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// LOWERING-MACOS-NEXT:     let {{__v[0-9]+}}: *mut i32 = unsafe { __error() };
+// LOWERING-MACOS-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-MACOS-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-MACOS-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
+// LOWERING-MACOS-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-MACOS-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
+// LOWERING-MACOS-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-MACOS-NEXT: }
 // SLATE-FILECHECK-END lowering-macos

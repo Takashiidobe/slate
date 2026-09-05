@@ -828,6 +828,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 })),
             });
             let old = self.next_temp();
+            let ok_value = self.next_temp();
+            let err_value = self.next_temp();
             self.push_stmt(Stmt::Let {
                 name: old.clone(),
                 mutable: false,
@@ -838,16 +840,16 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         ExprMatchArm {
                             pattern: Pattern::TupleStruct {
                                 name: "Ok".into(),
-                                fields: vec![Pattern::Binding("v".into())],
+                                fields: vec![Pattern::Binding(ok_value.clone().into())],
                             },
-                            value: Expr::Var("v".into()),
+                            value: Expr::Var(ok_value.into()),
                         },
                         ExprMatchArm {
                             pattern: Pattern::TupleStruct {
                                 name: "Err".into(),
-                                fields: vec![Pattern::Binding("v".into())],
+                                fields: vec![Pattern::Binding(err_value.clone().into())],
                             },
-                            value: Expr::Var("v".into()),
+                            value: Expr::Var(err_value.into()),
                         },
                     ],
                 }),

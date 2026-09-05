@@ -12,13 +12,16 @@ int main(void) {
 }
 
 // SLATE-FILECHECK-BEGIN lowering
-// LOWERING-DAG: let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
-// LOWERING-DAG: let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-DAG: let {{_v[0-9]+}}: u64 = 8;
-// LOWERING-DAG: let {{_v[0-9]+}}: *mut core::ffi::c_void =
-// LOWERING-DAG:     unsafe { memset({{_v[0-9]+}} as *mut core::ffi::c_void, {{_v[0-9]+}} as i32, {{_v[0-9]+}} as usize) };
+// LOWERING-DAG: let {{__v[0-9]+}}: *mut core::ffi::c_void = {{__v[0-9]+}} as *mut core::ffi::c_void;
+// LOWERING-DAG: let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG: let {{__v[0-9]+}}: u64 = 8;
+// LOWERING-DAG: let {{__v[0-9]+}}: *mut core::ffi::c_void =
+// LOWERING-DAG:     unsafe { memset({{__v[0-9]+}} as *mut core::ffi::c_void, {{__v[0-9]+}} as i32, {{__v[0-9]+}} as usize) };
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: unsafe { buf[(0usize..8usize)].fill((0 as i32) as i8) };
+// REWRITES-DAG: let {{__v[0-9]+}}: *mut core::ffi::c_void = {{__v[0-9]+}} as *mut core::ffi::c_void;
+// REWRITES-DAG: let {{__v[0-9]+}}: i32 = 0;
+// REWRITES-DAG: let {{__v[0-9]+}}: u64 = 8;
+// REWRITES-DAG: unsafe { std::ptr::write_bytes({{__v[0-9]+}} as *mut u8, ({{__v[0-9]+}} as i32) as u8, {{__v[0-9]+}} as usize) };
 // SLATE-FILECHECK-END rewrites

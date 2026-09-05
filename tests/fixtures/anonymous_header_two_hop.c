@@ -39,23 +39,23 @@ int main(void) {
 // LOWERING-NEXT:         count: 0,
 // LOWERING-NEXT:         value: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() },
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: anonymous_header_state = anonymous_header_state {
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: anonymous_header_state = anonymous_header_state {
 // LOWERING-NEXT:         count: 0,
 // LOWERING-NEXT:         value: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() },
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     state = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 7;
+// LOWERING-NEXT:     state = {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 7;
 // LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         state.value.wide = {{_v[0-9]+}};
+// LOWERING-NEXT:         state.value.wide = {{__v[0-9]+}};
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = state.count;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { state.value.wide };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 7;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = state.count;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { state.value.wide };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 7;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -92,14 +92,21 @@ int main(void) {
 // REWRITES-NEXT:         count: 0,
 // REWRITES-NEXT:         value: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() },
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     state = anonymous_header_state {
+// REWRITES-NEXT:     let {{__v[0-9]+}}: anonymous_header_state = anonymous_header_state {
 // REWRITES-NEXT:         count: 0,
 // REWRITES-NEXT:         value: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() },
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     state = {{__v[0-9]+}};
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 7;
 // REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         state.value.wide = 7;
+// REWRITES-NEXT:         state.value.wide = {{__v[0-9]+}};
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = state.count + (((unsafe { state.value.wide }) != 7) as i32);
-// REWRITES-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = state.count;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { state.value.wide };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 7;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// REWRITES-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

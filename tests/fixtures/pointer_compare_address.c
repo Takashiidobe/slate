@@ -112,22 +112,22 @@ int main(void) {
 // REWRITES-NEXT:         tm_gmtoff: 0,
 // REWRITES-NEXT:         tm_zone: std::ptr::null_mut(),
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut tm = unsafe {
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut tm = unsafe {
 // REWRITES-NEXT:         gmtime_r(
 // REWRITES-NEXT:             std::ptr::addr_of_mut!(timestamp) as *const i64,
 // REWRITES-NEXT:             std::ptr::addr_of_mut!(utc) as *mut tm,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == std::ptr::addr_of_mut!(utc);
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut tm = unsafe {
+// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == std::ptr::addr_of_mut!(utc);
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut tm = unsafe {
 // REWRITES-NEXT:         localtime_r(
 // REWRITES-NEXT:             std::ptr::addr_of_mut!(timestamp) as *const i64,
 // REWRITES-NEXT:             std::ptr::addr_of_mut!(local) as *mut tm,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == std::ptr::addr_of_mut!(local);
-// REWRITES-NEXT:     unsafe { printf(c"%d %d\n".as_ptr(), {{_v[0-9]+}}, {{_v[0-9]+}} as i32) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == std::ptr::addr_of_mut!(local);
+// REWRITES-NEXT:     unsafe { printf(c"%d %d\n".as_ptr(), {{__v[0-9]+}}, {{__v[0-9]+}} as i32) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

@@ -46,75 +46,75 @@ int main() {
 // LOWERING-NEXT:     let mut r: i32 = 0;
 // LOWERING-NEXT:     a = {{arg[0-9]+}};
 // LOWERING-NEXT:     b = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     r = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     r = {{__v[0-9]+}};
 // LOWERING-NEXT:     {
 // LOWERING-NEXT:         loop {
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = a;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = b;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < {{_v[0-9]+}};
-// LOWERING-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = a;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = b;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
+// LOWERING-NEXT:             if !{{__v[0-9]+}} {
 // LOWERING-NEXT:                 break;
 // LOWERING-NEXT:             }
 // LOWERING-NEXT:             {
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = a;
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:                 a = {{_v[0-9]+}};
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = r;
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:                 r = {{_v[0-9]+}};
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = a;
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-NEXT:                 a = {{__v[0-9]+}};
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = r;
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-NEXT:                 r = {{__v[0-9]+}};
 // LOWERING-NEXT:             }
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = a;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = b;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
-// LOWERING-NEXT:         if {{_v[0-9]+}} {
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = r;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = 10;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:             r = {{_v[0-9]+}};
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = a;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = b;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
+// LOWERING-NEXT:         if {{__v[0-9]+}} {
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = r;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = 10;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-NEXT:             r = {{__v[0-9]+}};
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = a;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = b;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} > {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = a;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = b;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} - {{_v[0-9]+}};
-// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = a;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = b;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} > {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = if {{__v[0-9]+}} {
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = a;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = b;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} - {{__v[0-9]+}};
+// LOWERING-NEXT:         {{__v[0-9]+}}
 // LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = b;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = a;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} - {{_v[0-9]+}};
-// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = b;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = a;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} - {{__v[0-9]+}};
+// LOWERING-NEXT:         {{__v[0-9]+}}
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = a;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = b;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} & {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = a;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} << {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = r;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = a;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = b;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} & {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = a;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} << {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = r;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-NEXT:     return {{__v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 2;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 5;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = classify({{_v[0-9]+}}, {{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 2;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 5;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = classify({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -128,14 +128,14 @@ int main() {
 // REWRITES-DAG:     if a == b {
 // REWRITES-DAG:         r += 10;
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{_v[0-9]+}}: i32 = if a > b {
-// REWRITES-DAG:         let {{_v[0-9]+}}: i32 = a - b;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = if a > b {
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = a - b;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: i32 = b - a;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = b - a;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-DAG:     r + {{_v[0-9]+}} + ((a & b) + (a << {{_v[0-9]+}}))
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 1;
+// REWRITES-DAG:     r + {{__v[0-9]+}} + ((a & b) + (a << {{__v[0-9]+}}))
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

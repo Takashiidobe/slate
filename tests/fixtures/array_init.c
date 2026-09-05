@@ -42,61 +42,61 @@ int main(void) {
 // LOWERING-NEXT:     let mut s: [i8; 6] = [0; 6];
 // LOWERING-NEXT:     let mut padded: [i8; 8] = [0; 8];
 // LOWERING-NEXT:     let mut sum: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: [i32; 5] = [1, 2, 3, 4, 5];
-// LOWERING-NEXT:     *a = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: [i32; 4] = [7, 8, 0, 0];
-// LOWERING-NEXT:     *partial = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: [i8; 6] = [104, 101, 108, 108, 111, 0];
-// LOWERING-NEXT:     s = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: [i8; 8] = [104, 105, 0, 0, 0, 0, 0, 0];
-// LOWERING-NEXT:     padded = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     sum = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: [i32; 5] = [1, 2, 3, 4, 5];
+// LOWERING-NEXT:     *a = {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: [i32; 4] = [7, 8, 0, 0];
+// LOWERING-NEXT:     *partial = {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: [i8; 6] = [104, 101, 108, 108, 111, 0];
+// LOWERING-NEXT:     s = {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: [i8; 8] = [104, 105, 0, 0, 0, 0, 0, 0];
+// LOWERING-NEXT:     padded = {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     sum = {{__v[0-9]+}};
 // LOWERING-NEXT:     {
 // LOWERING-NEXT:         let mut i: i32 = 0;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:         i = {{_v[0-9]+}};
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:         i = {{__v[0-9]+}};
 // LOWERING-NEXT:         loop {
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = i;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = 5;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < {{_v[0-9]+}};
-// LOWERING-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = i;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = 5;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
+// LOWERING-NEXT:             if !{{__v[0-9]+}} {
 // LOWERING-NEXT:                 break;
 // LOWERING-NEXT:             }
 // LOWERING-NEXT:             {
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = i;
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} as i64;
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = a[({{_v[0-9]+}} as usize)];
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = sum;
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:                 sum = {{_v[0-9]+}};
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = i;
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: i64 = {{__v[0-9]+}} as i64;
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = a[({{__v[0-9]+}} as usize)];
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = sum;
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-NEXT:                 sum = {{__v[0-9]+}};
 // LOWERING-NEXT:             }
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = i;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
-// LOWERING-NEXT:             i = {{_v[0-9]+}};
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = i;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + 1;
+// LOWERING-NEXT:             i = {{__v[0-9]+}};
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = sum;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 1;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = partial[({{_v[0-9]+}} as usize)];
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = partial[({{_v[0-9]+}} as usize)];
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%s\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = s.as_mut_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%s %d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = padded.as_mut_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 4;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i8 = padded[({{_v[0-9]+}} as usize)];
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = sum;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d %d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = 1;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = partial[({{__v[0-9]+}} as usize)];
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = 3;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = partial[({{__v[0-9]+}} as usize)];
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%s\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = s.as_mut_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%s %d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = padded.as_mut_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = 4;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i8 = padded[({{__v[0-9]+}} as usize)];
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -125,23 +125,55 @@ int main(void) {
 // REWRITES-NEXT:     let mut s: [i8; 6] = [0; 6];
 // REWRITES-NEXT:     let mut padded: [i8; 8] = [0; 8];
 // REWRITES-NEXT:     let mut sum: i32 = 0;
-// REWRITES-NEXT:     *a = [1, 2, 3, 4, 5];
-// REWRITES-NEXT:     *partial = [7, 8, 0, 0];
-// REWRITES-NEXT:     s = [104, 101, 108, 108, 111, 0];
-// REWRITES-NEXT:     padded = [104, 105, 0, 0, 0, 0, 0, 0];
-// REWRITES-NEXT:     for i in a.iter().copied() {
-// REWRITES-NEXT:         sum += i;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: [i32; 5] = [1, 2, 3, 4, 5];
+// REWRITES-NEXT:     *a = {{__v[0-9]+}};
+// REWRITES-NEXT:     let {{__v[0-9]+}}: [i32; 4] = [7, 8, 0, 0];
+// REWRITES-NEXT:     *partial = {{__v[0-9]+}};
+// REWRITES-NEXT:     let {{__v[0-9]+}}: [i8; 6] = [104, 101, 108, 108, 111, 0];
+// REWRITES-NEXT:     s = {{__v[0-9]+}};
+// REWRITES-NEXT:     let {{__v[0-9]+}}: [i8; 8] = [104, 105, 0, 0, 0, 0, 0, 0];
+// REWRITES-NEXT:     padded = {{__v[0-9]+}};
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT:     sum = {{__v[0-9]+}};
+// REWRITES-NEXT:     let mut i: i32 = 0;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT:     i = {{__v[0-9]+}};
+// REWRITES-NEXT:     loop {
+// REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = i;
+// REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 5;
+// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
+// REWRITES-NEXT:         if !{{__v[0-9]+}} {
+// REWRITES-NEXT:             break;
+// REWRITES-NEXT:         }
+// REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = i;
+// REWRITES-NEXT:         let {{__v[0-9]+}}: i64 = {{__v[0-9]+}} as i64;
+// REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = a[({{__v[0-9]+}} as usize)];
+// REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = sum;
+// REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// REWRITES-NEXT:         sum = {{__v[0-9]+}};
+// REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = i;
+// REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + 1;
+// REWRITES-NEXT:         i = {{__v[0-9]+}};
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), sum) };
-// REWRITES-NEXT:     unsafe { printf(c"%d %d\n".as_ptr(), partial[1], partial[3]) };
-// REWRITES-NEXT:     unsafe { printf(c"%s\n".as_ptr(), s.as_mut_ptr() as *mut i8) };
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"%s %d\n".as_ptr(),
-// REWRITES-NEXT:             padded.as_mut_ptr() as *mut i8,
-// REWRITES-NEXT:             padded[4] as i32,
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i8 = c"%d\n".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = sum;
+// REWRITES-NEXT:     unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i8 = c"%d %d\n".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i64 = 1;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = partial[({{__v[0-9]+}} as usize)];
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = partial[({{__v[0-9]+}} as usize)];
+// REWRITES-NEXT:     unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i8 = c"%s\n".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i8 = s.as_mut_ptr() as *mut i8;
+// REWRITES-NEXT:     unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i8 = c"%s %d\n".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i8 = padded.as_mut_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i64 = 4;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i8 = padded[({{__v[0-9]+}} as usize)];
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// REWRITES-NEXT:     unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

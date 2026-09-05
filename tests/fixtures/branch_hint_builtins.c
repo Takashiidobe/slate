@@ -63,36 +63,36 @@ int main(void) {
 // LOWERING-NEXT:     let mut a: i32 = 0;
 // LOWERING-NEXT:     let mut b: i32 = 0;
 // LOWERING-NEXT:     let mut c: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = use_expect({{_v[0-9]+}});
-// LOWERING-NEXT:         a = {{_v[0-9]+}};
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = use_expect({{__v[0-9]+}});
+// LOWERING-NEXT:         a = {{__v[0-9]+}};
 // LOWERING-NEXT:         {
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = use_expect_with_probability({{_v[0-9]+}});
-// LOWERING-NEXT:             b = {{_v[0-9]+}};
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = use_expect_with_probability({{__v[0-9]+}});
+// LOWERING-NEXT:             b = {{__v[0-9]+}};
 // LOWERING-NEXT:             {
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = use_unpredictable({{_v[0-9]+}});
-// LOWERING-NEXT:                 c = {{_v[0-9]+}};
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: *mut i8 = b"%d %d %d %d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = a;
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = b;
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = c;
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { side_effect_calls };
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 =
-// LOWERING-NEXT:                     unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:                 __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:                 std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = use_unpredictable({{__v[0-9]+}});
+// LOWERING-NEXT:                 c = {{__v[0-9]+}};
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: *mut i8 = b"%d %d %d %d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = a;
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = b;
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = c;
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = unsafe { side_effect_calls };
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 =
+// LOWERING-NEXT:                     unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:                 __retval = {{__v[0-9]+}};
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = __retval;
+// LOWERING-NEXT:                 std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-NEXT:             }
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = __retval;
+// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn use_expect({{arg[0-9]+}}: i32) -> i32 {
@@ -100,23 +100,23 @@ int main(void) {
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     x = {{arg[0-9]+}};
 // LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = x;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = bump({{_v[0-9]+}});
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} as i64;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i64 = 1;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i64 = {{_v[0-9]+}};
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// LOWERING-NEXT:         if {{_v[0-9]+}} {
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:             __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:             return {{_v[0-9]+}};
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = x;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = bump({{__v[0-9]+}});
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i64 = {{__v[0-9]+}} as i64;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i64 = 1;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i64 = {{__v[0-9]+}};
+// LOWERING-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
+// LOWERING-NEXT:         if {{__v[0-9]+}} {
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-NEXT:             __retval = {{__v[0-9]+}};
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = __retval;
+// LOWERING-NEXT:             return {{__v[0-9]+}};
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     __retval = {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = __retval;
+// LOWERING-NEXT:     return {{__v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn use_expect_with_probability({{arg[0-9]+}}: i32) -> i32 {
@@ -124,23 +124,23 @@ int main(void) {
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     x = {{arg[0-9]+}};
 // LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = x;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = bump({{_v[0-9]+}});
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} as i64;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i64 = 1;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i64 = {{_v[0-9]+}};
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// LOWERING-NEXT:         if {{_v[0-9]+}} {
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:             __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:             return {{_v[0-9]+}};
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = x;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = bump({{__v[0-9]+}});
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i64 = {{__v[0-9]+}} as i64;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i64 = 1;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i64 = {{__v[0-9]+}};
+// LOWERING-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
+// LOWERING-NEXT:         if {{__v[0-9]+}} {
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-NEXT:             __retval = {{__v[0-9]+}};
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = __retval;
+// LOWERING-NEXT:             return {{__v[0-9]+}};
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     __retval = {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = __retval;
+// LOWERING-NEXT:     return {{__v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn use_unpredictable({{arg[0-9]+}}: i32) -> i32 {
@@ -148,28 +148,28 @@ int main(void) {
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     x = {{arg[0-9]+}};
 // LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = x;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = bump({{_v[0-9]+}});
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} > {{_v[0-9]+}};
-// LOWERING-NEXT:         if {{_v[0-9]+}} {
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:             __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:             return {{_v[0-9]+}};
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = x;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = bump({{__v[0-9]+}});
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} > {{__v[0-9]+}};
+// LOWERING-NEXT:         if {{__v[0-9]+}} {
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-NEXT:             __retval = {{__v[0-9]+}};
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = __retval;
+// LOWERING-NEXT:             return {{__v[0-9]+}};
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     __retval = {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = __retval;
+// LOWERING-NEXT:     return {{__v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn bump({{arg[0-9]+}}: i32) -> i32 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { side_effect_calls };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { side_effect_calls };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + 1;
 // LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         side_effect_calls = {{_v[0-9]+}};
+// LOWERING-NEXT:         side_effect_calls = {{__v[0-9]+}};
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     return {{arg[0-9]+}};
 // LOWERING-NEXT: }
@@ -211,25 +211,25 @@ int main(void) {
 // REWRITES-NEXT:     std::process::exit(__retval as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn use_expect(mut {{_v[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = bump({{_v[0-9]+}});
-// REWRITES-NEXT:     if ({{_v[0-9]+}} as i64) != 0 {
+// REWRITES-NEXT: fn use_expect(mut {{__v[0-9]+}}: i32) -> i32 {
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = bump({{__v[0-9]+}});
+// REWRITES-NEXT:     if ({{__v[0-9]+}} as i64) != 0 {
 // REWRITES-NEXT:         return 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     0
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn use_expect_with_probability(mut {{_v[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = bump({{_v[0-9]+}});
-// REWRITES-NEXT:     if ({{_v[0-9]+}} as i64) != 0 {
+// REWRITES-NEXT: fn use_expect_with_probability(mut {{__v[0-9]+}}: i32) -> i32 {
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = bump({{__v[0-9]+}});
+// REWRITES-NEXT:     if ({{__v[0-9]+}} as i64) != 0 {
 // REWRITES-NEXT:         return 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     0
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn use_unpredictable(mut {{_v[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = bump({{_v[0-9]+}});
-// REWRITES-NEXT:     if {{_v[0-9]+}} > 0 {
+// REWRITES-NEXT: fn use_unpredictable(mut {{__v[0-9]+}}: i32) -> i32 {
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = bump({{__v[0-9]+}});
+// REWRITES-NEXT:     if {{__v[0-9]+}} > 0 {
 // REWRITES-NEXT:         return 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     0

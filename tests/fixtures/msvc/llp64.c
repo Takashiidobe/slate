@@ -77,7 +77,7 @@ int main(void) {
 // LOWERING-MSVC-NEXT:     {{arg[0-9]+}}: i64,
 // LOWERING-MSVC-NEXT:     {{arg[0-9]+}}: f64,
 // LOWERING-MSVC-NEXT: ) -> i64 {
-// LOWERING-MSVC-NEXT:     let {{_v[0-9]+}}: i64 = unsafe {
+// LOWERING-MSVC-NEXT:     let {{__v[0-9]+}}: i64 = unsafe {
 // LOWERING-MSVC-NEXT:         imported_msvc(
 // LOWERING-MSVC-NEXT:             {{arg[0-9]+}} as usize,
 // LOWERING-MSVC-NEXT:             {{arg[0-9]+}} as isize,
@@ -89,31 +89,31 @@ int main(void) {
 // LOWERING-MSVC-NEXT:             {{arg[0-9]+}} as f64,
 // LOWERING-MSVC-NEXT:         )
 // LOWERING-MSVC-NEXT:     };
-// LOWERING-MSVC-NEXT:     return {{_v[0-9]+}};
+// LOWERING-MSVC-NEXT:     return {{__v[0-9]+}};
 // LOWERING-MSVC-NEXT: }
 // LOWERING-MSVC-EMPTY:
 // LOWERING-MSVC-NEXT: fn main() {
 // LOWERING-MSVC-NEXT:     let mut buffer: [i8; 8] = [0; 8];
-// LOWERING-MSVC-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-MSVC-NEXT:     let {{_v[0-9]+}}: *mut i8 = buffer.as_mut_ptr() as *mut i8;
-// LOWERING-MSVC-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"slate\0".as_ptr() as *mut i8;
-// LOWERING-MSVC-NEXT:     let {{_v[0-9]+}}: *mut i8 = (unsafe {
+// LOWERING-MSVC-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-MSVC-NEXT:     let {{__v[0-9]+}}: *mut i8 = buffer.as_mut_ptr() as *mut i8;
+// LOWERING-MSVC-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"slate\0".as_ptr() as *mut i8;
+// LOWERING-MSVC-NEXT:     let {{__v[0-9]+}}: *mut i8 = (unsafe {
 // LOWERING-MSVC-NEXT:         strcpy(
-// LOWERING-MSVC-NEXT:             {{_v[0-9]+}} as *mut core::ffi::c_char,
-// LOWERING-MSVC-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-MSVC-NEXT:             {{__v[0-9]+}} as *mut core::ffi::c_char,
+// LOWERING-MSVC-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
 // LOWERING-MSVC-NEXT:         )
 // LOWERING-MSVC-NEXT:     }) as *mut i8;
-// LOWERING-MSVC-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%zu %d\n\0".as_ptr() as *mut i8;
-// LOWERING-MSVC-NEXT:     let {{_v[0-9]+}}: *mut i8 = buffer.as_mut_ptr() as *mut i8;
-// LOWERING-MSVC-NEXT:     let {{_v[0-9]+}}: u64 = (unsafe { strlen({{_v[0-9]+}} as *const core::ffi::c_char) }) as u64;
-// LOWERING-MSVC-NEXT:     let {{_v[0-9]+}}: i32 = 55;
-// LOWERING-MSVC-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { isdigit({{_v[0-9]+}} as i32) };
-// LOWERING-MSVC-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-MSVC-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-MSVC-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-MSVC-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// LOWERING-MSVC-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-MSVC-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-MSVC-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%zu %d\n\0".as_ptr() as *mut i8;
+// LOWERING-MSVC-NEXT:     let {{__v[0-9]+}}: *mut i8 = buffer.as_mut_ptr() as *mut i8;
+// LOWERING-MSVC-NEXT:     let {{__v[0-9]+}}: u64 = (unsafe { strlen({{__v[0-9]+}} as *const core::ffi::c_char) }) as u64;
+// LOWERING-MSVC-NEXT:     let {{__v[0-9]+}}: i32 = 55;
+// LOWERING-MSVC-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { isdigit({{__v[0-9]+}} as i32) };
+// LOWERING-MSVC-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-MSVC-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-MSVC-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-MSVC-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// LOWERING-MSVC-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-MSVC-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-MSVC-NEXT: }
 // SLATE-FILECHECK-END lowering-msvc
 
@@ -159,7 +159,7 @@ int main(void) {
 // REWRITES-MSVC-NEXT:     {{arg[0-9]+}}: i64,
 // REWRITES-MSVC-NEXT:     {{arg[0-9]+}}: f64,
 // REWRITES-MSVC-NEXT: ) -> i64 {
-// REWRITES-MSVC-NEXT:     unsafe {
+// REWRITES-MSVC-NEXT:     let {{__v[0-9]+}}: i64 = unsafe {
 // REWRITES-MSVC-NEXT:         imported_msvc(
 // REWRITES-MSVC-NEXT:             {{arg[0-9]+}} as usize,
 // REWRITES-MSVC-NEXT:             {{arg[0-9]+}} as isize,
@@ -170,22 +170,30 @@ int main(void) {
 // REWRITES-MSVC-NEXT:             {{arg[0-9]+}} as i64,
 // REWRITES-MSVC-NEXT:             {{arg[0-9]+}} as f64,
 // REWRITES-MSVC-NEXT:         )
-// REWRITES-MSVC-NEXT:     }
+// REWRITES-MSVC-NEXT:     };
+// REWRITES-MSVC-NEXT:     {{__v[0-9]+}}
 // REWRITES-MSVC-NEXT: }
 // REWRITES-MSVC-EMPTY:
 // REWRITES-MSVC-NEXT: fn main() {
 // REWRITES-MSVC-NEXT:     let mut buffer: [i8; 8] = [0; 8];
+// REWRITES-MSVC-NEXT:     let {{__v[0-9]+}}: *mut i8 = buffer.as_mut_ptr() as *mut i8;
+// REWRITES-MSVC-NEXT:     let {{__v[0-9]+}}: *mut i8 = c"slate".as_ptr() as *mut i8;
 // REWRITES-MSVC-NEXT:     (unsafe {
 // REWRITES-MSVC-NEXT:         strcpy(
-// REWRITES-MSVC-NEXT:             buffer.as_mut_ptr() as *mut core::ffi::c_char,
-// REWRITES-MSVC-NEXT:             c"slate".as_ptr(),
+// REWRITES-MSVC-NEXT:             {{__v[0-9]+}} as *mut core::ffi::c_char,
+// REWRITES-MSVC-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
 // REWRITES-MSVC-NEXT:         )
 // REWRITES-MSVC-NEXT:     }) as *mut i8;
-// REWRITES-MSVC-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"%zu %d\n".as_ptr() as *mut i8;
-// REWRITES-MSVC-NEXT:     let {{_v[0-9]+}}: *mut i8 = buffer.as_mut_ptr() as *mut i8;
-// REWRITES-MSVC-NEXT:     let {{_v[0-9]+}}: u64 = (unsafe { strlen({{_v[0-9]+}} as *const core::ffi::c_char) }) as u64;
-// REWRITES-MSVC-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { isdigit(55 as i32) };
-// REWRITES-MSVC-NEXT:     unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, ({{_v[0-9]+}} != 0) as i32) };
-// REWRITES-MSVC-NEXT:     std::process::exit(0 as i32);
+// REWRITES-MSVC-NEXT:     let {{__v[0-9]+}}: *mut i8 = c"%zu %d\n".as_ptr() as *mut i8;
+// REWRITES-MSVC-NEXT:     let {{__v[0-9]+}}: *mut i8 = buffer.as_mut_ptr() as *mut i8;
+// REWRITES-MSVC-NEXT:     let {{__v[0-9]+}}: u64 = (unsafe { strlen({{__v[0-9]+}} as *const core::ffi::c_char) }) as u64;
+// REWRITES-MSVC-NEXT:     let {{__v[0-9]+}}: i32 = 55;
+// REWRITES-MSVC-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { isdigit({{__v[0-9]+}} as i32) };
+// REWRITES-MSVC-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// REWRITES-MSVC-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-MSVC-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// REWRITES-MSVC-NEXT:     unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// REWRITES-MSVC-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// REWRITES-MSVC-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // REWRITES-MSVC-NEXT: }
 // SLATE-FILECHECK-END rewrites-msvc

@@ -92,66 +92,66 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn gnu_pragma_hidden({{arg[0-9]+}}: i32) -> i32 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 13;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{arg[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 13;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{arg[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-NEXT:     return {{__v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[unsafe(no_mangle)]
 // LOWERING-NEXT: pub extern "C-unwind" fn gnu_pragma_weak_target() -> i32 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 17;
-// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 17;
+// LOWERING-NEXT:     return {{__v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn gnu_pragma_actual() -> i32 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 19;
-// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 19;
+// LOWERING-NEXT:     return {{__v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let mut packed: GNUPragmaPacked = GNUPragmaPacked { tag: 0, value: 0 };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: GNUPragmaPacked = GNUPragmaPacked { tag: 29, value: 31 };
-// LOWERING-NEXT:     packed = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d %d %d %d %d %d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 5;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { gnu_pragma_inner_macro };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { gnu_pragma_outer_macro };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 5;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = std::mem::offset_of!(GNUPragmaPacked, value) as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 37;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = gnu_pragma_hidden({{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { gnu_pragma_weak_alias() };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = gnu_pragma_actual();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = gnu_pragma_diagnostic();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u8 = packed.tag;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = packed.value;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: GNUPragmaPacked = GNUPragmaPacked { tag: 29, value: 31 };
+// LOWERING-NEXT:     packed = {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d %d %d %d %d %d %d %d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 5;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { gnu_pragma_inner_macro };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { gnu_pragma_outer_macro };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 5;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = std::mem::offset_of!(GNUPragmaPacked, value) as i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 37;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = gnu_pragma_hidden({{__v[0-9]+}});
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { gnu_pragma_weak_alias() };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = gnu_pragma_actual();
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = gnu_pragma_diagnostic();
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u8 = packed.tag;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = packed.value;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe {
 // LOWERING-NEXT:         printf(
-// LOWERING-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_char,
-// LOWERING-NEXT:             {{_v[0-9]+}},
-// LOWERING-NEXT:             {{_v[0-9]+}},
-// LOWERING-NEXT:             {{_v[0-9]+}},
-// LOWERING-NEXT:             {{_v[0-9]+}},
-// LOWERING-NEXT:             {{_v[0-9]+}},
-// LOWERING-NEXT:             {{_v[0-9]+}},
-// LOWERING-NEXT:             {{_v[0-9]+}},
-// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:             {{__v[0-9]+}},
 // LOWERING-NEXT:         )
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn gnu_pragma_diagnostic() -> i32 {
 // LOWERING-NEXT:     let mut ignored: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 23;
-// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 23;
+// LOWERING-NEXT:     return {{__v[0-9]+}};
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -207,25 +207,25 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut packed: GNUPragmaPacked = GNUPragmaPacked { tag: 29, value: 31 };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"%d %d %d %d %d %d %d %d\n".as_ptr() as *mut i8;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { gnu_pragma_inner_macro };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { gnu_pragma_outer_macro };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = std::mem::offset_of!(GNUPragmaPacked, value) as i32;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = gnu_pragma_hidden(37);
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { gnu_pragma_weak_alias() };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = gnu_pragma_actual();
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = gnu_pragma_diagnostic();
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i8 = c"%d %d %d %d %d %d %d %d\n".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { gnu_pragma_inner_macro };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { gnu_pragma_outer_macro };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = std::mem::offset_of!(GNUPragmaPacked, value) as i32;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = gnu_pragma_hidden(37);
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { gnu_pragma_weak_alias() };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = gnu_pragma_actual();
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = gnu_pragma_diagnostic();
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_char,
+// REWRITES-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
 // REWRITES-NEXT:             5 as i32,
-// REWRITES-NEXT:             {{_v[0-9]+}},
-// REWRITES-NEXT:             {{_v[0-9]+}},
+// REWRITES-NEXT:             {{__v[0-9]+}},
+// REWRITES-NEXT:             {{__v[0-9]+}},
 // REWRITES-NEXT:             5 as i32,
-// REWRITES-NEXT:             {{_v[0-9]+}},
-// REWRITES-NEXT:             {{_v[0-9]+}},
-// REWRITES-NEXT:             {{_v[0-9]+}},
-// REWRITES-NEXT:             {{_v[0-9]+}} + {{_v[0-9]+}} + (packed.tag as i32) + (packed.value as i32),
+// REWRITES-NEXT:             {{__v[0-9]+}},
+// REWRITES-NEXT:             {{__v[0-9]+}},
+// REWRITES-NEXT:             {{__v[0-9]+}},
+// REWRITES-NEXT:             {{__v[0-9]+}} + {{__v[0-9]+}} + (packed.tag as i32) + (packed.value as i32),
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     std::process::exit(0 as i32);

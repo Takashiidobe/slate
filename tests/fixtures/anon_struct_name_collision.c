@@ -52,19 +52,19 @@ int main(void) {
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let mut named: __slate_anonymous_struct_0 = __slate_anonymous_struct_0 { value: 0 };
 // LOWERING-NEXT:     let mut point: {{anon_[0-9]+}} = {{anon_[0-9]+}} { x: 0, y: 0 };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: __slate_anonymous_struct_0 = __slate_anonymous_struct_0 { value: 7 };
-// LOWERING-NEXT:     named = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: {{anon_[0-9]+}} = {{anon_[0-9]+}} { x: 3, y: 4 };
-// LOWERING-NEXT:     point = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = named.value;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = point.x;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = point.y;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: __slate_anonymous_struct_0 = __slate_anonymous_struct_0 { value: 7 };
+// LOWERING-NEXT:     named = {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: {{anon_[0-9]+}} = {{anon_[0-9]+}} { x: 3, y: 4 };
+// LOWERING-NEXT:     point = {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = named.value;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = point.x;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = point.y;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering

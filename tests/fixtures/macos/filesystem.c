@@ -129,31 +129,31 @@ int open_read_only(const char *path) { return open(path, O_RDONLY); }
 // LOWERING-MACOS-NEXT: }
 // LOWERING-MACOS-EMPTY:
 // LOWERING-MACOS-NEXT: fn is_directory({{arg[0-9]+}}: u16) -> i32 {
-// LOWERING-MACOS-NEXT:     let {{_v[0-9]+}}: i32 = {{arg[0-9]+}} as i32;
-// LOWERING-MACOS-NEXT:     let {{_v[0-9]+}}: i32 = 61440;
-// LOWERING-MACOS-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} & {{_v[0-9]+}};
-// LOWERING-MACOS-NEXT:     let {{_v[0-9]+}}: i32 = 16384;
-// LOWERING-MACOS-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
-// LOWERING-MACOS-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-MACOS-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-MACOS-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// LOWERING-MACOS-NEXT:     return {{_v[0-9]+}};
+// LOWERING-MACOS-NEXT:     let {{__v[0-9]+}}: i32 = {{arg[0-9]+}} as i32;
+// LOWERING-MACOS-NEXT:     let {{__v[0-9]+}}: i32 = 61440;
+// LOWERING-MACOS-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} & {{__v[0-9]+}};
+// LOWERING-MACOS-NEXT:     let {{__v[0-9]+}}: i32 = 16384;
+// LOWERING-MACOS-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
+// LOWERING-MACOS-NEXT:     let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-MACOS-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-MACOS-NEXT:     let {{__v[0-9]+}}: i32 = if {{__v[0-9]+}} { {{__v[0-9]+}} } else { {{__v[0-9]+}} };
+// LOWERING-MACOS-NEXT:     return {{__v[0-9]+}};
 // LOWERING-MACOS-NEXT: }
 // LOWERING-MACOS-EMPTY:
 // LOWERING-MACOS-NEXT: fn stat_file({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: *mut stat) -> i32 {
-// LOWERING-MACOS-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { stat({{arg[0-9]+}} as *const core::ffi::c_char, {{arg[0-9]+}} as *mut stat) };
-// LOWERING-MACOS-NEXT:     return {{_v[0-9]+}};
+// LOWERING-MACOS-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { stat({{arg[0-9]+}} as *const core::ffi::c_char, {{arg[0-9]+}} as *mut stat) };
+// LOWERING-MACOS-NEXT:     return {{__v[0-9]+}};
 // LOWERING-MACOS-NEXT: }
 // LOWERING-MACOS-EMPTY:
 // LOWERING-MACOS-NEXT: fn next_entry({{arg[0-9]+}}: *mut __dirstream) -> *mut dirent {
-// LOWERING-MACOS-NEXT:     let {{_v[0-9]+}}: *mut dirent = unsafe { readdir({{arg[0-9]+}} as *mut __dirstream) };
-// LOWERING-MACOS-NEXT:     return {{_v[0-9]+}};
+// LOWERING-MACOS-NEXT:     let {{__v[0-9]+}}: *mut dirent = unsafe { readdir({{arg[0-9]+}} as *mut __dirstream) };
+// LOWERING-MACOS-NEXT:     return {{__v[0-9]+}};
 // LOWERING-MACOS-NEXT: }
 // LOWERING-MACOS-EMPTY:
 // LOWERING-MACOS-NEXT: fn open_read_only({{arg[0-9]+}}: *mut i8) -> i32 {
-// LOWERING-MACOS-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-MACOS-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { open({{arg[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}} as i32) };
-// LOWERING-MACOS-NEXT:     return {{_v[0-9]+}};
+// LOWERING-MACOS-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-MACOS-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { open({{arg[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}} as i32) };
+// LOWERING-MACOS-NEXT:     return {{__v[0-9]+}};
 // LOWERING-MACOS-NEXT: }
 // SLATE-FILECHECK-END lowering-macos
 
@@ -219,24 +219,30 @@ int open_read_only(const char *path) { return open(path, O_RDONLY); }
 // REWRITES-MACOS-NEXT: }
 // REWRITES-MACOS-EMPTY:
 // REWRITES-MACOS-NEXT: fn is_directory({{arg[0-9]+}}: u16) -> i32 {
-// REWRITES-MACOS-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-MACOS-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-MACOS-NEXT:     if ({{arg[0-9]+}} as i32) & 61440 == 16384 {
-// REWRITES-MACOS-NEXT:         {{_v[0-9]+}}
-// REWRITES-MACOS-NEXT:     } else {
-// REWRITES-MACOS-NEXT:         {{_v[0-9]+}}
-// REWRITES-MACOS-NEXT:     }
+// REWRITES-MACOS-NEXT:     let {{__v[0-9]+}}: i32 = {{arg[0-9]+}} as i32;
+// REWRITES-MACOS-NEXT:     let {{__v[0-9]+}}: i32 = 61440;
+// REWRITES-MACOS-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} & {{__v[0-9]+}};
+// REWRITES-MACOS-NEXT:     let {{__v[0-9]+}}: i32 = 16384;
+// REWRITES-MACOS-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
+// REWRITES-MACOS-NEXT:     let {{__v[0-9]+}}: i32 = 1;
+// REWRITES-MACOS-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// REWRITES-MACOS-NEXT:     let {{__v[0-9]+}}: i32 = if {{__v[0-9]+}} { {{__v[0-9]+}} } else { {{__v[0-9]+}} };
+// REWRITES-MACOS-NEXT:     {{__v[0-9]+}}
 // REWRITES-MACOS-NEXT: }
 // REWRITES-MACOS-EMPTY:
 // REWRITES-MACOS-NEXT: fn stat_file({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: *mut stat) -> i32 {
-// REWRITES-MACOS-NEXT:     unsafe { stat({{arg[0-9]+}} as *const core::ffi::c_char, {{arg[0-9]+}} as *mut stat) }
+// REWRITES-MACOS-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { stat({{arg[0-9]+}} as *const core::ffi::c_char, {{arg[0-9]+}} as *mut stat) };
+// REWRITES-MACOS-NEXT:     {{__v[0-9]+}}
 // REWRITES-MACOS-NEXT: }
 // REWRITES-MACOS-EMPTY:
 // REWRITES-MACOS-NEXT: fn next_entry({{arg[0-9]+}}: *mut __dirstream) -> *mut dirent {
-// REWRITES-MACOS-NEXT:     unsafe { readdir({{arg[0-9]+}} as *mut __dirstream) }
+// REWRITES-MACOS-NEXT:     let {{__v[0-9]+}}: *mut dirent = unsafe { readdir({{arg[0-9]+}} as *mut __dirstream) };
+// REWRITES-MACOS-NEXT:     {{__v[0-9]+}}
 // REWRITES-MACOS-NEXT: }
 // REWRITES-MACOS-EMPTY:
 // REWRITES-MACOS-NEXT: fn open_read_only({{arg[0-9]+}}: *mut i8) -> i32 {
-// REWRITES-MACOS-NEXT:     unsafe { open({{arg[0-9]+}} as *const core::ffi::c_char, 0 as i32) }
+// REWRITES-MACOS-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// REWRITES-MACOS-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { open({{arg[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}} as i32) };
+// REWRITES-MACOS-NEXT:     {{__v[0-9]+}}
 // REWRITES-MACOS-NEXT: }
 // SLATE-FILECHECK-END rewrites-macos

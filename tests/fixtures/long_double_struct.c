@@ -143,25 +143,25 @@ int main(void) {
 // LOWERING-NEXT:         tag: 0,
 // LOWERING-NEXT:         value: LongDouble([0; 10]),
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 3;
-// LOWERING-NEXT:     b.tag = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 144, 1, 64]);
-// LOWERING-NEXT:     b.value = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: r#box = b;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = sum_box({{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = b.value;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]);
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} * {{_v[0-9]+}};
-// LOWERING-NEXT:     b.value = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = b.value;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __slate_f80_to_i32({{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 3;
+// LOWERING-NEXT:     b.tag = {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 144, 1, 64]);
+// LOWERING-NEXT:     b.value = {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: r#box = b;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = sum_box({{__v[0-9]+}});
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = b.value;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]);
+// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} * {{__v[0-9]+}};
+// LOWERING-NEXT:     b.value = {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = b.value;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = __slate_f80_to_i32({{__v[0-9]+}});
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn sum_box({{arg[0-9]+}}: r#box) -> i32 {
@@ -170,12 +170,12 @@ int main(void) {
 // LOWERING-NEXT:         value: LongDouble([0; 10]),
 // LOWERING-NEXT:     };
 // LOWERING-NEXT:     b = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = b.value;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = b.tag;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_i32({{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __slate_f80_to_i32({{_v[0-9]+}});
-// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = b.value;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = b.tag;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_i32({{__v[0-9]+}});
+// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = __slate_f80_to_i32({{__v[0-9]+}});
+// LOWERING-NEXT:     return {{__v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: unsafe extern "C" {
@@ -370,16 +370,16 @@ int main(void) {
 // REWRITES-NEXT:     b.value = LongDouble([0, 0, 0, 0, 0, 0, 0, 144, 1, 64]);
 // REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), sum_box(b)) };
 // REWRITES-NEXT:     b.value *= LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]);
-// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = b.value;
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), __slate_f80_to_i32({{_v[0-9]+}})) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: LongDouble = b.value;
+// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), __slate_f80_to_i32({{__v[0-9]+}})) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn sum_box(mut b: r#box) -> i32 {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = b.value;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = b.tag;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_i32({{_v[0-9]+}});
-// REWRITES-NEXT:     __slate_f80_to_i32({{_v[0-9]+}} + {{_v[0-9]+}})
+// REWRITES-NEXT:     let {{__v[0-9]+}}: LongDouble = b.value;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = b.tag;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_i32({{__v[0-9]+}});
+// REWRITES-NEXT:     __slate_f80_to_i32({{__v[0-9]+}} + {{__v[0-9]+}})
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe extern "C" {

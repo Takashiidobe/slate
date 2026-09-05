@@ -32,39 +32,39 @@ int main (void)
 // LOWERING-DAG: fn main() {
 // LOWERING-DAG:     let mut d: aligned::Aligned<aligned::A16, [num_complex::Complex<f64>; 1]> =
 // LOWERING-DAG:         aligned::Aligned([num_complex::Complex { re: 0.0, im: 0.0 }; 1]);
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:     let {{_v[0-9]+}}: num_complex::Complex<f32> = foo();
-// LOWERING-DAG:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.re as f64;
-// LOWERING-DAG:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.im as f64;
-// LOWERING-DAG:     let {{_v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} };
-// LOWERING-DAG:     let {{_v[0-9]+}}: i64 = 0;
-// LOWERING-DAG:     d[({{_v[0-9]+}} as usize)] = {{_v[0-9]+}};
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:     let {{__v[0-9]+}}: num_complex::Complex<f32> = foo();
+// LOWERING-DAG:     let {{__v[0-9]+}}: f64 = {{__v[0-9]+}}.re as f64;
+// LOWERING-DAG:     let {{__v[0-9]+}}: f64 = {{__v[0-9]+}}.im as f64;
+// LOWERING-DAG:     let {{__v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex { re: {{__v[0-9]+}}, im: {{__v[0-9]+}} };
+// LOWERING-DAG:     let {{__v[0-9]+}}: i64 = 0;
+// LOWERING-DAG:     d[({{__v[0-9]+}} as usize)] = {{__v[0-9]+}};
 // LOWERING-DAG:     {
-// LOWERING-DAG:         let {{_v[0-9]+}}: i64 = 0;
-// LOWERING-DAG:         let {{_v[0-9]+}}: num_complex::Complex<f64> = d[({{_v[0-9]+}} as usize)];
-// LOWERING-DAG:         let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.re;
-// LOWERING-DAG:         let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-DAG:         let {{_v[0-9]+}}: f64 = {{_v[0-9]+}} as f64;
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: i64 = 0;
+// LOWERING-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> = d[({{__v[0-9]+}} as usize)];
+// LOWERING-DAG:         let {{__v[0-9]+}}: f64 = {{__v[0-9]+}}.re;
+// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-DAG:         let {{__v[0-9]+}}: f64 = {{__v[0-9]+}} as f64;
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: i64 = 0;
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<f64> = d[({{_v[0-9]+}} as usize)];
-// LOWERING-DAG:             let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.im;
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = -1;
-// LOWERING-DAG:             let {{_v[0-9]+}}: f64 = {{_v[0-9]+}} as f64;
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: i64 = 0;
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f64> = d[({{__v[0-9]+}} as usize)];
+// LOWERING-DAG:             let {{__v[0-9]+}}: f64 = {{__v[0-9]+}}.im;
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = -1;
+// LOWERING-DAG:             let {{__v[0-9]+}}: f64 = {{__v[0-9]+}} as f64;
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         if {{_v[0-9]+}} {
+// LOWERING-DAG:         if {{__v[0-9]+}} {
 // LOWERING-DAG:             unsafe { abort() };
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:     unsafe { exit({{_v[0-9]+}} as i32) };
-// LOWERING-DAG:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:     unsafe { exit({{__v[0-9]+}} as i32) };
+// LOWERING-DAG:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-DAG: }
 // SLATE-FILECHECK-END lowering
 
@@ -72,25 +72,36 @@ int main (void)
 // REWRITES-DAG: fn main() {
 // REWRITES-DAG:     let mut d: aligned::Aligned<aligned::A16, [num_complex::Complex<f64>; 1]> =
 // REWRITES-DAG:         aligned::Aligned([num_complex::Complex { re: 0.0, im: 0.0 }; 1]);
-// REWRITES-DAG:     let {{_v[0-9]+}}: num_complex::Complex<f32> = foo();
-// REWRITES-DAG:     let {{_v[0-9]+}}: i64 = 0;
-// REWRITES-DAG:     d[({{_v[0-9]+}} as usize)] = num_complex::Complex {
-// REWRITES-DAG:         re: {{_v[0-9]+}}.re as f64,
-// REWRITES-DAG:         im: {{_v[0-9]+}}.im as f64,
-// REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: num_complex::Complex<f64> = d[0];
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}}.re != ((1 as i32) as f64) {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// REWRITES-DAG:     let {{__v[0-9]+}}: num_complex::Complex<f32> = foo();
+// REWRITES-DAG:     let {{__v[0-9]+}}: f64 = {{__v[0-9]+}}.re as f64;
+// REWRITES-DAG:     let {{__v[0-9]+}}: f64 = {{__v[0-9]+}}.im as f64;
+// REWRITES-DAG:     let {{__v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex { re: {{__v[0-9]+}}, im: {{__v[0-9]+}} };
+// REWRITES-DAG:     let {{__v[0-9]+}}: i64 = 0;
+// REWRITES-DAG:     d[({{__v[0-9]+}} as usize)] = {{__v[0-9]+}};
+// REWRITES-DAG:     let {{__v[0-9]+}}: i64 = 0;
+// REWRITES-DAG:     let {{__v[0-9]+}}: num_complex::Complex<f64> = d[({{__v[0-9]+}} as usize)];
+// REWRITES-DAG:     let {{__v[0-9]+}}: f64 = {{__v[0-9]+}}.re;
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 1;
+// REWRITES-DAG:     let {{__v[0-9]+}}: f64 = {{__v[0-9]+}} as f64;
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<f64> = d[0];
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}}.im != ((-1 as i32) as f64);
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: i64 = 0;
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> = d[({{__v[0-9]+}} as usize)];
+// REWRITES-DAG:         let {{__v[0-9]+}}: f64 = {{__v[0-9]+}}.im;
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = -1;
+// REWRITES-DAG:         let {{__v[0-9]+}}: f64 = {{__v[0-9]+}} as f64;
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     if {{_v[0-9]+}} {
+// REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
-// REWRITES-DAG:     unsafe { exit(0 as i32) };
-// REWRITES-DAG:     std::process::exit(0 as i32);
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// REWRITES-DAG:     unsafe { exit({{__v[0-9]+}} as i32) };
+// REWRITES-DAG:     std::process::exit({{__v[0-9]+}} as i32);
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

@@ -66,53 +66,53 @@ int slate_lookup_user_shell(uid_t uid, char *buffer, size_t size) {
 // LOWERING-MACOS-DAG:     let mut __retval: i32 = 0;
 // LOWERING-MACOS-DAG:     let mut status: i32 = 0;
 // LOWERING-MACOS-DAG:     let mut result: i32 = 0;
-// LOWERING-MACOS-DAG:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-MACOS-DAG:     status = {{_v[0-9]+}};
-// LOWERING-MACOS-DAG:     let {{_v[0-9]+}}: *mut *mut core::ffi::c_void = std::ptr::null_mut();
-// LOWERING-MACOS-DAG:     let {{_v[0-9]+}}: *mut *mut core::ffi::c_void = std::ptr::null_mut();
-// LOWERING-MACOS-DAG:     let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-MACOS-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-MACOS-DAG:     status = {{__v[0-9]+}};
+// LOWERING-MACOS-DAG:     let {{__v[0-9]+}}: *mut *mut core::ffi::c_void = std::ptr::null_mut();
+// LOWERING-MACOS-DAG:     let {{__v[0-9]+}}: *mut *mut core::ffi::c_void = std::ptr::null_mut();
+// LOWERING-MACOS-DAG:     let {{__v[0-9]+}}: i32 = unsafe {
 // LOWERING-MACOS-DAG:         posix_spawn(
 // LOWERING-MACOS-DAG:             {{arg[0-9]+}} as *mut i32,
 // LOWERING-MACOS-DAG:             {{arg[0-9]+}} as *const core::ffi::c_char,
-// LOWERING-MACOS-DAG:             {{_v[0-9]+}} as *const *mut core::ffi::c_void,
-// LOWERING-MACOS-DAG:             {{_v[0-9]+}} as *const *mut core::ffi::c_void,
+// LOWERING-MACOS-DAG:             {{__v[0-9]+}} as *const *mut core::ffi::c_void,
+// LOWERING-MACOS-DAG:             {{__v[0-9]+}} as *const *mut core::ffi::c_void,
 // LOWERING-MACOS-DAG:             {{arg[0-9]+}} as *mut *mut core::ffi::c_char,
 // LOWERING-MACOS-DAG:             {{arg[0-9]+}} as *mut *mut core::ffi::c_char,
 // LOWERING-MACOS-DAG:         )
 // LOWERING-MACOS-DAG:     };
-// LOWERING-MACOS-DAG:     result = {{_v[0-9]+}};
+// LOWERING-MACOS-DAG:     result = {{__v[0-9]+}};
 // LOWERING-MACOS-DAG:     {
-// LOWERING-MACOS-DAG:         let {{_v[0-9]+}}: i32 = result;
-// LOWERING-MACOS-DAG:         let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-MACOS-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-MACOS-DAG:         if {{_v[0-9]+}} {
-// LOWERING-MACOS-DAG:             let {{_v[0-9]+}}: i32 = result;
-// LOWERING-MACOS-DAG:             __retval = {{_v[0-9]+}};
-// LOWERING-MACOS-DAG:             let {{_v[0-9]+}}: i32 = __retval;
-// LOWERING-MACOS-DAG:             return {{_v[0-9]+}};
+// LOWERING-MACOS-DAG:         let {{__v[0-9]+}}: i32 = result;
+// LOWERING-MACOS-DAG:         let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-MACOS-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-MACOS-DAG:         if {{__v[0-9]+}} {
+// LOWERING-MACOS-DAG:             let {{__v[0-9]+}}: i32 = result;
+// LOWERING-MACOS-DAG:             __retval = {{__v[0-9]+}};
+// LOWERING-MACOS-DAG:             let {{__v[0-9]+}}: i32 = __retval;
+// LOWERING-MACOS-DAG:             return {{__v[0-9]+}};
 // LOWERING-MACOS-DAG:         }
 // LOWERING-MACOS-DAG:     }
-// LOWERING-MACOS-DAG:     let {{_v[0-9]+}}: i32 = unsafe { *{{arg[0-9]+}} };
-// LOWERING-MACOS-DAG:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-MACOS-DAG:     let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-MACOS-DAG:     let {{__v[0-9]+}}: i32 = unsafe { *{{arg[0-9]+}} };
+// LOWERING-MACOS-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-MACOS-DAG:     let {{__v[0-9]+}}: i32 = unsafe {
 // LOWERING-MACOS-DAG:         waitpid(
-// LOWERING-MACOS-DAG:             {{_v[0-9]+}} as i32,
+// LOWERING-MACOS-DAG:             {{__v[0-9]+}} as i32,
 // LOWERING-MACOS-DAG:             std::ptr::addr_of_mut!(status) as *mut i32,
-// LOWERING-MACOS-DAG:             {{_v[0-9]+}} as i32,
+// LOWERING-MACOS-DAG:             {{__v[0-9]+}} as i32,
 // LOWERING-MACOS-DAG:         )
 // LOWERING-MACOS-DAG:     };
-// LOWERING-MACOS-DAG:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-MACOS-DAG:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < {{_v[0-9]+}};
-// LOWERING-MACOS-DAG:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} {
-// LOWERING-MACOS-DAG:         let {{_v[0-9]+}}: i32 = -1;
-// LOWERING-MACOS-DAG:         {{_v[0-9]+}}
+// LOWERING-MACOS-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-MACOS-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
+// LOWERING-MACOS-DAG:     let {{__v[0-9]+}}: i32 = if {{__v[0-9]+}} {
+// LOWERING-MACOS-DAG:         let {{__v[0-9]+}}: i32 = -1;
+// LOWERING-MACOS-DAG:         {{__v[0-9]+}}
 // LOWERING-MACOS-DAG:     } else {
-// LOWERING-MACOS-DAG:         let {{_v[0-9]+}}: i32 = status;
-// LOWERING-MACOS-DAG:         {{_v[0-9]+}}
+// LOWERING-MACOS-DAG:         let {{__v[0-9]+}}: i32 = status;
+// LOWERING-MACOS-DAG:         {{__v[0-9]+}}
 // LOWERING-MACOS-DAG:     };
-// LOWERING-MACOS-DAG:     __retval = {{_v[0-9]+}};
-// LOWERING-MACOS-DAG:     let {{_v[0-9]+}}: i32 = __retval;
-// LOWERING-MACOS-DAG:     return {{_v[0-9]+}};
+// LOWERING-MACOS-DAG:     __retval = {{__v[0-9]+}};
+// LOWERING-MACOS-DAG:     let {{__v[0-9]+}}: i32 = __retval;
+// LOWERING-MACOS-DAG:     return {{__v[0-9]+}};
 // LOWERING-MACOS-DAG: }
 // LOWERING-MACOS-DAG: fn slate_terminal_page_size({{arg[0-9]+}}: i32, {{arg[0-9]+}}: *mut termios) -> i64 {
 // LOWERING-MACOS-DAG:     let mut fd: i32 = 0;
@@ -121,23 +121,23 @@ int slate_lookup_user_shell(uid_t uid, char *buffer, size_t size) {
 // LOWERING-MACOS-DAG:     fd = {{arg[0-9]+}};
 // LOWERING-MACOS-DAG:     state = {{arg[0-9]+}};
 // LOWERING-MACOS-DAG:     {
-// LOWERING-MACOS-DAG:         let {{_v[0-9]+}}: i32 = fd;
-// LOWERING-MACOS-DAG:         let {{_v[0-9]+}}: *mut termios = state;
-// LOWERING-MACOS-DAG:         let {{_v[0-9]+}}: i32 = unsafe { tcgetattr({{_v[0-9]+}} as i32, {{_v[0-9]+}} as *mut termios) };
-// LOWERING-MACOS-DAG:         let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-MACOS-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-MACOS-DAG:         if {{_v[0-9]+}} {
-// LOWERING-MACOS-DAG:             let {{_v[0-9]+}}: i64 = -1;
-// LOWERING-MACOS-DAG:             __retval = {{_v[0-9]+}};
-// LOWERING-MACOS-DAG:             let {{_v[0-9]+}}: i64 = __retval;
-// LOWERING-MACOS-DAG:             return {{_v[0-9]+}};
+// LOWERING-MACOS-DAG:         let {{__v[0-9]+}}: i32 = fd;
+// LOWERING-MACOS-DAG:         let {{__v[0-9]+}}: *mut termios = state;
+// LOWERING-MACOS-DAG:         let {{__v[0-9]+}}: i32 = unsafe { tcgetattr({{__v[0-9]+}} as i32, {{__v[0-9]+}} as *mut termios) };
+// LOWERING-MACOS-DAG:         let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-MACOS-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-MACOS-DAG:         if {{__v[0-9]+}} {
+// LOWERING-MACOS-DAG:             let {{__v[0-9]+}}: i64 = -1;
+// LOWERING-MACOS-DAG:             __retval = {{__v[0-9]+}};
+// LOWERING-MACOS-DAG:             let {{__v[0-9]+}}: i64 = __retval;
+// LOWERING-MACOS-DAG:             return {{__v[0-9]+}};
 // LOWERING-MACOS-DAG:         }
 // LOWERING-MACOS-DAG:     }
-// LOWERING-MACOS-DAG:     let {{_v[0-9]+}}: i32 = 29;
-// LOWERING-MACOS-DAG:     let {{_v[0-9]+}}: i64 = unsafe { sysconf({{_v[0-9]+}} as i32) };
-// LOWERING-MACOS-DAG:     __retval = {{_v[0-9]+}};
-// LOWERING-MACOS-DAG:     let {{_v[0-9]+}}: i64 = __retval;
-// LOWERING-MACOS-DAG:     return {{_v[0-9]+}};
+// LOWERING-MACOS-DAG:     let {{__v[0-9]+}}: i32 = 29;
+// LOWERING-MACOS-DAG:     let {{__v[0-9]+}}: i64 = unsafe { sysconf({{__v[0-9]+}} as i32) };
+// LOWERING-MACOS-DAG:     __retval = {{__v[0-9]+}};
+// LOWERING-MACOS-DAG:     let {{__v[0-9]+}}: i64 = __retval;
+// LOWERING-MACOS-DAG:     return {{__v[0-9]+}};
 // LOWERING-MACOS-DAG: }
 // LOWERING-MACOS-DAG: unsafe fn slate_lookup_user_shell({{arg[0-9]+}}: u32, {{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: u64) -> i32 {
 // LOWERING-MACOS-DAG:     let mut size: u64 = 0;
@@ -145,72 +145,72 @@ int slate_lookup_user_shell(uid_t uid, char *buffer, size_t size) {
 // LOWERING-MACOS-DAG:     let mut entry: *mut passwd = std::ptr::null_mut();
 // LOWERING-MACOS-DAG:     let mut length: u64 = 0;
 // LOWERING-MACOS-DAG:     size = {{arg[0-9]+}};
-// LOWERING-MACOS-DAG:     let {{_v[0-9]+}}: *mut passwd = unsafe { getpwuid({{arg[0-9]+}} as u32) };
-// LOWERING-MACOS-DAG:     entry = {{_v[0-9]+}};
+// LOWERING-MACOS-DAG:     let {{__v[0-9]+}}: *mut passwd = unsafe { getpwuid({{arg[0-9]+}} as u32) };
+// LOWERING-MACOS-DAG:     entry = {{__v[0-9]+}};
 // LOWERING-MACOS-DAG:     {
-// LOWERING-MACOS-DAG:         let {{_v[0-9]+}}: *mut passwd = entry;
-// LOWERING-MACOS-DAG:         let {{_v[0-9]+}}: *mut passwd = std::ptr::null_mut();
-// LOWERING-MACOS-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
-// LOWERING-MACOS-DAG:         if {{_v[0-9]+}} {
-// LOWERING-MACOS-DAG:             let {{_v[0-9]+}}: i32 = -1;
-// LOWERING-MACOS-DAG:             __retval = {{_v[0-9]+}};
-// LOWERING-MACOS-DAG:             let {{_v[0-9]+}}: i32 = __retval;
-// LOWERING-MACOS-DAG:             return {{_v[0-9]+}};
+// LOWERING-MACOS-DAG:         let {{__v[0-9]+}}: *mut passwd = entry;
+// LOWERING-MACOS-DAG:         let {{__v[0-9]+}}: *mut passwd = std::ptr::null_mut();
+// LOWERING-MACOS-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
+// LOWERING-MACOS-DAG:         if {{__v[0-9]+}} {
+// LOWERING-MACOS-DAG:             let {{__v[0-9]+}}: i32 = -1;
+// LOWERING-MACOS-DAG:             __retval = {{__v[0-9]+}};
+// LOWERING-MACOS-DAG:             let {{__v[0-9]+}}: i32 = __retval;
+// LOWERING-MACOS-DAG:             return {{__v[0-9]+}};
 // LOWERING-MACOS-DAG:         }
 // LOWERING-MACOS-DAG:     }
-// LOWERING-MACOS-DAG:     let {{_v[0-9]+}}: u64 = 0;
-// LOWERING-MACOS-DAG:     length = {{_v[0-9]+}};
+// LOWERING-MACOS-DAG:     let {{__v[0-9]+}}: u64 = 0;
+// LOWERING-MACOS-DAG:     length = {{__v[0-9]+}};
 // LOWERING-MACOS-DAG:     {
 // LOWERING-MACOS-DAG:         loop {
-// LOWERING-MACOS-DAG:             let {{_v[0-9]+}}: u64 = length;
-// LOWERING-MACOS-DAG:             let {{_v[0-9]+}}: *mut passwd = entry;
-// LOWERING-MACOS-DAG:             let {{_v[0-9]+}}: *mut i8 = unsafe { (*{{_v[0-9]+}}).pw_shell };
-// LOWERING-MACOS-DAG:             let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add({{_v[0-9]+}} as usize) };
-// LOWERING-MACOS-DAG:             let {{_v[0-9]+}}: i8 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-MACOS-DAG:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-MACOS-DAG:             let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-MACOS-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-MACOS-DAG:             let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-MACOS-DAG:                 let {{_v[0-9]+}}: u64 = length;
-// LOWERING-MACOS-DAG:                 let {{_v[0-9]+}}: u64 = 1;
-// LOWERING-MACOS-DAG:                 let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-MACOS-DAG:                 let {{_v[0-9]+}}: u64 = size;
-// LOWERING-MACOS-DAG:                 let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < {{_v[0-9]+}};
-// LOWERING-MACOS-DAG:                 {{_v[0-9]+}}
+// LOWERING-MACOS-DAG:             let {{__v[0-9]+}}: u64 = length;
+// LOWERING-MACOS-DAG:             let {{__v[0-9]+}}: *mut passwd = entry;
+// LOWERING-MACOS-DAG:             let {{__v[0-9]+}}: *mut i8 = unsafe { (*{{__v[0-9]+}}).pw_shell };
+// LOWERING-MACOS-DAG:             let {{__v[0-9]+}}: *mut i8 = unsafe { {{__v[0-9]+}}.add({{__v[0-9]+}} as usize) };
+// LOWERING-MACOS-DAG:             let {{__v[0-9]+}}: i8 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-MACOS-DAG:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-MACOS-DAG:             let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-MACOS-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-MACOS-DAG:             let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-MACOS-DAG:                 let {{__v[0-9]+}}: u64 = length;
+// LOWERING-MACOS-DAG:                 let {{__v[0-9]+}}: u64 = 1;
+// LOWERING-MACOS-DAG:                 let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-MACOS-DAG:                 let {{__v[0-9]+}}: u64 = size;
+// LOWERING-MACOS-DAG:                 let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
+// LOWERING-MACOS-DAG:                 {{__v[0-9]+}}
 // LOWERING-MACOS-DAG:             } else {
-// LOWERING-MACOS-DAG:                 let {{_v[0-9]+}}: bool = false;
-// LOWERING-MACOS-DAG:                 {{_v[0-9]+}}
+// LOWERING-MACOS-DAG:                 let {{__v[0-9]+}}: bool = false;
+// LOWERING-MACOS-DAG:                 {{__v[0-9]+}}
 // LOWERING-MACOS-DAG:             };
-// LOWERING-MACOS-DAG:             if !{{_v[0-9]+}} {
+// LOWERING-MACOS-DAG:             if !{{__v[0-9]+}} {
 // LOWERING-MACOS-DAG:                 break;
 // LOWERING-MACOS-DAG:             }
-// LOWERING-MACOS-DAG:             let {{_v[0-9]+}}: u64 = length;
-// LOWERING-MACOS-DAG:             let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} + 1;
-// LOWERING-MACOS-DAG:             length = {{_v[0-9]+}};
+// LOWERING-MACOS-DAG:             let {{__v[0-9]+}}: u64 = length;
+// LOWERING-MACOS-DAG:             let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} + 1;
+// LOWERING-MACOS-DAG:             length = {{__v[0-9]+}};
 // LOWERING-MACOS-DAG:         }
 // LOWERING-MACOS-DAG:     }
-// LOWERING-MACOS-DAG:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{arg[0-9]+}} as *mut core::ffi::c_void;
-// LOWERING-MACOS-DAG:     let {{_v[0-9]+}}: *mut passwd = entry;
-// LOWERING-MACOS-DAG:     let {{_v[0-9]+}}: *mut i8 = unsafe { (*{{_v[0-9]+}}).pw_shell };
-// LOWERING-MACOS-DAG:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
-// LOWERING-MACOS-DAG:     let {{_v[0-9]+}}: u64 = length;
-// LOWERING-MACOS-DAG:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe {
+// LOWERING-MACOS-DAG:     let {{__v[0-9]+}}: *mut core::ffi::c_void = {{arg[0-9]+}} as *mut core::ffi::c_void;
+// LOWERING-MACOS-DAG:     let {{__v[0-9]+}}: *mut passwd = entry;
+// LOWERING-MACOS-DAG:     let {{__v[0-9]+}}: *mut i8 = unsafe { (*{{__v[0-9]+}}).pw_shell };
+// LOWERING-MACOS-DAG:     let {{__v[0-9]+}}: *mut core::ffi::c_void = {{__v[0-9]+}} as *mut core::ffi::c_void;
+// LOWERING-MACOS-DAG:     let {{__v[0-9]+}}: u64 = length;
+// LOWERING-MACOS-DAG:     let {{__v[0-9]+}}: *mut core::ffi::c_void = unsafe {
 // LOWERING-MACOS-DAG:         memcpy(
-// LOWERING-MACOS-DAG:             {{_v[0-9]+}} as *mut core::ffi::c_void,
-// LOWERING-MACOS-DAG:             {{_v[0-9]+}} as *mut core::ffi::c_void,
-// LOWERING-MACOS-DAG:             {{_v[0-9]+}} as u64,
+// LOWERING-MACOS-DAG:             {{__v[0-9]+}} as *mut core::ffi::c_void,
+// LOWERING-MACOS-DAG:             {{__v[0-9]+}} as *mut core::ffi::c_void,
+// LOWERING-MACOS-DAG:             {{__v[0-9]+}} as u64,
 // LOWERING-MACOS-DAG:         )
 // LOWERING-MACOS-DAG:     };
-// LOWERING-MACOS-DAG:     let {{_v[0-9]+}}: i8 = 0;
-// LOWERING-MACOS-DAG:     let {{_v[0-9]+}}: u64 = length;
-// LOWERING-MACOS-DAG:     let {{_v[0-9]+}}: *mut i8 = unsafe { {{arg[0-9]+}}.add({{_v[0-9]+}} as usize) };
+// LOWERING-MACOS-DAG:     let {{__v[0-9]+}}: i8 = 0;
+// LOWERING-MACOS-DAG:     let {{__v[0-9]+}}: u64 = length;
+// LOWERING-MACOS-DAG:     let {{__v[0-9]+}}: *mut i8 = unsafe { {{arg[0-9]+}}.add({{__v[0-9]+}} as usize) };
 // LOWERING-MACOS-DAG:     unsafe {
-// LOWERING-MACOS-DAG:         *{{_v[0-9]+}} = {{_v[0-9]+}};
+// LOWERING-MACOS-DAG:         *{{__v[0-9]+}} = {{__v[0-9]+}};
 // LOWERING-MACOS-DAG:     }
-// LOWERING-MACOS-DAG:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-MACOS-DAG:     __retval = {{_v[0-9]+}};
-// LOWERING-MACOS-DAG:     let {{_v[0-9]+}}: i32 = __retval;
-// LOWERING-MACOS-DAG:     return {{_v[0-9]+}};
+// LOWERING-MACOS-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-MACOS-DAG:     __retval = {{__v[0-9]+}};
+// LOWERING-MACOS-DAG:     let {{__v[0-9]+}}: i32 = __retval;
+// LOWERING-MACOS-DAG:     return {{__v[0-9]+}};
 // LOWERING-MACOS-DAG: }
 // SLATE-FILECHECK-END lowering-macos
 
@@ -221,79 +221,137 @@ int slate_lookup_user_shell(uid_t uid, char *buffer, size_t size) {
 // REWRITES-MACOS-DAG:     {{arg[0-9]+}}: *mut *mut i8,
 // REWRITES-MACOS-DAG:     {{arg[0-9]+}}: *mut *mut i8,
 // REWRITES-MACOS-DAG: ) -> i32 {
+// REWRITES-MACOS-DAG:     let mut __retval: i32 = 0;
 // REWRITES-MACOS-DAG:     let mut status: i32 = 0;
 // REWRITES-MACOS-DAG:     let mut result: i32 = 0;
-// REWRITES-MACOS-DAG:     let {{_v[0-9]+}}: *mut *mut core::ffi::c_void = std::ptr::null_mut();
-// REWRITES-MACOS-DAG:     let {{_v[0-9]+}}: *mut *mut core::ffi::c_void = std::ptr::null_mut();
-// REWRITES-MACOS-DAG:     result = unsafe {
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// REWRITES-MACOS-DAG:     status = {{__v[0-9]+}};
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: *mut *mut core::ffi::c_void = std::ptr::null_mut();
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: *mut *mut core::ffi::c_void = std::ptr::null_mut();
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: i32 = unsafe {
 // REWRITES-MACOS-DAG:         posix_spawn(
 // REWRITES-MACOS-DAG:             {{arg[0-9]+}} as *mut i32,
 // REWRITES-MACOS-DAG:             {{arg[0-9]+}} as *const core::ffi::c_char,
-// REWRITES-MACOS-DAG:             {{_v[0-9]+}} as *const *mut core::ffi::c_void,
-// REWRITES-MACOS-DAG:             {{_v[0-9]+}} as *const *mut core::ffi::c_void,
+// REWRITES-MACOS-DAG:             {{__v[0-9]+}} as *const *mut core::ffi::c_void,
+// REWRITES-MACOS-DAG:             {{__v[0-9]+}} as *const *mut core::ffi::c_void,
 // REWRITES-MACOS-DAG:             {{arg[0-9]+}} as *mut *mut core::ffi::c_char,
 // REWRITES-MACOS-DAG:             {{arg[0-9]+}} as *mut *mut core::ffi::c_char,
 // REWRITES-MACOS-DAG:         )
 // REWRITES-MACOS-DAG:     };
-// REWRITES-MACOS-DAG:     if result != 0 {
-// REWRITES-MACOS-DAG:         return result;
+// REWRITES-MACOS-DAG:     result = {{__v[0-9]+}};
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: i32 = result;
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-MACOS-DAG:     if {{__v[0-9]+}} {
+// REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: i32 = result;
+// REWRITES-MACOS-DAG:         __retval = {{__v[0-9]+}};
+// REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: i32 = __retval;
+// REWRITES-MACOS-DAG:         return {{__v[0-9]+}};
 // REWRITES-MACOS-DAG:     }
-// REWRITES-MACOS-DAG:     let {{_v[0-9]+}}: i32 = unsafe {
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: i32 = unsafe { *{{arg[0-9]+}} };
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: i32 = unsafe {
 // REWRITES-MACOS-DAG:         waitpid(
-// REWRITES-MACOS-DAG:             (unsafe { *{{arg[0-9]+}} }) as i32,
+// REWRITES-MACOS-DAG:             {{__v[0-9]+}} as i32,
 // REWRITES-MACOS-DAG:             std::ptr::addr_of_mut!(status) as *mut i32,
-// REWRITES-MACOS-DAG:             0 as i32,
+// REWRITES-MACOS-DAG:             {{__v[0-9]+}} as i32,
 // REWRITES-MACOS-DAG:         )
 // REWRITES-MACOS-DAG:     };
-// REWRITES-MACOS-DAG:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} < 0 {
-// REWRITES-MACOS-DAG:         let {{_v[0-9]+}}: i32 = -1;
-// REWRITES-MACOS-DAG:         {{_v[0-9]+}}
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: i32 = if {{__v[0-9]+}} {
+// REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: i32 = -1;
+// REWRITES-MACOS-DAG:         {{__v[0-9]+}}
 // REWRITES-MACOS-DAG:     } else {
-// REWRITES-MACOS-DAG:         let {{_v[0-9]+}}: i32 = status;
-// REWRITES-MACOS-DAG:         {{_v[0-9]+}}
+// REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: i32 = status;
+// REWRITES-MACOS-DAG:         {{__v[0-9]+}}
 // REWRITES-MACOS-DAG:     };
-// REWRITES-MACOS-DAG:     {{_v[0-9]+}}
+// REWRITES-MACOS-DAG:     __retval = {{__v[0-9]+}};
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: i32 = __retval;
+// REWRITES-MACOS-DAG:     {{__v[0-9]+}}
 // REWRITES-MACOS-DAG: }
-// REWRITES-MACOS-DAG: fn slate_terminal_page_size(mut {{_v[0-9]+}}: i32, mut {{_v[0-9]+}}: *mut termios) -> i64 {
-// REWRITES-MACOS-DAG:     let {{_v[0-9]+}}: i32 = unsafe { tcgetattr({{_v[0-9]+}} as i32, {{_v[0-9]+}} as *mut termios) };
-// REWRITES-MACOS-DAG:     if {{_v[0-9]+}} != 0 {
-// REWRITES-MACOS-DAG:         return -1;
+// REWRITES-MACOS-DAG: fn slate_terminal_page_size(mut {{__v[0-9]+}}: i32, mut {{__v[0-9]+}}: *mut termios) -> i64 {
+// REWRITES-MACOS-DAG:     let mut __retval: i64 = 0;
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: i32 = unsafe { tcgetattr({{__v[0-9]+}} as i32, {{__v[0-9]+}} as *mut termios) };
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-MACOS-DAG:     if {{__v[0-9]+}} {
+// REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: i64 = -1;
+// REWRITES-MACOS-DAG:         __retval = {{__v[0-9]+}};
+// REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: i64 = __retval;
+// REWRITES-MACOS-DAG:         return {{__v[0-9]+}};
 // REWRITES-MACOS-DAG:     }
-// REWRITES-MACOS-DAG:     unsafe { sysconf(29 as i32) }
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: i32 = 29;
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: i64 = unsafe { sysconf({{__v[0-9]+}} as i32) };
+// REWRITES-MACOS-DAG:     __retval = {{__v[0-9]+}};
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: i64 = __retval;
+// REWRITES-MACOS-DAG:     {{__v[0-9]+}}
 // REWRITES-MACOS-DAG: }
 // REWRITES-MACOS-DAG: unsafe fn slate_lookup_user_shell({{arg[0-9]+}}: u32, {{arg[0-9]+}}: *mut i8, mut size: u64) -> i32 {
-// REWRITES-MACOS-DAG:     let mut entry: *mut passwd = unsafe { getpwuid({{arg[0-9]+}} as u32) };
+// REWRITES-MACOS-DAG:     let mut __retval: i32 = 0;
+// REWRITES-MACOS-DAG:     let mut entry: *mut passwd = std::ptr::null_mut();
 // REWRITES-MACOS-DAG:     let mut length: u64 = 0;
-// REWRITES-MACOS-DAG:     if entry == std::ptr::null_mut() {
-// REWRITES-MACOS-DAG:         return -1;
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: *mut passwd = unsafe { getpwuid({{arg[0-9]+}} as u32) };
+// REWRITES-MACOS-DAG:     entry = {{__v[0-9]+}};
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: *mut passwd = entry;
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: *mut passwd = std::ptr::null_mut();
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
+// REWRITES-MACOS-DAG:     if {{__v[0-9]+}} {
+// REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: i32 = -1;
+// REWRITES-MACOS-DAG:         __retval = {{__v[0-9]+}};
+// REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: i32 = __retval;
+// REWRITES-MACOS-DAG:         return {{__v[0-9]+}};
 // REWRITES-MACOS-DAG:     }
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: u64 = 0;
+// REWRITES-MACOS-DAG:     length = {{__v[0-9]+}};
 // REWRITES-MACOS-DAG:     loop {
-// REWRITES-MACOS-DAG:         let {{_v[0-9]+}}: *mut i8 = unsafe { (*entry).pw_shell };
-// REWRITES-MACOS-DAG:         let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(length as usize) };
-// REWRITES-MACOS-DAG:         let {{_v[0-9]+}}: bool = if ((unsafe { *{{_v[0-9]+}} }) as i32) != 0 {
-// REWRITES-MACOS-DAG:             let {{_v[0-9]+}}: bool = length + 1 < size;
-// REWRITES-MACOS-DAG:             {{_v[0-9]+}}
+// REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: u64 = length;
+// REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: *mut passwd = entry;
+// REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: *mut i8 = unsafe { (*{{__v[0-9]+}}).pw_shell };
+// REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: *mut i8 = unsafe { {{__v[0-9]+}}.add({{__v[0-9]+}} as usize) };
+// REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: i8 = unsafe { *{{__v[0-9]+}} };
+// REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: i32 = 0;
+// REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-MACOS-DAG:             let {{__v[0-9]+}}: u64 = length;
+// REWRITES-MACOS-DAG:             let {{__v[0-9]+}}: u64 = 1;
+// REWRITES-MACOS-DAG:             let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// REWRITES-MACOS-DAG:             let {{__v[0-9]+}}: u64 = size;
+// REWRITES-MACOS-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
+// REWRITES-MACOS-DAG:             {{__v[0-9]+}}
 // REWRITES-MACOS-DAG:         } else {
-// REWRITES-MACOS-DAG:             let {{_v[0-9]+}}: bool = false;
-// REWRITES-MACOS-DAG:             {{_v[0-9]+}}
+// REWRITES-MACOS-DAG:             let {{__v[0-9]+}}: bool = false;
+// REWRITES-MACOS-DAG:             {{__v[0-9]+}}
 // REWRITES-MACOS-DAG:         };
-// REWRITES-MACOS-DAG:         if !{{_v[0-9]+}} {
+// REWRITES-MACOS-DAG:         if !{{__v[0-9]+}} {
 // REWRITES-MACOS-DAG:             break;
 // REWRITES-MACOS-DAG:         }
-// REWRITES-MACOS-DAG:         length += 1;
+// REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: u64 = length;
+// REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} + 1;
+// REWRITES-MACOS-DAG:         length = {{__v[0-9]+}};
 // REWRITES-MACOS-DAG:     }
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: *mut core::ffi::c_void = {{arg[0-9]+}} as *mut core::ffi::c_void;
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: *mut passwd = entry;
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: *mut i8 = unsafe { (*{{__v[0-9]+}}).pw_shell };
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: *mut core::ffi::c_void = {{__v[0-9]+}} as *mut core::ffi::c_void;
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: u64 = length;
 // REWRITES-MACOS-DAG:     unsafe {
 // REWRITES-MACOS-DAG:         std::ptr::copy_nonoverlapping(
-// REWRITES-MACOS-DAG:             ((unsafe { (*entry).pw_shell }) as *mut core::ffi::c_void) as *const u8,
-// REWRITES-MACOS-DAG:             {{arg[0-9]+}} as *mut u8,
-// REWRITES-MACOS-DAG:             (length as u64) as usize,
+// REWRITES-MACOS-DAG:             {{__v[0-9]+}} as *const u8,
+// REWRITES-MACOS-DAG:             {{__v[0-9]+}} as *mut u8,
+// REWRITES-MACOS-DAG:             ({{__v[0-9]+}} as u64) as usize,
 // REWRITES-MACOS-DAG:         )
 // REWRITES-MACOS-DAG:     };
-// REWRITES-MACOS-DAG:     let {{_v[0-9]+}}: i8 = 0;
-// REWRITES-MACOS-DAG:     let {{_v[0-9]+}}: *mut i8 = unsafe { {{arg[0-9]+}}.add(length as usize) };
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: i8 = 0;
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: u64 = length;
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: *mut i8 = unsafe { {{arg[0-9]+}}.add({{__v[0-9]+}} as usize) };
 // REWRITES-MACOS-DAG:     unsafe {
-// REWRITES-MACOS-DAG:         *{{_v[0-9]+}} = {{_v[0-9]+}};
+// REWRITES-MACOS-DAG:         *{{__v[0-9]+}} = {{__v[0-9]+}};
 // REWRITES-MACOS-DAG:     }
-// REWRITES-MACOS-DAG:     0
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// REWRITES-MACOS-DAG:     __retval = {{__v[0-9]+}};
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: i32 = __retval;
+// REWRITES-MACOS-DAG:     {{__v[0-9]+}}
 // REWRITES-MACOS-DAG: }
 // SLATE-FILECHECK-END rewrites-macos

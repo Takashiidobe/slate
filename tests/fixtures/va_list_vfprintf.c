@@ -38,13 +38,13 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %s\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 42;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"forwarded\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     unsafe { print_values({{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d %s\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 42;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"forwarded\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     unsafe { print_values({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: unsafe extern "C-unwind" fn print_values({{arg[0-9]+}}: *mut i8, mut __slate_va_args: ...) {
@@ -52,10 +52,10 @@ int main(void) {
 // LOWERING-NEXT:     unsafe {
 // LOWERING-NEXT:         args = __slate_va_args.clone();
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stdout };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut libc::FILE = unsafe { stdout };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe {
 // LOWERING-NEXT:         vfprintf(
-// LOWERING-NEXT:             {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-NEXT:             {{__v[0-9]+}} as *mut libc::FILE,
 // LOWERING-NEXT:             {{arg[0-9]+}} as *const core::ffi::c_char,
 // LOWERING-NEXT:             args.clone(),
 // LOWERING-NEXT:         )

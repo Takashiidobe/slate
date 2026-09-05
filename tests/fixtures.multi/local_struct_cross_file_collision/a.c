@@ -29,7 +29,7 @@ int run_a(void) {
 // REWRITES-DAG:         }; 2],
 // REWRITES-DAG:     );
 // REWRITES-DAG:     let mut total: i32 = 0;
-// REWRITES-DAG:     *items = [
+// REWRITES-DAG:     let {{__v[0-9]+}}: [Item; 2] = [
 // REWRITES-DAG:         Item {
 // REWRITES-DAG:             value: 1,
 // REWRITES-DAG:             weight: 10,
@@ -39,9 +39,34 @@ int run_a(void) {
 // REWRITES-DAG:             weight: 20,
 // REWRITES-DAG:         },
 // REWRITES-DAG:     ];
-// REWRITES-DAG:     for i in 0..2 {
-// REWRITES-DAG:         total += items[((i as i64) as usize)].value * items[((i as i64) as usize)].weight;
+// REWRITES-DAG:     *items = {{__v[0-9]+}};
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// REWRITES-DAG:     total = {{__v[0-9]+}};
+// REWRITES-DAG:     let mut i: i32 = 0;
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// REWRITES-DAG:     i = {{__v[0-9]+}};
+// REWRITES-DAG:     loop {
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = i;
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 2;
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
+// REWRITES-DAG:         if !{{__v[0-9]+}} {
+// REWRITES-DAG:             break;
+// REWRITES-DAG:         }
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = i;
+// REWRITES-DAG:         let {{__v[0-9]+}}: i64 = {{__v[0-9]+}} as i64;
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = items[({{__v[0-9]+}} as usize)].value;
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = i;
+// REWRITES-DAG:         let {{__v[0-9]+}}: i64 = {{__v[0-9]+}} as i64;
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = items[({{__v[0-9]+}} as usize)].weight;
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} * {{__v[0-9]+}};
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = total;
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// REWRITES-DAG:         total = {{__v[0-9]+}};
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = i;
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + 1;
+// REWRITES-DAG:         i = {{__v[0-9]+}};
 // REWRITES-DAG:     }
-// REWRITES-DAG:     total
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = total;
+// REWRITES-DAG:     {{__v[0-9]+}}
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

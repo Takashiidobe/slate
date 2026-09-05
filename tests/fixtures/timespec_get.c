@@ -18,20 +18,20 @@ int main(void) {
 // REWRITES-DAG:         tv_sec: 0,
 // REWRITES-DAG:         tv_nsec: 0,
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: i32 = unsafe {
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = unsafe {
 // REWRITES-DAG:         timespec_get(
 // REWRITES-DAG:             std::ptr::addr_of_mut!(value) as *mut libc::timespec,
 // REWRITES-DAG:             1 as i32,
 // REWRITES-DAG:         )
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if value.tv_nsec >= 0 {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = value.tv_nsec < 1000000000;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if value.tv_nsec >= 0 {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = value.tv_nsec < 1000000000;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = false;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = false;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     unsafe { printf(c"%d %d\n".as_ptr(), ({{_v[0-9]+}} == 1) as i32, {{_v[0-9]+}} as i32) };
+// REWRITES-DAG:     unsafe { printf(c"%d %d\n".as_ptr(), ({{__v[0-9]+}} == 1) as i32, {{__v[0-9]+}} as i32) };
 // REWRITES-DAG:     std::process::exit(0 as i32);
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

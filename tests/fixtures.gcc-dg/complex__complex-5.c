@@ -60,36 +60,40 @@ main (void)
 
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: fn main() {
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-DAG:     fill_stack();
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = unsafe { feclearexcept({{_v[0-9]+}} as i32) };
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = unsafe { feclearexcept({{__v[0-9]+}} as i32) };
 // LOWERING-DAG:     use_stack();
 // LOWERING-DAG:     {
-// LOWERING-DAG:         let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-DAG:         let {{_v[0-9]+}}: i32 = unsafe { fetestexcept({{_v[0-9]+}} as i32) };
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// LOWERING-DAG:         if {{_v[0-9]+}} {
+// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = unsafe { fetestexcept({{__v[0-9]+}} as i32) };
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
+// LOWERING-DAG:         if {{__v[0-9]+}} {
 // LOWERING-DAG:             unsafe { abort() };
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:     unsafe { exit({{_v[0-9]+}} as i32) };
-// LOWERING-DAG:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:     unsafe { exit({{__v[0-9]+}} as i32) };
+// LOWERING-DAG:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-DAG: }
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: fn main() {
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-DAG:     fill_stack();
-// REWRITES-DAG:     unsafe { feclearexcept(1 as i32) };
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 1;
+// REWRITES-DAG:     unsafe { feclearexcept({{__v[0-9]+}} as i32) };
 // REWRITES-DAG:     use_stack();
-// REWRITES-DAG:     let {{_v[0-9]+}}: i32 = unsafe { fetestexcept(1 as i32) };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// REWRITES-DAG:     if {{_v[0-9]+}} {
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 1;
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = unsafe { fetestexcept({{__v[0-9]+}} as i32) };
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
+// REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { std::process::abort() };
 // REWRITES-DAG:     }
-// REWRITES-DAG:     unsafe { std::process::exit(0 as i32) };
-// REWRITES-DAG:     std::process::exit(0 as i32);
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// REWRITES-DAG:     unsafe { std::process::exit({{__v[0-9]+}} as i32) };
+// REWRITES-DAG:     std::process::exit({{__v[0-9]+}} as i32);
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites
