@@ -1793,6 +1793,9 @@ fn extract_enum(node: &Value, enum_typedefs: &HashMap<String, String>) -> Option
             value,
         });
     }
+    if variants.is_empty() {
+        return None;
+    }
     Some(Enum {
         name,
         comments: attached_comment(node),

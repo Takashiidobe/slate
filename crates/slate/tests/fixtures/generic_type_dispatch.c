@@ -24,26 +24,20 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN common-lowering
-// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = int_score({{__v[0-9]+}});
-// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i64 = 8;
-// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = long_score({{__v[0-9]+}});
-// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: *mut i32 = array.as_mut_ptr() as *mut i32;
-// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = pointer_score({{__v[0-9]+}});
-// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
-// SLATE-FILECHECK-END common-lowering
-
-// SLATE-FILECHECK-BEGIN lowering-x86_64-gnu
+// SLATE-FILECHECK-BEGIN lowering
+// LOWERING-DAG: let {{__v[0-9]+}}: i32 = int_score({{__v[0-9]+}});
+// LOWERING-DAG: let {{__v[0-9]+}}: i64 = 8;
+// LOWERING-DAG: let {{__v[0-9]+}}: i32 = long_score({{__v[0-9]+}});
+// LOWERING-DAG: let {{__v[0-9]+}}: *mut i32 = array.as_mut_ptr() as *mut i32;
+// LOWERING-DAG: let {{__v[0-9]+}}: i32 = pointer_score({{__v[0-9]+}});
 // LOWERING-X86_64-GNU-DAG: let {{__v[0-9]+}}: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
-// SLATE-FILECHECK-END lowering-x86_64-gnu
-
-// SLATE-FILECHECK-BEGIN lowering-aarch64-gnu
 // LOWERING-AARCH64-GNU-DAG: let {{__v[0-9]+}}: *mut u8 = b"%d %d %d\n\0".as_ptr() as *mut u8;
-// SLATE-FILECHECK-END lowering-aarch64-gnu
+// LOWERING-DAG: let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// SLATE-FILECHECK-END lowering
 
-// SLATE-FILECHECK-BEGIN common-rewrites
-// COMMON-REWRITES-DAG: let {{__v[0-9]+}}: i32 = int_score(7 as i32);
-// COMMON-REWRITES-DAG: let {{__v[0-9]+}}: i32 = long_score(8 as i64);
-// COMMON-REWRITES-DAG: let {{__v[0-9]+}}: *mut i32 = array.as_mut_ptr() as *mut i32;
-// COMMON-REWRITES-DAG: unsafe { printf(c"%d %d %d\n".as_ptr(), {{__v[0-9]+}}, {{__v[0-9]+}}, pointer_score({{__v[0-9]+}})) };
-// SLATE-FILECHECK-END common-rewrites
+// SLATE-FILECHECK-BEGIN rewrites
+// REWRITES-DAG: let {{__v[0-9]+}}: i32 = int_score(7 as i32);
+// REWRITES-DAG: let {{__v[0-9]+}}: i32 = long_score(8 as i64);
+// REWRITES-DAG: let {{__v[0-9]+}}: *mut i32 = array.as_mut_ptr() as *mut i32;
+// REWRITES-DAG: unsafe { printf(c"%d %d %d\n".as_ptr(), {{__v[0-9]+}}, {{__v[0-9]+}}, pointer_score({{__v[0-9]+}})) };
+// SLATE-FILECHECK-END rewrites

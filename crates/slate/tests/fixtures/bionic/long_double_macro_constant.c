@@ -6,37 +6,37 @@ int main(void) { return f() == 0.0L; }
 // REWRITES-BIONIC-X86_64-DAG: #![feature(f128)]
 // REWRITES-BIONIC-X86_64-NOT: struct LongDouble
 
-// SLATE-FILECHECK-BEGIN common-lowering
-// COMMON-LOWERING: #![feature(f128)]
-// COMMON-LOWERING-NEXT: #![allow(
-// COMMON-LOWERING-NEXT:     dead_code,
-// COMMON-LOWERING-NEXT:     unused,
-// COMMON-LOWERING-NEXT:     non_camel_case_types,
-// COMMON-LOWERING-NEXT:     non_snake_case,
-// COMMON-LOWERING-NEXT:     non_upper_case_globals,
-// COMMON-LOWERING-NEXT:     arithmetic_overflow,
-// COMMON-LOWERING-NEXT:     unconditional_panic,
-// COMMON-LOWERING-NEXT:     suspicious_runtime_symbol_definitions,
-// COMMON-LOWERING-NEXT:     unpredictable_function_pointer_comparisons,
-// COMMON-LOWERING-NEXT:     unused_comparisons
-// COMMON-LOWERING-NEXT: )]
-// COMMON-LOWERING-EMPTY:
-// COMMON-LOWERING-NEXT: fn f() -> f128 {
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: f128 = 6.475180e-4966f128;
-// COMMON-LOWERING-NEXT:     return {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT: }
-// COMMON-LOWERING-EMPTY:
-// COMMON-LOWERING-NEXT: fn main() {
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: f128 = f();
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: f128 = 0.000000e+00f128;
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// COMMON-LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
-// COMMON-LOWERING-NEXT: }
-// SLATE-FILECHECK-END common-lowering
+// SLATE-FILECHECK-BEGIN lowering
+// LOWERING: #![feature(f128)]
+// LOWERING-NEXT: #![allow(
+// LOWERING-NEXT:     dead_code,
+// LOWERING-NEXT:     unused,
+// LOWERING-NEXT:     non_camel_case_types,
+// LOWERING-NEXT:     non_snake_case,
+// LOWERING-NEXT:     non_upper_case_globals,
+// LOWERING-NEXT:     arithmetic_overflow,
+// LOWERING-NEXT:     unconditional_panic,
+// LOWERING-NEXT:     suspicious_runtime_symbol_definitions,
+// LOWERING-NEXT:     unpredictable_function_pointer_comparisons,
+// LOWERING-NEXT:     unused_comparisons
+// LOWERING-NEXT: )]
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn f() -> f128 {
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f128 = 6.475180e-4966f128;
+// LOWERING-NEXT:     return {{__v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f128 = f();
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f128 = 0.000000e+00f128;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT: }
+// SLATE-FILECHECK-END lowering
 
-// SLATE-FILECHECK-BEGIN rewrites-bionic-aarch64
+// SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-BIONIC-AARCH64: #![feature(f128)]
 // REWRITES-BIONIC-AARCH64-NEXT: #![allow(
 // REWRITES-BIONIC-AARCH64-NEXT:     dead_code,
@@ -61,4 +61,4 @@ int main(void) { return f() == 0.0L; }
 // REWRITES-BIONIC-AARCH64-NEXT:     let {{__v[0-9]+}}: f128 = 0.000000e+00f128;
 // REWRITES-BIONIC-AARCH64-NEXT:     std::process::exit(({{__v[0-9]+}} == {{__v[0-9]+}}) as i32);
 // REWRITES-BIONIC-AARCH64-NEXT: }
-// SLATE-FILECHECK-END rewrites-bionic-aarch64
+// SLATE-FILECHECK-END rewrites

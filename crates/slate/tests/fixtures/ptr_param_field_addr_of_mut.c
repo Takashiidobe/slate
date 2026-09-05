@@ -39,70 +39,64 @@ int main(void) {
 // @rewrite-fn-end
 // @lowering-fn-end
 
-// SLATE-FILECHECK-BEGIN common-lowering
-// COMMON-LOWERING-DAG: freeDict(unsafe { std::ptr::addr_of_mut!((*{{arg[0-9]+}}).dict) });
-// COMMON-LOWERING-DAG: syncDestroy(unsafe { std::ptr::addr_of_mut!((*{{arg[0-9]+}}).io) });
-// COMMON-LOWERING-DAG: fn main() {
-// COMMON-LOWERING-DAG:     let mut __retval: i32 = 0;
-// COMMON-LOWERING-DAG:     let mut r: cRess_t = cRess_t {
-// COMMON-LOWERING-DAG:         dict: FIO_Dict_t { x: 0 },
-// COMMON-LOWERING-DAG:         cctx: 0,
-// COMMON-LOWERING-DAG:         io: FIO_SyncCompressIO { y: 0 },
-// COMMON-LOWERING-DAG:     };
-// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// COMMON-LOWERING-DAG:     __retval = {{__v[0-9]+}};
-// COMMON-LOWERING-DAG:     {
-// COMMON-LOWERING-DAG:         let {{__v[0-9]+}}: cRess_t = cRess_t {
-// COMMON-LOWERING-DAG:             dict: FIO_Dict_t { x: 5 },
-// COMMON-LOWERING-DAG:             cctx: 9,
-// COMMON-LOWERING-DAG:             io: FIO_SyncCompressIO { y: 7 },
-// COMMON-LOWERING-DAG:         };
-// COMMON-LOWERING-DAG:         r = {{__v[0-9]+}};
-// COMMON-LOWERING-DAG:         freeCResources(std::ptr::addr_of_mut!(r));
-// COMMON-LOWERING-DAG:         let {{__v[0-9]+}}: i32 = r.dict.x;
-// COMMON-LOWERING-DAG:         let {{__v[0-9]+}}: i32 = r.io.y;
-// COMMON-LOWERING-DAG:         let {{__v[0-9]+}}: i32 = r.cctx;
-// COMMON-LOWERING-DAG:         let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
-// COMMON-LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 0;
-// COMMON-LOWERING-DAG:         __retval = {{__v[0-9]+}};
-// COMMON-LOWERING-DAG:         let {{__v[0-9]+}}: i32 = __retval;
-// COMMON-LOWERING-DAG:         std::process::exit({{__v[0-9]+}} as i32);
-// COMMON-LOWERING-DAG:     }
-// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: i32 = __retval;
-// COMMON-LOWERING-DAG:     std::process::exit({{__v[0-9]+}} as i32);
-// COMMON-LOWERING-DAG: }
-// SLATE-FILECHECK-END common-lowering
-
-// SLATE-FILECHECK-BEGIN lowering-x86_64-gnu
+// SLATE-FILECHECK-BEGIN lowering
+// LOWERING-DAG: freeDict(unsafe { std::ptr::addr_of_mut!((*{{arg[0-9]+}}).dict) });
+// LOWERING-DAG: syncDestroy(unsafe { std::ptr::addr_of_mut!((*{{arg[0-9]+}}).io) });
+// LOWERING-DAG: fn main() {
+// LOWERING-DAG:     let mut __retval: i32 = 0;
+// LOWERING-DAG:     let mut r: cRess_t = cRess_t {
+// LOWERING-DAG:         dict: FIO_Dict_t { x: 0 },
+// LOWERING-DAG:         cctx: 0,
+// LOWERING-DAG:         io: FIO_SyncCompressIO { y: 0 },
+// LOWERING-DAG:     };
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:     __retval = {{__v[0-9]+}};
+// LOWERING-DAG:     {
+// LOWERING-DAG:         let {{__v[0-9]+}}: cRess_t = cRess_t {
+// LOWERING-DAG:             dict: FIO_Dict_t { x: 5 },
+// LOWERING-DAG:             cctx: 9,
+// LOWERING-DAG:             io: FIO_SyncCompressIO { y: 7 },
+// LOWERING-DAG:         };
+// LOWERING-DAG:         r = {{__v[0-9]+}};
+// LOWERING-DAG:         freeCResources(std::ptr::addr_of_mut!(r));
 // LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
-// SLATE-FILECHECK-END lowering-x86_64-gnu
-
-// SLATE-FILECHECK-BEGIN lowering-aarch64-gnu
 // LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: *mut u8 = b"%d %d %d\n\0".as_ptr() as *mut u8;
-// SLATE-FILECHECK-END lowering-aarch64-gnu
+// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = r.dict.x;
+// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = r.io.y;
+// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = r.cctx;
+// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:         __retval = {{__v[0-9]+}};
+// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = __retval;
+// LOWERING-DAG:         std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-DAG:     }
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = __retval;
+// LOWERING-DAG:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-DAG: }
+// SLATE-FILECHECK-END lowering
 
-// SLATE-FILECHECK-BEGIN common-rewrites
-// COMMON-REWRITES-DAG: freeDict(unsafe { std::ptr::addr_of_mut!((*({{arg[0-9]+}} as *mut cRess_t)).dict) });
-// COMMON-REWRITES-DAG: syncDestroy(unsafe { std::ptr::addr_of_mut!((*({{arg[0-9]+}} as *mut cRess_t)).io) });
-// COMMON-REWRITES-DAG: fn main() {
-// COMMON-REWRITES-DAG:     let mut __retval: i32 = 0;
-// COMMON-REWRITES-DAG:     let mut r: cRess_t = cRess_t {
-// COMMON-REWRITES-DAG:         dict: FIO_Dict_t { x: 0 },
-// COMMON-REWRITES-DAG:         cctx: 0,
-// COMMON-REWRITES-DAG:         io: FIO_SyncCompressIO { y: 0 },
-// COMMON-REWRITES-DAG:     };
-// COMMON-REWRITES-DAG:     r = cRess_t {
-// COMMON-REWRITES-DAG:         dict: FIO_Dict_t { x: 5 },
-// COMMON-REWRITES-DAG:         cctx: 9,
-// COMMON-REWRITES-DAG:         io: FIO_SyncCompressIO { y: 7 },
-// COMMON-REWRITES-DAG:     };
-// COMMON-REWRITES-DAG:     freeCResources(unsafe { &mut (*std::ptr::addr_of_mut!(r)) });
-// COMMON-REWRITES-DAG:     let {{__v[0-9]+}}: i32 = r.dict.x;
-// COMMON-REWRITES-DAG:     let {{__v[0-9]+}}: i32 = r.io.y;
-// COMMON-REWRITES-DAG:     let {{__v[0-9]+}}: i32 = r.cctx;
-// COMMON-REWRITES-DAG:     unsafe { printf(c"%d %d %d\n".as_ptr(), {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
-// COMMON-REWRITES-DAG:     __retval = 0;
-// COMMON-REWRITES-DAG:     std::process::exit(__retval as i32);
-// COMMON-REWRITES-DAG:     std::process::exit(__retval as i32);
-// COMMON-REWRITES-DAG: }
-// SLATE-FILECHECK-END common-rewrites
+// SLATE-FILECHECK-BEGIN rewrites
+// REWRITES-DAG: freeDict(unsafe { std::ptr::addr_of_mut!((*({{arg[0-9]+}} as *mut cRess_t)).dict) });
+// REWRITES-DAG: syncDestroy(unsafe { std::ptr::addr_of_mut!((*({{arg[0-9]+}} as *mut cRess_t)).io) });
+// REWRITES-DAG: fn main() {
+// REWRITES-DAG:     let mut __retval: i32 = 0;
+// REWRITES-DAG:     let mut r: cRess_t = cRess_t {
+// REWRITES-DAG:         dict: FIO_Dict_t { x: 0 },
+// REWRITES-DAG:         cctx: 0,
+// REWRITES-DAG:         io: FIO_SyncCompressIO { y: 0 },
+// REWRITES-DAG:     };
+// REWRITES-DAG:     r = cRess_t {
+// REWRITES-DAG:         dict: FIO_Dict_t { x: 5 },
+// REWRITES-DAG:         cctx: 9,
+// REWRITES-DAG:         io: FIO_SyncCompressIO { y: 7 },
+// REWRITES-DAG:     };
+// REWRITES-DAG:     freeCResources(unsafe { &mut (*std::ptr::addr_of_mut!(r)) });
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = r.dict.x;
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = r.io.y;
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = r.cctx;
+// REWRITES-DAG:     unsafe { printf(c"%d %d %d\n".as_ptr(), {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// REWRITES-DAG:     __retval = 0;
+// REWRITES-DAG:     std::process::exit(__retval as i32);
+// REWRITES-DAG:     std::process::exit(__retval as i32);
+// REWRITES-DAG: }
+// SLATE-FILECHECK-END rewrites

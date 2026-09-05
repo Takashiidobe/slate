@@ -17,18 +17,12 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN lowering-x86_64-gnu
+// SLATE-FILECHECK-BEGIN lowering
 // LOWERING-X86_64-GNU-DAG: p = std::ptr::addr_of_mut!(*src);
-// SLATE-FILECHECK-END lowering-x86_64-gnu
-
-// SLATE-FILECHECK-BEGIN lowering-aarch64-gnu
 // LOWERING-AARCH64-GNU-DAG: p = std::ptr::addr_of_mut!(src);
-// SLATE-FILECHECK-END lowering-aarch64-gnu
+// SLATE-FILECHECK-END lowering
 
-// SLATE-FILECHECK-BEGIN rewrites-x86_64-gnu
+// SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-X86_64-GNU-DAG: p = std::ptr::addr_of_mut!(*src);
-// SLATE-FILECHECK-END rewrites-x86_64-gnu
-
-// SLATE-FILECHECK-BEGIN rewrites-aarch64-gnu
 // REWRITES-AARCH64-GNU-DAG: p = std::ptr::addr_of_mut!(src);
-// SLATE-FILECHECK-END rewrites-aarch64-gnu
+// SLATE-FILECHECK-END rewrites

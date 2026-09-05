@@ -5,11 +5,8 @@ Slate compiles and runs the C source and generated Rust, then compares stdout
 and exit status. FileCheck directives add generated-Rust shape assertions; they
 do not replace runtime comparison.
 
-`NEXTEST_PROFILE=lowering` activates `COMMON`, `COMMON-LOWERING`, and
-`LOWERING` directives. The `rewrites` profile activates `COMMON`,
-`COMMON-REWRITES`, and `REWRITES` directives. The profile-qualified common
-prefixes let target-specific generation share checks within one profile without
-requiring lowering checks to pass against rewritten Rust.
+`NEXTEST_PROFILE=lowering` activates `COMMON` and `LOWERING` directives. The
+`rewrites` profile activates `COMMON` and `REWRITES` directives.
 
 `REWRITES` directives are enforced against the new worklist engine's output.
 Only assertions satisfied by the current engine belong in the baseline; add
@@ -80,9 +77,17 @@ file. Test execution reuses the generated crate for FileCheck, Rust compilation,
 and differential comparison; FileCheck does not trigger another translation.
 
 Pass repeated `--target PREFIX=TRIPLE` arguments to generate checks for
-multiple ABIs. The updater factors identical checks into `COMMON-LOWERING` or
-`COMMON-REWRITES` blocks and leaves ABI-specific checks under the corresponding
-target prefix. For example:
+multiple ABIs (currently exactly two per invocation). The updater diffs the two
+targets' check sequences positionally and interleaves them into one ordered
+block: lines identical across targets fall back to the bare `LOWERING`/
+`REWRITES` tag (always selected, regardless of which target's prefix a run
+adds), and lines that differ keep their own target prefix (e.g.
+`LOWERING-X86_64-GNU`) in place, at the exact point where they diverge. This
+preserves `CHECK-NEXT` adjacency for whichever single target a test run
+selects — unlike bag-based common/residual extraction, which would relocate a
+divergent line (e.g. a struct field whose pointee type differs by ABI) to a
+trailing block, breaking adjacency for any divergence that isn't at the very
+end of the file. For example:
 
 ```bash
 python3 tools/update_filecheck.py --profile both --in-place \

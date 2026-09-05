@@ -25,64 +25,52 @@ int main(void) {
 // @rewrite-fn-end
 // @lowering-fn-end
 
-// SLATE-FILECHECK-BEGIN common-lowering
-// COMMON-LOWERING-DAG: fn main() {
-// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 3;
-// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 4;
-// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 1;
-// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 7;
-// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: f64 = 2.5;
-// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: i32 = unsafe {
-// COMMON-LOWERING-DAG:         printf(
-// COMMON-LOWERING-DAG:             {{__v[0-9]+}} as *const core::ffi::c_char,
-// COMMON-LOWERING-DAG:             {{__v[0-9]+}},
-// COMMON-LOWERING-DAG:             {{__v[0-9]+}},
-// COMMON-LOWERING-DAG:             {{__v[0-9]+}},
-// COMMON-LOWERING-DAG:             {{__v[0-9]+}},
-// COMMON-LOWERING-DAG:             {{__v[0-9]+}},
-// COMMON-LOWERING-DAG:             {{__v[0-9]+}},
-// COMMON-LOWERING-DAG:         )
-// COMMON-LOWERING-DAG:     };
-// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// COMMON-LOWERING-DAG:     std::process::exit({{__v[0-9]+}} as i32);
-// COMMON-LOWERING-DAG: }
-// SLATE-FILECHECK-END common-lowering
-
-// SLATE-FILECHECK-BEGIN lowering-x86_64-gnu
+// SLATE-FILECHECK-BEGIN lowering
+// LOWERING-DAG: fn main() {
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 3;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 4;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 7;
+// LOWERING-DAG:     let {{__v[0-9]+}}: f64 = 2.5;
 // LOWERING-X86_64-GNU-DAG:     let {{__v[0-9]+}}: *mut i8 = b"int\0".as_ptr() as *mut i8;
 // LOWERING-X86_64-GNU-DAG:     let {{__v[0-9]+}}: *mut i8 = b"double\0".as_ptr() as *mut i8;
 // LOWERING-X86_64-GNU-DAG:     let {{__v[0-9]+}}: *mut i8 = b"%d %d %d %d %s %s\n\0".as_ptr() as *mut i8;
-// SLATE-FILECHECK-END lowering-x86_64-gnu
-
-// SLATE-FILECHECK-BEGIN lowering-aarch64-gnu
 // LOWERING-AARCH64-GNU-DAG:     let {{__v[0-9]+}}: *mut u8 = b"int\0".as_ptr() as *mut u8;
 // LOWERING-AARCH64-GNU-DAG:     let {{__v[0-9]+}}: *mut u8 = b"double\0".as_ptr() as *mut u8;
 // LOWERING-AARCH64-GNU-DAG:     let {{__v[0-9]+}}: *mut u8 = b"%d %d %d %d %s %s\n\0".as_ptr() as *mut u8;
-// SLATE-FILECHECK-END lowering-aarch64-gnu
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = unsafe {
+// LOWERING-DAG:         printf(
+// LOWERING-DAG:             {{__v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-DAG:             {{__v[0-9]+}},
+// LOWERING-DAG:             {{__v[0-9]+}},
+// LOWERING-DAG:             {{__v[0-9]+}},
+// LOWERING-DAG:             {{__v[0-9]+}},
+// LOWERING-DAG:             {{__v[0-9]+}},
+// LOWERING-DAG:             {{__v[0-9]+}},
+// LOWERING-DAG:         )
+// LOWERING-DAG:     };
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-DAG: }
+// SLATE-FILECHECK-END lowering
 
-// SLATE-FILECHECK-BEGIN common-rewrites
-// COMMON-REWRITES-DAG: fn main() {
-// COMMON-REWRITES-DAG:     unsafe {
-// COMMON-REWRITES-DAG:         printf(
-// COMMON-REWRITES-DAG:             c"%d %d %d %d %s %s\n".as_ptr(),
-// COMMON-REWRITES-DAG:             3 as i32,
-// COMMON-REWRITES-DAG:             4 as i32,
-// COMMON-REWRITES-DAG:             1 as i32,
-// COMMON-REWRITES-DAG:             0 as i32,
-// COMMON-REWRITES-DAG:         )
-// COMMON-REWRITES-DAG:     };
-// COMMON-REWRITES-DAG:     std::process::exit(0 as i32);
-// COMMON-REWRITES-DAG: }
-// SLATE-FILECHECK-END common-rewrites
-
-// SLATE-FILECHECK-BEGIN rewrites-x86_64-gnu
+// SLATE-FILECHECK-BEGIN rewrites
+// REWRITES-DAG: fn main() {
+// REWRITES-DAG:     unsafe {
+// REWRITES-DAG:         printf(
+// REWRITES-DAG:             c"%d %d %d %d %s %s\n".as_ptr(),
+// REWRITES-DAG:             3 as i32,
+// REWRITES-DAG:             4 as i32,
+// REWRITES-DAG:             1 as i32,
+// REWRITES-DAG:             0 as i32,
 // REWRITES-X86_64-GNU-DAG:             c"int".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-DAG:             c"double".as_ptr() as *mut i8,
-// SLATE-FILECHECK-END rewrites-x86_64-gnu
-
-// SLATE-FILECHECK-BEGIN rewrites-aarch64-gnu
 // REWRITES-AARCH64-GNU-DAG:             c"int".as_ptr() as *mut u8,
 // REWRITES-AARCH64-GNU-DAG:             c"double".as_ptr() as *mut u8,
-// SLATE-FILECHECK-END rewrites-aarch64-gnu
+// REWRITES-DAG:         )
+// REWRITES-DAG:     };
+// REWRITES-DAG:     std::process::exit(0 as i32);
+// REWRITES-DAG: }
+// SLATE-FILECHECK-END rewrites

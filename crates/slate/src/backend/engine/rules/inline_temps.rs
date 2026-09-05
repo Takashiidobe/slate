@@ -1,7 +1,9 @@
 use super::walk;
 use crate::backend::engine::NodeRule;
 use crate::backend::engine::arena::{Arena, FunctionOptimizer, NodeId, NodeKind, NodeKindTag};
-use crate::backend::rust_ast::{BinOp, Expr, Ident, Prim, RustValue, Stmt, Type, UnaryOp, is_temp_name};
+use crate::backend::rust_ast::{
+    BinOp, Expr, Ident, Prim, RustValue, Stmt, Type, UnaryOp, is_temp_name,
+};
 use crate::function_identity::CallBinding;
 
 fn expr_ident(expr: &Expr) -> Option<Ident> {

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import argparse
 from collections import Counter
+import difflib
 import glob
 import os
 import re
@@ -342,56 +343,58 @@ def render_checks(rust, prefix):
     return checks
 
 
-def commonize_checks(checks_by_prefix, common_prefix="COMMON"):
-    if len(checks_by_prefix) < 2:
-        return [], dict(checks_by_prefix)
+def _strip_check_tag(check, prefix):
+    return re.sub(
+        rf"^// {re.escape(prefix)}(?P<suffix>-[A-Z]+)?:",
+        r"//\g<suffix>:",
+        check,
+    )
 
+
+def _retag_check(check, new_prefix):
+    return re.sub(
+        r"^//(?P<suffix>-[A-Z]+)?:",
+        rf"// {new_prefix}\g<suffix>:",
+        check,
+    )
+
+
+def interleave_checks(checks_by_prefix, common_prefix):
+    """Merge per-target check lists into one CHECK-NEXT-ordered sequence.
+
+    Lines identical across every target collapse onto `common_prefix`
+    (selected regardless of which target is active at runtime); lines that
+    differ stay tagged with their own target's prefix. Divergent runs are
+    emitted in their original relative position rather than appended after
+    all common lines, so CHECK-NEXT adjacency holds no matter which single
+    target's prefix a test run selects.
+    """
     prefixes = list(checks_by_prefix)
-    normalized = {
-        prefix: [
-            re.sub(
-                rf"^// {re.escape(prefix)}(?P<suffix>-[A-Z]+)?:",
-                r"//\g<suffix>:",
-                check,
-            )
-            for check in checks
-        ]
-        for prefix, checks in checks_by_prefix.items()
-    }
-    common_counts = Counter(normalized[prefixes[0]])
-    for prefix in prefixes[1:]:
-        common_counts &= Counter(normalized[prefix])
-    common = []
-    remaining_common = common_counts.copy()
-    for check in normalized[prefixes[0]]:
-        if remaining_common[check]:
-            common.append(
-                re.sub(
-                    r"^//(?P<suffix>-[A-Z]+)?:",
-                    rf"// {common_prefix}\g<suffix>:",
-                    check,
-                )
-            )
-            remaining_common[check] -= 1
+    if len(prefixes) < 2:
+        return list(checks_by_prefix.get(prefixes[0], [])) if prefixes else []
+    if len(prefixes) != 2:
+        raise NotImplementedError(
+            "interleaving FileCheck blocks across more than two target "
+            f"profiles is not supported: {prefixes}"
+        )
 
-    residuals = {}
-    for prefix, checks in checks_by_prefix.items():
-        to_remove = Counter()
-        for check in common:
-            normalized_check = re.sub(
-                rf"^// {re.escape(common_prefix)}(?P<suffix>-[A-Z]+)?:",
-                r"//\g<suffix>:",
-                check,
+    a_prefix, b_prefix = prefixes
+    a_checks = checks_by_prefix[a_prefix]
+    b_checks = checks_by_prefix[b_prefix]
+    a_normalized = [_strip_check_tag(check, a_prefix) for check in a_checks]
+    b_normalized = [_strip_check_tag(check, b_prefix) for check in b_checks]
+
+    matcher = difflib.SequenceMatcher(None, a_normalized, b_normalized, autojunk=False)
+    merged = []
+    for tag, i1, i2, j1, j2 in matcher.get_opcodes():
+        if tag == "equal":
+            merged.extend(
+                _retag_check(check, common_prefix) for check in a_normalized[i1:i2]
             )
-            to_remove[normalized_check] += 1
-        residual = []
-        for check, normalized_check in zip(checks, normalized[prefix]):
-            if to_remove[normalized_check]:
-                to_remove[normalized_check] -= 1
-            else:
-                residual.append(check)
-        residuals[prefix] = residual
-    return common, residuals
+        else:
+            merged.extend(a_checks[i1:i2])
+            merged.extend(b_checks[j1:j2])
+    return merged
 
 
 def escape_check_pattern(line):
@@ -627,13 +630,9 @@ def update_path(path, profiles, in_place, target_mode):
             checks_by_prefix = grouped.get(base_profile, {})
             if not checks_by_prefix:
                 continue
-            common_prefix = f"COMMON-{base_profile}"
-            common, residuals = commonize_checks(checks_by_prefix, common_prefix)
-            if common:
-                blocks.append(generated_block(common, common_prefix))
-            for profile in checks_by_prefix:
-                if residuals[profile]:
-                    blocks.append(generated_block(residuals[profile], profile))
+            merged = interleave_checks(checks_by_prefix, base_profile)
+            if merged:
+                blocks.append(generated_block(merged, base_profile))
     else:
         blocks = [
             generated_block(checks_by_profile[profile], profile)

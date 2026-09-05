@@ -8,10 +8,7 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN rewrites-x86_64-gnu
+// SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-X86_64-GNU-DAG: unsafe { printf(c"%s\n".as_ptr(), buf.as_mut_ptr() as *mut i8) };
-// SLATE-FILECHECK-END rewrites-x86_64-gnu
-
-// SLATE-FILECHECK-BEGIN rewrites-aarch64-gnu
 // REWRITES-AARCH64-GNU-DAG: unsafe { printf(c"%s\n".as_ptr(), buf.as_mut_ptr() as *mut u8) };
-// SLATE-FILECHECK-END rewrites-aarch64-gnu
+// SLATE-FILECHECK-END rewrites
