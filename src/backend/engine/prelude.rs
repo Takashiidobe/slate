@@ -7,6 +7,16 @@ use crate::function_identity::CallBinding;
 pub(super) const ATOI: &str = "__slate_atoi";
 pub(super) const ATOL: &str = "__slate_atol";
 
+pub(in crate::backend) fn char_prim() -> Prim {
+    if crate::frontend::toolchain::char_is_signed_default(
+        &crate::frontend::toolchain::active_target(),
+    ) {
+        Prim::I8
+    } else {
+        Prim::U8
+    }
+}
+
 pub(in crate::backend) fn inject(program: &mut Program) {
     let mut needed: Vec<&'static str> = Vec::new();
     {
@@ -231,7 +241,7 @@ fn ato_int_prelude(name: &str, ret: Prim) -> Item {
             mutable: false,
             ty: Type::Ptr {
                 mutable: false,
-                inner: Box::new(Type::Prim(Prim::I8)),
+                inner: Box::new(Type::Prim(char_prim())),
             },
         }],
         ret: Some(Type::Prim(ret)),

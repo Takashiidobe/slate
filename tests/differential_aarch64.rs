@@ -17,23 +17,6 @@ fn skip_reason(name: &str) -> Option<&'static str> {
             "SLATE_CLANG's CIR frontend does not support _BitInt > 128 bits or __float128 \
              for aarch64-unknown-linux-gnu (slate-sdks.1)",
         ),
-        "aligned_struct"
-        | "gnu_libc_algorithms"
-        | "atoi_atol_prelude_dynamic"
-        | "numeric_parse_fixup"
-        | "support_module_cleanup"
-        | "nested_anon_struct_fields"
-        | "string_param_lift"
-        | "gnu_builtin_atomic_flag"
-        | "assert_recovery_preserves_result"
-        | "assert_runtime_false"
-        | "assert_runtime_true"
-        | "bitint_record_layout"
-        | "destructor_early_return"
-        | "packed_aligned_struct" => Some(
-            "known bug: slate lowers plain char to signed i8 regardless of target char \
-             signedness; aarch64-linux-gnu defaults char to unsigned (slate-sdks.2)",
-        ),
         "long_double_complex" | "long_double_f80_arithmetic" => Some(
             "known bug: f128 (binary128) division produces wrong results on non-x86 \
              targets (slate-sdks.3)",
@@ -45,6 +28,11 @@ fn skip_reason(name: &str) -> Option<&'static str> {
         "stat_struct" => Some(
             "known bug: aarch64 struct stat field layout is wrong under raw lowering \
              (likely the same root cause as slate-jxmx's nlink_t widening bug)",
+        ),
+        "gnu_builtin_atomic_flag" => Some(
+            "ClangIR limitation: 'cir.atomic.test_and_set' requires an 8-bit signed-integer \
+             pointer operand unconditionally, but aarch64 char is unsigned, so CIR itself \
+             fails verification here regardless of slate's lowerer",
         ),
         _ => None,
     }

@@ -2350,6 +2350,9 @@ fn parse_c_type(s: &str) -> CType {
     } else {
         let signed = !s.contains("unsigned");
         if s.contains("char") && !s.contains("signed") {
+            let signed = crate::frontend::toolchain::char_is_signed_default(
+                &crate::frontend::toolchain::active_target(),
+            );
             CType::Char { signed }
         } else {
             CType::Int {

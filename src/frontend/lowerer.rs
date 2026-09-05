@@ -316,29 +316,52 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
     lowerer.lower_module(cir, c)
 }
 
+fn cir_data_members<'a>(
+    members: &'a [CirType],
+    member_kinds: &[CirRecordMemberKind],
+) -> Vec<&'a CirType> {
+    if member_kinds.len() != members.len() {
+        return members.iter().collect();
+    }
+    members
+        .iter()
+        .zip(member_kinds)
+        .filter(|(_, kind)| {
+            matches!(
+                kind,
+                CirRecordMemberKind::Data | CirRecordMemberKind::BitField
+            )
+        })
+        .map(|(member, _)| member)
+        .collect()
+}
+
 fn cir_record_field_types_from_aliases(
     record: &crate::frontend::c_ast::Record,
     aliases: &BTreeMap<String, CirType>,
     va_list_boxed: bool,
 ) -> Option<Vec<Type>> {
-    let members = aliases.values().find_map(|ty| match ty {
+    let (members, member_kinds) = aliases.values().find_map(|ty| match ty {
         CirType::Struct {
             name: Some(name),
             members: Some(members),
+            member_kinds,
             ..
         }
         | CirType::Union {
             name: Some(name),
             members: Some(members),
+            member_kinds,
             ..
         } if sanitize_ident(name).as_str() == sanitize_ident(&record.name).as_str() => {
-            Some(members)
+            Some((members, member_kinds))
         }
         _ => None,
     })?;
-    (members.len() == record.fields.len()).then(|| {
-        members
-            .iter()
+    let data_members = cir_data_members(members, member_kinds);
+    (data_members.len() == record.fields.len()).then(|| {
+        data_members
+            .into_iter()
             .map(|member| rust_type_with_aliases(member, aliases, va_list_boxed))
             .collect()
     })
@@ -592,10 +615,22 @@ fn lower_record_def(
                 || (field.bit_width.is_none()
                     && matches!(cir_ty, Some(Type::Array { .. }))
                     && !matches!(field.ty, CType::Array(..)));
+            let char_cir_ty = matches!(field.ty, CType::Char { .. })
+                .then(|| match cir_ty {
+                    Some(ty @ (Type::Prim(Prim::I8) | Type::Prim(Prim::U8))) => Some(ty.clone()),
+                    Some(other) => panic!(
+                        "record `{}` field `{}`: CIR resolved plain `char` to {other:?}, \
+                         not an 8-bit int; record/CIR member lists are misaligned",
+                        record.name, field.name
+                    ),
+                    None => None,
+                })
+                .flatten();
             RecordField {
                 comments: comments(&field.comments),
                 name: sanitize_ident(&field.name),
                 ty: if trust_cir { cir_ty.cloned() } else { None }
+                    .or(char_cir_ty)
                     .unwrap_or_else(|| c_record_field_type(&field.ty, va_list_boxed)),
             }
         })
@@ -2034,6 +2069,20 @@ impl __SlateVaArgs {
                 .and_then(|types| types.get(index).cloned())
         {
             return Some(field_ty);
+        }
+        if matches!(field.ty, CType::Char { .. }) {
+            match self
+                .cir_record_field_types(record)
+                .and_then(|types| types.get(index).cloned())
+            {
+                Some(ty @ (Type::Prim(Prim::I8) | Type::Prim(Prim::U8))) => return Some(ty),
+                Some(other) => panic!(
+                    "record `{}` field `{}`: CIR resolved plain `char` to {other:?}, not an \
+                     8-bit int; record/CIR member lists are misaligned",
+                    record.name, field.name
+                ),
+                None => {}
+            }
         }
         Some(self.c_record_field_type(&field.ty))
     }
