@@ -1,3 +1,4 @@
+// { dg-do run { target x86_64-*-* } }
 // @lowering-fn-begin
 // @rewrite-fn-begin
 __attribute__((target("bmi"))) int bmi_probe(int x) { return x + 1; }

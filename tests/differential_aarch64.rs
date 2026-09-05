@@ -8,23 +8,6 @@ fn fixtures_dir() -> PathBuf {
 
 fn skip_reason(name: &str) -> Option<&'static str> {
     match name {
-        "asm_ebx_output_cpuid" | "asm_fixed_register_cpuid" => {
-            Some("x86 cpuid asm, no aarch64 equivalent")
-        }
-        "gnu_asm_flag_outputs" => Some("x86 condition-code (=@cc*) asm output constraints"),
-        "gnu_asm_register_variable" => Some("x86 register name (eax) in asm"),
-        "vec_masked_load_ops" | "x86_instruction_intrinsics" | "x86_simd_vector_intrinsics" => {
-            Some("x86 intrinsics (immintrin.h), not available on aarch64")
-        }
-        "target_feature_bmi" => Some("x86-only target_feature (bmi1)"),
-        "asm_dialect_switch"
-        | "asm_goto_statement_expr"
-        | "gnu_basic_asm"
-        | "gnu_extended_asm"
-        | "inline_asm_ops"
-        | "filecheck_pattern_normalization" => {
-            Some("x86 AT&T-syntax / register-width asm template modifiers")
-        }
         "bitint_shift"
         | "float128"
         | "long_double"
@@ -84,6 +67,12 @@ fn fixtures() -> Vec<(String, PathBuf)> {
             .unwrap_or_else(|| panic!("non-UTF8 fixture name: {}", path.display()))
             .to_string();
         if let Some(reason) = skip_reason(&name) {
+            eprintln!("skip  {name}: {reason}");
+            continue;
+        }
+        if let Some(reason) =
+            support::fixture_target_restriction(&path, "aarch64-unknown-linux-gnu")
+        {
             eprintln!("skip  {name}: {reason}");
             continue;
         }
@@ -147,22 +136,19 @@ fn generated_differential_aarch64() {
 
     let translated = support::parallel_map(&fixtures, |(name, path)| {
         let generated = tmp.join(format!("{name}.generated.rs"));
-        support::translate_with_args(
-            path,
-            &generated,
-            &support::fixture_clang_arg_overrides(name),
-        )
-        .map(|()| generated)
+        let dg_options = support::fixture_dg_options(path);
+        let mut extra_args = dg_options.clone();
+        extra_args.extend(support::fixture_dg_additional_options(path));
+        support::translate_with_args(path, &generated, &extra_args)
+            .map(|()| (generated, dg_options))
     });
 
     let mut cases = Vec::new();
     for ((name, path), result) in fixtures.iter().zip(translated) {
         match result {
-            Ok(generated) => {
+            Ok((generated, dg_options)) => {
                 let mut config = support::RunConfig::default();
-                config
-                    .c_args
-                    .extend(support::fixture_c_ref_std_override(name));
+                config.c_args.extend(dg_options);
                 cases.push(support::Case {
                     name: name.clone(),
                     c_src: path.clone(),

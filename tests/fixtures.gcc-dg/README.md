@@ -2,6 +2,8 @@ Supported runnable `gcc.dg` differential fixtures live here. The matching
 `fixtures.gcc-dg.unsupported` directory contains cases that compile and run
 with Clang but still fail Slate differential testing.
 
+The corpus currently includes atomic, complex, and long-double run cases.
+
 Run the supported suite with:
 
 ```bash

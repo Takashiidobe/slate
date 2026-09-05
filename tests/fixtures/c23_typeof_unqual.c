@@ -1,3 +1,4 @@
+// { dg-options "-std=gnu23" }
 #include <stdio.h>
 
 int main(void) {

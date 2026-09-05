@@ -1,3 +1,5 @@
+// { dg-do run { target x86_64-*-* } }
+// { dg-options "-std=gnu23" }
 int main(void) {
   register int x asm("eax") = 5;
   __asm__ __volatile__("incl %0" : "+r"(x));
@@ -18,6 +20,8 @@ int main(void) {
 // LOWERING-NEXT:     unused_comparisons
 // LOWERING-NEXT: )]
 // LOWERING-EMPTY:
+// LOWERING-NEXT: /// { dg-do run { target x86_64-*-* } }
+// LOWERING-NEXT: /// { dg-options "-std=gnu23" }
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 5;
@@ -43,6 +47,8 @@ int main(void) {
 // REWRITES-NEXT:     unused_comparisons
 // REWRITES-NEXT: )]
 // REWRITES-EMPTY:
+// REWRITES-NEXT: /// { dg-do run { target x86_64-*-* } }
+// REWRITES-NEXT: /// { dg-options "-std=gnu23" }
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 5;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32;

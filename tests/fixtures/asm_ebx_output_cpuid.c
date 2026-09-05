@@ -1,3 +1,4 @@
+// { dg-do run { target x86_64-*-* } }
 typedef unsigned int U32;
 
 int cpuid_leaf7_ebx_nonzero(void) {

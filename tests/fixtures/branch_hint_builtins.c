@@ -1,3 +1,4 @@
+// { dg-additional-options "-O1" }
 #include <stdio.h>
 
 static int side_effect_calls = 0;

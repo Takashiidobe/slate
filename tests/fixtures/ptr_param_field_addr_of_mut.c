@@ -1,3 +1,4 @@
+// { dg-additional-options "-O2" }
 #include <stdio.h>
 
 typedef struct {

@@ -1,3 +1,4 @@
+// { dg-do run { target x86_64-*-* } }
 #include <stdio.h>
 
 #define CLASSIFY_ZERO(value)                                                   \
