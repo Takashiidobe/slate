@@ -349,6 +349,14 @@ pub(super) fn f80_shim_decls() -> Vec<ExternFnDecl> {
             vec![f80_param("a", f80()), f80_param("n", Type::Prim(Prim::I32))],
             Some(f80()),
         ),
+        f80_extern_decl(
+            "__slate_f128_nexttoward",
+            vec![
+                f80_param("from", Type::Prim(Prim::F128)),
+                f80_param("toward", Type::Prim(Prim::F128)),
+            ],
+            Some(Type::Prim(Prim::F128)),
+        ),
         f80_extern_decl("__slate_f80_neg", vec![f80_param("a", f80())], Some(f80())),
     ];
     for shim in [

@@ -188,6 +188,10 @@ __slate_f80 __slate_f80_powi(__slate_f80 a, int n) {
   return __slate_f80_store(powl(__slate_f80_load(a), n));
 }
 
+__float128 __slate_f128_nexttoward(__float128 from, __float128 toward) {
+  return __builtin_nextafterf128(from, toward);
+}
+
 __slate_f80 __slate_f80_add_assign(__slate_f80 *a, __slate_f80 b) {
   *a = __slate_f80_add(*a, b);
   return *a;
