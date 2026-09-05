@@ -336,7 +336,11 @@ fn render_typed_shim_source<'a>(
     let has_f80 = shims
         .iter()
         .any(|shim| shim.name.contains("f80") || shim.name.starts_with("__slate_ld_"));
-    if has_f80 {
+    if has_f80
+        || shims
+            .iter()
+            .any(|shim| shim.name.starts_with("__slate_f128_"))
+    {
         blocks.push(F80_SHIMS.to_string());
     }
     if shims
@@ -351,6 +355,7 @@ fn render_typed_shim_source<'a>(
     for shim in shims {
         if shim.name.starts_with("__slate_f80_")
             || shim.name.starts_with("__slate_cf80_")
+            || shim.name.starts_with("__slate_f128_")
             || shim.name.starts_with("__slate_fenv_")
         {
             continue;
@@ -505,7 +510,10 @@ pub fn render_shim_c_source_for_names(names: &BTreeSet<String>) -> String {
             .collect::<Vec<_>>()
             .join("\n"),
     ];
-    if names.iter().any(|name| name.contains("f80")) {
+    if names
+        .iter()
+        .any(|name| name.contains("f80") || name.starts_with("__slate_f128_"))
+    {
         blocks.push(F80_SHIMS.to_string());
     }
     if names.iter().any(|name| name.starts_with("__slate_fenv_")) {

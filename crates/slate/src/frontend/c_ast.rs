@@ -6,6 +6,7 @@ use std::path::{Path, PathBuf};
 use std::process::{Command, ExitStatus};
 use thiserror::Error;
 
+use crate::frontend::toolchain;
 use crate::function_identity::{CallBinding, FunctionIdentity, Provenance, classify_function};
 
 #[derive(Debug, Error)]
@@ -14,7 +15,7 @@ pub enum AstError {
     Target {
         path: PathBuf,
         #[source]
-        source: crate::frontend::toolchain::TargetError,
+        source: toolchain::TargetError,
     },
     #[error("spawn {clang} for Clang AST dump of {path}: {source}")]
     Spawn {
@@ -396,7 +397,7 @@ struct PackAttribute {
 
 fn macro_dump_plugin() -> String {
     std::env::var("SLATE_MACRO_DUMP_PLUGIN").unwrap_or_else(|_| {
-        let clang = PathBuf::from(crate::frontend::toolchain::clang());
+        let clang = PathBuf::from(toolchain::clang());
         clang
             .parent()
             .and_then(Path::parent)
@@ -649,13 +650,12 @@ fn run_clang_ast_dump(
     src: &Path,
     extra_args: &[String],
 ) -> Result<(String, PluginEvents), AstError> {
-    let clang = crate::frontend::toolchain::clang();
+    let clang = toolchain::clang();
     let mut cmd = Command::new(&clang);
-    let target_args =
-        crate::frontend::toolchain::target_args().map_err(|source| AstError::Target {
-            path: src.to_path_buf(),
-            source,
-        })?;
+    let target_args = toolchain::target_args().map_err(|source| AstError::Target {
+        path: src.to_path_buf(),
+        source,
+    })?;
     cmd.args([
         "-std=gnu23",
         "-Xclang",
@@ -664,13 +664,10 @@ fn run_clang_ast_dump(
         "-fparse-all-comments",
     ])
     .arg(format!("-fplugin={}", macro_dump_plugin()));
-    if let Some(shim_dir) = crate::frontend::toolchain::libc_shim_dir() {
-        for root in [
-            Some(shim_dir),
-            crate::frontend::toolchain::clang_resource_dir_include(),
-        ]
-        .into_iter()
-        .flatten()
+    if let Some(shim_dir) = toolchain::libc_shim_dir() {
+        for root in [Some(shim_dir), toolchain::clang_resource_dir_include()]
+            .into_iter()
+            .flatten()
         {
             cmd.args([
                 "-Xclang",
@@ -2339,9 +2336,7 @@ fn parse_c_type(s: &str) -> CType {
         CType::Float { bits: 64 }
     } else if s == "long double" {
         CType::Float {
-            bits: crate::frontend::toolchain::long_double_bits(
-                &crate::frontend::toolchain::active_target(),
-            ),
+            bits: toolchain::long_double_bits(&toolchain::active_target()),
         }
     } else if s == "_Float16" {
         CType::Float { bits: 16 }
@@ -2354,9 +2349,7 @@ fn parse_c_type(s: &str) -> CType {
     } else {
         let signed = !s.contains("unsigned");
         if s.contains("char") && !s.contains("signed") {
-            let signed = crate::frontend::toolchain::char_is_signed_default(
-                &crate::frontend::toolchain::active_target(),
-            );
+            let signed = toolchain::char_is_signed_default(&toolchain::active_target());
             CType::Char { signed }
         } else {
             CType::Int {

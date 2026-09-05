@@ -1,5 +1,8 @@
 use super::*;
-use crate::function_identity::CallBinding;
+use crate::{
+    frontend::function_abi,
+    function_identity::{CallBinding, FunctionIdentity},
+};
 
 impl<'a, 'b> FunctionLowerer<'a, 'b> {
     fn coerce_group_alloca(&self, load_result: &str) -> Option<(&str, &str, &str)> {
@@ -308,6 +311,51 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         arg_types: &[CirType],
         binding: &CallBinding,
     ) -> bool {
+        if callee_name == "nexttowardf128"
+            && args.len() == 2
+            && arg_types
+                .iter()
+                .all(|ty| matches!(self.parent.rust_type(ty), Type::Prim(Prim::F128)))
+            && result_ty
+                .map(|ty| matches!(self.parent.rust_type(ty), Type::Prim(Prim::F128)))
+                .unwrap_or(false)
+        {
+            let shim_name = "__slate_f128_nexttoward";
+            self.parent
+                .long_double_shims
+                .entry(shim_name.into())
+                .or_insert_with(|| ExternFnDecl {
+                    attrs: Vec::new(),
+                    identity: FunctionIdentity::Unknown,
+                    name: shim_name.into(),
+                    declared_type: None,
+                    trusted_headers: BTreeSet::new(),
+                    params: vec![
+                        FnParam {
+                            name: "_from".into(),
+                            mutable: false,
+                            ty: Type::Prim(Prim::F128),
+                        },
+                        FnParam {
+                            name: "_toward".into(),
+                            mutable: false,
+                            ty: Type::Prim(Prim::F128),
+                        },
+                    ],
+                    variadic: false,
+                    ret: Some(Type::Prim(Prim::F128)),
+                    safe: false,
+                });
+            let call = Self::unsafe_expr(Expr::Call {
+                binding: CallBinding::Generated,
+                func: Box::new(Expr::Var(shim_name.into())),
+                args: args.to_vec(),
+            });
+            if let Some(result) = result {
+                self.materialize_expr(result, call, result_ty);
+            }
+            return true;
+        }
         if crate::frontend::toolchain::uses_f64_long_double_abi() {
             return false;
         }
@@ -387,8 +435,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .known_functions
             .get(callee_name)
             .copied()
-            .unwrap_or(crate::function_identity::FunctionIdentity::Unknown);
-        crate::frontend::function_abi::repair_function_signature(
+            .unwrap_or(FunctionIdentity::Unknown);
+        function_abi::repair_function_signature(
             self.parent
                 .function_types
                 .get(callee_name)
