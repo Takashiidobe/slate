@@ -75,7 +75,8 @@ int main(void) {
 // LOWERING-NEXT:         *std::ptr::addr_of_mut!({{__slate_alloca_frame[0-9]+}}.3) = {{_v[0-9]+}};
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f32 = {{__slate_alloca_frame[0-9]+}}.3;
-// LOWERING-NEXT:     *{{__slate_alloca_frame[0-9]+}}.2 = [10, 20, 30, 40];
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i32; 4] = [10, 20, 30, 40];
+// LOWERING-NEXT:     *{{__slate_alloca_frame[0-9]+}}.2 = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = {{__slate_alloca_frame[0-9]+}}.2.as_mut_ptr() as *mut i32;
 // LOWERING-NEXT:     {{__slate_alloca_frame[0-9]+}}.1 = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 2;

@@ -1,5 +1,6 @@
 static int bump(int value) { return value + 1; }
 
+// @lowering-fn-begin
 // @rewrite-fn-begin
 static int maybe_apply(int (*op)(int), int value) {
   if (op) {
@@ -8,7 +9,9 @@ static int maybe_apply(int (*op)(int), int value) {
   return value;
 }
 // @rewrite-fn-end
+// @lowering-fn-end
 
+// @lowering-fn-begin
 // @rewrite-fn-begin
 int main(void) {
   int (*op)(int) = 0;
@@ -23,102 +26,83 @@ int main(void) {
   return total == 10 ? 0 : 1;
 }
 // @rewrite-fn-end
+// @lowering-fn-end
 
 // SLATE-FILECHECK-BEGIN lowering
-// LOWERING: #![allow(
-// LOWERING-NEXT:     dead_code,
-// LOWERING-NEXT:     unused,
-// LOWERING-NEXT:     non_camel_case_types,
-// LOWERING-NEXT:     non_snake_case,
-// LOWERING-NEXT:     non_upper_case_globals,
-// LOWERING-NEXT:     arithmetic_overflow,
-// LOWERING-NEXT:     unconditional_panic,
-// LOWERING-NEXT:     suspicious_runtime_symbol_definitions,
-// LOWERING-NEXT:     unpredictable_function_pointer_comparisons,
-// LOWERING-NEXT:     unused_comparisons
-// LOWERING-NEXT: )]
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn maybe_apply({{arg[0-9]+}}: Option<unsafe extern "C-unwind" fn(i32) -> i32>, {{arg[0-9]+}}: i32) -> i32 {
-// LOWERING-NEXT:     let mut op: Option<unsafe extern "C-unwind" fn(i32) -> i32> = None;
-// LOWERING-NEXT:     let mut value: i32 = 0;
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
-// LOWERING-NEXT:     op = {{arg[0-9]+}};
-// LOWERING-NEXT:     value = {{arg[0-9]+}};
-// LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(i32) -> i32> = op;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}}.is_some();
-// LOWERING-NEXT:         if {{_v[0-9]+}} {
-// LOWERING-NEXT:             let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(i32) -> i32> = op;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = value;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = unsafe { {{_v[0-9]+}}.unwrap()({{_v[0-9]+}}) };
-// LOWERING-NEXT:             __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:             return {{_v[0-9]+}};
-// LOWERING-NEXT:         }
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = value;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: extern "C-unwind" fn bump({{arg[0-9]+}}: i32) -> i32 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{arg[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
-// LOWERING-NEXT:     let mut op: Option<unsafe extern "C-unwind" fn(i32) -> i32> = None;
-// LOWERING-NEXT:     let mut total: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(i32) -> i32> = None;
-// LOWERING-NEXT:     op = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(i32) -> i32> = op;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 4;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = maybe_apply({{_v[0-9]+}}, {{_v[0-9]+}});
-// LOWERING-NEXT:     total = {{_v[0-9]+}};
-// LOWERING-NEXT:     op = unsafe {
-// LOWERING-NEXT:         std::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(i32) -> i32>>(
-// LOWERING-NEXT:             bump as *const (),
-// LOWERING-NEXT:         )
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(i32) -> i32> = op;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(i32) -> i32> = None;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-NEXT:         if {{_v[0-9]+}} {
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = total;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(i32) -> i32> = op;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = 5;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = maybe_apply({{_v[0-9]+}}, {{_v[0-9]+}});
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:             total = {{_v[0-9]+}};
-// LOWERING-NEXT:         }
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(i32) -> i32> = op;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(i32) -> i32> = None;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
-// LOWERING-NEXT:         if {{_v[0-9]+}} {
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = 2;
-// LOWERING-NEXT:             __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:             std::process::exit({{_v[0-9]+}} as i32);
-// LOWERING-NEXT:         }
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = total;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 10;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
-// LOWERING-NEXT: }
+// LOWERING-DAG: fn maybe_apply({{arg[0-9]+}}: Option<unsafe extern "C-unwind" fn(i32) -> i32>, {{arg[0-9]+}}: i32) -> i32 {
+// LOWERING-DAG:     let mut op: Option<unsafe extern "C-unwind" fn(i32) -> i32> = None;
+// LOWERING-DAG:     let mut value: i32 = 0;
+// LOWERING-DAG:     let mut __retval: i32 = 0;
+// LOWERING-DAG:     op = {{arg[0-9]+}};
+// LOWERING-DAG:     value = {{arg[0-9]+}};
+// LOWERING-DAG:     {
+// LOWERING-DAG:         let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(i32) -> i32> = op;
+// LOWERING-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}}.is_some();
+// LOWERING-DAG:         if {{_v[0-9]+}} {
+// LOWERING-DAG:             let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(i32) -> i32> = op;
+// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = value;
+// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = unsafe { {{_v[0-9]+}}.unwrap()({{_v[0-9]+}}) };
+// LOWERING-DAG:             __retval = {{_v[0-9]+}};
+// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = __retval;
+// LOWERING-DAG:             return {{_v[0-9]+}};
+// LOWERING-DAG:         }
+// LOWERING-DAG:     }
+// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = value;
+// LOWERING-DAG:     __retval = {{_v[0-9]+}};
+// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = __retval;
+// LOWERING-DAG:     return {{_v[0-9]+}};
+// LOWERING-DAG: }
+// LOWERING-DAG: fn main() {
+// LOWERING-DAG:     let mut __retval: i32 = 0;
+// LOWERING-DAG:     let mut op: Option<unsafe extern "C-unwind" fn(i32) -> i32> = None;
+// LOWERING-DAG:     let mut total: i32 = 0;
+// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:     __retval = {{_v[0-9]+}};
+// LOWERING-DAG:     let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(i32) -> i32> = None;
+// LOWERING-DAG:     op = {{_v[0-9]+}};
+// LOWERING-DAG:     let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(i32) -> i32> = op;
+// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 4;
+// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = maybe_apply({{_v[0-9]+}}, {{_v[0-9]+}});
+// LOWERING-DAG:     total = {{_v[0-9]+}};
+// LOWERING-DAG:     op = unsafe {
+// LOWERING-DAG:         std::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(i32) -> i32>>(
+// LOWERING-DAG:             bump as *const (),
+// LOWERING-DAG:         )
+// LOWERING-DAG:     };
+// LOWERING-DAG:     {
+// LOWERING-DAG:         let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(i32) -> i32> = op;
+// LOWERING-DAG:         let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(i32) -> i32> = None;
+// LOWERING-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
+// LOWERING-DAG:         if {{_v[0-9]+}} {
+// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = total;
+// LOWERING-DAG:             let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(i32) -> i32> = op;
+// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = 5;
+// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = maybe_apply({{_v[0-9]+}}, {{_v[0-9]+}});
+// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-DAG:             total = {{_v[0-9]+}};
+// LOWERING-DAG:         }
+// LOWERING-DAG:     }
+// LOWERING-DAG:     {
+// LOWERING-DAG:         let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(i32) -> i32> = op;
+// LOWERING-DAG:         let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(i32) -> i32> = None;
+// LOWERING-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-DAG:         if {{_v[0-9]+}} {
+// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = 2;
+// LOWERING-DAG:             __retval = {{_v[0-9]+}};
+// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = __retval;
+// LOWERING-DAG:             std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-DAG:         }
+// LOWERING-DAG:     }
+// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = total;
+// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 10;
+// LOWERING-DAG:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 1;
+// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// LOWERING-DAG:     __retval = {{_v[0-9]+}};
+// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = __retval;
+// LOWERING-DAG:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-DAG: }
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites

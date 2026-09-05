@@ -40,11 +40,12 @@ int main(void) {
 // COMMON-DAG: bitint::BInt::<65, 2, 16>::from_i128(777 as i128)
 
 // SLATE-FILECHECK-BEGIN lowering
-// LOWERING-DAG: item = BitIntOrArray {
+// LOWERING-DAG: let {{_v[0-9]+}}: BitIntOrArray = BitIntOrArray {
 // LOWERING-DAG:     bytes: [
 // LOWERING-DAG:         97, 98, 99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 // LOWERING-DAG:     ],
 // LOWERING-DAG: };
+// LOWERING-DAG: item = {{_v[0-9]+}};
 // LOWERING-DAG: let {{_v[0-9]+}}: *mut i8 = b"%zu %zu %d %d %lld %d %c%c%c\n\0".as_ptr() as *mut i8;
 // LOWERING-DAG: let {{_v[0-9]+}}: u64 = 24;
 // LOWERING-DAG: let {{_v[0-9]+}}: u64 = 40;

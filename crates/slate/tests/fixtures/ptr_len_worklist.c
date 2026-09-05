@@ -36,6 +36,32 @@ int main(void) {
 // LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
+// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 5;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} as u64;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 4;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} * {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc({{_v[0-9]+}} as usize) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = {{_v[0-9]+}} as *mut i32;
+// LOWERING-NEXT:     forward_fill({{_v[0-9]+}}, {{_v[0-9]+}});
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 1;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(1) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 4;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(4) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn forward_fill({{arg[0-9]+}}: *mut i32, {{arg[0-9]+}}: i32) {
+// LOWERING-NEXT:     fill_values({{arg[0-9]+}}, {{arg[0-9]+}});
+// LOWERING-NEXT:     return;
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
 // LOWERING-NEXT: fn fill_values({{arg[0-9]+}}: *mut i32, {{arg[0-9]+}}: i32) {
 // LOWERING-NEXT:     let mut values: *mut i32 = std::ptr::null_mut();
 // LOWERING-NEXT:     let mut len: i32 = 0;
@@ -69,32 +95,6 @@ int main(void) {
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     return;
 // LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn forward_fill({{arg[0-9]+}}: *mut i32, {{arg[0-9]+}}: i32) {
-// LOWERING-NEXT:     fill_values({{arg[0-9]+}}, {{arg[0-9]+}});
-// LOWERING-NEXT:     return;
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 5;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} as u64;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 4;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} * {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc({{_v[0-9]+}} as usize) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = {{_v[0-9]+}} as *mut i32;
-// LOWERING-NEXT:     forward_fill({{_v[0-9]+}}, {{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 1;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(1) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 4;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(4) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
-// LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
@@ -117,25 +117,6 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn fill_values({{arg[0-9]+}}: &mut [i32]) {
-// REWRITES-NEXT:     let mut values: *mut i32 = {{arg[0-9]+}}.as_mut_ptr() as *mut i32;
-// REWRITES-NEXT:     let mut len: i32 = {{arg[0-9]+}}.len() as i32;
-// REWRITES-NEXT:     for i in 0..len {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = i * 3;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i32 = values;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.offset((i as i64) as isize) };
-// REWRITES-NEXT:         unsafe {
-// REWRITES-NEXT:             *{{_v[0-9]+}} = {{_v[0-9]+}};
-// REWRITES-NEXT:         }
-// REWRITES-NEXT:     }
-// REWRITES-NEXT:     return;
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: fn forward_fill({{arg[0-9]+}}: &mut [i32]) {
-// REWRITES-NEXT:     fill_values({{arg[0-9]+}});
-// REWRITES-NEXT:     return;
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 5;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = ({{_v[0-9]+}} as u64) * 4;
@@ -148,5 +129,24 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(4) };
 // REWRITES-NEXT:     unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, unsafe { *{{_v[0-9]+}} }) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn forward_fill({{arg[0-9]+}}: &mut [i32]) {
+// REWRITES-NEXT:     fill_values({{arg[0-9]+}});
+// REWRITES-NEXT:     return;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn fill_values({{arg[0-9]+}}: &mut [i32]) {
+// REWRITES-NEXT:     let mut values: *mut i32 = {{arg[0-9]+}}.as_mut_ptr() as *mut i32;
+// REWRITES-NEXT:     let mut len: i32 = {{arg[0-9]+}}.len() as i32;
+// REWRITES-NEXT:     for i in 0..len {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = i * 3;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i32 = values;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.offset((i as i64) as isize) };
+// REWRITES-NEXT:         unsafe {
+// REWRITES-NEXT:             *{{_v[0-9]+}} = {{_v[0-9]+}};
+// REWRITES-NEXT:         }
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

@@ -41,6 +41,35 @@ int main(void) {
 // LOWERING-NEXT:     fn strcmp(_0: *const core::ffi::c_char, _1: *const core::ffi::c_char) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
+// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT:     let mut x: [i8; 4] = [0; 4];
+// LOWERING-NEXT:     let mut y: [i8; 4] = [0; 4];
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i8; 4] = [97, 98, 99, 0];
+// LOWERING-NEXT:     x = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i8; 4] = [97, 98, 100, 0];
+// LOWERING-NEXT:     y = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = x.as_mut_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 3;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = y.as_mut_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 3;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = cmp_texts({{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}});
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = y.as_mut_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 3;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = x.as_mut_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 3;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = cmp_texts({{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}});
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = x.as_mut_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 3;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = x.as_mut_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 3;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = cmp_texts({{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}});
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
 // LOWERING-NEXT: fn cmp_texts({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: i32, {{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: i32) -> i32 {
 // LOWERING-NEXT:     let mut a: *mut i8 = std::ptr::null_mut();
 // LOWERING-NEXT:     let mut alen: i32 = 0;
@@ -143,33 +172,6 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut x: [i8; 4] = [0; 4];
-// LOWERING-NEXT:     let mut y: [i8; 4] = [0; 4];
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     x = [97, 98, 99, 0];
-// LOWERING-NEXT:     y = [97, 98, 100, 0];
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = x.as_mut_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 3;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = y.as_mut_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 3;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = cmp_texts({{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = y.as_mut_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 3;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = x.as_mut_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 3;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = cmp_texts({{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = x.as_mut_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 3;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = x.as_mut_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 3;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = cmp_texts({{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
-// LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
@@ -192,32 +194,11 @@ int main(void) {
 // REWRITES-NEXT:     fn strcmp(_0: *const core::ffi::c_char, _1: *const core::ffi::c_char) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn cmp_texts({{arg[0-9]+}}: &str, {{arg[0-9]+}}: &str) -> i32 {
-// REWRITES-NEXT:     let mut a: *mut i8 = {{arg[0-9]+}}.as_ptr() as *mut i8;
-// REWRITES-NEXT:     let mut alen: i32 = {{arg[0-9]+}}.len() as i32;
-// REWRITES-NEXT:     let mut b: *mut i8 = {{arg[0-9]+}}.as_ptr() as *mut i8;
-// REWRITES-NEXT:     let mut blen: i32 = {{arg[0-9]+}}.len() as i32;
-// REWRITES-NEXT:     let mut sa: i32 = 0;
-// REWRITES-NEXT:     let mut sb: i32 = 0;
-// REWRITES-NEXT:     for i in 0..alen {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i8 = a;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.offset((i as i64) as isize) };
-// REWRITES-NEXT:         sa += (unsafe { *{{_v[0-9]+}} }) as i32;
-// REWRITES-NEXT:     }
-// REWRITES-NEXT:     for i2 in 0..blen {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i8 = b;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.offset((i2 as i64) as isize) };
-// REWRITES-NEXT:         sb += (unsafe { *{{_v[0-9]+}} }) as i32;
-// REWRITES-NEXT:     }
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { {{arg[0-9]+}}.cmp({{arg[0-9]+}}) as i32 };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = (({{_v[0-9]+}} > 0) as i32) - (({{_v[0-9]+}} < 0) as i32);
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { {{arg[0-9]+}}.cmp({{arg[0-9]+}}) as i32 };
-// REWRITES-NEXT:     {{_v[0-9]+}} * 1000 + (({{_v[0-9]+}} == 0) as i32) * 100 + (sa - sb)
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     let mut x: [i8; 4] = [97, 98, 99, 0];
-// REWRITES-NEXT:     let mut y: [i8; 4] = [97, 98, 100, 0];
+// REWRITES-NEXT:     let mut x: [i8; 4] = [0; 4];
+// REWRITES-NEXT:     let mut y: [i8; 4] = [0; 4];
+// REWRITES-NEXT:     x = [97, 98, 99, 0];
+// REWRITES-NEXT:     y = [97, 98, 100, 0];
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"%d %d %d\n".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = x.as_mut_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = y.as_mut_ptr() as *mut i8;
@@ -275,5 +256,28 @@ int main(void) {
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn cmp_texts({{arg[0-9]+}}: &str, {{arg[0-9]+}}: &str) -> i32 {
+// REWRITES-NEXT:     let mut a: *mut i8 = {{arg[0-9]+}}.as_ptr() as *mut i8;
+// REWRITES-NEXT:     let mut alen: i32 = {{arg[0-9]+}}.len() as i32;
+// REWRITES-NEXT:     let mut b: *mut i8 = {{arg[0-9]+}}.as_ptr() as *mut i8;
+// REWRITES-NEXT:     let mut blen: i32 = {{arg[0-9]+}}.len() as i32;
+// REWRITES-NEXT:     let mut sa: i32 = 0;
+// REWRITES-NEXT:     let mut sb: i32 = 0;
+// REWRITES-NEXT:     for i in 0..alen {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i8 = a;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.offset((i as i64) as isize) };
+// REWRITES-NEXT:         sa += (unsafe { *{{_v[0-9]+}} }) as i32;
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     for i2 in 0..blen {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i8 = b;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.offset((i2 as i64) as isize) };
+// REWRITES-NEXT:         sb += (unsafe { *{{_v[0-9]+}} }) as i32;
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { {{arg[0-9]+}}.cmp({{arg[0-9]+}}) as i32 };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = (({{_v[0-9]+}} > 0) as i32) - (({{_v[0-9]+}} < 0) as i32);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { {{arg[0-9]+}}.cmp({{arg[0-9]+}}) as i32 };
+// REWRITES-NEXT:     {{_v[0-9]+}} * 1000 + (({{_v[0-9]+}} == 0) as i32) * 100 + (sa - sb)
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

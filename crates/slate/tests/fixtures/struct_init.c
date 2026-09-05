@@ -53,9 +53,12 @@ int main(void) {
 // LOWERING-NEXT:     let mut designated: Triple = Triple { x: 0, y: 0, z: 0 };
 // LOWERING-NEXT:     let mut copy: Triple = Triple { x: 0, y: 0, z: 0 };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     full = Triple { x: 1, y: 2, z: 3 };
-// LOWERING-NEXT:     partial = Triple { x: 4, y: 5, z: 0 };
-// LOWERING-NEXT:     designated = Triple { x: 7, y: 0, z: 9 };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: Triple = Triple { x: 1, y: 2, z: 3 };
+// LOWERING-NEXT:     full = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: Triple = Triple { x: 4, y: 5, z: 0 };
+// LOWERING-NEXT:     partial = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: Triple = Triple { x: 7, y: 0, z: 9 };
+// LOWERING-NEXT:     designated = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = full.x;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = full.y;
@@ -111,10 +114,13 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     let mut full: Triple = Triple { x: 1, y: 2, z: 3 };
-// REWRITES-NEXT:     let mut partial: Triple = Triple { x: 4, y: 5, z: 0 };
-// REWRITES-NEXT:     let mut designated: Triple = Triple { x: 7, y: 0, z: 9 };
-// REWRITES-NEXT:     let mut copy: Triple = full;
+// REWRITES-NEXT:     let mut full: Triple = Triple { x: 0, y: 0, z: 0 };
+// REWRITES-NEXT:     let mut partial: Triple = Triple { x: 0, y: 0, z: 0 };
+// REWRITES-NEXT:     let mut designated: Triple = Triple { x: 0, y: 0, z: 0 };
+// REWRITES-NEXT:     let mut copy: Triple = Triple { x: 0, y: 0, z: 0 };
+// REWRITES-NEXT:     full = Triple { x: 1, y: 2, z: 3 };
+// REWRITES-NEXT:     partial = Triple { x: 4, y: 5, z: 0 };
+// REWRITES-NEXT:     designated = Triple { x: 7, y: 0, z: 9 };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = full.x;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = full.y;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = full.z;
@@ -127,6 +133,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = designated.y;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = designated.z;
 // REWRITES-NEXT:     unsafe { printf(c"%d %d %d\n".as_ptr(), {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-NEXT:     copy = full;
 // REWRITES-NEXT:     copy.x = 42;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = full.x;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = copy.x;

@@ -3,6 +3,7 @@
 
 static int get_count(void) { return 4; }
 
+// @lowering-fn-begin
 // @rewrite-fn-begin
 int main(void) {
   unsigned char forward_buf[8] = {1, 2, 3, 4, 5, 6, 7, 8};
@@ -25,175 +26,153 @@ int main(void) {
   return 0;
 }
 // @rewrite-fn-end
+// @lowering-fn-end
 
 // SLATE-FILECHECK-BEGIN lowering
-// LOWERING: #![feature(c_variadic)]
-// LOWERING-NEXT: #![allow(
-// LOWERING-NEXT:     dead_code,
-// LOWERING-NEXT:     unused,
-// LOWERING-NEXT:     non_camel_case_types,
-// LOWERING-NEXT:     non_snake_case,
-// LOWERING-NEXT:     non_upper_case_globals,
-// LOWERING-NEXT:     arithmetic_overflow,
-// LOWERING-NEXT:     unconditional_panic,
-// LOWERING-NEXT:     suspicious_runtime_symbol_definitions,
-// LOWERING-NEXT:     unpredictable_function_pointer_comparisons,
-// LOWERING-NEXT:     unused_comparisons
-// LOWERING-NEXT: )]
-// LOWERING-EMPTY:
-// LOWERING-NEXT: unsafe extern "C" {
-// LOWERING-NEXT:     fn memmove(
-// LOWERING-NEXT:         _0: *mut core::ffi::c_void,
-// LOWERING-NEXT:         _1: *const core::ffi::c_void,
-// LOWERING-NEXT:         _2: usize,
-// LOWERING-NEXT:     ) -> *mut core::ffi::c_void;
-// LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn get_count() -> i32 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 4;
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut forward_buf: [u8; 8] = [0; 8];
-// LOWERING-NEXT:     let mut backward_buf: [u8; 8] = [0; 8];
-// LOWERING-NEXT:     let mut dyn_buf: [u8; 8] = [0; 8];
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     forward_buf = [1, 2, 3, 4, 5, 6, 7, 8];
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u8 = forward_buf.as_mut_ptr() as *mut u8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u8 = unsafe { {{_v[0-9]+}}.add(1) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u8 = forward_buf.as_mut_ptr() as *mut u8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 5;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe {
-// LOWERING-NEXT:         memmove(
-// LOWERING-NEXT:             {{_v[0-9]+}} as *mut core::ffi::c_void,
-// LOWERING-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_void,
-// LOWERING-NEXT:             {{_v[0-9]+}} as usize,
-// LOWERING-NEXT:         )
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     backward_buf = [1, 2, 3, 4, 5, 6, 7, 8];
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u8 = backward_buf.as_mut_ptr() as *mut u8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u8 = backward_buf.as_mut_ptr() as *mut u8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u8 = unsafe { {{_v[0-9]+}}.add(1) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 5;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe {
-// LOWERING-NEXT:         memmove(
-// LOWERING-NEXT:             {{_v[0-9]+}} as *mut core::ffi::c_void,
-// LOWERING-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_void,
-// LOWERING-NEXT:             {{_v[0-9]+}} as usize,
-// LOWERING-NEXT:         )
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     dyn_buf = [1, 2, 3, 4, 5, 6, 7, 8];
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = get_count();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u8 = dyn_buf.as_mut_ptr() as *mut u8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u8 = dyn_buf.as_mut_ptr() as *mut u8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u8 = unsafe { {{_v[0-9]+}}.add(1) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} as u64;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe {
-// LOWERING-NEXT:         memmove(
-// LOWERING-NEXT:             {{_v[0-9]+}} as *mut core::ffi::c_void,
-// LOWERING-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_void,
-// LOWERING-NEXT:             {{_v[0-9]+}} as usize,
-// LOWERING-NEXT:         )
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     {
-// LOWERING-NEXT:         let mut i: i32 = 0;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:         i = {{_v[0-9]+}};
-// LOWERING-NEXT:         loop {
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = i;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = 8;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < {{_v[0-9]+}};
-// LOWERING-NEXT:             if !{{_v[0-9]+}} {
-// LOWERING-NEXT:                 break;
-// LOWERING-NEXT:             }
-// LOWERING-NEXT:             let {{_v[0-9]+}}: *mut i8 = b"%d \0".as_ptr() as *mut i8;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = i;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} as i64;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: u8 = forward_buf[({{_v[0-9]+}} as usize)];
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = i;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
-// LOWERING-NEXT:             i = {{_v[0-9]+}};
-// LOWERING-NEXT:         }
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     {
-// LOWERING-NEXT:         let mut i2: i32 = 0;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:         i2 = {{_v[0-9]+}};
-// LOWERING-NEXT:         loop {
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = i2;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = 8;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < {{_v[0-9]+}};
-// LOWERING-NEXT:             if !{{_v[0-9]+}} {
-// LOWERING-NEXT:                 break;
-// LOWERING-NEXT:             }
-// LOWERING-NEXT:             let {{_v[0-9]+}}: *mut i8 = b"%d \0".as_ptr() as *mut i8;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = i2;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} as i64;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: u8 = backward_buf[({{_v[0-9]+}} as usize)];
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = i2;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
-// LOWERING-NEXT:             i2 = {{_v[0-9]+}};
-// LOWERING-NEXT:         }
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     {
-// LOWERING-NEXT:         let mut i3: i32 = 0;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:         i3 = {{_v[0-9]+}};
-// LOWERING-NEXT:         loop {
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = i3;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = 8;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < {{_v[0-9]+}};
-// LOWERING-NEXT:             if !{{_v[0-9]+}} {
-// LOWERING-NEXT:                 break;
-// LOWERING-NEXT:             }
-// LOWERING-NEXT:             let {{_v[0-9]+}}: *mut i8 = b"%d \0".as_ptr() as *mut i8;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = i3;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} as i64;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: u8 = dyn_buf[({{_v[0-9]+}} as usize)];
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = i3;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
-// LOWERING-NEXT:             i3 = {{_v[0-9]+}};
-// LOWERING-NEXT:         }
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
-// LOWERING-NEXT: }
+// LOWERING-DAG: fn main() {
+// LOWERING-DAG:     let mut forward_buf: [u8; 8] = [0; 8];
+// LOWERING-DAG:     let mut backward_buf: [u8; 8] = [0; 8];
+// LOWERING-DAG:     let mut dyn_buf: [u8; 8] = [0; 8];
+// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:     let {{_v[0-9]+}}: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
+// LOWERING-DAG:     forward_buf = {{_v[0-9]+}};
+// LOWERING-DAG:     let {{_v[0-9]+}}: *mut u8 = forward_buf.as_mut_ptr() as *mut u8;
+// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 1;
+// LOWERING-DAG:     let {{_v[0-9]+}}: *mut u8 = unsafe { {{_v[0-9]+}}.add(1) };
+// LOWERING-DAG:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
+// LOWERING-DAG:     let {{_v[0-9]+}}: *mut u8 = forward_buf.as_mut_ptr() as *mut u8;
+// LOWERING-DAG:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
+// LOWERING-DAG:     let {{_v[0-9]+}}: u64 = 5;
+// LOWERING-DAG:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe {
+// LOWERING-DAG:         memmove(
+// LOWERING-DAG:             {{_v[0-9]+}} as *mut core::ffi::c_void,
+// LOWERING-DAG:             {{_v[0-9]+}} as *const core::ffi::c_void,
+// LOWERING-DAG:             {{_v[0-9]+}} as usize,
+// LOWERING-DAG:         )
+// LOWERING-DAG:     };
+// LOWERING-DAG:     let {{_v[0-9]+}}: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
+// LOWERING-DAG:     backward_buf = {{_v[0-9]+}};
+// LOWERING-DAG:     let {{_v[0-9]+}}: *mut u8 = backward_buf.as_mut_ptr() as *mut u8;
+// LOWERING-DAG:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
+// LOWERING-DAG:     let {{_v[0-9]+}}: *mut u8 = backward_buf.as_mut_ptr() as *mut u8;
+// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 1;
+// LOWERING-DAG:     let {{_v[0-9]+}}: *mut u8 = unsafe { {{_v[0-9]+}}.add(1) };
+// LOWERING-DAG:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
+// LOWERING-DAG:     let {{_v[0-9]+}}: u64 = 5;
+// LOWERING-DAG:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe {
+// LOWERING-DAG:         memmove(
+// LOWERING-DAG:             {{_v[0-9]+}} as *mut core::ffi::c_void,
+// LOWERING-DAG:             {{_v[0-9]+}} as *const core::ffi::c_void,
+// LOWERING-DAG:             {{_v[0-9]+}} as usize,
+// LOWERING-DAG:         )
+// LOWERING-DAG:     };
+// LOWERING-DAG:     let {{_v[0-9]+}}: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
+// LOWERING-DAG:     dyn_buf = {{_v[0-9]+}};
+// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = get_count();
+// LOWERING-DAG:     let {{_v[0-9]+}}: *mut u8 = dyn_buf.as_mut_ptr() as *mut u8;
+// LOWERING-DAG:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
+// LOWERING-DAG:     let {{_v[0-9]+}}: *mut u8 = dyn_buf.as_mut_ptr() as *mut u8;
+// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 1;
+// LOWERING-DAG:     let {{_v[0-9]+}}: *mut u8 = unsafe { {{_v[0-9]+}}.add(1) };
+// LOWERING-DAG:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
+// LOWERING-DAG:     let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} as u64;
+// LOWERING-DAG:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe {
+// LOWERING-DAG:         memmove(
+// LOWERING-DAG:             {{_v[0-9]+}} as *mut core::ffi::c_void,
+// LOWERING-DAG:             {{_v[0-9]+}} as *const core::ffi::c_void,
+// LOWERING-DAG:             {{_v[0-9]+}} as usize,
+// LOWERING-DAG:         )
+// LOWERING-DAG:     };
+// LOWERING-DAG:     {
+// LOWERING-DAG:         let mut i: i32 = 0;
+// LOWERING-DAG:         let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:         i = {{_v[0-9]+}};
+// LOWERING-DAG:         loop {
+// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = i;
+// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = 8;
+// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < {{_v[0-9]+}};
+// LOWERING-DAG:             if !{{_v[0-9]+}} {
+// LOWERING-DAG:                 break;
+// LOWERING-DAG:             }
+// LOWERING-DAG:             let {{_v[0-9]+}}: *mut i8 = b"%d \0".as_ptr() as *mut i8;
+// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = i;
+// LOWERING-DAG:             let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} as i64;
+// LOWERING-DAG:             let {{_v[0-9]+}}: u8 = forward_buf[({{_v[0-9]+}} as usize)];
+// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
+// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
+// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = i;
+// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-DAG:             i = {{_v[0-9]+}};
+// LOWERING-DAG:         }
+// LOWERING-DAG:     }
+// LOWERING-DAG:     {
+// LOWERING-DAG:         let mut i2: i32 = 0;
+// LOWERING-DAG:         let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:         i2 = {{_v[0-9]+}};
+// LOWERING-DAG:         loop {
+// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = i2;
+// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = 8;
+// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < {{_v[0-9]+}};
+// LOWERING-DAG:             if !{{_v[0-9]+}} {
+// LOWERING-DAG:                 break;
+// LOWERING-DAG:             }
+// LOWERING-DAG:             let {{_v[0-9]+}}: *mut i8 = b"%d \0".as_ptr() as *mut i8;
+// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = i2;
+// LOWERING-DAG:             let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} as i64;
+// LOWERING-DAG:             let {{_v[0-9]+}}: u8 = backward_buf[({{_v[0-9]+}} as usize)];
+// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
+// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
+// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = i2;
+// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-DAG:             i2 = {{_v[0-9]+}};
+// LOWERING-DAG:         }
+// LOWERING-DAG:     }
+// LOWERING-DAG:     {
+// LOWERING-DAG:         let mut i3: i32 = 0;
+// LOWERING-DAG:         let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:         i3 = {{_v[0-9]+}};
+// LOWERING-DAG:         loop {
+// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = i3;
+// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = 8;
+// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < {{_v[0-9]+}};
+// LOWERING-DAG:             if !{{_v[0-9]+}} {
+// LOWERING-DAG:                 break;
+// LOWERING-DAG:             }
+// LOWERING-DAG:             let {{_v[0-9]+}}: *mut i8 = b"%d \0".as_ptr() as *mut i8;
+// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = i3;
+// LOWERING-DAG:             let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} as i64;
+// LOWERING-DAG:             let {{_v[0-9]+}}: u8 = dyn_buf[({{_v[0-9]+}} as usize)];
+// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
+// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
+// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = i3;
+// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-DAG:             i3 = {{_v[0-9]+}};
+// LOWERING-DAG:         }
+// LOWERING-DAG:     }
+// LOWERING-DAG:     let {{_v[0-9]+}}: *mut i8 = b"\n\0".as_ptr() as *mut i8;
+// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char) };
+// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-DAG: }
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: fn main() {
 // REWRITES-DAG:     let mut forward_buf: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
-// REWRITES-DAG:     let mut backward_buf: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
-// REWRITES-DAG:     let mut dyn_buf: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
+// REWRITES-DAG:     let mut backward_buf: [u8; 8] = [0; 8];
+// REWRITES-DAG:     let mut dyn_buf: [u8; 8] = [0; 8];
 // REWRITES-DAG:     let {{_v[0-9]+}}: *mut u8 = forward_buf.as_mut_ptr() as *mut u8;
 // REWRITES-DAG:     let {{_v[0-9]+}}: *mut u8 = unsafe { {{_v[0-9]+}}.add(1) };
 // REWRITES-DAG:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
 // REWRITES-DAG:     let {{_v[0-9]+}}: *mut u8 = forward_buf.as_mut_ptr() as *mut u8;
 // REWRITES-DAG:     unsafe { std::ptr::copy({{_v[0-9]+}} as *const u8, {{_v[0-9]+}} as *mut u8, (5 as u64) as usize) };
+// REWRITES-DAG:     backward_buf = [1, 2, 3, 4, 5, 6, 7, 8];
 // REWRITES-DAG:     let {{_v[0-9]+}}: *mut u8 = backward_buf.as_mut_ptr() as *mut u8;
 // REWRITES-DAG:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
 // REWRITES-DAG:     let {{_v[0-9]+}}: *mut u8 = backward_buf.as_mut_ptr() as *mut u8;
 // REWRITES-DAG:     let {{_v[0-9]+}}: *mut u8 = unsafe { {{_v[0-9]+}}.add(1) };
 // REWRITES-DAG:     unsafe { std::ptr::copy({{_v[0-9]+}} as *const u8, {{_v[0-9]+}} as *mut u8, (5 as u64) as usize) };
+// REWRITES-DAG:     dyn_buf = [1, 2, 3, 4, 5, 6, 7, 8];
 // REWRITES-DAG:     let {{_v[0-9]+}}: i32 = get_count();
 // REWRITES-DAG:     let {{_v[0-9]+}}: *mut u8 = dyn_buf.as_mut_ptr() as *mut u8;
 // REWRITES-DAG:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;

@@ -1,6 +1,57 @@
 use super::*;
 
 impl<'a, 'b> FunctionLowerer<'a, 'b> {
+    pub(super) fn lower_complex_cast(&mut self, op: &inst::Cast, src_ty: &CirType) {
+        let src = self.operand_expr(&op.src);
+        let (real, imag, component_ty) = match src_ty {
+            CirType::Complex { element_type } => (
+                Expr::Field {
+                    base: Box::new(src.clone()),
+                    field: "re".into(),
+                },
+                Expr::Field {
+                    base: Box::new(src),
+                    field: "im".into(),
+                },
+                element_type.as_ref(),
+            ),
+            _ => (src, zero_for_cir_type(src_ty), src_ty),
+        };
+        let target_component = match &op.result_ty {
+            CirType::Complex { element_type } => element_type.as_ref(),
+            ty => ty,
+        };
+        let mut cast_part = |part: &str, value: Expr| {
+            let src = format!("{}.{}.src", op.result, part);
+            let result = format!("{}.{}", op.result, part);
+            self.values.insert(src.clone(), Val::Expr(value));
+            self.value_types.insert(src.clone(), component_ty.clone());
+            self.lower_cast(&inst::Cast {
+                src,
+                result: result.clone(),
+                result_ty: target_component.clone(),
+                ..op.clone()
+            });
+            self.operand_expr(&result)
+        };
+        let real = cast_part("re", real);
+        let value = if matches!(op.result_ty, CirType::Complex { .. }) {
+            Expr::StructLit {
+                name: COMPLEX_TY.into(),
+                fields: vec![("re".into(), real), ("im".into(), cast_part("im", imag))],
+            }
+        } else if matches!(op.result_ty, CirType::Bool) {
+            Expr::Binary {
+                op: BinOp::Or,
+                lhs: Box::new(real),
+                rhs: Box::new(cast_part("im", imag)),
+            }
+        } else {
+            real
+        };
+        self.materialize_expr(&op.result, value, Some(&op.result_ty));
+    }
+
     pub(super) fn lower_complex_create(
         &mut self,
         result: &str,
@@ -99,6 +150,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 bitfield_name: None,
                 bitfield_unaligned: false,
                 field_is_trailing: false,
+                unaligned: false,
             },
         );
     }
@@ -112,6 +164,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     ) {
         if let Some(call) = self.complex_runtime_binop(result_ty, lhs, rhs, "__mulsc3", "__muldc3")
         {
+            self.materialize_expr(result, call, Some(result_ty));
+            return;
+        }
+        if let Some(call) = self.complex_cf80_binop(result_ty, lhs, rhs, "__slate_cf80_mul") {
             self.materialize_expr(result, call, Some(result_ty));
             return;
         }
@@ -177,6 +233,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     ) {
         if let Some(call) = self.complex_runtime_binop(result_ty, lhs, rhs, "__divsc3", "__divdc3")
         {
+            self.materialize_expr(result, call, Some(result_ty));
+            return;
+        }
+        if let Some(call) = self.complex_cf80_binop(result_ty, lhs, rhs, "__slate_cf80_div") {
             self.materialize_expr(result, call, Some(result_ty));
             return;
         }
@@ -325,6 +385,49 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 part(lhs, "im"),
                 part(rhs.clone(), "re"),
                 part(rhs, "im"),
+            ],
+        }))
+    }
+
+    pub(super) fn complex_cf80_binop(
+        &mut self,
+        result_ty: &CirType,
+        lhs: &str,
+        rhs: &str,
+        shim_name: &str,
+    ) -> Option<Expr> {
+        let inner = match result_ty {
+            CirType::Complex { element_type } => element_type.as_ref(),
+            _ => return None,
+        };
+        if !is_wrapped_long_double(inner) {
+            return None;
+        }
+        let lhs = self.operand_expr(lhs);
+        let rhs = self.operand_expr(rhs);
+        let part = |base: Expr, field: &str| Expr::Field {
+            base: Box::new(base),
+            field: field.into(),
+        };
+        self.parent.uses_complex.set(true);
+        Some(Self::unsafe_expr(Expr::Call {
+            binding: crate::function_identity::CallBinding::Generated,
+            func: Box::new(Expr::Var(shim_name.into())),
+            args: vec![
+                Expr::StructLit {
+                    name: COMPLEX_TY.into(),
+                    fields: vec![
+                        ("re".into(), part(lhs.clone(), "re")),
+                        ("im".into(), part(lhs, "im")),
+                    ],
+                },
+                Expr::StructLit {
+                    name: COMPLEX_TY.into(),
+                    fields: vec![
+                        ("re".into(), part(rhs.clone(), "re")),
+                        ("im".into(), part(rhs, "im")),
+                    ],
+                },
             ],
         }))
     }

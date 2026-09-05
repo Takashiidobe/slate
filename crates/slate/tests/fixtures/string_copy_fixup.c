@@ -55,10 +55,14 @@ int main(void) {
 // LOWERING-NEXT:     let mut trunc_copy: aligned::Aligned<aligned::A16, [i8; 16]> = aligned::Aligned([0; 16]);
 // LOWERING-NEXT:     let mut trunc_append: aligned::Aligned<aligned::A16, [i8; 16]> = aligned::Aligned([0; 16]);
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     *copy = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-// LOWERING-NEXT:     *append = [102, 111, 111, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-// LOWERING-NEXT:     *trunc_copy = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-// LOWERING-NEXT:     *trunc_append = [112, 114, 101, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i8; 16] = [0; 16];
+// LOWERING-NEXT:     *copy = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i8; 16] = [102, 111, 111, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+// LOWERING-NEXT:     *append = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i8; 16] = [0; 16];
+// LOWERING-NEXT:     *trunc_copy = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i8; 16] = [112, 114, 101, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+// LOWERING-NEXT:     *trunc_append = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = copy.as_mut_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"abc\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = (unsafe {
@@ -154,9 +158,9 @@ int main(void) {
 // REWRITES-NEXT:     let mut append: aligned::Aligned<aligned::A16, [i8; 16]> = aligned::Aligned([0; 16]);
 // REWRITES-NEXT:     let mut trunc_copy: aligned::Aligned<aligned::A16, [i8; 16]> = aligned::Aligned([0; 16]);
 // REWRITES-NEXT:     let mut trunc_append: aligned::Aligned<aligned::A16, [i8; 16]> = aligned::Aligned([0; 16]);
-// REWRITES-NEXT:     *copy = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+// REWRITES-NEXT:     *copy = [0; 16];
 // REWRITES-NEXT:     *append = [102, 111, 111, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-// REWRITES-NEXT:     *trunc_copy = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+// REWRITES-NEXT:     *trunc_copy = [0; 16];
 // REWRITES-NEXT:     *trunc_append = [112, 114, 101, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 // REWRITES-NEXT:     (unsafe { strcpy(copy.as_mut_ptr() as *mut core::ffi::c_char, c"abc".as_ptr()) }) as *mut i8;
 // REWRITES-NEXT:     (unsafe {

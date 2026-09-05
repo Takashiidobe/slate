@@ -28,7 +28,8 @@ int main(void) {
 // LOWERING-DAG:     let {{_v[0-9]+}}: u64 = 4;
 // LOWERING-DAG:     let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} * {{_v[0-9]+}};
 // LOWERING-DAG:     let {{_v[0-9]+}}: u64 = 8;
-// LOWERING-DAG:     values = [7, 8, 9];
+// LOWERING-DAG:     let {{_v[0-9]+}}: [i32; 3] = [7, 8, 9];
+// LOWERING-DAG:     values = {{_v[0-9]+}};
 // LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 3;
 // LOWERING-DAG:     let {{_v[0-9]+}}: *mut i32 = values.as_mut_ptr() as *mut i32;
 // LOWERING-DAG:     let {{_v[0-9]+}}: i32 = parameter_bound({{_v[0-9]+}}, {{_v[0-9]+}});
@@ -41,10 +42,11 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: fn main() {
-// REWRITES-DAG:     let mut values: [i32; 3] = [7, 8, 9];
+// REWRITES-DAG:     let mut values: [i32; 3] = [0; 3];
 // REWRITES-DAG:     let {{_v[0-9]+}}: i32 = 3;
 // REWRITES-DAG:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
 // REWRITES-DAG:     let {{_v[0-9]+}}: u64 = 4 * ({{_v[0-9]+}} as u64);
+// REWRITES-DAG:     values = [7, 8, 9];
 // REWRITES-DAG:     let {{_v[0-9]+}}: *mut i32 = values.as_mut_ptr() as *mut i32;
 // REWRITES-DAG:     unsafe {
 // REWRITES-DAG:         printf(

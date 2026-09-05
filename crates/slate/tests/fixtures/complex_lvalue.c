@@ -44,17 +44,6 @@ int main(void) {
 // LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn pick({{arg[0-9]+}}: *mut f64) -> f64 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { *{{arg[0-9]+}} };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 5.0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         *{{arg[0-9]+}} = {{_v[0-9]+}};
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { *{{arg[0-9]+}} };
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let mut z: num_complex::Complex<f64> = num_complex::Complex { re: 0.0, im: 0.0 };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
@@ -85,6 +74,17 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn pick({{arg[0-9]+}}: *mut f64) -> f64 {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { *{{arg[0-9]+}} };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 5.0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-NEXT:     unsafe {
+// LOWERING-NEXT:         *{{arg[0-9]+}} = {{_v[0-9]+}};
+// LOWERING-NEXT:     }
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { *{{arg[0-9]+}} };
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
@@ -113,13 +113,6 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn pick({{arg[0-9]+}}: &mut f64) -> f64 {
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         *({{arg[0-9]+}} as *mut f64) = (unsafe { *({{arg[0-9]+}} as *mut f64) }) + 5.0;
-// REWRITES-NEXT:     }
-// REWRITES-NEXT:     unsafe { *({{arg[0-9]+}} as *mut f64) }
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut z: num_complex::Complex<f64> = num_complex::Complex { re: 0.0, im: 0.0 };
 // REWRITES-NEXT:     z = num_complex::Complex { re: 1.0, im: 2.0 };
@@ -134,5 +127,12 @@ int main(void) {
 // REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), {{_v[0-9]+}} as i32) };
 // REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), {{_v[0-9]+}} as i32) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn pick({{arg[0-9]+}}: &mut f64) -> f64 {
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         *({{arg[0-9]+}} as *mut f64) = (unsafe { *({{arg[0-9]+}} as *mut f64) }) + 5.0;
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     unsafe { *({{arg[0-9]+}} as *mut f64) }
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

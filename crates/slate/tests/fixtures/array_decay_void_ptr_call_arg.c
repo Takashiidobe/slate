@@ -30,21 +30,22 @@ int main(void) {
 // LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
+// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT:     let mut text: [i8; 6] = [0; 6];
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i8; 6] = [104, 101, 108, 108, 111, 0];
+// LOWERING-NEXT:     text = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = text.as_mut_ptr() as *mut core::ffi::c_void;
+// LOWERING-NEXT:     set_data({{_v[0-9]+}} as *mut core::ffi::c_void);
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
 // LOWERING-NEXT: fn set_data({{arg[0-9]+}}: *mut core::ffi::c_void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = {{arg[0-9]+}} as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%s\n\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     return;
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut text: [i8; 6] = [0; 6];
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     text = [104, 101, 108, 108, 111, 0];
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = text.as_mut_ptr() as *mut core::ffi::c_void;
-// LOWERING-NEXT:     set_data({{_v[0-9]+}} as *mut core::ffi::c_void);
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -67,14 +68,14 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn set_data({{arg[0-9]+}}: *mut core::ffi::c_void) {
-// REWRITES-NEXT:     unsafe { printf(c"%s\n".as_ptr(), {{arg[0-9]+}} as *mut i8) };
-// REWRITES-NEXT:     return;
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut text: [i8; 6] = [104, 101, 108, 108, 111, 0];
 // REWRITES-NEXT:     set_data(text.as_mut_ptr() as *mut core::ffi::c_void);
 // REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn set_data({{arg[0-9]+}}: *mut core::ffi::c_void) {
+// REWRITES-NEXT:     unsafe { printf(c"%s\n".as_ptr(), {{arg[0-9]+}} as *mut i8) };
+// REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

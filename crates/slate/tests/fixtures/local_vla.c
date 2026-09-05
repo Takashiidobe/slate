@@ -41,44 +41,6 @@ int main(void) {
 // LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn sum_vla({{arg[0-9]+}}: i32, {{arg[0-9]+}}: *mut i32) -> i32 {
-// LOWERING-NEXT:     let mut length: i32 = 0;
-// LOWERING-NEXT:     let mut values: *mut i32 = std::ptr::null_mut();
-// LOWERING-NEXT:     let mut total: i32 = 0;
-// LOWERING-NEXT:     length = {{arg[0-9]+}};
-// LOWERING-NEXT:     values = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     total = {{_v[0-9]+}};
-// LOWERING-NEXT:     {
-// LOWERING-NEXT:         let mut index: i32 = 0;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:         index = {{_v[0-9]+}};
-// LOWERING-NEXT:         loop {
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = index;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = length;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < {{_v[0-9]+}};
-// LOWERING-NEXT:             if !{{_v[0-9]+}} {
-// LOWERING-NEXT:                 break;
-// LOWERING-NEXT:             }
-// LOWERING-NEXT:             {
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = index;
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} as i64;
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: *mut i32 = values;
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.offset({{_v[0-9]+}} as isize) };
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = total;
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:                 total = {{_v[0-9]+}};
-// LOWERING-NEXT:             }
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = index;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
-// LOWERING-NEXT:             index = {{_v[0-9]+}};
-// LOWERING-NEXT:         }
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = total;
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let mut result: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
@@ -133,6 +95,44 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn sum_vla({{arg[0-9]+}}: i32, {{arg[0-9]+}}: *mut i32) -> i32 {
+// LOWERING-NEXT:     let mut length: i32 = 0;
+// LOWERING-NEXT:     let mut values: *mut i32 = std::ptr::null_mut();
+// LOWERING-NEXT:     let mut total: i32 = 0;
+// LOWERING-NEXT:     length = {{arg[0-9]+}};
+// LOWERING-NEXT:     values = {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     total = {{_v[0-9]+}};
+// LOWERING-NEXT:     {
+// LOWERING-NEXT:         let mut index: i32 = 0;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:         index = {{_v[0-9]+}};
+// LOWERING-NEXT:         loop {
+// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = index;
+// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = length;
+// LOWERING-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < {{_v[0-9]+}};
+// LOWERING-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-NEXT:                 break;
+// LOWERING-NEXT:             }
+// LOWERING-NEXT:             {
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = index;
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} as i64;
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: *mut i32 = values;
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.offset({{_v[0-9]+}} as isize) };
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = total;
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-NEXT:                 total = {{_v[0-9]+}};
+// LOWERING-NEXT:             }
+// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = index;
+// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-NEXT:             index = {{_v[0-9]+}};
+// LOWERING-NEXT:         }
+// LOWERING-NEXT:     }
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = total;
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
@@ -154,21 +154,6 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn sum_vla({{arg[0-9]+}}: i32, {{arg[0-9]+}}: *mut i32) -> i32 {
-// REWRITES-NEXT:     let __arg1_view = unsafe { std::slice::from_raw_parts({{arg[0-9]+}} as *const i32, {{arg[0-9]+}} as usize) };
-// REWRITES-NEXT:     let mut length: i32 = {{arg[0-9]+}};
-// REWRITES-NEXT:     let mut values: *mut i32 = {{arg[0-9]+}};
-// REWRITES-NEXT:     let mut total: i32 = 0;
-// REWRITES-NEXT:     let mut index: i32 = 0;
-// REWRITES-NEXT:     while index < length {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i32 = values;
-// REWRITES-NEXT:         unsafe { {{_v[0-9]+}}.offset((index as i64) as isize) };
-// REWRITES-NEXT:         total += unsafe { __arg1_view[(index as usize)] };
-// REWRITES-NEXT:         index += 1;
-// REWRITES-NEXT:     }
-// REWRITES-NEXT:     total
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut result: i32 = 0;
 // REWRITES-NEXT:     let mut length: i32 = 4;
@@ -184,5 +169,20 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = result + 1;
 // REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), {{_v[0-9]+}}) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn sum_vla({{arg[0-9]+}}: i32, {{arg[0-9]+}}: *mut i32) -> i32 {
+// REWRITES-NEXT:     let __arg1_view = unsafe { std::slice::from_raw_parts({{arg[0-9]+}} as *const i32, {{arg[0-9]+}} as usize) };
+// REWRITES-NEXT:     let mut length: i32 = {{arg[0-9]+}};
+// REWRITES-NEXT:     let mut values: *mut i32 = {{arg[0-9]+}};
+// REWRITES-NEXT:     let mut total: i32 = 0;
+// REWRITES-NEXT:     let mut index: i32 = 0;
+// REWRITES-NEXT:     while index < length {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i32 = values;
+// REWRITES-NEXT:         unsafe { {{_v[0-9]+}}.offset((index as i64) as isize) };
+// REWRITES-NEXT:         total += unsafe { __arg1_view[(index as usize)] };
+// REWRITES-NEXT:         index += 1;
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     total
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

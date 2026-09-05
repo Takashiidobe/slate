@@ -231,99 +231,43 @@ int main(void) {
 // LOWERING-NEXT:     }
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: #[repr(C)]
-// LOWERING-NEXT: #[derive(Clone, Copy)]
-// LOWERING-NEXT: struct {{anon_struct[0-9A-Za-z_]*}} {
-// LOWERING-NEXT:     __slate_anon_0: LongDouble,
-// LOWERING-NEXT:     __slate_anon_1: LongDouble,
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
 // LOWERING-NEXT: unsafe extern "C" {
-// LOWERING-NEXT:     fn __divxc3(
-// LOWERING-NEXT:         _0: LongDouble,
-// LOWERING-NEXT:         _1: LongDouble,
-// LOWERING-NEXT:         _2: LongDouble,
-// LOWERING-NEXT:         _3: LongDouble,
-// LOWERING-NEXT:     ) -> num_complex::Complex<LongDouble>;
-// LOWERING-NEXT:     fn __mulxc3(
-// LOWERING-NEXT:         _0: LongDouble,
-// LOWERING-NEXT:         _1: LongDouble,
-// LOWERING-NEXT:         _2: LongDouble,
-// LOWERING-NEXT:         _3: LongDouble,
-// LOWERING-NEXT:     ) -> num_complex::Complex<LongDouble>;
 // LOWERING-NEXT:     fn abort() -> !;
 // LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
-// LOWERING-NEXT:     fn cabsl(_0: *mut num_complex::Complex<LongDouble>) -> LongDouble;
-// LOWERING-NEXT:     fn cargl(_0: *mut num_complex::Complex<LongDouble>) -> LongDouble;
-// LOWERING-NEXT:     fn cprojl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
-// LOWERING-NEXT:     fn csqrtl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
-// LOWERING-NEXT:     fn cexpl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
-// LOWERING-NEXT:     fn clogl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// LOWERING-NEXT:     fn cabsl(_0: num_complex::Complex<LongDouble>) -> LongDouble;
+// LOWERING-NEXT:     fn cargl(_0: num_complex::Complex<LongDouble>) -> LongDouble;
+// LOWERING-NEXT:     fn cprojl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
+// LOWERING-NEXT:     fn csqrtl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
+// LOWERING-NEXT:     fn cexpl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
+// LOWERING-NEXT:     fn clogl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
 // LOWERING-NEXT:     fn cpowl(
-// LOWERING-NEXT:         _0: *mut num_complex::Complex<LongDouble>,
-// LOWERING-NEXT:         _1: *mut num_complex::Complex<LongDouble>,
-// LOWERING-NEXT:     ) -> {{anon_struct[0-9A-Za-z_]*}};
-// LOWERING-NEXT:     fn csinl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
-// LOWERING-NEXT:     fn ccosl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
-// LOWERING-NEXT:     fn ctanl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
-// LOWERING-NEXT:     fn casinl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
-// LOWERING-NEXT:     fn cacosl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
-// LOWERING-NEXT:     fn catanl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
-// LOWERING-NEXT:     fn csinhl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
-// LOWERING-NEXT:     fn ccoshl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
-// LOWERING-NEXT:     fn ctanhl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
-// LOWERING-NEXT:     fn casinhl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
-// LOWERING-NEXT:     fn cacoshl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
-// LOWERING-NEXT:     fn catanhl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// LOWERING-NEXT:         _0: num_complex::Complex<LongDouble>,
+// LOWERING-NEXT:         _1: num_complex::Complex<LongDouble>,
+// LOWERING-NEXT:     ) -> num_complex::Complex<LongDouble>;
+// LOWERING-NEXT:     fn csinl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
+// LOWERING-NEXT:     fn ccosl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
+// LOWERING-NEXT:     fn ctanl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
+// LOWERING-NEXT:     fn casinl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
+// LOWERING-NEXT:     fn cacosl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
+// LOWERING-NEXT:     fn catanl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
+// LOWERING-NEXT:     fn csinhl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
+// LOWERING-NEXT:     fn ccoshl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
+// LOWERING-NEXT:     fn ctanhl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
+// LOWERING-NEXT:     fn casinhl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
+// LOWERING-NEXT:     fn cacoshl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
+// LOWERING-NEXT:     fn catanhl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn print_lc({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: *mut num_complex::Complex<LongDouble>) {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { *{{arg[0-9]+}} };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%s=%Lax%Lai\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.re;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.im;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 =
-// LOWERING-NEXT:         unsafe { __slate_printf__ri32_pi8_pi8_f80_f80({{_v[0-9]+}} as *mut i8, {{arg[0-9]+}} as *mut i8, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     return;
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn mix_complex(
-// LOWERING-NEXT:     {{arg[0-9]+}}: *mut num_complex::Complex<LongDouble>,
-// LOWERING-NEXT:     {{arg[0-9]+}}: *mut num_complex::Complex<LongDouble>,
-// LOWERING-NEXT: ) -> {{anon_struct[0-9A-Za-z_]*}} {
-// LOWERING-NEXT:     let mut coerce: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-NEXT:         re: LongDouble([0; 10]),
-// LOWERING-NEXT:         im: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { *{{arg[0-9]+}} };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { *{{arg[0-9]+}} };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-NEXT:         re: {{_v[0-9]+}}.re + {{_v[0-9]+}}.re,
-// LOWERING-NEXT:         im: {{_v[0-9]+}}.im + {{_v[0-9]+}}.im,
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]);
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.re;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.im;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} / {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} / {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]);
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.re;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.im;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} * {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} * {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} };
-// LOWERING-NEXT:     coerce = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut {{anon_struct[0-9A-Za-z_]*}} = std::ptr::addr_of_mut!(coerce) as *mut {{anon_struct[0-9A-Za-z_]*}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: {{anon_struct[0-9A-Za-z_]*}} = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     check_arithmetic();
+// LOWERING-NEXT:     check_casts();
+// LOWERING-NEXT:     check_stdlib_functions();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn check_arithmetic() {
-// LOWERING-NEXT:     let mut coerce: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} {
-// LOWERING-NEXT:         __slate_anon_0: LongDouble([0; 10]),
-// LOWERING-NEXT:         __slate_anon_1: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
 // LOWERING-NEXT:     let mut a: num_complex::Complex<LongDouble> = num_complex::Complex {
 // LOWERING-NEXT:         re: LongDouble([0; 10]),
 // LOWERING-NEXT:         im: LongDouble([0; 10]),
@@ -349,12 +293,7 @@ int main(void) {
 // LOWERING-NEXT:         re: {{_v[0-9]+}}.re + {{_v[0-9]+}}.re,
 // LOWERING-NEXT:         im: {{_v[0-9]+}}.im + {{_v[0-9]+}}.im,
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     let mut byval: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-NEXT:         re: LongDouble([0; 10]),
-// LOWERING-NEXT:         im: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     byval = {{_v[0-9]+}};
-// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, std::ptr::addr_of_mut!(byval));
+// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, {{_v[0-9]+}});
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"sub\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = a;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = b;
@@ -362,62 +301,39 @@ int main(void) {
 // LOWERING-NEXT:         re: {{_v[0-9]+}}.re - {{_v[0-9]+}}.re,
 // LOWERING-NEXT:         im: {{_v[0-9]+}}.im - {{_v[0-9]+}}.im,
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     let mut byval2: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-NEXT:         re: LongDouble([0; 10]),
-// LOWERING-NEXT:         im: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     byval2 = {{_v[0-9]+}};
-// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, std::ptr::addr_of_mut!(byval2));
+// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, {{_v[0-9]+}});
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"mul\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = a;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = b;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.re;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.im;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.re;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.im;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} * {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} * {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} * {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} * {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} - {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = false;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = __slate_cf80_mul(
-// LOWERING-NEXT:             num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} },
-// LOWERING-NEXT:             num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} },
-// LOWERING-NEXT:         );
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
+// LOWERING-NEXT:         __slate_cf80_mul(
+// LOWERING-NEXT:             num_complex::Complex {
+// LOWERING-NEXT:                 re: {{_v[0-9]+}}.re,
+// LOWERING-NEXT:                 im: {{_v[0-9]+}}.im,
+// LOWERING-NEXT:             },
+// LOWERING-NEXT:             num_complex::Complex {
+// LOWERING-NEXT:                 re: {{_v[0-9]+}}.re,
+// LOWERING-NEXT:                 im: {{_v[0-9]+}}.im,
+// LOWERING-NEXT:             },
+// LOWERING-NEXT:         )
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     let mut byval3: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-NEXT:         re: LongDouble([0; 10]),
-// LOWERING-NEXT:         im: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     byval3 = {{_v[0-9]+}};
-// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, std::ptr::addr_of_mut!(byval3));
+// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, {{_v[0-9]+}});
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"div\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = a;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = b;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.re;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.im;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.re;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.im;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = __slate_cf80_div(
-// LOWERING-NEXT:         num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} },
-// LOWERING-NEXT:         num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} },
-// LOWERING-NEXT:     );
-// LOWERING-NEXT:     let mut byval4: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-NEXT:         re: LongDouble([0; 10]),
-// LOWERING-NEXT:         im: LongDouble([0; 10]),
+// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
+// LOWERING-NEXT:         __slate_cf80_div(
+// LOWERING-NEXT:             num_complex::Complex {
+// LOWERING-NEXT:                 re: {{_v[0-9]+}}.re,
+// LOWERING-NEXT:                 im: {{_v[0-9]+}}.im,
+// LOWERING-NEXT:             },
+// LOWERING-NEXT:             num_complex::Complex {
+// LOWERING-NEXT:                 re: {{_v[0-9]+}}.re,
+// LOWERING-NEXT:                 im: {{_v[0-9]+}}.im,
+// LOWERING-NEXT:             },
+// LOWERING-NEXT:         )
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     byval4 = {{_v[0-9]+}};
-// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, std::ptr::addr_of_mut!(byval4));
+// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, {{_v[0-9]+}});
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"neg\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = a;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.re;
@@ -425,12 +341,7 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = -{{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = -{{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} };
-// LOWERING-NEXT:     let mut byval5: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-NEXT:         re: LongDouble([0; 10]),
-// LOWERING-NEXT:         im: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     byval5 = {{_v[0-9]+}};
-// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, std::ptr::addr_of_mut!(byval5));
+// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, {{_v[0-9]+}});
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = a;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = b;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
@@ -438,72 +349,44 @@ int main(void) {
 // LOWERING-NEXT:         im: {{_v[0-9]+}}.im + {{_v[0-9]+}}.im,
 // LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"add_assign\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let mut byval6: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-NEXT:         re: LongDouble([0; 10]),
-// LOWERING-NEXT:         im: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     byval6 = {{_v[0-9]+}};
-// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, std::ptr::addr_of_mut!(byval6));
+// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, {{_v[0-9]+}});
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = b;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // LOWERING-NEXT:         re: {{_v[0-9]+}}.re - {{_v[0-9]+}}.re,
 // LOWERING-NEXT:         im: {{_v[0-9]+}}.im - {{_v[0-9]+}}.im,
 // LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"sub_assign\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let mut byval7: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-NEXT:         re: LongDouble([0; 10]),
-// LOWERING-NEXT:         im: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     byval7 = {{_v[0-9]+}};
-// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, std::ptr::addr_of_mut!(byval7));
+// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, {{_v[0-9]+}});
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = b;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.re;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.im;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.re;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.im;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} * {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} * {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} * {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} * {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} - {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = false;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = __slate_cf80_mul(
-// LOWERING-NEXT:             num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} },
-// LOWERING-NEXT:             num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} },
-// LOWERING-NEXT:         );
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
+// LOWERING-NEXT:         __slate_cf80_mul(
+// LOWERING-NEXT:             num_complex::Complex {
+// LOWERING-NEXT:                 re: {{_v[0-9]+}}.re,
+// LOWERING-NEXT:                 im: {{_v[0-9]+}}.im,
+// LOWERING-NEXT:             },
+// LOWERING-NEXT:             num_complex::Complex {
+// LOWERING-NEXT:                 re: {{_v[0-9]+}}.re,
+// LOWERING-NEXT:                 im: {{_v[0-9]+}}.im,
+// LOWERING-NEXT:             },
+// LOWERING-NEXT:         )
 // LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"mul_assign\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let mut byval8: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-NEXT:         re: LongDouble([0; 10]),
-// LOWERING-NEXT:         im: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     byval8 = {{_v[0-9]+}};
-// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, std::ptr::addr_of_mut!(byval8));
+// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, {{_v[0-9]+}});
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = b;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.re;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.im;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.re;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.im;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = __slate_cf80_div(
-// LOWERING-NEXT:         num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} },
-// LOWERING-NEXT:         num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} },
-// LOWERING-NEXT:     );
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"div_assign\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let mut byval9: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-NEXT:         re: LongDouble([0; 10]),
-// LOWERING-NEXT:         im: LongDouble([0; 10]),
+// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
+// LOWERING-NEXT:         __slate_cf80_div(
+// LOWERING-NEXT:             num_complex::Complex {
+// LOWERING-NEXT:                 re: {{_v[0-9]+}}.re,
+// LOWERING-NEXT:                 im: {{_v[0-9]+}}.im,
+// LOWERING-NEXT:             },
+// LOWERING-NEXT:             num_complex::Complex {
+// LOWERING-NEXT:                 re: {{_v[0-9]+}}.re,
+// LOWERING-NEXT:                 im: {{_v[0-9]+}}.im,
+// LOWERING-NEXT:             },
+// LOWERING-NEXT:         )
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     byval9 = {{_v[0-9]+}};
-// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, std::ptr::addr_of_mut!(byval9));
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"div_assign\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, {{_v[0-9]+}});
 // LOWERING-NEXT:     {
 // LOWERING-NEXT:         let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = a;
 // LOWERING-NEXT:         let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = a;
@@ -533,42 +416,15 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"mix\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = a;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = b;
-// LOWERING-NEXT:     let mut byval10: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-NEXT:         re: LongDouble([0; 10]),
-// LOWERING-NEXT:         im: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     byval10 = {{_v[0-9]+}};
-// LOWERING-NEXT:     let mut byval11: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-NEXT:         re: LongDouble([0; 10]),
-// LOWERING-NEXT:         im: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     byval11 = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: {{anon_struct[0-9A-Za-z_]*}} = mix_complex(
-// LOWERING-NEXT:         std::ptr::addr_of_mut!(byval10),
-// LOWERING-NEXT:         std::ptr::addr_of_mut!(byval11),
-// LOWERING-NEXT:     );
-// LOWERING-NEXT:     coerce = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut num_complex::Complex<LongDouble> =
-// LOWERING-NEXT:         std::ptr::addr_of_mut!(coerce) as *mut num_complex::Complex<LongDouble>;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:     let mut byval12: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-NEXT:         re: LongDouble([0; 10]),
-// LOWERING-NEXT:         im: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     byval12 = {{_v[0-9]+}};
-// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, std::ptr::addr_of_mut!(byval12));
+// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = mix_complex({{_v[0-9]+}}, {{_v[0-9]+}});
+// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, {{_v[0-9]+}});
 // LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 144, 2, 64]);
 // LOWERING-NEXT:     a.re = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 2, 64]);
 // LOWERING-NEXT:     a.im = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"real_imag_assign\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = a;
-// LOWERING-NEXT:     let mut byval13: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-NEXT:         re: LongDouble([0; 10]),
-// LOWERING-NEXT:         im: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     byval13 = {{_v[0-9]+}};
-// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, std::ptr::addr_of_mut!(byval13));
+// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, {{_v[0-9]+}});
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"real_field=%La imag_field=%La\n\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = a;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.re;
@@ -582,16 +438,13 @@ int main(void) {
 // LOWERING-NEXT:     let mut back: LongDouble = LongDouble([0; 10]);
 // LOWERING-NEXT:     let mut real_part: LongDouble = LongDouble([0; 10]);
 // LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 1, 64]);
+// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0; 10]);
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"real_to_complex\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let mut byval: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-NEXT:         re: LongDouble([0; 10]),
-// LOWERING-NEXT:         im: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     byval = {{_v[0-9]+}};
-// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, std::ptr::addr_of_mut!(byval));
+// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, {{_v[0-9]+}});
 // LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.re;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}};
 // LOWERING-NEXT:     back = {{_v[0-9]+}};
 // LOWERING-NEXT:     {
 // LOWERING-NEXT:         let {{_v[0-9]+}}: LongDouble = back;
@@ -606,6 +459,7 @@ int main(void) {
 // LOWERING-NEXT:         im: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 64]),
 // LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.re;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}};
 // LOWERING-NEXT:     real_part = {{_v[0-9]+}};
 // LOWERING-NEXT:     {
 // LOWERING-NEXT:         let {{_v[0-9]+}}: LongDouble = real_part;
@@ -615,269 +469,84 @@ int main(void) {
 // LOWERING-NEXT:             unsafe { abort() };
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.re;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.im;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = __slate_f80_to_f64({{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = __slate_f80_to_f64({{_v[0-9]+}});
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = __slate_f80_to_f64({{_v[0-9]+}}.re);
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = __slate_f80_to_f64({{_v[0-9]+}}.im);
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"to_double_complex\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.re;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.im;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f64({{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f64({{_v[0-9]+}});
+// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f64({{_v[0-9]+}}.re);
+// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f64({{_v[0-9]+}}.im);
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} };
-// LOWERING-NEXT:     let mut byval2: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-NEXT:         re: LongDouble([0; 10]),
-// LOWERING-NEXT:         im: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     byval2 = {{_v[0-9]+}};
-// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, std::ptr::addr_of_mut!(byval2));
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.re;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.im;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f32 = __slate_f80_to_f32({{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f32 = __slate_f80_to_f32({{_v[0-9]+}});
+// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, {{_v[0-9]+}});
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f32 = __slate_f80_to_f32({{_v[0-9]+}}.re);
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f32 = __slate_f80_to_f32({{_v[0-9]+}}.im);
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"to_float_complex\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f32 = {{_v[0-9]+}}.re;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f32 = {{_v[0-9]+}}.im;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f32({{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f32({{_v[0-9]+}});
+// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f32({{_v[0-9]+}}.re);
+// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f32({{_v[0-9]+}}.im);
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} };
-// LOWERING-NEXT:     let mut byval3: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-NEXT:         re: LongDouble([0; 10]),
-// LOWERING-NEXT:         im: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     byval3 = {{_v[0-9]+}};
-// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, std::ptr::addr_of_mut!(byval3));
+// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, {{_v[0-9]+}});
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 6.0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 0.0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.re;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.im;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f64({{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f64({{_v[0-9]+}});
+// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f64({{_v[0-9]+}}.re);
+// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f64({{_v[0-9]+}}.im);
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"from_double_complex\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let mut byval4: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-NEXT:         re: LongDouble([0; 10]),
-// LOWERING-NEXT:         im: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     byval4 = {{_v[0-9]+}};
-// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, std::ptr::addr_of_mut!(byval4));
+// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, {{_v[0-9]+}});
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 7;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_i32({{_v[0-9]+}});
+// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0; 10]);
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"from_int\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let mut byval5: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-NEXT:         re: LongDouble([0; 10]),
-// LOWERING-NEXT:         im: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     byval5 = {{_v[0-9]+}};
-// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, std::ptr::addr_of_mut!(byval5));
+// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, {{_v[0-9]+}});
 // LOWERING-NEXT:     return;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn check_stdlib_functions() {
-// LOWERING-NEXT:     let mut coerce: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} {
-// LOWERING-NEXT:         __slate_anon_0: LongDouble([0; 10]),
-// LOWERING-NEXT:         __slate_anon_1: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let mut coerce2: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} {
-// LOWERING-NEXT:         __slate_anon_0: LongDouble([0; 10]),
-// LOWERING-NEXT:         __slate_anon_1: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let mut coerce3: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} {
-// LOWERING-NEXT:         __slate_anon_0: LongDouble([0; 10]),
-// LOWERING-NEXT:         __slate_anon_1: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let mut coerce4: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} {
-// LOWERING-NEXT:         __slate_anon_0: LongDouble([0; 10]),
-// LOWERING-NEXT:         __slate_anon_1: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let mut coerce5: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} {
-// LOWERING-NEXT:         __slate_anon_0: LongDouble([0; 10]),
-// LOWERING-NEXT:         __slate_anon_1: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let mut coerce6: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} {
-// LOWERING-NEXT:         __slate_anon_0: LongDouble([0; 10]),
-// LOWERING-NEXT:         __slate_anon_1: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let mut coerce7: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} {
-// LOWERING-NEXT:         __slate_anon_0: LongDouble([0; 10]),
-// LOWERING-NEXT:         __slate_anon_1: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let mut coerce8: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} {
-// LOWERING-NEXT:         __slate_anon_0: LongDouble([0; 10]),
-// LOWERING-NEXT:         __slate_anon_1: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let mut coerce9: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} {
-// LOWERING-NEXT:         __slate_anon_0: LongDouble([0; 10]),
-// LOWERING-NEXT:         __slate_anon_1: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let mut coerce10: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} {
-// LOWERING-NEXT:         __slate_anon_0: LongDouble([0; 10]),
-// LOWERING-NEXT:         __slate_anon_1: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let mut coerce11: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} {
-// LOWERING-NEXT:         __slate_anon_0: LongDouble([0; 10]),
-// LOWERING-NEXT:         __slate_anon_1: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let mut coerce12: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} {
-// LOWERING-NEXT:         __slate_anon_0: LongDouble([0; 10]),
-// LOWERING-NEXT:         __slate_anon_1: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let mut coerce13: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} {
-// LOWERING-NEXT:         __slate_anon_0: LongDouble([0; 10]),
-// LOWERING-NEXT:         __slate_anon_1: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let mut coerce14: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} {
-// LOWERING-NEXT:         __slate_anon_0: LongDouble([0; 10]),
-// LOWERING-NEXT:         __slate_anon_1: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let mut coerce15: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} {
-// LOWERING-NEXT:         __slate_anon_0: LongDouble([0; 10]),
-// LOWERING-NEXT:         __slate_anon_1: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let mut coerce16: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} {
-// LOWERING-NEXT:         __slate_anon_0: LongDouble([0; 10]),
-// LOWERING-NEXT:         __slate_anon_1: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let mut coerce17: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} {
-// LOWERING-NEXT:         __slate_anon_0: LongDouble([0; 10]),
-// LOWERING-NEXT:         __slate_anon_1: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // LOWERING-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]),
 // LOWERING-NEXT:         im: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 64]),
 // LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"cabs=%La\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let mut byval: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-NEXT:         re: LongDouble([0; 10]),
-// LOWERING-NEXT:         im: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     byval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe {
-// LOWERING-NEXT:         __slate_cabsl__rf80_pcf80(
-// LOWERING-NEXT:             std::ptr::addr_of_mut!(byval) as *mut num_complex::Complex<LongDouble>
-// LOWERING-NEXT:         )
-// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble =
+// LOWERING-NEXT:         unsafe { __slate_cabsl__rf80_cf80({{_v[0-9]+}} as num_complex::Complex<LongDouble>) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { __slate_printf__ri32_pi8_f80({{_v[0-9]+}} as *mut i8, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"carg=%La\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let mut byval2: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-NEXT:         re: LongDouble([0; 10]),
-// LOWERING-NEXT:         im: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     byval2 = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe {
-// LOWERING-NEXT:         __slate_cargl__rf80_pcf80(
-// LOWERING-NEXT:             std::ptr::addr_of_mut!(byval2) as *mut num_complex::Complex<LongDouble>
-// LOWERING-NEXT:         )
-// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble =
+// LOWERING-NEXT:         unsafe { __slate_cargl__rf80_cf80({{_v[0-9]+}} as num_complex::Complex<LongDouble>) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { __slate_printf__ri32_pi8_f80({{_v[0-9]+}} as *mut i8, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"conj\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.re;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.im;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = -{{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} };
-// LOWERING-NEXT:     let mut byval3: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-NEXT:         re: LongDouble([0; 10]),
-// LOWERING-NEXT:         im: LongDouble([0; 10]),
+// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// LOWERING-NEXT:         re: {{_v[0-9]+}}.re,
+// LOWERING-NEXT:         im: -{{_v[0-9]+}}.im,
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     byval3 = {{_v[0-9]+}};
-// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, std::ptr::addr_of_mut!(byval3));
+// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, {{_v[0-9]+}});
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"cproj\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let mut byval4: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-NEXT:         re: LongDouble([0; 10]),
-// LOWERING-NEXT:         im: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     byval4 = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: {{anon_struct[0-9A-Za-z_]*}} = unsafe {
-// LOWERING-NEXT:         __slate_cprojl__rcf80_pcf80(
-// LOWERING-NEXT:             std::ptr::addr_of_mut!(byval4) as *mut num_complex::Complex<LongDouble>
-// LOWERING-NEXT:         )
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     coerce17 = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut num_complex::Complex<LongDouble> =
-// LOWERING-NEXT:         std::ptr::addr_of_mut!(coerce17) as *mut num_complex::Complex<LongDouble>;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:     let mut byval5: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-NEXT:         re: LongDouble([0; 10]),
-// LOWERING-NEXT:         im: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     byval5 = {{_v[0-9]+}};
-// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, std::ptr::addr_of_mut!(byval5));
+// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> =
+// LOWERING-NEXT:         unsafe { __slate_cprojl__rcf80_cf80({{_v[0-9]+}} as num_complex::Complex<LongDouble>) };
+// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, {{_v[0-9]+}});
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"csqrt\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let mut byval6: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-NEXT:         re: LongDouble([0; 10]),
-// LOWERING-NEXT:         im: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     byval6 = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: {{anon_struct[0-9A-Za-z_]*}} = unsafe {
-// LOWERING-NEXT:         __slate_csqrtl__rcf80_pcf80(
-// LOWERING-NEXT:             std::ptr::addr_of_mut!(byval6) as *mut num_complex::Complex<LongDouble>
-// LOWERING-NEXT:         )
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     coerce16 = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut num_complex::Complex<LongDouble> =
-// LOWERING-NEXT:         std::ptr::addr_of_mut!(coerce16) as *mut num_complex::Complex<LongDouble>;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:     let mut byval7: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-NEXT:         re: LongDouble([0; 10]),
-// LOWERING-NEXT:         im: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     byval7 = {{_v[0-9]+}};
-// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, std::ptr::addr_of_mut!(byval7));
+// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> =
+// LOWERING-NEXT:         unsafe { __slate_csqrtl__rcf80_cf80({{_v[0-9]+}} as num_complex::Complex<LongDouble>) };
+// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, {{_v[0-9]+}});
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"cexp\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // LOWERING-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // LOWERING-NEXT:         im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     let mut byval8: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-NEXT:         re: LongDouble([0; 10]),
-// LOWERING-NEXT:         im: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     byval8 = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: {{anon_struct[0-9A-Za-z_]*}} = unsafe {
-// LOWERING-NEXT:         __slate_cexpl__rcf80_pcf80(
-// LOWERING-NEXT:             std::ptr::addr_of_mut!(byval8) as *mut num_complex::Complex<LongDouble>
-// LOWERING-NEXT:         )
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     coerce15 = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut num_complex::Complex<LongDouble> =
-// LOWERING-NEXT:         std::ptr::addr_of_mut!(coerce15) as *mut num_complex::Complex<LongDouble>;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:     let mut byval9: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-NEXT:         re: LongDouble([0; 10]),
-// LOWERING-NEXT:         im: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     byval9 = {{_v[0-9]+}};
-// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, std::ptr::addr_of_mut!(byval9));
+// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> =
+// LOWERING-NEXT:         unsafe { __slate_cexpl__rcf80_cf80({{_v[0-9]+}} as num_complex::Complex<LongDouble>) };
+// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, {{_v[0-9]+}});
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"clog\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // LOWERING-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]),
 // LOWERING-NEXT:         im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     let mut byval10: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-NEXT:         re: LongDouble([0; 10]),
-// LOWERING-NEXT:         im: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     byval10 = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: {{anon_struct[0-9A-Za-z_]*}} = unsafe {
-// LOWERING-NEXT:         __slate_clogl__rcf80_pcf80(
-// LOWERING-NEXT:             std::ptr::addr_of_mut!(byval10) as *mut num_complex::Complex<LongDouble>
-// LOWERING-NEXT:         )
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     coerce14 = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut num_complex::Complex<LongDouble> =
-// LOWERING-NEXT:         std::ptr::addr_of_mut!(coerce14) as *mut num_complex::Complex<LongDouble>;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:     let mut byval11: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-NEXT:         re: LongDouble([0; 10]),
-// LOWERING-NEXT:         im: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     byval11 = {{_v[0-9]+}};
-// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, std::ptr::addr_of_mut!(byval11));
+// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> =
+// LOWERING-NEXT:         unsafe { __slate_clogl__rcf80_cf80({{_v[0-9]+}} as num_complex::Complex<LongDouble>) };
+// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, {{_v[0-9]+}});
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"cpow\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // LOWERING-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]),
@@ -887,332 +556,109 @@ int main(void) {
 // LOWERING-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]),
 // LOWERING-NEXT:         im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     let mut byval12: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-NEXT:         re: LongDouble([0; 10]),
-// LOWERING-NEXT:         im: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     byval12 = {{_v[0-9]+}};
-// LOWERING-NEXT:     let mut byval13: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-NEXT:         re: LongDouble([0; 10]),
-// LOWERING-NEXT:         im: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     byval13 = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: {{anon_struct[0-9A-Za-z_]*}} = unsafe {
-// LOWERING-NEXT:         __slate_cpowl__rcf80_pcf80_pcf80(
-// LOWERING-NEXT:             std::ptr::addr_of_mut!(byval12) as *mut num_complex::Complex<LongDouble>,
-// LOWERING-NEXT:             std::ptr::addr_of_mut!(byval13) as *mut num_complex::Complex<LongDouble>,
+// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
+// LOWERING-NEXT:         __slate_cpowl__rcf80_cf80_cf80(
+// LOWERING-NEXT:             {{_v[0-9]+}} as num_complex::Complex<LongDouble>,
+// LOWERING-NEXT:             {{_v[0-9]+}} as num_complex::Complex<LongDouble>,
 // LOWERING-NEXT:         )
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     coerce13 = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut num_complex::Complex<LongDouble> =
-// LOWERING-NEXT:         std::ptr::addr_of_mut!(coerce13) as *mut num_complex::Complex<LongDouble>;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:     let mut byval14: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-NEXT:         re: LongDouble([0; 10]),
-// LOWERING-NEXT:         im: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     byval14 = {{_v[0-9]+}};
-// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, std::ptr::addr_of_mut!(byval14));
+// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, {{_v[0-9]+}});
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"csin\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // LOWERING-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // LOWERING-NEXT:         im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     let mut byval15: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-NEXT:         re: LongDouble([0; 10]),
-// LOWERING-NEXT:         im: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     byval15 = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: {{anon_struct[0-9A-Za-z_]*}} = unsafe {
-// LOWERING-NEXT:         __slate_csinl__rcf80_pcf80(
-// LOWERING-NEXT:             std::ptr::addr_of_mut!(byval15) as *mut num_complex::Complex<LongDouble>
-// LOWERING-NEXT:         )
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     coerce12 = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut num_complex::Complex<LongDouble> =
-// LOWERING-NEXT:         std::ptr::addr_of_mut!(coerce12) as *mut num_complex::Complex<LongDouble>;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:     let mut byval16: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-NEXT:         re: LongDouble([0; 10]),
-// LOWERING-NEXT:         im: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     byval16 = {{_v[0-9]+}};
-// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, std::ptr::addr_of_mut!(byval16));
+// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> =
+// LOWERING-NEXT:         unsafe { __slate_csinl__rcf80_cf80({{_v[0-9]+}} as num_complex::Complex<LongDouble>) };
+// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, {{_v[0-9]+}});
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"ccos\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // LOWERING-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // LOWERING-NEXT:         im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     let mut byval17: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-NEXT:         re: LongDouble([0; 10]),
-// LOWERING-NEXT:         im: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     byval17 = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: {{anon_struct[0-9A-Za-z_]*}} = unsafe {
-// LOWERING-NEXT:         __slate_ccosl__rcf80_pcf80(
-// LOWERING-NEXT:             std::ptr::addr_of_mut!(byval17) as *mut num_complex::Complex<LongDouble>
-// LOWERING-NEXT:         )
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     coerce11 = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut num_complex::Complex<LongDouble> =
-// LOWERING-NEXT:         std::ptr::addr_of_mut!(coerce11) as *mut num_complex::Complex<LongDouble>;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:     let mut byval18: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-NEXT:         re: LongDouble([0; 10]),
-// LOWERING-NEXT:         im: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     byval18 = {{_v[0-9]+}};
-// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, std::ptr::addr_of_mut!(byval18));
+// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> =
+// LOWERING-NEXT:         unsafe { __slate_ccosl__rcf80_cf80({{_v[0-9]+}} as num_complex::Complex<LongDouble>) };
+// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, {{_v[0-9]+}});
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"ctan\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // LOWERING-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // LOWERING-NEXT:         im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     let mut byval19: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-NEXT:         re: LongDouble([0; 10]),
-// LOWERING-NEXT:         im: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     byval19 = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: {{anon_struct[0-9A-Za-z_]*}} = unsafe {
-// LOWERING-NEXT:         __slate_ctanl__rcf80_pcf80(
-// LOWERING-NEXT:             std::ptr::addr_of_mut!(byval19) as *mut num_complex::Complex<LongDouble>
-// LOWERING-NEXT:         )
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     coerce10 = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut num_complex::Complex<LongDouble> =
-// LOWERING-NEXT:         std::ptr::addr_of_mut!(coerce10) as *mut num_complex::Complex<LongDouble>;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:     let mut byval20: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-NEXT:         re: LongDouble([0; 10]),
-// LOWERING-NEXT:         im: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     byval20 = {{_v[0-9]+}};
-// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, std::ptr::addr_of_mut!(byval20));
+// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> =
+// LOWERING-NEXT:         unsafe { __slate_ctanl__rcf80_cf80({{_v[0-9]+}} as num_complex::Complex<LongDouble>) };
+// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, {{_v[0-9]+}});
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"casin\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // LOWERING-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // LOWERING-NEXT:         im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     let mut byval21: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-NEXT:         re: LongDouble([0; 10]),
-// LOWERING-NEXT:         im: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     byval21 = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: {{anon_struct[0-9A-Za-z_]*}} = unsafe {
-// LOWERING-NEXT:         __slate_casinl__rcf80_pcf80(
-// LOWERING-NEXT:             std::ptr::addr_of_mut!(byval21) as *mut num_complex::Complex<LongDouble>
-// LOWERING-NEXT:         )
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     coerce9 = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut num_complex::Complex<LongDouble> =
-// LOWERING-NEXT:         std::ptr::addr_of_mut!(coerce9) as *mut num_complex::Complex<LongDouble>;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:     let mut byval22: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-NEXT:         re: LongDouble([0; 10]),
-// LOWERING-NEXT:         im: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     byval22 = {{_v[0-9]+}};
-// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, std::ptr::addr_of_mut!(byval22));
+// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> =
+// LOWERING-NEXT:         unsafe { __slate_casinl__rcf80_cf80({{_v[0-9]+}} as num_complex::Complex<LongDouble>) };
+// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, {{_v[0-9]+}});
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"cacos\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // LOWERING-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]),
 // LOWERING-NEXT:         im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     let mut byval23: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-NEXT:         re: LongDouble([0; 10]),
-// LOWERING-NEXT:         im: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     byval23 = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: {{anon_struct[0-9A-Za-z_]*}} = unsafe {
-// LOWERING-NEXT:         __slate_cacosl__rcf80_pcf80(
-// LOWERING-NEXT:             std::ptr::addr_of_mut!(byval23) as *mut num_complex::Complex<LongDouble>
-// LOWERING-NEXT:         )
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     coerce8 = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut num_complex::Complex<LongDouble> =
-// LOWERING-NEXT:         std::ptr::addr_of_mut!(coerce8) as *mut num_complex::Complex<LongDouble>;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:     let mut byval24: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-NEXT:         re: LongDouble([0; 10]),
-// LOWERING-NEXT:         im: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     byval24 = {{_v[0-9]+}};
-// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, std::ptr::addr_of_mut!(byval24));
+// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> =
+// LOWERING-NEXT:         unsafe { __slate_cacosl__rcf80_cf80({{_v[0-9]+}} as num_complex::Complex<LongDouble>) };
+// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, {{_v[0-9]+}});
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"catan\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // LOWERING-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // LOWERING-NEXT:         im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     let mut byval25: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-NEXT:         re: LongDouble([0; 10]),
-// LOWERING-NEXT:         im: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     byval25 = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: {{anon_struct[0-9A-Za-z_]*}} = unsafe {
-// LOWERING-NEXT:         __slate_catanl__rcf80_pcf80(
-// LOWERING-NEXT:             std::ptr::addr_of_mut!(byval25) as *mut num_complex::Complex<LongDouble>
-// LOWERING-NEXT:         )
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     coerce7 = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut num_complex::Complex<LongDouble> =
-// LOWERING-NEXT:         std::ptr::addr_of_mut!(coerce7) as *mut num_complex::Complex<LongDouble>;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:     let mut byval26: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-NEXT:         re: LongDouble([0; 10]),
-// LOWERING-NEXT:         im: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     byval26 = {{_v[0-9]+}};
-// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, std::ptr::addr_of_mut!(byval26));
+// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> =
+// LOWERING-NEXT:         unsafe { __slate_catanl__rcf80_cf80({{_v[0-9]+}} as num_complex::Complex<LongDouble>) };
+// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, {{_v[0-9]+}});
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"csinh\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // LOWERING-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // LOWERING-NEXT:         im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     let mut byval27: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-NEXT:         re: LongDouble([0; 10]),
-// LOWERING-NEXT:         im: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     byval27 = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: {{anon_struct[0-9A-Za-z_]*}} = unsafe {
-// LOWERING-NEXT:         __slate_csinhl__rcf80_pcf80(
-// LOWERING-NEXT:             std::ptr::addr_of_mut!(byval27) as *mut num_complex::Complex<LongDouble>
-// LOWERING-NEXT:         )
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     coerce6 = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut num_complex::Complex<LongDouble> =
-// LOWERING-NEXT:         std::ptr::addr_of_mut!(coerce6) as *mut num_complex::Complex<LongDouble>;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:     let mut byval28: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-NEXT:         re: LongDouble([0; 10]),
-// LOWERING-NEXT:         im: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     byval28 = {{_v[0-9]+}};
-// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, std::ptr::addr_of_mut!(byval28));
+// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> =
+// LOWERING-NEXT:         unsafe { __slate_csinhl__rcf80_cf80({{_v[0-9]+}} as num_complex::Complex<LongDouble>) };
+// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, {{_v[0-9]+}});
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"ccosh\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // LOWERING-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // LOWERING-NEXT:         im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     let mut byval29: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-NEXT:         re: LongDouble([0; 10]),
-// LOWERING-NEXT:         im: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     byval29 = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: {{anon_struct[0-9A-Za-z_]*}} = unsafe {
-// LOWERING-NEXT:         __slate_ccoshl__rcf80_pcf80(
-// LOWERING-NEXT:             std::ptr::addr_of_mut!(byval29) as *mut num_complex::Complex<LongDouble>
-// LOWERING-NEXT:         )
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     coerce5 = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut num_complex::Complex<LongDouble> =
-// LOWERING-NEXT:         std::ptr::addr_of_mut!(coerce5) as *mut num_complex::Complex<LongDouble>;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:     let mut byval30: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-NEXT:         re: LongDouble([0; 10]),
-// LOWERING-NEXT:         im: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     byval30 = {{_v[0-9]+}};
-// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, std::ptr::addr_of_mut!(byval30));
+// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> =
+// LOWERING-NEXT:         unsafe { __slate_ccoshl__rcf80_cf80({{_v[0-9]+}} as num_complex::Complex<LongDouble>) };
+// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, {{_v[0-9]+}});
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"ctanh\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // LOWERING-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // LOWERING-NEXT:         im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     let mut byval31: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-NEXT:         re: LongDouble([0; 10]),
-// LOWERING-NEXT:         im: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     byval31 = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: {{anon_struct[0-9A-Za-z_]*}} = unsafe {
-// LOWERING-NEXT:         __slate_ctanhl__rcf80_pcf80(
-// LOWERING-NEXT:             std::ptr::addr_of_mut!(byval31) as *mut num_complex::Complex<LongDouble>
-// LOWERING-NEXT:         )
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     coerce4 = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut num_complex::Complex<LongDouble> =
-// LOWERING-NEXT:         std::ptr::addr_of_mut!(coerce4) as *mut num_complex::Complex<LongDouble>;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:     let mut byval32: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-NEXT:         re: LongDouble([0; 10]),
-// LOWERING-NEXT:         im: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     byval32 = {{_v[0-9]+}};
-// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, std::ptr::addr_of_mut!(byval32));
+// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> =
+// LOWERING-NEXT:         unsafe { __slate_ctanhl__rcf80_cf80({{_v[0-9]+}} as num_complex::Complex<LongDouble>) };
+// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, {{_v[0-9]+}});
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"casinh\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // LOWERING-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // LOWERING-NEXT:         im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     let mut byval33: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-NEXT:         re: LongDouble([0; 10]),
-// LOWERING-NEXT:         im: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     byval33 = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: {{anon_struct[0-9A-Za-z_]*}} = unsafe {
-// LOWERING-NEXT:         __slate_casinhl__rcf80_pcf80(
-// LOWERING-NEXT:             std::ptr::addr_of_mut!(byval33) as *mut num_complex::Complex<LongDouble>
-// LOWERING-NEXT:         )
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     coerce3 = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut num_complex::Complex<LongDouble> =
-// LOWERING-NEXT:         std::ptr::addr_of_mut!(coerce3) as *mut num_complex::Complex<LongDouble>;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:     let mut byval34: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-NEXT:         re: LongDouble([0; 10]),
-// LOWERING-NEXT:         im: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     byval34 = {{_v[0-9]+}};
-// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, std::ptr::addr_of_mut!(byval34));
+// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> =
+// LOWERING-NEXT:         unsafe { __slate_casinhl__rcf80_cf80({{_v[0-9]+}} as num_complex::Complex<LongDouble>) };
+// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, {{_v[0-9]+}});
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"cacosh\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // LOWERING-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]),
 // LOWERING-NEXT:         im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     let mut byval35: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-NEXT:         re: LongDouble([0; 10]),
-// LOWERING-NEXT:         im: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     byval35 = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: {{anon_struct[0-9A-Za-z_]*}} = unsafe {
-// LOWERING-NEXT:         __slate_cacoshl__rcf80_pcf80(
-// LOWERING-NEXT:             std::ptr::addr_of_mut!(byval35) as *mut num_complex::Complex<LongDouble>
-// LOWERING-NEXT:         )
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     coerce2 = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut num_complex::Complex<LongDouble> =
-// LOWERING-NEXT:         std::ptr::addr_of_mut!(coerce2) as *mut num_complex::Complex<LongDouble>;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:     let mut byval36: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-NEXT:         re: LongDouble([0; 10]),
-// LOWERING-NEXT:         im: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     byval36 = {{_v[0-9]+}};
-// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, std::ptr::addr_of_mut!(byval36));
+// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> =
+// LOWERING-NEXT:         unsafe { __slate_cacoshl__rcf80_cf80({{_v[0-9]+}} as num_complex::Complex<LongDouble>) };
+// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, {{_v[0-9]+}});
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"catanh\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // LOWERING-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // LOWERING-NEXT:         im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     let mut byval37: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-NEXT:         re: LongDouble([0; 10]),
-// LOWERING-NEXT:         im: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     byval37 = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: {{anon_struct[0-9A-Za-z_]*}} = unsafe {
-// LOWERING-NEXT:         __slate_catanhl__rcf80_pcf80(
-// LOWERING-NEXT:             std::ptr::addr_of_mut!(byval37) as *mut num_complex::Complex<LongDouble>
-// LOWERING-NEXT:         )
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     coerce = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut num_complex::Complex<LongDouble> =
-// LOWERING-NEXT:         std::ptr::addr_of_mut!(coerce) as *mut num_complex::Complex<LongDouble>;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:     let mut byval38: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-NEXT:         re: LongDouble([0; 10]),
-// LOWERING-NEXT:         im: LongDouble([0; 10]),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     byval38 = {{_v[0-9]+}};
-// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, std::ptr::addr_of_mut!(byval38));
+// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> =
+// LOWERING-NEXT:         unsafe { __slate_catanhl__rcf80_cf80({{_v[0-9]+}} as num_complex::Complex<LongDouble>) };
+// LOWERING-NEXT:     print_lc({{_v[0-9]+}}, {{_v[0-9]+}});
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"creal=%La cimag=%La\n\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.re;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.im;
@@ -1220,43 +666,68 @@ int main(void) {
 // LOWERING-NEXT:     return;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     check_arithmetic();
-// LOWERING-NEXT:     check_casts();
-// LOWERING-NEXT:     check_stdlib_functions();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT: fn print_lc({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: num_complex::Complex<LongDouble>) {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%s=%Lax%Lai\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{arg[0-9]+}}.re;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{arg[0-9]+}}.im;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 =
+// LOWERING-NEXT:         unsafe { __slate_printf__ri32_pi8_pi8_f80_f80({{_v[0-9]+}} as *mut i8, {{arg[0-9]+}} as *mut i8, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     return;
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn mix_complex(
+// LOWERING-NEXT:     {{arg[0-9]+}}: num_complex::Complex<LongDouble>,
+// LOWERING-NEXT:     {{arg[0-9]+}}: num_complex::Complex<LongDouble>,
+// LOWERING-NEXT: ) -> num_complex::Complex<LongDouble> {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// LOWERING-NEXT:         re: {{arg[0-9]+}}.re + {{arg[0-9]+}}.re,
+// LOWERING-NEXT:         im: {{arg[0-9]+}}.im + {{arg[0-9]+}}.im,
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]);
+// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.re;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.im;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} / {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} / {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]);
+// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.re;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.im;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} * {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} * {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} };
+// LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: unsafe extern "C" {
-// LOWERING-NEXT:     fn __slate_cabsl__rf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> LongDouble;
-// LOWERING-NEXT:     fn __slate_cacoshl__rcf80_pcf80(
-// LOWERING-NEXT:         _0: *mut num_complex::Complex<LongDouble>,
-// LOWERING-NEXT:     ) -> {{anon_struct[0-9A-Za-z_]*}};
-// LOWERING-NEXT:     fn __slate_cacosl__rcf80_pcf80(
-// LOWERING-NEXT:         _0: *mut num_complex::Complex<LongDouble>,
-// LOWERING-NEXT:     ) -> {{anon_struct[0-9A-Za-z_]*}};
-// LOWERING-NEXT:     fn __slate_cargl__rf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> LongDouble;
-// LOWERING-NEXT:     fn __slate_casinhl__rcf80_pcf80(
-// LOWERING-NEXT:         _0: *mut num_complex::Complex<LongDouble>,
-// LOWERING-NEXT:     ) -> {{anon_struct[0-9A-Za-z_]*}};
-// LOWERING-NEXT:     fn __slate_casinl__rcf80_pcf80(
-// LOWERING-NEXT:         _0: *mut num_complex::Complex<LongDouble>,
-// LOWERING-NEXT:     ) -> {{anon_struct[0-9A-Za-z_]*}};
-// LOWERING-NEXT:     fn __slate_catanhl__rcf80_pcf80(
-// LOWERING-NEXT:         _0: *mut num_complex::Complex<LongDouble>,
-// LOWERING-NEXT:     ) -> {{anon_struct[0-9A-Za-z_]*}};
-// LOWERING-NEXT:     fn __slate_catanl__rcf80_pcf80(
-// LOWERING-NEXT:         _0: *mut num_complex::Complex<LongDouble>,
-// LOWERING-NEXT:     ) -> {{anon_struct[0-9A-Za-z_]*}};
-// LOWERING-NEXT:     fn __slate_ccoshl__rcf80_pcf80(
-// LOWERING-NEXT:         _0: *mut num_complex::Complex<LongDouble>,
-// LOWERING-NEXT:     ) -> {{anon_struct[0-9A-Za-z_]*}};
-// LOWERING-NEXT:     fn __slate_ccosl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>)
-// LOWERING-NEXT:     -> {{anon_struct[0-9A-Za-z_]*}};
-// LOWERING-NEXT:     fn __slate_cexpl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>)
-// LOWERING-NEXT:     -> {{anon_struct[0-9A-Za-z_]*}};
+// LOWERING-NEXT:     fn __slate_cabsl__rf80_cf80(_0: num_complex::Complex<LongDouble>) -> LongDouble;
+// LOWERING-NEXT:     fn __slate_cacoshl__rcf80_cf80(
+// LOWERING-NEXT:         _0: num_complex::Complex<LongDouble>,
+// LOWERING-NEXT:     ) -> num_complex::Complex<LongDouble>;
+// LOWERING-NEXT:     fn __slate_cacosl__rcf80_cf80(
+// LOWERING-NEXT:         _0: num_complex::Complex<LongDouble>,
+// LOWERING-NEXT:     ) -> num_complex::Complex<LongDouble>;
+// LOWERING-NEXT:     fn __slate_cargl__rf80_cf80(_0: num_complex::Complex<LongDouble>) -> LongDouble;
+// LOWERING-NEXT:     fn __slate_casinhl__rcf80_cf80(
+// LOWERING-NEXT:         _0: num_complex::Complex<LongDouble>,
+// LOWERING-NEXT:     ) -> num_complex::Complex<LongDouble>;
+// LOWERING-NEXT:     fn __slate_casinl__rcf80_cf80(
+// LOWERING-NEXT:         _0: num_complex::Complex<LongDouble>,
+// LOWERING-NEXT:     ) -> num_complex::Complex<LongDouble>;
+// LOWERING-NEXT:     fn __slate_catanhl__rcf80_cf80(
+// LOWERING-NEXT:         _0: num_complex::Complex<LongDouble>,
+// LOWERING-NEXT:     ) -> num_complex::Complex<LongDouble>;
+// LOWERING-NEXT:     fn __slate_catanl__rcf80_cf80(
+// LOWERING-NEXT:         _0: num_complex::Complex<LongDouble>,
+// LOWERING-NEXT:     ) -> num_complex::Complex<LongDouble>;
+// LOWERING-NEXT:     fn __slate_ccoshl__rcf80_cf80(
+// LOWERING-NEXT:         _0: num_complex::Complex<LongDouble>,
+// LOWERING-NEXT:     ) -> num_complex::Complex<LongDouble>;
+// LOWERING-NEXT:     fn __slate_ccosl__rcf80_cf80(
+// LOWERING-NEXT:         _0: num_complex::Complex<LongDouble>,
+// LOWERING-NEXT:     ) -> num_complex::Complex<LongDouble>;
+// LOWERING-NEXT:     fn __slate_cexpl__rcf80_cf80(
+// LOWERING-NEXT:         _0: num_complex::Complex<LongDouble>,
+// LOWERING-NEXT:     ) -> num_complex::Complex<LongDouble>;
 // LOWERING-NEXT:     safe fn __slate_cf80_div(
 // LOWERING-NEXT:         a: num_complex::Complex<LongDouble>,
 // LOWERING-NEXT:         b: num_complex::Complex<LongDouble>,
@@ -1265,28 +736,31 @@ int main(void) {
 // LOWERING-NEXT:         a: num_complex::Complex<LongDouble>,
 // LOWERING-NEXT:         b: num_complex::Complex<LongDouble>,
 // LOWERING-NEXT:     ) -> num_complex::Complex<LongDouble>;
-// LOWERING-NEXT:     fn __slate_clogl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>)
-// LOWERING-NEXT:     -> {{anon_struct[0-9A-Za-z_]*}};
-// LOWERING-NEXT:     fn __slate_cpowl__rcf80_pcf80_pcf80(
-// LOWERING-NEXT:         _0: *mut num_complex::Complex<LongDouble>,
-// LOWERING-NEXT:         _1: *mut num_complex::Complex<LongDouble>,
-// LOWERING-NEXT:     ) -> {{anon_struct[0-9A-Za-z_]*}};
-// LOWERING-NEXT:     fn __slate_cprojl__rcf80_pcf80(
-// LOWERING-NEXT:         _0: *mut num_complex::Complex<LongDouble>,
-// LOWERING-NEXT:     ) -> {{anon_struct[0-9A-Za-z_]*}};
-// LOWERING-NEXT:     fn __slate_csinhl__rcf80_pcf80(
-// LOWERING-NEXT:         _0: *mut num_complex::Complex<LongDouble>,
-// LOWERING-NEXT:     ) -> {{anon_struct[0-9A-Za-z_]*}};
-// LOWERING-NEXT:     fn __slate_csinl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>)
-// LOWERING-NEXT:     -> {{anon_struct[0-9A-Za-z_]*}};
-// LOWERING-NEXT:     fn __slate_csqrtl__rcf80_pcf80(
-// LOWERING-NEXT:         _0: *mut num_complex::Complex<LongDouble>,
-// LOWERING-NEXT:     ) -> {{anon_struct[0-9A-Za-z_]*}};
-// LOWERING-NEXT:     fn __slate_ctanhl__rcf80_pcf80(
-// LOWERING-NEXT:         _0: *mut num_complex::Complex<LongDouble>,
-// LOWERING-NEXT:     ) -> {{anon_struct[0-9A-Za-z_]*}};
-// LOWERING-NEXT:     fn __slate_ctanl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>)
-// LOWERING-NEXT:     -> {{anon_struct[0-9A-Za-z_]*}};
+// LOWERING-NEXT:     fn __slate_clogl__rcf80_cf80(
+// LOWERING-NEXT:         _0: num_complex::Complex<LongDouble>,
+// LOWERING-NEXT:     ) -> num_complex::Complex<LongDouble>;
+// LOWERING-NEXT:     fn __slate_cpowl__rcf80_cf80_cf80(
+// LOWERING-NEXT:         _0: num_complex::Complex<LongDouble>,
+// LOWERING-NEXT:         _1: num_complex::Complex<LongDouble>,
+// LOWERING-NEXT:     ) -> num_complex::Complex<LongDouble>;
+// LOWERING-NEXT:     fn __slate_cprojl__rcf80_cf80(
+// LOWERING-NEXT:         _0: num_complex::Complex<LongDouble>,
+// LOWERING-NEXT:     ) -> num_complex::Complex<LongDouble>;
+// LOWERING-NEXT:     fn __slate_csinhl__rcf80_cf80(
+// LOWERING-NEXT:         _0: num_complex::Complex<LongDouble>,
+// LOWERING-NEXT:     ) -> num_complex::Complex<LongDouble>;
+// LOWERING-NEXT:     fn __slate_csinl__rcf80_cf80(
+// LOWERING-NEXT:         _0: num_complex::Complex<LongDouble>,
+// LOWERING-NEXT:     ) -> num_complex::Complex<LongDouble>;
+// LOWERING-NEXT:     fn __slate_csqrtl__rcf80_cf80(
+// LOWERING-NEXT:         _0: num_complex::Complex<LongDouble>,
+// LOWERING-NEXT:     ) -> num_complex::Complex<LongDouble>;
+// LOWERING-NEXT:     fn __slate_ctanhl__rcf80_cf80(
+// LOWERING-NEXT:         _0: num_complex::Complex<LongDouble>,
+// LOWERING-NEXT:     ) -> num_complex::Complex<LongDouble>;
+// LOWERING-NEXT:     fn __slate_ctanl__rcf80_cf80(
+// LOWERING-NEXT:         _0: num_complex::Complex<LongDouble>,
+// LOWERING-NEXT:     ) -> num_complex::Complex<LongDouble>;
 // LOWERING-NEXT:     safe fn __slate_f80_abs(a: LongDouble) -> LongDouble;
 // LOWERING-NEXT:     safe fn __slate_f80_add(a: LongDouble, b: LongDouble) -> LongDouble;
 // LOWERING-NEXT:     safe fn __slate_f80_ceil(a: LongDouble) -> LongDouble;
@@ -1465,103 +939,41 @@ int main(void) {
 // REWRITES-NEXT:     }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: #[repr(C)]
-// REWRITES-NEXT: #[derive(Clone, Copy)]
-// REWRITES-NEXT: struct {{anon_struct[0-9A-Za-z_]*}} {
-// REWRITES-NEXT:     __slate_anon_0: LongDouble,
-// REWRITES-NEXT:     __slate_anon_1: LongDouble,
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe extern "C" {
-// REWRITES-NEXT:     fn __divxc3(
-// REWRITES-NEXT:         _0: LongDouble,
-// REWRITES-NEXT:         _1: LongDouble,
-// REWRITES-NEXT:         _2: LongDouble,
-// REWRITES-NEXT:         _3: LongDouble,
-// REWRITES-NEXT:     ) -> num_complex::Complex<LongDouble>;
-// REWRITES-NEXT:     fn __mulxc3(
-// REWRITES-NEXT:         _0: LongDouble,
-// REWRITES-NEXT:         _1: LongDouble,
-// REWRITES-NEXT:         _2: LongDouble,
-// REWRITES-NEXT:         _3: LongDouble,
-// REWRITES-NEXT:     ) -> num_complex::Complex<LongDouble>;
 // REWRITES-NEXT:     fn abort() -> !;
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
-// REWRITES-NEXT:     fn cabsl(_0: *mut num_complex::Complex<LongDouble>) -> LongDouble;
-// REWRITES-NEXT:     fn cargl(_0: *mut num_complex::Complex<LongDouble>) -> LongDouble;
-// REWRITES-NEXT:     fn cprojl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
-// REWRITES-NEXT:     fn csqrtl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
-// REWRITES-NEXT:     fn cexpl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
-// REWRITES-NEXT:     fn clogl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// REWRITES-NEXT:     fn cabsl(_0: num_complex::Complex<LongDouble>) -> LongDouble;
+// REWRITES-NEXT:     fn cargl(_0: num_complex::Complex<LongDouble>) -> LongDouble;
+// REWRITES-NEXT:     fn cprojl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
+// REWRITES-NEXT:     fn csqrtl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
+// REWRITES-NEXT:     fn cexpl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
+// REWRITES-NEXT:     fn clogl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
 // REWRITES-NEXT:     fn cpowl(
-// REWRITES-NEXT:         _0: *mut num_complex::Complex<LongDouble>,
-// REWRITES-NEXT:         _1: *mut num_complex::Complex<LongDouble>,
-// REWRITES-NEXT:     ) -> {{anon_struct[0-9A-Za-z_]*}};
-// REWRITES-NEXT:     fn csinl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
-// REWRITES-NEXT:     fn ccosl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
-// REWRITES-NEXT:     fn ctanl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
-// REWRITES-NEXT:     fn casinl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
-// REWRITES-NEXT:     fn cacosl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
-// REWRITES-NEXT:     fn catanl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
-// REWRITES-NEXT:     fn csinhl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
-// REWRITES-NEXT:     fn ccoshl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
-// REWRITES-NEXT:     fn ctanhl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
-// REWRITES-NEXT:     fn casinhl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
-// REWRITES-NEXT:     fn cacoshl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
-// REWRITES-NEXT:     fn catanhl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// REWRITES-NEXT:         _0: num_complex::Complex<LongDouble>,
+// REWRITES-NEXT:         _1: num_complex::Complex<LongDouble>,
+// REWRITES-NEXT:     ) -> num_complex::Complex<LongDouble>;
+// REWRITES-NEXT:     fn csinl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
+// REWRITES-NEXT:     fn ccosl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
+// REWRITES-NEXT:     fn ctanl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
+// REWRITES-NEXT:     fn casinl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
+// REWRITES-NEXT:     fn cacosl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
+// REWRITES-NEXT:     fn catanl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
+// REWRITES-NEXT:     fn csinhl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
+// REWRITES-NEXT:     fn ccoshl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
+// REWRITES-NEXT:     fn ctanhl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
+// REWRITES-NEXT:     fn casinhl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
+// REWRITES-NEXT:     fn cacoshl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
+// REWRITES-NEXT:     fn catanhl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn print_lc({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: &num_complex::Complex<LongDouble>) {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> =
-// REWRITES-NEXT:         unsafe { *({{arg[0-9]+}} as *const num_complex::Complex<LongDouble>) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.re;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.im;
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         __slate_printf__ri32_pi8_pi8_f80_f80(
-// REWRITES-NEXT:             c"%s=%Lax%Lai\n".as_ptr() as *mut i8,
-// REWRITES-NEXT:             {{arg[0-9]+}} as *mut i8,
-// REWRITES-NEXT:             {{_v[0-9]+}},
-// REWRITES-NEXT:             {{_v[0-9]+}},
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     return;
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: fn mix_complex(
-// REWRITES-NEXT:     {{arg[0-9]+}}: &num_complex::Complex<LongDouble>,
-// REWRITES-NEXT:     {{arg[0-9]+}}: &num_complex::Complex<LongDouble>,
-// REWRITES-NEXT: ) -> {{anon_struct[0-9A-Za-z_]*}} {
-// REWRITES-NEXT:     let mut coerce: num_complex::Complex<LongDouble> = num_complex::Complex {
-// REWRITES-NEXT:         re: LongDouble([0; 10]),
-// REWRITES-NEXT:         im: LongDouble([0; 10]),
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> =
-// REWRITES-NEXT:         unsafe { *({{arg[0-9]+}} as *const num_complex::Complex<LongDouble>) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> =
-// REWRITES-NEXT:         unsafe { *({{arg[0-9]+}} as *const num_complex::Complex<LongDouble>) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
-// REWRITES-NEXT:         re: {{_v[0-9]+}}.re + {{_v[0-9]+}}.re,
-// REWRITES-NEXT:         im: {{_v[0-9]+}}.im + {{_v[0-9]+}}.im,
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]);
-// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
-// REWRITES-NEXT:         re: {{_v[0-9]+}}.re / {{_v[0-9]+}},
-// REWRITES-NEXT:         im: {{_v[0-9]+}}.im / {{_v[0-9]+}},
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]);
-// REWRITES-NEXT:     coerce = num_complex::Complex {
-// REWRITES-NEXT:         re: {{_v[0-9]+}}.re * {{_v[0-9]+}},
-// REWRITES-NEXT:         im: {{_v[0-9]+}}.im * {{_v[0-9]+}},
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut {{anon_struct[0-9A-Za-z_]*}} = std::ptr::addr_of_mut!(coerce) as *mut {{anon_struct[0-9A-Za-z_]*}};
-// REWRITES-NEXT:     return unsafe { *{{_v[0-9]+}} };
+// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT:     check_arithmetic();
+// REWRITES-NEXT:     check_casts();
+// REWRITES-NEXT:     check_stdlib_functions();
+// REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn check_arithmetic() {
-// REWRITES-NEXT:     let mut coerce: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} {
-// REWRITES-NEXT:         __slate_anon_0: LongDouble([0; 10]),
-// REWRITES-NEXT:         __slate_anon_1: LongDouble([0; 10]),
-// REWRITES-NEXT:     };
 // REWRITES-NEXT:     let mut a: num_complex::Complex<LongDouble> = num_complex::Complex {
 // REWRITES-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]),
 // REWRITES-NEXT:         im: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]),
@@ -1570,114 +982,94 @@ int main(void) {
 // REWRITES-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]),
 // REWRITES-NEXT:         im: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 191]),
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"add".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = a;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = b;
-// REWRITES-NEXT:     let mut byval: num_complex::Complex<LongDouble> = num_complex::Complex {
+// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // REWRITES-NEXT:         re: {{_v[0-9]+}}.re + {{_v[0-9]+}}.re,
 // REWRITES-NEXT:         im: {{_v[0-9]+}}.im + {{_v[0-9]+}}.im,
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval)) });
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"sub".as_ptr() as *mut i8;
+// REWRITES-NEXT:     print_lc(c"add".as_ptr() as *mut i8, {{_v[0-9]+}});
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = a;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = b;
-// REWRITES-NEXT:     let mut byval2: num_complex::Complex<LongDouble> = num_complex::Complex {
+// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // REWRITES-NEXT:         re: {{_v[0-9]+}}.re - {{_v[0-9]+}}.re,
 // REWRITES-NEXT:         im: {{_v[0-9]+}}.im - {{_v[0-9]+}}.im,
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval2)) });
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"mul".as_ptr() as *mut i8;
+// REWRITES-NEXT:     print_lc(c"sub".as_ptr() as *mut i8, {{_v[0-9]+}});
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = a;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = b;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.re;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.im;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.re;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.im;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} * {{_v[0-9]+}} - {{_v[0-9]+}} * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} * {{_v[0-9]+}} + {{_v[0-9]+}} * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} != {{_v[0-9]+}} { {{_v[0-9]+}} != {{_v[0-9]+}} } else { false };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = if {{_v[0-9]+}} {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = __slate_cf80_mul(
-// REWRITES-NEXT:             num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} },
-// REWRITES-NEXT:             num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} },
-// REWRITES-NEXT:         );
-// REWRITES-NEXT:         {{_v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         {{_v[0-9]+}}
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let mut byval3: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
-// REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval3)) });
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"div".as_ptr() as *mut i8;
+// REWRITES-NEXT:     print_lc(c"mul".as_ptr() as *mut i8, unsafe {
+// REWRITES-NEXT:         __slate_cf80_mul(
+// REWRITES-NEXT:             num_complex::Complex {
+// REWRITES-NEXT:                 re: {{_v[0-9]+}}.re,
+// REWRITES-NEXT:                 im: {{_v[0-9]+}}.im,
+// REWRITES-NEXT:             },
+// REWRITES-NEXT:             num_complex::Complex {
+// REWRITES-NEXT:                 re: {{_v[0-9]+}}.re,
+// REWRITES-NEXT:                 im: {{_v[0-9]+}}.im,
+// REWRITES-NEXT:             },
+// REWRITES-NEXT:         )
+// REWRITES-NEXT:     });
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = a;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = b;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.re;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.im;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.re;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.im;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = __slate_cf80_div(
-// REWRITES-NEXT:         num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} },
-// REWRITES-NEXT:         num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} },
-// REWRITES-NEXT:     );
-// REWRITES-NEXT:     let mut byval4: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
-// REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval4)) });
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"neg".as_ptr() as *mut i8;
+// REWRITES-NEXT:     print_lc(c"div".as_ptr() as *mut i8, unsafe {
+// REWRITES-NEXT:         __slate_cf80_div(
+// REWRITES-NEXT:             num_complex::Complex {
+// REWRITES-NEXT:                 re: {{_v[0-9]+}}.re,
+// REWRITES-NEXT:                 im: {{_v[0-9]+}}.im,
+// REWRITES-NEXT:             },
+// REWRITES-NEXT:             num_complex::Complex {
+// REWRITES-NEXT:                 re: {{_v[0-9]+}}.re,
+// REWRITES-NEXT:                 im: {{_v[0-9]+}}.im,
+// REWRITES-NEXT:             },
+// REWRITES-NEXT:         )
+// REWRITES-NEXT:     });
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = a;
-// REWRITES-NEXT:     let mut byval5: num_complex::Complex<LongDouble> = num_complex::Complex {
+// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // REWRITES-NEXT:         re: -{{_v[0-9]+}}.re,
 // REWRITES-NEXT:         im: -{{_v[0-9]+}}.im,
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval5)) });
+// REWRITES-NEXT:     print_lc(c"neg".as_ptr() as *mut i8, {{_v[0-9]+}});
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = a;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = b;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // REWRITES-NEXT:         re: {{_v[0-9]+}}.re + {{_v[0-9]+}}.re,
 // REWRITES-NEXT:         im: {{_v[0-9]+}}.im + {{_v[0-9]+}}.im,
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"add_assign".as_ptr() as *mut i8;
-// REWRITES-NEXT:     let mut byval6: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
-// REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval6)) });
+// REWRITES-NEXT:     print_lc(c"add_assign".as_ptr() as *mut i8, {{_v[0-9]+}});
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = b;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // REWRITES-NEXT:         re: {{_v[0-9]+}}.re - {{_v[0-9]+}}.re,
 // REWRITES-NEXT:         im: {{_v[0-9]+}}.im - {{_v[0-9]+}}.im,
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"sub_assign".as_ptr() as *mut i8;
-// REWRITES-NEXT:     let mut byval7: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
-// REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval7)) });
+// REWRITES-NEXT:     print_lc(c"sub_assign".as_ptr() as *mut i8, {{_v[0-9]+}});
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = b;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.re;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.im;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.re;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.im;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} * {{_v[0-9]+}} - {{_v[0-9]+}} * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} * {{_v[0-9]+}} + {{_v[0-9]+}} * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} != {{_v[0-9]+}} { {{_v[0-9]+}} != {{_v[0-9]+}} } else { false };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = if {{_v[0-9]+}} {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = __slate_cf80_mul(
-// REWRITES-NEXT:             num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} },
-// REWRITES-NEXT:             num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} },
-// REWRITES-NEXT:         );
-// REWRITES-NEXT:         {{_v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         {{_v[0-9]+}}
+// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
+// REWRITES-NEXT:         __slate_cf80_mul(
+// REWRITES-NEXT:             num_complex::Complex {
+// REWRITES-NEXT:                 re: {{_v[0-9]+}}.re,
+// REWRITES-NEXT:                 im: {{_v[0-9]+}}.im,
+// REWRITES-NEXT:             },
+// REWRITES-NEXT:             num_complex::Complex {
+// REWRITES-NEXT:                 re: {{_v[0-9]+}}.re,
+// REWRITES-NEXT:                 im: {{_v[0-9]+}}.im,
+// REWRITES-NEXT:             },
+// REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"mul_assign".as_ptr() as *mut i8;
-// REWRITES-NEXT:     let mut byval8: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
-// REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval8)) });
+// REWRITES-NEXT:     print_lc(c"mul_assign".as_ptr() as *mut i8, {{_v[0-9]+}});
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = b;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.re;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.im;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.re;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.im;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = __slate_cf80_div(
-// REWRITES-NEXT:         num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} },
-// REWRITES-NEXT:         num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} },
-// REWRITES-NEXT:     );
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"div_assign".as_ptr() as *mut i8;
-// REWRITES-NEXT:     let mut byval9: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
-// REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval9)) });
+// REWRITES-NEXT:     print_lc(c"div_assign".as_ptr() as *mut i8, unsafe {
+// REWRITES-NEXT:         __slate_cf80_div(
+// REWRITES-NEXT:             num_complex::Complex {
+// REWRITES-NEXT:                 re: {{_v[0-9]+}}.re,
+// REWRITES-NEXT:                 im: {{_v[0-9]+}}.im,
+// REWRITES-NEXT:             },
+// REWRITES-NEXT:             num_complex::Complex {
+// REWRITES-NEXT:                 re: {{_v[0-9]+}}.re,
+// REWRITES-NEXT:                 im: {{_v[0-9]+}}.im,
+// REWRITES-NEXT:             },
+// REWRITES-NEXT:         )
+// REWRITES-NEXT:     });
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = !(a == a);
 // REWRITES-NEXT:     if {{_v[0-9]+}} {
 // REWRITES-NEXT:         unsafe { abort() };
@@ -1690,25 +1082,10 @@ int main(void) {
 // REWRITES-NEXT:     if {{_v[0-9]+}} {
 // REWRITES-NEXT:         unsafe { abort() };
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"mix".as_ptr() as *mut i8;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = a;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = b;
-// REWRITES-NEXT:     let mut byval10: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
-// REWRITES-NEXT:     let mut byval11: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
-// REWRITES-NEXT:     coerce = mix_complex(unsafe { &(*std::ptr::addr_of_mut!(byval10)) }, unsafe {
-// REWRITES-NEXT:         &(*std::ptr::addr_of_mut!(byval11))
-// REWRITES-NEXT:     });
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut num_complex::Complex<LongDouble> =
-// REWRITES-NEXT:         std::ptr::addr_of_mut!(coerce) as *mut num_complex::Complex<LongDouble>;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { *{{_v[0-9]+}} };
-// REWRITES-NEXT:     let mut byval12: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
-// REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval12)) });
+// REWRITES-NEXT:     print_lc(c"mix".as_ptr() as *mut i8, mix_complex(a, b));
 // REWRITES-NEXT:     a.re = LongDouble([0, 0, 0, 0, 0, 0, 0, 144, 2, 64]);
 // REWRITES-NEXT:     a.im = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 2, 64]);
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"real_imag_assign".as_ptr() as *mut i8;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = a;
-// REWRITES-NEXT:     let mut byval13: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
-// REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval13)) });
+// REWRITES-NEXT:     print_lc(c"real_imag_assign".as_ptr() as *mut i8, a);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = a;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.re;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = a;
@@ -1730,9 +1107,7 @@ int main(void) {
 // REWRITES-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 1, 64]),
 // REWRITES-NEXT:         im: LongDouble([0; 10]),
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"real_to_complex".as_ptr() as *mut i8;
-// REWRITES-NEXT:     let mut byval: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
-// REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval)) });
+// REWRITES-NEXT:     print_lc(c"real_to_complex".as_ptr() as *mut i8, {{_v[0-9]+}});
 // REWRITES-NEXT:     back = {{_v[0-9]+}}.re;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = back != LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 1, 64]);
 // REWRITES-NEXT:     if {{_v[0-9]+}} {
@@ -1747,209 +1122,78 @@ int main(void) {
 // REWRITES-NEXT:     if {{_v[0-9]+}} {
 // REWRITES-NEXT:         unsafe { abort() };
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.re;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.im;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = __slate_f80_to_f64({{_v[0-9]+}});
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = __slate_f80_to_f64({{_v[0-9]+}});
+// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = __slate_f80_to_f64({{_v[0-9]+}}.re);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = __slate_f80_to_f64({{_v[0-9]+}}.im);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"to_double_complex".as_ptr() as *mut i8;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.re;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.im;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f64({{_v[0-9]+}});
-// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f64({{_v[0-9]+}});
+// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f64({{_v[0-9]+}}.re);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f64({{_v[0-9]+}}.im);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} };
-// REWRITES-NEXT:     let mut byval2: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
-// REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval2)) });
-// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.re;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.im;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = __slate_f80_to_f32({{_v[0-9]+}});
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = __slate_f80_to_f32({{_v[0-9]+}});
+// REWRITES-NEXT:     print_lc({{_v[0-9]+}}, {{_v[0-9]+}});
+// REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = __slate_f80_to_f32({{_v[0-9]+}}.re);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = __slate_f80_to_f32({{_v[0-9]+}}.im);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"to_float_complex".as_ptr() as *mut i8;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = {{_v[0-9]+}}.re;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = {{_v[0-9]+}}.im;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f32({{_v[0-9]+}});
-// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f32({{_v[0-9]+}});
+// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f32({{_v[0-9]+}}.re);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f32({{_v[0-9]+}}.im);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} };
-// REWRITES-NEXT:     let mut byval3: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
-// REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval3)) });
+// REWRITES-NEXT:     print_lc({{_v[0-9]+}}, {{_v[0-9]+}});
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = 6.0;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = 0.0;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.re;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.im;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f64({{_v[0-9]+}});
-// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f64({{_v[0-9]+}});
+// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f64({{_v[0-9]+}}.re);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f64({{_v[0-9]+}}.im);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"from_double_complex".as_ptr() as *mut i8;
-// REWRITES-NEXT:     let mut byval4: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
-// REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval4)) });
+// REWRITES-NEXT:     print_lc(c"from_double_complex".as_ptr() as *mut i8, {{_v[0-9]+}});
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_i32(7 as i32);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // REWRITES-NEXT:         re: {{_v[0-9]+}},
 // REWRITES-NEXT:         im: LongDouble([0; 10]),
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"from_int".as_ptr() as *mut i8;
-// REWRITES-NEXT:     let mut byval5: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
-// REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval5)) });
+// REWRITES-NEXT:     print_lc(c"from_int".as_ptr() as *mut i8, {{_v[0-9]+}});
 // REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn check_stdlib_functions() {
-// REWRITES-NEXT:     let mut coerce: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} {
-// REWRITES-NEXT:         __slate_anon_0: LongDouble([0; 10]),
-// REWRITES-NEXT:         __slate_anon_1: LongDouble([0; 10]),
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let mut coerce2: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} {
-// REWRITES-NEXT:         __slate_anon_0: LongDouble([0; 10]),
-// REWRITES-NEXT:         __slate_anon_1: LongDouble([0; 10]),
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let mut coerce3: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} {
-// REWRITES-NEXT:         __slate_anon_0: LongDouble([0; 10]),
-// REWRITES-NEXT:         __slate_anon_1: LongDouble([0; 10]),
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let mut coerce4: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} {
-// REWRITES-NEXT:         __slate_anon_0: LongDouble([0; 10]),
-// REWRITES-NEXT:         __slate_anon_1: LongDouble([0; 10]),
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let mut coerce5: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} {
-// REWRITES-NEXT:         __slate_anon_0: LongDouble([0; 10]),
-// REWRITES-NEXT:         __slate_anon_1: LongDouble([0; 10]),
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let mut coerce6: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} {
-// REWRITES-NEXT:         __slate_anon_0: LongDouble([0; 10]),
-// REWRITES-NEXT:         __slate_anon_1: LongDouble([0; 10]),
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let mut coerce7: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} {
-// REWRITES-NEXT:         __slate_anon_0: LongDouble([0; 10]),
-// REWRITES-NEXT:         __slate_anon_1: LongDouble([0; 10]),
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let mut coerce8: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} {
-// REWRITES-NEXT:         __slate_anon_0: LongDouble([0; 10]),
-// REWRITES-NEXT:         __slate_anon_1: LongDouble([0; 10]),
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let mut coerce9: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} {
-// REWRITES-NEXT:         __slate_anon_0: LongDouble([0; 10]),
-// REWRITES-NEXT:         __slate_anon_1: LongDouble([0; 10]),
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let mut coerce10: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} {
-// REWRITES-NEXT:         __slate_anon_0: LongDouble([0; 10]),
-// REWRITES-NEXT:         __slate_anon_1: LongDouble([0; 10]),
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let mut coerce11: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} {
-// REWRITES-NEXT:         __slate_anon_0: LongDouble([0; 10]),
-// REWRITES-NEXT:         __slate_anon_1: LongDouble([0; 10]),
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let mut coerce12: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} {
-// REWRITES-NEXT:         __slate_anon_0: LongDouble([0; 10]),
-// REWRITES-NEXT:         __slate_anon_1: LongDouble([0; 10]),
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let mut coerce13: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} {
-// REWRITES-NEXT:         __slate_anon_0: LongDouble([0; 10]),
-// REWRITES-NEXT:         __slate_anon_1: LongDouble([0; 10]),
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let mut coerce14: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} {
-// REWRITES-NEXT:         __slate_anon_0: LongDouble([0; 10]),
-// REWRITES-NEXT:         __slate_anon_1: LongDouble([0; 10]),
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let mut coerce15: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} {
-// REWRITES-NEXT:         __slate_anon_0: LongDouble([0; 10]),
-// REWRITES-NEXT:         __slate_anon_1: LongDouble([0; 10]),
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let mut coerce16: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} {
-// REWRITES-NEXT:         __slate_anon_0: LongDouble([0; 10]),
-// REWRITES-NEXT:         __slate_anon_1: LongDouble([0; 10]),
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let mut coerce17: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} {
-// REWRITES-NEXT:         __slate_anon_0: LongDouble([0; 10]),
-// REWRITES-NEXT:         __slate_anon_1: LongDouble([0; 10]),
-// REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // REWRITES-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]),
 // REWRITES-NEXT:         im: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 64]),
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"cabs=%La\n".as_ptr() as *mut i8;
-// REWRITES-NEXT:     let mut byval: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
 // REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         __slate_printf__ri32_pi8_f80({{_v[0-9]+}} as *mut i8, unsafe {
-// REWRITES-NEXT:             __slate_cabsl__rf80_pcf80(
-// REWRITES-NEXT:                 std::ptr::addr_of_mut!(byval) as *mut num_complex::Complex<LongDouble>
-// REWRITES-NEXT:             )
+// REWRITES-NEXT:         __slate_printf__ri32_pi8_f80(c"cabs=%La\n".as_ptr() as *mut i8, unsafe {
+// REWRITES-NEXT:             __slate_cabsl__rf80_cf80({{_v[0-9]+}} as num_complex::Complex<LongDouble>)
 // REWRITES-NEXT:         })
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"carg=%La\n".as_ptr() as *mut i8;
-// REWRITES-NEXT:     let mut byval2: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
 // REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         __slate_printf__ri32_pi8_f80({{_v[0-9]+}} as *mut i8, unsafe {
-// REWRITES-NEXT:             __slate_cargl__rf80_pcf80(
-// REWRITES-NEXT:                 std::ptr::addr_of_mut!(byval2) as *mut num_complex::Complex<LongDouble>
-// REWRITES-NEXT:             )
+// REWRITES-NEXT:         __slate_printf__ri32_pi8_f80(c"carg=%La\n".as_ptr() as *mut i8, unsafe {
+// REWRITES-NEXT:             __slate_cargl__rf80_cf80({{_v[0-9]+}} as num_complex::Complex<LongDouble>)
 // REWRITES-NEXT:         })
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"conj".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // REWRITES-NEXT:         re: {{_v[0-9]+}}.re,
 // REWRITES-NEXT:         im: -{{_v[0-9]+}}.im,
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let mut byval3: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
-// REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval3)) });
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"cproj".as_ptr() as *mut i8;
-// REWRITES-NEXT:     let mut byval4: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
-// REWRITES-NEXT:     coerce17 = unsafe {
-// REWRITES-NEXT:         __slate_cprojl__rcf80_pcf80(
-// REWRITES-NEXT:             std::ptr::addr_of_mut!(byval4) as *mut num_complex::Complex<LongDouble>
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut num_complex::Complex<LongDouble> =
-// REWRITES-NEXT:         std::ptr::addr_of_mut!(coerce17) as *mut num_complex::Complex<LongDouble>;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { *{{_v[0-9]+}} };
-// REWRITES-NEXT:     let mut byval5: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
-// REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval5)) });
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"csqrt".as_ptr() as *mut i8;
-// REWRITES-NEXT:     let mut byval6: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
-// REWRITES-NEXT:     coerce16 = unsafe {
-// REWRITES-NEXT:         __slate_csqrtl__rcf80_pcf80(
-// REWRITES-NEXT:             std::ptr::addr_of_mut!(byval6) as *mut num_complex::Complex<LongDouble>
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut num_complex::Complex<LongDouble> =
-// REWRITES-NEXT:         std::ptr::addr_of_mut!(coerce16) as *mut num_complex::Complex<LongDouble>;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { *{{_v[0-9]+}} };
-// REWRITES-NEXT:     let mut byval7: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
-// REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval7)) });
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"cexp".as_ptr() as *mut i8;
+// REWRITES-NEXT:     print_lc(c"conj".as_ptr() as *mut i8, {{_v[0-9]+}});
+// REWRITES-NEXT:     print_lc(c"cproj".as_ptr() as *mut i8, unsafe {
+// REWRITES-NEXT:         __slate_cprojl__rcf80_cf80({{_v[0-9]+}} as num_complex::Complex<LongDouble>)
+// REWRITES-NEXT:     });
+// REWRITES-NEXT:     print_lc(c"csqrt".as_ptr() as *mut i8, unsafe {
+// REWRITES-NEXT:         __slate_csqrtl__rcf80_cf80({{_v[0-9]+}} as num_complex::Complex<LongDouble>)
+// REWRITES-NEXT:     });
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // REWRITES-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // REWRITES-NEXT:         im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let mut byval8: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
-// REWRITES-NEXT:     coerce15 = unsafe {
-// REWRITES-NEXT:         __slate_cexpl__rcf80_pcf80(
-// REWRITES-NEXT:             std::ptr::addr_of_mut!(byval8) as *mut num_complex::Complex<LongDouble>
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut num_complex::Complex<LongDouble> =
-// REWRITES-NEXT:         std::ptr::addr_of_mut!(coerce15) as *mut num_complex::Complex<LongDouble>;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { *{{_v[0-9]+}} };
-// REWRITES-NEXT:     let mut byval9: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
-// REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval9)) });
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"clog".as_ptr() as *mut i8;
+// REWRITES-NEXT:     print_lc(c"cexp".as_ptr() as *mut i8, unsafe {
+// REWRITES-NEXT:         __slate_cexpl__rcf80_cf80({{_v[0-9]+}} as num_complex::Complex<LongDouble>)
+// REWRITES-NEXT:     });
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // REWRITES-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]),
 // REWRITES-NEXT:         im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let mut byval10: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
-// REWRITES-NEXT:     coerce14 = unsafe {
-// REWRITES-NEXT:         __slate_clogl__rcf80_pcf80(
-// REWRITES-NEXT:             std::ptr::addr_of_mut!(byval10) as *mut num_complex::Complex<LongDouble>
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut num_complex::Complex<LongDouble> =
-// REWRITES-NEXT:         std::ptr::addr_of_mut!(coerce14) as *mut num_complex::Complex<LongDouble>;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { *{{_v[0-9]+}} };
-// REWRITES-NEXT:     let mut byval11: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
-// REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval11)) });
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"cpow".as_ptr() as *mut i8;
+// REWRITES-NEXT:     print_lc(c"clog".as_ptr() as *mut i8, unsafe {
+// REWRITES-NEXT:         __slate_clogl__rcf80_cf80({{_v[0-9]+}} as num_complex::Complex<LongDouble>)
+// REWRITES-NEXT:     });
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // REWRITES-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]),
 // REWRITES-NEXT:         im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
@@ -1958,211 +1202,96 @@ int main(void) {
 // REWRITES-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]),
 // REWRITES-NEXT:         im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let mut byval12: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
-// REWRITES-NEXT:     let mut byval13: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
-// REWRITES-NEXT:     coerce13 = unsafe {
-// REWRITES-NEXT:         __slate_cpowl__rcf80_pcf80_pcf80(
-// REWRITES-NEXT:             std::ptr::addr_of_mut!(byval12) as *mut num_complex::Complex<LongDouble>,
-// REWRITES-NEXT:             std::ptr::addr_of_mut!(byval13) as *mut num_complex::Complex<LongDouble>,
+// REWRITES-NEXT:     print_lc(c"cpow".as_ptr() as *mut i8, unsafe {
+// REWRITES-NEXT:         __slate_cpowl__rcf80_cf80_cf80(
+// REWRITES-NEXT:             {{_v[0-9]+}} as num_complex::Complex<LongDouble>,
+// REWRITES-NEXT:             {{_v[0-9]+}} as num_complex::Complex<LongDouble>,
 // REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut num_complex::Complex<LongDouble> =
-// REWRITES-NEXT:         std::ptr::addr_of_mut!(coerce13) as *mut num_complex::Complex<LongDouble>;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { *{{_v[0-9]+}} };
-// REWRITES-NEXT:     let mut byval14: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
-// REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval14)) });
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"csin".as_ptr() as *mut i8;
+// REWRITES-NEXT:     });
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // REWRITES-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // REWRITES-NEXT:         im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let mut byval15: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
-// REWRITES-NEXT:     coerce12 = unsafe {
-// REWRITES-NEXT:         __slate_csinl__rcf80_pcf80(
-// REWRITES-NEXT:             std::ptr::addr_of_mut!(byval15) as *mut num_complex::Complex<LongDouble>
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut num_complex::Complex<LongDouble> =
-// REWRITES-NEXT:         std::ptr::addr_of_mut!(coerce12) as *mut num_complex::Complex<LongDouble>;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { *{{_v[0-9]+}} };
-// REWRITES-NEXT:     let mut byval16: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
-// REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval16)) });
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"ccos".as_ptr() as *mut i8;
+// REWRITES-NEXT:     print_lc(c"csin".as_ptr() as *mut i8, unsafe {
+// REWRITES-NEXT:         __slate_csinl__rcf80_cf80({{_v[0-9]+}} as num_complex::Complex<LongDouble>)
+// REWRITES-NEXT:     });
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // REWRITES-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // REWRITES-NEXT:         im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let mut byval17: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
-// REWRITES-NEXT:     coerce11 = unsafe {
-// REWRITES-NEXT:         __slate_ccosl__rcf80_pcf80(
-// REWRITES-NEXT:             std::ptr::addr_of_mut!(byval17) as *mut num_complex::Complex<LongDouble>
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut num_complex::Complex<LongDouble> =
-// REWRITES-NEXT:         std::ptr::addr_of_mut!(coerce11) as *mut num_complex::Complex<LongDouble>;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { *{{_v[0-9]+}} };
-// REWRITES-NEXT:     let mut byval18: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
-// REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval18)) });
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"ctan".as_ptr() as *mut i8;
+// REWRITES-NEXT:     print_lc(c"ccos".as_ptr() as *mut i8, unsafe {
+// REWRITES-NEXT:         __slate_ccosl__rcf80_cf80({{_v[0-9]+}} as num_complex::Complex<LongDouble>)
+// REWRITES-NEXT:     });
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // REWRITES-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // REWRITES-NEXT:         im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let mut byval19: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
-// REWRITES-NEXT:     coerce10 = unsafe {
-// REWRITES-NEXT:         __slate_ctanl__rcf80_pcf80(
-// REWRITES-NEXT:             std::ptr::addr_of_mut!(byval19) as *mut num_complex::Complex<LongDouble>
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut num_complex::Complex<LongDouble> =
-// REWRITES-NEXT:         std::ptr::addr_of_mut!(coerce10) as *mut num_complex::Complex<LongDouble>;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { *{{_v[0-9]+}} };
-// REWRITES-NEXT:     let mut byval20: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
-// REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval20)) });
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"casin".as_ptr() as *mut i8;
+// REWRITES-NEXT:     print_lc(c"ctan".as_ptr() as *mut i8, unsafe {
+// REWRITES-NEXT:         __slate_ctanl__rcf80_cf80({{_v[0-9]+}} as num_complex::Complex<LongDouble>)
+// REWRITES-NEXT:     });
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // REWRITES-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // REWRITES-NEXT:         im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let mut byval21: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
-// REWRITES-NEXT:     coerce9 = unsafe {
-// REWRITES-NEXT:         __slate_casinl__rcf80_pcf80(
-// REWRITES-NEXT:             std::ptr::addr_of_mut!(byval21) as *mut num_complex::Complex<LongDouble>
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut num_complex::Complex<LongDouble> =
-// REWRITES-NEXT:         std::ptr::addr_of_mut!(coerce9) as *mut num_complex::Complex<LongDouble>;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { *{{_v[0-9]+}} };
-// REWRITES-NEXT:     let mut byval22: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
-// REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval22)) });
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"cacos".as_ptr() as *mut i8;
+// REWRITES-NEXT:     print_lc(c"casin".as_ptr() as *mut i8, unsafe {
+// REWRITES-NEXT:         __slate_casinl__rcf80_cf80({{_v[0-9]+}} as num_complex::Complex<LongDouble>)
+// REWRITES-NEXT:     });
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // REWRITES-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]),
 // REWRITES-NEXT:         im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let mut byval23: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
-// REWRITES-NEXT:     coerce8 = unsafe {
-// REWRITES-NEXT:         __slate_cacosl__rcf80_pcf80(
-// REWRITES-NEXT:             std::ptr::addr_of_mut!(byval23) as *mut num_complex::Complex<LongDouble>
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut num_complex::Complex<LongDouble> =
-// REWRITES-NEXT:         std::ptr::addr_of_mut!(coerce8) as *mut num_complex::Complex<LongDouble>;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { *{{_v[0-9]+}} };
-// REWRITES-NEXT:     let mut byval24: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
-// REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval24)) });
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"catan".as_ptr() as *mut i8;
+// REWRITES-NEXT:     print_lc(c"cacos".as_ptr() as *mut i8, unsafe {
+// REWRITES-NEXT:         __slate_cacosl__rcf80_cf80({{_v[0-9]+}} as num_complex::Complex<LongDouble>)
+// REWRITES-NEXT:     });
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // REWRITES-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // REWRITES-NEXT:         im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let mut byval25: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
-// REWRITES-NEXT:     coerce7 = unsafe {
-// REWRITES-NEXT:         __slate_catanl__rcf80_pcf80(
-// REWRITES-NEXT:             std::ptr::addr_of_mut!(byval25) as *mut num_complex::Complex<LongDouble>
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut num_complex::Complex<LongDouble> =
-// REWRITES-NEXT:         std::ptr::addr_of_mut!(coerce7) as *mut num_complex::Complex<LongDouble>;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { *{{_v[0-9]+}} };
-// REWRITES-NEXT:     let mut byval26: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
-// REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval26)) });
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"csinh".as_ptr() as *mut i8;
+// REWRITES-NEXT:     print_lc(c"catan".as_ptr() as *mut i8, unsafe {
+// REWRITES-NEXT:         __slate_catanl__rcf80_cf80({{_v[0-9]+}} as num_complex::Complex<LongDouble>)
+// REWRITES-NEXT:     });
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // REWRITES-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // REWRITES-NEXT:         im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let mut byval27: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
-// REWRITES-NEXT:     coerce6 = unsafe {
-// REWRITES-NEXT:         __slate_csinhl__rcf80_pcf80(
-// REWRITES-NEXT:             std::ptr::addr_of_mut!(byval27) as *mut num_complex::Complex<LongDouble>
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut num_complex::Complex<LongDouble> =
-// REWRITES-NEXT:         std::ptr::addr_of_mut!(coerce6) as *mut num_complex::Complex<LongDouble>;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { *{{_v[0-9]+}} };
-// REWRITES-NEXT:     let mut byval28: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
-// REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval28)) });
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"ccosh".as_ptr() as *mut i8;
+// REWRITES-NEXT:     print_lc(c"csinh".as_ptr() as *mut i8, unsafe {
+// REWRITES-NEXT:         __slate_csinhl__rcf80_cf80({{_v[0-9]+}} as num_complex::Complex<LongDouble>)
+// REWRITES-NEXT:     });
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // REWRITES-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // REWRITES-NEXT:         im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let mut byval29: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
-// REWRITES-NEXT:     coerce5 = unsafe {
-// REWRITES-NEXT:         __slate_ccoshl__rcf80_pcf80(
-// REWRITES-NEXT:             std::ptr::addr_of_mut!(byval29) as *mut num_complex::Complex<LongDouble>
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut num_complex::Complex<LongDouble> =
-// REWRITES-NEXT:         std::ptr::addr_of_mut!(coerce5) as *mut num_complex::Complex<LongDouble>;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { *{{_v[0-9]+}} };
-// REWRITES-NEXT:     let mut byval30: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
-// REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval30)) });
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"ctanh".as_ptr() as *mut i8;
+// REWRITES-NEXT:     print_lc(c"ccosh".as_ptr() as *mut i8, unsafe {
+// REWRITES-NEXT:         __slate_ccoshl__rcf80_cf80({{_v[0-9]+}} as num_complex::Complex<LongDouble>)
+// REWRITES-NEXT:     });
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // REWRITES-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // REWRITES-NEXT:         im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let mut byval31: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
-// REWRITES-NEXT:     coerce4 = unsafe {
-// REWRITES-NEXT:         __slate_ctanhl__rcf80_pcf80(
-// REWRITES-NEXT:             std::ptr::addr_of_mut!(byval31) as *mut num_complex::Complex<LongDouble>
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut num_complex::Complex<LongDouble> =
-// REWRITES-NEXT:         std::ptr::addr_of_mut!(coerce4) as *mut num_complex::Complex<LongDouble>;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { *{{_v[0-9]+}} };
-// REWRITES-NEXT:     let mut byval32: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
-// REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval32)) });
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"casinh".as_ptr() as *mut i8;
+// REWRITES-NEXT:     print_lc(c"ctanh".as_ptr() as *mut i8, unsafe {
+// REWRITES-NEXT:         __slate_ctanhl__rcf80_cf80({{_v[0-9]+}} as num_complex::Complex<LongDouble>)
+// REWRITES-NEXT:     });
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // REWRITES-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // REWRITES-NEXT:         im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let mut byval33: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
-// REWRITES-NEXT:     coerce3 = unsafe {
-// REWRITES-NEXT:         __slate_casinhl__rcf80_pcf80(
-// REWRITES-NEXT:             std::ptr::addr_of_mut!(byval33) as *mut num_complex::Complex<LongDouble>
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut num_complex::Complex<LongDouble> =
-// REWRITES-NEXT:         std::ptr::addr_of_mut!(coerce3) as *mut num_complex::Complex<LongDouble>;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { *{{_v[0-9]+}} };
-// REWRITES-NEXT:     let mut byval34: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
-// REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval34)) });
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"cacosh".as_ptr() as *mut i8;
+// REWRITES-NEXT:     print_lc(c"casinh".as_ptr() as *mut i8, unsafe {
+// REWRITES-NEXT:         __slate_casinhl__rcf80_cf80({{_v[0-9]+}} as num_complex::Complex<LongDouble>)
+// REWRITES-NEXT:     });
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // REWRITES-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]),
 // REWRITES-NEXT:         im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let mut byval35: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
-// REWRITES-NEXT:     coerce2 = unsafe {
-// REWRITES-NEXT:         __slate_cacoshl__rcf80_pcf80(
-// REWRITES-NEXT:             std::ptr::addr_of_mut!(byval35) as *mut num_complex::Complex<LongDouble>
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut num_complex::Complex<LongDouble> =
-// REWRITES-NEXT:         std::ptr::addr_of_mut!(coerce2) as *mut num_complex::Complex<LongDouble>;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { *{{_v[0-9]+}} };
-// REWRITES-NEXT:     let mut byval36: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
-// REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval36)) });
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"catanh".as_ptr() as *mut i8;
+// REWRITES-NEXT:     print_lc(c"cacosh".as_ptr() as *mut i8, unsafe {
+// REWRITES-NEXT:         __slate_cacoshl__rcf80_cf80({{_v[0-9]+}} as num_complex::Complex<LongDouble>)
+// REWRITES-NEXT:     });
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // REWRITES-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // REWRITES-NEXT:         im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let mut byval37: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
-// REWRITES-NEXT:     coerce = unsafe {
-// REWRITES-NEXT:         __slate_catanhl__rcf80_pcf80(
-// REWRITES-NEXT:             std::ptr::addr_of_mut!(byval37) as *mut num_complex::Complex<LongDouble>
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut num_complex::Complex<LongDouble> =
-// REWRITES-NEXT:         std::ptr::addr_of_mut!(coerce) as *mut num_complex::Complex<LongDouble>;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { *{{_v[0-9]+}} };
-// REWRITES-NEXT:     let mut byval38: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
-// REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval38)) });
+// REWRITES-NEXT:     print_lc(c"catanh".as_ptr() as *mut i8, unsafe {
+// REWRITES-NEXT:         __slate_catanhl__rcf80_cf80({{_v[0-9]+}} as num_complex::Complex<LongDouble>)
+// REWRITES-NEXT:     });
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.re;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.im;
 // REWRITES-NEXT:     unsafe {
@@ -2171,41 +1300,70 @@ int main(void) {
 // REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     check_arithmetic();
-// REWRITES-NEXT:     check_casts();
-// REWRITES-NEXT:     check_stdlib_functions();
-// REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT: fn print_lc({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: num_complex::Complex<LongDouble>) {
+// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = {{arg[0-9]+}}.re;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = {{arg[0-9]+}}.im;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         __slate_printf__ri32_pi8_pi8_f80_f80(
+// REWRITES-NEXT:             c"%s=%Lax%Lai\n".as_ptr() as *mut i8,
+// REWRITES-NEXT:             {{arg[0-9]+}} as *mut i8,
+// REWRITES-NEXT:             {{_v[0-9]+}},
+// REWRITES-NEXT:             {{_v[0-9]+}},
+// REWRITES-NEXT:         )
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     return;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn mix_complex(
+// REWRITES-NEXT:     {{arg[0-9]+}}: num_complex::Complex<LongDouble>,
+// REWRITES-NEXT:     {{arg[0-9]+}}: num_complex::Complex<LongDouble>,
+// REWRITES-NEXT: ) -> num_complex::Complex<LongDouble> {
+// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// REWRITES-NEXT:         re: {{arg[0-9]+}}.re + {{arg[0-9]+}}.re,
+// REWRITES-NEXT:         im: {{arg[0-9]+}}.im + {{arg[0-9]+}}.im,
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// REWRITES-NEXT:         re: {{_v[0-9]+}}.re / {{_v[0-9]+}},
+// REWRITES-NEXT:         im: {{_v[0-9]+}}.im / {{_v[0-9]+}},
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]);
+// REWRITES-NEXT:     num_complex::Complex {
+// REWRITES-NEXT:         re: {{_v[0-9]+}}.re * {{_v[0-9]+}},
+// REWRITES-NEXT:         im: {{_v[0-9]+}}.im * {{_v[0-9]+}},
+// REWRITES-NEXT:     }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe extern "C" {
-// REWRITES-NEXT:     fn __slate_cabsl__rf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> LongDouble;
-// REWRITES-NEXT:     fn __slate_cacoshl__rcf80_pcf80(
-// REWRITES-NEXT:         _0: *mut num_complex::Complex<LongDouble>,
-// REWRITES-NEXT:     ) -> {{anon_struct[0-9A-Za-z_]*}};
-// REWRITES-NEXT:     fn __slate_cacosl__rcf80_pcf80(
-// REWRITES-NEXT:         _0: *mut num_complex::Complex<LongDouble>,
-// REWRITES-NEXT:     ) -> {{anon_struct[0-9A-Za-z_]*}};
-// REWRITES-NEXT:     fn __slate_cargl__rf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> LongDouble;
-// REWRITES-NEXT:     fn __slate_casinhl__rcf80_pcf80(
-// REWRITES-NEXT:         _0: *mut num_complex::Complex<LongDouble>,
-// REWRITES-NEXT:     ) -> {{anon_struct[0-9A-Za-z_]*}};
-// REWRITES-NEXT:     fn __slate_casinl__rcf80_pcf80(
-// REWRITES-NEXT:         _0: *mut num_complex::Complex<LongDouble>,
-// REWRITES-NEXT:     ) -> {{anon_struct[0-9A-Za-z_]*}};
-// REWRITES-NEXT:     fn __slate_catanhl__rcf80_pcf80(
-// REWRITES-NEXT:         _0: *mut num_complex::Complex<LongDouble>,
-// REWRITES-NEXT:     ) -> {{anon_struct[0-9A-Za-z_]*}};
-// REWRITES-NEXT:     fn __slate_catanl__rcf80_pcf80(
-// REWRITES-NEXT:         _0: *mut num_complex::Complex<LongDouble>,
-// REWRITES-NEXT:     ) -> {{anon_struct[0-9A-Za-z_]*}};
-// REWRITES-NEXT:     fn __slate_ccoshl__rcf80_pcf80(
-// REWRITES-NEXT:         _0: *mut num_complex::Complex<LongDouble>,
-// REWRITES-NEXT:     ) -> {{anon_struct[0-9A-Za-z_]*}};
-// REWRITES-NEXT:     fn __slate_ccosl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>)
-// REWRITES-NEXT:     -> {{anon_struct[0-9A-Za-z_]*}};
-// REWRITES-NEXT:     fn __slate_cexpl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>)
-// REWRITES-NEXT:     -> {{anon_struct[0-9A-Za-z_]*}};
+// REWRITES-NEXT:     fn __slate_cabsl__rf80_cf80(_0: num_complex::Complex<LongDouble>) -> LongDouble;
+// REWRITES-NEXT:     fn __slate_cacoshl__rcf80_cf80(
+// REWRITES-NEXT:         _0: num_complex::Complex<LongDouble>,
+// REWRITES-NEXT:     ) -> num_complex::Complex<LongDouble>;
+// REWRITES-NEXT:     fn __slate_cacosl__rcf80_cf80(
+// REWRITES-NEXT:         _0: num_complex::Complex<LongDouble>,
+// REWRITES-NEXT:     ) -> num_complex::Complex<LongDouble>;
+// REWRITES-NEXT:     fn __slate_cargl__rf80_cf80(_0: num_complex::Complex<LongDouble>) -> LongDouble;
+// REWRITES-NEXT:     fn __slate_casinhl__rcf80_cf80(
+// REWRITES-NEXT:         _0: num_complex::Complex<LongDouble>,
+// REWRITES-NEXT:     ) -> num_complex::Complex<LongDouble>;
+// REWRITES-NEXT:     fn __slate_casinl__rcf80_cf80(
+// REWRITES-NEXT:         _0: num_complex::Complex<LongDouble>,
+// REWRITES-NEXT:     ) -> num_complex::Complex<LongDouble>;
+// REWRITES-NEXT:     fn __slate_catanhl__rcf80_cf80(
+// REWRITES-NEXT:         _0: num_complex::Complex<LongDouble>,
+// REWRITES-NEXT:     ) -> num_complex::Complex<LongDouble>;
+// REWRITES-NEXT:     fn __slate_catanl__rcf80_cf80(
+// REWRITES-NEXT:         _0: num_complex::Complex<LongDouble>,
+// REWRITES-NEXT:     ) -> num_complex::Complex<LongDouble>;
+// REWRITES-NEXT:     fn __slate_ccoshl__rcf80_cf80(
+// REWRITES-NEXT:         _0: num_complex::Complex<LongDouble>,
+// REWRITES-NEXT:     ) -> num_complex::Complex<LongDouble>;
+// REWRITES-NEXT:     fn __slate_ccosl__rcf80_cf80(
+// REWRITES-NEXT:         _0: num_complex::Complex<LongDouble>,
+// REWRITES-NEXT:     ) -> num_complex::Complex<LongDouble>;
+// REWRITES-NEXT:     fn __slate_cexpl__rcf80_cf80(
+// REWRITES-NEXT:         _0: num_complex::Complex<LongDouble>,
+// REWRITES-NEXT:     ) -> num_complex::Complex<LongDouble>;
 // REWRITES-NEXT:     safe fn __slate_cf80_div(
 // REWRITES-NEXT:         a: num_complex::Complex<LongDouble>,
 // REWRITES-NEXT:         b: num_complex::Complex<LongDouble>,
@@ -2214,28 +1372,31 @@ int main(void) {
 // REWRITES-NEXT:         a: num_complex::Complex<LongDouble>,
 // REWRITES-NEXT:         b: num_complex::Complex<LongDouble>,
 // REWRITES-NEXT:     ) -> num_complex::Complex<LongDouble>;
-// REWRITES-NEXT:     fn __slate_clogl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>)
-// REWRITES-NEXT:     -> {{anon_struct[0-9A-Za-z_]*}};
-// REWRITES-NEXT:     fn __slate_cpowl__rcf80_pcf80_pcf80(
-// REWRITES-NEXT:         _0: *mut num_complex::Complex<LongDouble>,
-// REWRITES-NEXT:         _1: *mut num_complex::Complex<LongDouble>,
-// REWRITES-NEXT:     ) -> {{anon_struct[0-9A-Za-z_]*}};
-// REWRITES-NEXT:     fn __slate_cprojl__rcf80_pcf80(
-// REWRITES-NEXT:         _0: *mut num_complex::Complex<LongDouble>,
-// REWRITES-NEXT:     ) -> {{anon_struct[0-9A-Za-z_]*}};
-// REWRITES-NEXT:     fn __slate_csinhl__rcf80_pcf80(
-// REWRITES-NEXT:         _0: *mut num_complex::Complex<LongDouble>,
-// REWRITES-NEXT:     ) -> {{anon_struct[0-9A-Za-z_]*}};
-// REWRITES-NEXT:     fn __slate_csinl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>)
-// REWRITES-NEXT:     -> {{anon_struct[0-9A-Za-z_]*}};
-// REWRITES-NEXT:     fn __slate_csqrtl__rcf80_pcf80(
-// REWRITES-NEXT:         _0: *mut num_complex::Complex<LongDouble>,
-// REWRITES-NEXT:     ) -> {{anon_struct[0-9A-Za-z_]*}};
-// REWRITES-NEXT:     fn __slate_ctanhl__rcf80_pcf80(
-// REWRITES-NEXT:         _0: *mut num_complex::Complex<LongDouble>,
-// REWRITES-NEXT:     ) -> {{anon_struct[0-9A-Za-z_]*}};
-// REWRITES-NEXT:     fn __slate_ctanl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>)
-// REWRITES-NEXT:     -> {{anon_struct[0-9A-Za-z_]*}};
+// REWRITES-NEXT:     fn __slate_clogl__rcf80_cf80(
+// REWRITES-NEXT:         _0: num_complex::Complex<LongDouble>,
+// REWRITES-NEXT:     ) -> num_complex::Complex<LongDouble>;
+// REWRITES-NEXT:     fn __slate_cpowl__rcf80_cf80_cf80(
+// REWRITES-NEXT:         _0: num_complex::Complex<LongDouble>,
+// REWRITES-NEXT:         _1: num_complex::Complex<LongDouble>,
+// REWRITES-NEXT:     ) -> num_complex::Complex<LongDouble>;
+// REWRITES-NEXT:     fn __slate_cprojl__rcf80_cf80(
+// REWRITES-NEXT:         _0: num_complex::Complex<LongDouble>,
+// REWRITES-NEXT:     ) -> num_complex::Complex<LongDouble>;
+// REWRITES-NEXT:     fn __slate_csinhl__rcf80_cf80(
+// REWRITES-NEXT:         _0: num_complex::Complex<LongDouble>,
+// REWRITES-NEXT:     ) -> num_complex::Complex<LongDouble>;
+// REWRITES-NEXT:     fn __slate_csinl__rcf80_cf80(
+// REWRITES-NEXT:         _0: num_complex::Complex<LongDouble>,
+// REWRITES-NEXT:     ) -> num_complex::Complex<LongDouble>;
+// REWRITES-NEXT:     fn __slate_csqrtl__rcf80_cf80(
+// REWRITES-NEXT:         _0: num_complex::Complex<LongDouble>,
+// REWRITES-NEXT:     ) -> num_complex::Complex<LongDouble>;
+// REWRITES-NEXT:     fn __slate_ctanhl__rcf80_cf80(
+// REWRITES-NEXT:         _0: num_complex::Complex<LongDouble>,
+// REWRITES-NEXT:     ) -> num_complex::Complex<LongDouble>;
+// REWRITES-NEXT:     fn __slate_ctanl__rcf80_cf80(
+// REWRITES-NEXT:         _0: num_complex::Complex<LongDouble>,
+// REWRITES-NEXT:     ) -> num_complex::Complex<LongDouble>;
 // REWRITES-NEXT:     safe fn __slate_f80_abs(a: LongDouble) -> LongDouble;
 // REWRITES-NEXT:     safe fn __slate_f80_add(a: LongDouble, b: LongDouble) -> LongDouble;
 // REWRITES-NEXT:     safe fn __slate_f80_ceil(a: LongDouble) -> LongDouble;

@@ -43,23 +43,14 @@ int main(void) {
 // LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: extern "C-unwind" fn add_one({{arg[0-9]+}}: *mut i32) -> *mut i32 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{arg[0-9]+}} };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         *{{arg[0-9]+}} = {{_v[0-9]+}};
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     return {{arg[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let mut value: i32 = 0;
 // LOWERING-NEXT:     let mut callback: Callback = Callback { handler: None };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 41;
 // LOWERING-NEXT:     value = {{_v[0-9]+}};
-// LOWERING-NEXT:     callback = Callback { handler: None };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: Callback = Callback { handler: None };
+// LOWERING-NEXT:     callback = {{_v[0-9]+}};
 // LOWERING-NEXT:     callback.handler = unsafe {
 // LOWERING-NEXT:         std::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(*mut i32) -> *mut i32>>(
 // LOWERING-NEXT:             add_one as *const (),
@@ -71,6 +62,16 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: extern "C-unwind" fn add_one({{arg[0-9]+}}: *mut i32) -> *mut i32 {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{arg[0-9]+}} };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-NEXT:     unsafe {
+// LOWERING-NEXT:         *{{arg[0-9]+}} = {{_v[0-9]+}};
+// LOWERING-NEXT:     }
+// LOWERING-NEXT:     return {{arg[0-9]+}};
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -99,13 +100,6 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: extern "C-unwind" fn add_one({{arg[0-9]+}}: *mut i32) -> *mut i32 {
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         *{{arg[0-9]+}} = (unsafe { *{{arg[0-9]+}} }) + 1;
-// REWRITES-NEXT:     }
-// REWRITES-NEXT:     {{arg[0-9]+}}
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut value: i32 = 0;
 // REWRITES-NEXT:     let mut callback: Callback = Callback { handler: None };
@@ -120,5 +114,12 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { callback.handler.unwrap()(std::ptr::addr_of_mut!(value)) };
 // REWRITES-NEXT:     unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, unsafe { *{{_v[0-9]+}} }) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: extern "C-unwind" fn add_one({{arg[0-9]+}}: *mut i32) -> *mut i32 {
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         *{{arg[0-9]+}} = (unsafe { *{{arg[0-9]+}} }) + 1;
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     {{arg[0-9]+}}
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

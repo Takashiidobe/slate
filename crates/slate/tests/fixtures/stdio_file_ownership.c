@@ -56,10 +56,11 @@ int main(void) {
 // LOWERING-NEXT:     let mut buf: aligned::Aligned<aligned::A16, [i8; 16]> = aligned::Aligned([0; 16]);
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     *name = [
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i8; 31] = [
 // LOWERING-NEXT:         115, 108, 97, 116, 101, 95, 115, 116, 100, 105, 111, 95, 102, 105, 108, 101, 95, 111, 119,
 // LOWERING-NEXT:         110, 101, 114, 115, 104, 105, 112, 46, 116, 109, 112, 0,
 // LOWERING-NEXT:     ];
+// LOWERING-NEXT:     *name = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = name.as_mut_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { remove({{_v[0-9]+}} as *const core::ffi::c_char) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = name.as_mut_ptr() as *mut i8;
@@ -111,7 +112,8 @@ int main(void) {
 // LOWERING-NEXT:             std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     *buf = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i8; 16] = [0; 16];
+// LOWERING-NEXT:     *buf = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = buf.as_mut_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 16;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut libc::FILE = g;
@@ -189,7 +191,7 @@ int main(void) {
 // REWRITES-NEXT:         __retval = 0;
 // REWRITES-NEXT:         std::process::exit(__retval as i32);
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     *buf = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+// REWRITES-NEXT:     *buf = [0; 16];
 // REWRITES-NEXT:     (unsafe {
 // REWRITES-NEXT:         fgets(
 // REWRITES-NEXT:             buf.as_mut_ptr() as *mut core::ffi::c_char,

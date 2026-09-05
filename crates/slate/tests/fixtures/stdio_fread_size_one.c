@@ -106,7 +106,8 @@ int main(void) {
 // LOWERING-NEXT:             std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     *buf = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i8; 16] = [0; 16];
+// LOWERING-NEXT:     *buf = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = buf.as_mut_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 1;
@@ -181,7 +182,7 @@ int main(void) {
 // REWRITES-NEXT:         __retval = 0;
 // REWRITES-NEXT:         std::process::exit(__retval as i32);
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     *buf = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+// REWRITES-NEXT:     *buf = [0; 16];
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = buf.as_mut_ptr() as *mut i8;
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(

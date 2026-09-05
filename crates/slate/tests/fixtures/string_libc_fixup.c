@@ -76,17 +76,28 @@ int main(void) {
 // LOWERING-NEXT:     let mut reject: [i8; 3] = [0; 3];
 // LOWERING-NEXT:     let mut utf8: [i8; 4] = [0; 4];
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     alpha = [97, 98, 99, 0];
-// LOWERING-NEXT:     beta = [97, 98, 100, 0];
-// LOWERING-NEXT:     bytes_a = [255, 1, 0];
-// LOWERING-NEXT:     bytes_b = [255, 2, 0];
-// LOWERING-NEXT:     hay = [97, 98, 97, 99, 97, 100, 0];
-// LOWERING-NEXT:     sub = [97, 99, 97, 0];
-// LOWERING-NEXT:     empty = [0];
-// LOWERING-NEXT:     set = [99, 120, 0];
-// LOWERING-NEXT:     prefix = [97, 98, 0];
-// LOWERING-NEXT:     reject = [99, 100, 0];
-// LOWERING-NEXT:     utf8 = [104, -61, -87, 0];
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i8; 4] = [97, 98, 99, 0];
+// LOWERING-NEXT:     alpha = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i8; 4] = [97, 98, 100, 0];
+// LOWERING-NEXT:     beta = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [u8; 3] = [255, 1, 0];
+// LOWERING-NEXT:     bytes_a = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [u8; 3] = [255, 2, 0];
+// LOWERING-NEXT:     bytes_b = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i8; 7] = [97, 98, 97, 99, 97, 100, 0];
+// LOWERING-NEXT:     hay = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i8; 4] = [97, 99, 97, 0];
+// LOWERING-NEXT:     sub = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i8; 1] = [0; 1];
+// LOWERING-NEXT:     empty = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i8; 3] = [99, 120, 0];
+// LOWERING-NEXT:     set = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i8; 3] = [97, 98, 0];
+// LOWERING-NEXT:     prefix = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i8; 3] = [99, 100, 0];
+// LOWERING-NEXT:     reject = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i8; 4] = [104, -61, -87, 0];
+// LOWERING-NEXT:     utf8 = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 169;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%zu %d %d %d %d\n\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = alpha.as_mut_ptr() as *mut i8;
@@ -141,7 +152,16 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-NEXT:         printf(
+// LOWERING-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:         )
+// LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = hay.as_mut_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 97;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 =

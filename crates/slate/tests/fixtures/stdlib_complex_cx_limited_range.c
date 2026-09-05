@@ -77,27 +77,15 @@ int main(void) {
 // LOWERING-NEXT:     {
 // LOWERING-NEXT:         let {{_v[0-9]+}}: num_complex::Complex<f64> = a;
 // LOWERING-NEXT:         let {{_v[0-9]+}}: num_complex::Complex<f64> = b;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.re;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.im;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.re;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.im;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: f64 = {{_v[0-9]+}} * {{_v[0-9]+}};
-// LOWERING-NEXT:         let {{_v[0-9]+}}: f64 = {{_v[0-9]+}} * {{_v[0-9]+}};
-// LOWERING-NEXT:         let {{_v[0-9]+}}: f64 = {{_v[0-9]+}} * {{_v[0-9]+}};
-// LOWERING-NEXT:         let {{_v[0-9]+}}: f64 = {{_v[0-9]+}} * {{_v[0-9]+}};
-// LOWERING-NEXT:         let {{_v[0-9]+}}: f64 = {{_v[0-9]+}} - {{_v[0-9]+}};
-// LOWERING-NEXT:         let {{_v[0-9]+}}: f64 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:         let {{_v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} };
+// LOWERING-NEXT:         let {{_v[0-9]+}}: num_complex::Complex<f64> =
+// LOWERING-NEXT:             unsafe { __muldc3({{_v[0-9]+}}.re, {{_v[0-9]+}}.im, {{_v[0-9]+}}.re, {{_v[0-9]+}}.im) };
 // LOWERING-NEXT:         product = {{_v[0-9]+}};
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     {
 // LOWERING-NEXT:         let {{_v[0-9]+}}: num_complex::Complex<f64> = a;
 // LOWERING-NEXT:         let {{_v[0-9]+}}: num_complex::Complex<f64> = b;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.re;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.im;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.re;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.im;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: num_complex::Complex<f64> = unsafe { __divdc3({{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-NEXT:         let {{_v[0-9]+}}: num_complex::Complex<f64> =
+// LOWERING-NEXT:             unsafe { __divdc3({{_v[0-9]+}}.re, {{_v[0-9]+}}.im, {{_v[0-9]+}}.re, {{_v[0-9]+}}.im) };
 // LOWERING-NEXT:         quotient = {{_v[0-9]+}};
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%.4f %.4f %.4f %.4f\n\0".as_ptr() as *mut i8;
@@ -194,21 +182,10 @@ int main(void) {
 // REWRITES-NEXT:     b = num_complex::Complex { re: {{_v[0-9]+}}, im: -{{_v[0-9]+}} };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f64> = a;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f64> = b;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.re;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.im;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.re;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.im;
-// REWRITES-NEXT:     product = num_complex::Complex {
-// REWRITES-NEXT:         re: {{_v[0-9]+}} * {{_v[0-9]+}} - {{_v[0-9]+}} * {{_v[0-9]+}},
-// REWRITES-NEXT:         im: {{_v[0-9]+}} * {{_v[0-9]+}} + {{_v[0-9]+}} * {{_v[0-9]+}},
-// REWRITES-NEXT:     };
+// REWRITES-NEXT:     product = unsafe { __muldc3({{_v[0-9]+}}.re, {{_v[0-9]+}}.im, {{_v[0-9]+}}.re, {{_v[0-9]+}}.im) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f64> = a;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f64> = b;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.re;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.im;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.re;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.im;
-// REWRITES-NEXT:     quotient = unsafe { __divdc3({{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-NEXT:     quotient = unsafe { __divdc3({{_v[0-9]+}}.re, {{_v[0-9]+}}.im, {{_v[0-9]+}}.re, {{_v[0-9]+}}.im) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f64> = product;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.re;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f64> = product;

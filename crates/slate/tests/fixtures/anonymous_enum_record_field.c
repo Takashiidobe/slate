@@ -47,7 +47,8 @@ int main(void) {
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let mut conditional: Conditional = Conditional { ctx: {{_unnamed_at_[0-9A-Za-z_]+}}::IN_THEN };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     conditional = Conditional { ctx: {{_unnamed_at_[0-9A-Za-z_]+}}::IN_THEN };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: Conditional = Conditional { ctx: {{_unnamed_at_[0-9A-Za-z_]+}}::IN_THEN };
+// LOWERING-NEXT:     conditional = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = 5;
 // LOWERING-NEXT:     conditional.ctx = {{_unnamed_at_[0-9A-Za-z_]+}}::IN_ELSE;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d\n\0".as_ptr() as *mut i8;
@@ -95,7 +96,8 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut conditional: Conditional = Conditional { ctx: {{_unnamed_at_[0-9A-Za-z_]+}}::IN_THEN };
-// REWRITES-NEXT:     conditional = Conditional { ctx: {{_unnamed_at_[0-9A-Za-z_]+}}::IN_THEN };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: Conditional = Conditional { ctx: {{_unnamed_at_[0-9A-Za-z_]+}}::IN_THEN };
+// REWRITES-NEXT:     conditional = {{_v[0-9]+}};
 // REWRITES-NEXT:     conditional.ctx = {{_unnamed_at_[0-9A-Za-z_]+}}::IN_ELSE;
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(

@@ -71,26 +71,6 @@ int main(void) {
 // LOWERING-NEXT:     fn longjmp(_0: *mut __slate_jmp_buf_tag, _1: i32) -> !;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn run_test({{arg[0-9]+}}: i32) {
-// LOWERING-NEXT:     let mut i: i32 = 0;
-// LOWERING-NEXT:     i = {{arg[0-9]+}};
-// LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = i;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = 2;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
-// LOWERING-NEXT:         if {{_v[0-9]+}} {
-// LOWERING-NEXT:             let {{_v[0-9]+}}: *mut __slate_jmp_buf_tag =
-// LOWERING-NEXT:                 std::ptr::addr_of_mut!(env).cast::<__slate_jmp_buf_tag>();
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:             unsafe { longjmp({{_v[0-9]+}} as *mut __slate_jmp_buf_tag, {{_v[0-9]+}} as i32) };
-// LOWERING-NEXT:         }
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"ran %d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = i;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     return;
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     {
@@ -156,6 +136,26 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn run_test({{arg[0-9]+}}: i32) {
+// LOWERING-NEXT:     let mut i: i32 = 0;
+// LOWERING-NEXT:     i = {{arg[0-9]+}};
+// LOWERING-NEXT:     {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = i;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = 2;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-NEXT:         if {{_v[0-9]+}} {
+// LOWERING-NEXT:             let {{_v[0-9]+}}: *mut __slate_jmp_buf_tag =
+// LOWERING-NEXT:                 std::ptr::addr_of_mut!(env).cast::<__slate_jmp_buf_tag>();
+// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = 1;
+// LOWERING-NEXT:             unsafe { longjmp({{_v[0-9]+}} as *mut __slate_jmp_buf_tag, {{_v[0-9]+}} as i32) };
+// LOWERING-NEXT:         }
+// LOWERING-NEXT:     }
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"ran %d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = i;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     return;
+// LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
@@ -199,21 +199,6 @@ int main(void) {
 // REWRITES-NEXT:     fn longjmp(_0: *mut __slate_jmp_buf_tag, _1: i32) -> !;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn run_test(mut i: i32) {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = i == 2;
-// REWRITES-NEXT:     if {{_v[0-9]+}} {
-// REWRITES-NEXT:         unsafe {
-// REWRITES-NEXT:             longjmp(
-// REWRITES-NEXT:                 std::ptr::addr_of_mut!(env).cast::<__slate_jmp_buf_tag>()
-// REWRITES-NEXT:                     as *mut __slate_jmp_buf_tag,
-// REWRITES-NEXT:                 1 as i32,
-// REWRITES-NEXT:             )
-// REWRITES-NEXT:         };
-// REWRITES-NEXT:     }
-// REWRITES-NEXT:     unsafe { printf(c"ran %d\n".as_ptr(), i) };
-// REWRITES-NEXT:     return;
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut i: i32 = 0;
 // REWRITES-NEXT:     '__loop0: while i < 5 {
@@ -246,5 +231,20 @@ int main(void) {
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn run_test(mut i: i32) {
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = i == 2;
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         unsafe {
+// REWRITES-NEXT:             longjmp(
+// REWRITES-NEXT:                 std::ptr::addr_of_mut!(env).cast::<__slate_jmp_buf_tag>()
+// REWRITES-NEXT:                     as *mut __slate_jmp_buf_tag,
+// REWRITES-NEXT:                 1 as i32,
+// REWRITES-NEXT:             )
+// REWRITES-NEXT:         };
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     unsafe { printf(c"ran %d\n".as_ptr(), i) };
+// REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

@@ -127,9 +127,12 @@ int main(void) {
 // LOWERING-NEXT:     let mut p: Point = Point { x: 0, y: 0 };
 // LOWERING-NEXT:     let mut c: Castable = unsafe { std::mem::zeroed::<Castable>() };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     *range_values = [0, 0, 9, 9, 9, 9, 0, 0, 0, 0];
-// LOWERING-NEXT:     old_index = [0, 11, 0];
-// LOWERING-NEXT:     p = Point { x: 1, y: 2 };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i32; 10] = [0, 0, 9, 9, 9, 9, 0, 0, 0, 0];
+// LOWERING-NEXT:     *range_values = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i32; 3] = [0, 11, 0];
+// LOWERING-NEXT:     old_index = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: Point = Point { x: 1, y: 2 };
+// LOWERING-NEXT:     p = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 5;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = std::ptr::addr_of_mut!(c) as *mut i32;
 // LOWERING-NEXT:     unsafe {

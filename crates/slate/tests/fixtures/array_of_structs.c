@@ -69,7 +69,8 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = ps[({{_v[0-9]+}} as usize)].y;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     *init = [Point { x: 10, y: 20 }, Point { x: 30, y: 40 }];
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [Point; 2] = [Point { x: 10, y: 20 }, Point { x: 30, y: 40 }];
+// LOWERING-NEXT:     *init = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = init[({{_v[0-9]+}} as usize)].y;

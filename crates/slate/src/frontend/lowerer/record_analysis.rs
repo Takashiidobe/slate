@@ -401,7 +401,11 @@ pub fn anon_local_records(module: &Module) -> Vec<crate::frontend::c_ast::Record
             .filter(|(i, _)| {
                 matches!(
                     member_kinds.get(*i),
-                    Some(CirRecordMemberKind::Data | CirRecordMemberKind::Pad)
+                    Some(
+                        CirRecordMemberKind::Data
+                            | CirRecordMemberKind::Pad
+                            | CirRecordMemberKind::BitField
+                    )
                 )
             })
             .map(|(i, field_ty)| crate::frontend::c_ast::Decl {

@@ -59,6 +59,58 @@ int main(void) {
 // LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
+// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT:     let mut input: [u8; 4] = [0; 4];
+// LOWERING-NEXT:     let mut tag: aligned::Aligned<aligned::A16, [u8; 22]> = aligned::Aligned([0; 22]);
+// LOWERING-NEXT:     let mut buffer: [u8; 4] = [0; 4];
+// LOWERING-NEXT:     let mut size_read: u64 = 0;
+// LOWERING-NEXT:     let mut parser: parser_t = parser_t {
+// LOWERING-NEXT:         read_handler: None,
+// LOWERING-NEXT:         read_handler_data: std::ptr::null_mut(),
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [u8; 4] = [97, 98, 99, 0];
+// LOWERING-NEXT:     input = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [u8; 22] = [
+// LOWERING-NEXT:         116, 97, 103, 58, 121, 97, 109, 108, 46, 111, 114, 103, 44, 50, 48, 48, 50, 58, 115, 116,
+// LOWERING-NEXT:         114, 0,
+// LOWERING-NEXT:     ];
+// LOWERING-NEXT:     *tag = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [u8; 4] = [0; 4];
+// LOWERING-NEXT:     buffer = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 0;
+// LOWERING-NEXT:     size_read = {{_v[0-9]+}};
+// LOWERING-NEXT:     parser.read_handler = unsafe {
+// LOWERING-NEXT:         std::mem::transmute::<
+// LOWERING-NEXT:             *const (),
+// LOWERING-NEXT:             Option<
+// LOWERING-NEXT:                 unsafe extern "C-unwind" fn(*mut core::ffi::c_void, *mut u8, u64, *mut u64) -> i32,
+// LOWERING-NEXT:             >,
+// LOWERING-NEXT:         >(read_bytes as *const ())
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u8 = input.as_mut_ptr() as *mut u8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
+// LOWERING-NEXT:     parser.read_handler_data = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: Option<
+// LOWERING-NEXT:         unsafe extern "C-unwind" fn(*mut core::ffi::c_void, *mut u8, u64, *mut u64) -> i32,
+// LOWERING-NEXT:     > = parser.read_handler;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = parser.read_handler_data;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u8 = buffer.as_mut_ptr() as *mut u8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 3;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { {{_v[0-9]+}}.unwrap()({{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, std::ptr::addr_of_mut!(size_read)) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %lu %c %c\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = size_read;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 1;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u8 = buffer[({{_v[0-9]+}} as usize)];
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 4;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u8 = tag[({{_v[0-9]+}} as usize)];
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
 // LOWERING-NEXT: extern "C-unwind" fn read_bytes(
 // LOWERING-NEXT:     {{arg[0-9]+}}: *mut core::ffi::c_void,
 // LOWERING-NEXT:     {{arg[0-9]+}}: *mut u8,
@@ -107,55 +159,6 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut input: [u8; 4] = [0; 4];
-// LOWERING-NEXT:     let mut tag: aligned::Aligned<aligned::A16, [u8; 22]> = aligned::Aligned([0; 22]);
-// LOWERING-NEXT:     let mut buffer: [u8; 4] = [0; 4];
-// LOWERING-NEXT:     let mut size_read: u64 = 0;
-// LOWERING-NEXT:     let mut parser: parser_t = parser_t {
-// LOWERING-NEXT:         read_handler: None,
-// LOWERING-NEXT:         read_handler_data: std::ptr::null_mut(),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     input = [97, 98, 99, 0];
-// LOWERING-NEXT:     *tag = [
-// LOWERING-NEXT:         116, 97, 103, 58, 121, 97, 109, 108, 46, 111, 114, 103, 44, 50, 48, 48, 50, 58, 115, 116,
-// LOWERING-NEXT:         114, 0,
-// LOWERING-NEXT:     ];
-// LOWERING-NEXT:     buffer = [0, 0, 0, 0];
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 0;
-// LOWERING-NEXT:     size_read = {{_v[0-9]+}};
-// LOWERING-NEXT:     parser.read_handler = unsafe {
-// LOWERING-NEXT:         std::mem::transmute::<
-// LOWERING-NEXT:             *const (),
-// LOWERING-NEXT:             Option<
-// LOWERING-NEXT:                 unsafe extern "C-unwind" fn(*mut core::ffi::c_void, *mut u8, u64, *mut u64) -> i32,
-// LOWERING-NEXT:             >,
-// LOWERING-NEXT:         >(read_bytes as *const ())
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u8 = input.as_mut_ptr() as *mut u8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
-// LOWERING-NEXT:     parser.read_handler_data = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: Option<
-// LOWERING-NEXT:         unsafe extern "C-unwind" fn(*mut core::ffi::c_void, *mut u8, u64, *mut u64) -> i32,
-// LOWERING-NEXT:     > = parser.read_handler;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = parser.read_handler_data;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u8 = buffer.as_mut_ptr() as *mut u8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 3;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { {{_v[0-9]+}}.unwrap()({{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, std::ptr::addr_of_mut!(size_read)) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %lu %c %c\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = size_read;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 1;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u8 = buffer[({{_v[0-9]+}} as usize)];
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 4;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u8 = tag[({{_v[0-9]+}} as usize)];
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
-// LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
@@ -185,31 +188,8 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: extern "C-unwind" fn read_bytes(
-// REWRITES-NEXT:     {{arg[0-9]+}}: *mut core::ffi::c_void,
-// REWRITES-NEXT:     mut buffer: *mut u8,
-// REWRITES-NEXT:     mut size: u64,
-// REWRITES-NEXT:     {{arg[0-9]+}}: *mut u64,
-// REWRITES-NEXT: ) -> i32 {
-// REWRITES-NEXT:     let mut source: *mut u8 = {{arg[0-9]+}} as *mut u8;
-// REWRITES-NEXT:     for i in 0..size {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut u8 = source;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut u8 = unsafe { {{_v[0-9]+}}.add(i as usize) };
-// REWRITES-NEXT:         let {{_v[0-9]+}}: u8 = unsafe { *{{_v[0-9]+}} };
-// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut u8 = buffer;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut u8 = unsafe { {{_v[0-9]+}}.add(i as usize) };
-// REWRITES-NEXT:         unsafe {
-// REWRITES-NEXT:             *{{_v[0-9]+}} = {{_v[0-9]+}};
-// REWRITES-NEXT:         }
-// REWRITES-NEXT:     }
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         *{{arg[0-9]+}} = size;
-// REWRITES-NEXT:     }
-// REWRITES-NEXT:     1
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     let mut input: [u8; 4] = [97, 98, 99, 0];
+// REWRITES-NEXT:     let mut input: [u8; 4] = [0; 4];
 // REWRITES-NEXT:     let mut tag: aligned::Aligned<aligned::A16, [u8; 22]> = aligned::Aligned([0; 22]);
 // REWRITES-NEXT:     let mut buffer: [u8; 4] = [0; 4];
 // REWRITES-NEXT:     let mut size_read: u64 = 0;
@@ -217,11 +197,12 @@ int main(void) {
 // REWRITES-NEXT:         read_handler: None,
 // REWRITES-NEXT:         read_handler_data: std::ptr::null_mut(),
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     input = [97, 98, 99, 0];
 // REWRITES-NEXT:     *tag = [
 // REWRITES-NEXT:         116, 97, 103, 58, 121, 97, 109, 108, 46, 111, 114, 103, 44, 50, 48, 48, 50, 58, 115, 116,
 // REWRITES-NEXT:         114, 0,
 // REWRITES-NEXT:     ];
-// REWRITES-NEXT:     buffer = [0, 0, 0, 0];
+// REWRITES-NEXT:     buffer = [0; 4];
 // REWRITES-NEXT:     parser.read_handler = unsafe {
 // REWRITES-NEXT:         std::mem::transmute::<
 // REWRITES-NEXT:             *const (),
@@ -247,5 +228,28 @@ int main(void) {
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: extern "C-unwind" fn read_bytes(
+// REWRITES-NEXT:     {{arg[0-9]+}}: *mut core::ffi::c_void,
+// REWRITES-NEXT:     mut buffer: *mut u8,
+// REWRITES-NEXT:     mut size: u64,
+// REWRITES-NEXT:     {{arg[0-9]+}}: *mut u64,
+// REWRITES-NEXT: ) -> i32 {
+// REWRITES-NEXT:     let mut source: *mut u8 = {{arg[0-9]+}} as *mut u8;
+// REWRITES-NEXT:     for i in 0..size {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut u8 = source;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut u8 = unsafe { {{_v[0-9]+}}.add(i as usize) };
+// REWRITES-NEXT:         let {{_v[0-9]+}}: u8 = unsafe { *{{_v[0-9]+}} };
+// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut u8 = buffer;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut u8 = unsafe { {{_v[0-9]+}}.add(i as usize) };
+// REWRITES-NEXT:         unsafe {
+// REWRITES-NEXT:             *{{_v[0-9]+}} = {{_v[0-9]+}};
+// REWRITES-NEXT:         }
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         *{{arg[0-9]+}} = size;
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     1
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

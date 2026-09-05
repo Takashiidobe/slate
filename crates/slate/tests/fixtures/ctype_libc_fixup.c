@@ -44,15 +44,6 @@ int main(void) {
 // LOWERING-NEXT:     fn tolower(_0: i32) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn next_lower() -> i32 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { next_lower_c };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
-// LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         next_lower_c = {{_v[0-9]+}};
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 81;
@@ -92,6 +83,15 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn next_lower() -> i32 {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { next_lower_c };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-NEXT:     unsafe {
+// LOWERING-NEXT:         next_lower_c = {{_v[0-9]+}};
+// LOWERING-NEXT:     }
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
@@ -115,14 +115,6 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT:     fn toupper(_0: i32) -> i32;
 // REWRITES-NEXT:     fn tolower(_0: i32) -> i32;
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: fn next_lower() -> i32 {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { next_lower_c };
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         next_lower_c = {{_v[0-9]+}} + 1;
-// REWRITES-NEXT:     }
-// REWRITES-NEXT:     {{_v[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
@@ -161,5 +153,13 @@ int main(void) {
 // REWRITES-NEXT:         })
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn next_lower() -> i32 {
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { next_lower_c };
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         next_lower_c = {{_v[0-9]+}} + 1;
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     {{_v[0-9]+}}
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

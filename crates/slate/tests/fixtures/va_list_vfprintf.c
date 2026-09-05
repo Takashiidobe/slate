@@ -37,6 +37,16 @@ int main(void) {
 // LOWERING-NEXT:     ) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
+// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %s\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 42;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"forwarded\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     unsafe { print_values({{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
 // LOWERING-NEXT: unsafe extern "C-unwind" fn print_values({{arg[0-9]+}}: *mut i8, mut __slate_va_args: ...) {
 // LOWERING-NEXT:     let mut args: core::ffi::VaList<'_>;
 // LOWERING-NEXT:     unsafe {
@@ -51,16 +61,6 @@ int main(void) {
 // LOWERING-NEXT:         )
 // LOWERING-NEXT:     };
 // LOWERING-NEXT:     return;
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %s\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 42;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"forwarded\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     unsafe { print_values({{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -88,6 +88,17 @@ int main(void) {
 // REWRITES-NEXT:     ) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
+// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         print_values(
+// REWRITES-NEXT:             c"%d %s\n".as_ptr() as *mut i8,
+// REWRITES-NEXT:             42 as i32,
+// REWRITES-NEXT:             c"forwarded".as_ptr() as *mut i8,
+// REWRITES-NEXT:         )
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe extern "C-unwind" fn print_values({{arg[0-9]+}}: *mut i8, mut __slate_va_args: ...) {
 // REWRITES-NEXT:     let mut args: core::ffi::VaList<'_>;
 // REWRITES-NEXT:     unsafe {
@@ -101,16 +112,5 @@ int main(void) {
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     return;
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         print_values(
-// REWRITES-NEXT:             c"%d %s\n".as_ptr() as *mut i8,
-// REWRITES-NEXT:             42 as i32,
-// REWRITES-NEXT:             c"forwarded".as_ptr() as *mut i8,
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

@@ -102,8 +102,10 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
 // LOWERING-NEXT:     e.r#type = {{_v[0-9]+}};
-// LOWERING-NEXT:     h = [72, 0];
-// LOWERING-NEXT:     s = [83, 0];
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i8; 2] = [72, 0];
+// LOWERING-NEXT:     h = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i8; 2] = [83, 0];
+// LOWERING-NEXT:     s = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = h.as_mut_ptr() as *mut i8;
 // LOWERING-NEXT:     unsafe {
 // LOWERING-NEXT:         e.data.tag.handle = {{_v[0-9]+}};

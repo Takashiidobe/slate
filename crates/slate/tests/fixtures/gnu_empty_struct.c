@@ -35,20 +35,20 @@ int main(void) {
 // LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn empty_size() -> u64 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: GNUEmpty = GNUEmpty { __slate_empty: [] };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 0;
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: GNUEmpty = GNUEmpty { __slate_empty: [] };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = std::mem::size_of::<GNUEmpty>() as i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%zu %zu\n\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = empty_size();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = empty_size({{_v[0-9]+}});
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn empty_size({{arg[0-9]+}}: GNUEmpty) -> u64 {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 0;
+// LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -77,13 +77,14 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn empty_size() -> u64 {
-// REWRITES-NEXT:     0
+// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT:     let {{_v[0-9]+}}: GNUEmpty = GNUEmpty { __slate_empty: [] };
+// REWRITES-NEXT:     std::mem::size_of::<GNUEmpty>() as i32;
+// REWRITES-NEXT:     unsafe { printf(c"%zu %zu\n".as_ptr(), 0 as u64, empty_size({{_v[0-9]+}})) };
+// REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     std::mem::size_of::<GNUEmpty>() as i32;
-// REWRITES-NEXT:     unsafe { printf(c"%zu %zu\n".as_ptr(), 0 as u64, empty_size()) };
-// REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT: fn empty_size({{arg[0-9]+}}: GNUEmpty) -> u64 {
+// REWRITES-NEXT:     0
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

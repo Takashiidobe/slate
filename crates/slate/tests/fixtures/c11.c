@@ -473,13 +473,6 @@ int main(void) {
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[derive(Clone, Copy)]
-// LOWERING-NEXT: struct {{anon_struct[0-9A-Za-z_]*}} {
-// LOWERING-NEXT:     __slate_anon_0: u64,
-// LOWERING-NEXT:     __slate_anon_1: i32,
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: #[repr(C)]
-// LOWERING-NEXT: #[derive(Clone, Copy)]
 // LOWERING-NEXT: union cnd_t {
 // LOWERING-NEXT:     __size: [i8; 48],
 // LOWERING-NEXT:     __align: i64,
@@ -551,123 +544,15 @@ int main(void) {
 // LOWERING-NEXT:     fn free(_0: *mut core::ffi::c_void);
 // LOWERING-NEXT:     fn at_quick_exit(_0: Option<unsafe extern "C-unwind" fn()>) -> i32;
 // LOWERING-NEXT:     fn remove(_0: *const core::ffi::c_char) -> i32;
-// LOWERING-NEXT:     fn fopen(_0: *const core::ffi::c_char, _1: *const core::ffi::c_char) -> *mut libc::FILE;
 // LOWERING-NEXT:     fn fclose(_0: *mut libc::FILE) -> i32;
 // LOWERING-NEXT:     fn timespec_get(_0: *mut libc::timespec, _1: i32) -> i32;
-// LOWERING-NEXT:     fn quick_exit(_0: i32) -> !;
 // LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // LOWERING-NEXT:     fn putchar(_0: i32) -> i32;
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn c11_evaluation_step({{arg[0-9]+}}: i32) -> i32 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { c11_evaluation_total };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
-// LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         c11_evaluation_total = {{_v[0-9]+}};
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 2;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{arg[0-9]+}} * {{_v[0-9]+}};
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn c11_make_temporary({{arg[0-9]+}}: i32) -> {{anon_struct[0-9A-Za-z_]*}} {
-// LOWERING-NEXT:     let mut coerce: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} {
-// LOWERING-NEXT:         __slate_anon_0: 0,
-// LOWERING-NEXT:         __slate_anon_1: 0,
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let mut __retval: C11Temporary = C11Temporary { values: [0; 3] };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = std::ptr::addr_of_mut!(__retval.values) as *mut i32;
-// LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         *{{_v[0-9]+}} = {{arg[0-9]+}};
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 1;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(1) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{arg[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         *{{_v[0-9]+}} = {{_v[0-9]+}};
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(2) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 2;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{arg[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         *{{_v[0-9]+}} = {{_v[0-9]+}};
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: C11Temporary = __retval;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut C11Temporary = std::ptr::addr_of_mut!(coerce) as *mut C11Temporary;
-// LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         *{{_v[0-9]+}} = {{_v[0-9]+}};
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: {{anon_struct[0-9A-Za-z_]*}} = coerce;
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: extern "C-unwind" fn c11_thread_worker({{arg[0-9]+}}: *mut core::ffi::c_void) -> i32 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = {{arg[0-9]+}} as *mut i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 29;
-// LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         c11_thread_local_value = {{_v[0-9]+}};
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 34;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { __errno_location() };
-// LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         *{{_v[0-9]+}} = {{_v[0-9]+}};
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {
-// LOWERING-NEXT:         std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(c11_atomic_total))
-// LOWERING-NEXT:             .fetch_add({{_v[0-9]+}}, std::sync::atomic::Ordering::SeqCst)
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { c11_thread_local_value };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { __errno_location() };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 34;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: extern "C-unwind" fn c11_once_handler() {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { c11_once_total };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         c11_once_total = {{_v[0-9]+}};
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     return;
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: extern "C-unwind" fn c11_quick_handler() {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 100;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {
-// LOWERING-NEXT:         std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(c11_atomic_total))
-// LOWERING-NEXT:             .fetch_add({{_v[0-9]+}}, std::sync::atomic::Ordering::Relaxed)
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     return;
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn c11_open_exclusive({{arg[0-9]+}}: *mut i8) -> *mut libc::FILE {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"wx\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut libc::FILE = unsafe {
-// LOWERING-NEXT:         fopen(
-// LOWERING-NEXT:             {{arg[0-9]+}} as *const core::ffi::c_char,
-// LOWERING-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_char,
-// LOWERING-NEXT:         )
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn c11_never_return({{arg[0-9]+}}: i32) -> ! {
-// LOWERING-NEXT:     unsafe { quick_exit({{arg[0-9]+}} as i32) }
+// LOWERING-NEXT:     fn fopen(_0: *const core::ffi::c_char, _1: *const core::ffi::c_char) -> *mut libc::FILE;
+// LOWERING-NEXT:     fn quick_exit(_0: i32) -> !;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut coerce: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} {
-// LOWERING-NEXT:         __slate_anon_0: 0,
-// LOWERING-NEXT:         __slate_anon_1: 0,
-// LOWERING-NEXT:     };
 // LOWERING-NEXT:     let mut anonymous: C11Anonymous = C11Anonymous {
 // LOWERING-NEXT:         __slate_anon_0: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() },
 // LOWERING-NEXT:         __slate_anon_1: {{anon_[0-9]+}} { x: 0, y: 0 },
@@ -705,27 +590,32 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u16 = 937;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = 128578;
-// LOWERING-NEXT:     anonymous = C11Anonymous {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: C11Anonymous = C11Anonymous {
 // LOWERING-NEXT:         __slate_anon_0: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() },
 // LOWERING-NEXT:         __slate_anon_1: {{anon_[0-9]+}} { x: 0, y: 0 },
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     *aligned_object = C11OverAligned { value: 0 };
-// LOWERING-NEXT:     utf16_state = __mbstate_t {
+// LOWERING-NEXT:     anonymous = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: C11OverAligned = C11OverAligned { value: 0 };
+// LOWERING-NEXT:     *aligned_object = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: __mbstate_t = __mbstate_t {
 // LOWERING-NEXT:         __count: 0,
 // LOWERING-NEXT:         __value: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() },
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     utf32_state = __mbstate_t {
+// LOWERING-NEXT:     utf16_state = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: __mbstate_t = __mbstate_t {
 // LOWERING-NEXT:         __count: 0,
 // LOWERING-NEXT:         __value: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() },
 // LOWERING-NEXT:     };
+// LOWERING-NEXT:     utf32_state = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u16 = 0;
 // LOWERING-NEXT:     converted16 = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = 0;
 // LOWERING-NEXT:     converted32 = {{_v[0-9]+}};
-// LOWERING-NEXT:     current_time = libc::timespec {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: libc::timespec = libc::timespec {
 // LOWERING-NEXT:         tv_sec: 0,
 // LOWERING-NEXT:         tv_nsec: 0,
 // LOWERING-NEXT:     };
+// LOWERING-NEXT:     current_time = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     once_control = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 7;
@@ -802,10 +692,7 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 1;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 43;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: {{anon_struct[0-9A-Za-z_]*}} = c11_make_temporary({{_v[0-9]+}});
-// LOWERING-NEXT:     coerce = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut C11Temporary = std::ptr::addr_of_mut!(coerce) as *mut C11Temporary;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: C11Temporary = unsafe { *{{_v[0-9]+}} };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: C11Temporary = c11_make_temporary({{_v[0-9]+}});
 // LOWERING-NEXT:     ref_tmp0 = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = ref_tmp0.values[({{_v[0-9]+}} as usize)];
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
@@ -1237,6 +1124,101 @@ int main(void) {
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
+// LOWERING-NEXT: fn c11_evaluation_step({{arg[0-9]+}}: i32) -> i32 {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { c11_evaluation_total };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
+// LOWERING-NEXT:     unsafe {
+// LOWERING-NEXT:         c11_evaluation_total = {{_v[0-9]+}};
+// LOWERING-NEXT:     }
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 2;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{arg[0-9]+}} * {{_v[0-9]+}};
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn c11_make_temporary({{arg[0-9]+}}: i32) -> C11Temporary {
+// LOWERING-NEXT:     let mut __retval: C11Temporary = C11Temporary { values: [0; 3] };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = std::ptr::addr_of_mut!(__retval.values) as *mut i32;
+// LOWERING-NEXT:     unsafe {
+// LOWERING-NEXT:         *{{_v[0-9]+}} = {{arg[0-9]+}};
+// LOWERING-NEXT:     }
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 1;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(1) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{arg[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-NEXT:     unsafe {
+// LOWERING-NEXT:         *{{_v[0-9]+}} = {{_v[0-9]+}};
+// LOWERING-NEXT:     }
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(2) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 2;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{arg[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-NEXT:     unsafe {
+// LOWERING-NEXT:         *{{_v[0-9]+}} = {{_v[0-9]+}};
+// LOWERING-NEXT:     }
+// LOWERING-NEXT:     let {{_v[0-9]+}}: C11Temporary = __retval;
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: extern "C-unwind" fn c11_thread_worker({{arg[0-9]+}}: *mut core::ffi::c_void) -> i32 {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = {{arg[0-9]+}} as *mut i32;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 29;
+// LOWERING-NEXT:     unsafe {
+// LOWERING-NEXT:         c11_thread_local_value = {{_v[0-9]+}};
+// LOWERING-NEXT:     }
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 34;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { __errno_location() };
+// LOWERING-NEXT:     unsafe {
+// LOWERING-NEXT:         *{{_v[0-9]+}} = {{_v[0-9]+}};
+// LOWERING-NEXT:     }
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-NEXT:         std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(c11_atomic_total))
+// LOWERING-NEXT:             .fetch_add({{_v[0-9]+}}, std::sync::atomic::Ordering::SeqCst)
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { c11_thread_local_value };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { __errno_location() };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 34;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: extern "C-unwind" fn c11_once_handler() {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { c11_once_total };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-NEXT:     unsafe {
+// LOWERING-NEXT:         c11_once_total = {{_v[0-9]+}};
+// LOWERING-NEXT:     }
+// LOWERING-NEXT:     return;
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: extern "C-unwind" fn c11_quick_handler() {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 100;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-NEXT:         std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(c11_atomic_total))
+// LOWERING-NEXT:             .fetch_add({{_v[0-9]+}}, std::sync::atomic::Ordering::Relaxed)
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     return;
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn c11_open_exclusive({{arg[0-9]+}}: *mut i8) -> *mut libc::FILE {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"wx\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut libc::FILE = unsafe {
+// LOWERING-NEXT:         fopen(
+// LOWERING-NEXT:             {{arg[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-NEXT:         )
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn c11_never_return({{arg[0-9]+}}: i32) -> ! {
+// LOWERING-NEXT:     unsafe { quick_exit({{arg[0-9]+}} as i32) }
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
 // LOWERING-NEXT: unsafe extern "C" {
 // LOWERING-NEXT:     safe fn __slate_cf80_div(
 // LOWERING-NEXT:         a: num_complex::Complex<LongDouble>,
@@ -1478,13 +1460,6 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[repr(C)]
 // REWRITES-NEXT: #[derive(Clone, Copy)]
-// REWRITES-NEXT: struct {{anon_struct[0-9A-Za-z_]*}} {
-// REWRITES-NEXT:     __slate_anon_0: u64,
-// REWRITES-NEXT:     __slate_anon_1: i32,
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: #[repr(C)]
-// REWRITES-NEXT: #[derive(Clone, Copy)]
 // REWRITES-NEXT: union cnd_t {
 // REWRITES-NEXT:     __size: [i8; 48],
 // REWRITES-NEXT:     __align: i64,
@@ -1556,95 +1531,15 @@ int main(void) {
 // REWRITES-NEXT:     fn free(_0: *mut core::ffi::c_void);
 // REWRITES-NEXT:     fn at_quick_exit(_0: Option<unsafe extern "C-unwind" fn()>) -> i32;
 // REWRITES-NEXT:     fn remove(_0: *const core::ffi::c_char) -> i32;
-// REWRITES-NEXT:     fn fopen(_0: *const core::ffi::c_char, _1: *const core::ffi::c_char) -> *mut libc::FILE;
 // REWRITES-NEXT:     fn fclose(_0: *mut libc::FILE) -> i32;
 // REWRITES-NEXT:     fn timespec_get(_0: *mut libc::timespec, _1: i32) -> i32;
-// REWRITES-NEXT:     fn quick_exit(_0: i32) -> !;
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT:     fn putchar(_0: i32) -> i32;
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: fn c11_evaluation_step({{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         c11_evaluation_total = (unsafe { c11_evaluation_total }) + {{arg[0-9]+}};
-// REWRITES-NEXT:     }
-// REWRITES-NEXT:     {{arg[0-9]+}} * 2
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: fn c11_make_temporary({{arg[0-9]+}}: i32) -> {{anon_struct[0-9A-Za-z_]*}} {
-// REWRITES-NEXT:     let mut coerce: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} {
-// REWRITES-NEXT:         __slate_anon_0: 0,
-// REWRITES-NEXT:         __slate_anon_1: 0,
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let mut __retval: C11Temporary = C11Temporary { values: [0; 3] };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = std::ptr::addr_of_mut!(__retval.values) as *mut i32;
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         *{{_v[0-9]+}} = {{arg[0-9]+}};
-// REWRITES-NEXT:     }
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(1) };
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         *{{_v[0-9]+}} = {{arg[0-9]+}} + 1;
-// REWRITES-NEXT:     }
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(2) };
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         *{{_v[0-9]+}} = {{arg[0-9]+}} + 2;
-// REWRITES-NEXT:     }
-// REWRITES-NEXT:     let {{_v[0-9]+}}: C11Temporary = __retval;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut C11Temporary = std::ptr::addr_of_mut!(coerce) as *mut C11Temporary;
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         *{{_v[0-9]+}} = {{_v[0-9]+}};
-// REWRITES-NEXT:     }
-// REWRITES-NEXT:     return coerce;
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: extern "C-unwind" fn c11_thread_worker({{arg[0-9]+}}: *mut core::ffi::c_void) -> i32 {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *({{arg[0-9]+}} as *mut i32) };
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         c11_thread_local_value = 29;
-// REWRITES-NEXT:     }
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 34;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { __errno_location() };
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         *{{_v[0-9]+}} = {{_v[0-9]+}};
-// REWRITES-NEXT:     }
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(c11_atomic_total))
-// REWRITES-NEXT:             .fetch_add({{_v[0-9]+}}, std::sync::atomic::Ordering::SeqCst)
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { c11_thread_local_value };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { __errno_location() };
-// REWRITES-NEXT:     {{_v[0-9]+}} + (((unsafe { *{{_v[0-9]+}} }) == 34) as i32)
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: extern "C-unwind" fn c11_once_handler() {
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         c11_once_total = (unsafe { c11_once_total }) + 1;
-// REWRITES-NEXT:     }
-// REWRITES-NEXT:     return;
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: extern "C-unwind" fn c11_quick_handler() {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 100;
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(c11_atomic_total))
-// REWRITES-NEXT:             .fetch_add({{_v[0-9]+}}, std::sync::atomic::Ordering::Relaxed)
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     return;
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: fn c11_open_exclusive({{arg[0-9]+}}: *mut i8) -> *mut libc::FILE {
-// REWRITES-NEXT:     unsafe { fopen({{arg[0-9]+}} as *const core::ffi::c_char, c"wx".as_ptr()) }
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: fn c11_never_return({{arg[0-9]+}}: i32) -> ! {
-// REWRITES-NEXT:     unsafe { quick_exit({{arg[0-9]+}} as i32) }
+// REWRITES-NEXT:     fn fopen(_0: *const core::ffi::c_char, _1: *const core::ffi::c_char) -> *mut libc::FILE;
+// REWRITES-NEXT:     fn quick_exit(_0: i32) -> !;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     let mut coerce: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} {
-// REWRITES-NEXT:         __slate_anon_0: 0,
-// REWRITES-NEXT:         __slate_anon_1: 0,
-// REWRITES-NEXT:     };
 // REWRITES-NEXT:     let mut anonymous: C11Anonymous = C11Anonymous {
 // REWRITES-NEXT:         __slate_anon_0: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() },
 // REWRITES-NEXT:         __slate_anon_1: {{anon_[0-9]+}} { x: 0, y: 0 },
@@ -1725,9 +1620,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = c11_evaluation_step(2);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = c11_evaluation_step(3);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}} + unsafe { c11_evaluation_total };
-// REWRITES-NEXT:     coerce = c11_make_temporary(43);
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut C11Temporary = std::ptr::addr_of_mut!(coerce) as *mut C11Temporary;
-// REWRITES-NEXT:     ref_tmp0 = unsafe { *{{_v[0-9]+}} };
+// REWRITES-NEXT:     ref_tmp0 = c11_make_temporary(43);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = ref_tmp0.values[1];
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 0 + {{_v[0-9]+}} + 1 + 1 + 1 + 1;
@@ -1950,6 +1843,73 @@ int main(void) {
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     unsafe { putchar(10 as i32) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn c11_evaluation_step({{arg[0-9]+}}: i32) -> i32 {
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         c11_evaluation_total = (unsafe { c11_evaluation_total }) + {{arg[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     {{arg[0-9]+}} * 2
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn c11_make_temporary({{arg[0-9]+}}: i32) -> C11Temporary {
+// REWRITES-NEXT:     let mut __retval: C11Temporary = C11Temporary { values: [0; 3] };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = std::ptr::addr_of_mut!(__retval.values) as *mut i32;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         *{{_v[0-9]+}} = {{arg[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(1) };
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         *{{_v[0-9]+}} = {{arg[0-9]+}} + 1;
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(2) };
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         *{{_v[0-9]+}} = {{arg[0-9]+}} + 2;
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     return __retval;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: extern "C-unwind" fn c11_thread_worker({{arg[0-9]+}}: *mut core::ffi::c_void) -> i32 {
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *({{arg[0-9]+}} as *mut i32) };
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         c11_thread_local_value = 29;
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 34;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { __errno_location() };
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         *{{_v[0-9]+}} = {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(c11_atomic_total))
+// REWRITES-NEXT:             .fetch_add({{_v[0-9]+}}, std::sync::atomic::Ordering::SeqCst)
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { c11_thread_local_value };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { __errno_location() };
+// REWRITES-NEXT:     {{_v[0-9]+}} + (((unsafe { *{{_v[0-9]+}} }) == 34) as i32)
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: extern "C-unwind" fn c11_once_handler() {
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         c11_once_total = (unsafe { c11_once_total }) + 1;
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     return;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: extern "C-unwind" fn c11_quick_handler() {
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 100;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(c11_atomic_total))
+// REWRITES-NEXT:             .fetch_add({{_v[0-9]+}}, std::sync::atomic::Ordering::Relaxed)
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     return;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn c11_open_exclusive({{arg[0-9]+}}: *mut i8) -> *mut libc::FILE {
+// REWRITES-NEXT:     unsafe { fopen({{arg[0-9]+}} as *const core::ffi::c_char, c"wx".as_ptr()) }
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn c11_never_return({{arg[0-9]+}}: i32) -> ! {
+// REWRITES-NEXT:     unsafe { quick_exit({{arg[0-9]+}} as i32) }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe extern "C" {

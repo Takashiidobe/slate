@@ -231,1075 +231,6 @@ int main(void) {
 // LOWERING-EMPTY:
 // LOWERING-NEXT: static mut project_state: i32 = 0;
 // LOWERING-EMPTY:
-// LOWERING-NEXT: extern "C-unwind" fn strlen({{arg[0-9]+}}: *mut i8) -> u64 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 5;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} as u64;
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn malloc({{arg[0-9]+}}: u64) -> *mut core::ffi::c_void {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 16;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn calloc({{arg[0-9]+}}: u64, {{arg[0-9]+}}: u64) -> *mut core::ffi::c_void {
-// LOWERING-NEXT:     let mut size: u64 = 0;
-// LOWERING-NEXT:     size = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: u64 = size;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 16;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn realloc({{arg[0-9]+}}: *mut core::ffi::c_void, {{arg[0-9]+}}: u64) -> *mut core::ffi::c_void {
-// LOWERING-NEXT:     let mut size: u64 = 0;
-// LOWERING-NEXT:     size = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: u64 = size;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 16;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn free({{arg[0-9]+}}: *mut core::ffi::c_void) {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 77;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         project_state = {{_v[0-9]+}};
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     return;
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn memcpy(
-// LOWERING-NEXT:     {{arg[0-9]+}}: *mut core::ffi::c_void,
-// LOWERING-NEXT:     {{arg[0-9]+}}: *mut core::ffi::c_void,
-// LOWERING-NEXT:     {{arg[0-9]+}}: u64,
-// LOWERING-NEXT: ) -> *mut core::ffi::c_void {
-// LOWERING-NEXT:     let mut dst: *mut core::ffi::c_void = std::ptr::null_mut();
-// LOWERING-NEXT:     let mut src: *mut core::ffi::c_void = std::ptr::null_mut();
-// LOWERING-NEXT:     dst = {{arg[0-9]+}};
-// LOWERING-NEXT:     src = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut core::ffi::c_void = src;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != std::ptr::null_mut();
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut core::ffi::c_void = dst;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn memmove(
-// LOWERING-NEXT:     {{arg[0-9]+}}: *mut core::ffi::c_void,
-// LOWERING-NEXT:     {{arg[0-9]+}}: *mut core::ffi::c_void,
-// LOWERING-NEXT:     {{arg[0-9]+}}: u64,
-// LOWERING-NEXT: ) -> *mut core::ffi::c_void {
-// LOWERING-NEXT:     let mut dst: *mut core::ffi::c_void = std::ptr::null_mut();
-// LOWERING-NEXT:     let mut src: *mut core::ffi::c_void = std::ptr::null_mut();
-// LOWERING-NEXT:     dst = {{arg[0-9]+}};
-// LOWERING-NEXT:     src = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut core::ffi::c_void = src;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != std::ptr::null_mut();
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut core::ffi::c_void = dst;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn memset({{arg[0-9]+}}: *mut core::ffi::c_void, {{arg[0-9]+}}: i32, {{arg[0-9]+}}: u64) -> *mut core::ffi::c_void {
-// LOWERING-NEXT:     let mut dst: *mut core::ffi::c_void = std::ptr::null_mut();
-// LOWERING-NEXT:     let mut count: u64 = 0;
-// LOWERING-NEXT:     dst = {{arg[0-9]+}};
-// LOWERING-NEXT:     count = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: u64 = count;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut core::ffi::c_void = dst;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn memchr({{arg[0-9]+}}: *mut core::ffi::c_void, {{arg[0-9]+}}: i32, {{arg[0-9]+}}: u64) -> *mut core::ffi::c_void {
-// LOWERING-NEXT:     let mut value: i32 = 0;
-// LOWERING-NEXT:     let mut count: u64 = 0;
-// LOWERING-NEXT:     value = {{arg[0-9]+}};
-// LOWERING-NEXT:     count = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = value;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: u64 = count;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 24;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn strcpy({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: *mut i8) -> *mut i8 {
-// LOWERING-NEXT:     let mut dst: *mut i8 = std::ptr::null_mut();
-// LOWERING-NEXT:     dst = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut i8 = dst;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut i8 = std::ptr::null_mut();
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn strcat({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: *mut i8) -> *mut i8 {
-// LOWERING-NEXT:     let mut dst: *mut i8 = std::ptr::null_mut();
-// LOWERING-NEXT:     dst = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut i8 = dst;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut i8 = std::ptr::null_mut();
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn strncpy({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: u64) -> *mut i8 {
-// LOWERING-NEXT:     let mut dst: *mut i8 = std::ptr::null_mut();
-// LOWERING-NEXT:     let mut count: u64 = 0;
-// LOWERING-NEXT:     dst = {{arg[0-9]+}};
-// LOWERING-NEXT:     count = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: u64 = count;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut i8 = dst;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut i8 = std::ptr::null_mut();
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn strncat({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: u64) -> *mut i8 {
-// LOWERING-NEXT:     let mut dst: *mut i8 = std::ptr::null_mut();
-// LOWERING-NEXT:     let mut count: u64 = 0;
-// LOWERING-NEXT:     dst = {{arg[0-9]+}};
-// LOWERING-NEXT:     count = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: u64 = count;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut i8 = dst;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut i8 = std::ptr::null_mut();
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn strcmp({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: *mut i8) -> i32 {
-// LOWERING-NEXT:     let mut rhs: *mut i8 = std::ptr::null_mut();
-// LOWERING-NEXT:     rhs = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut i8 = rhs;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != std::ptr::null_mut();
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 11;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn strncmp({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: u64) -> i32 {
-// LOWERING-NEXT:     let mut rhs: *mut i8 = std::ptr::null_mut();
-// LOWERING-NEXT:     let mut count: u64 = 0;
-// LOWERING-NEXT:     rhs = {{arg[0-9]+}};
-// LOWERING-NEXT:     count = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut i8 = rhs;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != std::ptr::null_mut();
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: u64 = count;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 12;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn memcmp({{arg[0-9]+}}: *mut core::ffi::c_void, {{arg[0-9]+}}: *mut core::ffi::c_void, {{arg[0-9]+}}: u64) -> i32 {
-// LOWERING-NEXT:     let mut rhs: *mut core::ffi::c_void = std::ptr::null_mut();
-// LOWERING-NEXT:     let mut count: u64 = 0;
-// LOWERING-NEXT:     rhs = {{arg[0-9]+}};
-// LOWERING-NEXT:     count = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut core::ffi::c_void = rhs;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != std::ptr::null_mut();
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: u64 = count;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 13;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn strchr({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: i32) -> *mut i8 {
-// LOWERING-NEXT:     let mut value: i32 = 0;
-// LOWERING-NEXT:     value = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = value;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = {{_v[0-9]+}} as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = std::ptr::null_mut();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn strrchr({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: i32) -> *mut i8 {
-// LOWERING-NEXT:     let mut value: i32 = 0;
-// LOWERING-NEXT:     value = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = value;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = {{_v[0-9]+}} as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = std::ptr::null_mut();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn strstr({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: *mut i8) -> *mut i8 {
-// LOWERING-NEXT:     let mut needle: *mut i8 = std::ptr::null_mut();
-// LOWERING-NEXT:     needle = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut i8 = needle;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != std::ptr::null_mut();
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = {{_v[0-9]+}} as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = std::ptr::null_mut();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn strpbrk({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: *mut i8) -> *mut i8 {
-// LOWERING-NEXT:     let mut accept: *mut i8 = std::ptr::null_mut();
-// LOWERING-NEXT:     accept = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut i8 = accept;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != std::ptr::null_mut();
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = {{_v[0-9]+}} as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = std::ptr::null_mut();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn strspn({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: *mut i8) -> u64 {
-// LOWERING-NEXT:     let mut accept: *mut i8 = std::ptr::null_mut();
-// LOWERING-NEXT:     accept = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut i8 = accept;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != std::ptr::null_mut();
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 31;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} as u64;
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn strcspn({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: *mut i8) -> u64 {
-// LOWERING-NEXT:     let mut reject: *mut i8 = std::ptr::null_mut();
-// LOWERING-NEXT:     reject = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut i8 = reject;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != std::ptr::null_mut();
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} as u64;
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn atoi({{arg[0-9]+}}: *mut i8) -> i32 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 41;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn atol({{arg[0-9]+}}: *mut i8) -> i64 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 42;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} as i64;
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn strtol({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: *mut *mut i8, {{arg[0-9]+}}: i32) -> i64 {
-// LOWERING-NEXT:     let mut end: *mut *mut i8 = std::ptr::null_mut();
-// LOWERING-NEXT:     let mut base: i32 = 0;
-// LOWERING-NEXT:     end = {{arg[0-9]+}};
-// LOWERING-NEXT:     base = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut *mut i8 = end;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != std::ptr::null_mut();
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = base;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 43;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} as i64;
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn strtoul({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: *mut *mut i8, {{arg[0-9]+}}: i32) -> u64 {
-// LOWERING-NEXT:     let mut end: *mut *mut i8 = std::ptr::null_mut();
-// LOWERING-NEXT:     let mut base: i32 = 0;
-// LOWERING-NEXT:     end = {{arg[0-9]+}};
-// LOWERING-NEXT:     base = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut *mut i8 = end;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != std::ptr::null_mut();
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = base;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 44;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} as u64;
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn strtod({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: *mut *mut i8) -> f64 {
-// LOWERING-NEXT:     let mut end: *mut *mut i8 = std::ptr::null_mut();
-// LOWERING-NEXT:     end = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut *mut i8 = end;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != std::ptr::null_mut();
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 45.0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 0.0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn printf({{arg[0-9]+}}: *mut i8) -> i32 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 51;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn puts({{arg[0-9]+}}: *mut i8) -> i32 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 52;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn fopen({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: *mut i8) -> *mut core::ffi::c_void {
-// LOWERING-NEXT:     let mut mode: *mut i8 = std::ptr::null_mut();
-// LOWERING-NEXT:     mode = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut i8 = mode;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != std::ptr::null_mut();
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 48;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn fputs({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: *mut core::ffi::c_void) -> i32 {
-// LOWERING-NEXT:     let mut stream: *mut core::ffi::c_void = std::ptr::null_mut();
-// LOWERING-NEXT:     stream = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut core::ffi::c_void = stream;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != std::ptr::null_mut();
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 54;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn fgets({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: i32, {{arg[0-9]+}}: *mut core::ffi::c_void) -> *mut i8 {
-// LOWERING-NEXT:     let mut count: i32 = 0;
-// LOWERING-NEXT:     let mut stream: *mut core::ffi::c_void = std::ptr::null_mut();
-// LOWERING-NEXT:     count = {{arg[0-9]+}};
-// LOWERING-NEXT:     stream = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = count;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut core::ffi::c_void = stream;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != std::ptr::null_mut();
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 40;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = {{_v[0-9]+}} as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = std::ptr::null_mut();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn fread(
-// LOWERING-NEXT:     {{arg[0-9]+}}: *mut core::ffi::c_void,
-// LOWERING-NEXT:     {{arg[0-9]+}}: u64,
-// LOWERING-NEXT:     {{arg[0-9]+}}: u64,
-// LOWERING-NEXT:     {{arg[0-9]+}}: *mut core::ffi::c_void,
-// LOWERING-NEXT: ) -> u64 {
-// LOWERING-NEXT:     let mut size: u64 = 0;
-// LOWERING-NEXT:     let mut count: u64 = 0;
-// LOWERING-NEXT:     let mut stream: *mut core::ffi::c_void = std::ptr::null_mut();
-// LOWERING-NEXT:     size = {{arg[0-9]+}};
-// LOWERING-NEXT:     count = {{arg[0-9]+}};
-// LOWERING-NEXT:     stream = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: u64 = size;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: u64 = count;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut core::ffi::c_void = stream;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != std::ptr::null_mut();
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 56;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} as u64;
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn fwrite(
-// LOWERING-NEXT:     {{arg[0-9]+}}: *mut core::ffi::c_void,
-// LOWERING-NEXT:     {{arg[0-9]+}}: u64,
-// LOWERING-NEXT:     {{arg[0-9]+}}: u64,
-// LOWERING-NEXT:     {{arg[0-9]+}}: *mut core::ffi::c_void,
-// LOWERING-NEXT: ) -> u64 {
-// LOWERING-NEXT:     let mut size: u64 = 0;
-// LOWERING-NEXT:     let mut count: u64 = 0;
-// LOWERING-NEXT:     let mut stream: *mut core::ffi::c_void = std::ptr::null_mut();
-// LOWERING-NEXT:     size = {{arg[0-9]+}};
-// LOWERING-NEXT:     count = {{arg[0-9]+}};
-// LOWERING-NEXT:     stream = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: u64 = size;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: u64 = count;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut core::ffi::c_void = stream;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != std::ptr::null_mut();
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 57;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} as u64;
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn fclose({{arg[0-9]+}}: *mut core::ffi::c_void) -> i32 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 58;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn fflush({{arg[0-9]+}}: *mut core::ffi::c_void) -> i32 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 59;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn remove({{arg[0-9]+}}: *mut i8) -> i32 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 60;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn toupper({{arg[0-9]+}}: i32) -> i32 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 61;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn tolower({{arg[0-9]+}}: i32) -> i32 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 62;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn sin({{arg[0-9]+}}: f64) -> f64 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != 0.0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 63.0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 0.0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn cos({{arg[0-9]+}}: f64) -> f64 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != 0.0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 64.0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 0.0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn tan({{arg[0-9]+}}: f64) -> f64 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != 0.0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 65.0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 0.0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn log({{arg[0-9]+}}: f64) -> f64 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != 0.0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 66.0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 0.0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn log10({{arg[0-9]+}}: f64) -> f64 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != 0.0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 67.0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 0.0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn log2({{arg[0-9]+}}: f64) -> f64 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != 0.0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 68.0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 0.0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn pow({{arg[0-9]+}}: f64, {{arg[0-9]+}}: f64) -> f64 {
-// LOWERING-NEXT:     let mut rhs: f64 = 0.0;
-// LOWERING-NEXT:     rhs = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != 0.0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: f64 = rhs;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0.0;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 69.0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 0.0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn sqrt({{arg[0-9]+}}: f64) -> f64 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != 0.0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 70.0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 0.0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn exp({{arg[0-9]+}}: f64) -> f64 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != 0.0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 71.0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 0.0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn exp2({{arg[0-9]+}}: f64) -> f64 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != 0.0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 72.0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 0.0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn fmod({{arg[0-9]+}}: f64, {{arg[0-9]+}}: f64) -> f64 {
-// LOWERING-NEXT:     let mut rhs: f64 = 0.0;
-// LOWERING-NEXT:     rhs = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != 0.0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: f64 = rhs;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0.0;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 73.0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 0.0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn lround({{arg[0-9]+}}: f64) -> i64 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != 0.0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 74;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} as i64;
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn llround({{arg[0-9]+}}: f64) -> i64 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != 0.0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 75;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} as i64;
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn pthread_create(
-// LOWERING-NEXT:     {{arg[0-9]+}}: *mut u64,
-// LOWERING-NEXT:     {{arg[0-9]+}}: *mut core::ffi::c_void,
-// LOWERING-NEXT:     {{arg[0-9]+}}: Option<unsafe extern "C-unwind" fn(*mut core::ffi::c_void) -> *mut core::ffi::c_void>,
-// LOWERING-NEXT:     {{arg[0-9]+}}: *mut core::ffi::c_void,
-// LOWERING-NEXT: ) -> i32 {
-// LOWERING-NEXT:     let mut attr: *mut core::ffi::c_void = std::ptr::null_mut();
-// LOWERING-NEXT:     let mut start: Option<
-// LOWERING-NEXT:         unsafe extern "C-unwind" fn(*mut core::ffi::c_void) -> *mut core::ffi::c_void,
-// LOWERING-NEXT:     > = None;
-// LOWERING-NEXT:     let mut arg: *mut core::ffi::c_void = std::ptr::null_mut();
-// LOWERING-NEXT:     attr = {{arg[0-9]+}};
-// LOWERING-NEXT:     start = {{arg[0-9]+}};
-// LOWERING-NEXT:     arg = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut core::ffi::c_void = attr;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != std::ptr::null_mut();
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: Option<
-// LOWERING-NEXT:             unsafe extern "C-unwind" fn(*mut core::ffi::c_void) -> *mut core::ffi::c_void,
-// LOWERING-NEXT:         > = start;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}}.is_some();
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut core::ffi::c_void = arg;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != std::ptr::null_mut();
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 78;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: extern "C-unwind" fn start({{arg[0-9]+}}: *mut core::ffi::c_void) -> *mut core::ffi::c_void {
-// LOWERING-NEXT:     return {{arg[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn pthread_join({{arg[0-9]+}}: u64, {{arg[0-9]+}}: *mut *mut core::ffi::c_void) -> i32 {
-// LOWERING-NEXT:     let mut result: *mut *mut core::ffi::c_void = std::ptr::null_mut();
-// LOWERING-NEXT:     result = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut *mut core::ffi::c_void = result;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != std::ptr::null_mut();
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 79;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn qsort(
-// LOWERING-NEXT:     {{arg[0-9]+}}: *mut core::ffi::c_void,
-// LOWERING-NEXT:     {{arg[0-9]+}}: u64,
-// LOWERING-NEXT:     {{arg[0-9]+}}: u64,
-// LOWERING-NEXT:     {{arg[0-9]+}}: Option<
-// LOWERING-NEXT:         unsafe extern "C-unwind" fn(*mut core::ffi::c_void, *mut core::ffi::c_void) -> i32,
-// LOWERING-NEXT:     >,
-// LOWERING-NEXT: ) {
-// LOWERING-NEXT:     let mut count: u64 = 0;
-// LOWERING-NEXT:     let mut size: u64 = 0;
-// LOWERING-NEXT:     let mut callback: Option<
-// LOWERING-NEXT:         unsafe extern "C-unwind" fn(*mut core::ffi::c_void, *mut core::ffi::c_void) -> i32,
-// LOWERING-NEXT:     > = None;
-// LOWERING-NEXT:     count = {{arg[0-9]+}};
-// LOWERING-NEXT:     size = {{arg[0-9]+}};
-// LOWERING-NEXT:     callback = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: u64 = count;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: u64 = size;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: Option<
-// LOWERING-NEXT:             unsafe extern "C-unwind" fn(*mut core::ffi::c_void, *mut core::ffi::c_void) -> i32,
-// LOWERING-NEXT:         > = callback;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}}.is_some();
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 76;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         project_state = {{_v[0-9]+}};
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     return;
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: extern "C-unwind" fn compare({{arg[0-9]+}}: *mut core::ffi::c_void, {{arg[0-9]+}}: *mut core::ffi::c_void) -> i32 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} == {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn bsearch(
-// LOWERING-NEXT:     {{arg[0-9]+}}: *mut core::ffi::c_void,
-// LOWERING-NEXT:     {{arg[0-9]+}}: *mut core::ffi::c_void,
-// LOWERING-NEXT:     {{arg[0-9]+}}: u64,
-// LOWERING-NEXT:     {{arg[0-9]+}}: u64,
-// LOWERING-NEXT:     {{arg[0-9]+}}: Option<
-// LOWERING-NEXT:         unsafe extern "C-unwind" fn(*mut core::ffi::c_void, *mut core::ffi::c_void) -> i32,
-// LOWERING-NEXT:     >,
-// LOWERING-NEXT: ) -> *mut core::ffi::c_void {
-// LOWERING-NEXT:     let mut base: *mut core::ffi::c_void = std::ptr::null_mut();
-// LOWERING-NEXT:     let mut count: u64 = 0;
-// LOWERING-NEXT:     let mut size: u64 = 0;
-// LOWERING-NEXT:     let mut callback: Option<
-// LOWERING-NEXT:         unsafe extern "C-unwind" fn(*mut core::ffi::c_void, *mut core::ffi::c_void) -> i32,
-// LOWERING-NEXT:     > = None;
-// LOWERING-NEXT:     base = {{arg[0-9]+}};
-// LOWERING-NEXT:     count = {{arg[0-9]+}};
-// LOWERING-NEXT:     size = {{arg[0-9]+}};
-// LOWERING-NEXT:     callback = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut core::ffi::c_void = base;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != std::ptr::null_mut();
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: u64 = count;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: u64 = size;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: Option<
-// LOWERING-NEXT:             unsafe extern "C-unwind" fn(*mut core::ffi::c_void, *mut core::ffi::c_void) -> i32,
-// LOWERING-NEXT:         > = callback;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}}.is_some();
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 56;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn exit({{arg[0-9]+}}: i32) {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 80;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{arg[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         project_state = {{_v[0-9]+}};
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     return;
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut a: [i8; 8] = [0; 8];
@@ -1314,8 +245,10 @@ int main(void) {
 // LOWERING-NEXT:     let mut strlen_call: Option<unsafe extern "C-unwind" fn(*mut i8) -> u64> = None;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     a = [97, 0, 0, 0, 0, 0, 0, 0];
-// LOWERING-NEXT:     b = [98, 0, 0, 0, 0, 0, 0, 0];
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i8; 8] = [97, 0, 0, 0, 0, 0, 0, 0];
+// LOWERING-NEXT:     a = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i8; 8] = [98, 0, 0, 0, 0, 0, 0, 0];
+// LOWERING-NEXT:     b = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = a.as_mut_ptr() as *mut i8;
 // LOWERING-NEXT:     end = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 1;
@@ -2770,5 +1703,1074 @@ int main(void) {
 // LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: extern "C-unwind" fn strlen({{arg[0-9]+}}: *mut i8) -> u64 {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 5;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} as u64;
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn malloc({{arg[0-9]+}}: u64) -> *mut core::ffi::c_void {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 16;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn calloc({{arg[0-9]+}}: u64, {{arg[0-9]+}}: u64) -> *mut core::ffi::c_void {
+// LOWERING-NEXT:     let mut size: u64 = 0;
+// LOWERING-NEXT:     size = {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: u64 = size;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     } else {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 16;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn realloc({{arg[0-9]+}}: *mut core::ffi::c_void, {{arg[0-9]+}}: u64) -> *mut core::ffi::c_void {
+// LOWERING-NEXT:     let mut size: u64 = 0;
+// LOWERING-NEXT:     size = {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: u64 = size;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     } else {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 16;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn free({{arg[0-9]+}}: *mut core::ffi::c_void) {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 77;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// LOWERING-NEXT:     unsafe {
+// LOWERING-NEXT:         project_state = {{_v[0-9]+}};
+// LOWERING-NEXT:     }
+// LOWERING-NEXT:     return;
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn memcpy(
+// LOWERING-NEXT:     {{arg[0-9]+}}: *mut core::ffi::c_void,
+// LOWERING-NEXT:     {{arg[0-9]+}}: *mut core::ffi::c_void,
+// LOWERING-NEXT:     {{arg[0-9]+}}: u64,
+// LOWERING-NEXT: ) -> *mut core::ffi::c_void {
+// LOWERING-NEXT:     let mut dst: *mut core::ffi::c_void = std::ptr::null_mut();
+// LOWERING-NEXT:     let mut src: *mut core::ffi::c_void = std::ptr::null_mut();
+// LOWERING-NEXT:     dst = {{arg[0-9]+}};
+// LOWERING-NEXT:     src = {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut core::ffi::c_void = src;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != std::ptr::null_mut();
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     } else {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = if {{_v[0-9]+}} {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut core::ffi::c_void = dst;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     } else {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn memmove(
+// LOWERING-NEXT:     {{arg[0-9]+}}: *mut core::ffi::c_void,
+// LOWERING-NEXT:     {{arg[0-9]+}}: *mut core::ffi::c_void,
+// LOWERING-NEXT:     {{arg[0-9]+}}: u64,
+// LOWERING-NEXT: ) -> *mut core::ffi::c_void {
+// LOWERING-NEXT:     let mut dst: *mut core::ffi::c_void = std::ptr::null_mut();
+// LOWERING-NEXT:     let mut src: *mut core::ffi::c_void = std::ptr::null_mut();
+// LOWERING-NEXT:     dst = {{arg[0-9]+}};
+// LOWERING-NEXT:     src = {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut core::ffi::c_void = src;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != std::ptr::null_mut();
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     } else {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = if {{_v[0-9]+}} {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut core::ffi::c_void = dst;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     } else {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn memset({{arg[0-9]+}}: *mut core::ffi::c_void, {{arg[0-9]+}}: i32, {{arg[0-9]+}}: u64) -> *mut core::ffi::c_void {
+// LOWERING-NEXT:     let mut dst: *mut core::ffi::c_void = std::ptr::null_mut();
+// LOWERING-NEXT:     let mut count: u64 = 0;
+// LOWERING-NEXT:     dst = {{arg[0-9]+}};
+// LOWERING-NEXT:     count = {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: u64 = count;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     } else {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = if {{_v[0-9]+}} {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut core::ffi::c_void = dst;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     } else {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn memchr({{arg[0-9]+}}: *mut core::ffi::c_void, {{arg[0-9]+}}: i32, {{arg[0-9]+}}: u64) -> *mut core::ffi::c_void {
+// LOWERING-NEXT:     let mut value: i32 = 0;
+// LOWERING-NEXT:     let mut count: u64 = 0;
+// LOWERING-NEXT:     value = {{arg[0-9]+}};
+// LOWERING-NEXT:     count = {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = value;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     } else {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: u64 = count;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     } else {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 24;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn strcpy({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: *mut i8) -> *mut i8 {
+// LOWERING-NEXT:     let mut dst: *mut i8 = std::ptr::null_mut();
+// LOWERING-NEXT:     dst = {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = if {{_v[0-9]+}} {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut i8 = dst;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     } else {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut i8 = std::ptr::null_mut();
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn strcat({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: *mut i8) -> *mut i8 {
+// LOWERING-NEXT:     let mut dst: *mut i8 = std::ptr::null_mut();
+// LOWERING-NEXT:     dst = {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = if {{_v[0-9]+}} {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut i8 = dst;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     } else {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut i8 = std::ptr::null_mut();
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn strncpy({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: u64) -> *mut i8 {
+// LOWERING-NEXT:     let mut dst: *mut i8 = std::ptr::null_mut();
+// LOWERING-NEXT:     let mut count: u64 = 0;
+// LOWERING-NEXT:     dst = {{arg[0-9]+}};
+// LOWERING-NEXT:     count = {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: u64 = count;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     } else {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = if {{_v[0-9]+}} {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut i8 = dst;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     } else {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut i8 = std::ptr::null_mut();
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn strncat({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: u64) -> *mut i8 {
+// LOWERING-NEXT:     let mut dst: *mut i8 = std::ptr::null_mut();
+// LOWERING-NEXT:     let mut count: u64 = 0;
+// LOWERING-NEXT:     dst = {{arg[0-9]+}};
+// LOWERING-NEXT:     count = {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: u64 = count;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     } else {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = if {{_v[0-9]+}} {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut i8 = dst;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     } else {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut i8 = std::ptr::null_mut();
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn strcmp({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: *mut i8) -> i32 {
+// LOWERING-NEXT:     let mut rhs: *mut i8 = std::ptr::null_mut();
+// LOWERING-NEXT:     rhs = {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut i8 = rhs;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != std::ptr::null_mut();
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     } else {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 11;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn strncmp({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: u64) -> i32 {
+// LOWERING-NEXT:     let mut rhs: *mut i8 = std::ptr::null_mut();
+// LOWERING-NEXT:     let mut count: u64 = 0;
+// LOWERING-NEXT:     rhs = {{arg[0-9]+}};
+// LOWERING-NEXT:     count = {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut i8 = rhs;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != std::ptr::null_mut();
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     } else {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: u64 = count;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     } else {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 12;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn memcmp({{arg[0-9]+}}: *mut core::ffi::c_void, {{arg[0-9]+}}: *mut core::ffi::c_void, {{arg[0-9]+}}: u64) -> i32 {
+// LOWERING-NEXT:     let mut rhs: *mut core::ffi::c_void = std::ptr::null_mut();
+// LOWERING-NEXT:     let mut count: u64 = 0;
+// LOWERING-NEXT:     rhs = {{arg[0-9]+}};
+// LOWERING-NEXT:     count = {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut core::ffi::c_void = rhs;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != std::ptr::null_mut();
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     } else {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: u64 = count;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     } else {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 13;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn strchr({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: i32) -> *mut i8 {
+// LOWERING-NEXT:     let mut value: i32 = 0;
+// LOWERING-NEXT:     value = {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = value;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     } else {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 32;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = {{_v[0-9]+}} as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = std::ptr::null_mut();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn strrchr({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: i32) -> *mut i8 {
+// LOWERING-NEXT:     let mut value: i32 = 0;
+// LOWERING-NEXT:     value = {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = value;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     } else {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 32;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = {{_v[0-9]+}} as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = std::ptr::null_mut();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn strstr({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: *mut i8) -> *mut i8 {
+// LOWERING-NEXT:     let mut needle: *mut i8 = std::ptr::null_mut();
+// LOWERING-NEXT:     needle = {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut i8 = needle;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != std::ptr::null_mut();
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     } else {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 32;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = {{_v[0-9]+}} as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = std::ptr::null_mut();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn strpbrk({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: *mut i8) -> *mut i8 {
+// LOWERING-NEXT:     let mut accept: *mut i8 = std::ptr::null_mut();
+// LOWERING-NEXT:     accept = {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut i8 = accept;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != std::ptr::null_mut();
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     } else {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 32;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = {{_v[0-9]+}} as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = std::ptr::null_mut();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn strspn({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: *mut i8) -> u64 {
+// LOWERING-NEXT:     let mut accept: *mut i8 = std::ptr::null_mut();
+// LOWERING-NEXT:     accept = {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut i8 = accept;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != std::ptr::null_mut();
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     } else {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 31;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} as u64;
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn strcspn({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: *mut i8) -> u64 {
+// LOWERING-NEXT:     let mut reject: *mut i8 = std::ptr::null_mut();
+// LOWERING-NEXT:     reject = {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut i8 = reject;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != std::ptr::null_mut();
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     } else {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 32;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} as u64;
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn atoi({{arg[0-9]+}}: *mut i8) -> i32 {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 41;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn atol({{arg[0-9]+}}: *mut i8) -> i64 {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 42;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} as i64;
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn strtol({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: *mut *mut i8, {{arg[0-9]+}}: i32) -> i64 {
+// LOWERING-NEXT:     let mut end: *mut *mut i8 = std::ptr::null_mut();
+// LOWERING-NEXT:     let mut base: i32 = 0;
+// LOWERING-NEXT:     end = {{arg[0-9]+}};
+// LOWERING-NEXT:     base = {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut *mut i8 = end;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != std::ptr::null_mut();
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     } else {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = base;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     } else {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 43;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} as i64;
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn strtoul({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: *mut *mut i8, {{arg[0-9]+}}: i32) -> u64 {
+// LOWERING-NEXT:     let mut end: *mut *mut i8 = std::ptr::null_mut();
+// LOWERING-NEXT:     let mut base: i32 = 0;
+// LOWERING-NEXT:     end = {{arg[0-9]+}};
+// LOWERING-NEXT:     base = {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut *mut i8 = end;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != std::ptr::null_mut();
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     } else {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = base;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     } else {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 44;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} as u64;
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn strtod({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: *mut *mut i8) -> f64 {
+// LOWERING-NEXT:     let mut end: *mut *mut i8 = std::ptr::null_mut();
+// LOWERING-NEXT:     end = {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut *mut i8 = end;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != std::ptr::null_mut();
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     } else {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 45.0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 0.0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn printf({{arg[0-9]+}}: *mut i8) -> i32 {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 51;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn puts({{arg[0-9]+}}: *mut i8) -> i32 {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 52;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn fopen({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: *mut i8) -> *mut core::ffi::c_void {
+// LOWERING-NEXT:     let mut mode: *mut i8 = std::ptr::null_mut();
+// LOWERING-NEXT:     mode = {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut i8 = mode;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != std::ptr::null_mut();
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     } else {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 48;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn fputs({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: *mut core::ffi::c_void) -> i32 {
+// LOWERING-NEXT:     let mut stream: *mut core::ffi::c_void = std::ptr::null_mut();
+// LOWERING-NEXT:     stream = {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut core::ffi::c_void = stream;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != std::ptr::null_mut();
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     } else {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 54;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn fgets({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: i32, {{arg[0-9]+}}: *mut core::ffi::c_void) -> *mut i8 {
+// LOWERING-NEXT:     let mut count: i32 = 0;
+// LOWERING-NEXT:     let mut stream: *mut core::ffi::c_void = std::ptr::null_mut();
+// LOWERING-NEXT:     count = {{arg[0-9]+}};
+// LOWERING-NEXT:     stream = {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = count;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     } else {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut core::ffi::c_void = stream;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != std::ptr::null_mut();
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     } else {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 40;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = {{_v[0-9]+}} as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = std::ptr::null_mut();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn fread(
+// LOWERING-NEXT:     {{arg[0-9]+}}: *mut core::ffi::c_void,
+// LOWERING-NEXT:     {{arg[0-9]+}}: u64,
+// LOWERING-NEXT:     {{arg[0-9]+}}: u64,
+// LOWERING-NEXT:     {{arg[0-9]+}}: *mut core::ffi::c_void,
+// LOWERING-NEXT: ) -> u64 {
+// LOWERING-NEXT:     let mut size: u64 = 0;
+// LOWERING-NEXT:     let mut count: u64 = 0;
+// LOWERING-NEXT:     let mut stream: *mut core::ffi::c_void = std::ptr::null_mut();
+// LOWERING-NEXT:     size = {{arg[0-9]+}};
+// LOWERING-NEXT:     count = {{arg[0-9]+}};
+// LOWERING-NEXT:     stream = {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: u64 = size;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     } else {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: u64 = count;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     } else {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut core::ffi::c_void = stream;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != std::ptr::null_mut();
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     } else {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 56;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} as u64;
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn fwrite(
+// LOWERING-NEXT:     {{arg[0-9]+}}: *mut core::ffi::c_void,
+// LOWERING-NEXT:     {{arg[0-9]+}}: u64,
+// LOWERING-NEXT:     {{arg[0-9]+}}: u64,
+// LOWERING-NEXT:     {{arg[0-9]+}}: *mut core::ffi::c_void,
+// LOWERING-NEXT: ) -> u64 {
+// LOWERING-NEXT:     let mut size: u64 = 0;
+// LOWERING-NEXT:     let mut count: u64 = 0;
+// LOWERING-NEXT:     let mut stream: *mut core::ffi::c_void = std::ptr::null_mut();
+// LOWERING-NEXT:     size = {{arg[0-9]+}};
+// LOWERING-NEXT:     count = {{arg[0-9]+}};
+// LOWERING-NEXT:     stream = {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: u64 = size;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     } else {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: u64 = count;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     } else {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut core::ffi::c_void = stream;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != std::ptr::null_mut();
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     } else {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 57;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} as u64;
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn fclose({{arg[0-9]+}}: *mut core::ffi::c_void) -> i32 {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 58;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn fflush({{arg[0-9]+}}: *mut core::ffi::c_void) -> i32 {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 59;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn remove({{arg[0-9]+}}: *mut i8) -> i32 {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 60;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn toupper({{arg[0-9]+}}: i32) -> i32 {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 61;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn tolower({{arg[0-9]+}}: i32) -> i32 {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 62;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn sin({{arg[0-9]+}}: f64) -> f64 {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != 0.0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 63.0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 0.0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn cos({{arg[0-9]+}}: f64) -> f64 {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != 0.0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 64.0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 0.0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn tan({{arg[0-9]+}}: f64) -> f64 {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != 0.0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 65.0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 0.0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn log({{arg[0-9]+}}: f64) -> f64 {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != 0.0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 66.0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 0.0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn log10({{arg[0-9]+}}: f64) -> f64 {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != 0.0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 67.0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 0.0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn log2({{arg[0-9]+}}: f64) -> f64 {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != 0.0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 68.0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 0.0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn pow({{arg[0-9]+}}: f64, {{arg[0-9]+}}: f64) -> f64 {
+// LOWERING-NEXT:     let mut rhs: f64 = 0.0;
+// LOWERING-NEXT:     rhs = {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != 0.0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: f64 = rhs;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0.0;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     } else {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 69.0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 0.0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn sqrt({{arg[0-9]+}}: f64) -> f64 {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != 0.0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 70.0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 0.0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn exp({{arg[0-9]+}}: f64) -> f64 {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != 0.0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 71.0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 0.0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn exp2({{arg[0-9]+}}: f64) -> f64 {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != 0.0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 72.0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 0.0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn fmod({{arg[0-9]+}}: f64, {{arg[0-9]+}}: f64) -> f64 {
+// LOWERING-NEXT:     let mut rhs: f64 = 0.0;
+// LOWERING-NEXT:     rhs = {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != 0.0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: f64 = rhs;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0.0;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     } else {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 73.0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 0.0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn lround({{arg[0-9]+}}: f64) -> i64 {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != 0.0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 74;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} as i64;
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn llround({{arg[0-9]+}}: f64) -> i64 {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != 0.0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 75;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} as i64;
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn pthread_create(
+// LOWERING-NEXT:     {{arg[0-9]+}}: *mut u64,
+// LOWERING-NEXT:     {{arg[0-9]+}}: *mut core::ffi::c_void,
+// LOWERING-NEXT:     {{arg[0-9]+}}: Option<unsafe extern "C-unwind" fn(*mut core::ffi::c_void) -> *mut core::ffi::c_void>,
+// LOWERING-NEXT:     {{arg[0-9]+}}: *mut core::ffi::c_void,
+// LOWERING-NEXT: ) -> i32 {
+// LOWERING-NEXT:     let mut attr: *mut core::ffi::c_void = std::ptr::null_mut();
+// LOWERING-NEXT:     let mut start: Option<
+// LOWERING-NEXT:         unsafe extern "C-unwind" fn(*mut core::ffi::c_void) -> *mut core::ffi::c_void,
+// LOWERING-NEXT:     > = None;
+// LOWERING-NEXT:     let mut arg: *mut core::ffi::c_void = std::ptr::null_mut();
+// LOWERING-NEXT:     attr = {{arg[0-9]+}};
+// LOWERING-NEXT:     start = {{arg[0-9]+}};
+// LOWERING-NEXT:     arg = {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut core::ffi::c_void = attr;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != std::ptr::null_mut();
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     } else {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: Option<
+// LOWERING-NEXT:             unsafe extern "C-unwind" fn(*mut core::ffi::c_void) -> *mut core::ffi::c_void,
+// LOWERING-NEXT:         > = start;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}}.is_some();
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     } else {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut core::ffi::c_void = arg;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != std::ptr::null_mut();
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     } else {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 78;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: extern "C-unwind" fn start({{arg[0-9]+}}: *mut core::ffi::c_void) -> *mut core::ffi::c_void {
+// LOWERING-NEXT:     return {{arg[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn pthread_join({{arg[0-9]+}}: u64, {{arg[0-9]+}}: *mut *mut core::ffi::c_void) -> i32 {
+// LOWERING-NEXT:     let mut result: *mut *mut core::ffi::c_void = std::ptr::null_mut();
+// LOWERING-NEXT:     result = {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut *mut core::ffi::c_void = result;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != std::ptr::null_mut();
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     } else {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 79;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn qsort(
+// LOWERING-NEXT:     {{arg[0-9]+}}: *mut core::ffi::c_void,
+// LOWERING-NEXT:     {{arg[0-9]+}}: u64,
+// LOWERING-NEXT:     {{arg[0-9]+}}: u64,
+// LOWERING-NEXT:     {{arg[0-9]+}}: Option<
+// LOWERING-NEXT:         unsafe extern "C-unwind" fn(*mut core::ffi::c_void, *mut core::ffi::c_void) -> i32,
+// LOWERING-NEXT:     >,
+// LOWERING-NEXT: ) {
+// LOWERING-NEXT:     let mut count: u64 = 0;
+// LOWERING-NEXT:     let mut size: u64 = 0;
+// LOWERING-NEXT:     let mut callback: Option<
+// LOWERING-NEXT:         unsafe extern "C-unwind" fn(*mut core::ffi::c_void, *mut core::ffi::c_void) -> i32,
+// LOWERING-NEXT:     > = None;
+// LOWERING-NEXT:     count = {{arg[0-9]+}};
+// LOWERING-NEXT:     size = {{arg[0-9]+}};
+// LOWERING-NEXT:     callback = {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: u64 = count;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     } else {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: u64 = size;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     } else {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: Option<
+// LOWERING-NEXT:             unsafe extern "C-unwind" fn(*mut core::ffi::c_void, *mut core::ffi::c_void) -> i32,
+// LOWERING-NEXT:         > = callback;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}}.is_some();
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     } else {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 76;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// LOWERING-NEXT:     unsafe {
+// LOWERING-NEXT:         project_state = {{_v[0-9]+}};
+// LOWERING-NEXT:     }
+// LOWERING-NEXT:     return;
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: extern "C-unwind" fn compare({{arg[0-9]+}}: *mut core::ffi::c_void, {{arg[0-9]+}}: *mut core::ffi::c_void) -> i32 {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} == {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn bsearch(
+// LOWERING-NEXT:     {{arg[0-9]+}}: *mut core::ffi::c_void,
+// LOWERING-NEXT:     {{arg[0-9]+}}: *mut core::ffi::c_void,
+// LOWERING-NEXT:     {{arg[0-9]+}}: u64,
+// LOWERING-NEXT:     {{arg[0-9]+}}: u64,
+// LOWERING-NEXT:     {{arg[0-9]+}}: Option<
+// LOWERING-NEXT:         unsafe extern "C-unwind" fn(*mut core::ffi::c_void, *mut core::ffi::c_void) -> i32,
+// LOWERING-NEXT:     >,
+// LOWERING-NEXT: ) -> *mut core::ffi::c_void {
+// LOWERING-NEXT:     let mut base: *mut core::ffi::c_void = std::ptr::null_mut();
+// LOWERING-NEXT:     let mut count: u64 = 0;
+// LOWERING-NEXT:     let mut size: u64 = 0;
+// LOWERING-NEXT:     let mut callback: Option<
+// LOWERING-NEXT:         unsafe extern "C-unwind" fn(*mut core::ffi::c_void, *mut core::ffi::c_void) -> i32,
+// LOWERING-NEXT:     > = None;
+// LOWERING-NEXT:     base = {{arg[0-9]+}};
+// LOWERING-NEXT:     count = {{arg[0-9]+}};
+// LOWERING-NEXT:     size = {{arg[0-9]+}};
+// LOWERING-NEXT:     callback = {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut core::ffi::c_void = base;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != std::ptr::null_mut();
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     } else {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: u64 = count;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     } else {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: u64 = size;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     } else {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: Option<
+// LOWERING-NEXT:             unsafe extern "C-unwind" fn(*mut core::ffi::c_void, *mut core::ffi::c_void) -> i32,
+// LOWERING-NEXT:         > = callback;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}}.is_some();
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     } else {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 56;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn exit({{arg[0-9]+}}: i32) {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 80;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{arg[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-NEXT:     unsafe {
+// LOWERING-NEXT:         project_state = {{_v[0-9]+}};
+// LOWERING-NEXT:     }
+// LOWERING-NEXT:     return;
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering

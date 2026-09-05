@@ -155,9 +155,27 @@ int main(void) {
 // LOWERING-NEXT:     fn memset(_0: *mut core::ffi::c_void, _1: i32, _2: usize) -> *mut core::ffi::c_void;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
+// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT:     let mut input: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 7;
+// LOWERING-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(input), {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d %d %d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(input)) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = cache_prefetch_probe({{_v[0-9]+}});
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = frame_probe();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = clear_padding_probe();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = frexp_probe();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = hyperbolic_probe();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
 // LOWERING-NEXT: fn cache_prefetch_probe({{arg[0-9]+}}: i32) -> i32 {
 // LOWERING-NEXT:     let mut bytes: aligned::Aligned<aligned::A16, [i8; 16]> = aligned::Aligned([0; 16]);
-// LOWERING-NEXT:     *bytes = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i8; 16] = [0; 16];
+// LOWERING-NEXT:     *bytes = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i8 = {{arg[0-9]+}} as i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 0;
 // LOWERING-NEXT:     bytes[({{_v[0-9]+}} as usize)] = {{_v[0-9]+}};
@@ -403,23 +421,6 @@ int main(void) {
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut input: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 7;
-// LOWERING-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(input), {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d %d %d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(input)) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = cache_prefetch_probe({{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = frame_probe();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = clear_padding_probe();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = frexp_probe();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = hyperbolic_probe();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
 // LOWERING-NEXT: unsafe extern "unadjusted" {
 // LOWERING-NEXT:     #[link_name = "llvm.clear_cache"]
 // LOWERING-NEXT:     fn __slate_intrinsic_clear_cache_64e8e36ba84fcffa(
@@ -492,9 +493,27 @@ int main(void) {
 // REWRITES-NEXT:     fn memset(_0: *mut core::ffi::c_void, _1: i32, _2: usize) -> *mut core::ffi::c_void;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
+// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT:     let mut input: i32 = 0;
+// REWRITES-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(input), 7 as i32) };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"%d %d %d %d %d\n".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(input)) };
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         printf(
+// REWRITES-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_char,
+// REWRITES-NEXT:             cache_prefetch_probe({{_v[0-9]+}}),
+// REWRITES-NEXT:             frame_probe(),
+// REWRITES-NEXT:             clear_padding_probe(),
+// REWRITES-NEXT:             frexp_probe(),
+// REWRITES-NEXT:             hyperbolic_probe(),
+// REWRITES-NEXT:         )
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
 // REWRITES-NEXT: fn cache_prefetch_probe({{arg[0-9]+}}: i32) -> i32 {
 // REWRITES-NEXT:     let mut bytes: aligned::Aligned<aligned::A16, [i8; 16]> = aligned::Aligned([0; 16]);
-// REWRITES-NEXT:     *bytes = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+// REWRITES-NEXT:     *bytes = [0; 16];
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 0;
 // REWRITES-NEXT:     bytes[({{_v[0-9]+}} as usize)] = {{arg[0-9]+}} as i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = bytes.as_mut_ptr() as *mut i8;
@@ -637,24 +656,6 @@ int main(void) {
 // REWRITES-NEXT:         + 100 * (({{_v[0-9]+}} == 1.0) as i32)
 // REWRITES-NEXT:         + 10 * (({{_v[0-9]+}} == 0.0) as i32)
 // REWRITES-NEXT:         + (({{_v[0-9]+}} == 0.0) as i32)
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     let mut input: i32 = 0;
-// REWRITES-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(input), 7 as i32) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"%d %d %d %d %d\n".as_ptr() as *mut i8;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(input)) };
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_char,
-// REWRITES-NEXT:             cache_prefetch_probe({{_v[0-9]+}}),
-// REWRITES-NEXT:             frame_probe(),
-// REWRITES-NEXT:             clear_padding_probe(),
-// REWRITES-NEXT:             frexp_probe(),
-// REWRITES-NEXT:             hyperbolic_probe(),
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe extern "unadjusted" {

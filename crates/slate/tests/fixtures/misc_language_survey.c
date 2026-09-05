@@ -90,7 +90,8 @@ int main(void) {
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let mut values: [i32; 3] = [0; 3];
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     values = [1, 2, 3];
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i32; 3] = [1, 2, 3];
+// LOWERING-NEXT:     values = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 3;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = values.as_mut_ptr() as *mut i32;
 // LOWERING-NEXT:     unsafe { scale({{_v[0-9]+}}, {{_v[0-9]+}}) };

@@ -56,8 +56,10 @@ int main(void) {
 // LOWERING-NEXT:     let mut digits: [i8; 3] = [0; 3];
 // LOWERING-NEXT:     let mut word: [i8; 6] = [0; 6];
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     digits = [52, 50, 0];
-// LOWERING-NEXT:     word = [104, 101, 108, 108, 111, 0];
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i8; 3] = [52, 50, 0];
+// LOWERING-NEXT:     digits = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i8; 6] = [104, 101, 108, 108, 111, 0];
+// LOWERING-NEXT:     word = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d\n\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = digits.as_mut_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = forward_num({{_v[0-9]+}});
@@ -114,27 +116,29 @@ int main(void) {
 // REWRITES-NEXT:         .unwrap_or(0i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn parse_num({{arg[0-9]+}}: &str) -> i32 {
-// REWRITES-NEXT:     unsafe { __slate_atoi({{arg[0-9]+}}.as_ptr() as *const i8) }
+// REWRITES-NEXT: fn parse_num({{arg[0-9]+}}: *mut i8) -> i32 {
+// REWRITES-NEXT:     unsafe { __slate_atoi({{arg[0-9]+}} as *const i8) }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn forward_num({{arg[0-9]+}}: &str) -> i32 {
+// REWRITES-NEXT: fn forward_num({{arg[0-9]+}}: *mut i8) -> i32 {
 // REWRITES-NEXT:     parse_num({{arg[0-9]+}})
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn text_len({{arg[0-9]+}}: &str) -> i32 {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = (unsafe { {{arg[0-9]+}}.len() as u64 }) as u64;
+// REWRITES-NEXT: fn text_len({{arg[0-9]+}}: *mut i8) -> i32 {
+// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = (unsafe { strlen({{arg[0-9]+}} as *const core::ffi::c_char) }) as u64;
 // REWRITES-NEXT:     {{_v[0-9]+}} as i32
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     let mut digits: [i8; 3] = [52, 50, 0];
-// REWRITES-NEXT:     let mut word: [i8; 6] = [104, 101, 108, 108, 111, 0];
+// REWRITES-NEXT:     let mut digits: [i8; 3] = [0; 3];
+// REWRITES-NEXT:     let mut word: [i8; 6] = [0; 6];
+// REWRITES-NEXT:     digits = [52, 50, 0];
+// REWRITES-NEXT:     word = [104, 101, 108, 108, 111, 0];
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"%d %d\n".as_ptr() as *mut i8;
-// REWRITES-NEXT:     digits.as_mut_ptr() as *mut i8;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = forward_num("42");
-// REWRITES-NEXT:     word.as_mut_ptr() as *mut i8;
-// REWRITES-NEXT:     unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, text_len("hello")) };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = digits.as_mut_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = forward_num({{_v[0-9]+}});
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = word.as_mut_ptr() as *mut i8;
+// REWRITES-NEXT:     unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, text_len({{_v[0-9]+}})) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

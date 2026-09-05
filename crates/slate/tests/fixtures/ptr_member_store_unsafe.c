@@ -59,14 +59,20 @@ int main(void) {
 // LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn bump({{arg[0-9]+}}: *mut i32) {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{arg[0-9]+}} };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 10;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         *{{arg[0-9]+}} = {{_v[0-9]+}};
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     return;
+// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT:     let mut o: outer = outer {
+// LOWERING-NEXT:         buf: inner { start: 0, end: 0 },
+// LOWERING-NEXT:         error: 0,
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     init(std::ptr::addr_of_mut!(o));
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = o.buf.start;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = o.buf.end;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = o.error;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn init({{arg[0-9]+}}: *mut outer) {
@@ -86,20 +92,14 @@ int main(void) {
 // LOWERING-NEXT:     return;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut o: outer = outer {
-// LOWERING-NEXT:         buf: inner { start: 0, end: 0 },
-// LOWERING-NEXT:         error: 0,
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     init(std::ptr::addr_of_mut!(o));
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = o.buf.start;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = o.buf.end;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = o.error;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT: fn bump({{arg[0-9]+}}: *mut i32) {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{arg[0-9]+}} };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 10;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-NEXT:     unsafe {
+// LOWERING-NEXT:         *{{arg[0-9]+}} = {{_v[0-9]+}};
+// LOWERING-NEXT:     }
+// LOWERING-NEXT:     return;
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -136,11 +136,17 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn bump({{arg[0-9]+}}: *mut i32) {
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         *{{arg[0-9]+}} = (unsafe { *{{arg[0-9]+}} }) + 10;
-// REWRITES-NEXT:     }
-// REWRITES-NEXT:     return;
+// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT:     let mut o: outer = outer {
+// REWRITES-NEXT:         buf: inner { start: 0, end: 0 },
+// REWRITES-NEXT:         error: 0,
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     init(unsafe { &mut (*std::ptr::addr_of_mut!(o)) });
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = o.buf.start;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = o.buf.end;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = o.error;
+// REWRITES-NEXT:     unsafe { printf(c"%d %d %d\n".as_ptr(), {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn init({{arg[0-9]+}}: &mut outer) {
@@ -157,16 +163,10 @@ int main(void) {
 // REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     let mut o: outer = outer {
-// REWRITES-NEXT:         buf: inner { start: 0, end: 0 },
-// REWRITES-NEXT:         error: 0,
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     init(unsafe { &mut (*std::ptr::addr_of_mut!(o)) });
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = o.buf.start;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = o.buf.end;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = o.error;
-// REWRITES-NEXT:     unsafe { printf(c"%d %d %d\n".as_ptr(), {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT: fn bump({{arg[0-9]+}}: *mut i32) {
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         *{{arg[0-9]+}} = (unsafe { *{{arg[0-9]+}} }) + 10;
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

@@ -219,7 +219,7 @@ unsigned int slate_first_interface_flags(void) {
 // LOWERING-MACOS-DAG:     };
 // LOWERING-MACOS-DAG:     let mut status: i32 = 0;
 // LOWERING-MACOS-DAG:     result = {{arg[0-9]+}};
-// LOWERING-MACOS-DAG:     hints = addrinfo {
+// LOWERING-MACOS-DAG:     let {{_v[0-9]+}}: addrinfo = addrinfo {
 // LOWERING-MACOS-DAG:         ai_flags: 0,
 // LOWERING-MACOS-DAG:         ai_family: 0,
 // LOWERING-MACOS-DAG:         ai_socktype: 0,
@@ -229,6 +229,7 @@ unsigned int slate_first_interface_flags(void) {
 // LOWERING-MACOS-DAG:         ai_addr: std::ptr::null_mut(),
 // LOWERING-MACOS-DAG:         ai_next: std::ptr::null_mut(),
 // LOWERING-MACOS-DAG:     };
+// LOWERING-MACOS-DAG:     hints = {{_v[0-9]+}};
 // LOWERING-MACOS-DAG:     let {{_v[0-9]+}}: i32 = 30;
 // LOWERING-MACOS-DAG:     hints.ai_family = {{_v[0-9]+}};
 // LOWERING-MACOS-DAG:     let {{_v[0-9]+}}: i32 = 2;

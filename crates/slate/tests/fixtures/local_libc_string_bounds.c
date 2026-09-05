@@ -55,41 +55,6 @@ int main(void) {
 // LOWERING-NEXT:     fn strcspn(_0: *const core::ffi::c_char, _1: *const core::ffi::c_char) -> usize;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn bounded_cmp({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: u64) -> i32 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {
-// LOWERING-NEXT:         strncmp(
-// LOWERING-NEXT:             {{arg[0-9]+}} as *const core::ffi::c_char,
-// LOWERING-NEXT:             {{arg[0-9]+}} as *const core::ffi::c_char,
-// LOWERING-NEXT:             {{arg[0-9]+}} as usize,
-// LOWERING-NEXT:         )
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn bounded_len({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: u64) -> u64 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = (unsafe { strnlen({{arg[0-9]+}} as *const core::ffi::c_char, {{arg[0-9]+}} as usize) }) as u64;
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn spans({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: *mut i8) -> u64 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = (unsafe {
-// LOWERING-NEXT:         strspn(
-// LOWERING-NEXT:             {{arg[0-9]+}} as *const core::ffi::c_char,
-// LOWERING-NEXT:             {{arg[0-9]+}} as *const core::ffi::c_char,
-// LOWERING-NEXT:         )
-// LOWERING-NEXT:     }) as u64;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 100;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} * {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = (unsafe {
-// LOWERING-NEXT:         strcspn(
-// LOWERING-NEXT:             {{arg[0-9]+}} as *const core::ffi::c_char,
-// LOWERING-NEXT:             {{arg[0-9]+}} as *const core::ffi::c_char,
-// LOWERING-NEXT:         )
-// LOWERING-NEXT:     }) as u64;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let mut abc: [i8; 4] = [0; 4];
 // LOWERING-NEXT:     let mut abd: [i8; 4] = [0; 4];
@@ -99,13 +64,20 @@ int main(void) {
 // LOWERING-NEXT:     let mut empty: [i8; 1] = [0; 1];
 // LOWERING-NEXT:     let mut reject: [i8; 3] = [0; 3];
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     abc = [97, 98, 99, 0];
-// LOWERING-NEXT:     abd = [97, 98, 100, 0];
-// LOWERING-NEXT:     text = [97, 98, 99, 100, 101, 102, 0];
-// LOWERING-NEXT:     span = [97, 98, 97, 99, 97, 100, 0];
-// LOWERING-NEXT:     accept = [97, 98, 0];
-// LOWERING-NEXT:     empty = [0];
-// LOWERING-NEXT:     reject = [99, 100, 0];
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i8; 4] = [97, 98, 99, 0];
+// LOWERING-NEXT:     abc = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i8; 4] = [97, 98, 100, 0];
+// LOWERING-NEXT:     abd = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i8; 7] = [97, 98, 99, 100, 101, 102, 0];
+// LOWERING-NEXT:     text = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i8; 7] = [97, 98, 97, 99, 97, 100, 0];
+// LOWERING-NEXT:     span = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i8; 3] = [97, 98, 0];
+// LOWERING-NEXT:     accept = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i8; 1] = [0; 1];
+// LOWERING-NEXT:     empty = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i8; 3] = [99, 100, 0];
+// LOWERING-NEXT:     reject = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d %zu %zu %zu %zu %zu %zu\n\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = abc.as_mut_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = abd.as_mut_ptr() as *mut i8;
@@ -162,5 +134,40 @@ int main(void) {
 // LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn bounded_cmp({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: u64) -> i32 {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-NEXT:         strncmp(
+// LOWERING-NEXT:             {{arg[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-NEXT:             {{arg[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-NEXT:             {{arg[0-9]+}} as usize,
+// LOWERING-NEXT:         )
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn bounded_len({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: u64) -> u64 {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = (unsafe { strnlen({{arg[0-9]+}} as *const core::ffi::c_char, {{arg[0-9]+}} as usize) }) as u64;
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn spans({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: *mut i8) -> u64 {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = (unsafe {
+// LOWERING-NEXT:         strspn(
+// LOWERING-NEXT:             {{arg[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-NEXT:             {{arg[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-NEXT:         )
+// LOWERING-NEXT:     }) as u64;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 100;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} * {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = (unsafe {
+// LOWERING-NEXT:         strcspn(
+// LOWERING-NEXT:             {{arg[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-NEXT:             {{arg[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-NEXT:         )
+// LOWERING-NEXT:     }) as u64;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering

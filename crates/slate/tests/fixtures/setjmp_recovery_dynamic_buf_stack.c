@@ -63,33 +63,36 @@ int main(void) {
 // LOWERING-EMPTY:
 // LOWERING-NEXT: unsafe extern "C" {
 // LOWERING-NEXT:     fn malloc(_0: usize) -> *mut core::ffi::c_void;
-// LOWERING-NEXT:     fn setjmp(_0: *mut __slate_jmp_buf_tag) -> i32;
-// LOWERING-NEXT:     fn longjmp(_0: *mut __slate_jmp_buf_tag, _1: i32) -> !;
-// LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // LOWERING-NEXT:     fn free(_0: *mut core::ffi::c_void);
+// LOWERING-NEXT:     fn setjmp(_0: *mut __slate_jmp_buf_tag) -> i32;
+// LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
+// LOWERING-NEXT:     fn longjmp(_0: *mut __slate_jmp_buf_tag, _1: i32) -> !;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn inner({{arg[0-9]+}}: i32) {
-// LOWERING-NEXT:     let mut fail: i32 = 0;
-// LOWERING-NEXT:     fail = {{arg[0-9]+}};
-// LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = fail;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// LOWERING-NEXT:         if {{_v[0-9]+}} {
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = unsafe { jb_top };
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} - 1;
-// LOWERING-NEXT:             unsafe {
-// LOWERING-NEXT:                 jb_top = {{_v[0-9]+}};
-// LOWERING-NEXT:             }
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} as i64;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: *mut [__slate_jmp_buf_tag; 1] = unsafe { jb_stack };
-// LOWERING-NEXT:             let {{_v[0-9]+}}: *mut [__slate_jmp_buf_tag; 1] = unsafe { {{_v[0-9]+}}.offset({{_v[0-9]+}} as isize) };
-// LOWERING-NEXT:             let {{_v[0-9]+}}: *mut __slate_jmp_buf_tag = {{_v[0-9]+}} as *mut __slate_jmp_buf_tag;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = 42;
-// LOWERING-NEXT:             unsafe { longjmp({{_v[0-9]+}} as *mut __slate_jmp_buf_tag, {{_v[0-9]+}} as i32) };
-// LOWERING-NEXT:         }
+// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 200;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} * {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc({{_v[0-9]+}} as usize) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut [__slate_jmp_buf_tag; 1] = {{_v[0-9]+}} as *mut [__slate_jmp_buf_tag; 1];
+// LOWERING-NEXT:     unsafe {
+// LOWERING-NEXT:         jb_stack = {{_v[0-9]+}};
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     return;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     run_case({{_v[0-9]+}}, {{_v[0-9]+}});
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// LOWERING-NEXT:     run_case({{_v[0-9]+}}, {{_v[0-9]+}});
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 2;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     run_case({{_v[0-9]+}}, {{_v[0-9]+}});
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut [__slate_jmp_buf_tag; 1] = unsafe { jb_stack };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
+// LOWERING-NEXT:     unsafe { free({{_v[0-9]+}} as *mut core::ffi::c_void) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn run_case({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) {
@@ -125,30 +128,27 @@ int main(void) {
 // LOWERING-NEXT:     return;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 200;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} * {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc({{_v[0-9]+}} as usize) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut [__slate_jmp_buf_tag; 1] = {{_v[0-9]+}} as *mut [__slate_jmp_buf_tag; 1];
-// LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         jb_stack = {{_v[0-9]+}};
+// LOWERING-NEXT: fn inner({{arg[0-9]+}}: i32) {
+// LOWERING-NEXT:     let mut fail: i32 = 0;
+// LOWERING-NEXT:     fail = {{arg[0-9]+}};
+// LOWERING-NEXT:     {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = fail;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-NEXT:         if {{_v[0-9]+}} {
+// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = unsafe { jb_top };
+// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} - 1;
+// LOWERING-NEXT:             unsafe {
+// LOWERING-NEXT:                 jb_top = {{_v[0-9]+}};
+// LOWERING-NEXT:             }
+// LOWERING-NEXT:             let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} as i64;
+// LOWERING-NEXT:             let {{_v[0-9]+}}: *mut [__slate_jmp_buf_tag; 1] = unsafe { jb_stack };
+// LOWERING-NEXT:             let {{_v[0-9]+}}: *mut [__slate_jmp_buf_tag; 1] = unsafe { {{_v[0-9]+}}.offset({{_v[0-9]+}} as isize) };
+// LOWERING-NEXT:             let {{_v[0-9]+}}: *mut __slate_jmp_buf_tag = {{_v[0-9]+}} as *mut __slate_jmp_buf_tag;
+// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = 42;
+// LOWERING-NEXT:             unsafe { longjmp({{_v[0-9]+}} as *mut __slate_jmp_buf_tag, {{_v[0-9]+}} as i32) };
+// LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     run_case({{_v[0-9]+}}, {{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:     run_case({{_v[0-9]+}}, {{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 2;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     run_case({{_v[0-9]+}}, {{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut [__slate_jmp_buf_tag; 1] = unsafe { jb_stack };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
-// LOWERING-NEXT:     unsafe { free({{_v[0-9]+}} as *mut core::ffi::c_void) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT:     return;
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -181,28 +181,24 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe extern "C" {
 // REWRITES-NEXT:     fn malloc(_0: usize) -> *mut core::ffi::c_void;
-// REWRITES-NEXT:     fn setjmp(_0: *mut __slate_jmp_buf_tag) -> i32;
-// REWRITES-NEXT:     fn longjmp(_0: *mut __slate_jmp_buf_tag, _1: i32) -> !;
-// REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT:     fn free(_0: *mut core::ffi::c_void);
+// REWRITES-NEXT:     fn setjmp(_0: *mut __slate_jmp_buf_tag) -> i32;
+// REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
+// REWRITES-NEXT:     fn longjmp(_0: *mut __slate_jmp_buf_tag, _1: i32) -> !;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn inner(mut {{_v[0-9]+}}: i32) {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// REWRITES-NEXT:     if {{_v[0-9]+}} {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = (unsafe { jb_top }) - 1;
-// REWRITES-NEXT:         unsafe {
-// REWRITES-NEXT:             jb_top = {{_v[0-9]+}};
-// REWRITES-NEXT:         }
-// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut [__slate_jmp_buf_tag; 1] = unsafe { jb_stack };
-// REWRITES-NEXT:         unsafe {
-// REWRITES-NEXT:             longjmp(
-// REWRITES-NEXT:                 (unsafe { {{_v[0-9]+}}.offset(({{_v[0-9]+}} as i64) as isize) }) as *mut __slate_jmp_buf_tag,
-// REWRITES-NEXT:                 42 as i32,
-// REWRITES-NEXT:             )
-// REWRITES-NEXT:         };
+// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 200 * {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc({{_v[0-9]+}} as usize) };
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         jb_stack = {{_v[0-9]+}} as *mut [__slate_jmp_buf_tag; 1];
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     return;
+// REWRITES-NEXT:     run_case(0, 0);
+// REWRITES-NEXT:     run_case(1, 1);
+// REWRITES-NEXT:     run_case(2, 0);
+// REWRITES-NEXT:     unsafe { free((unsafe { jb_stack }) as *mut core::ffi::c_void) };
+// REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn run_case(mut id: i32, mut fail: i32) {
@@ -223,17 +219,21 @@ int main(void) {
 // REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 8;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 200 * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc({{_v[0-9]+}} as usize) };
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         jb_stack = {{_v[0-9]+}} as *mut [__slate_jmp_buf_tag; 1];
+// REWRITES-NEXT: fn inner(mut {{_v[0-9]+}}: i32) {
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = (unsafe { jb_top }) - 1;
+// REWRITES-NEXT:         unsafe {
+// REWRITES-NEXT:             jb_top = {{_v[0-9]+}};
+// REWRITES-NEXT:         }
+// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut [__slate_jmp_buf_tag; 1] = unsafe { jb_stack };
+// REWRITES-NEXT:         unsafe {
+// REWRITES-NEXT:             longjmp(
+// REWRITES-NEXT:                 (unsafe { {{_v[0-9]+}}.offset(({{_v[0-9]+}} as i64) as isize) }) as *mut __slate_jmp_buf_tag,
+// REWRITES-NEXT:                 42 as i32,
+// REWRITES-NEXT:             )
+// REWRITES-NEXT:         };
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     run_case(0, 0);
-// REWRITES-NEXT:     run_case(1, 1);
-// REWRITES-NEXT:     run_case(2, 0);
-// REWRITES-NEXT:     unsafe { free((unsafe { jb_stack }) as *mut core::ffi::c_void) };
-// REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

@@ -149,13 +149,13 @@ int main(void) { return 0; }
 // LOWERING-BIONIC-AARCH64-NEXT:     }
 // LOWERING-BIONIC-AARCH64-EMPTY:
 // LOWERING-BIONIC-AARCH64-NEXT:     fn next_arg<T: Copy + 'static>(&mut self) -> T {
+// LOWERING-BIONIC-AARCH64-NEXT:         let index = self.index;
+// LOWERING-BIONIC-AARCH64-NEXT:         self.index += 1;
 // LOWERING-BIONIC-AARCH64-NEXT:         if std::mem::size_of::<T>() == 0 {
 // LOWERING-BIONIC-AARCH64-NEXT:             return unsafe { std::mem::zeroed() };
 // LOWERING-BIONIC-AARCH64-NEXT:         }
 // LOWERING-BIONIC-AARCH64-NEXT:         let args = self.args.as_ref().expect("va_arg with no arguments");
-// LOWERING-BIONIC-AARCH64-NEXT:         let value = args[self.index].read::<T>();
-// LOWERING-BIONIC-AARCH64-NEXT:         self.index += 1;
-// LOWERING-BIONIC-AARCH64-NEXT:         value
+// LOWERING-BIONIC-AARCH64-NEXT:         args[index].read::<T>()
 // LOWERING-BIONIC-AARCH64-NEXT:     }
 // LOWERING-BIONIC-AARCH64-NEXT: }
 // LOWERING-BIONIC-AARCH64-EMPTY:
@@ -291,13 +291,13 @@ int main(void) { return 0; }
 // LOWERING-BIONIC-X86_64-NEXT:     }
 // LOWERING-BIONIC-X86_64-EMPTY:
 // LOWERING-BIONIC-X86_64-NEXT:     fn next_arg<T: Copy + 'static>(&mut self) -> T {
+// LOWERING-BIONIC-X86_64-NEXT:         let index = self.index;
+// LOWERING-BIONIC-X86_64-NEXT:         self.index += 1;
 // LOWERING-BIONIC-X86_64-NEXT:         if std::mem::size_of::<T>() == 0 {
 // LOWERING-BIONIC-X86_64-NEXT:             return unsafe { std::mem::zeroed() };
 // LOWERING-BIONIC-X86_64-NEXT:         }
 // LOWERING-BIONIC-X86_64-NEXT:         let args = self.args.as_ref().expect("va_arg with no arguments");
-// LOWERING-BIONIC-X86_64-NEXT:         let value = args[self.index].read::<T>();
-// LOWERING-BIONIC-X86_64-NEXT:         self.index += 1;
-// LOWERING-BIONIC-X86_64-NEXT:         value
+// LOWERING-BIONIC-X86_64-NEXT:         args[index].read::<T>()
 // LOWERING-BIONIC-X86_64-NEXT:     }
 // LOWERING-BIONIC-X86_64-NEXT: }
 // LOWERING-BIONIC-X86_64-EMPTY:

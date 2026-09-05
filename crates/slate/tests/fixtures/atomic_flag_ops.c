@@ -72,7 +72,8 @@ int main(void) {
 // LOWERING-NEXT:     let mut _atomictmp6: bool = false;
 // LOWERING-NEXT:     let mut atomic_temp4: bool = false;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     flag = atomic_flag { _Value: false };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: atomic_flag = atomic_flag { _Value: false };
+// LOWERING-NEXT:     flag = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
 // LOWERING-NEXT:     _atomictmp = {{_v[0-9]+}};

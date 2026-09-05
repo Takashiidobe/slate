@@ -35,7 +35,8 @@ int main(void) {
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let mut buf: [i8; 8] = [0; 8];
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     buf = [1, 2, 3, 4, 5, 6, 7, 8];
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
+// LOWERING-NEXT:     buf = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = buf.as_mut_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = buf.as_mut_ptr() as *mut i8;

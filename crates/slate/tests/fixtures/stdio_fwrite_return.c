@@ -69,9 +69,10 @@ int main(void) {
 // LOWERING-NEXT:             std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     *buf = [
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i8; 16] = [
 // LOWERING-NEXT:         48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 97, 98, 99, 100, 101, 0,
 // LOWERING-NEXT:     ];
+// LOWERING-NEXT:     *buf = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = buf.as_mut_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 1;

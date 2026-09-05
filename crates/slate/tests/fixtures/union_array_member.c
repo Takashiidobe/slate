@@ -42,7 +42,8 @@ int main(void) {
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let mut word: Word = unsafe { std::mem::zeroed::<Word>() };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     word = Word { value: 0 };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: Word = Word { value: 0 };
+// LOWERING-NEXT:     word = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u8 = 65;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 0;
 // LOWERING-NEXT:     unsafe {

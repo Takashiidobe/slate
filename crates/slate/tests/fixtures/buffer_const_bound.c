@@ -63,10 +63,12 @@ int main(void) {
 // LOWERING-DAG:     let mut a: [i32; 3] = [0; 3];
 // LOWERING-DAG:     let mut big: aligned::Aligned<aligned::A16, [i32; 6]> = aligned::Aligned([0; 6]);
 // LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:     *arr = [10, 20, 30, 40];
+// LOWERING-DAG:     let {{_v[0-9]+}}: [i32; 4] = [10, 20, 30, 40];
+// LOWERING-DAG:     *arr = {{_v[0-9]+}};
 // LOWERING-DAG:     let {{_v[0-9]+}}: *mut i32 = arr.as_mut_ptr() as *mut i32;
 // LOWERING-DAG:     let {{_v[0-9]+}}: i32 = sum_fixed({{_v[0-9]+}});
-// LOWERING-DAG:     a = [1, 2, 3];
+// LOWERING-DAG:     let {{_v[0-9]+}}: [i32; 3] = [1, 2, 3];
+// LOWERING-DAG:     a = {{_v[0-9]+}};
 // LOWERING-DAG:     let {{_v[0-9]+}}: *mut i32 = a.as_mut_ptr() as *mut i32;
 // LOWERING-DAG:     scale_fixed({{_v[0-9]+}});
 // LOWERING-DAG:     let {{_v[0-9]+}}: u64 = 3;
@@ -95,7 +97,8 @@ int main(void) {
 // LOWERING-DAG:     let {{_v[0-9]+}}: i32 = sum3({{_v[0-9]+}});
 // LOWERING-DAG:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
 // LOWERING-DAG:     unsafe { free({{_v[0-9]+}} as *mut core::ffi::c_void) };
-// LOWERING-DAG:     *big = [1, 2, 3, 4, 5, 6];
+// LOWERING-DAG:     let {{_v[0-9]+}}: [i32; 6] = [1, 2, 3, 4, 5, 6];
+// LOWERING-DAG:     *big = {{_v[0-9]+}};
 // LOWERING-DAG:     let {{_v[0-9]+}}: *mut i32 = big.as_mut_ptr() as *mut i32;
 // LOWERING-DAG:     let {{_v[0-9]+}}: i32 = mix({{_v[0-9]+}});
 // LOWERING-DAG:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d %d %d\n\0".as_ptr() as *mut i8;

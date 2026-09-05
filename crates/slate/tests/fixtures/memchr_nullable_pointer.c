@@ -43,7 +43,8 @@ int main(void) {
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let mut buf: [u8; 4] = [0; 4];
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     buf = [10, 20, 30, 40];
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [u8; 4] = [10, 20, 30, 40];
+// LOWERING-NEXT:     buf = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u8 = buf.as_mut_ptr() as *mut u8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 30;
@@ -101,7 +102,8 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     let mut buf: [u8; 4] = [10, 20, 30, 40];
+// REWRITES-NEXT:     let mut buf: [u8; 4] = [0; 4];
+// REWRITES-NEXT:     buf = [10, 20, 30, 40];
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut u8 = buf.as_mut_ptr() as *mut u8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = __slate_memchr(
 // REWRITES-NEXT:         {{_v[0-9]+}} as *mut core::ffi::c_void,

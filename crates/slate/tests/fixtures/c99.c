@@ -300,145 +300,6 @@ int main(void) {
 // LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn c99_vm_sum({{arg[0-9]+}}: i32, {{arg[0-9]+}}: *mut i32) -> i32 {
-// LOWERING-NEXT:     let mut length: i32 = 0;
-// LOWERING-NEXT:     let mut values: *mut i32 = std::ptr::null_mut();
-// LOWERING-NEXT:     let mut total: i32 = 0;
-// LOWERING-NEXT:     length = {{arg[0-9]+}};
-// LOWERING-NEXT:     values = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     total = {{_v[0-9]+}};
-// LOWERING-NEXT:     {
-// LOWERING-NEXT:         let mut index: i32 = 0;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:         index = {{_v[0-9]+}};
-// LOWERING-NEXT:         loop {
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = index;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = length;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < {{_v[0-9]+}};
-// LOWERING-NEXT:             if !{{_v[0-9]+}} {
-// LOWERING-NEXT:                 break;
-// LOWERING-NEXT:             }
-// LOWERING-NEXT:             {
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = index;
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} as i64;
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: *mut i32 = values;
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.offset({{_v[0-9]+}} as isize) };
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = total;
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:                 total = {{_v[0-9]+}};
-// LOWERING-NEXT:             }
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = index;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
-// LOWERING-NEXT:             index = {{_v[0-9]+}};
-// LOWERING-NEXT:         }
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = total;
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn sum3({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{arg[0-9]+}} + {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn c99_thirty_two_parameters(
-// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
-// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
-// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
-// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
-// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
-// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
-// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
-// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
-// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
-// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
-// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
-// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
-// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
-// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
-// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
-// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
-// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
-// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
-// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
-// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
-// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
-// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
-// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
-// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
-// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
-// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
-// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
-// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
-// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
-// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
-// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
-// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
-// LOWERING-NEXT: ) -> i32 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{arg[0-9]+}} + {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn c99_inline_square({{arg[0-9]+}}: i32) -> i32 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{arg[0-9]+}} * {{arg[0-9]+}};
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn c99_qualified_array_sum({{arg[0-9]+}}: *mut i32) -> i32 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{arg[0-9]+}}.add(0) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 1;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{arg[0-9]+}}.add(1) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{arg[0-9]+}}.add(2) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn c99_restrict_sum({{arg[0-9]+}}: *mut i32, {{arg[0-9]+}}: *mut i32) -> i32 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{arg[0-9]+}} };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{arg[0-9]+}} };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut α: i32 = 0;
@@ -506,10 +367,8 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f32 = 1.0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f32 = {{_v[0-9]+}} + {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f32 = {{_v[0-9]+}}.re;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f32 = {{_v[0-9]+}}.im;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}} as f64;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}} as f64;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.re as f64;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.im as f64;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.re;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.im;
@@ -524,10 +383,8 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f32 = 1.0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f32 = {{_v[0-9]+}} + {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f32 = {{_v[0-9]+}}.re;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f32 = {{_v[0-9]+}}.im;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f32({{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f32({{_v[0-9]+}});
+// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f32({{_v[0-9]+}}.re);
+// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f32({{_v[0-9]+}}.im);
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.re;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.im;
@@ -564,10 +421,8 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f32 = 1.0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f32 = {{_v[0-9]+}} + {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f32 = {{_v[0-9]+}}.re;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f32 = {{_v[0-9]+}}.im;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}} as f64;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}} as f64;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.re as f64;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.im as f64;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.re;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.im;
@@ -584,18 +439,10 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f32 = 0.0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f32 = 1.0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex {
-// LOWERING-NEXT:         re: {{_v[0-9]+}},
-// LOWERING-NEXT:         im: {{_v[0-9]+}},
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f32 = {{_v[0-9]+}}.re;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f32 = {{_v[0-9]+}}.im;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f32({{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f32({{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-NEXT:         re: {{_v[0-9]+}},
-// LOWERING-NEXT:         im: {{_v[0-9]+}},
-// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f32({{_v[0-9]+}}.re);
+// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f32({{_v[0-9]+}}.im);
+// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.re;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.im;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} * {{_v[0-9]+}};
@@ -719,11 +566,13 @@ int main(void) {
 // LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = 1;
 // LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
 // LOWERING-NEXT:         nonconstant_initializer.second = {{_v[0-9]+}};
-// LOWERING-NEXT:         designated_initializer = C99Pair {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: C99Pair = C99Pair {
 // LOWERING-NEXT:             first: 22,
 // LOWERING-NEXT:             second: 23,
 // LOWERING-NEXT:         };
-// LOWERING-NEXT:         *designated_array = [27, 0, 29, 0];
+// LOWERING-NEXT:         designated_initializer = {{_v[0-9]+}};
+// LOWERING-NEXT:         let {{_v[0-9]+}}: [i32; 4] = [27, 0, 29, 0];
+// LOWERING-NEXT:         *designated_array = {{_v[0-9]+}};
 // LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = 31;
 // LOWERING-NEXT:         const_value = {{_v[0-9]+}};
 // LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = const_value;
@@ -739,10 +588,11 @@ int main(void) {
 // LOWERING-NEXT:         restricted_pointer = std::ptr::addr_of_mut!(restricted_value);
 // LOWERING-NEXT:         let {{_v[0-9]+}}: f64 = 3.0;
 // LOWERING-NEXT:         hexadecimal_float = {{_v[0-9]+}};
-// LOWERING-NEXT:         compound_pair = C99Pair {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: C99Pair = C99Pair {
 // LOWERING-NEXT:             first: 43,
 // LOWERING-NEXT:             second: 47,
 // LOWERING-NEXT:         };
+// LOWERING-NEXT:         compound_pair = {{_v[0-9]+}};
 // LOWERING-NEXT:         let {{_v[0-9]+}}: i64 = 1;
 // LOWERING-NEXT:         let {{_v[0-9]+}}: *mut i32 = _compoundliteral.as_mut_ptr() as *mut i32;
 // LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = 51;
@@ -797,7 +647,8 @@ int main(void) {
 // LOWERING-NEXT:                 index3 = {{_v[0-9]+}};
 // LOWERING-NEXT:             }
 // LOWERING-NEXT:         }
-// LOWERING-NEXT:         qualified_values = [2, 3, 5];
+// LOWERING-NEXT:         let {{_v[0-9]+}}: [i32; 3] = [2, 3, 5];
+// LOWERING-NEXT:         qualified_values = {{_v[0-9]+}};
 // LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = 7;
 // LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = 11;
 // LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = 13;
@@ -951,6 +802,145 @@ int main(void) {
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn c99_vm_sum({{arg[0-9]+}}: i32, {{arg[0-9]+}}: *mut i32) -> i32 {
+// LOWERING-NEXT:     let mut length: i32 = 0;
+// LOWERING-NEXT:     let mut values: *mut i32 = std::ptr::null_mut();
+// LOWERING-NEXT:     let mut total: i32 = 0;
+// LOWERING-NEXT:     length = {{arg[0-9]+}};
+// LOWERING-NEXT:     values = {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     total = {{_v[0-9]+}};
+// LOWERING-NEXT:     {
+// LOWERING-NEXT:         let mut index: i32 = 0;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:         index = {{_v[0-9]+}};
+// LOWERING-NEXT:         loop {
+// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = index;
+// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = length;
+// LOWERING-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < {{_v[0-9]+}};
+// LOWERING-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-NEXT:                 break;
+// LOWERING-NEXT:             }
+// LOWERING-NEXT:             {
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = index;
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} as i64;
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: *mut i32 = values;
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.offset({{_v[0-9]+}} as isize) };
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = total;
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-NEXT:                 total = {{_v[0-9]+}};
+// LOWERING-NEXT:             }
+// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = index;
+// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-NEXT:             index = {{_v[0-9]+}};
+// LOWERING-NEXT:         }
+// LOWERING-NEXT:     }
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = total;
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn sum3({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{arg[0-9]+}} + {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn c99_thirty_two_parameters(
+// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
+// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
+// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
+// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
+// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
+// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
+// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
+// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
+// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
+// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
+// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
+// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
+// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
+// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
+// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
+// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
+// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
+// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
+// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
+// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
+// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
+// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
+// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
+// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
+// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
+// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
+// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
+// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
+// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
+// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
+// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
+// LOWERING-NEXT:     {{arg[0-9]+}}: i32,
+// LOWERING-NEXT: ) -> i32 {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{arg[0-9]+}} + {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn c99_inline_square({{arg[0-9]+}}: i32) -> i32 {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{arg[0-9]+}} * {{arg[0-9]+}};
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn c99_qualified_array_sum({{arg[0-9]+}}: *mut i32) -> i32 {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{arg[0-9]+}}.add(0) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 1;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{arg[0-9]+}}.add(1) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{arg[0-9]+}}.add(2) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn c99_restrict_sum({{arg[0-9]+}}: *mut i32, {{arg[0-9]+}}: *mut i32) -> i32 {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{arg[0-9]+}} };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{arg[0-9]+}} };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: unsafe extern "C" {
@@ -1165,109 +1155,6 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn c99_vm_sum({{arg[0-9]+}}: i32, {{arg[0-9]+}}: *mut i32) -> i32 {
-// REWRITES-NEXT:     let __arg40_view = unsafe { std::slice::from_raw_parts({{arg[0-9]+}} as *const i32, {{arg[0-9]+}} as usize) };
-// REWRITES-NEXT:     let mut length: i32 = {{arg[0-9]+}};
-// REWRITES-NEXT:     let mut values: *mut i32 = {{arg[0-9]+}};
-// REWRITES-NEXT:     let mut total: i32 = 0;
-// REWRITES-NEXT:     let mut index: i32 = 0;
-// REWRITES-NEXT:     while index < length {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i32 = values;
-// REWRITES-NEXT:         unsafe { {{_v[0-9]+}}.offset((index as i64) as isize) };
-// REWRITES-NEXT:         total += unsafe { __arg40_view[(index as usize)] };
-// REWRITES-NEXT:         index += 1;
-// REWRITES-NEXT:     }
-// REWRITES-NEXT:     total
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: fn sum3({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     {{arg[0-9]+}} + {{arg[0-9]+}} + {{arg[0-9]+}}
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: fn c99_thirty_two_parameters(
-// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
-// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
-// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
-// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
-// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
-// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
-// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
-// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
-// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
-// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
-// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
-// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
-// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
-// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
-// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
-// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
-// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
-// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
-// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
-// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
-// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
-// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
-// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
-// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
-// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
-// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
-// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
-// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
-// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
-// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
-// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
-// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
-// REWRITES-NEXT: ) -> i32 {
-// REWRITES-NEXT:     {{arg[0-9]+}} + {{arg[0-9]+}}
-// REWRITES-NEXT:         + {{arg[0-9]+}}
-// REWRITES-NEXT:         + {{arg[0-9]+}}
-// REWRITES-NEXT:         + {{arg[0-9]+}}
-// REWRITES-NEXT:         + {{arg[0-9]+}}
-// REWRITES-NEXT:         + {{arg[0-9]+}}
-// REWRITES-NEXT:         + {{arg[0-9]+}}
-// REWRITES-NEXT:         + {{arg[0-9]+}}
-// REWRITES-NEXT:         + {{arg[0-9]+}}
-// REWRITES-NEXT:         + {{arg[0-9]+}}
-// REWRITES-NEXT:         + {{arg[0-9]+}}
-// REWRITES-NEXT:         + {{arg[0-9]+}}
-// REWRITES-NEXT:         + {{arg[0-9]+}}
-// REWRITES-NEXT:         + {{arg[0-9]+}}
-// REWRITES-NEXT:         + {{arg[0-9]+}}
-// REWRITES-NEXT:         + {{arg[0-9]+}}
-// REWRITES-NEXT:         + {{arg[0-9]+}}
-// REWRITES-NEXT:         + {{arg[0-9]+}}
-// REWRITES-NEXT:         + {{arg[0-9]+}}
-// REWRITES-NEXT:         + {{arg[0-9]+}}
-// REWRITES-NEXT:         + {{arg[0-9]+}}
-// REWRITES-NEXT:         + {{arg[0-9]+}}
-// REWRITES-NEXT:         + {{arg[0-9]+}}
-// REWRITES-NEXT:         + {{arg[0-9]+}}
-// REWRITES-NEXT:         + {{arg[0-9]+}}
-// REWRITES-NEXT:         + {{arg[0-9]+}}
-// REWRITES-NEXT:         + {{arg[0-9]+}}
-// REWRITES-NEXT:         + {{arg[0-9]+}}
-// REWRITES-NEXT:         + {{arg[0-9]+}}
-// REWRITES-NEXT:         + {{arg[0-9]+}}
-// REWRITES-NEXT:         + {{arg[0-9]+}}
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: fn c99_inline_square({{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     {{arg[0-9]+}} * {{arg[0-9]+}}
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: fn c99_qualified_array_sum({{arg[0-9]+}}: *mut i32) -> i32 {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{arg[0-9]+}}.add(0) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{arg[0-9]+}}.add(1) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + unsafe { *{{_v[0-9]+}} };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{arg[0-9]+}}.add(2) };
-// REWRITES-NEXT:     {{_v[0-9]+}} + unsafe { *{{_v[0-9]+}} }
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: fn c99_restrict_sum({{arg[0-9]+}}: &i32, {{arg[0-9]+}}: &i32) -> i32 {
-// REWRITES-NEXT:     (unsafe { *({{arg[0-9]+}} as *const i32) }) + unsafe { *({{arg[0-9]+}} as *const i32) }
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut __retval: i32 = 0;
 // REWRITES-NEXT:     let mut α: i32 = 7;
@@ -1342,10 +1229,8 @@ int main(void) {
 // REWRITES-NEXT:         re: 0.0 + {{_v[0-9]+}},
 // REWRITES-NEXT:         im: {{_v[0-9]+}},
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = {{_v[0-9]+}}.re;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = {{_v[0-9]+}}.im;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f32({{_v[0-9]+}});
-// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f32({{_v[0-9]+}});
+// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f32({{_v[0-9]+}}.re);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f32({{_v[0-9]+}}.im);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // REWRITES-NEXT:         re: {{_v[0-9]+}} + {{_v[0-9]+}} * {{_v[0-9]+}}.re,
@@ -1384,14 +1269,9 @@ int main(void) {
 // REWRITES-NEXT:         re: 0.0 + {{_v[0-9]+}},
 // REWRITES-NEXT:         im: {{_v[0-9]+}},
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = {{_v[0-9]+}}.re;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = {{_v[0-9]+}}.im;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f32({{_v[0-9]+}});
-// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f32({{_v[0-9]+}});
-// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
-// REWRITES-NEXT:         re: {{_v[0-9]+}},
-// REWRITES-NEXT:         im: {{_v[0-9]+}},
-// REWRITES-NEXT:     };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f32({{_v[0-9]+}}.re);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f32({{_v[0-9]+}}.im);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} };
 // REWRITES-NEXT:     enhanced_arithmetic = {{_v[0-9]+}}
 // REWRITES-NEXT:         + (({{_v[0-9]+}}
 // REWRITES-NEXT:             == num_complex::Complex {
@@ -1554,6 +1434,109 @@ int main(void) {
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     std::process::exit(__retval as i32);
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn c99_vm_sum({{arg[0-9]+}}: i32, {{arg[0-9]+}}: *mut i32) -> i32 {
+// REWRITES-NEXT:     let __arg40_view = unsafe { std::slice::from_raw_parts({{arg[0-9]+}} as *const i32, {{arg[0-9]+}} as usize) };
+// REWRITES-NEXT:     let mut length: i32 = {{arg[0-9]+}};
+// REWRITES-NEXT:     let mut values: *mut i32 = {{arg[0-9]+}};
+// REWRITES-NEXT:     let mut total: i32 = 0;
+// REWRITES-NEXT:     let mut index: i32 = 0;
+// REWRITES-NEXT:     while index < length {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i32 = values;
+// REWRITES-NEXT:         unsafe { {{_v[0-9]+}}.offset((index as i64) as isize) };
+// REWRITES-NEXT:         total += unsafe { __arg40_view[(index as usize)] };
+// REWRITES-NEXT:         index += 1;
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     total
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn sum3({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
+// REWRITES-NEXT:     {{arg[0-9]+}} + {{arg[0-9]+}} + {{arg[0-9]+}}
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn c99_thirty_two_parameters(
+// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
+// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
+// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
+// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
+// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
+// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
+// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
+// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
+// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
+// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
+// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
+// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
+// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
+// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
+// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
+// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
+// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
+// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
+// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
+// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
+// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
+// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
+// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
+// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
+// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
+// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
+// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
+// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
+// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
+// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
+// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
+// REWRITES-NEXT:     {{arg[0-9]+}}: i32,
+// REWRITES-NEXT: ) -> i32 {
+// REWRITES-NEXT:     {{arg[0-9]+}} + {{arg[0-9]+}}
+// REWRITES-NEXT:         + {{arg[0-9]+}}
+// REWRITES-NEXT:         + {{arg[0-9]+}}
+// REWRITES-NEXT:         + {{arg[0-9]+}}
+// REWRITES-NEXT:         + {{arg[0-9]+}}
+// REWRITES-NEXT:         + {{arg[0-9]+}}
+// REWRITES-NEXT:         + {{arg[0-9]+}}
+// REWRITES-NEXT:         + {{arg[0-9]+}}
+// REWRITES-NEXT:         + {{arg[0-9]+}}
+// REWRITES-NEXT:         + {{arg[0-9]+}}
+// REWRITES-NEXT:         + {{arg[0-9]+}}
+// REWRITES-NEXT:         + {{arg[0-9]+}}
+// REWRITES-NEXT:         + {{arg[0-9]+}}
+// REWRITES-NEXT:         + {{arg[0-9]+}}
+// REWRITES-NEXT:         + {{arg[0-9]+}}
+// REWRITES-NEXT:         + {{arg[0-9]+}}
+// REWRITES-NEXT:         + {{arg[0-9]+}}
+// REWRITES-NEXT:         + {{arg[0-9]+}}
+// REWRITES-NEXT:         + {{arg[0-9]+}}
+// REWRITES-NEXT:         + {{arg[0-9]+}}
+// REWRITES-NEXT:         + {{arg[0-9]+}}
+// REWRITES-NEXT:         + {{arg[0-9]+}}
+// REWRITES-NEXT:         + {{arg[0-9]+}}
+// REWRITES-NEXT:         + {{arg[0-9]+}}
+// REWRITES-NEXT:         + {{arg[0-9]+}}
+// REWRITES-NEXT:         + {{arg[0-9]+}}
+// REWRITES-NEXT:         + {{arg[0-9]+}}
+// REWRITES-NEXT:         + {{arg[0-9]+}}
+// REWRITES-NEXT:         + {{arg[0-9]+}}
+// REWRITES-NEXT:         + {{arg[0-9]+}}
+// REWRITES-NEXT:         + {{arg[0-9]+}}
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn c99_inline_square({{arg[0-9]+}}: i32) -> i32 {
+// REWRITES-NEXT:     {{arg[0-9]+}} * {{arg[0-9]+}}
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn c99_qualified_array_sum({{arg[0-9]+}}: *mut i32) -> i32 {
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{arg[0-9]+}}.add(0) };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{arg[0-9]+}}.add(1) };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + unsafe { *{{_v[0-9]+}} };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{arg[0-9]+}}.add(2) };
+// REWRITES-NEXT:     {{_v[0-9]+}} + unsafe { *{{_v[0-9]+}} }
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn c99_restrict_sum({{arg[0-9]+}}: &i32, {{arg[0-9]+}}: &i32) -> i32 {
+// REWRITES-NEXT:     (unsafe { *({{arg[0-9]+}} as *const i32) }) + unsafe { *({{arg[0-9]+}} as *const i32) }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe extern "C" {

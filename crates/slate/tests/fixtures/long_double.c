@@ -401,6 +401,36 @@ int main(void) {
 // LOWERING-NEXT:     fn canonicalizel(_0: *mut LongDouble, _1: *const LongDouble) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
+// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 63]);
+// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 144, 1, 64]);
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = truncate_long_double({{_v[0-9]+}});
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]);
+// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 1, 64]);
+// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = mix_long_double({{_v[0-9]+}}, {{_v[0-9]+}});
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = truncate_long_double({{_v[0-9]+}});
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 7;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_i32({{_v[0-9]+}});
+// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]);
+// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} / {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = truncate_long_double({{_v[0-9]+}});
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     check_int_casts();
+// LOWERING-NEXT:     check_i128_casts();
+// LOWERING-NEXT:     check_bitint_casts();
+// LOWERING-NEXT:     check_math_functions();
+// LOWERING-NEXT:     check_remaining_math_functions();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
 // LOWERING-NEXT: fn truncate_long_double({{arg[0-9]+}}: LongDouble) -> i32 {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __slate_f80_to_i32({{arg[0-9]+}});
 // LOWERING-NEXT:     return {{_v[0-9]+}};
@@ -788,13 +818,6 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bitint::BUint<300, 5, 40> = *ub300;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = {{_v[0-9]+}}.to_u128() as u64;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     return;
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn print_ld({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: LongDouble) {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%s=%La\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 =
-// LOWERING-NEXT:         unsafe { __slate_printf__ri32_pi8_pi8_f80({{_v[0-9]+}} as *mut i8, {{arg[0-9]+}} as *mut i8, {{arg[0-9]+}}) };
 // LOWERING-NEXT:     return;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
@@ -1208,34 +1231,11 @@ int main(void) {
 // LOWERING-NEXT:     return;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 63]);
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 144, 1, 64]);
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = truncate_long_double({{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]);
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 1, 64]);
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = mix_long_double({{_v[0-9]+}}, {{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = truncate_long_double({{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 7;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_i32({{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]);
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} / {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = truncate_long_double({{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     check_int_casts();
-// LOWERING-NEXT:     check_i128_casts();
-// LOWERING-NEXT:     check_bitint_casts();
-// LOWERING-NEXT:     check_math_functions();
-// LOWERING-NEXT:     check_remaining_math_functions();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT: fn print_ld({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: LongDouble) {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%s=%La\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 =
+// LOWERING-NEXT:         unsafe { __slate_printf__ri32_pi8_pi8_f80({{_v[0-9]+}} as *mut i8, {{arg[0-9]+}} as *mut i8, {{arg[0-9]+}}) };
+// LOWERING-NEXT:     return;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: unsafe extern "C" {
@@ -1500,6 +1500,37 @@ int main(void) {
 // REWRITES-NEXT:     fn tgammal(_0: LongDouble) -> LongDouble;
 // REWRITES-NEXT:     fn lgammal(_0: LongDouble) -> LongDouble;
 // REWRITES-NEXT:     fn canonicalizel(_0: *mut LongDouble, _1: *const LongDouble) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         printf(
+// REWRITES-NEXT:             c"%d\n".as_ptr(),
+// REWRITES-NEXT:             truncate_long_double(
+// REWRITES-NEXT:                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 63])
+// REWRITES-NEXT:                     + LongDouble([0, 0, 0, 0, 0, 0, 0, 144, 1, 64]),
+// REWRITES-NEXT:             ),
+// REWRITES-NEXT:         )
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"%d\n".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 1, 64]);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = mix_long_double({{_v[0-9]+}}, {{_v[0-9]+}});
+// REWRITES-NEXT:     unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, truncate_long_double({{_v[0-9]+}})) };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"%d\n".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_i32(7 as i32);
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         printf(
+// REWRITES-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_char,
+// REWRITES-NEXT:             truncate_long_double({{_v[0-9]+}} / LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64])),
+// REWRITES-NEXT:         )
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     check_int_casts();
+// REWRITES-NEXT:     check_i128_casts();
+// REWRITES-NEXT:     check_bitint_casts();
+// REWRITES-NEXT:     check_math_functions();
+// REWRITES-NEXT:     check_remaining_math_functions();
+// REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn truncate_long_double({{arg[0-9]+}}: LongDouble) -> i32 {
@@ -1775,13 +1806,6 @@ int main(void) {
 // REWRITES-NEXT:             {{_v[0-9]+}}.to_i128() as i64,
 // REWRITES-NEXT:             {{_v[0-9]+}}.to_u128() as u64,
 // REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     return;
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: fn print_ld({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: LongDouble) {
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         __slate_printf__ri32_pi8_pi8_f80(c"%s=%La\n".as_ptr() as *mut i8, {{arg[0-9]+}} as *mut i8, {{arg[0-9]+}})
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
@@ -2136,35 +2160,11 @@ int main(void) {
 // REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT: fn print_ld({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: LongDouble) {
 // REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"%d\n".as_ptr(),
-// REWRITES-NEXT:             truncate_long_double(
-// REWRITES-NEXT:                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 63])
-// REWRITES-NEXT:                     + LongDouble([0, 0, 0, 0, 0, 0, 0, 144, 1, 64]),
-// REWRITES-NEXT:             ),
-// REWRITES-NEXT:         )
+// REWRITES-NEXT:         __slate_printf__ri32_pi8_pi8_f80(c"%s=%La\n".as_ptr() as *mut i8, {{arg[0-9]+}} as *mut i8, {{arg[0-9]+}})
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"%d\n".as_ptr() as *mut i8;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]);
-// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 1, 64]);
-// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = mix_long_double({{_v[0-9]+}}, {{_v[0-9]+}});
-// REWRITES-NEXT:     unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, truncate_long_double({{_v[0-9]+}})) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"%d\n".as_ptr() as *mut i8;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_i32(7 as i32);
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_char,
-// REWRITES-NEXT:             truncate_long_double({{_v[0-9]+}} / LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64])),
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     check_int_casts();
-// REWRITES-NEXT:     check_i128_casts();
-// REWRITES-NEXT:     check_bitint_casts();
-// REWRITES-NEXT:     check_math_functions();
-// REWRITES-NEXT:     check_remaining_math_functions();
-// REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe extern "C" {

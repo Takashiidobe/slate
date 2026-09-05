@@ -107,22 +107,11 @@ int main(void) {
 // LOWERING-DAG: let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(cookie) as *mut core::ffi::c_void;
 // LOWERING-DAG: let {{_v[0-9]+}}: *mut i8 = b"w\0".as_ptr() as *mut i8;
 // LOWERING-DAG: let {{_v[0-9]+}}: _IO_cookie_io_functions_t = functions;
-// LOWERING-DAG: let mut byval: _IO_cookie_io_functions_t = _IO_cookie_io_functions_t {
-// LOWERING-DAG:     read: None,
-// LOWERING-DAG:     write: None,
-// LOWERING-DAG:     seek: None,
-// LOWERING-DAG:     close: None,
-// LOWERING-DAG: };
-// LOWERING-DAG: byval = {{_v[0-9]+}};
 // LOWERING-DAG: let {{_v[0-9]+}}: *mut libc::FILE = unsafe {
 // LOWERING-DAG:     fopencookie(
 // LOWERING-DAG:         {{_v[0-9]+}} as *mut core::ffi::c_void,
 // LOWERING-DAG:         {{_v[0-9]+}} as *const core::ffi::c_char,
-// LOWERING-DAG:         unsafe {
-// LOWERING-DAG:             std::ptr::read_unaligned(
-// LOWERING-DAG:                 std::ptr::addr_of_mut!(byval) as *const _IO_cookie_io_functions_t
-// LOWERING-DAG:             )
-// LOWERING-DAG:         },
+// LOWERING-DAG:         {{_v[0-9]+}} as _IO_cookie_io_functions_t,
 // LOWERING-DAG:     )
 // LOWERING-DAG: };
 // SLATE-FILECHECK-END lowering
@@ -162,18 +151,11 @@ int main(void) {
 // REWRITES-DAG:     >(gnu_cookie_close as *const ())
 // REWRITES-DAG: };
 // REWRITES-DAG: let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(cookie) as *mut core::ffi::c_void;
-// REWRITES-DAG: let {{_v[0-9]+}}: *mut i8 = c"w".as_ptr() as *mut i8;
-// REWRITES-DAG: let {{_v[0-9]+}}: _IO_cookie_io_functions_t = functions;
-// REWRITES-DAG: let mut byval: _IO_cookie_io_functions_t = {{_v[0-9]+}};
 // REWRITES-DAG: let {{_v[0-9]+}}: *mut libc::FILE = unsafe {
 // REWRITES-DAG:     fopencookie(
 // REWRITES-DAG:         {{_v[0-9]+}} as *mut core::ffi::c_void,
-// REWRITES-DAG:         {{_v[0-9]+}} as *const core::ffi::c_char,
-// REWRITES-DAG:         unsafe {
-// REWRITES-DAG:             std::ptr::read_unaligned(
-// REWRITES-DAG:                 std::ptr::addr_of_mut!(byval) as *const _IO_cookie_io_functions_t
-// REWRITES-DAG:             )
-// REWRITES-DAG:         },
+// REWRITES-DAG:         c"w".as_ptr(),
+// REWRITES-DAG:         functions as _IO_cookie_io_functions_t,
 // REWRITES-DAG:     )
 // REWRITES-DAG: };
 // SLATE-FILECHECK-END rewrites

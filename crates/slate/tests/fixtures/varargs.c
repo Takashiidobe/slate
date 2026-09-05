@@ -103,14 +103,49 @@ int main(void) {
 // LOWERING-NEXT:     }
 // LOWERING-EMPTY:
 // LOWERING-NEXT:     fn next_arg<T: Copy + 'static>(&mut self) -> T {
+// LOWERING-NEXT:         let index = self.index;
+// LOWERING-NEXT:         self.index += 1;
 // LOWERING-NEXT:         if std::mem::size_of::<T>() == 0 {
 // LOWERING-NEXT:             return unsafe { std::mem::zeroed() };
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:         let args = self.args.as_ref().expect("va_arg with no arguments");
-// LOWERING-NEXT:         let value = args[self.index].read::<T>();
-// LOWERING-NEXT:         self.index += 1;
-// LOWERING-NEXT:         value
+// LOWERING-NEXT:         args[index].read::<T>()
 // LOWERING-NEXT:     }
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 4;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 10;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 20;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 30;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 40;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-NEXT:         sum(
+// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:             __SlateVaArgs::new(vec![
+// LOWERING-NEXT:                 __SlateVaArg::new({{_v[0-9]+}}),
+// LOWERING-NEXT:                 __SlateVaArg::new({{_v[0-9]+}}),
+// LOWERING-NEXT:                 __SlateVaArg::new({{_v[0-9]+}}),
+// LOWERING-NEXT:                 __SlateVaArg::new({{_v[0-9]+}}),
+// LOWERING-NEXT:             ]),
+// LOWERING-NEXT:         )
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 5;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 7;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 9;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-NEXT:         pick_second(
+// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:             __SlateVaArgs::new(vec![__SlateVaArg::new({{_v[0-9]+}}), __SlateVaArg::new({{_v[0-9]+}})]),
+// LOWERING-NEXT:         )
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: unsafe fn sum({{arg[0-9]+}}: i32, mut __slate_va_args: __SlateVaArgs) -> i32 {
@@ -161,40 +196,5 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{arg[0-9]+}} + {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
 // LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 4;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 10;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 20;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 30;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 40;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {
-// LOWERING-NEXT:         sum(
-// LOWERING-NEXT:             {{_v[0-9]+}},
-// LOWERING-NEXT:             __SlateVaArgs::new(vec![
-// LOWERING-NEXT:                 __SlateVaArg::new({{_v[0-9]+}}),
-// LOWERING-NEXT:                 __SlateVaArg::new({{_v[0-9]+}}),
-// LOWERING-NEXT:                 __SlateVaArg::new({{_v[0-9]+}}),
-// LOWERING-NEXT:                 __SlateVaArg::new({{_v[0-9]+}}),
-// LOWERING-NEXT:             ]),
-// LOWERING-NEXT:         )
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 5;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 7;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 9;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {
-// LOWERING-NEXT:         pick_second(
-// LOWERING-NEXT:             {{_v[0-9]+}},
-// LOWERING-NEXT:             __SlateVaArgs::new(vec![__SlateVaArg::new({{_v[0-9]+}}), __SlateVaArg::new({{_v[0-9]+}})]),
-// LOWERING-NEXT:         )
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering

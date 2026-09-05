@@ -76,7 +76,7 @@ int main(void) {
 // LOWERING-NEXT:         __unused: [0; 3],
 // LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     info = stat {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: stat = stat {
 // LOWERING-NEXT:         st_dev: 0,
 // LOWERING-NEXT:         st_ino: 0,
 // LOWERING-NEXT:         st_nlink: 0,
@@ -102,6 +102,7 @@ int main(void) {
 // LOWERING-NEXT:         },
 // LOWERING-NEXT:         __unused: [0; 3],
 // LOWERING-NEXT:     };
+// LOWERING-NEXT:     info = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"/dev/null\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {
 // LOWERING-NEXT:         stat(

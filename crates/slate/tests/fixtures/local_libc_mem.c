@@ -48,7 +48,8 @@ int main(void) {
 // LOWERING-NEXT:     let mut src: [i8; 8] = [0; 8];
 // LOWERING-NEXT:     let mut moved: aligned::Aligned<aligned::A16, [i8; 16]> = aligned::Aligned([0; 16]);
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     src = [104, 101, 108, 108, 111, 0, 0, 0];
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i8; 8] = [104, 101, 108, 108, 111, 0, 0, 0];
+// LOWERING-NEXT:     src = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = dst.as_mut_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = src.as_mut_ptr() as *mut i8;
@@ -124,8 +125,9 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut dst: aligned::Aligned<aligned::A16, [i8; 16]> = aligned::Aligned([0; 16]);
-// REWRITES-NEXT:     let mut src: [i8; 8] = [104, 101, 108, 108, 111, 0, 0, 0];
+// REWRITES-NEXT:     let mut src: [i8; 8] = [0; 8];
 // REWRITES-NEXT:     let mut moved: aligned::Aligned<aligned::A16, [i8; 16]> = aligned::Aligned([0; 16]);
+// REWRITES-NEXT:     src = [104, 101, 108, 108, 111, 0, 0, 0];
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = dst.as_mut_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = src.as_mut_ptr() as *mut i8;

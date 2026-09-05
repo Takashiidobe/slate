@@ -42,21 +42,6 @@ int main(void) {
 // LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn from_int({{arg[0-9]+}}: i32) -> bool {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != 0;
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn from_compare({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> bool {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} < {{arg[0-9]+}};
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn use_bool({{arg[0-9]+}}: bool) -> i32 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{arg[0-9]+}} as i32;
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
@@ -94,6 +79,21 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn from_int({{arg[0-9]+}}: i32) -> bool {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != 0;
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn from_compare({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> bool {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} < {{arg[0-9]+}};
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn use_bool({{arg[0-9]+}}: bool) -> i32 {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{arg[0-9]+}} as i32;
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
@@ -115,18 +115,6 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn from_int({{arg[0-9]+}}: i32) -> bool {
-// REWRITES-NEXT:     {{arg[0-9]+}} != 0
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: fn from_compare({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> bool {
-// REWRITES-NEXT:     {{arg[0-9]+}} < {{arg[0-9]+}}
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: fn use_bool({{arg[0-9]+}}: bool) -> i32 {
-// REWRITES-NEXT:     {{arg[0-9]+}} as i32
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), from_int(0) as i32) };
 // REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), from_int(42) as i32) };
@@ -139,5 +127,17 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
 // REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), use_bool({{_v[0-9]+}})) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn from_int({{arg[0-9]+}}: i32) -> bool {
+// REWRITES-NEXT:     {{arg[0-9]+}} != 0
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn from_compare({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> bool {
+// REWRITES-NEXT:     {{arg[0-9]+}} < {{arg[0-9]+}}
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn use_bool({{arg[0-9]+}}: bool) -> i32 {
+// REWRITES-NEXT:     {{arg[0-9]+}} as i32
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

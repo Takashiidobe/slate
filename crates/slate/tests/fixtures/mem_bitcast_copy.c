@@ -54,7 +54,8 @@ int main(void) {
 // LOWERING-NEXT:     let mut p: Pair = Pair { x: 0, y: 0 };
 // LOWERING-NEXT:     let mut b: Bits = Bits { a: 0, b: 0 };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     p = Pair { x: 7, y: 9 };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: Pair = Pair { x: 7, y: 9 };
+// LOWERING-NEXT:     p = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(p) as *mut core::ffi::c_void;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(b) as *mut core::ffi::c_void;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 8;
@@ -102,8 +103,9 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     let mut p: Pair = Pair { x: 7, y: 9 };
+// REWRITES-NEXT:     let mut p: Pair = Pair { x: 0, y: 0 };
 // REWRITES-NEXT:     let mut b: Bits = Bits { a: 0, b: 0 };
+// REWRITES-NEXT:     p = Pair { x: 7, y: 9 };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(p) as *mut core::ffi::c_void;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(b) as *mut core::ffi::c_void;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 8;

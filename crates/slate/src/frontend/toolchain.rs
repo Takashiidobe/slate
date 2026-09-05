@@ -646,7 +646,7 @@ pub fn emit_generic(src: &Path) -> Result<String, EmitError> {
 }
 
 pub fn emit_generic_with_args(src: &Path, extra_args: &[String]) -> Result<String, EmitError> {
-    emit_generic_with_args_and_cir_opt_flags(src, extra_args, &["--mem2reg"])
+    emit_generic_with_args_and_cir_opt_flags(src, extra_args, &["--cir-canonicalize", "--mem2reg"])
 }
 
 /// Like `emit_generic_with_args`, but also flattens every function in the
@@ -666,6 +666,7 @@ pub fn emit_generic_with_args_flattened(
         extra_args,
         &[
             "--verify-each=false",
+            "--cir-canonicalize",
             "--cir-flatten-cfg",
             "--cir-goto-solver",
         ],
@@ -679,7 +680,11 @@ pub fn emit_generic_with_args_cfg_flattened(
     emit_generic_with_args_and_cir_opt_flags(
         src,
         extra_args,
-        &["--verify-each=false", "--cir-flatten-cfg"],
+        &[
+            "--verify-each=false",
+            "--cir-canonicalize",
+            "--cir-flatten-cfg",
+        ],
     )
 }
 
@@ -696,7 +701,7 @@ fn emit_generic_with_args_and_cir_opt_flags(
         "-emit-cir",
         "-std=gnu23",
         "-Xclang",
-        "-disable-llvm-passes",
+        "-clangir-disable-passes",
         "-o",
         "-",
     ])

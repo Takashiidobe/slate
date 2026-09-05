@@ -62,7 +62,7 @@ int main(void) {
 // LOWERING-NEXT:     );
 // LOWERING-NEXT:     let mut actual: aligned::Aligned<aligned::A4, Status> = aligned::Aligned(Status::E_OK);
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     *cases = [
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [CaseData; 2] = [
 // LOWERING-NEXT:         CaseData {
 // LOWERING-NEXT:             input: 1,
 // LOWERING-NEXT:             expected: Status::E_OK,
@@ -72,6 +72,7 @@ int main(void) {
 // LOWERING-NEXT:             expected: Status::E_FAIL,
 // LOWERING-NEXT:         },
 // LOWERING-NEXT:     ];
+// LOWERING-NEXT:     *cases = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = 0;
 // LOWERING-NEXT:     *actual = Status::E_OK;
 // LOWERING-NEXT:     {
@@ -155,7 +156,7 @@ int main(void) {
 // REWRITES-NEXT:         }; 2],
 // REWRITES-NEXT:     );
 // REWRITES-NEXT:     let mut actual: aligned::Aligned<aligned::A4, Status> = aligned::Aligned(Status::E_OK);
-// REWRITES-NEXT:     *cases = [
+// REWRITES-NEXT:     let {{_v[0-9]+}}: [CaseData; 2] = [
 // REWRITES-NEXT:         CaseData {
 // REWRITES-NEXT:             input: 1,
 // REWRITES-NEXT:             expected: Status::E_OK,
@@ -165,6 +166,7 @@ int main(void) {
 // REWRITES-NEXT:             expected: Status::E_FAIL,
 // REWRITES-NEXT:         },
 // REWRITES-NEXT:     ];
+// REWRITES-NEXT:     *cases = {{_v[0-9]+}};
 // REWRITES-NEXT:     *actual = Status::E_OK;
 // REWRITES-NEXT:     let mut i: i32 = 0;
 // REWRITES-NEXT:     while i < 2 {

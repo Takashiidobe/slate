@@ -34,11 +34,6 @@ int main(void) {
 // LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn lladd({{arg[0-9]+}}: i64, {{arg[0-9]+}}: i64) -> i64 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = {{arg[0-9]+}} + {{arg[0-9]+}};
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
 // LOWERING-NEXT: /// REWRITES-DAG: println!("{}
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
@@ -52,5 +47,10 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn lladd({{arg[0-9]+}}: i64, {{arg[0-9]+}}: i64) -> i64 {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = {{arg[0-9]+}} + {{arg[0-9]+}};
+// LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering

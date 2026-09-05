@@ -343,10 +343,10 @@ int main(void) {
 // LOWERING-DAG: }
 // LOWERING-DAG: fn gnu_builtin_floating() -> i32 {
 // LOWERING-DAG:     let {{_v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex { re: 3.0, im: 4.0 };
-// LOWERING-DAG:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.re;
-// LOWERING-DAG:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.im;
-// LOWERING-DAG:     let {{_v[0-9]+}}: f64 = -{{_v[0-9]+}};
-// LOWERING-DAG:     let {{_v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} };
+// LOWERING-DAG:     let {{_v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex {
+// LOWERING-DAG:         re: {{_v[0-9]+}}.re,
+// LOWERING-DAG:         im: -{{_v[0-9]+}}.im,
+// LOWERING-DAG:     };
 // LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 5;
 // LOWERING-DAG:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};

@@ -78,10 +78,11 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = b.len;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     init = Buf {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: Buf = Buf {
 // LOWERING-NEXT:         data: [1, 2, 3],
 // LOWERING-NEXT:         len: 3,
 // LOWERING-NEXT:     };
+// LOWERING-NEXT:     init = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     sum = {{_v[0-9]+}};
 // LOWERING-NEXT:     {
