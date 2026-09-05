@@ -49,11 +49,11 @@ int main(void) {
 // LOWERING-NEXT:     unused_comparisons
 // LOWERING-NEXT: )]
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn __slate_memchr(s: *const core::ffi::c_void, c: i32, n: usize) -> *mut core::ffi::c_void {
-// LOWERING-NEXT:     let b: u8 = c as u8;
-// LOWERING-NEXT:     let bytes: *const u8 = s as *const u8;
+// LOWERING-NEXT: fn __slate_memchr(__s: *const core::ffi::c_void, __c: i32, __n: usize) -> *mut core::ffi::c_void {
+// LOWERING-NEXT:     let b: u8 = __c as u8;
+// LOWERING-NEXT:     let bytes: *const u8 = __s as *const u8;
 // LOWERING-NEXT:     let mut i: usize = 0;
-// LOWERING-NEXT:     while i < n {
+// LOWERING-NEXT:     while i < __n {
 // LOWERING-NEXT:         if (unsafe { *bytes.add(i) }) == b {
 // LOWERING-NEXT:             return (unsafe { bytes.add(i) }) as *mut core::ffi::c_void;
 // LOWERING-NEXT:         }

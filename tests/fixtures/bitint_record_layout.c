@@ -36,8 +36,8 @@ int main(void) {
   return 0;
 }
 
-// COMMON-DAG: bitint::BInt::<65, 2, 16>::from_i128(333 as i128)
-// COMMON-DAG: bitint::BInt::<65, 2, 16>::from_i128(777 as i128)
+// COMMON-DAG: bitint::BInt::<65, 2, 16>::from_decimal_str("333")
+// COMMON-DAG: bitint::BInt::<65, 2, 16>::from_decimal_str("777")
 
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: let {{_v[0-9]+}}: BitIntOrArray = BitIntOrArray {

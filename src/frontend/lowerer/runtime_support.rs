@@ -678,10 +678,11 @@ pub(super) fn memchr_prelude() -> Item {
         inner: Box::new(Type::Prim(Prim::U8)),
     };
     let var = |name: &str| Expr::Var(shim_param(name).into());
+    let local = |name: &str| Expr::Var(name.into());
     let byte_at = || Expr::MethodCall {
-        recv: Box::new(var("bytes")),
+        recv: Box::new(local("bytes")),
         method: "add".into(),
-        args: vec![var("i")],
+        args: vec![local("i")],
     };
 
     let hit = Stmt::If {
@@ -691,7 +692,7 @@ pub(super) fn memchr_prelude() -> Item {
                 op: UnaryOp::Deref,
                 expr: Box::new(byte_at()),
             })),
-            rhs: Box::new(var("b")),
+            rhs: Box::new(local("b")),
         },
         then_body: vec![Stmt::Return(Some(Expr::Cast {
             expr: Box::new(FunctionLowerer::unsafe_expr(byte_at())),
@@ -700,7 +701,7 @@ pub(super) fn memchr_prelude() -> Item {
         else_body: Vec::new(),
     };
     let step = Stmt::CompoundAssign {
-        target: var("i"),
+        target: local("i"),
         op: BinOp::Add,
         value: Expr::Value(RustValue::I64(1)),
     };
@@ -708,7 +709,7 @@ pub(super) fn memchr_prelude() -> Item {
         label: None,
         cond: Expr::Binary {
             op: BinOp::Lt,
-            lhs: Box::new(var("i")),
+            lhs: Box::new(local("i")),
             rhs: Box::new(var("n")),
         },
         body: crate::backend::rust_ast::Block {
