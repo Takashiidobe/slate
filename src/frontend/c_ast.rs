@@ -2338,7 +2338,11 @@ fn parse_c_type(s: &str) -> CType {
     } else if s == "double" {
         CType::Float { bits: 64 }
     } else if s == "long double" {
-        CType::Float { bits: 80 }
+        CType::Float {
+            bits: crate::frontend::toolchain::long_double_bits(
+                &crate::frontend::toolchain::active_target(),
+            ),
+        }
     } else if s == "_Float16" {
         CType::Float { bits: 16 }
     } else if matches!(s, "_Float128" | "__float128") {

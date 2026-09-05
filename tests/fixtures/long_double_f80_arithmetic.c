@@ -1,3 +1,4 @@
+// { dg-do run { target x86_64-*-* } }
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>

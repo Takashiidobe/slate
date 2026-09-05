@@ -505,10 +505,25 @@ fn glibc_minor_version(target: &str) -> Result<Option<u32>, TargetError> {
 }
 
 pub fn uses_f64_long_double_abi() -> bool {
-    matches!(
-        active_target().as_str(),
-        "aarch64-apple-darwin" | "x86_64-pc-windows-msvc"
-    )
+    uses_f64_long_double_abi_for(&active_target())
+}
+
+fn uses_f64_long_double_abi_for(target: &str) -> bool {
+    matches!(target, "aarch64-apple-darwin" | "x86_64-pc-windows-msvc")
+}
+
+pub fn long_double_bits(target: &str) -> u32 {
+    if uses_f64_long_double_abi_for(target) {
+        return 64;
+    }
+    let Ok(config) = target_config(target) else {
+        return 80;
+    };
+    if matches!(config.arch, "aarch64" | "arm") || config.arch.starts_with("riscv") {
+        128
+    } else {
+        80
+    }
 }
 
 pub fn target_has_native_fma(bits: u32) -> bool {

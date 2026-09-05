@@ -162,7 +162,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         lhs: &str,
         rhs: &str,
     ) {
-        if let Some(call) = self.complex_runtime_binop(result_ty, lhs, rhs, "__mulsc3", "__muldc3")
+        if let Some(call) =
+            self.complex_runtime_binop(result_ty, lhs, rhs, "__mulsc3", "__muldc3", "__multc3")
         {
             self.materialize_expr(result, call, Some(result_ty));
             return;
@@ -231,7 +232,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         lhs: &str,
         rhs: &str,
     ) {
-        if let Some(call) = self.complex_runtime_binop(result_ty, lhs, rhs, "__divsc3", "__divdc3")
+        if let Some(call) =
+            self.complex_runtime_binop(result_ty, lhs, rhs, "__divsc3", "__divdc3", "__divtc3")
         {
             self.materialize_expr(result, call, Some(result_ty));
             return;
@@ -360,6 +362,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         rhs: &str,
         f32_name: &str,
         f64_name: &str,
+        f128_name: &str,
     ) -> Option<Expr> {
         let inner = match result_ty {
             CirType::Complex { element_type } => element_type.as_ref(),
@@ -368,6 +371,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let name = match inner {
             CirType::Single => f32_name,
             CirType::Double => f64_name,
+            CirType::Fp128 => f128_name,
+            _ if is_quad_long_double(inner) => f128_name,
             _ => return None,
         };
         let lhs = self.operand_expr(lhs);
