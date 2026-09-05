@@ -1091,6 +1091,60 @@ pub fn run_with_config(bin: &Path, config: &RunConfig, cwd: &Path) -> Result<Run
     })
 }
 
+pub fn dg_option_flags(path: &Path) -> Vec<String> {
+    let Ok(text) = std::fs::read_to_string(path) else {
+        return Vec::new();
+    };
+    let mut flags = Vec::new();
+    for line in text.lines() {
+        if !line.contains("dg-options") && !line.contains("dg-additional-options") {
+            continue;
+        }
+        let Some(quote_start) = line.find('"') else {
+            continue;
+        };
+        let rest = &line[quote_start + 1..];
+        let Some(quote_len) = rest.find('"') else {
+            continue;
+        };
+        let quoted = &rest[..quote_len];
+        let after = &rest[quote_len + 1..];
+        if after.contains("target") && !dg_target_clause_applies(after) {
+            continue;
+        }
+        flags.extend(
+            quoted
+                .split_whitespace()
+                .filter(|flag| is_semantic_dg_flag(flag))
+                .map(str::to_string),
+        );
+    }
+    flags
+}
+
+fn dg_target_clause_applies(clause: &str) -> bool {
+    if clause.contains("ia32") {
+        return false;
+    }
+    clause.contains("x86_64") || clause.contains("i?86") || clause.contains("i386")
+}
+
+fn is_semantic_dg_flag(flag: &str) -> bool {
+    matches!(
+        flag,
+        "-fwrapv"
+            | "-fno-strict-overflow"
+            | "-fno-strict-aliasing"
+            | "-fno-trapping-math"
+            | "-ffast-math"
+            | "-fno-common"
+            | "-mno-mmx"
+            | "-fsignaling-nans"
+            | "-pthread"
+    ) || flag.starts_with("-std=")
+        || flag.starts_with("-finput-charset=")
+}
+
 pub fn translate(c_src: &Path, rs_out: &Path) -> Result<(), String> {
     translate_with_args(c_src, rs_out, &[])
 }
