@@ -442,7 +442,7 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: unsafe extern "unadjusted" {
-// LOWERING-NEXT:     #[link_name = "llvm.clear_cache.p0"]
+// LOWERING-NEXT:     #[link_name = "llvm.clear_cache"]
 // LOWERING-NEXT:     fn __slate_intrinsic_clear_cache_64e8e36ba84fcffa(
 // LOWERING-NEXT:         _0: *mut core::ffi::c_void,
 // LOWERING-NEXT:         _1: *mut core::ffi::c_void,
@@ -686,7 +686,7 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe extern "unadjusted" {
-// REWRITES-NEXT:     #[link_name = "llvm.clear_cache.p0"]
+// REWRITES-NEXT:     #[link_name = "llvm.clear_cache"]
 // REWRITES-NEXT:     fn __slate_intrinsic_clear_cache_64e8e36ba84fcffa(
 // REWRITES-NEXT:         _0: *mut core::ffi::c_void,
 // REWRITES-NEXT:         _1: *mut core::ffi::c_void,

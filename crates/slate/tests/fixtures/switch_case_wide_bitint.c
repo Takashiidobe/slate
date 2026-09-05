@@ -148,10 +148,8 @@ int main(void) {
 // REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BInt<256, 4, 32> =
 // REWRITES-DAG:         bitint::BInt::<256, 4, 32>::from_decimal_str("170141183460469231731687303715884105727");
 // REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BInt<256, 4, 32> = bitint::BInt::<256, 4, 32>::from_i128({{arg[0-9]+}} as i128);
-// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BInt<256, 4, 32> = {{__v[0-9]+}} + {{__v[0-9]+}};
-// REWRITES-DAG:     *v = {{__v[0-9]+}};
-// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BInt<256, 4, 32> = *v;
-// REWRITES-DAG:     match {{__v[0-9]+}} {
+// REWRITES-DAG:     *v = {{__v[0-9]+}} + {{__v[0-9]+}};
+// REWRITES-DAG:     match *v {
 // REWRITES-DAG:         __switch_sel
 // REWRITES-DAG:             if __switch_sel
 // REWRITES-DAG:                 == const {
@@ -172,10 +170,7 @@ int main(void) {
 // REWRITES-DAG:                         )
 // REWRITES-DAG:                     } =>
 // REWRITES-DAG:         {
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 1;
-// REWRITES-DAG:             __retval = {{__v[0-9]+}};
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = __retval;
-// REWRITES-DAG:             return {{__v[0-9]+}};
+// REWRITES-DAG:             return 1;
 // REWRITES-DAG:         }
 // REWRITES-DAG:         __switch_sel
 // REWRITES-DAG:             if __switch_sel
@@ -185,10 +180,7 @@ int main(void) {
 // REWRITES-DAG:                     )
 // REWRITES-DAG:                 } =>
 // REWRITES-DAG:         {
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 2;
-// REWRITES-DAG:             __retval = {{__v[0-9]+}};
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = __retval;
-// REWRITES-DAG:             return {{__v[0-9]+}};
+// REWRITES-DAG:             return 2;
 // REWRITES-DAG:         }
 // REWRITES-DAG:         __switch_sel
 // REWRITES-DAG:             if __switch_sel
@@ -198,19 +190,12 @@ int main(void) {
 // REWRITES-DAG:                     )
 // REWRITES-DAG:                 } =>
 // REWRITES-DAG:         {
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 3;
-// REWRITES-DAG:             __retval = {{__v[0-9]+}};
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = __retval;
-// REWRITES-DAG:             return {{__v[0-9]+}};
+// REWRITES-DAG:             return 3;
 // REWRITES-DAG:         }
 // REWRITES-DAG:         _ => {
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:             __retval = {{__v[0-9]+}};
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = __retval;
-// REWRITES-DAG:             return {{__v[0-9]+}};
+// REWRITES-DAG:             return 0;
 // REWRITES-DAG:         }
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = __retval;
-// REWRITES-DAG:     {{__v[0-9]+}}
+// REWRITES-DAG:     __retval
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

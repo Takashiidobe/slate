@@ -15,22 +15,15 @@ int parse_value(void) {
 // REWRITES-DAG: pub extern "C-unwind" fn parse_value() -> i32 {
 // REWRITES-DAG:     let mut end: *mut i8 = std::ptr::null_mut();
 // REWRITES-DAG:     let mut value: LongDouble = LongDouble([0; 10]);
-// REWRITES-DAG:     let {{__v[0-9]+}}: *mut i8 = c"2.75".as_ptr() as *mut i8;
-// REWRITES-DAG:     let {{__v[0-9]+}}: LongDouble = unsafe {
+// REWRITES-DAG:     value = unsafe {
 // REWRITES-DAG:         __slate_strtold__rf80_pc_ppc(
-// REWRITES-DAG:             {{__v[0-9]+}} as *const core::ffi::c_char,
+// REWRITES-DAG:             c"2.75".as_ptr(),
 // REWRITES-DAG:             std::ptr::addr_of_mut!(end) as *mut *mut core::ffi::c_char,
 // REWRITES-DAG:         )
 // REWRITES-DAG:     };
-// REWRITES-DAG:     value = {{__v[0-9]+}};
-// REWRITES-DAG:     let {{__v[0-9]+}}: *mut i8 = end;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i8 = unsafe { *{{__v[0-9]+}} };
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = ((unsafe { *end }) as i32) == 0;
 // REWRITES-DAG:     let {{__v[0-9]+}}: i32 = if {{__v[0-9]+}} {
-// REWRITES-DAG:         let {{__v[0-9]+}}: LongDouble = value;
-// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = __slate_f80_to_i32({{__v[0-9]+}});
+// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = __slate_f80_to_i32(value);
 // REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
 // REWRITES-DAG:         let {{__v[0-9]+}}: i32 = -1;

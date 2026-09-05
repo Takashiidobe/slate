@@ -246,7 +246,8 @@ int main(void) {
 }
 
 // SLATE-FILECHECK-BEGIN lowering
-// LOWERING: #![feature(c_variadic)]
+// LOWERING: #![feature(f128)]
+// LOWERING-NEXT: #![feature(c_variadic)]
 // LOWERING-NEXT: #![allow(
 // LOWERING-NEXT:     dead_code,
 // LOWERING-NEXT:     unused,
@@ -817,7 +818,15 @@ int main(void) {
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = {{__v[0-9]+}}.to_i128() as i64;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: bitint::BUint<300, 5, 40> = *ub300;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = {{__v[0-9]+}}.to_u128() as u64;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe {
+// LOWERING-NEXT:         printf(
+// LOWERING-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:         )
+// LOWERING-NEXT:     };
 // LOWERING-NEXT:     return;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
@@ -1093,7 +1102,15 @@ int main(void) {
 // LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} / {{__v[0-9]+}};
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = unsafe { __slate_llroundl__ri64_f80({{__v[0-9]+}}) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe {
+// LOWERING-NEXT:         printf(
+// LOWERING-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:         )
+// LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"ilogb=%d\n\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { __slate_ilogbl__ri32_f80({{__v[0-9]+}}) };
@@ -1259,16 +1276,31 @@ int main(void) {
 // LOWERING-NEXT:     fn __slate_erfl__rf80_f80(_0: LongDouble) -> LongDouble;
 // LOWERING-NEXT:     fn __slate_exp2l__rf80_f80(_0: LongDouble) -> LongDouble;
 // LOWERING-NEXT:     fn __slate_expl__rf80_f80(_0: LongDouble) -> LongDouble;
+// LOWERING-NEXT:     safe fn __slate_f128_nexttoward(__from: f128, __toward: f128) -> f128;
 // LOWERING-NEXT:     safe fn __slate_f80_abs(__a: LongDouble) -> LongDouble;
+// LOWERING-NEXT:     safe fn __slate_f80_acos(__a: LongDouble) -> LongDouble;
+// LOWERING-NEXT:     safe fn __slate_f80_acosh(__a: LongDouble) -> LongDouble;
 // LOWERING-NEXT:     safe fn __slate_f80_add(__a: LongDouble, __b: LongDouble) -> LongDouble;
+// LOWERING-NEXT:     safe fn __slate_f80_asin(__a: LongDouble) -> LongDouble;
+// LOWERING-NEXT:     safe fn __slate_f80_asinh(__a: LongDouble) -> LongDouble;
+// LOWERING-NEXT:     safe fn __slate_f80_atan(__a: LongDouble) -> LongDouble;
+// LOWERING-NEXT:     safe fn __slate_f80_atanh(__a: LongDouble) -> LongDouble;
+// LOWERING-NEXT:     safe fn __slate_f80_cbrt(__a: LongDouble) -> LongDouble;
 // LOWERING-NEXT:     safe fn __slate_f80_ceil(__a: LongDouble) -> LongDouble;
 // LOWERING-NEXT:     safe fn __slate_f80_copysign(__a: LongDouble, __b: LongDouble) -> LongDouble;
+// LOWERING-NEXT:     safe fn __slate_f80_cos(__a: LongDouble) -> LongDouble;
+// LOWERING-NEXT:     safe fn __slate_f80_cosh(__a: LongDouble) -> LongDouble;
 // LOWERING-NEXT:     safe fn __slate_f80_div(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // LOWERING-NEXT:     safe fn __slate_f80_eq(__a: LongDouble, __b: LongDouble) -> bool;
+// LOWERING-NEXT:     safe fn __slate_f80_exp(__a: LongDouble) -> LongDouble;
+// LOWERING-NEXT:     safe fn __slate_f80_exp2(__a: LongDouble) -> LongDouble;
+// LOWERING-NEXT:     safe fn __slate_f80_expm1(__a: LongDouble) -> LongDouble;
+// LOWERING-NEXT:     safe fn __slate_f80_fdim(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // LOWERING-NEXT:     safe fn __slate_f80_floor(__a: LongDouble) -> LongDouble;
 // LOWERING-NEXT:     safe fn __slate_f80_fma(__a: LongDouble, __b: LongDouble, __c: LongDouble) -> LongDouble;
 // LOWERING-NEXT:     safe fn __slate_f80_fmax(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // LOWERING-NEXT:     safe fn __slate_f80_fmin(__a: LongDouble, __b: LongDouble) -> LongDouble;
+// LOWERING-NEXT:     safe fn __slate_f80_fmod(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // LOWERING-NEXT:     safe fn __slate_f80_fract(__a: LongDouble) -> LongDouble;
 // LOWERING-NEXT:     safe fn __slate_f80_from_bool(__a: bool) -> LongDouble;
 // LOWERING-NEXT:     safe fn __slate_f80_from_f32(__a: f32) -> LongDouble;
@@ -1285,16 +1317,30 @@ int main(void) {
 // LOWERING-NEXT:     safe fn __slate_f80_from_u8(__a: u8) -> LongDouble;
 // LOWERING-NEXT:     safe fn __slate_f80_ge(__a: LongDouble, __b: LongDouble) -> bool;
 // LOWERING-NEXT:     safe fn __slate_f80_gt(__a: LongDouble, __b: LongDouble) -> bool;
+// LOWERING-NEXT:     safe fn __slate_f80_hypot(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // LOWERING-NEXT:     safe fn __slate_f80_is_fp_class(__a: LongDouble, __flags: i32) -> bool;
 // LOWERING-NEXT:     safe fn __slate_f80_le(__a: LongDouble, __b: LongDouble) -> bool;
+// LOWERING-NEXT:     safe fn __slate_f80_log(__a: LongDouble) -> LongDouble;
+// LOWERING-NEXT:     safe fn __slate_f80_log10(__a: LongDouble) -> LongDouble;
+// LOWERING-NEXT:     safe fn __slate_f80_log1p(__a: LongDouble) -> LongDouble;
+// LOWERING-NEXT:     safe fn __slate_f80_log2(__a: LongDouble) -> LongDouble;
 // LOWERING-NEXT:     safe fn __slate_f80_lt(__a: LongDouble, __b: LongDouble) -> bool;
 // LOWERING-NEXT:     safe fn __slate_f80_mul(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // LOWERING-NEXT:     safe fn __slate_f80_ne(__a: LongDouble, __b: LongDouble) -> bool;
+// LOWERING-NEXT:     safe fn __slate_f80_nearbyint(__a: LongDouble) -> LongDouble;
 // LOWERING-NEXT:     safe fn __slate_f80_neg(__a: LongDouble) -> LongDouble;
+// LOWERING-NEXT:     safe fn __slate_f80_pow(__a: LongDouble, __b: LongDouble) -> LongDouble;
+// LOWERING-NEXT:     safe fn __slate_f80_powi(__a: LongDouble, __n: i32) -> LongDouble;
+// LOWERING-NEXT:     safe fn __slate_f80_remainder(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // LOWERING-NEXT:     safe fn __slate_f80_rint(__a: LongDouble) -> LongDouble;
 // LOWERING-NEXT:     safe fn __slate_f80_round(__a: LongDouble) -> LongDouble;
 // LOWERING-NEXT:     safe fn __slate_f80_signbit(__a: LongDouble) -> bool;
+// LOWERING-NEXT:     safe fn __slate_f80_sin(__a: LongDouble) -> LongDouble;
+// LOWERING-NEXT:     safe fn __slate_f80_sinh(__a: LongDouble) -> LongDouble;
+// LOWERING-NEXT:     safe fn __slate_f80_sqrt(__a: LongDouble) -> LongDouble;
 // LOWERING-NEXT:     safe fn __slate_f80_sub(__a: LongDouble, __b: LongDouble) -> LongDouble;
+// LOWERING-NEXT:     safe fn __slate_f80_tan(__a: LongDouble) -> LongDouble;
+// LOWERING-NEXT:     safe fn __slate_f80_tanh(__a: LongDouble) -> LongDouble;
 // LOWERING-NEXT:     safe fn __slate_f80_to_bool(__a: LongDouble) -> bool;
 // LOWERING-NEXT:     safe fn __slate_f80_to_f32(__a: LongDouble) -> f32;
 // LOWERING-NEXT:     safe fn __slate_f80_to_f64(__a: LongDouble) -> f64;
@@ -1347,7 +1393,8 @@ int main(void) {
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES: #![feature(c_variadic)]
+// REWRITES: #![feature(f128)]
+// REWRITES-NEXT: #![feature(c_variadic)]
 // REWRITES-NEXT: #![allow(
 // REWRITES-NEXT:     dead_code,
 // REWRITES-NEXT:     unused,
@@ -1516,7 +1563,12 @@ int main(void) {
 // REWRITES-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]);
 // REWRITES-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 1, 64]);
 // REWRITES-NEXT:     let {{__v[0-9]+}}: LongDouble = mix_long_double({{__v[0-9]+}}, {{__v[0-9]+}});
-// REWRITES-NEXT:     unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, truncate_long_double({{__v[0-9]+}})) };
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         printf(
+// REWRITES-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
+// REWRITES-NEXT:             truncate_long_double({{__v[0-9]+}}),
+// REWRITES-NEXT:         )
+// REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i8 = c"%d\n".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_i32(7 as i32);
 // REWRITES-NEXT:     unsafe {
@@ -1749,7 +1801,8 @@ int main(void) {
 // REWRITES-NEXT:         bitint::BInt::<256, 4, 32>::from_i128(__slate_f80_to_i128({{__v[0-9]+}}) as i128);
 // REWRITES-NEXT:     *b256 = {{__v[0-9]+}};
 // REWRITES-NEXT:     let {{__v[0-9]+}}: bitint::BInt<256, 4, 32> = *b256;
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bitint::BInt<256, 4, 32> = bitint::BInt::<256, 4, 32>::from_decimal_str("9999999999");
+// REWRITES-NEXT:     let {{__v[0-9]+}}: bitint::BInt<256, 4, 32> =
+// REWRITES-NEXT:         bitint::BInt::<256, 4, 32>::from_decimal_str("9999999999");
 // REWRITES-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
 // REWRITES-NEXT:     if {{__v[0-9]+}} {
 // REWRITES-NEXT:         unsafe { abort() };
@@ -2040,9 +2093,13 @@ int main(void) {
 // REWRITES-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) };
 // REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}, unsafe {
-// REWRITES-NEXT:             __slate_llroundl__ri64_f80({{__v[0-9]+}} / {{__v[0-9]+}})
-// REWRITES-NEXT:         })
+// REWRITES-NEXT:         printf(
+// REWRITES-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
+// REWRITES-NEXT:             {{__v[0-9]+}},
+// REWRITES-NEXT:             {{__v[0-9]+}},
+// REWRITES-NEXT:             {{__v[0-9]+}},
+// REWRITES-NEXT:             unsafe { __slate_llroundl__ri64_f80({{__v[0-9]+}} / {{__v[0-9]+}}) },
+// REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i8 = c"ilogb=%d\n".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
@@ -2188,16 +2245,31 @@ int main(void) {
 // REWRITES-NEXT:     fn __slate_erfl__rf80_f80(_0: LongDouble) -> LongDouble;
 // REWRITES-NEXT:     fn __slate_exp2l__rf80_f80(_0: LongDouble) -> LongDouble;
 // REWRITES-NEXT:     fn __slate_expl__rf80_f80(_0: LongDouble) -> LongDouble;
+// REWRITES-NEXT:     safe fn __slate_f128_nexttoward(__from: f128, __toward: f128) -> f128;
 // REWRITES-NEXT:     safe fn __slate_f80_abs(__a: LongDouble) -> LongDouble;
+// REWRITES-NEXT:     safe fn __slate_f80_acos(__a: LongDouble) -> LongDouble;
+// REWRITES-NEXT:     safe fn __slate_f80_acosh(__a: LongDouble) -> LongDouble;
 // REWRITES-NEXT:     safe fn __slate_f80_add(__a: LongDouble, __b: LongDouble) -> LongDouble;
+// REWRITES-NEXT:     safe fn __slate_f80_asin(__a: LongDouble) -> LongDouble;
+// REWRITES-NEXT:     safe fn __slate_f80_asinh(__a: LongDouble) -> LongDouble;
+// REWRITES-NEXT:     safe fn __slate_f80_atan(__a: LongDouble) -> LongDouble;
+// REWRITES-NEXT:     safe fn __slate_f80_atanh(__a: LongDouble) -> LongDouble;
+// REWRITES-NEXT:     safe fn __slate_f80_cbrt(__a: LongDouble) -> LongDouble;
 // REWRITES-NEXT:     safe fn __slate_f80_ceil(__a: LongDouble) -> LongDouble;
 // REWRITES-NEXT:     safe fn __slate_f80_copysign(__a: LongDouble, __b: LongDouble) -> LongDouble;
+// REWRITES-NEXT:     safe fn __slate_f80_cos(__a: LongDouble) -> LongDouble;
+// REWRITES-NEXT:     safe fn __slate_f80_cosh(__a: LongDouble) -> LongDouble;
 // REWRITES-NEXT:     safe fn __slate_f80_div(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // REWRITES-NEXT:     safe fn __slate_f80_eq(__a: LongDouble, __b: LongDouble) -> bool;
+// REWRITES-NEXT:     safe fn __slate_f80_exp(__a: LongDouble) -> LongDouble;
+// REWRITES-NEXT:     safe fn __slate_f80_exp2(__a: LongDouble) -> LongDouble;
+// REWRITES-NEXT:     safe fn __slate_f80_expm1(__a: LongDouble) -> LongDouble;
+// REWRITES-NEXT:     safe fn __slate_f80_fdim(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // REWRITES-NEXT:     safe fn __slate_f80_floor(__a: LongDouble) -> LongDouble;
 // REWRITES-NEXT:     safe fn __slate_f80_fma(__a: LongDouble, __b: LongDouble, __c: LongDouble) -> LongDouble;
 // REWRITES-NEXT:     safe fn __slate_f80_fmax(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // REWRITES-NEXT:     safe fn __slate_f80_fmin(__a: LongDouble, __b: LongDouble) -> LongDouble;
+// REWRITES-NEXT:     safe fn __slate_f80_fmod(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // REWRITES-NEXT:     safe fn __slate_f80_fract(__a: LongDouble) -> LongDouble;
 // REWRITES-NEXT:     safe fn __slate_f80_from_bool(__a: bool) -> LongDouble;
 // REWRITES-NEXT:     safe fn __slate_f80_from_f32(__a: f32) -> LongDouble;
@@ -2214,16 +2286,30 @@ int main(void) {
 // REWRITES-NEXT:     safe fn __slate_f80_from_u8(__a: u8) -> LongDouble;
 // REWRITES-NEXT:     safe fn __slate_f80_ge(__a: LongDouble, __b: LongDouble) -> bool;
 // REWRITES-NEXT:     safe fn __slate_f80_gt(__a: LongDouble, __b: LongDouble) -> bool;
+// REWRITES-NEXT:     safe fn __slate_f80_hypot(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // REWRITES-NEXT:     safe fn __slate_f80_is_fp_class(__a: LongDouble, __flags: i32) -> bool;
 // REWRITES-NEXT:     safe fn __slate_f80_le(__a: LongDouble, __b: LongDouble) -> bool;
+// REWRITES-NEXT:     safe fn __slate_f80_log(__a: LongDouble) -> LongDouble;
+// REWRITES-NEXT:     safe fn __slate_f80_log10(__a: LongDouble) -> LongDouble;
+// REWRITES-NEXT:     safe fn __slate_f80_log1p(__a: LongDouble) -> LongDouble;
+// REWRITES-NEXT:     safe fn __slate_f80_log2(__a: LongDouble) -> LongDouble;
 // REWRITES-NEXT:     safe fn __slate_f80_lt(__a: LongDouble, __b: LongDouble) -> bool;
 // REWRITES-NEXT:     safe fn __slate_f80_mul(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // REWRITES-NEXT:     safe fn __slate_f80_ne(__a: LongDouble, __b: LongDouble) -> bool;
+// REWRITES-NEXT:     safe fn __slate_f80_nearbyint(__a: LongDouble) -> LongDouble;
 // REWRITES-NEXT:     safe fn __slate_f80_neg(__a: LongDouble) -> LongDouble;
+// REWRITES-NEXT:     safe fn __slate_f80_pow(__a: LongDouble, __b: LongDouble) -> LongDouble;
+// REWRITES-NEXT:     safe fn __slate_f80_powi(__a: LongDouble, __n: i32) -> LongDouble;
+// REWRITES-NEXT:     safe fn __slate_f80_remainder(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // REWRITES-NEXT:     safe fn __slate_f80_rint(__a: LongDouble) -> LongDouble;
 // REWRITES-NEXT:     safe fn __slate_f80_round(__a: LongDouble) -> LongDouble;
 // REWRITES-NEXT:     safe fn __slate_f80_signbit(__a: LongDouble) -> bool;
+// REWRITES-NEXT:     safe fn __slate_f80_sin(__a: LongDouble) -> LongDouble;
+// REWRITES-NEXT:     safe fn __slate_f80_sinh(__a: LongDouble) -> LongDouble;
+// REWRITES-NEXT:     safe fn __slate_f80_sqrt(__a: LongDouble) -> LongDouble;
 // REWRITES-NEXT:     safe fn __slate_f80_sub(__a: LongDouble, __b: LongDouble) -> LongDouble;
+// REWRITES-NEXT:     safe fn __slate_f80_tan(__a: LongDouble) -> LongDouble;
+// REWRITES-NEXT:     safe fn __slate_f80_tanh(__a: LongDouble) -> LongDouble;
 // REWRITES-NEXT:     safe fn __slate_f80_to_bool(__a: LongDouble) -> bool;
 // REWRITES-NEXT:     safe fn __slate_f80_to_f32(__a: LongDouble) -> f32;
 // REWRITES-NEXT:     safe fn __slate_f80_to_f64(__a: LongDouble) -> f64;

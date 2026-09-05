@@ -46,7 +46,7 @@ int main(void) {
   return 0;
 }
 
-// REWRITES-DAG: let _v{{[0-9]+}}: f64 = m.total;
+// REWRITES-DAG: let __v{{[0-9]+}}: f64 = m.total;
 // REWRITES-DAG: unsafe { s.total }
 // REWRITES-DAG: (unsafe { s.tag }) as i32
 

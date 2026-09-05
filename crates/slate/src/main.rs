@@ -563,6 +563,44 @@ impl ProjectModules {
     fn write(self) -> Result<Vec<PathBuf>, String> {
         write_project_modules(self.paths, self.programs)
     }
+
+    fn drain_module_features(&mut self) -> BTreeSet<rust_ast::Feature> {
+        let mut features = BTreeSet::new();
+        for program in &mut self.programs {
+            if let Some(rust_ast::Item::CrateAttrs(attrs)) = program.items.first_mut() {
+                attrs.retain(|attr| {
+                    if let rust_ast::CrateAttr::Feature(feature) = attr {
+                        features.insert(*feature);
+                        false
+                    } else {
+                        true
+                    }
+                });
+            }
+        }
+        features
+    }
+
+    fn install_crate_features(&mut self, path: &Path, features: &BTreeSet<rust_ast::Feature>) {
+        let Some(program) = self
+            .paths
+            .iter()
+            .position(|p| p == path)
+            .map(|index| &mut self.programs[index])
+        else {
+            return;
+        };
+        if let Some(rust_ast::Item::CrateAttrs(attrs)) = program.items.first_mut() {
+            for feature in features {
+                if !attrs
+                    .iter()
+                    .any(|attr| matches!(attr, rust_ast::CrateAttr::Feature(existing) if existing == feature))
+                {
+                    attrs.insert(0, rust_ast::CrateAttr::Feature(*feature));
+                }
+            }
+        }
+    }
 }
 
 fn merge_target_programs(variants: &[(rust_ast::Cfg, rust_ast::Program)]) -> rust_ast::Program {
@@ -1223,9 +1261,11 @@ fn translate_project_lib_crate_with_manifest(
 
     let has_shared_types =
         project_modules.push_shared_types(&crate_src, shared_records, shared_enums, &mut shims);
+    let mut crate_features = project.crate_features.clone();
+    crate_features.extend(project_modules.drain_module_features());
 
     let mut lib_rs = String::new();
-    for feature in &project.crate_features {
+    for feature in &crate_features {
         lib_rs.push_str(&format!("#![feature({})]\n", feature.spelling()));
     }
     if has_shared_types {
@@ -1608,6 +1648,8 @@ fn translate_project_lib_crate_with_compile_commands(
     }
     let has_shared_types =
         project_modules.push_shared_types(&crate_src, shared_records, shared_enums, &mut shims);
+    let mut crate_features = crate_features;
+    crate_features.extend(project_modules.drain_module_features());
     written.extend(project_modules.write()?);
 
     let mut lib_rs = String::new();
@@ -1993,6 +2035,8 @@ fn translate_project_with_targets(
         project_modules.push(output, program);
     }
     project_modules.push_shared_types(&crate_src, shared_records, shared_enums, &mut shims);
+    let module_features = project_modules.drain_module_features();
+    project_modules.install_crate_features(&crate_src.join("main.rs"), &module_features);
     written.extend(project_modules.write()?);
 
     let shim_output = crate_src.join("slate_shims.c");
@@ -2374,6 +2418,8 @@ fn translate_project_with_compile_commands(
         project_modules.push(output, program);
     }
     project_modules.push_shared_types(&crate_src, shared_records, shared_enums, &mut shims);
+    let module_features = project_modules.drain_module_features();
+    project_modules.install_crate_features(&crate_src.join("main.rs"), &module_features);
     written.extend(project_modules.write()?);
 
     let shim_output = crate_src.join("slate_shims.c");
@@ -2401,7 +2447,6 @@ fn translate_project_with_compile_commands(
         .collect())
 }
 
-/// Record the preprocessor conditional regions of `path` (resolving active
 /// branches for the given clang args) and print them as JSON for later stages.
 fn record_cfg(path: &Path, clang_args: &[String]) -> Result<String, String> {
     let (source, _raw) =

@@ -643,6 +643,6 @@ fn raw_lower_skips_fixups_for_directive_translation() {
         String::from_utf8_lossy(&out.stderr)
     );
     let rust = String::from_utf8(out.stdout).expect("generated Rust is utf8");
-    assert!(rust.contains("let _v0: i32 = arg0 + arg1;"));
+    assert!(rust.contains("let __v0: i32 = arg0 + arg1;"));
     assert!(!rust.contains("println!"));
 }

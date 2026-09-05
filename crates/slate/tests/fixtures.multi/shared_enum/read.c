@@ -26,11 +26,9 @@ int mode_value(struct Holder *holder) {
 // REWRITES-DAG: pub unsafe extern "C-unwind" fn mode_value({{arg[0-9]+}}: *mut Holder) -> i32 {
 // REWRITES-DAG:     let {{__v[0-9]+}}: u32 = (unsafe { (*{{arg[0-9]+}}).mode }) as u32;
 // REWRITES-DAG:     let {{__v[0-9]+}}: u32 = Mode::MODE_READY as u32;
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
 // REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 42;
 // REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = if {{__v[0-9]+}} { {{__v[0-9]+}} } else { {{__v[0-9]+}} };
-// REWRITES-DAG:     {{__v[0-9]+}}
+// REWRITES-DAG:     if {{__v[0-9]+}} == {{__v[0-9]+}} { {{__v[0-9]+}} } else { {{__v[0-9]+}} }
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites
 

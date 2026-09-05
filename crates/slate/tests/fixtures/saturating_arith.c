@@ -116,7 +116,15 @@ int main(void) {
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}}[({{__v[0-9]+}} as usize)];
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 3;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}}[({{__v[0-9]+}} as usize)];
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe {
+// LOWERING-NEXT:         printf(
+// LOWERING-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:         )
+// LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-NEXT: }

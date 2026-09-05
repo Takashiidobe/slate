@@ -91,7 +91,11 @@ fn check_groups(
                 groups.push(group);
             }
         } else if let Some(group) = &mut current {
+            let is_close = check == "// CHECK: {{^}}}";
             group.push(check);
+            if is_close {
+                groups.push(current.take().unwrap());
+            }
         } else {
             global.push(check);
         }
