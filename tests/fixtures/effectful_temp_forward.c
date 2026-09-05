@@ -32,40 +32,34 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN common-lowering
-// COMMON-LOWERING-DAG: fn safe_forward({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
-// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: i32 = add({{arg[0-9]+}}, {{arg[0-9]+}});
-// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: i32 = {{arg[0-9]+}} + {{arg[0-9]+}};
-// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
-// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
-// COMMON-LOWERING-DAG:     return {{__v[0-9]+}};
-// COMMON-LOWERING-DAG: }
-// COMMON-LOWERING-DAG: fn blocked_forward({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) {
-// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: i32 = add({{arg[0-9]+}}, {{arg[0-9]+}});
-// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: i32 = side_effect();
-// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}) };
-// COMMON-LOWERING-DAG:     return;
-// COMMON-LOWERING-DAG: }
-// SLATE-FILECHECK-END common-lowering
-
-// SLATE-FILECHECK-BEGIN lowering-x86_64-gnu
+// SLATE-FILECHECK-BEGIN lowering
+// LOWERING-DAG: fn safe_forward({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = add({{arg[0-9]+}}, {{arg[0-9]+}});
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = {{arg[0-9]+}} + {{arg[0-9]+}};
 // LOWERING-X86_64-GNU-DAG:     let {{__v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// LOWERING-X86_64-GNU-DAG:     let {{__v[0-9]+}}: *mut i8 = b"%d %d\n\0".as_ptr() as *mut i8;
-// SLATE-FILECHECK-END lowering-x86_64-gnu
-
-// SLATE-FILECHECK-BEGIN lowering-aarch64-gnu
 // LOWERING-AARCH64-GNU-DAG:     let {{__v[0-9]+}}: *mut u8 = b"%d\n\0".as_ptr() as *mut u8;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-DAG:     return {{__v[0-9]+}};
+// LOWERING-DAG: }
+// LOWERING-DAG: fn blocked_forward({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) {
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = add({{arg[0-9]+}}, {{arg[0-9]+}});
+// LOWERING-X86_64-GNU-DAG:     let {{__v[0-9]+}}: *mut i8 = b"%d %d\n\0".as_ptr() as *mut i8;
 // LOWERING-AARCH64-GNU-DAG:     let {{__v[0-9]+}}: *mut u8 = b"%d %d\n\0".as_ptr() as *mut u8;
-// SLATE-FILECHECK-END lowering-aarch64-gnu
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = side_effect();
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// LOWERING-DAG:     return;
+// LOWERING-DAG: }
+// SLATE-FILECHECK-END lowering
 
-// SLATE-FILECHECK-BEGIN common-rewrites
-// COMMON-REWRITES-DAG: fn safe_forward({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
-// COMMON-REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{arg[0-9]+}} + {{arg[0-9]+}};
-// COMMON-REWRITES-DAG:     unsafe { printf(c"%d\n".as_ptr(), add({{arg[0-9]+}}, {{arg[0-9]+}})) };
-// COMMON-REWRITES-DAG:     {{__v[0-9]+}} + {{__v[0-9]+}}
-// COMMON-REWRITES-DAG: }
-// COMMON-REWRITES-DAG: fn blocked_forward({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) {
-// COMMON-REWRITES-DAG:     unsafe { printf(c"%d %d\n".as_ptr(), add({{arg[0-9]+}}, {{arg[0-9]+}}), side_effect()) };
-// COMMON-REWRITES-DAG:     return;
-// COMMON-REWRITES-DAG: }
-// SLATE-FILECHECK-END common-rewrites
+// SLATE-FILECHECK-BEGIN rewrites
+// REWRITES-DAG: fn safe_forward({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{arg[0-9]+}} + {{arg[0-9]+}};
+// REWRITES-DAG:     unsafe { printf(c"%d\n".as_ptr(), add({{arg[0-9]+}}, {{arg[0-9]+}})) };
+// REWRITES-DAG:     {{__v[0-9]+}} + {{__v[0-9]+}}
+// REWRITES-DAG: }
+// REWRITES-DAG: fn blocked_forward({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) {
+// REWRITES-DAG:     unsafe { printf(c"%d %d\n".as_ptr(), add({{arg[0-9]+}}, {{arg[0-9]+}}), side_effect()) };
+// REWRITES-DAG:     return;
+// REWRITES-DAG: }
+// SLATE-FILECHECK-END rewrites

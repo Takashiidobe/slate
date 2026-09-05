@@ -26,126 +26,114 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN common-lowering
-// COMMON-LOWERING: #![feature(c_variadic)]
-// COMMON-LOWERING-NEXT: #![allow(
-// COMMON-LOWERING-NEXT:     dead_code,
-// COMMON-LOWERING-NEXT:     unused,
-// COMMON-LOWERING-NEXT:     non_camel_case_types,
-// COMMON-LOWERING-NEXT:     non_snake_case,
-// COMMON-LOWERING-NEXT:     non_upper_case_globals,
-// COMMON-LOWERING-NEXT:     arithmetic_overflow,
-// COMMON-LOWERING-NEXT:     unconditional_panic,
-// COMMON-LOWERING-NEXT:     suspicious_runtime_symbol_definitions,
-// COMMON-LOWERING-NEXT:     unpredictable_function_pointer_comparisons,
-// COMMON-LOWERING-NEXT:     unused_comparisons
-// COMMON-LOWERING-NEXT: )]
-// COMMON-LOWERING-EMPTY:
-// COMMON-LOWERING-NEXT: #[repr(C, align(32))]
-// COMMON-LOWERING-NEXT: #[derive(Clone, Copy)]
-// COMMON-LOWERING-NEXT: struct OverAligned {
-// COMMON-LOWERING-NEXT:     value: i32,
-// COMMON-LOWERING-NEXT: }
-// COMMON-LOWERING-EMPTY:
-// COMMON-LOWERING-NEXT: unsafe extern "C" {
-// COMMON-LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
-// COMMON-LOWERING-NEXT: }
-// COMMON-LOWERING-EMPTY:
-// COMMON-LOWERING-NEXT: fn main() {
-// COMMON-LOWERING-NEXT:     let mut object: aligned::Aligned<aligned::A32, OverAligned> =
-// COMMON-LOWERING-NEXT:         aligned::Aligned(OverAligned { value: 0 });
-// COMMON-LOWERING-NEXT:     let mut local: aligned::Aligned<aligned::A64, i32> = aligned::Aligned(0);
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: OverAligned = OverAligned { value: 7 };
-// COMMON-LOWERING-NEXT:     *object = {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 11;
-// COMMON-LOWERING-NEXT:     *local = {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = std::mem::align_of::<OverAligned>() as u64;
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = std::ptr::addr_of_mut!(*object) as u64;
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = 32;
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} % {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = std::ptr::addr_of_mut!(*local) as u64;
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = 64;
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} % {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = object.value;
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = *local;
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe {
-// COMMON-LOWERING-NEXT:         printf(
-// COMMON-LOWERING-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
-// COMMON-LOWERING-NEXT:             {{__v[0-9]+}},
-// COMMON-LOWERING-NEXT:             {{__v[0-9]+}},
-// COMMON-LOWERING-NEXT:             {{__v[0-9]+}},
-// COMMON-LOWERING-NEXT:             {{__v[0-9]+}},
-// COMMON-LOWERING-NEXT:             {{__v[0-9]+}},
-// COMMON-LOWERING-NEXT:         )
-// COMMON-LOWERING-NEXT:     };
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// COMMON-LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
-// COMMON-LOWERING-NEXT: }
-// SLATE-FILECHECK-END common-lowering
-
-// SLATE-FILECHECK-BEGIN lowering-x86_64-gnu
+// SLATE-FILECHECK-BEGIN lowering
+// LOWERING: #![feature(c_variadic)]
+// LOWERING-NEXT: #![allow(
+// LOWERING-NEXT:     dead_code,
+// LOWERING-NEXT:     unused,
+// LOWERING-NEXT:     non_camel_case_types,
+// LOWERING-NEXT:     non_snake_case,
+// LOWERING-NEXT:     non_upper_case_globals,
+// LOWERING-NEXT:     arithmetic_overflow,
+// LOWERING-NEXT:     unconditional_panic,
+// LOWERING-NEXT:     suspicious_runtime_symbol_definitions,
+// LOWERING-NEXT:     unpredictable_function_pointer_comparisons,
+// LOWERING-NEXT:     unused_comparisons
+// LOWERING-NEXT: )]
+// LOWERING-EMPTY:
+// LOWERING-NEXT: #[repr(C, align(32))]
+// LOWERING-NEXT: #[derive(Clone, Copy)]
+// LOWERING-NEXT: struct OverAligned {
+// LOWERING-NEXT:     value: i32,
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: unsafe extern "C" {
+// LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT:     let mut object: aligned::Aligned<aligned::A32, OverAligned> =
+// LOWERING-NEXT:         aligned::Aligned(OverAligned { value: 0 });
+// LOWERING-NEXT:     let mut local: aligned::Aligned<aligned::A64, i32> = aligned::Aligned(0);
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: OverAligned = OverAligned { value: 7 };
+// LOWERING-NEXT:     *object = {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 11;
+// LOWERING-NEXT:     *local = {{__v[0-9]+}};
 // LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%zu %zu %zu %d %d\n\0".as_ptr() as *mut i8;
-// SLATE-FILECHECK-END lowering-x86_64-gnu
-
-// SLATE-FILECHECK-BEGIN lowering-aarch64-gnu
 // LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = b"%zu %zu %zu %d %d\n\0".as_ptr() as *mut u8;
-// SLATE-FILECHECK-END lowering-aarch64-gnu
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = std::mem::align_of::<OverAligned>() as u64;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = std::ptr::addr_of_mut!(*object) as u64;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = 32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} % {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = std::ptr::addr_of_mut!(*local) as u64;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = 64;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} % {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = object.value;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = *local;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe {
+// LOWERING-NEXT:         printf(
+// LOWERING-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:         )
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT: }
+// SLATE-FILECHECK-END lowering
 
-// SLATE-FILECHECK-BEGIN common-rewrites
-// COMMON-REWRITES: #![feature(c_variadic)]
-// COMMON-REWRITES-NEXT: #![allow(
-// COMMON-REWRITES-NEXT:     dead_code,
-// COMMON-REWRITES-NEXT:     unused,
-// COMMON-REWRITES-NEXT:     non_camel_case_types,
-// COMMON-REWRITES-NEXT:     non_snake_case,
-// COMMON-REWRITES-NEXT:     non_upper_case_globals,
-// COMMON-REWRITES-NEXT:     arithmetic_overflow,
-// COMMON-REWRITES-NEXT:     unconditional_panic,
-// COMMON-REWRITES-NEXT:     suspicious_runtime_symbol_definitions,
-// COMMON-REWRITES-NEXT:     unpredictable_function_pointer_comparisons,
-// COMMON-REWRITES-NEXT:     unused_comparisons
-// COMMON-REWRITES-NEXT: )]
-// COMMON-REWRITES-EMPTY:
-// COMMON-REWRITES-NEXT: #[repr(C, align(32))]
-// COMMON-REWRITES-NEXT: #[derive(Clone, Copy)]
-// COMMON-REWRITES-NEXT: struct OverAligned {
-// COMMON-REWRITES-NEXT:     value: i32,
-// COMMON-REWRITES-NEXT: }
-// COMMON-REWRITES-EMPTY:
-// COMMON-REWRITES-NEXT: unsafe extern "C" {
-// COMMON-REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
-// COMMON-REWRITES-NEXT: }
-// COMMON-REWRITES-EMPTY:
-// COMMON-REWRITES-NEXT: fn main() {
-// COMMON-REWRITES-NEXT:     let mut object: aligned::Aligned<aligned::A32, OverAligned> =
-// COMMON-REWRITES-NEXT:         aligned::Aligned(OverAligned { value: 0 });
-// COMMON-REWRITES-NEXT:     let mut local: aligned::Aligned<aligned::A64, i32> = aligned::Aligned(0);
-// COMMON-REWRITES-NEXT:     *object = OverAligned { value: 7 };
-// COMMON-REWRITES-NEXT:     *local = 11;
-// COMMON-REWRITES-NEXT:     let {{__v[0-9]+}}: u64 = std::ptr::addr_of_mut!(*object) as u64;
-// COMMON-REWRITES-NEXT:     let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} % 32;
-// COMMON-REWRITES-NEXT:     let {{__v[0-9]+}}: u64 = std::ptr::addr_of_mut!(*local) as u64;
-// COMMON-REWRITES-NEXT:     let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} % 64;
-// COMMON-REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = object.value;
-// COMMON-REWRITES-NEXT:     unsafe {
-// COMMON-REWRITES-NEXT:         printf(
-// COMMON-REWRITES-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
-// COMMON-REWRITES-NEXT:             std::mem::align_of::<OverAligned>() as u64,
-// COMMON-REWRITES-NEXT:             {{__v[0-9]+}},
-// COMMON-REWRITES-NEXT:             {{__v[0-9]+}},
-// COMMON-REWRITES-NEXT:             {{__v[0-9]+}},
-// COMMON-REWRITES-NEXT:             *local,
-// COMMON-REWRITES-NEXT:         )
-// COMMON-REWRITES-NEXT:     };
-// COMMON-REWRITES-NEXT:     std::process::exit(0 as i32);
-// COMMON-REWRITES-NEXT: }
-// SLATE-FILECHECK-END common-rewrites
-
-// SLATE-FILECHECK-BEGIN rewrites-x86_64-gnu
+// SLATE-FILECHECK-BEGIN rewrites
+// REWRITES: #![feature(c_variadic)]
+// REWRITES-NEXT: #![allow(
+// REWRITES-NEXT:     dead_code,
+// REWRITES-NEXT:     unused,
+// REWRITES-NEXT:     non_camel_case_types,
+// REWRITES-NEXT:     non_snake_case,
+// REWRITES-NEXT:     non_upper_case_globals,
+// REWRITES-NEXT:     arithmetic_overflow,
+// REWRITES-NEXT:     unconditional_panic,
+// REWRITES-NEXT:     suspicious_runtime_symbol_definitions,
+// REWRITES-NEXT:     unpredictable_function_pointer_comparisons,
+// REWRITES-NEXT:     unused_comparisons
+// REWRITES-NEXT: )]
+// REWRITES-EMPTY:
+// REWRITES-NEXT: #[repr(C, align(32))]
+// REWRITES-NEXT: #[derive(Clone, Copy)]
+// REWRITES-NEXT: struct OverAligned {
+// REWRITES-NEXT:     value: i32,
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT:     let mut object: aligned::Aligned<aligned::A32, OverAligned> =
+// REWRITES-NEXT:         aligned::Aligned(OverAligned { value: 0 });
+// REWRITES-NEXT:     let mut local: aligned::Aligned<aligned::A64, i32> = aligned::Aligned(0);
+// REWRITES-NEXT:     *object = OverAligned { value: 7 };
+// REWRITES-NEXT:     *local = 11;
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = c"%zu %zu %zu %d %d\n".as_ptr() as *mut i8;
-// SLATE-FILECHECK-END rewrites-x86_64-gnu
-
-// SLATE-FILECHECK-BEGIN rewrites-aarch64-gnu
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = c"%zu %zu %zu %d %d\n".as_ptr() as *mut u8;
-// SLATE-FILECHECK-END rewrites-aarch64-gnu
+// REWRITES-NEXT:     let {{__v[0-9]+}}: u64 = std::ptr::addr_of_mut!(*object) as u64;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} % 32;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: u64 = std::ptr::addr_of_mut!(*local) as u64;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} % 64;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = object.value;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         printf(
+// REWRITES-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
+// REWRITES-NEXT:             std::mem::align_of::<OverAligned>() as u64,
+// REWRITES-NEXT:             {{__v[0-9]+}},
+// REWRITES-NEXT:             {{__v[0-9]+}},
+// REWRITES-NEXT:             {{__v[0-9]+}},
+// REWRITES-NEXT:             *local,
+// REWRITES-NEXT:         )
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT: }
+// SLATE-FILECHECK-END rewrites

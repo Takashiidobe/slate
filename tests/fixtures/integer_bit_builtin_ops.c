@@ -27,105 +27,99 @@ int main(void) {
 // @rewrite-fn-end
 // @lowering-fn-end
 
-// SLATE-FILECHECK-BEGIN common-lowering
-// COMMON-LOWERING-DAG: fn main() {
-// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: u32 = 305419896;
-// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: u32 = 0;
-// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: i32 = -12345;
-// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: u32 = 5;
-// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}}.reverse_bits();
-// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}}.swap_bytes();
-// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}}.leading_zeros() as u32;
-// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}}.trailing_zeros() as u32;
-// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: i32 = if {{__v[0-9]+}} == 0 {
-// COMMON-LOWERING-DAG:         0
-// COMMON-LOWERING-DAG:     } else {
-// COMMON-LOWERING-DAG:         ({{__v[0-9]+}}.trailing_zeros() as i32) + 1
-// COMMON-LOWERING-DAG:     };
-// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: i32 = if {{__v[0-9]+}} == 0 {
-// COMMON-LOWERING-DAG:         0
-// COMMON-LOWERING-DAG:     } else {
-// COMMON-LOWERING-DAG:         ({{__v[0-9]+}}.trailing_zeros() as i32) + 1
-// COMMON-LOWERING-DAG:     };
-// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}}.count_ones() as u32;
-// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: u32 = ({{__v[0-9]+}}.count_ones() as u32) & 1;
-// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: i32 = (if {{__v[0-9]+}} < 0 { !{{__v[0-9]+}} } else { {{__v[0-9]+}} }.leading_zeros() as i32) - 1;
-// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}}.rotate_left({{__v[0-9]+}} as u32);
-// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}}.rotate_right({{__v[0-9]+}} as u32);
-// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: i32 = unsafe {
-// COMMON-LOWERING-DAG:         printf(
-// COMMON-LOWERING-DAG:             {{__v[0-9]+}} as *const core::ffi::c_char,
-// COMMON-LOWERING-DAG:             {{__v[0-9]+}},
-// COMMON-LOWERING-DAG:             {{__v[0-9]+}},
-// COMMON-LOWERING-DAG:             {{__v[0-9]+}},
-// COMMON-LOWERING-DAG:             {{__v[0-9]+}},
-// COMMON-LOWERING-DAG:             {{__v[0-9]+}},
-// COMMON-LOWERING-DAG:             {{__v[0-9]+}},
-// COMMON-LOWERING-DAG:             {{__v[0-9]+}},
-// COMMON-LOWERING-DAG:             {{__v[0-9]+}},
-// COMMON-LOWERING-DAG:             {{__v[0-9]+}},
-// COMMON-LOWERING-DAG:             {{__v[0-9]+}},
-// COMMON-LOWERING-DAG:             {{__v[0-9]+}},
-// COMMON-LOWERING-DAG:         )
-// COMMON-LOWERING-DAG:     };
-// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// COMMON-LOWERING-DAG:     std::process::exit({{__v[0-9]+}} as i32);
-// COMMON-LOWERING-DAG: }
-// SLATE-FILECHECK-END common-lowering
-
-// SLATE-FILECHECK-BEGIN lowering-x86_64-gnu
+// SLATE-FILECHECK-BEGIN lowering
+// LOWERING-DAG: fn main() {
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:     let {{__v[0-9]+}}: u32 = 305419896;
+// LOWERING-DAG:     let {{__v[0-9]+}}: u32 = 0;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = -12345;
+// LOWERING-DAG:     let {{__v[0-9]+}}: u32 = 5;
+// LOWERING-DAG:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}}.reverse_bits();
+// LOWERING-DAG:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}}.swap_bytes();
+// LOWERING-DAG:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}}.leading_zeros() as u32;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-DAG:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}}.trailing_zeros() as u32;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = if {{__v[0-9]+}} == 0 {
+// LOWERING-DAG:         0
+// LOWERING-DAG:     } else {
+// LOWERING-DAG:         ({{__v[0-9]+}}.trailing_zeros() as i32) + 1
+// LOWERING-DAG:     };
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = if {{__v[0-9]+}} == 0 {
+// LOWERING-DAG:         0
+// LOWERING-DAG:     } else {
+// LOWERING-DAG:         ({{__v[0-9]+}}.trailing_zeros() as i32) + 1
+// LOWERING-DAG:     };
+// LOWERING-DAG:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}}.count_ones() as u32;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-DAG:     let {{__v[0-9]+}}: u32 = ({{__v[0-9]+}}.count_ones() as u32) & 1;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = (if {{__v[0-9]+}} < 0 { !{{__v[0-9]+}} } else { {{__v[0-9]+}} }.leading_zeros() as i32) - 1;
+// LOWERING-DAG:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}}.rotate_left({{__v[0-9]+}} as u32);
+// LOWERING-DAG:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}}.rotate_right({{__v[0-9]+}} as u32);
 // LOWERING-X86_64-GNU-DAG:     let {{__v[0-9]+}}: *mut i8 = b"%u %u %d %d %d %d %d %d %d %u %u\n\0".as_ptr() as *mut i8;
-// SLATE-FILECHECK-END lowering-x86_64-gnu
-
-// SLATE-FILECHECK-BEGIN lowering-aarch64-gnu
 // LOWERING-AARCH64-GNU-DAG:     let {{__v[0-9]+}}: *mut u8 = b"%u %u %d %d %d %d %d %d %d %u %u\n\0".as_ptr() as *mut u8;
-// SLATE-FILECHECK-END lowering-aarch64-gnu
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = unsafe {
+// LOWERING-DAG:         printf(
+// LOWERING-DAG:             {{__v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-DAG:             {{__v[0-9]+}},
+// LOWERING-DAG:             {{__v[0-9]+}},
+// LOWERING-DAG:             {{__v[0-9]+}},
+// LOWERING-DAG:             {{__v[0-9]+}},
+// LOWERING-DAG:             {{__v[0-9]+}},
+// LOWERING-DAG:             {{__v[0-9]+}},
+// LOWERING-DAG:             {{__v[0-9]+}},
+// LOWERING-DAG:             {{__v[0-9]+}},
+// LOWERING-DAG:             {{__v[0-9]+}},
+// LOWERING-DAG:             {{__v[0-9]+}},
+// LOWERING-DAG:             {{__v[0-9]+}},
+// LOWERING-DAG:         )
+// LOWERING-DAG:     };
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-DAG: }
+// SLATE-FILECHECK-END lowering
 
-// SLATE-FILECHECK-BEGIN common-rewrites
-// COMMON-REWRITES-DAG: fn main() {
-// COMMON-REWRITES-DAG:     let {{__v[0-9]+}}: u32 = 305419896;
-// COMMON-REWRITES-DAG:     let {{__v[0-9]+}}: i32 = -12345;
-// COMMON-REWRITES-DAG:     let {{__v[0-9]+}}: u32 = 5;
-// COMMON-REWRITES-DAG:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}}.reverse_bits();
-// COMMON-REWRITES-DAG:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}}.swap_bytes();
-// COMMON-REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// COMMON-REWRITES-DAG:     let {{__v[0-9]+}}: i32 = if {{__v[0-9]+}} == 0 {
-// COMMON-REWRITES-DAG:         0
-// COMMON-REWRITES-DAG:     } else {
-// COMMON-REWRITES-DAG:         ({{__v[0-9]+}}.trailing_zeros() as i32) + 1
-// COMMON-REWRITES-DAG:     };
-// COMMON-REWRITES-DAG:     let {{__v[0-9]+}}: i32 = (0 as u32) as i32;
-// COMMON-REWRITES-DAG:     let {{__v[0-9]+}}: i32 = if {{__v[0-9]+}} == 0 {
-// COMMON-REWRITES-DAG:         0
-// COMMON-REWRITES-DAG:     } else {
-// COMMON-REWRITES-DAG:         ({{__v[0-9]+}}.trailing_zeros() as i32) + 1
-// COMMON-REWRITES-DAG:     };
-// COMMON-REWRITES-DAG:     let {{__v[0-9]+}}: i32 = (if {{__v[0-9]+}} < 0 { !{{__v[0-9]+}} } else { {{__v[0-9]+}} }.leading_zeros() as i32) - 1;
-// COMMON-REWRITES-DAG:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}}.rotate_left({{__v[0-9]+}} as u32);
-// COMMON-REWRITES-DAG:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}}.rotate_right({{__v[0-9]+}} as u32);
-// COMMON-REWRITES-DAG:     unsafe {
-// COMMON-REWRITES-DAG:         printf(
-// COMMON-REWRITES-DAG:             c"%u %u %d %d %d %d %d %d %d %u %u\n".as_ptr(),
-// COMMON-REWRITES-DAG:             {{__v[0-9]+}},
-// COMMON-REWRITES-DAG:             {{__v[0-9]+}},
-// COMMON-REWRITES-DAG:             ({{__v[0-9]+}}.leading_zeros() as u32) as i32,
-// COMMON-REWRITES-DAG:             ({{__v[0-9]+}}.trailing_zeros() as u32) as i32,
-// COMMON-REWRITES-DAG:             {{__v[0-9]+}},
-// COMMON-REWRITES-DAG:             {{__v[0-9]+}},
-// COMMON-REWRITES-DAG:             ({{__v[0-9]+}}.count_ones() as u32) as i32,
-// COMMON-REWRITES-DAG:             (({{__v[0-9]+}}.count_ones() as u32) & 1) as i32,
-// COMMON-REWRITES-DAG:             {{__v[0-9]+}},
-// COMMON-REWRITES-DAG:             {{__v[0-9]+}},
-// COMMON-REWRITES-DAG:             {{__v[0-9]+}},
-// COMMON-REWRITES-DAG:         )
-// COMMON-REWRITES-DAG:     };
-// COMMON-REWRITES-DAG:     std::process::exit(0 as i32);
-// COMMON-REWRITES-DAG: }
-// SLATE-FILECHECK-END common-rewrites
+// SLATE-FILECHECK-BEGIN rewrites
+// REWRITES-DAG: fn main() {
+// REWRITES-DAG:     let {{__v[0-9]+}}: u32 = 305419896;
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = -12345;
+// REWRITES-DAG:     let {{__v[0-9]+}}: u32 = 5;
+// REWRITES-DAG:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}}.reverse_bits();
+// REWRITES-DAG:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}}.swap_bytes();
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = if {{__v[0-9]+}} == 0 {
+// REWRITES-DAG:         0
+// REWRITES-DAG:     } else {
+// REWRITES-DAG:         ({{__v[0-9]+}}.trailing_zeros() as i32) + 1
+// REWRITES-DAG:     };
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = (0 as u32) as i32;
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = if {{__v[0-9]+}} == 0 {
+// REWRITES-DAG:         0
+// REWRITES-DAG:     } else {
+// REWRITES-DAG:         ({{__v[0-9]+}}.trailing_zeros() as i32) + 1
+// REWRITES-DAG:     };
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = (if {{__v[0-9]+}} < 0 { !{{__v[0-9]+}} } else { {{__v[0-9]+}} }.leading_zeros() as i32) - 1;
+// REWRITES-DAG:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}}.rotate_left({{__v[0-9]+}} as u32);
+// REWRITES-DAG:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}}.rotate_right({{__v[0-9]+}} as u32);
+// REWRITES-DAG:     unsafe {
+// REWRITES-DAG:         printf(
+// REWRITES-DAG:             c"%u %u %d %d %d %d %d %d %d %u %u\n".as_ptr(),
+// REWRITES-DAG:             {{__v[0-9]+}},
+// REWRITES-DAG:             {{__v[0-9]+}},
+// REWRITES-DAG:             ({{__v[0-9]+}}.leading_zeros() as u32) as i32,
+// REWRITES-DAG:             ({{__v[0-9]+}}.trailing_zeros() as u32) as i32,
+// REWRITES-DAG:             {{__v[0-9]+}},
+// REWRITES-DAG:             {{__v[0-9]+}},
+// REWRITES-DAG:             ({{__v[0-9]+}}.count_ones() as u32) as i32,
+// REWRITES-DAG:             (({{__v[0-9]+}}.count_ones() as u32) & 1) as i32,
+// REWRITES-DAG:             {{__v[0-9]+}},
+// REWRITES-DAG:             {{__v[0-9]+}},
+// REWRITES-DAG:             {{__v[0-9]+}},
+// REWRITES-DAG:         )
+// REWRITES-DAG:     };
+// REWRITES-DAG:     std::process::exit(0 as i32);
+// REWRITES-DAG: }
+// SLATE-FILECHECK-END rewrites

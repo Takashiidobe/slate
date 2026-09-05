@@ -75,159 +75,153 @@ int main(void) { return 0; }
 // REWRITES-BIONIC-AARCH64-DAG: _4: u32
 // REWRITES-BIONIC-X86_64-DAG: _4: i32
 
-// SLATE-FILECHECK-BEGIN common-lowering
-// COMMON-LOWERING: #![feature(f128)]
-// COMMON-LOWERING-NEXT: #![allow(
-// COMMON-LOWERING-NEXT:     dead_code,
-// COMMON-LOWERING-NEXT:     unused,
-// COMMON-LOWERING-NEXT:     non_camel_case_types,
-// COMMON-LOWERING-NEXT:     non_snake_case,
-// COMMON-LOWERING-NEXT:     non_upper_case_globals,
-// COMMON-LOWERING-NEXT:     arithmetic_overflow,
-// COMMON-LOWERING-NEXT:     unconditional_panic,
-// COMMON-LOWERING-NEXT:     suspicious_runtime_symbol_definitions,
-// COMMON-LOWERING-NEXT:     unpredictable_function_pointer_comparisons,
-// COMMON-LOWERING-NEXT:     unused_comparisons
-// COMMON-LOWERING-NEXT: )]
-// COMMON-LOWERING-EMPTY:
-// COMMON-LOWERING-NEXT: }
-// COMMON-LOWERING-EMPTY:
-// COMMON-LOWERING-NEXT: unsafe extern "C" {
-// COMMON-LOWERING-NEXT:     -> i64;
-// COMMON-LOWERING-NEXT: }
-// COMMON-LOWERING-EMPTY:
-// COMMON-LOWERING-NEXT: struct __SlateVaArg {
-// COMMON-LOWERING-NEXT:     value: Box<dyn std::any::Any>,
-// COMMON-LOWERING-NEXT:     size: usize,
-// COMMON-LOWERING-NEXT: }
-// COMMON-LOWERING-EMPTY:
-// COMMON-LOWERING-NEXT: impl __SlateVaArg {
-// COMMON-LOWERING-NEXT:     fn new<T: 'static>(value: T) -> Self {
-// COMMON-LOWERING-NEXT:         Self {
-// COMMON-LOWERING-NEXT:             value: Box::new(value),
-// COMMON-LOWERING-NEXT:             size: std::mem::size_of::<T>(),
-// COMMON-LOWERING-NEXT:         }
-// COMMON-LOWERING-NEXT:     }
-// COMMON-LOWERING-EMPTY:
-// COMMON-LOWERING-NEXT:     fn read<T: Copy + 'static>(&self) -> T {
-// COMMON-LOWERING-NEXT:         if let Some(value) = self.value.downcast_ref::<T>() {
-// COMMON-LOWERING-NEXT:             return *value;
-// COMMON-LOWERING-NEXT:         }
-// COMMON-LOWERING-NEXT:         assert!(self.size >= std::mem::size_of::<T>());
-// COMMON-LOWERING-NEXT:         unsafe {
-// COMMON-LOWERING-NEXT:             std::ptr::read_unaligned(
-// COMMON-LOWERING-NEXT:                 (self.value.as_ref() as *const dyn std::any::Any) as *const () as *const T,
-// COMMON-LOWERING-NEXT:             )
-// COMMON-LOWERING-NEXT:         }
-// COMMON-LOWERING-NEXT:     }
-// COMMON-LOWERING-NEXT: }
-// COMMON-LOWERING-EMPTY:
-// COMMON-LOWERING-NEXT: #[derive(Clone)]
-// COMMON-LOWERING-NEXT: struct __SlateVaArgs {
-// COMMON-LOWERING-NEXT:     args: Option<std::rc::Rc<Vec<__SlateVaArg>>>,
-// COMMON-LOWERING-NEXT:     index: usize,
-// COMMON-LOWERING-NEXT: }
-// COMMON-LOWERING-EMPTY:
-// COMMON-LOWERING-NEXT: impl __SlateVaArgs {
-// COMMON-LOWERING-NEXT:     fn new(args: Vec<__SlateVaArg>) -> Self {
-// COMMON-LOWERING-NEXT:         Self {
-// COMMON-LOWERING-NEXT:             args: Some(std::rc::Rc::new(args)),
-// COMMON-LOWERING-NEXT:             index: 0,
-// COMMON-LOWERING-NEXT:         }
-// COMMON-LOWERING-NEXT:     }
-// COMMON-LOWERING-EMPTY:
-// COMMON-LOWERING-NEXT:     const fn empty() -> Self {
-// COMMON-LOWERING-NEXT:         Self {
-// COMMON-LOWERING-NEXT:             args: None,
-// COMMON-LOWERING-NEXT:             index: 0,
-// COMMON-LOWERING-NEXT:         }
-// COMMON-LOWERING-NEXT:     }
-// COMMON-LOWERING-EMPTY:
-// COMMON-LOWERING-NEXT:     fn next_arg<T: Copy + 'static>(&mut self) -> T {
-// COMMON-LOWERING-NEXT:         let index = self.index;
-// COMMON-LOWERING-NEXT:         self.index += 1;
-// COMMON-LOWERING-NEXT:         if std::mem::size_of::<T>() == 0 {
-// COMMON-LOWERING-NEXT:             return unsafe { std::mem::zeroed() };
-// COMMON-LOWERING-NEXT:         }
-// COMMON-LOWERING-NEXT:         let args = self.args.as_ref().expect("va_arg with no arguments");
-// COMMON-LOWERING-NEXT:         args[index].read::<T>()
-// COMMON-LOWERING-NEXT:     }
-// COMMON-LOWERING-NEXT: }
-// COMMON-LOWERING-EMPTY:
-// COMMON-LOWERING-NEXT: fn call_bionic_import(
-// COMMON-LOWERING-NEXT:     {{arg[0-9]+}}: u64,
-// COMMON-LOWERING-NEXT:     {{arg[0-9]+}}: i64,
-// COMMON-LOWERING-NEXT:     {{arg[0-9]+}}: i64,
-// COMMON-LOWERING-NEXT:     {{arg[0-9]+}}: u64,
-// COMMON-LOWERING-NEXT:     {{arg[0-9]+}}: u32,
-// COMMON-LOWERING-NEXT:     {{arg[0-9]+}}: f128,
-// COMMON-LOWERING-NEXT: ) -> i64 {
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = unsafe {
-// COMMON-LOWERING-NEXT:         bionic_import(
-// COMMON-LOWERING-NEXT:             {{arg[0-9]+}} as usize,
-// COMMON-LOWERING-NEXT:             {{arg[0-9]+}} as isize,
-// COMMON-LOWERING-NEXT:             {{arg[0-9]+}} as isize,
-// COMMON-LOWERING-NEXT:             {{arg[0-9]+}} as usize,
-// COMMON-LOWERING-NEXT:             {{arg[0-9]+}} as u32,
-// COMMON-LOWERING-NEXT:             {{arg[0-9]+}} as f128,
-// COMMON-LOWERING-NEXT:         )
-// COMMON-LOWERING-NEXT:     };
-// COMMON-LOWERING-NEXT:     return {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT: }
-// COMMON-LOWERING-EMPTY:
-// COMMON-LOWERING-NEXT: unsafe fn bionic_variadic_count({{arg[0-9]+}}: i32, mut __slate_va_args: __SlateVaArgs) -> i32 {
-// COMMON-LOWERING-NEXT:     let mut count: i32 = 0;
-// COMMON-LOWERING-NEXT:     let mut values: __SlateVaArgs = __SlateVaArgs::empty();
-// COMMON-LOWERING-NEXT:     let mut total: i32 = 0;
-// COMMON-LOWERING-NEXT:     count = {{arg[0-9]+}};
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// COMMON-LOWERING-NEXT:     total = {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT:     unsafe {
-// COMMON-LOWERING-NEXT:         values = __slate_va_args.clone();
-// COMMON-LOWERING-NEXT:     }
-// COMMON-LOWERING-NEXT:     {
-// COMMON-LOWERING-NEXT:         let mut i: i32 = 0;
-// COMMON-LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = 0;
-// COMMON-LOWERING-NEXT:         i = {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT:         loop {
-// COMMON-LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = i;
-// COMMON-LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = count;
-// COMMON-LOWERING-NEXT:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT:             if !{{__v[0-9]+}} {
-// COMMON-LOWERING-NEXT:                 break;
-// COMMON-LOWERING-NEXT:             }
-// COMMON-LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = unsafe { values.next_arg::<i32>() };
-// COMMON-LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = total;
-// COMMON-LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT:             total = {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = i;
-// COMMON-LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + 1;
-// COMMON-LOWERING-NEXT:             i = {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT:         }
-// COMMON-LOWERING-NEXT:     }
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = total;
-// COMMON-LOWERING-NEXT:     return {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT: }
-// COMMON-LOWERING-NEXT: fn main() {
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// COMMON-LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
-// SLATE-FILECHECK-END common-lowering
-
-// SLATE-FILECHECK-BEGIN lowering-bionic-aarch64
+// SLATE-FILECHECK-BEGIN lowering
+// LOWERING: #![feature(f128)]
+// LOWERING-NEXT: #![allow(
+// LOWERING-NEXT:     dead_code,
+// LOWERING-NEXT:     unused,
+// LOWERING-NEXT:     non_camel_case_types,
+// LOWERING-NEXT:     non_snake_case,
+// LOWERING-NEXT:     non_upper_case_globals,
+// LOWERING-NEXT:     arithmetic_overflow,
+// LOWERING-NEXT:     unconditional_panic,
+// LOWERING-NEXT:     suspicious_runtime_symbol_definitions,
+// LOWERING-NEXT:     unpredictable_function_pointer_comparisons,
+// LOWERING-NEXT:     unused_comparisons
+// LOWERING-NEXT: )]
+// LOWERING-EMPTY:
 // LOWERING-BIONIC-AARCH64-NEXT: #[repr(C)]
 // LOWERING-BIONIC-AARCH64-NEXT: #[derive(Clone, Copy)]
 // LOWERING-BIONIC-AARCH64-NEXT: struct __va_list {
 // LOWERING-BIONIC-AARCH64-NEXT:     __slate_empty: [u8; 0],
-// LOWERING-BIONIC-AARCH64-NEXT:     fn bionic_import(_0: usize, _1: isize, _2: isize, _3: usize, _4: u32, _5: u32, _6: f128)
-// LOWERING-BIONIC-AARCH64-NEXT:     {{arg[0-9]+}}: u32,
-// LOWERING-BIONIC-AARCH64-NEXT:             {{arg[0-9]+}} as u32,
-// LOWERING-BIONIC-AARCH64-EMPTY:
 // LOWERING-BIONIC-AARCH64-NEXT: }
-// SLATE-FILECHECK-END lowering-bionic-aarch64
-
-// SLATE-FILECHECK-BEGIN lowering-bionic-x86_64
+// LOWERING-BIONIC-AARCH64-EMPTY:
+// LOWERING-NEXT: unsafe extern "C" {
+// LOWERING-BIONIC-AARCH64-NEXT:     fn bionic_import(_0: usize, _1: isize, _2: isize, _3: usize, _4: u32, _5: u32, _6: f128)
 // LOWERING-BIONIC-X86_64-NEXT:     fn bionic_import(_0: usize, _1: isize, _2: isize, _3: usize, _4: i32, _5: u32, _6: f128)
+// LOWERING-NEXT:     -> i64;
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: struct __SlateVaArg {
+// LOWERING-NEXT:     value: Box<dyn std::any::Any>,
+// LOWERING-NEXT:     size: usize,
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: impl __SlateVaArg {
+// LOWERING-NEXT:     fn new<T: 'static>(value: T) -> Self {
+// LOWERING-NEXT:         Self {
+// LOWERING-NEXT:             value: Box::new(value),
+// LOWERING-NEXT:             size: std::mem::size_of::<T>(),
+// LOWERING-NEXT:         }
+// LOWERING-NEXT:     }
+// LOWERING-EMPTY:
+// LOWERING-NEXT:     fn read<T: Copy + 'static>(&self) -> T {
+// LOWERING-NEXT:         if let Some(value) = self.value.downcast_ref::<T>() {
+// LOWERING-NEXT:             return *value;
+// LOWERING-NEXT:         }
+// LOWERING-NEXT:         assert!(self.size >= std::mem::size_of::<T>());
+// LOWERING-NEXT:         unsafe {
+// LOWERING-NEXT:             std::ptr::read_unaligned(
+// LOWERING-NEXT:                 (self.value.as_ref() as *const dyn std::any::Any) as *const () as *const T,
+// LOWERING-NEXT:             )
+// LOWERING-NEXT:         }
+// LOWERING-NEXT:     }
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: #[derive(Clone)]
+// LOWERING-NEXT: struct __SlateVaArgs {
+// LOWERING-NEXT:     args: Option<std::rc::Rc<Vec<__SlateVaArg>>>,
+// LOWERING-NEXT:     index: usize,
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: impl __SlateVaArgs {
+// LOWERING-NEXT:     fn new(args: Vec<__SlateVaArg>) -> Self {
+// LOWERING-NEXT:         Self {
+// LOWERING-NEXT:             args: Some(std::rc::Rc::new(args)),
+// LOWERING-NEXT:             index: 0,
+// LOWERING-NEXT:         }
+// LOWERING-NEXT:     }
+// LOWERING-EMPTY:
+// LOWERING-NEXT:     const fn empty() -> Self {
+// LOWERING-NEXT:         Self {
+// LOWERING-NEXT:             args: None,
+// LOWERING-NEXT:             index: 0,
+// LOWERING-NEXT:         }
+// LOWERING-NEXT:     }
+// LOWERING-EMPTY:
+// LOWERING-NEXT:     fn next_arg<T: Copy + 'static>(&mut self) -> T {
+// LOWERING-NEXT:         let index = self.index;
+// LOWERING-NEXT:         self.index += 1;
+// LOWERING-NEXT:         if std::mem::size_of::<T>() == 0 {
+// LOWERING-NEXT:             return unsafe { std::mem::zeroed() };
+// LOWERING-NEXT:         }
+// LOWERING-NEXT:         let args = self.args.as_ref().expect("va_arg with no arguments");
+// LOWERING-NEXT:         args[index].read::<T>()
+// LOWERING-NEXT:     }
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn call_bionic_import(
+// LOWERING-NEXT:     {{arg[0-9]+}}: u64,
+// LOWERING-NEXT:     {{arg[0-9]+}}: i64,
+// LOWERING-NEXT:     {{arg[0-9]+}}: i64,
+// LOWERING-NEXT:     {{arg[0-9]+}}: u64,
+// LOWERING-BIONIC-AARCH64-NEXT:     {{arg[0-9]+}}: u32,
 // LOWERING-BIONIC-X86_64-NEXT:     {{arg[0-9]+}}: i32,
+// LOWERING-NEXT:     {{arg[0-9]+}}: u32,
+// LOWERING-NEXT:     {{arg[0-9]+}}: f128,
+// LOWERING-NEXT: ) -> i64 {
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = unsafe {
+// LOWERING-NEXT:         bionic_import(
+// LOWERING-NEXT:             {{arg[0-9]+}} as usize,
+// LOWERING-NEXT:             {{arg[0-9]+}} as isize,
+// LOWERING-NEXT:             {{arg[0-9]+}} as isize,
+// LOWERING-NEXT:             {{arg[0-9]+}} as usize,
+// LOWERING-BIONIC-AARCH64-NEXT:             {{arg[0-9]+}} as u32,
 // LOWERING-BIONIC-X86_64-NEXT:             {{arg[0-9]+}} as i32,
-// SLATE-FILECHECK-END lowering-bionic-x86_64
+// LOWERING-NEXT:             {{arg[0-9]+}} as u32,
+// LOWERING-NEXT:             {{arg[0-9]+}} as f128,
+// LOWERING-NEXT:         )
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     return {{__v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: unsafe fn bionic_variadic_count({{arg[0-9]+}}: i32, mut __slate_va_args: __SlateVaArgs) -> i32 {
+// LOWERING-NEXT:     let mut count: i32 = 0;
+// LOWERING-NEXT:     let mut values: __SlateVaArgs = __SlateVaArgs::empty();
+// LOWERING-NEXT:     let mut total: i32 = 0;
+// LOWERING-NEXT:     count = {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     total = {{__v[0-9]+}};
+// LOWERING-NEXT:     unsafe {
+// LOWERING-NEXT:         values = __slate_va_args.clone();
+// LOWERING-NEXT:     }
+// LOWERING-NEXT:     {
+// LOWERING-NEXT:         let mut i: i32 = 0;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:         i = {{__v[0-9]+}};
+// LOWERING-NEXT:         loop {
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = i;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = count;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
+// LOWERING-NEXT:             if !{{__v[0-9]+}} {
+// LOWERING-NEXT:                 break;
+// LOWERING-NEXT:             }
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = unsafe { values.next_arg::<i32>() };
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = total;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-NEXT:             total = {{__v[0-9]+}};
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = i;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + 1;
+// LOWERING-NEXT:             i = {{__v[0-9]+}};
+// LOWERING-NEXT:         }
+// LOWERING-NEXT:     }
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = total;
+// LOWERING-NEXT:     return {{__v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT: }
+// SLATE-FILECHECK-END lowering

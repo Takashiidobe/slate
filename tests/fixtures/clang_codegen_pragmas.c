@@ -29,152 +29,140 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN common-lowering
-// COMMON-LOWERING: #![feature(c_variadic)]
-// COMMON-LOWERING-NEXT: #![allow(
-// COMMON-LOWERING-NEXT:     dead_code,
-// COMMON-LOWERING-NEXT:     unused,
-// COMMON-LOWERING-NEXT:     non_camel_case_types,
-// COMMON-LOWERING-NEXT:     non_snake_case,
-// COMMON-LOWERING-NEXT:     non_upper_case_globals,
-// COMMON-LOWERING-NEXT:     arithmetic_overflow,
-// COMMON-LOWERING-NEXT:     unconditional_panic,
-// COMMON-LOWERING-NEXT:     suspicious_runtime_symbol_definitions,
-// COMMON-LOWERING-NEXT:     unpredictable_function_pointer_comparisons,
-// COMMON-LOWERING-NEXT:     unused_comparisons
-// COMMON-LOWERING-NEXT: )]
-// COMMON-LOWERING-EMPTY:
-// COMMON-LOWERING-NEXT: unsafe extern "C" {
-// COMMON-LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
-// COMMON-LOWERING-NEXT: }
-// COMMON-LOWERING-EMPTY:
-// COMMON-LOWERING-NEXT: fn hidden_fn() -> i32 {
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 7;
-// COMMON-LOWERING-NEXT:     return {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT: }
-// COMMON-LOWERING-EMPTY:
-// COMMON-LOWERING-NEXT: fn fma_like({{arg[0-9]+}}: f64, {{arg[0-9]+}}: f64, {{arg[0-9]+}}: f64) -> f64 {
-// COMMON-LOWERING-NEXT:     return {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT: }
-// COMMON-LOWERING-EMPTY:
-// COMMON-LOWERING-NEXT: fn main() {
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 1;
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 2;
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = add_noopt({{__v[0-9]+}}, {{__v[0-9]+}});
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = hidden_fn();
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = loop_sum();
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = 2.0;
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = 3.0;
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = 4.0;
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = fma_like({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// COMMON-LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
-// COMMON-LOWERING-NEXT: }
-// COMMON-LOWERING-EMPTY:
-// COMMON-LOWERING-NEXT: #[inline(never)]
-// COMMON-LOWERING-NEXT: fn add_noopt({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{arg[0-9]+}} + {{arg[0-9]+}};
-// COMMON-LOWERING-NEXT:     return {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT: }
-// COMMON-LOWERING-EMPTY:
-// COMMON-LOWERING-NEXT: fn loop_sum() -> i32 {
-// COMMON-LOWERING-NEXT:     let mut s: i32 = 0;
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// COMMON-LOWERING-NEXT:     s = {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT:     {
-// COMMON-LOWERING-NEXT:         let mut i: i32 = 0;
-// COMMON-LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = 0;
-// COMMON-LOWERING-NEXT:         i = {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT:         loop {
-// COMMON-LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = i;
-// COMMON-LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = 8;
-// COMMON-LOWERING-NEXT:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT:             if !{{__v[0-9]+}} {
-// COMMON-LOWERING-NEXT:                 break;
-// COMMON-LOWERING-NEXT:             }
-// COMMON-LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = i;
-// COMMON-LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = s;
-// COMMON-LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT:             s = {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = i;
-// COMMON-LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + 1;
-// COMMON-LOWERING-NEXT:             i = {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT:         }
-// COMMON-LOWERING-NEXT:     }
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = s;
-// COMMON-LOWERING-NEXT:     return {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT: }
-// SLATE-FILECHECK-END common-lowering
-
-// SLATE-FILECHECK-BEGIN lowering-x86_64-gnu
+// SLATE-FILECHECK-BEGIN lowering
+// LOWERING: #![feature(c_variadic)]
+// LOWERING-NEXT: #![allow(
+// LOWERING-NEXT:     dead_code,
+// LOWERING-NEXT:     unused,
+// LOWERING-NEXT:     non_camel_case_types,
+// LOWERING-NEXT:     non_snake_case,
+// LOWERING-NEXT:     non_upper_case_globals,
+// LOWERING-NEXT:     arithmetic_overflow,
+// LOWERING-NEXT:     unconditional_panic,
+// LOWERING-NEXT:     suspicious_runtime_symbol_definitions,
+// LOWERING-NEXT:     unpredictable_function_pointer_comparisons,
+// LOWERING-NEXT:     unused_comparisons
+// LOWERING-NEXT: )]
+// LOWERING-EMPTY:
+// LOWERING-NEXT: unsafe extern "C" {
+// LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn hidden_fn() -> i32 {
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 7;
+// LOWERING-NEXT:     return {{__v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn fma_like({{arg[0-9]+}}: f64, {{arg[0-9]+}}: f64, {{arg[0-9]+}}: f64) -> f64 {
 // LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: f64 = {{arg[0-9]+}} * {{arg[0-9]+}} + {{arg[0-9]+}};
-// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d %d %d %f\n\0".as_ptr() as *mut i8;
-// SLATE-FILECHECK-END lowering-x86_64-gnu
-
-// SLATE-FILECHECK-BEGIN lowering-aarch64-gnu
 // LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: f64 = {{arg[0-9]+}}.mul_add({{arg[0-9]+}}, {{arg[0-9]+}});
+// LOWERING-NEXT:     return {{__v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d %d %d %f\n\0".as_ptr() as *mut i8;
 // LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = b"%d %d %d %f\n\0".as_ptr() as *mut u8;
-// SLATE-FILECHECK-END lowering-aarch64-gnu
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 2;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = add_noopt({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = hidden_fn();
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = loop_sum();
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = 2.0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = 3.0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = 4.0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = fma_like({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: #[inline(never)]
+// LOWERING-NEXT: fn add_noopt({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{arg[0-9]+}} + {{arg[0-9]+}};
+// LOWERING-NEXT:     return {{__v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn loop_sum() -> i32 {
+// LOWERING-NEXT:     let mut s: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     s = {{__v[0-9]+}};
+// LOWERING-NEXT:     {
+// LOWERING-NEXT:         let mut i: i32 = 0;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:         i = {{__v[0-9]+}};
+// LOWERING-NEXT:         loop {
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = i;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = 8;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
+// LOWERING-NEXT:             if !{{__v[0-9]+}} {
+// LOWERING-NEXT:                 break;
+// LOWERING-NEXT:             }
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = i;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = s;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-NEXT:             s = {{__v[0-9]+}};
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = i;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + 1;
+// LOWERING-NEXT:             i = {{__v[0-9]+}};
+// LOWERING-NEXT:         }
+// LOWERING-NEXT:     }
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = s;
+// LOWERING-NEXT:     return {{__v[0-9]+}};
+// LOWERING-NEXT: }
+// SLATE-FILECHECK-END lowering
 
-// SLATE-FILECHECK-BEGIN common-rewrites
-// COMMON-REWRITES: #![feature(c_variadic)]
-// COMMON-REWRITES-NEXT: #![allow(
-// COMMON-REWRITES-NEXT:     dead_code,
-// COMMON-REWRITES-NEXT:     unused,
-// COMMON-REWRITES-NEXT:     non_camel_case_types,
-// COMMON-REWRITES-NEXT:     non_snake_case,
-// COMMON-REWRITES-NEXT:     non_upper_case_globals,
-// COMMON-REWRITES-NEXT:     arithmetic_overflow,
-// COMMON-REWRITES-NEXT:     unconditional_panic,
-// COMMON-REWRITES-NEXT:     suspicious_runtime_symbol_definitions,
-// COMMON-REWRITES-NEXT:     unpredictable_function_pointer_comparisons,
-// COMMON-REWRITES-NEXT:     unused_comparisons
-// COMMON-REWRITES-NEXT: )]
-// COMMON-REWRITES-EMPTY:
-// COMMON-REWRITES-NEXT: unsafe extern "C" {
-// COMMON-REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
-// COMMON-REWRITES-NEXT: }
-// COMMON-REWRITES-EMPTY:
-// COMMON-REWRITES-NEXT: fn hidden_fn() -> i32 {
-// COMMON-REWRITES-NEXT:     7
-// COMMON-REWRITES-NEXT: }
-// COMMON-REWRITES-EMPTY:
-// COMMON-REWRITES-NEXT: fn fma_like({{arg[0-9]+}}: f64, {{arg[0-9]+}}: f64, {{arg[0-9]+}}: f64) -> f64 {
-// COMMON-REWRITES-NEXT: }
-// COMMON-REWRITES-EMPTY:
-// COMMON-REWRITES-NEXT: fn main() {
-// COMMON-REWRITES-NEXT:     unsafe {
-// COMMON-REWRITES-NEXT:         printf(
-// COMMON-REWRITES-NEXT:             c"%d %d %d %f\n".as_ptr(),
-// COMMON-REWRITES-NEXT:             add_noopt(1, 2),
-// COMMON-REWRITES-NEXT:             hidden_fn(),
-// COMMON-REWRITES-NEXT:             loop_sum(),
-// COMMON-REWRITES-NEXT:             fma_like(2.0, 3.0, 4.0),
-// COMMON-REWRITES-NEXT:         )
-// COMMON-REWRITES-NEXT:     };
-// COMMON-REWRITES-NEXT:     std::process::exit(0 as i32);
-// COMMON-REWRITES-NEXT: }
-// COMMON-REWRITES-EMPTY:
-// COMMON-REWRITES-NEXT: #[inline(never)]
-// COMMON-REWRITES-NEXT: fn add_noopt({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
-// COMMON-REWRITES-NEXT:     {{arg[0-9]+}} + {{arg[0-9]+}}
-// COMMON-REWRITES-NEXT: }
-// COMMON-REWRITES-EMPTY:
-// COMMON-REWRITES-NEXT: fn loop_sum() -> i32 {
-// COMMON-REWRITES-NEXT:     let mut s: i32 = 0;
-// COMMON-REWRITES-NEXT:     for i in 0..8 {
-// COMMON-REWRITES-NEXT:         s += i;
-// COMMON-REWRITES-NEXT:     }
-// COMMON-REWRITES-NEXT:     s
-// COMMON-REWRITES-NEXT: }
-// SLATE-FILECHECK-END common-rewrites
-
-// SLATE-FILECHECK-BEGIN rewrites-x86_64-gnu
+// SLATE-FILECHECK-BEGIN rewrites
+// REWRITES: #![feature(c_variadic)]
+// REWRITES-NEXT: #![allow(
+// REWRITES-NEXT:     dead_code,
+// REWRITES-NEXT:     unused,
+// REWRITES-NEXT:     non_camel_case_types,
+// REWRITES-NEXT:     non_snake_case,
+// REWRITES-NEXT:     non_upper_case_globals,
+// REWRITES-NEXT:     arithmetic_overflow,
+// REWRITES-NEXT:     unconditional_panic,
+// REWRITES-NEXT:     suspicious_runtime_symbol_definitions,
+// REWRITES-NEXT:     unpredictable_function_pointer_comparisons,
+// REWRITES-NEXT:     unused_comparisons
+// REWRITES-NEXT: )]
+// REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn hidden_fn() -> i32 {
+// REWRITES-NEXT:     7
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn fma_like({{arg[0-9]+}}: f64, {{arg[0-9]+}}: f64, {{arg[0-9]+}}: f64) -> f64 {
 // REWRITES-X86_64-GNU-NEXT:     {{arg[0-9]+}} * {{arg[0-9]+}} + {{arg[0-9]+}}
-// SLATE-FILECHECK-END rewrites-x86_64-gnu
-
-// SLATE-FILECHECK-BEGIN rewrites-aarch64-gnu
 // REWRITES-AARCH64-GNU-NEXT:     {{arg[0-9]+}}.mul_add({{arg[0-9]+}}, {{arg[0-9]+}})
-// SLATE-FILECHECK-END rewrites-aarch64-gnu
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         printf(
+// REWRITES-NEXT:             c"%d %d %d %f\n".as_ptr(),
+// REWRITES-NEXT:             add_noopt(1, 2),
+// REWRITES-NEXT:             hidden_fn(),
+// REWRITES-NEXT:             loop_sum(),
+// REWRITES-NEXT:             fma_like(2.0, 3.0, 4.0),
+// REWRITES-NEXT:         )
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: #[inline(never)]
+// REWRITES-NEXT: fn add_noopt({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
+// REWRITES-NEXT:     {{arg[0-9]+}} + {{arg[0-9]+}}
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn loop_sum() -> i32 {
+// REWRITES-NEXT:     let mut s: i32 = 0;
+// REWRITES-NEXT:     for i in 0..8 {
+// REWRITES-NEXT:         s += i;
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     s
+// REWRITES-NEXT: }
+// SLATE-FILECHECK-END rewrites

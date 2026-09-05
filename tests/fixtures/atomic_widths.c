@@ -20,217 +20,205 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN common-lowering
-// COMMON-LOWERING: #![feature(c_variadic)]
-// COMMON-LOWERING-NEXT: #![allow(
-// COMMON-LOWERING-NEXT:     dead_code,
-// COMMON-LOWERING-NEXT:     unused,
-// COMMON-LOWERING-NEXT:     non_camel_case_types,
-// COMMON-LOWERING-NEXT:     non_snake_case,
-// COMMON-LOWERING-NEXT:     non_upper_case_globals,
-// COMMON-LOWERING-NEXT:     arithmetic_overflow,
-// COMMON-LOWERING-NEXT:     unconditional_panic,
-// COMMON-LOWERING-NEXT:     suspicious_runtime_symbol_definitions,
-// COMMON-LOWERING-NEXT:     unpredictable_function_pointer_comparisons,
-// COMMON-LOWERING-NEXT:     unused_comparisons
-// COMMON-LOWERING-NEXT: )]
-// COMMON-LOWERING-EMPTY:
-// COMMON-LOWERING-NEXT: #[repr(C)]
-// COMMON-LOWERING-NEXT: #[allow(non_camel_case_types)]
-// COMMON-LOWERING-NEXT: #[derive(Clone, Copy, PartialEq, Eq, Debug, Hash)]
-// COMMON-LOWERING-NEXT: enum memory_order {
-// COMMON-LOWERING-NEXT:     memory_order_relaxed = 0,
-// COMMON-LOWERING-NEXT:     memory_order_consume = 1,
-// COMMON-LOWERING-NEXT:     memory_order_acquire = 2,
-// COMMON-LOWERING-NEXT:     memory_order_release = 3,
-// COMMON-LOWERING-NEXT:     memory_order_acq_rel = 4,
-// COMMON-LOWERING-NEXT:     memory_order_seq_cst = 5,
-// COMMON-LOWERING-NEXT: }
-// COMMON-LOWERING-EMPTY:
-// COMMON-LOWERING-NEXT: unsafe extern "C" {
-// COMMON-LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
-// COMMON-LOWERING-NEXT: }
-// COMMON-LOWERING-EMPTY:
-// COMMON-LOWERING-NEXT: fn main() {
-// COMMON-LOWERING-NEXT:     let mut u8: u8 = 0;
-// COMMON-LOWERING-NEXT:     let mut i8: i8 = 0;
-// COMMON-LOWERING-NEXT:     let mut u32: u32 = 0;
-// COMMON-LOWERING-NEXT:     let mut i64: i64 = 0;
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: u8 = 250;
-// COMMON-LOWERING-NEXT:     u8 = {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i8 = -5;
-// COMMON-LOWERING-NEXT:     i8 = {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = 1000;
-// COMMON-LOWERING-NEXT:     u32 = {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = -10000000000i64;
-// COMMON-LOWERING-NEXT:     i64 = {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: u8 = 3;
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: u8 = unsafe {
-// COMMON-LOWERING-NEXT:         std::sync::atomic::AtomicU8::from_ptr(std::ptr::addr_of_mut!(u8))
-// COMMON-LOWERING-NEXT:             .fetch_add({{__v[0-9]+}}, std::sync::atomic::Ordering::Relaxed)
-// COMMON-LOWERING-NEXT:     };
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i8 = 7;
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i8 = unsafe {
-// COMMON-LOWERING-NEXT:         std::sync::atomic::AtomicI8::from_ptr(std::ptr::addr_of_mut!(i8))
-// COMMON-LOWERING-NEXT:             .fetch_sub({{__v[0-9]+}}, std::sync::atomic::Ordering::AcqRel)
-// COMMON-LOWERING-NEXT:     };
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = 255;
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = unsafe {
-// COMMON-LOWERING-NEXT:         std::sync::atomic::AtomicU32::from_ptr(std::ptr::addr_of_mut!(u32))
-// COMMON-LOWERING-NEXT:             .fetch_xor({{__v[0-9]+}}, std::sync::atomic::Ordering::Release)
-// COMMON-LOWERING-NEXT:     };
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = 1234567890123i64;
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = unsafe {
-// COMMON-LOWERING-NEXT:         std::sync::atomic::AtomicI64::from_ptr(std::ptr::addr_of_mut!(i64))
-// COMMON-LOWERING-NEXT:             .swap({{__v[0-9]+}}, std::sync::atomic::Ordering::Acquire)
-// COMMON-LOWERING-NEXT:     };
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: u8 = unsafe {
-// COMMON-LOWERING-NEXT:         std::sync::atomic::AtomicU8::from_ptr(std::ptr::addr_of_mut!(u8))
-// COMMON-LOWERING-NEXT:             .load(std::sync::atomic::Ordering::SeqCst)
-// COMMON-LOWERING-NEXT:     };
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i8 = unsafe {
-// COMMON-LOWERING-NEXT:         std::sync::atomic::AtomicI8::from_ptr(std::ptr::addr_of_mut!(i8))
-// COMMON-LOWERING-NEXT:             .load(std::sync::atomic::Ordering::SeqCst)
-// COMMON-LOWERING-NEXT:     };
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = unsafe {
-// COMMON-LOWERING-NEXT:         std::sync::atomic::AtomicU32::from_ptr(std::ptr::addr_of_mut!(u32))
-// COMMON-LOWERING-NEXT:             .load(std::sync::atomic::Ordering::SeqCst)
-// COMMON-LOWERING-NEXT:     };
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = unsafe {
-// COMMON-LOWERING-NEXT:         std::sync::atomic::AtomicI64::from_ptr(std::ptr::addr_of_mut!(i64))
-// COMMON-LOWERING-NEXT:             .load(std::sync::atomic::Ordering::SeqCst)
-// COMMON-LOWERING-NEXT:     };
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe {
-// COMMON-LOWERING-NEXT:         printf(
-// COMMON-LOWERING-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
-// COMMON-LOWERING-NEXT:             {{__v[0-9]+}},
-// COMMON-LOWERING-NEXT:             {{__v[0-9]+}},
-// COMMON-LOWERING-NEXT:             {{__v[0-9]+}},
-// COMMON-LOWERING-NEXT:             {{__v[0-9]+}},
-// COMMON-LOWERING-NEXT:             {{__v[0-9]+}},
-// COMMON-LOWERING-NEXT:             {{__v[0-9]+}},
-// COMMON-LOWERING-NEXT:             {{__v[0-9]+}},
-// COMMON-LOWERING-NEXT:             {{__v[0-9]+}},
-// COMMON-LOWERING-NEXT:         )
-// COMMON-LOWERING-NEXT:     };
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// COMMON-LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
-// COMMON-LOWERING-NEXT: }
-// SLATE-FILECHECK-END common-lowering
-
-// SLATE-FILECHECK-BEGIN lowering-x86_64-gnu
+// SLATE-FILECHECK-BEGIN lowering
+// LOWERING: #![feature(c_variadic)]
+// LOWERING-NEXT: #![allow(
+// LOWERING-NEXT:     dead_code,
+// LOWERING-NEXT:     unused,
+// LOWERING-NEXT:     non_camel_case_types,
+// LOWERING-NEXT:     non_snake_case,
+// LOWERING-NEXT:     non_upper_case_globals,
+// LOWERING-NEXT:     arithmetic_overflow,
+// LOWERING-NEXT:     unconditional_panic,
+// LOWERING-NEXT:     suspicious_runtime_symbol_definitions,
+// LOWERING-NEXT:     unpredictable_function_pointer_comparisons,
+// LOWERING-NEXT:     unused_comparisons
+// LOWERING-NEXT: )]
+// LOWERING-EMPTY:
+// LOWERING-NEXT: #[repr(C)]
+// LOWERING-NEXT: #[allow(non_camel_case_types)]
+// LOWERING-NEXT: #[derive(Clone, Copy, PartialEq, Eq, Debug, Hash)]
+// LOWERING-NEXT: enum memory_order {
+// LOWERING-NEXT:     memory_order_relaxed = 0,
+// LOWERING-NEXT:     memory_order_consume = 1,
+// LOWERING-NEXT:     memory_order_acquire = 2,
+// LOWERING-NEXT:     memory_order_release = 3,
+// LOWERING-NEXT:     memory_order_acq_rel = 4,
+// LOWERING-NEXT:     memory_order_seq_cst = 5,
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: unsafe extern "C" {
+// LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT:     let mut u8: u8 = 0;
+// LOWERING-NEXT:     let mut i8: i8 = 0;
+// LOWERING-NEXT:     let mut u32: u32 = 0;
+// LOWERING-NEXT:     let mut i64: i64 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u8 = 250;
+// LOWERING-NEXT:     u8 = {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i8 = -5;
+// LOWERING-NEXT:     i8 = {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = 1000;
+// LOWERING-NEXT:     u32 = {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = -10000000000i64;
+// LOWERING-NEXT:     i64 = {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u8 = 3;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u8 = unsafe {
+// LOWERING-NEXT:         std::sync::atomic::AtomicU8::from_ptr(std::ptr::addr_of_mut!(u8))
+// LOWERING-NEXT:             .fetch_add({{__v[0-9]+}}, std::sync::atomic::Ordering::Relaxed)
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i8 = 7;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i8 = unsafe {
+// LOWERING-NEXT:         std::sync::atomic::AtomicI8::from_ptr(std::ptr::addr_of_mut!(i8))
+// LOWERING-NEXT:             .fetch_sub({{__v[0-9]+}}, std::sync::atomic::Ordering::AcqRel)
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = 255;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = unsafe {
+// LOWERING-NEXT:         std::sync::atomic::AtomicU32::from_ptr(std::ptr::addr_of_mut!(u32))
+// LOWERING-NEXT:             .fetch_xor({{__v[0-9]+}}, std::sync::atomic::Ordering::Release)
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = 1234567890123i64;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = unsafe {
+// LOWERING-NEXT:         std::sync::atomic::AtomicI64::from_ptr(std::ptr::addr_of_mut!(i64))
+// LOWERING-NEXT:             .swap({{__v[0-9]+}}, std::sync::atomic::Ordering::Acquire)
+// LOWERING-NEXT:     };
 // LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%u %d %u %lld %u %d %u %lld\n\0".as_ptr() as *mut i8;
-// SLATE-FILECHECK-END lowering-x86_64-gnu
-
-// SLATE-FILECHECK-BEGIN lowering-aarch64-gnu
 // LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = b"%u %d %u %lld %u %d %u %lld\n\0".as_ptr() as *mut u8;
-// SLATE-FILECHECK-END lowering-aarch64-gnu
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u8 = unsafe {
+// LOWERING-NEXT:         std::sync::atomic::AtomicU8::from_ptr(std::ptr::addr_of_mut!(u8))
+// LOWERING-NEXT:             .load(std::sync::atomic::Ordering::SeqCst)
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i8 = unsafe {
+// LOWERING-NEXT:         std::sync::atomic::AtomicI8::from_ptr(std::ptr::addr_of_mut!(i8))
+// LOWERING-NEXT:             .load(std::sync::atomic::Ordering::SeqCst)
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = unsafe {
+// LOWERING-NEXT:         std::sync::atomic::AtomicU32::from_ptr(std::ptr::addr_of_mut!(u32))
+// LOWERING-NEXT:             .load(std::sync::atomic::Ordering::SeqCst)
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = unsafe {
+// LOWERING-NEXT:         std::sync::atomic::AtomicI64::from_ptr(std::ptr::addr_of_mut!(i64))
+// LOWERING-NEXT:             .load(std::sync::atomic::Ordering::SeqCst)
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe {
+// LOWERING-NEXT:         printf(
+// LOWERING-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:         )
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT: }
+// SLATE-FILECHECK-END lowering
 
-// SLATE-FILECHECK-BEGIN common-rewrites
-// COMMON-REWRITES: #![feature(c_variadic)]
-// COMMON-REWRITES-NEXT: #![allow(
-// COMMON-REWRITES-NEXT:     dead_code,
-// COMMON-REWRITES-NEXT:     unused,
-// COMMON-REWRITES-NEXT:     non_camel_case_types,
-// COMMON-REWRITES-NEXT:     non_snake_case,
-// COMMON-REWRITES-NEXT:     non_upper_case_globals,
-// COMMON-REWRITES-NEXT:     arithmetic_overflow,
-// COMMON-REWRITES-NEXT:     unconditional_panic,
-// COMMON-REWRITES-NEXT:     suspicious_runtime_symbol_definitions,
-// COMMON-REWRITES-NEXT:     unpredictable_function_pointer_comparisons,
-// COMMON-REWRITES-NEXT:     unused_comparisons
-// COMMON-REWRITES-NEXT: )]
-// COMMON-REWRITES-EMPTY:
-// COMMON-REWRITES-NEXT: #[repr(C)]
-// COMMON-REWRITES-NEXT: #[allow(non_camel_case_types)]
-// COMMON-REWRITES-NEXT: #[derive(Clone, Copy, PartialEq, Eq, Debug, Hash)]
-// COMMON-REWRITES-NEXT: enum memory_order {
-// COMMON-REWRITES-NEXT:     memory_order_relaxed = 0,
-// COMMON-REWRITES-NEXT:     memory_order_consume = 1,
-// COMMON-REWRITES-NEXT:     memory_order_acquire = 2,
-// COMMON-REWRITES-NEXT:     memory_order_release = 3,
-// COMMON-REWRITES-NEXT:     memory_order_acq_rel = 4,
-// COMMON-REWRITES-NEXT:     memory_order_seq_cst = 5,
-// COMMON-REWRITES-NEXT: }
-// COMMON-REWRITES-EMPTY:
-// COMMON-REWRITES-NEXT: unsafe extern "C" {
-// COMMON-REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
-// COMMON-REWRITES-NEXT: }
-// COMMON-REWRITES-EMPTY:
-// COMMON-REWRITES-NEXT: fn main() {
-// COMMON-REWRITES-NEXT:     let mut u8: u8 = 0;
-// COMMON-REWRITES-NEXT:     let mut i8: i8 = 0;
-// COMMON-REWRITES-NEXT:     let mut u32: u32 = 0;
-// COMMON-REWRITES-NEXT:     let mut i64: i64 = 0;
-// COMMON-REWRITES-NEXT:     u8 = 250;
-// COMMON-REWRITES-NEXT:     i8 = -5;
-// COMMON-REWRITES-NEXT:     u32 = 1000;
-// COMMON-REWRITES-NEXT:     i64 = -10000000000i64;
-// COMMON-REWRITES-NEXT:     let {{__v[0-9]+}}: u8 = 3;
-// COMMON-REWRITES-NEXT:     let {{__v[0-9]+}}: u8 = unsafe {
-// COMMON-REWRITES-NEXT:         std::sync::atomic::AtomicU8::from_ptr(std::ptr::addr_of_mut!(u8))
-// COMMON-REWRITES-NEXT:             .fetch_add({{__v[0-9]+}}, std::sync::atomic::Ordering::Relaxed)
-// COMMON-REWRITES-NEXT:     };
-// COMMON-REWRITES-NEXT:     let {{__v[0-9]+}}: i8 = 7;
-// COMMON-REWRITES-NEXT:     let {{__v[0-9]+}}: i8 = unsafe {
-// COMMON-REWRITES-NEXT:         std::sync::atomic::AtomicI8::from_ptr(std::ptr::addr_of_mut!(i8))
-// COMMON-REWRITES-NEXT:             .fetch_sub({{__v[0-9]+}}, std::sync::atomic::Ordering::AcqRel)
-// COMMON-REWRITES-NEXT:     };
-// COMMON-REWRITES-NEXT:     let {{__v[0-9]+}}: u32 = 255;
-// COMMON-REWRITES-NEXT:     let {{__v[0-9]+}}: u32 = unsafe {
-// COMMON-REWRITES-NEXT:         std::sync::atomic::AtomicU32::from_ptr(std::ptr::addr_of_mut!(u32))
-// COMMON-REWRITES-NEXT:             .fetch_xor({{__v[0-9]+}}, std::sync::atomic::Ordering::Release)
-// COMMON-REWRITES-NEXT:     };
-// COMMON-REWRITES-NEXT:     let {{__v[0-9]+}}: i64 = unsafe {
-// COMMON-REWRITES-NEXT:         std::sync::atomic::AtomicI64::from_ptr(std::ptr::addr_of_mut!(i64))
-// COMMON-REWRITES-NEXT:             .swap(1234567890123i64, std::sync::atomic::Ordering::Acquire)
-// COMMON-REWRITES-NEXT:     };
-// COMMON-REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// COMMON-REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// COMMON-REWRITES-NEXT:     let {{__v[0-9]+}}: u8 = unsafe {
-// COMMON-REWRITES-NEXT:         std::sync::atomic::AtomicU8::from_ptr(std::ptr::addr_of_mut!(u8))
-// COMMON-REWRITES-NEXT:             .load(std::sync::atomic::Ordering::SeqCst)
-// COMMON-REWRITES-NEXT:     };
-// COMMON-REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// COMMON-REWRITES-NEXT:     let {{__v[0-9]+}}: i8 = unsafe {
-// COMMON-REWRITES-NEXT:         std::sync::atomic::AtomicI8::from_ptr(std::ptr::addr_of_mut!(i8))
-// COMMON-REWRITES-NEXT:             .load(std::sync::atomic::Ordering::SeqCst)
-// COMMON-REWRITES-NEXT:     };
-// COMMON-REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// COMMON-REWRITES-NEXT:     let {{__v[0-9]+}}: u32 = unsafe {
-// COMMON-REWRITES-NEXT:         std::sync::atomic::AtomicU32::from_ptr(std::ptr::addr_of_mut!(u32))
-// COMMON-REWRITES-NEXT:             .load(std::sync::atomic::Ordering::SeqCst)
-// COMMON-REWRITES-NEXT:     };
-// COMMON-REWRITES-NEXT:     let {{__v[0-9]+}}: i64 = unsafe {
-// COMMON-REWRITES-NEXT:         std::sync::atomic::AtomicI64::from_ptr(std::ptr::addr_of_mut!(i64))
-// COMMON-REWRITES-NEXT:             .load(std::sync::atomic::Ordering::SeqCst)
-// COMMON-REWRITES-NEXT:     };
-// COMMON-REWRITES-NEXT:     unsafe {
-// COMMON-REWRITES-NEXT:         printf(
-// COMMON-REWRITES-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
-// COMMON-REWRITES-NEXT:             {{__v[0-9]+}},
-// COMMON-REWRITES-NEXT:             {{__v[0-9]+}},
-// COMMON-REWRITES-NEXT:             {{__v[0-9]+}},
-// COMMON-REWRITES-NEXT:             {{__v[0-9]+}},
-// COMMON-REWRITES-NEXT:             {{__v[0-9]+}},
-// COMMON-REWRITES-NEXT:             {{__v[0-9]+}},
-// COMMON-REWRITES-NEXT:             {{__v[0-9]+}},
-// COMMON-REWRITES-NEXT:             {{__v[0-9]+}},
-// COMMON-REWRITES-NEXT:         )
-// COMMON-REWRITES-NEXT:     };
-// COMMON-REWRITES-NEXT:     std::process::exit(0 as i32);
-// COMMON-REWRITES-NEXT: }
-// SLATE-FILECHECK-END common-rewrites
-
-// SLATE-FILECHECK-BEGIN rewrites-x86_64-gnu
+// SLATE-FILECHECK-BEGIN rewrites
+// REWRITES: #![feature(c_variadic)]
+// REWRITES-NEXT: #![allow(
+// REWRITES-NEXT:     dead_code,
+// REWRITES-NEXT:     unused,
+// REWRITES-NEXT:     non_camel_case_types,
+// REWRITES-NEXT:     non_snake_case,
+// REWRITES-NEXT:     non_upper_case_globals,
+// REWRITES-NEXT:     arithmetic_overflow,
+// REWRITES-NEXT:     unconditional_panic,
+// REWRITES-NEXT:     suspicious_runtime_symbol_definitions,
+// REWRITES-NEXT:     unpredictable_function_pointer_comparisons,
+// REWRITES-NEXT:     unused_comparisons
+// REWRITES-NEXT: )]
+// REWRITES-EMPTY:
+// REWRITES-NEXT: #[repr(C)]
+// REWRITES-NEXT: #[allow(non_camel_case_types)]
+// REWRITES-NEXT: #[derive(Clone, Copy, PartialEq, Eq, Debug, Hash)]
+// REWRITES-NEXT: enum memory_order {
+// REWRITES-NEXT:     memory_order_relaxed = 0,
+// REWRITES-NEXT:     memory_order_consume = 1,
+// REWRITES-NEXT:     memory_order_acquire = 2,
+// REWRITES-NEXT:     memory_order_release = 3,
+// REWRITES-NEXT:     memory_order_acq_rel = 4,
+// REWRITES-NEXT:     memory_order_seq_cst = 5,
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT:     let mut u8: u8 = 0;
+// REWRITES-NEXT:     let mut i8: i8 = 0;
+// REWRITES-NEXT:     let mut u32: u32 = 0;
+// REWRITES-NEXT:     let mut i64: i64 = 0;
+// REWRITES-NEXT:     u8 = 250;
+// REWRITES-NEXT:     i8 = -5;
+// REWRITES-NEXT:     u32 = 1000;
+// REWRITES-NEXT:     i64 = -10000000000i64;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: u8 = 3;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: u8 = unsafe {
+// REWRITES-NEXT:         std::sync::atomic::AtomicU8::from_ptr(std::ptr::addr_of_mut!(u8))
+// REWRITES-NEXT:             .fetch_add({{__v[0-9]+}}, std::sync::atomic::Ordering::Relaxed)
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i8 = 7;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i8 = unsafe {
+// REWRITES-NEXT:         std::sync::atomic::AtomicI8::from_ptr(std::ptr::addr_of_mut!(i8))
+// REWRITES-NEXT:             .fetch_sub({{__v[0-9]+}}, std::sync::atomic::Ordering::AcqRel)
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: u32 = 255;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: u32 = unsafe {
+// REWRITES-NEXT:         std::sync::atomic::AtomicU32::from_ptr(std::ptr::addr_of_mut!(u32))
+// REWRITES-NEXT:             .fetch_xor({{__v[0-9]+}}, std::sync::atomic::Ordering::Release)
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i64 = unsafe {
+// REWRITES-NEXT:         std::sync::atomic::AtomicI64::from_ptr(std::ptr::addr_of_mut!(i64))
+// REWRITES-NEXT:             .swap(1234567890123i64, std::sync::atomic::Ordering::Acquire)
+// REWRITES-NEXT:     };
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = c"%u %d %u %lld %u %d %u %lld\n".as_ptr() as *mut i8;
-// SLATE-FILECHECK-END rewrites-x86_64-gnu
-
-// SLATE-FILECHECK-BEGIN rewrites-aarch64-gnu
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = c"%u %d %u %lld %u %d %u %lld\n".as_ptr() as *mut u8;
-// SLATE-FILECHECK-END rewrites-aarch64-gnu
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: u8 = unsafe {
+// REWRITES-NEXT:         std::sync::atomic::AtomicU8::from_ptr(std::ptr::addr_of_mut!(u8))
+// REWRITES-NEXT:             .load(std::sync::atomic::Ordering::SeqCst)
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i8 = unsafe {
+// REWRITES-NEXT:         std::sync::atomic::AtomicI8::from_ptr(std::ptr::addr_of_mut!(i8))
+// REWRITES-NEXT:             .load(std::sync::atomic::Ordering::SeqCst)
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: u32 = unsafe {
+// REWRITES-NEXT:         std::sync::atomic::AtomicU32::from_ptr(std::ptr::addr_of_mut!(u32))
+// REWRITES-NEXT:             .load(std::sync::atomic::Ordering::SeqCst)
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i64 = unsafe {
+// REWRITES-NEXT:         std::sync::atomic::AtomicI64::from_ptr(std::ptr::addr_of_mut!(i64))
+// REWRITES-NEXT:             .load(std::sync::atomic::Ordering::SeqCst)
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         printf(
+// REWRITES-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
+// REWRITES-NEXT:             {{__v[0-9]+}},
+// REWRITES-NEXT:             {{__v[0-9]+}},
+// REWRITES-NEXT:             {{__v[0-9]+}},
+// REWRITES-NEXT:             {{__v[0-9]+}},
+// REWRITES-NEXT:             {{__v[0-9]+}},
+// REWRITES-NEXT:             {{__v[0-9]+}},
+// REWRITES-NEXT:             {{__v[0-9]+}},
+// REWRITES-NEXT:             {{__v[0-9]+}},
+// REWRITES-NEXT:         )
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT: }
+// SLATE-FILECHECK-END rewrites

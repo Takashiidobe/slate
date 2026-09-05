@@ -65,427 +65,415 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN common-lowering
-// COMMON-LOWERING: #![feature(c_variadic)]
-// COMMON-LOWERING-NEXT: #![allow(
-// COMMON-LOWERING-NEXT:     dead_code,
-// COMMON-LOWERING-NEXT:     unused,
-// COMMON-LOWERING-NEXT:     non_camel_case_types,
-// COMMON-LOWERING-NEXT:     non_snake_case,
-// COMMON-LOWERING-NEXT:     non_upper_case_globals,
-// COMMON-LOWERING-NEXT:     arithmetic_overflow,
-// COMMON-LOWERING-NEXT:     unconditional_panic,
-// COMMON-LOWERING-NEXT:     suspicious_runtime_symbol_definitions,
-// COMMON-LOWERING-NEXT:     unpredictable_function_pointer_comparisons,
-// COMMON-LOWERING-NEXT:     unused_comparisons
-// COMMON-LOWERING-NEXT: )]
-// COMMON-LOWERING-EMPTY:
-// COMMON-LOWERING-NEXT: #[repr(C)]
-// COMMON-LOWERING-NEXT: #[derive(Clone, Copy)]
-// COMMON-LOWERING-NEXT: struct TestCase {
-// COMMON-LOWERING-NEXT:     expectedStatus: i32,
-// COMMON-LOWERING-NEXT: }
-// COMMON-LOWERING-EMPTY:
-// COMMON-LOWERING-NEXT: #[repr(C)]
-// COMMON-LOWERING-NEXT: #[derive(Clone, Copy)]
-// COMMON-LOWERING-NEXT: struct TestCase_0 {
-// COMMON-LOWERING-NEXT:     usesParameterEntities: i32,
-// COMMON-LOWERING-NEXT:     weight: i32,
-// COMMON-LOWERING-NEXT: }
-// COMMON-LOWERING-EMPTY:
-// COMMON-LOWERING-NEXT: #[repr(C)]
-// COMMON-LOWERING-NEXT: #[derive(Clone, Copy)]
-// COMMON-LOWERING-NEXT: struct TestCase_1 {
-// COMMON-LOWERING-NEXT:     expectedMovementInChars: i32,
-// COMMON-LOWERING-NEXT: }
-// COMMON-LOWERING-EMPTY:
-// COMMON-LOWERING-NEXT: unsafe extern "C" {
-// COMMON-LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
-// COMMON-LOWERING-NEXT: }
-// COMMON-LOWERING-EMPTY:
-// COMMON-LOWERING-NEXT: fn main() {
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = sum_docs();
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = sum_flags();
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = sum_movements();
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// COMMON-LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
-// COMMON-LOWERING-NEXT: }
-// COMMON-LOWERING-EMPTY:
-// COMMON-LOWERING-NEXT: fn sum_docs() -> i32 {
-// COMMON-LOWERING-NEXT:         [TestCase {
-// COMMON-LOWERING-NEXT:             doc: std::ptr::null_mut(),
-// COMMON-LOWERING-NEXT:             expectedStatus: 0,
-// COMMON-LOWERING-NEXT:         }; 3],
-// COMMON-LOWERING-NEXT:     );
-// COMMON-LOWERING-NEXT:     let mut total: i32 = 0;
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: [TestCase; 3] = [
-// COMMON-LOWERING-NEXT:         TestCase {
-// COMMON-LOWERING-NEXT:             expectedStatus: 1,
-// COMMON-LOWERING-NEXT:         },
-// COMMON-LOWERING-NEXT:         TestCase {
-// COMMON-LOWERING-NEXT:             expectedStatus: 2,
-// COMMON-LOWERING-NEXT:         },
-// COMMON-LOWERING-NEXT:         TestCase {
-// COMMON-LOWERING-NEXT:             expectedStatus: 3,
-// COMMON-LOWERING-NEXT:         },
-// COMMON-LOWERING-NEXT:     ];
-// COMMON-LOWERING-NEXT:     *cases = {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// COMMON-LOWERING-NEXT:     total = {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT:     {
-// COMMON-LOWERING-NEXT:         let mut i: i32 = 0;
-// COMMON-LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = 0;
-// COMMON-LOWERING-NEXT:         i = {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT:         loop {
-// COMMON-LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = i;
-// COMMON-LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = 3;
-// COMMON-LOWERING-NEXT:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT:             if !{{__v[0-9]+}} {
-// COMMON-LOWERING-NEXT:                 break;
-// COMMON-LOWERING-NEXT:             }
-// COMMON-LOWERING-NEXT:             {
-// COMMON-LOWERING-NEXT:                 let {{__v[0-9]+}}: i64 = 0;
-// COMMON-LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = i;
-// COMMON-LOWERING-NEXT:                 let {{__v[0-9]+}}: i64 = {{__v[0-9]+}} as i64;
-// COMMON-LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// COMMON-LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = i;
-// COMMON-LOWERING-NEXT:                 let {{__v[0-9]+}}: i64 = {{__v[0-9]+}} as i64;
-// COMMON-LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = cases[({{__v[0-9]+}} as usize)].expectedStatus;
-// COMMON-LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} * {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = total;
-// COMMON-LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT:                 total = {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT:             }
-// COMMON-LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = i;
-// COMMON-LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + 1;
-// COMMON-LOWERING-NEXT:             i = {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT:         }
-// COMMON-LOWERING-NEXT:     }
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = total;
-// COMMON-LOWERING-NEXT:     return {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT: }
-// COMMON-LOWERING-EMPTY:
-// COMMON-LOWERING-NEXT: fn sum_flags() -> i32 {
-// COMMON-LOWERING-NEXT:         [TestCase_0 {
-// COMMON-LOWERING-NEXT:             usesParameterEntities: 0,
-// COMMON-LOWERING-NEXT:             weight: 0,
-// COMMON-LOWERING-NEXT:         }; 2],
-// COMMON-LOWERING-NEXT:     );
-// COMMON-LOWERING-NEXT:     let mut total: i32 = 0;
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: [TestCase_0; 2] = [
-// COMMON-LOWERING-NEXT:         TestCase_0 {
-// COMMON-LOWERING-NEXT:             usesParameterEntities: 1,
-// COMMON-LOWERING-NEXT:             weight: 10,
-// COMMON-LOWERING-NEXT:         },
-// COMMON-LOWERING-NEXT:         TestCase_0 {
-// COMMON-LOWERING-NEXT:             usesParameterEntities: 0,
-// COMMON-LOWERING-NEXT:             weight: 20,
-// COMMON-LOWERING-NEXT:         },
-// COMMON-LOWERING-NEXT:     ];
-// COMMON-LOWERING-NEXT:     *cases = {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// COMMON-LOWERING-NEXT:     total = {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT:     {
-// COMMON-LOWERING-NEXT:         let mut i: i32 = 0;
-// COMMON-LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = 0;
-// COMMON-LOWERING-NEXT:         i = {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT:         loop {
-// COMMON-LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = i;
-// COMMON-LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = 2;
-// COMMON-LOWERING-NEXT:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT:             if !{{__v[0-9]+}} {
-// COMMON-LOWERING-NEXT:                 break;
-// COMMON-LOWERING-NEXT:             }
-// COMMON-LOWERING-NEXT:             {
-// COMMON-LOWERING-NEXT:                 {
-// COMMON-LOWERING-NEXT:                     let {{__v[0-9]+}}: i32 = i;
-// COMMON-LOWERING-NEXT:                     let {{__v[0-9]+}}: i64 = {{__v[0-9]+}} as i64;
-// COMMON-LOWERING-NEXT:                     let {{__v[0-9]+}}: i32 = cases[({{__v[0-9]+}} as usize)].usesParameterEntities;
-// COMMON-LOWERING-NEXT:                     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
-// COMMON-LOWERING-NEXT:                     if {{__v[0-9]+}} {
-// COMMON-LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = i;
-// COMMON-LOWERING-NEXT:                         let {{__v[0-9]+}}: i64 = {{__v[0-9]+}} as i64;
-// COMMON-LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = cases[({{__v[0-9]+}} as usize)].weight;
-// COMMON-LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = total;
-// COMMON-LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT:                         total = {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT:                     } else {
-// COMMON-LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = i;
-// COMMON-LOWERING-NEXT:                         let {{__v[0-9]+}}: i64 = {{__v[0-9]+}} as i64;
-// COMMON-LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = cases[({{__v[0-9]+}} as usize)].weight;
-// COMMON-LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = total;
-// COMMON-LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} - {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT:                         total = {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT:                     }
-// COMMON-LOWERING-NEXT:                 }
-// COMMON-LOWERING-NEXT:             }
-// COMMON-LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = i;
-// COMMON-LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + 1;
-// COMMON-LOWERING-NEXT:             i = {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT:         }
-// COMMON-LOWERING-NEXT:     }
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = total;
-// COMMON-LOWERING-NEXT:     return {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT: }
-// COMMON-LOWERING-EMPTY:
-// COMMON-LOWERING-NEXT: fn sum_movements() -> i32 {
-// COMMON-LOWERING-NEXT:         [TestCase_1 {
-// COMMON-LOWERING-NEXT:             expectedMovementInChars: 0,
-// COMMON-LOWERING-NEXT:             input: std::ptr::null_mut(),
-// COMMON-LOWERING-NEXT:         }; 3],
-// COMMON-LOWERING-NEXT:     );
-// COMMON-LOWERING-NEXT:     let mut total: i32 = 0;
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: [TestCase_1; 3] = [
-// COMMON-LOWERING-NEXT:         TestCase_1 {
-// COMMON-LOWERING-NEXT:             expectedMovementInChars: 1,
-// COMMON-LOWERING-NEXT:         },
-// COMMON-LOWERING-NEXT:         TestCase_1 {
-// COMMON-LOWERING-NEXT:             expectedMovementInChars: 2,
-// COMMON-LOWERING-NEXT:         },
-// COMMON-LOWERING-NEXT:         TestCase_1 {
-// COMMON-LOWERING-NEXT:             expectedMovementInChars: 3,
-// COMMON-LOWERING-NEXT:         },
-// COMMON-LOWERING-NEXT:     ];
-// COMMON-LOWERING-NEXT:     *cases = {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// COMMON-LOWERING-NEXT:     total = {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT:     {
-// COMMON-LOWERING-NEXT:         let mut i: i32 = 0;
-// COMMON-LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = 0;
-// COMMON-LOWERING-NEXT:         i = {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT:         loop {
-// COMMON-LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = i;
-// COMMON-LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = 3;
-// COMMON-LOWERING-NEXT:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT:             if !{{__v[0-9]+}} {
-// COMMON-LOWERING-NEXT:                 break;
-// COMMON-LOWERING-NEXT:             }
-// COMMON-LOWERING-NEXT:             {
-// COMMON-LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = i;
-// COMMON-LOWERING-NEXT:                 let {{__v[0-9]+}}: i64 = {{__v[0-9]+}} as i64;
-// COMMON-LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = cases[({{__v[0-9]+}} as usize)].expectedMovementInChars;
-// COMMON-LOWERING-NEXT:                 let {{__v[0-9]+}}: i64 = 0;
-// COMMON-LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = i;
-// COMMON-LOWERING-NEXT:                 let {{__v[0-9]+}}: i64 = {{__v[0-9]+}} as i64;
-// COMMON-LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// COMMON-LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = total;
-// COMMON-LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT:                 total = {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT:             }
-// COMMON-LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = i;
-// COMMON-LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + 1;
-// COMMON-LOWERING-NEXT:             i = {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT:         }
-// COMMON-LOWERING-NEXT:     }
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = total;
-// COMMON-LOWERING-NEXT:     return {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT: }
-// SLATE-FILECHECK-END common-lowering
-
-// SLATE-FILECHECK-BEGIN lowering-x86_64-gnu
+// SLATE-FILECHECK-BEGIN lowering
+// LOWERING: #![feature(c_variadic)]
+// LOWERING-NEXT: #![allow(
+// LOWERING-NEXT:     dead_code,
+// LOWERING-NEXT:     unused,
+// LOWERING-NEXT:     non_camel_case_types,
+// LOWERING-NEXT:     non_snake_case,
+// LOWERING-NEXT:     non_upper_case_globals,
+// LOWERING-NEXT:     arithmetic_overflow,
+// LOWERING-NEXT:     unconditional_panic,
+// LOWERING-NEXT:     suspicious_runtime_symbol_definitions,
+// LOWERING-NEXT:     unpredictable_function_pointer_comparisons,
+// LOWERING-NEXT:     unused_comparisons
+// LOWERING-NEXT: )]
+// LOWERING-EMPTY:
+// LOWERING-NEXT: #[repr(C)]
+// LOWERING-NEXT: #[derive(Clone, Copy)]
+// LOWERING-NEXT: struct TestCase {
 // LOWERING-X86_64-GNU-NEXT:     doc: *mut i8,
+// LOWERING-AARCH64-GNU-NEXT:     doc: *mut u8,
+// LOWERING-NEXT:     expectedStatus: i32,
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: #[repr(C)]
+// LOWERING-NEXT: #[derive(Clone, Copy)]
+// LOWERING-NEXT: struct TestCase_0 {
+// LOWERING-NEXT:     usesParameterEntities: i32,
+// LOWERING-NEXT:     weight: i32,
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: #[repr(C)]
+// LOWERING-NEXT: #[derive(Clone, Copy)]
+// LOWERING-NEXT: struct TestCase_1 {
+// LOWERING-NEXT:     expectedMovementInChars: i32,
 // LOWERING-X86_64-GNU-NEXT:     input: *mut i8,
+// LOWERING-AARCH64-GNU-NEXT:     input: *mut u8,
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: unsafe extern "C" {
+// LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
+// LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = b"%d %d %d\n\0".as_ptr() as *mut u8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = sum_docs();
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = sum_flags();
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = sum_movements();
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn sum_docs() -> i32 {
 // LOWERING-X86_64-GNU-NEXT:     let mut cases: aligned::Aligned<aligned::A16, [TestCase; 3]> = aligned::Aligned(
+// LOWERING-AARCH64-GNU-NEXT:     let mut cases: aligned::Aligned<aligned::A8, [TestCase; 3]> = aligned::Aligned(
+// LOWERING-NEXT:         [TestCase {
+// LOWERING-NEXT:             doc: std::ptr::null_mut(),
+// LOWERING-NEXT:             expectedStatus: 0,
+// LOWERING-NEXT:         }; 3],
+// LOWERING-NEXT:     );
+// LOWERING-NEXT:     let mut total: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: [TestCase; 3] = [
+// LOWERING-NEXT:         TestCase {
 // LOWERING-X86_64-GNU-NEXT:             doc: b"a\0".as_ptr() as *mut i8,
+// LOWERING-AARCH64-GNU-NEXT:             doc: b"a\0".as_ptr() as *mut u8,
+// LOWERING-NEXT:             expectedStatus: 1,
+// LOWERING-NEXT:         },
+// LOWERING-NEXT:         TestCase {
 // LOWERING-X86_64-GNU-NEXT:             doc: b"bb\0".as_ptr() as *mut i8,
+// LOWERING-AARCH64-GNU-NEXT:             doc: b"bb\0".as_ptr() as *mut u8,
+// LOWERING-NEXT:             expectedStatus: 2,
+// LOWERING-NEXT:         },
+// LOWERING-NEXT:         TestCase {
 // LOWERING-X86_64-GNU-NEXT:             doc: b"ccc\0".as_ptr() as *mut i8,
+// LOWERING-AARCH64-GNU-NEXT:             doc: b"ccc\0".as_ptr() as *mut u8,
+// LOWERING-NEXT:             expectedStatus: 3,
+// LOWERING-NEXT:         },
+// LOWERING-NEXT:     ];
+// LOWERING-NEXT:     *cases = {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     total = {{__v[0-9]+}};
+// LOWERING-NEXT:     {
+// LOWERING-NEXT:         let mut i: i32 = 0;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:         i = {{__v[0-9]+}};
+// LOWERING-NEXT:         loop {
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = i;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = 3;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
+// LOWERING-NEXT:             if !{{__v[0-9]+}} {
+// LOWERING-NEXT:                 break;
+// LOWERING-NEXT:             }
+// LOWERING-NEXT:             {
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: i64 = 0;
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = i;
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: i64 = {{__v[0-9]+}} as i64;
 // LOWERING-X86_64-GNU-NEXT:                 let {{__v[0-9]+}}: *mut i8 = cases[({{__v[0-9]+}} as usize)].doc;
 // LOWERING-X86_64-GNU-NEXT:                 let {{__v[0-9]+}}: *mut i8 = unsafe { {{__v[0-9]+}}.add(0) };
 // LOWERING-X86_64-GNU-NEXT:                 let {{__v[0-9]+}}: i8 = unsafe { *{{__v[0-9]+}} };
-// LOWERING-X86_64-GNU-NEXT:     let mut cases: aligned::Aligned<aligned::A16, [TestCase_0; 2]> = aligned::Aligned(
-// LOWERING-X86_64-GNU-NEXT:     let mut cases: aligned::Aligned<aligned::A16, [TestCase_1; 3]> = aligned::Aligned(
-// LOWERING-X86_64-GNU-NEXT:             input: b"x\0".as_ptr() as *mut i8,
-// LOWERING-X86_64-GNU-NEXT:             input: b"yy\0".as_ptr() as *mut i8,
-// LOWERING-X86_64-GNU-NEXT:             input: b"zzz\0".as_ptr() as *mut i8,
-// LOWERING-X86_64-GNU-NEXT:                 let {{__v[0-9]+}}: *mut i8 = cases[({{__v[0-9]+}} as usize)].input;
-// LOWERING-X86_64-GNU-NEXT:                 let {{__v[0-9]+}}: *mut i8 = unsafe { {{__v[0-9]+}}.add(0) };
-// LOWERING-X86_64-GNU-NEXT:                 let {{__v[0-9]+}}: i8 = unsafe { *{{__v[0-9]+}} };
-// SLATE-FILECHECK-END lowering-x86_64-gnu
-
-// SLATE-FILECHECK-BEGIN lowering-aarch64-gnu
-// LOWERING-AARCH64-GNU-NEXT:     doc: *mut u8,
-// LOWERING-AARCH64-GNU-NEXT:     input: *mut u8,
-// LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = b"%d %d %d\n\0".as_ptr() as *mut u8;
-// LOWERING-AARCH64-GNU-NEXT:     let mut cases: aligned::Aligned<aligned::A8, [TestCase; 3]> = aligned::Aligned(
-// LOWERING-AARCH64-GNU-NEXT:             doc: b"a\0".as_ptr() as *mut u8,
-// LOWERING-AARCH64-GNU-NEXT:             doc: b"bb\0".as_ptr() as *mut u8,
-// LOWERING-AARCH64-GNU-NEXT:             doc: b"ccc\0".as_ptr() as *mut u8,
 // LOWERING-AARCH64-GNU-NEXT:                 let {{__v[0-9]+}}: *mut u8 = cases[({{__v[0-9]+}} as usize)].doc;
 // LOWERING-AARCH64-GNU-NEXT:                 let {{__v[0-9]+}}: *mut u8 = unsafe { {{__v[0-9]+}}.add(0) };
 // LOWERING-AARCH64-GNU-NEXT:                 let {{__v[0-9]+}}: u8 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = i;
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: i64 = {{__v[0-9]+}} as i64;
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = cases[({{__v[0-9]+}} as usize)].expectedStatus;
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} * {{__v[0-9]+}};
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = total;
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-NEXT:                 total = {{__v[0-9]+}};
+// LOWERING-NEXT:             }
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = i;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + 1;
+// LOWERING-NEXT:             i = {{__v[0-9]+}};
+// LOWERING-NEXT:         }
+// LOWERING-NEXT:     }
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = total;
+// LOWERING-NEXT:     return {{__v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn sum_flags() -> i32 {
+// LOWERING-X86_64-GNU-NEXT:     let mut cases: aligned::Aligned<aligned::A16, [TestCase_0; 2]> = aligned::Aligned(
 // LOWERING-AARCH64-GNU-NEXT:     let mut cases: aligned::Aligned<aligned::A4, [TestCase_0; 2]> = aligned::Aligned(
+// LOWERING-NEXT:         [TestCase_0 {
+// LOWERING-NEXT:             usesParameterEntities: 0,
+// LOWERING-NEXT:             weight: 0,
+// LOWERING-NEXT:         }; 2],
+// LOWERING-NEXT:     );
+// LOWERING-NEXT:     let mut total: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: [TestCase_0; 2] = [
+// LOWERING-NEXT:         TestCase_0 {
+// LOWERING-NEXT:             usesParameterEntities: 1,
+// LOWERING-NEXT:             weight: 10,
+// LOWERING-NEXT:         },
+// LOWERING-NEXT:         TestCase_0 {
+// LOWERING-NEXT:             usesParameterEntities: 0,
+// LOWERING-NEXT:             weight: 20,
+// LOWERING-NEXT:         },
+// LOWERING-NEXT:     ];
+// LOWERING-NEXT:     *cases = {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     total = {{__v[0-9]+}};
+// LOWERING-NEXT:     {
+// LOWERING-NEXT:         let mut i: i32 = 0;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:         i = {{__v[0-9]+}};
+// LOWERING-NEXT:         loop {
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = i;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = 2;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
+// LOWERING-NEXT:             if !{{__v[0-9]+}} {
+// LOWERING-NEXT:                 break;
+// LOWERING-NEXT:             }
+// LOWERING-NEXT:             {
+// LOWERING-NEXT:                 {
+// LOWERING-NEXT:                     let {{__v[0-9]+}}: i32 = i;
+// LOWERING-NEXT:                     let {{__v[0-9]+}}: i64 = {{__v[0-9]+}} as i64;
+// LOWERING-NEXT:                     let {{__v[0-9]+}}: i32 = cases[({{__v[0-9]+}} as usize)].usesParameterEntities;
+// LOWERING-NEXT:                     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
+// LOWERING-NEXT:                     if {{__v[0-9]+}} {
+// LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = i;
+// LOWERING-NEXT:                         let {{__v[0-9]+}}: i64 = {{__v[0-9]+}} as i64;
+// LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = cases[({{__v[0-9]+}} as usize)].weight;
+// LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = total;
+// LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-NEXT:                         total = {{__v[0-9]+}};
+// LOWERING-NEXT:                     } else {
+// LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = i;
+// LOWERING-NEXT:                         let {{__v[0-9]+}}: i64 = {{__v[0-9]+}} as i64;
+// LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = cases[({{__v[0-9]+}} as usize)].weight;
+// LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = total;
+// LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} - {{__v[0-9]+}};
+// LOWERING-NEXT:                         total = {{__v[0-9]+}};
+// LOWERING-NEXT:                     }
+// LOWERING-NEXT:                 }
+// LOWERING-NEXT:             }
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = i;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + 1;
+// LOWERING-NEXT:             i = {{__v[0-9]+}};
+// LOWERING-NEXT:         }
+// LOWERING-NEXT:     }
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = total;
+// LOWERING-NEXT:     return {{__v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn sum_movements() -> i32 {
+// LOWERING-X86_64-GNU-NEXT:     let mut cases: aligned::Aligned<aligned::A16, [TestCase_1; 3]> = aligned::Aligned(
 // LOWERING-AARCH64-GNU-NEXT:     let mut cases: aligned::Aligned<aligned::A8, [TestCase_1; 3]> = aligned::Aligned(
+// LOWERING-NEXT:         [TestCase_1 {
+// LOWERING-NEXT:             expectedMovementInChars: 0,
+// LOWERING-NEXT:             input: std::ptr::null_mut(),
+// LOWERING-NEXT:         }; 3],
+// LOWERING-NEXT:     );
+// LOWERING-NEXT:     let mut total: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: [TestCase_1; 3] = [
+// LOWERING-NEXT:         TestCase_1 {
+// LOWERING-NEXT:             expectedMovementInChars: 1,
+// LOWERING-X86_64-GNU-NEXT:             input: b"x\0".as_ptr() as *mut i8,
 // LOWERING-AARCH64-GNU-NEXT:             input: b"x\0".as_ptr() as *mut u8,
+// LOWERING-NEXT:         },
+// LOWERING-NEXT:         TestCase_1 {
+// LOWERING-NEXT:             expectedMovementInChars: 2,
+// LOWERING-X86_64-GNU-NEXT:             input: b"yy\0".as_ptr() as *mut i8,
 // LOWERING-AARCH64-GNU-NEXT:             input: b"yy\0".as_ptr() as *mut u8,
+// LOWERING-NEXT:         },
+// LOWERING-NEXT:         TestCase_1 {
+// LOWERING-NEXT:             expectedMovementInChars: 3,
+// LOWERING-X86_64-GNU-NEXT:             input: b"zzz\0".as_ptr() as *mut i8,
 // LOWERING-AARCH64-GNU-NEXT:             input: b"zzz\0".as_ptr() as *mut u8,
+// LOWERING-NEXT:         },
+// LOWERING-NEXT:     ];
+// LOWERING-NEXT:     *cases = {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     total = {{__v[0-9]+}};
+// LOWERING-NEXT:     {
+// LOWERING-NEXT:         let mut i: i32 = 0;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:         i = {{__v[0-9]+}};
+// LOWERING-NEXT:         loop {
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = i;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = 3;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
+// LOWERING-NEXT:             if !{{__v[0-9]+}} {
+// LOWERING-NEXT:                 break;
+// LOWERING-NEXT:             }
+// LOWERING-NEXT:             {
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = i;
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: i64 = {{__v[0-9]+}} as i64;
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = cases[({{__v[0-9]+}} as usize)].expectedMovementInChars;
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: i64 = 0;
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = i;
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: i64 = {{__v[0-9]+}} as i64;
+// LOWERING-X86_64-GNU-NEXT:                 let {{__v[0-9]+}}: *mut i8 = cases[({{__v[0-9]+}} as usize)].input;
+// LOWERING-X86_64-GNU-NEXT:                 let {{__v[0-9]+}}: *mut i8 = unsafe { {{__v[0-9]+}}.add(0) };
+// LOWERING-X86_64-GNU-NEXT:                 let {{__v[0-9]+}}: i8 = unsafe { *{{__v[0-9]+}} };
 // LOWERING-AARCH64-GNU-NEXT:                 let {{__v[0-9]+}}: *mut u8 = cases[({{__v[0-9]+}} as usize)].input;
 // LOWERING-AARCH64-GNU-NEXT:                 let {{__v[0-9]+}}: *mut u8 = unsafe { {{__v[0-9]+}}.add(0) };
 // LOWERING-AARCH64-GNU-NEXT:                 let {{__v[0-9]+}}: u8 = unsafe { *{{__v[0-9]+}} };
-// SLATE-FILECHECK-END lowering-aarch64-gnu
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = total;
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-NEXT:                 total = {{__v[0-9]+}};
+// LOWERING-NEXT:             }
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = i;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + 1;
+// LOWERING-NEXT:             i = {{__v[0-9]+}};
+// LOWERING-NEXT:         }
+// LOWERING-NEXT:     }
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = total;
+// LOWERING-NEXT:     return {{__v[0-9]+}};
+// LOWERING-NEXT: }
+// SLATE-FILECHECK-END lowering
 
-// SLATE-FILECHECK-BEGIN common-rewrites
-// COMMON-REWRITES: #![feature(c_variadic)]
-// COMMON-REWRITES-NEXT: #![allow(
-// COMMON-REWRITES-NEXT:     dead_code,
-// COMMON-REWRITES-NEXT:     unused,
-// COMMON-REWRITES-NEXT:     non_camel_case_types,
-// COMMON-REWRITES-NEXT:     non_snake_case,
-// COMMON-REWRITES-NEXT:     non_upper_case_globals,
-// COMMON-REWRITES-NEXT:     arithmetic_overflow,
-// COMMON-REWRITES-NEXT:     unconditional_panic,
-// COMMON-REWRITES-NEXT:     suspicious_runtime_symbol_definitions,
-// COMMON-REWRITES-NEXT:     unpredictable_function_pointer_comparisons,
-// COMMON-REWRITES-NEXT:     unused_comparisons
-// COMMON-REWRITES-NEXT: )]
-// COMMON-REWRITES-EMPTY:
-// COMMON-REWRITES-NEXT: #[repr(C)]
-// COMMON-REWRITES-NEXT: #[derive(Clone, Copy)]
-// COMMON-REWRITES-NEXT: struct TestCase {
-// COMMON-REWRITES-NEXT:     expectedStatus: i32,
-// COMMON-REWRITES-NEXT: }
-// COMMON-REWRITES-EMPTY:
-// COMMON-REWRITES-NEXT: #[repr(C)]
-// COMMON-REWRITES-NEXT: #[derive(Clone, Copy)]
-// COMMON-REWRITES-NEXT: struct TestCase_0 {
-// COMMON-REWRITES-NEXT:     usesParameterEntities: i32,
-// COMMON-REWRITES-NEXT:     weight: i32,
-// COMMON-REWRITES-NEXT: }
-// COMMON-REWRITES-EMPTY:
-// COMMON-REWRITES-NEXT: #[repr(C)]
-// COMMON-REWRITES-NEXT: #[derive(Clone, Copy)]
-// COMMON-REWRITES-NEXT: struct TestCase_1 {
-// COMMON-REWRITES-NEXT:     expectedMovementInChars: i32,
-// COMMON-REWRITES-NEXT: }
-// COMMON-REWRITES-EMPTY:
-// COMMON-REWRITES-NEXT: unsafe extern "C" {
-// COMMON-REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
-// COMMON-REWRITES-NEXT: }
-// COMMON-REWRITES-EMPTY:
-// COMMON-REWRITES-NEXT: fn main() {
-// COMMON-REWRITES-NEXT:     unsafe {
-// COMMON-REWRITES-NEXT:         printf(
-// COMMON-REWRITES-NEXT:             c"%d %d %d\n".as_ptr(),
-// COMMON-REWRITES-NEXT:             sum_docs(),
-// COMMON-REWRITES-NEXT:             sum_flags(),
-// COMMON-REWRITES-NEXT:             sum_movements(),
-// COMMON-REWRITES-NEXT:         )
-// COMMON-REWRITES-NEXT:     };
-// COMMON-REWRITES-NEXT:     std::process::exit(0 as i32);
-// COMMON-REWRITES-NEXT: }
-// COMMON-REWRITES-EMPTY:
-// COMMON-REWRITES-NEXT: fn sum_docs() -> i32 {
-// COMMON-REWRITES-NEXT:         [TestCase {
-// COMMON-REWRITES-NEXT:             doc: std::ptr::null_mut(),
-// COMMON-REWRITES-NEXT:             expectedStatus: 0,
-// COMMON-REWRITES-NEXT:         }; 3],
-// COMMON-REWRITES-NEXT:     );
-// COMMON-REWRITES-NEXT:     let mut total: i32 = 0;
-// COMMON-REWRITES-NEXT:     *cases = [
-// COMMON-REWRITES-NEXT:         TestCase {
-// COMMON-REWRITES-NEXT:             expectedStatus: 1,
-// COMMON-REWRITES-NEXT:         },
-// COMMON-REWRITES-NEXT:         TestCase {
-// COMMON-REWRITES-NEXT:             expectedStatus: 2,
-// COMMON-REWRITES-NEXT:         },
-// COMMON-REWRITES-NEXT:         TestCase {
-// COMMON-REWRITES-NEXT:             expectedStatus: 3,
-// COMMON-REWRITES-NEXT:         },
-// COMMON-REWRITES-NEXT:     ];
-// COMMON-REWRITES-NEXT:     for i in 0..3 {
-// COMMON-REWRITES-NEXT:         total += ((unsafe { *{{__v[0-9]+}} }) as i32) * cases[((i as i64) as usize)].expectedStatus;
-// COMMON-REWRITES-NEXT:     }
-// COMMON-REWRITES-NEXT:     total
-// COMMON-REWRITES-NEXT: }
-// COMMON-REWRITES-EMPTY:
-// COMMON-REWRITES-NEXT: fn sum_flags() -> i32 {
-// COMMON-REWRITES-NEXT:         [TestCase_0 {
-// COMMON-REWRITES-NEXT:             usesParameterEntities: 0,
-// COMMON-REWRITES-NEXT:             weight: 0,
-// COMMON-REWRITES-NEXT:         }; 2],
-// COMMON-REWRITES-NEXT:     );
-// COMMON-REWRITES-NEXT:     let mut total: i32 = 0;
-// COMMON-REWRITES-NEXT:     *cases = [
-// COMMON-REWRITES-NEXT:         TestCase_0 {
-// COMMON-REWRITES-NEXT:             usesParameterEntities: 1,
-// COMMON-REWRITES-NEXT:             weight: 10,
-// COMMON-REWRITES-NEXT:         },
-// COMMON-REWRITES-NEXT:         TestCase_0 {
-// COMMON-REWRITES-NEXT:             usesParameterEntities: 0,
-// COMMON-REWRITES-NEXT:             weight: 20,
-// COMMON-REWRITES-NEXT:         },
-// COMMON-REWRITES-NEXT:     ];
-// COMMON-REWRITES-NEXT:     for i in 0..2 {
-// COMMON-REWRITES-NEXT:         if cases[((i as i64) as usize)].usesParameterEntities != 0 {
-// COMMON-REWRITES-NEXT:             total += cases[((i as i64) as usize)].weight;
-// COMMON-REWRITES-NEXT:         } else {
-// COMMON-REWRITES-NEXT:             total -= cases[((i as i64) as usize)].weight;
-// COMMON-REWRITES-NEXT:         }
-// COMMON-REWRITES-NEXT:     }
-// COMMON-REWRITES-NEXT:     total
-// COMMON-REWRITES-NEXT: }
-// COMMON-REWRITES-EMPTY:
-// COMMON-REWRITES-NEXT: fn sum_movements() -> i32 {
-// COMMON-REWRITES-NEXT:         [TestCase_1 {
-// COMMON-REWRITES-NEXT:             expectedMovementInChars: 0,
-// COMMON-REWRITES-NEXT:             input: std::ptr::null_mut(),
-// COMMON-REWRITES-NEXT:         }; 3],
-// COMMON-REWRITES-NEXT:     );
-// COMMON-REWRITES-NEXT:     let mut total: i32 = 0;
-// COMMON-REWRITES-NEXT:     *cases = [
-// COMMON-REWRITES-NEXT:         TestCase_1 {
-// COMMON-REWRITES-NEXT:             expectedMovementInChars: 1,
-// COMMON-REWRITES-NEXT:         },
-// COMMON-REWRITES-NEXT:         TestCase_1 {
-// COMMON-REWRITES-NEXT:             expectedMovementInChars: 2,
-// COMMON-REWRITES-NEXT:         },
-// COMMON-REWRITES-NEXT:         TestCase_1 {
-// COMMON-REWRITES-NEXT:             expectedMovementInChars: 3,
-// COMMON-REWRITES-NEXT:         },
-// COMMON-REWRITES-NEXT:     ];
-// COMMON-REWRITES-NEXT:     for i in 0..3 {
-// COMMON-REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = cases[((i as i64) as usize)].expectedMovementInChars;
-// COMMON-REWRITES-NEXT:         total += {{__v[0-9]+}} + ((unsafe { *{{__v[0-9]+}} }) as i32);
-// COMMON-REWRITES-NEXT:     }
-// COMMON-REWRITES-NEXT:     total
-// COMMON-REWRITES-NEXT: }
-// SLATE-FILECHECK-END common-rewrites
-
-// SLATE-FILECHECK-BEGIN rewrites-x86_64-gnu
+// SLATE-FILECHECK-BEGIN rewrites
+// REWRITES: #![feature(c_variadic)]
+// REWRITES-NEXT: #![allow(
+// REWRITES-NEXT:     dead_code,
+// REWRITES-NEXT:     unused,
+// REWRITES-NEXT:     non_camel_case_types,
+// REWRITES-NEXT:     non_snake_case,
+// REWRITES-NEXT:     non_upper_case_globals,
+// REWRITES-NEXT:     arithmetic_overflow,
+// REWRITES-NEXT:     unconditional_panic,
+// REWRITES-NEXT:     suspicious_runtime_symbol_definitions,
+// REWRITES-NEXT:     unpredictable_function_pointer_comparisons,
+// REWRITES-NEXT:     unused_comparisons
+// REWRITES-NEXT: )]
+// REWRITES-EMPTY:
+// REWRITES-NEXT: #[repr(C)]
+// REWRITES-NEXT: #[derive(Clone, Copy)]
+// REWRITES-NEXT: struct TestCase {
 // REWRITES-X86_64-GNU-NEXT:     doc: *mut i8,
+// REWRITES-AARCH64-GNU-NEXT:     doc: *mut u8,
+// REWRITES-NEXT:     expectedStatus: i32,
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: #[repr(C)]
+// REWRITES-NEXT: #[derive(Clone, Copy)]
+// REWRITES-NEXT: struct TestCase_0 {
+// REWRITES-NEXT:     usesParameterEntities: i32,
+// REWRITES-NEXT:     weight: i32,
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: #[repr(C)]
+// REWRITES-NEXT: #[derive(Clone, Copy)]
+// REWRITES-NEXT: struct TestCase_1 {
+// REWRITES-NEXT:     expectedMovementInChars: i32,
 // REWRITES-X86_64-GNU-NEXT:     input: *mut i8,
+// REWRITES-AARCH64-GNU-NEXT:     input: *mut u8,
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         printf(
+// REWRITES-NEXT:             c"%d %d %d\n".as_ptr(),
+// REWRITES-NEXT:             sum_docs(),
+// REWRITES-NEXT:             sum_flags(),
+// REWRITES-NEXT:             sum_movements(),
+// REWRITES-NEXT:         )
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn sum_docs() -> i32 {
 // REWRITES-X86_64-GNU-NEXT:     let mut cases: aligned::Aligned<aligned::A16, [TestCase; 3]> = aligned::Aligned(
+// REWRITES-AARCH64-GNU-NEXT:     let mut cases: aligned::Aligned<aligned::A8, [TestCase; 3]> = aligned::Aligned(
+// REWRITES-NEXT:         [TestCase {
+// REWRITES-NEXT:             doc: std::ptr::null_mut(),
+// REWRITES-NEXT:             expectedStatus: 0,
+// REWRITES-NEXT:         }; 3],
+// REWRITES-NEXT:     );
+// REWRITES-NEXT:     let mut total: i32 = 0;
+// REWRITES-NEXT:     *cases = [
+// REWRITES-NEXT:         TestCase {
 // REWRITES-X86_64-GNU-NEXT:             doc: c"a".as_ptr() as *mut i8,
+// REWRITES-AARCH64-GNU-NEXT:             doc: c"a".as_ptr() as *mut u8,
+// REWRITES-NEXT:             expectedStatus: 1,
+// REWRITES-NEXT:         },
+// REWRITES-NEXT:         TestCase {
 // REWRITES-X86_64-GNU-NEXT:             doc: c"bb".as_ptr() as *mut i8,
+// REWRITES-AARCH64-GNU-NEXT:             doc: c"bb".as_ptr() as *mut u8,
+// REWRITES-NEXT:             expectedStatus: 2,
+// REWRITES-NEXT:         },
+// REWRITES-NEXT:         TestCase {
 // REWRITES-X86_64-GNU-NEXT:             doc: c"ccc".as_ptr() as *mut i8,
+// REWRITES-AARCH64-GNU-NEXT:             doc: c"ccc".as_ptr() as *mut u8,
+// REWRITES-NEXT:             expectedStatus: 3,
+// REWRITES-NEXT:         },
+// REWRITES-NEXT:     ];
+// REWRITES-NEXT:     for i in 0..3 {
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: *mut i8 = cases[((i as i64) as usize)].doc;
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: *mut i8 = unsafe { {{__v[0-9]+}}.add(0) };
-// REWRITES-X86_64-GNU-NEXT:     let mut cases: aligned::Aligned<aligned::A16, [TestCase_0; 2]> = aligned::Aligned(
-// REWRITES-X86_64-GNU-NEXT:     let mut cases: aligned::Aligned<aligned::A16, [TestCase_1; 3]> = aligned::Aligned(
-// REWRITES-X86_64-GNU-NEXT:             input: c"x".as_ptr() as *mut i8,
-// REWRITES-X86_64-GNU-NEXT:             input: c"yy".as_ptr() as *mut i8,
-// REWRITES-X86_64-GNU-NEXT:             input: c"zzz".as_ptr() as *mut i8,
-// REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: *mut i8 = cases[((i as i64) as usize)].input;
-// REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: *mut i8 = unsafe { {{__v[0-9]+}}.add(0) };
-// SLATE-FILECHECK-END rewrites-x86_64-gnu
-
-// SLATE-FILECHECK-BEGIN rewrites-aarch64-gnu
-// REWRITES-AARCH64-GNU-NEXT:     doc: *mut u8,
-// REWRITES-AARCH64-GNU-NEXT:     input: *mut u8,
-// REWRITES-AARCH64-GNU-NEXT:     let mut cases: aligned::Aligned<aligned::A8, [TestCase; 3]> = aligned::Aligned(
-// REWRITES-AARCH64-GNU-NEXT:             doc: c"a".as_ptr() as *mut u8,
-// REWRITES-AARCH64-GNU-NEXT:             doc: c"bb".as_ptr() as *mut u8,
-// REWRITES-AARCH64-GNU-NEXT:             doc: c"ccc".as_ptr() as *mut u8,
 // REWRITES-AARCH64-GNU-NEXT:         let {{__v[0-9]+}}: *mut u8 = cases[((i as i64) as usize)].doc;
 // REWRITES-AARCH64-GNU-NEXT:         let {{__v[0-9]+}}: *mut u8 = unsafe { {{__v[0-9]+}}.add(0) };
+// REWRITES-NEXT:         total += ((unsafe { *{{__v[0-9]+}} }) as i32) * cases[((i as i64) as usize)].expectedStatus;
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     total
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn sum_flags() -> i32 {
+// REWRITES-X86_64-GNU-NEXT:     let mut cases: aligned::Aligned<aligned::A16, [TestCase_0; 2]> = aligned::Aligned(
 // REWRITES-AARCH64-GNU-NEXT:     let mut cases: aligned::Aligned<aligned::A4, [TestCase_0; 2]> = aligned::Aligned(
+// REWRITES-NEXT:         [TestCase_0 {
+// REWRITES-NEXT:             usesParameterEntities: 0,
+// REWRITES-NEXT:             weight: 0,
+// REWRITES-NEXT:         }; 2],
+// REWRITES-NEXT:     );
+// REWRITES-NEXT:     let mut total: i32 = 0;
+// REWRITES-NEXT:     *cases = [
+// REWRITES-NEXT:         TestCase_0 {
+// REWRITES-NEXT:             usesParameterEntities: 1,
+// REWRITES-NEXT:             weight: 10,
+// REWRITES-NEXT:         },
+// REWRITES-NEXT:         TestCase_0 {
+// REWRITES-NEXT:             usesParameterEntities: 0,
+// REWRITES-NEXT:             weight: 20,
+// REWRITES-NEXT:         },
+// REWRITES-NEXT:     ];
+// REWRITES-NEXT:     for i in 0..2 {
+// REWRITES-NEXT:         if cases[((i as i64) as usize)].usesParameterEntities != 0 {
+// REWRITES-NEXT:             total += cases[((i as i64) as usize)].weight;
+// REWRITES-NEXT:         } else {
+// REWRITES-NEXT:             total -= cases[((i as i64) as usize)].weight;
+// REWRITES-NEXT:         }
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     total
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn sum_movements() -> i32 {
+// REWRITES-X86_64-GNU-NEXT:     let mut cases: aligned::Aligned<aligned::A16, [TestCase_1; 3]> = aligned::Aligned(
 // REWRITES-AARCH64-GNU-NEXT:     let mut cases: aligned::Aligned<aligned::A8, [TestCase_1; 3]> = aligned::Aligned(
+// REWRITES-NEXT:         [TestCase_1 {
+// REWRITES-NEXT:             expectedMovementInChars: 0,
+// REWRITES-NEXT:             input: std::ptr::null_mut(),
+// REWRITES-NEXT:         }; 3],
+// REWRITES-NEXT:     );
+// REWRITES-NEXT:     let mut total: i32 = 0;
+// REWRITES-NEXT:     *cases = [
+// REWRITES-NEXT:         TestCase_1 {
+// REWRITES-NEXT:             expectedMovementInChars: 1,
+// REWRITES-X86_64-GNU-NEXT:             input: c"x".as_ptr() as *mut i8,
 // REWRITES-AARCH64-GNU-NEXT:             input: c"x".as_ptr() as *mut u8,
+// REWRITES-NEXT:         },
+// REWRITES-NEXT:         TestCase_1 {
+// REWRITES-NEXT:             expectedMovementInChars: 2,
+// REWRITES-X86_64-GNU-NEXT:             input: c"yy".as_ptr() as *mut i8,
 // REWRITES-AARCH64-GNU-NEXT:             input: c"yy".as_ptr() as *mut u8,
+// REWRITES-NEXT:         },
+// REWRITES-NEXT:         TestCase_1 {
+// REWRITES-NEXT:             expectedMovementInChars: 3,
+// REWRITES-X86_64-GNU-NEXT:             input: c"zzz".as_ptr() as *mut i8,
 // REWRITES-AARCH64-GNU-NEXT:             input: c"zzz".as_ptr() as *mut u8,
+// REWRITES-NEXT:         },
+// REWRITES-NEXT:     ];
+// REWRITES-NEXT:     for i in 0..3 {
+// REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = cases[((i as i64) as usize)].expectedMovementInChars;
+// REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: *mut i8 = cases[((i as i64) as usize)].input;
+// REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: *mut i8 = unsafe { {{__v[0-9]+}}.add(0) };
 // REWRITES-AARCH64-GNU-NEXT:         let {{__v[0-9]+}}: *mut u8 = cases[((i as i64) as usize)].input;
 // REWRITES-AARCH64-GNU-NEXT:         let {{__v[0-9]+}}: *mut u8 = unsafe { {{__v[0-9]+}}.add(0) };
-// SLATE-FILECHECK-END rewrites-aarch64-gnu
+// REWRITES-NEXT:         total += {{__v[0-9]+}} + ((unsafe { *{{__v[0-9]+}} }) as i32);
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     total
+// REWRITES-NEXT: }
+// SLATE-FILECHECK-END rewrites

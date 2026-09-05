@@ -30,194 +30,188 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN common-lowering
-// COMMON-LOWERING: #![feature(c_variadic)]
-// COMMON-LOWERING-NEXT: #![allow(
-// COMMON-LOWERING-NEXT:     dead_code,
-// COMMON-LOWERING-NEXT:     unused,
-// COMMON-LOWERING-NEXT:     non_camel_case_types,
-// COMMON-LOWERING-NEXT:     non_snake_case,
-// COMMON-LOWERING-NEXT:     non_upper_case_globals,
-// COMMON-LOWERING-NEXT:     arithmetic_overflow,
-// COMMON-LOWERING-NEXT:     unconditional_panic,
-// COMMON-LOWERING-NEXT:     suspicious_runtime_symbol_definitions,
-// COMMON-LOWERING-NEXT:     unpredictable_function_pointer_comparisons,
-// COMMON-LOWERING-NEXT:     unused_comparisons
-// COMMON-LOWERING-NEXT: )]
-// COMMON-LOWERING-EMPTY:
-// COMMON-LOWERING-NEXT: #[repr(C)]
-// COMMON-LOWERING-NEXT: #[derive(Clone, Copy)]
-// COMMON-LOWERING-NEXT: struct suite_t {
-// COMMON-LOWERING-NEXT:     tests: *mut Option<unsafe extern "C-unwind" fn()>,
-// COMMON-LOWERING-NEXT:     ntests: i32,
-// COMMON-LOWERING-NEXT: }
-// COMMON-LOWERING-EMPTY:
-// COMMON-LOWERING-NEXT: static mut last_ran: i32 = -1;
-// COMMON-LOWERING-EMPTY:
-// COMMON-LOWERING-NEXT: unsafe extern "C" {
-// COMMON-LOWERING-NEXT:     fn malloc(_0: usize) -> *mut core::ffi::c_void;
-// COMMON-LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
-// COMMON-LOWERING-NEXT:     fn free(_0: *mut core::ffi::c_void);
-// COMMON-LOWERING-NEXT: }
-// COMMON-LOWERING-EMPTY:
-// COMMON-LOWERING-NEXT: fn main() {
-// COMMON-LOWERING-NEXT:     let mut suite: suite_t = suite_t {
-// COMMON-LOWERING-NEXT:         tests: std::ptr::null_mut(),
-// COMMON-LOWERING-NEXT:         ntests: 0,
-// COMMON-LOWERING-NEXT:     };
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = 2;
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = 8;
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} * {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc({{__v[0-9]+}} as usize) };
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: *mut Option<unsafe extern "C-unwind" fn()> =
-// COMMON-LOWERING-NEXT:         {{__v[0-9]+}} as *mut Option<unsafe extern "C-unwind" fn()>;
-// COMMON-LOWERING-NEXT:     suite.tests = {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = 0;
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: *mut Option<unsafe extern "C-unwind" fn()> = suite.tests;
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: *mut Option<unsafe extern "C-unwind" fn()> = unsafe { {{__v[0-9]+}}.add(0) };
-// COMMON-LOWERING-NEXT:     unsafe {
-// COMMON-LOWERING-NEXT:         *{{__v[0-9]+}} = Some(test_a);
-// COMMON-LOWERING-NEXT:     }
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = 1;
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: *mut Option<unsafe extern "C-unwind" fn()> = suite.tests;
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: *mut Option<unsafe extern "C-unwind" fn()> = unsafe { {{__v[0-9]+}}.add(1) };
-// COMMON-LOWERING-NEXT:     unsafe {
-// COMMON-LOWERING-NEXT:         *{{__v[0-9]+}} = Some(test_b);
-// COMMON-LOWERING-NEXT:     }
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 2;
-// COMMON-LOWERING-NEXT:     suite.ntests = {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT:     {
-// COMMON-LOWERING-NEXT:         let mut i: i32 = 0;
-// COMMON-LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = 0;
-// COMMON-LOWERING-NEXT:         i = {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT:         loop {
-// COMMON-LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = i;
-// COMMON-LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = suite.ntests;
-// COMMON-LOWERING-NEXT:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT:             if !{{__v[0-9]+}} {
-// COMMON-LOWERING-NEXT:                 break;
-// COMMON-LOWERING-NEXT:             }
-// COMMON-LOWERING-NEXT:             {
-// COMMON-LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = i;
-// COMMON-LOWERING-NEXT:                 let {{__v[0-9]+}}: i64 = {{__v[0-9]+}} as i64;
-// COMMON-LOWERING-NEXT:                 let {{__v[0-9]+}}: *mut Option<unsafe extern "C-unwind" fn()> = suite.tests;
-// COMMON-LOWERING-NEXT:                 let {{__v[0-9]+}}: *mut Option<unsafe extern "C-unwind" fn()> =
-// COMMON-LOWERING-NEXT:                     unsafe { {{__v[0-9]+}}.offset({{__v[0-9]+}} as isize) };
-// COMMON-LOWERING-NEXT:                 let {{__v[0-9]+}}: Option<unsafe extern "C-unwind" fn()> = unsafe { *{{__v[0-9]+}} };
-// COMMON-LOWERING-NEXT:                 unsafe { {{__v[0-9]+}}.unwrap()() };
-// COMMON-LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = unsafe { last_ran };
-// COMMON-LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
-// COMMON-LOWERING-NEXT:             }
-// COMMON-LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = i;
-// COMMON-LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + 1;
-// COMMON-LOWERING-NEXT:             i = {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT:         }
-// COMMON-LOWERING-NEXT:     }
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: *mut Option<unsafe extern "C-unwind" fn()> = suite.tests;
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = {{__v[0-9]+}} as *mut core::ffi::c_void;
-// COMMON-LOWERING-NEXT:     unsafe { free({{__v[0-9]+}} as *mut core::ffi::c_void) };
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// COMMON-LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
-// COMMON-LOWERING-NEXT: }
-// COMMON-LOWERING-EMPTY:
-// COMMON-LOWERING-NEXT: extern "C-unwind" fn test_a() {
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// COMMON-LOWERING-NEXT:     unsafe {
-// COMMON-LOWERING-NEXT:         last_ran = {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT:     }
-// COMMON-LOWERING-NEXT:     return;
-// COMMON-LOWERING-NEXT: }
-// COMMON-LOWERING-EMPTY:
-// COMMON-LOWERING-NEXT: extern "C-unwind" fn test_b() {
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 1;
-// COMMON-LOWERING-NEXT:     unsafe {
-// COMMON-LOWERING-NEXT:         last_ran = {{__v[0-9]+}};
-// COMMON-LOWERING-NEXT:     }
-// COMMON-LOWERING-NEXT:     return;
-// COMMON-LOWERING-NEXT: }
-// SLATE-FILECHECK-END common-lowering
-
-// SLATE-FILECHECK-BEGIN lowering-x86_64-gnu
+// SLATE-FILECHECK-BEGIN lowering
+// LOWERING: #![feature(c_variadic)]
+// LOWERING-NEXT: #![allow(
+// LOWERING-NEXT:     dead_code,
+// LOWERING-NEXT:     unused,
+// LOWERING-NEXT:     non_camel_case_types,
+// LOWERING-NEXT:     non_snake_case,
+// LOWERING-NEXT:     non_upper_case_globals,
+// LOWERING-NEXT:     arithmetic_overflow,
+// LOWERING-NEXT:     unconditional_panic,
+// LOWERING-NEXT:     suspicious_runtime_symbol_definitions,
+// LOWERING-NEXT:     unpredictable_function_pointer_comparisons,
+// LOWERING-NEXT:     unused_comparisons
+// LOWERING-NEXT: )]
+// LOWERING-EMPTY:
+// LOWERING-NEXT: #[repr(C)]
+// LOWERING-NEXT: #[derive(Clone, Copy)]
+// LOWERING-NEXT: struct suite_t {
+// LOWERING-NEXT:     tests: *mut Option<unsafe extern "C-unwind" fn()>,
+// LOWERING-NEXT:     ntests: i32,
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: static mut last_ran: i32 = -1;
+// LOWERING-EMPTY:
+// LOWERING-NEXT: unsafe extern "C" {
+// LOWERING-NEXT:     fn malloc(_0: usize) -> *mut core::ffi::c_void;
+// LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
+// LOWERING-NEXT:     fn free(_0: *mut core::ffi::c_void);
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT:     let mut suite: suite_t = suite_t {
+// LOWERING-NEXT:         tests: std::ptr::null_mut(),
+// LOWERING-NEXT:         ntests: 0,
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = 2;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = 8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} * {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc({{__v[0-9]+}} as usize) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut Option<unsafe extern "C-unwind" fn()> =
+// LOWERING-NEXT:         {{__v[0-9]+}} as *mut Option<unsafe extern "C-unwind" fn()>;
+// LOWERING-NEXT:     suite.tests = {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut Option<unsafe extern "C-unwind" fn()> = suite.tests;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut Option<unsafe extern "C-unwind" fn()> = unsafe { {{__v[0-9]+}}.add(0) };
+// LOWERING-NEXT:     unsafe {
+// LOWERING-NEXT:         *{{__v[0-9]+}} = Some(test_a);
+// LOWERING-NEXT:     }
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = 1;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut Option<unsafe extern "C-unwind" fn()> = suite.tests;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut Option<unsafe extern "C-unwind" fn()> = unsafe { {{__v[0-9]+}}.add(1) };
+// LOWERING-NEXT:     unsafe {
+// LOWERING-NEXT:         *{{__v[0-9]+}} = Some(test_b);
+// LOWERING-NEXT:     }
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 2;
+// LOWERING-NEXT:     suite.ntests = {{__v[0-9]+}};
+// LOWERING-NEXT:     {
+// LOWERING-NEXT:         let mut i: i32 = 0;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:         i = {{__v[0-9]+}};
+// LOWERING-NEXT:         loop {
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = i;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = suite.ntests;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
+// LOWERING-NEXT:             if !{{__v[0-9]+}} {
+// LOWERING-NEXT:                 break;
+// LOWERING-NEXT:             }
+// LOWERING-NEXT:             {
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = i;
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: i64 = {{__v[0-9]+}} as i64;
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: *mut Option<unsafe extern "C-unwind" fn()> = suite.tests;
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: *mut Option<unsafe extern "C-unwind" fn()> =
+// LOWERING-NEXT:                     unsafe { {{__v[0-9]+}}.offset({{__v[0-9]+}} as isize) };
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: Option<unsafe extern "C-unwind" fn()> = unsafe { *{{__v[0-9]+}} };
+// LOWERING-NEXT:                 unsafe { {{__v[0-9]+}}.unwrap()() };
 // LOWERING-X86_64-GNU-NEXT:                 let {{__v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// SLATE-FILECHECK-END lowering-x86_64-gnu
-
-// SLATE-FILECHECK-BEGIN lowering-aarch64-gnu
 // LOWERING-AARCH64-GNU-NEXT:                 let {{__v[0-9]+}}: *mut u8 = b"%d\n\0".as_ptr() as *mut u8;
-// SLATE-FILECHECK-END lowering-aarch64-gnu
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = unsafe { last_ran };
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
+// LOWERING-NEXT:             }
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = i;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + 1;
+// LOWERING-NEXT:             i = {{__v[0-9]+}};
+// LOWERING-NEXT:         }
+// LOWERING-NEXT:     }
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut Option<unsafe extern "C-unwind" fn()> = suite.tests;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = {{__v[0-9]+}} as *mut core::ffi::c_void;
+// LOWERING-NEXT:     unsafe { free({{__v[0-9]+}} as *mut core::ffi::c_void) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: extern "C-unwind" fn test_a() {
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     unsafe {
+// LOWERING-NEXT:         last_ran = {{__v[0-9]+}};
+// LOWERING-NEXT:     }
+// LOWERING-NEXT:     return;
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: extern "C-unwind" fn test_b() {
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-NEXT:     unsafe {
+// LOWERING-NEXT:         last_ran = {{__v[0-9]+}};
+// LOWERING-NEXT:     }
+// LOWERING-NEXT:     return;
+// LOWERING-NEXT: }
+// SLATE-FILECHECK-END lowering
 
-// SLATE-FILECHECK-BEGIN common-rewrites
-// COMMON-REWRITES: #![feature(c_variadic)]
-// COMMON-REWRITES-NEXT: #![allow(
-// COMMON-REWRITES-NEXT:     dead_code,
-// COMMON-REWRITES-NEXT:     unused,
-// COMMON-REWRITES-NEXT:     non_camel_case_types,
-// COMMON-REWRITES-NEXT:     non_snake_case,
-// COMMON-REWRITES-NEXT:     non_upper_case_globals,
-// COMMON-REWRITES-NEXT:     arithmetic_overflow,
-// COMMON-REWRITES-NEXT:     unconditional_panic,
-// COMMON-REWRITES-NEXT:     suspicious_runtime_symbol_definitions,
-// COMMON-REWRITES-NEXT:     unpredictable_function_pointer_comparisons,
-// COMMON-REWRITES-NEXT:     unused_comparisons
-// COMMON-REWRITES-NEXT: )]
-// COMMON-REWRITES-EMPTY:
-// COMMON-REWRITES-NEXT: #[repr(C)]
-// COMMON-REWRITES-NEXT: #[derive(Clone, Copy)]
-// COMMON-REWRITES-NEXT: struct suite_t {
-// COMMON-REWRITES-NEXT:     tests: *mut Option<unsafe extern "C-unwind" fn()>,
-// COMMON-REWRITES-NEXT:     ntests: i32,
-// COMMON-REWRITES-NEXT: }
-// COMMON-REWRITES-EMPTY:
-// COMMON-REWRITES-NEXT: static mut last_ran: i32 = -1;
-// COMMON-REWRITES-EMPTY:
-// COMMON-REWRITES-NEXT: unsafe extern "C" {
-// COMMON-REWRITES-NEXT:     fn malloc(_0: usize) -> *mut core::ffi::c_void;
-// COMMON-REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
-// COMMON-REWRITES-NEXT:     fn free(_0: *mut core::ffi::c_void);
-// COMMON-REWRITES-NEXT: }
-// COMMON-REWRITES-EMPTY:
-// COMMON-REWRITES-NEXT: fn main() {
-// COMMON-REWRITES-NEXT:     let mut suite: suite_t = suite_t {
-// COMMON-REWRITES-NEXT:         tests: std::ptr::null_mut(),
-// COMMON-REWRITES-NEXT:         ntests: 0,
-// COMMON-REWRITES-NEXT:     };
-// COMMON-REWRITES-NEXT:     let {{__v[0-9]+}}: u64 = 8;
-// COMMON-REWRITES-NEXT:     let {{__v[0-9]+}}: u64 = 2 * {{__v[0-9]+}};
-// COMMON-REWRITES-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc({{__v[0-9]+}} as usize) };
-// COMMON-REWRITES-NEXT:     suite.tests = {{__v[0-9]+}} as *mut Option<unsafe extern "C-unwind" fn()>;
-// COMMON-REWRITES-NEXT:     let {{__v[0-9]+}}: *mut Option<unsafe extern "C-unwind" fn()> = suite.tests;
-// COMMON-REWRITES-NEXT:     let {{__v[0-9]+}}: *mut Option<unsafe extern "C-unwind" fn()> = unsafe { {{__v[0-9]+}}.add(0) };
-// COMMON-REWRITES-NEXT:     unsafe {
-// COMMON-REWRITES-NEXT:         *{{__v[0-9]+}} = Some(test_a);
-// COMMON-REWRITES-NEXT:     }
-// COMMON-REWRITES-NEXT:     let {{__v[0-9]+}}: *mut Option<unsafe extern "C-unwind" fn()> = suite.tests;
-// COMMON-REWRITES-NEXT:     let {{__v[0-9]+}}: *mut Option<unsafe extern "C-unwind" fn()> = unsafe { {{__v[0-9]+}}.add(1) };
-// COMMON-REWRITES-NEXT:     unsafe {
-// COMMON-REWRITES-NEXT:         *{{__v[0-9]+}} = Some(test_b);
-// COMMON-REWRITES-NEXT:     }
-// COMMON-REWRITES-NEXT:     suite.ntests = 2;
-// COMMON-REWRITES-NEXT:     for i in 0..suite.ntests {
-// COMMON-REWRITES-NEXT:         let {{__v[0-9]+}}: *mut Option<unsafe extern "C-unwind" fn()> = suite.tests;
-// COMMON-REWRITES-NEXT:         let {{__v[0-9]+}}: *mut Option<unsafe extern "C-unwind" fn()> =
-// COMMON-REWRITES-NEXT:             unsafe { {{__v[0-9]+}}.offset((i as i64) as isize) };
-// COMMON-REWRITES-NEXT:         unsafe { unsafe { *{{__v[0-9]+}} }.unwrap()() };
-// COMMON-REWRITES-NEXT:         unsafe { printf(c"%d\n".as_ptr(), unsafe { last_ran }) };
-// COMMON-REWRITES-NEXT:     }
-// COMMON-REWRITES-NEXT:     unsafe { free(suite.tests as *mut core::ffi::c_void) };
-// COMMON-REWRITES-NEXT:     std::process::exit(0 as i32);
-// COMMON-REWRITES-NEXT: }
-// COMMON-REWRITES-EMPTY:
-// COMMON-REWRITES-NEXT: extern "C-unwind" fn test_a() {
-// COMMON-REWRITES-NEXT:     unsafe {
-// COMMON-REWRITES-NEXT:         last_ran = 0;
-// COMMON-REWRITES-NEXT:     }
-// COMMON-REWRITES-NEXT:     return;
-// COMMON-REWRITES-NEXT: }
-// COMMON-REWRITES-EMPTY:
-// COMMON-REWRITES-NEXT: extern "C-unwind" fn test_b() {
-// COMMON-REWRITES-NEXT:     unsafe {
-// COMMON-REWRITES-NEXT:         last_ran = 1;
-// COMMON-REWRITES-NEXT:     }
-// COMMON-REWRITES-NEXT:     return;
-// COMMON-REWRITES-NEXT: }
-// SLATE-FILECHECK-END common-rewrites
+// SLATE-FILECHECK-BEGIN rewrites
+// REWRITES: #![feature(c_variadic)]
+// REWRITES-NEXT: #![allow(
+// REWRITES-NEXT:     dead_code,
+// REWRITES-NEXT:     unused,
+// REWRITES-NEXT:     non_camel_case_types,
+// REWRITES-NEXT:     non_snake_case,
+// REWRITES-NEXT:     non_upper_case_globals,
+// REWRITES-NEXT:     arithmetic_overflow,
+// REWRITES-NEXT:     unconditional_panic,
+// REWRITES-NEXT:     suspicious_runtime_symbol_definitions,
+// REWRITES-NEXT:     unpredictable_function_pointer_comparisons,
+// REWRITES-NEXT:     unused_comparisons
+// REWRITES-NEXT: )]
+// REWRITES-EMPTY:
+// REWRITES-NEXT: #[repr(C)]
+// REWRITES-NEXT: #[derive(Clone, Copy)]
+// REWRITES-NEXT: struct suite_t {
+// REWRITES-NEXT:     tests: *mut Option<unsafe extern "C-unwind" fn()>,
+// REWRITES-NEXT:     ntests: i32,
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: static mut last_ran: i32 = -1;
+// REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn malloc(_0: usize) -> *mut core::ffi::c_void;
+// REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
+// REWRITES-NEXT:     fn free(_0: *mut core::ffi::c_void);
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT:     let mut suite: suite_t = suite_t {
+// REWRITES-NEXT:         tests: std::ptr::null_mut(),
+// REWRITES-NEXT:         ntests: 0,
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: u64 = 8;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: u64 = 2 * {{__v[0-9]+}};
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc({{__v[0-9]+}} as usize) };
+// REWRITES-NEXT:     suite.tests = {{__v[0-9]+}} as *mut Option<unsafe extern "C-unwind" fn()>;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut Option<unsafe extern "C-unwind" fn()> = suite.tests;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut Option<unsafe extern "C-unwind" fn()> = unsafe { {{__v[0-9]+}}.add(0) };
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         *{{__v[0-9]+}} = Some(test_a);
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut Option<unsafe extern "C-unwind" fn()> = suite.tests;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut Option<unsafe extern "C-unwind" fn()> = unsafe { {{__v[0-9]+}}.add(1) };
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         *{{__v[0-9]+}} = Some(test_b);
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     suite.ntests = 2;
+// REWRITES-NEXT:     for i in 0..suite.ntests {
+// REWRITES-NEXT:         let {{__v[0-9]+}}: *mut Option<unsafe extern "C-unwind" fn()> = suite.tests;
+// REWRITES-NEXT:         let {{__v[0-9]+}}: *mut Option<unsafe extern "C-unwind" fn()> =
+// REWRITES-NEXT:             unsafe { {{__v[0-9]+}}.offset((i as i64) as isize) };
+// REWRITES-NEXT:         unsafe { unsafe { *{{__v[0-9]+}} }.unwrap()() };
+// REWRITES-NEXT:         unsafe { printf(c"%d\n".as_ptr(), unsafe { last_ran }) };
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     unsafe { free(suite.tests as *mut core::ffi::c_void) };
+// REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: extern "C-unwind" fn test_a() {
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         last_ran = 0;
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     return;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: extern "C-unwind" fn test_b() {
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         last_ran = 1;
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     return;
+// REWRITES-NEXT: }
+// SLATE-FILECHECK-END rewrites

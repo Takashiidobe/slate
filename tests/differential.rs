@@ -7,6 +7,20 @@ fn fixtures_dir() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures")
 }
 
+fn host_gnu_arch_suffix() -> Option<&'static str> {
+    let target = std::env::var("SLATE_TARGET")
+        .ok()
+        .filter(|target| !target.trim().is_empty())
+        .unwrap_or_else(|| env!("SLATE_BUILD_TARGET").to_string());
+    if target.starts_with("x86_64") && target.contains("gnu") {
+        Some("X86_64-GNU")
+    } else if target.starts_with("aarch64") && target.contains("gnu") {
+        Some("AARCH64-GNU")
+    } else {
+        None
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum FixtureFlavor {
     Default,
@@ -86,7 +100,16 @@ impl FixtureFlavor {
     fn check_prefixes(self, profile: support::filecheck::Profile) -> &'static [&'static str] {
         use support::filecheck::Profile::{Lowering, Rewrites};
         match (self, profile) {
-            (FixtureFlavor::Default, _) => &[],
+            (FixtureFlavor::Default, Lowering) => match host_gnu_arch_suffix() {
+                Some("X86_64-GNU") => &["LOWERING-X86_64-GNU"],
+                Some("AARCH64-GNU") => &["LOWERING-AARCH64-GNU"],
+                _ => &[],
+            },
+            (FixtureFlavor::Default, Rewrites) => match host_gnu_arch_suffix() {
+                Some("X86_64-GNU") => &["REWRITES-X86_64-GNU"],
+                Some("AARCH64-GNU") => &["REWRITES-AARCH64-GNU"],
+                _ => &[],
+            },
             (FixtureFlavor::Bionic, Lowering) => &["LOWERING-BIONIC-AARCH64"],
             (FixtureFlavor::Bionic, Rewrites) => &["REWRITES-BIONIC-AARCH64"],
             (FixtureFlavor::Macos, Lowering) => &["LOWERING-MACOS"],
@@ -641,10 +664,12 @@ fn generated_differential() {
                 .map_err(|e| format!("read {}: {e}", f.path.display()))?;
             let rust = std::fs::read_to_string(&generated)
                 .map_err(|e| format!("read {}: {e}", generated.display()))?;
-            support::filecheck::check_generated_rust(
+            let profile = support::filecheck::Profile::active();
+            support::filecheck::check_generated_rust_with_prefixes(
                 &fixture,
                 &rust,
-                support::filecheck::Profile::active(),
+                profile,
+                f.flavor.check_prefixes(profile),
                 &tmp.join("filecheck").join(&f.name),
             )?;
             let mut config = support::RunConfig::default();
