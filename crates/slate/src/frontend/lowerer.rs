@@ -1566,6 +1566,13 @@ impl __SlateVaArgs {
 
         if self.uses_long_double.get() {
             for decl in f80_shim_decls() {
+                if decl
+                    .params
+                    .iter()
+                    .any(|param| type_mentions_f128(&param.ty))
+                {
+                    self.uses_f128.set(true);
+                }
                 self.long_double_shims
                     .entry(decl.name.clone())
                     .or_insert(decl);
@@ -2535,6 +2542,26 @@ impl __SlateVaArgs {
         }
         match attr {
             Attr::ConstComplex { real, imag, .. } => {
+                if let Type::Complex(inner) = ty
+                    && matches!(inner.as_ref(), Type::LongDouble)
+                {
+                    let component = |attr: &Attr| match attr {
+                        Attr::Float { text, .. } | Attr::CirFloat { value: text, .. } => {
+                            match text.strip_prefix("0x").or_else(|| text.strip_prefix("0X")) {
+                                Some(bits) => f80_literal_bits_expr(bits),
+                                None => f80_literal_expr(text),
+                            }
+                        }
+                        _ => None,
+                    };
+                    return Some(Expr::StructLit {
+                        name: COMPLEX_TY.into(),
+                        fields: vec![
+                            ("re".into(), component(real)?),
+                            ("im".into(), component(imag)?),
+                        ],
+                    });
+                }
                 let re = complex_component_from_attr(real)?;
                 let im = complex_component_from_attr(imag)?;
                 Some(complex_const_expr(Some(ty), re, im))
