@@ -298,15 +298,42 @@ fn literal_string_locals(body: &[Stmt]) -> BTreeMap<String, Vec<u8>> {
             arrays.insert(name.clone());
         }
     });
+    let mut temp_array_lits: BTreeMap<String, Vec<u8>> = BTreeMap::new();
+    walk_stmts(body, &mut |stmt| {
+        let Stmt::Let {
+            name, init: Some(init), ..
+        } = stmt
+        else {
+            return;
+        };
+        let payload = match init {
+            Expr::ArrayLit(items) => array_lit_payload(items),
+            Expr::ArrayRepeat { elem, len } => array_repeat_payload(elem, *len),
+            _ => None,
+        };
+        if let Some(payload) = payload {
+            temp_array_lits.insert(name.clone(), payload);
+        }
+    });
     let mut confirmed: BTreeMap<String, Vec<u8>> = BTreeMap::new();
     walk_stmts(body, &mut |stmt| {
-        if let Stmt::Assign {
+        let Stmt::Assign {
             target: Expr::Var(name),
-            value: Expr::ArrayLit(items),
+            value,
         } = stmt
-            && arrays.contains(name.as_str())
-            && let Some(payload) = array_lit_payload(items)
-        {
+        else {
+            return;
+        };
+        if !arrays.contains(name.as_str()) {
+            return;
+        }
+        let payload = match value {
+            Expr::ArrayLit(items) => array_lit_payload(items),
+            Expr::ArrayRepeat { elem, len } => array_repeat_payload(elem, *len),
+            Expr::Var(temp) => temp_array_lits.get(temp.as_str()).cloned(),
+            _ => None,
+        };
+        if let Some(payload) = payload {
             confirmed.insert(name.as_str().to_string(), payload);
         }
     });
@@ -331,6 +358,10 @@ fn literal_string_locals(body: &[Stmt]) -> BTreeMap<String, Vec<u8>> {
             return confirmed;
         }
     }
+}
+
+fn array_repeat_payload(elem: &Expr, len: usize) -> Option<Vec<u8>> {
+    (len >= 1 && is_zero_literal(elem)).then(Vec::new)
 }
 
 fn array_lit_payload(items: &[Expr]) -> Option<Vec<u8>> {

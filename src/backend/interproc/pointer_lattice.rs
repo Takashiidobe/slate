@@ -2,8 +2,8 @@ use std::collections::{BTreeMap, BTreeSet};
 
 use crate::backend::interproc::{self, CallGraph};
 use crate::backend::rust_ast::{
-    BinOp, Block, CLibType, Expr, FnDef, Ident, Item, Path, Prim, Program, RustValue, Stmt, Type,
-    UnaryOp, Visibility,
+    BinOp, Block, CLibType, Expr, FnDef, Ident, Item, Path, Prim, Program, RustValue, Stmt,
+    StructDef, StructFields, Type, UnaryOp, Visibility,
 };
 use crate::function_identity::{CallBinding, FunctionIdentity, Known};
 
@@ -423,6 +423,38 @@ fn collect_fn_defs_into<'a>(items: &'a [Item], out: &mut BTreeMap<String, &'a Fn
                 out.insert(f.name.clone(), f);
             }
             Item::InlineMod { items, .. } => collect_fn_defs_into(items, out),
+            _ => {}
+        }
+    }
+}
+
+fn collect_field_ptr_mutability(items: &[Item]) -> BTreeMap<String, bool> {
+    let mut out = BTreeMap::new();
+    collect_field_ptr_mutability_into(items, &mut out);
+    out
+}
+
+fn collect_field_ptr_mutability_into(items: &[Item], out: &mut BTreeMap<String, bool>) {
+    for item in items {
+        match item {
+            Item::Record(record) => {
+                for field in &record.fields {
+                    if let Type::Ptr { mutable, .. } = &field.ty {
+                        out.insert(field.name.to_string(), *mutable);
+                    }
+                }
+            }
+            Item::Struct(StructDef {
+                fields: StructFields::Named(fields),
+                ..
+            }) => {
+                for field in fields {
+                    if let Type::Ptr { mutable, .. } = &field.ty {
+                        out.insert(field.name.clone(), *mutable);
+                    }
+                }
+            }
+            Item::InlineMod { items, .. } => collect_field_ptr_mutability_into(items, out),
             _ => {}
         }
     }
@@ -1137,6 +1169,7 @@ impl ClassifyCtx<'_> {
                 Known::StrLen
                 | Known::StrCmp
                 | Known::StrNCmp
+                | Known::StrNLen
                 | Known::StrChr
                 | Known::StrRChr
                 | Known::StrStr
@@ -1144,6 +1177,7 @@ impl ClassifyCtx<'_> {
                 | Known::StrSpn
                 | Known::StrCSpn => {
                     self.observe(canonical, PointerFact::observe_string);
+                    self.observe(canonical, PointerFact::observe_offset);
                 }
                 Known::MemChr | Known::MemCmp => {}
                 _ => self.observe(canonical, PointerFact::observe_escape),
@@ -1342,7 +1376,14 @@ pub(in crate::backend) fn apply(program: &mut Program) {
         return;
     }
 
-    apply_plans(&mut program.items, &plans, &param_names, &param_mutability);
+    let field_mutability = collect_field_ptr_mutability(&program.items);
+    apply_plans(
+        &mut program.items,
+        &plans,
+        &param_names,
+        &param_mutability,
+        &field_mutability,
+    );
 }
 
 fn for_each_fn_body<'a>(items: &'a [Item], f: &mut impl FnMut(&'a str, &'a [Stmt])) {
@@ -1532,6 +1573,7 @@ fn apply_plans(
     plans: &BTreeMap<String, BTreeMap<String, LiftPlan>>,
     param_names: &BTreeMap<String, Vec<String>>,
     param_mutability: &BTreeMap<String, Vec<Option<bool>>>,
+    field_mutability: &BTreeMap<String, bool>,
 ) {
     let empty = BTreeMap::new();
     for item in items {
@@ -1555,6 +1597,7 @@ fn apply_plans(
                     param_names,
                     param_mutability,
                     declared_mutability: &declared_mutability,
+                    field_mutability,
                     owned_aliases: &owned_aliases,
                     return_mutability: match &f.ret {
                         Some(Type::Ptr { mutable, .. }) => Some(*mutable),
@@ -1564,7 +1607,7 @@ fn apply_plans(
                 rewrite_stmts(&mut f.body, &ctx);
             }
             Item::InlineMod { items, .. } => {
-                apply_plans(items, plans, param_names, param_mutability)
+                apply_plans(items, plans, param_names, param_mutability, field_mutability)
             }
             _ => {}
         }
@@ -1696,6 +1739,7 @@ struct LiftCtx<'a> {
     param_names: &'a BTreeMap<String, Vec<String>>,
     param_mutability: &'a BTreeMap<String, Vec<Option<bool>>>,
     declared_mutability: &'a BTreeMap<String, bool>,
+    field_mutability: &'a BTreeMap<String, bool>,
     owned_aliases: &'a BTreeMap<String, String>,
     return_mutability: Option<bool>,
 }
@@ -1911,6 +1955,12 @@ fn rewrite_stmt(stmt: &mut Stmt, ctx: &LiftCtx) {
                         ctx.declared_mutability.get(target_name.as_str()).copied()
                     }
                     Expr::TupleField { .. } => Some(true),
+                    Expr::Field { field, .. } => Some(
+                        ctx.field_mutability
+                            .get(field.as_str())
+                            .copied()
+                            .unwrap_or(true),
+                    ),
                     _ => None,
                 };
                 if let Some(mutable) = target_mutable {
