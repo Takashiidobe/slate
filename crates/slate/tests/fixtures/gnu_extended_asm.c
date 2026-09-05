@@ -1,3 +1,4 @@
+// { dg-do run { target x86_64-*-* } }
 #include <stdio.h>
 
 static int gnu_extended_asm(int input) {

@@ -1,3 +1,4 @@
+// { dg-do run { target x86_64-*-* } }
 #include <immintrin.h>
 #include <stdio.h>
 #include <tmmintrin.h>

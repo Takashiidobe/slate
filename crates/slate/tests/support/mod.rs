@@ -19,25 +19,6 @@ pub struct Run {
     exit: Option<i32>,
 }
 
-pub fn fixture_clang_arg_overrides(name: &str) -> Vec<String> {
-    match name {
-        "goto_temp_cross_state" => vec!["-O2".to_string()],
-        "ptr_param_field_addr_of_mut" => vec!["-O2".to_string()],
-        "branch_hint_builtins" => vec!["-O1".to_string()],
-        "gnu_asm_register_variable" => vec!["-std=gnu23".to_string()],
-        "c23_typeof_unqual" => vec!["-std=gnu23".to_string()],
-        _ => Vec::new(),
-    }
-}
-
-pub fn fixture_c_ref_std_override(name: &str) -> Option<String> {
-    match name {
-        "gnu_asm_register_variable" => Some("-std=gnu23".to_string()),
-        "c23_typeof_unqual" => Some("-std=gnu23".to_string()),
-        _ => None,
-    }
-}
-
 pub struct CrossTarget {
     pub rust_triple: &'static str,
     pub cc: String,
@@ -1227,6 +1208,89 @@ fn is_semantic_dg_flag(flag: &str) -> bool {
             | "-pthread"
     ) || flag.starts_with("-std=")
         || flag.starts_with("-finput-charset=")
+}
+
+fn glob_match(pattern: &str, text: &str) -> bool {
+    fn helper(pattern: &[u8], text: &[u8]) -> bool {
+        match pattern.first() {
+            None => text.is_empty(),
+            Some(b'*') => (0..=text.len()).any(|i| helper(&pattern[1..], &text[i..])),
+            Some(b'?') => !text.is_empty() && helper(&pattern[1..], &text[1..]),
+            Some(c) => text.first() == Some(c) && helper(&pattern[1..], &text[1..]),
+        }
+    }
+    helper(pattern.as_bytes(), text.as_bytes())
+}
+
+fn target_clause_matches(text: &str, triple: &str) -> bool {
+    let Some(target_idx) = text.find("target") else {
+        return true;
+    };
+    let rest = text[target_idx + "target".len()..].trim_start();
+    let (negated, patterns) = if let Some(rest) = rest.strip_prefix('{') {
+        let inner = rest.split('}').next().unwrap_or(rest);
+        (true, inner.trim().trim_start_matches('!').trim())
+    } else {
+        (false, rest.split('}').next().unwrap_or(rest))
+    };
+    let any_match = patterns
+        .split_whitespace()
+        .any(|pattern| glob_match(pattern, triple));
+    if negated { !any_match } else { any_match }
+}
+
+pub fn fixture_target_restriction(path: &Path, triple: &str) -> Option<String> {
+    let text = std::fs::read_to_string(path).ok()?;
+    text.lines()
+        .find(|line| {
+            line.contains("dg-do")
+                && line.contains("target")
+                && !target_clause_matches(line, triple)
+        })
+        .map(|line| format!("{} (does not apply to {triple})", line.trim()))
+}
+
+fn is_semantic_fixture_flag(flag: &str) -> bool {
+    is_semantic_dg_flag(flag) || matches!(flag, "-O0" | "-O1" | "-O2" | "-O3")
+}
+
+fn fixture_dg_directive_flags(path: &Path, directive: &str) -> Vec<String> {
+    let Ok(text) = std::fs::read_to_string(path) else {
+        return Vec::new();
+    };
+    let mut flags = Vec::new();
+    for line in text.lines() {
+        if !line.contains(directive) {
+            continue;
+        }
+        let Some(quote_start) = line.find('"') else {
+            continue;
+        };
+        let rest = &line[quote_start + 1..];
+        let Some(quote_len) = rest.find('"') else {
+            continue;
+        };
+        let quoted = &rest[..quote_len];
+        let after = &rest[quote_len + 1..];
+        if after.contains("target") && !target_clause_matches(after, "x86_64-unknown-linux-gnu") {
+            continue;
+        }
+        flags.extend(
+            quoted
+                .split_whitespace()
+                .filter(|flag| is_semantic_fixture_flag(flag))
+                .map(str::to_string),
+        );
+    }
+    flags
+}
+
+pub fn fixture_dg_options(path: &Path) -> Vec<String> {
+    fixture_dg_directive_flags(path, "dg-options")
+}
+
+pub fn fixture_dg_additional_options(path: &Path) -> Vec<String> {
+    fixture_dg_directive_flags(path, "dg-additional-options")
 }
 
 pub fn translate(c_src: &Path, rs_out: &Path) -> Result<(), String> {

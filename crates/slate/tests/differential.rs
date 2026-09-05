@@ -633,12 +633,10 @@ fn generated_differential() {
         .collect();
     let translated = support::parallel_map(&default_fixtures, |f| {
         let generated = tmp.join(format!("{}.generated.rs", f.name));
-        support::translate_with_args(
-            &f.path,
-            &generated,
-            &support::fixture_clang_arg_overrides(&f.name),
-        )
-        .and_then(|()| {
+        let dg_options = support::fixture_dg_options(&f.path);
+        let mut extra_args = dg_options.clone();
+        extra_args.extend(support::fixture_dg_additional_options(&f.path));
+        support::translate_with_args(&f.path, &generated, &extra_args).and_then(|()| {
             let fixture = std::fs::read_to_string(&f.path)
                 .map_err(|e| format!("read {}: {e}", f.path.display()))?;
             let rust = std::fs::read_to_string(&generated)
@@ -650,9 +648,7 @@ fn generated_differential() {
                 &tmp.join("filecheck").join(&f.name),
             )?;
             let mut config = support::RunConfig::default();
-            config
-                .c_args
-                .extend(support::fixture_c_ref_std_override(&f.name));
+            config.c_args.extend(dg_options);
             Ok(support::Case {
                 name: f.name.clone(),
                 c_src: f.path.clone(),

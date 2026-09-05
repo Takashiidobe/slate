@@ -1,3 +1,4 @@
+// { dg-do run { target x86_64-*-* } }
 typedef unsigned int U32;
 
 static int cpuid_leaf1_nonzero(void) {
