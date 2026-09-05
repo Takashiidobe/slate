@@ -2,15 +2,15 @@
 /* { dg-do run { target bitint } } */
 
 #if __BITINT_MAXWIDTH__ >= 256
-// @lowering-fn-begin
-// @rewrite-fn-begin
 __attribute__((noipa)) unsigned _BitInt(256)
 foo (unsigned _BitInt(256) x, _BitInt(129) y)
 {
+// @lowering-begin
+// @rewrite-begin
   return x + (unsigned _BitInt(255)) y;
+// @rewrite-end
+// @lowering-end
 }
-// @rewrite-fn-end
-// @lowering-fn-end
 #endif
 
 // @lowering-fn-begin
