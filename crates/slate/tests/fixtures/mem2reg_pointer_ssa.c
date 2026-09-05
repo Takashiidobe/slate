@@ -36,8 +36,8 @@ int main(void) {
 // LOWERING-DAG:     return std::ptr::addr_of_mut!(value_pointer);
 // LOWERING-DAG: }
 // LOWERING-DAG: fn return_element() -> *mut i32 {
-// LOWERING-DAG:     let {{_v[0-9]+}}: i64 = 1;
-// LOWERING-DAG:     return unsafe { std::ptr::addr_of_mut!(values[({{_v[0-9]+}} as usize)]) };
+// LOWERING-DAG:     let {{__v[0-9]+}}: i64 = 1;
+// LOWERING-DAG:     return unsafe { std::ptr::addr_of_mut!(values[({{__v[0-9]+}} as usize)]) };
 // LOWERING-DAG: }
 // SLATE-FILECHECK-END lowering
 

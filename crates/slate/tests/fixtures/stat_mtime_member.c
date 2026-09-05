@@ -76,9 +76,9 @@ int main(void) {
 // LOWERING-NEXT:         },
 // LOWERING-NEXT:         __unused: [0; 3],
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: stat = stat {
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     __retval = {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: stat = stat {
 // LOWERING-NEXT:         st_dev: 0,
 // LOWERING-NEXT:         st_ino: 0,
 // LOWERING-NEXT:         st_nlink: 0,
@@ -104,29 +104,29 @@ int main(void) {
 // LOWERING-NEXT:         },
 // LOWERING-NEXT:         __unused: [0; 3],
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     info = {{_v[0-9]+}};
+// LOWERING-NEXT:     info = {{__v[0-9]+}};
 // LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut i8 = b"/dev/null\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-NEXT:         let {{__v[0-9]+}}: *mut i8 = b"/dev/null\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = unsafe {
 // LOWERING-NEXT:             stat(
-// LOWERING-NEXT:                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-NEXT:                 {{__v[0-9]+}} as *const core::ffi::c_char,
 // LOWERING-NEXT:                 std::ptr::addr_of_mut!(info) as *mut stat,
 // LOWERING-NEXT:             )
 // LOWERING-NEXT:         };
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-NEXT:         if {{_v[0-9]+}} {
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:             __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:             std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-NEXT:         if {{__v[0-9]+}} {
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-NEXT:             __retval = {{__v[0-9]+}};
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = __retval;
+// LOWERING-NEXT:             std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%lld\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = info.st_mtim.tv_sec;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%lld\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = info.st_mtim.tv_sec;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = __retval;
+// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -198,19 +198,19 @@ int main(void) {
 // REWRITES-NEXT:         },
 // REWRITES-NEXT:         __unused: [0; 3],
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe {
 // REWRITES-NEXT:         stat(
 // REWRITES-NEXT:             c"/dev/null".as_ptr(),
 // REWRITES-NEXT:             std::ptr::addr_of_mut!(info) as *mut stat,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
+// REWRITES-NEXT:     if {{__v[0-9]+}} {
 // REWRITES-NEXT:         __retval = 1;
 // REWRITES-NEXT:         std::process::exit(__retval as i32);
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = info.st_mtim.tv_sec;
-// REWRITES-NEXT:     unsafe { printf(c"%lld\n".as_ptr(), {{_v[0-9]+}}) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i64 = info.st_mtim.tv_sec;
+// REWRITES-NEXT:     unsafe { printf(c"%lld\n".as_ptr(), {{__v[0-9]+}}) };
 // REWRITES-NEXT:     std::process::exit(__retval as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

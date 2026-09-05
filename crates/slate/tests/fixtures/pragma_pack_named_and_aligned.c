@@ -117,29 +117,29 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d %d %d %d %d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = std::mem::size_of::<IgnoredBadAlign>() as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = std::mem::size_of::<NamedPushed>() as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = std::mem::size_of::<AfterNamedPop>() as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = std::mem::size_of::<AfterExtraPop>() as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = std::mem::size_of::<PackedButAligned>() as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = std::mem::align_of::<PackedButAligned>() as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d %d %d %d %d %d %d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = std::mem::size_of::<IgnoredBadAlign>() as i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = std::mem::size_of::<NamedPushed>() as i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = std::mem::size_of::<AfterNamedPop>() as i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = std::mem::size_of::<AfterExtraPop>() as i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = std::mem::size_of::<PackedButAligned>() as i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = std::mem::align_of::<PackedButAligned>() as i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe {
 // LOWERING-NEXT:         printf(
-// LOWERING-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_char,
-// LOWERING-NEXT:             {{_v[0-9]+}},
-// LOWERING-NEXT:             {{_v[0-9]+}},
-// LOWERING-NEXT:             {{_v[0-9]+}},
-// LOWERING-NEXT:             {{_v[0-9]+}},
-// LOWERING-NEXT:             {{_v[0-9]+}},
-// LOWERING-NEXT:             {{_v[0-9]+}},
-// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:             {{__v[0-9]+}},
 // LOWERING-NEXT:         )
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 

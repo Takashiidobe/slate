@@ -23,13 +23,13 @@ int main(void) {
 // LOWERING-NEXT: /// { dg-do run { target x86_64-*-* } }
 // LOWERING-NEXT: /// { dg-options "-std=gnu23" }
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 5;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 5;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32;
 // LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         core::arch::asm!("incl %eax", lateout("eax") {{_v[0-9]+}}, in("eax") {{_v[0-9]+}}, options(att_syntax));
+// LOWERING-NEXT:         core::arch::asm!("incl %eax", lateout("eax") {{__v[0-9]+}}, in("eax") {{__v[0-9]+}}, options(att_syntax));
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -50,11 +50,11 @@ int main(void) {
 // REWRITES-NEXT: /// { dg-do run { target x86_64-*-* } }
 // REWRITES-NEXT: /// { dg-options "-std=gnu23" }
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 5;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 5;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32;
 // REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         core::arch::asm!("incl %eax", lateout("eax") {{_v[0-9]+}}, in("eax") {{_v[0-9]+}}, options(att_syntax));
+// REWRITES-NEXT:         core::arch::asm!("incl %eax", lateout("eax") {{__v[0-9]+}}, in("eax") {{__v[0-9]+}}, options(att_syntax));
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// REWRITES-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

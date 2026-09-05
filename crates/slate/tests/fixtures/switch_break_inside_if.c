@@ -53,12 +53,12 @@ int main(void) {
 // LOWERING-NEXT:     let mut result: i32 = 0;
 // LOWERING-NEXT:     x = {{arg[0-9]+}};
 // LOWERING-NEXT:     extra = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = -1;
-// LOWERING-NEXT:     result = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = -1;
+// LOWERING-NEXT:     result = {{__v[0-9]+}};
 // LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = x;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = x;
 // LOWERING-NEXT:         {
-// LOWERING-NEXT:             let __switch_value0 = {{_v[0-9]+}};
+// LOWERING-NEXT:             let __switch_value0 = {{__v[0-9]+}};
 // LOWERING-NEXT:             let mut __switch_case0: i32 = match __switch_value0 {
 // LOWERING-NEXT:                 0 => 0,
 // LOWERING-NEXT:                 1 => 1,
@@ -68,26 +68,26 @@ int main(void) {
 // LOWERING-NEXT:                 match __switch_case0 {
 // LOWERING-NEXT:                     0 => {
 // LOWERING-NEXT:                         {
-// LOWERING-NEXT:                             let {{_v[0-9]+}}: i32 = extra;
-// LOWERING-NEXT:                             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// LOWERING-NEXT:                             if {{_v[0-9]+}} {
-// LOWERING-NEXT:                                 let {{_v[0-9]+}}: i32 = 10;
-// LOWERING-NEXT:                                 result = {{_v[0-9]+}};
+// LOWERING-NEXT:                             let {{__v[0-9]+}}: i32 = extra;
+// LOWERING-NEXT:                             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
+// LOWERING-NEXT:                             if {{__v[0-9]+}} {
+// LOWERING-NEXT:                                 let {{__v[0-9]+}}: i32 = 10;
+// LOWERING-NEXT:                                 result = {{__v[0-9]+}};
 // LOWERING-NEXT:                                 break '__switch0;
 // LOWERING-NEXT:                             }
 // LOWERING-NEXT:                         }
-// LOWERING-NEXT:                         let {{_v[0-9]+}}: i32 = 11;
-// LOWERING-NEXT:                         result = {{_v[0-9]+}};
+// LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 11;
+// LOWERING-NEXT:                         result = {{__v[0-9]+}};
 // LOWERING-NEXT:                         break '__switch0;
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                     1 => {
-// LOWERING-NEXT:                         let {{_v[0-9]+}}: i32 = 20;
-// LOWERING-NEXT:                         result = {{_v[0-9]+}};
+// LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 20;
+// LOWERING-NEXT:                         result = {{__v[0-9]+}};
 // LOWERING-NEXT:                         break '__switch0;
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                     2 => {
-// LOWERING-NEXT:                         let {{_v[0-9]+}}: i32 = -2;
-// LOWERING-NEXT:                         result = {{_v[0-9]+}};
+// LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = -2;
+// LOWERING-NEXT:                         result = {{__v[0-9]+}};
 // LOWERING-NEXT:                         break '__switch0;
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                     _ => {
@@ -97,34 +97,34 @@ int main(void) {
 // LOWERING-NEXT:             }
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = result;
-// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = result;
+// LOWERING-NEXT:     return {{__v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = classify({{_v[0-9]+}}, {{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = classify({{_v[0-9]+}}, {{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = classify({{_v[0-9]+}}, {{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 5;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = classify({{_v[0-9]+}}, {{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = classify({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = classify({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = classify({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 5;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = classify({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -147,9 +147,9 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn classify(mut {{_v[0-9]+}}: i32, mut extra: i32) -> i32 {
+// REWRITES-NEXT: fn classify(mut {{__v[0-9]+}}: i32, mut extra: i32) -> i32 {
 // REWRITES-NEXT:     let mut result: i32 = -1;
-// REWRITES-NEXT:     match {{_v[0-9]+}} {
+// REWRITES-NEXT:     match {{__v[0-9]+}} {
 // REWRITES-NEXT:         0 => {
 // REWRITES-NEXT:             if extra != 0 {
 // REWRITES-NEXT:                 result = 10;

@@ -39,27 +39,27 @@ int main(void) {
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let mut h: hooks = hooks { malloc_fn: None };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     h.malloc_fn = unsafe {
 // LOWERING-NEXT:         std::mem::transmute::<
 // LOWERING-NEXT:             *const (),
 // LOWERING-NEXT:             Option<unsafe extern "C-unwind" fn(u64) -> *mut core::ffi::c_void>,
 // LOWERING-NEXT:         >(malloc as *const ())
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(u64) -> *mut core::ffi::c_void> = h.malloc_fn;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}}
+// LOWERING-NEXT:     let {{__v[0-9]+}}: Option<unsafe extern "C-unwind" fn(u64) -> *mut core::ffi::c_void> = h.malloc_fn;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}}
 // LOWERING-NEXT:         == unsafe {
 // LOWERING-NEXT:             std::mem::transmute::<
 // LOWERING-NEXT:                 *const (),
 // LOWERING-NEXT:                 Option<unsafe extern "C-unwind" fn(u64) -> *mut core::ffi::c_void>,
 // LOWERING-NEXT:             >(malloc as *const ())
 // LOWERING-NEXT:         };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = if {{__v[0-9]+}} { {{__v[0-9]+}} } else { {{__v[0-9]+}} };
+// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -95,16 +95,16 @@ int main(void) {
 // REWRITES-NEXT:             Option<unsafe extern "C-unwind" fn(u64) -> *mut core::ffi::c_void>,
 // REWRITES-NEXT:         >(malloc as *const ())
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = h.malloc_fn
+// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = h.malloc_fn
 // REWRITES-NEXT:         == unsafe {
 // REWRITES-NEXT:             std::mem::transmute::<
 // REWRITES-NEXT:                 *const (),
 // REWRITES-NEXT:                 Option<unsafe extern "C-unwind" fn(u64) -> *mut core::ffi::c_void>,
 // REWRITES-NEXT:             >(malloc as *const ())
 // REWRITES-NEXT:         };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = if ({{_v[0-9]+}} as i32) != 0 { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// REWRITES-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = if ({{__v[0-9]+}} as i32) != 0 { {{__v[0-9]+}} } else { {{__v[0-9]+}} };
+// REWRITES-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

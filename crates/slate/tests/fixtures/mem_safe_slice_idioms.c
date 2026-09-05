@@ -69,16 +69,16 @@ int main(void) {
 }
 
 // SLATE-FILECHECK-BEGIN lowering
-// LOWERING-DAG: let {{_v[0-9]+}}: *mut u8 = dst_a.as_mut_ptr() as *mut u8;
-// LOWERING-DAG: let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
-// LOWERING-DAG: let {{_v[0-9]+}}: *mut u8 = src_a.as_mut_ptr() as *mut u8;
-// LOWERING-DAG: let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
-// LOWERING-DAG: let {{_v[0-9]+}}: u64 = 4;
-// LOWERING-DAG: let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe {
+// LOWERING-DAG: let {{__v[0-9]+}}: *mut u8 = dst_a.as_mut_ptr() as *mut u8;
+// LOWERING-DAG: let {{__v[0-9]+}}: *mut core::ffi::c_void = {{__v[0-9]+}} as *mut core::ffi::c_void;
+// LOWERING-DAG: let {{__v[0-9]+}}: *mut u8 = src_a.as_mut_ptr() as *mut u8;
+// LOWERING-DAG: let {{__v[0-9]+}}: *mut core::ffi::c_void = {{__v[0-9]+}} as *mut core::ffi::c_void;
+// LOWERING-DAG: let {{__v[0-9]+}}: u64 = 4;
+// LOWERING-DAG: let {{__v[0-9]+}}: *mut core::ffi::c_void = unsafe {
 // LOWERING-DAG:     memcpy(
-// LOWERING-DAG:         {{_v[0-9]+}} as *mut core::ffi::c_void,
-// LOWERING-DAG:         {{_v[0-9]+}} as *const core::ffi::c_void,
-// LOWERING-DAG:         {{_v[0-9]+}} as usize,
+// LOWERING-DAG:         {{__v[0-9]+}} as *mut core::ffi::c_void,
+// LOWERING-DAG:         {{__v[0-9]+}} as *const core::ffi::c_void,
+// LOWERING-DAG:         {{__v[0-9]+}} as usize,
 // LOWERING-DAG:     )
 // LOWERING-DAG: };
 // SLATE-FILECHECK-END lowering
@@ -95,21 +95,21 @@ int main(void) {
 // REWRITES-DAG: unsafe { self_c.copy_within(0usize..8usize, 0usize) };
 // REWRITES-DAG: dst_d.as_mut_ptr() as *mut u8;
 // REWRITES-DAG: unsafe { dst_d[(0usize..5usize)].fill((65 as i32) as u8) };
-// REWRITES-DAG: let {{_v[0-9]+}}: *mut u8 = dst_e.as_mut_ptr() as *mut u8;
-// REWRITES-DAG: let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
-// REWRITES-DAG: let {{_v[0-9]+}}: *mut u8 = src_e.as_mut_ptr() as *mut u8;
-// REWRITES-DAG: let {{_v[0-9]+}}: *mut u8 = unsafe { {{_v[0-9]+}}.add(2) };
+// REWRITES-DAG: let {{__v[0-9]+}}: *mut u8 = dst_e.as_mut_ptr() as *mut u8;
+// REWRITES-DAG: let {{__v[0-9]+}}: *mut core::ffi::c_void = {{__v[0-9]+}} as *mut core::ffi::c_void;
+// REWRITES-DAG: let {{__v[0-9]+}}: *mut u8 = src_e.as_mut_ptr() as *mut u8;
+// REWRITES-DAG: let {{__v[0-9]+}}: *mut u8 = unsafe { {{__v[0-9]+}}.add(2) };
 // REWRITES-DAG: unsafe {
-// REWRITES-DAG:     std::ptr::copy_nonoverlapping({{_v[0-9]+}} as *const u8, {{_v[0-9]+}} as *mut u8, (4 as u64) as usize)
+// REWRITES-DAG:     std::ptr::copy_nonoverlapping({{__v[0-9]+}} as *const u8, {{__v[0-9]+}} as *mut u8, (4 as u64) as usize)
 // REWRITES-DAG: };
-// REWRITES-DAG: let {{_v[0-9]+}}: *mut u8 = dst_f.as_mut_ptr() as *mut u8;
-// REWRITES-DAG: let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
-// REWRITES-DAG: let {{_v[0-9]+}}: *mut u8 = src_f.as_mut_ptr() as *mut u8;
+// REWRITES-DAG: let {{__v[0-9]+}}: *mut u8 = dst_f.as_mut_ptr() as *mut u8;
+// REWRITES-DAG: let {{__v[0-9]+}}: *mut core::ffi::c_void = {{__v[0-9]+}} as *mut core::ffi::c_void;
+// REWRITES-DAG: let {{__v[0-9]+}}: *mut u8 = src_f.as_mut_ptr() as *mut u8;
 // REWRITES-DAG: unsafe {
-// REWRITES-DAG:     std::ptr::copy_nonoverlapping({{_v[0-9]+}} as *const u8, {{_v[0-9]+}} as *mut u8, ({{_v[0-9]+}} as u64) as usize)
+// REWRITES-DAG:     std::ptr::copy_nonoverlapping({{__v[0-9]+}} as *const u8, {{__v[0-9]+}} as *mut u8, ({{__v[0-9]+}} as u64) as usize)
 // REWRITES-DAG: };
-// REWRITES-DAG: let {{_v[0-9]+}}: *mut u8 = dst_g.as_mut_ptr() as *mut u8;
+// REWRITES-DAG: let {{__v[0-9]+}}: *mut u8 = dst_g.as_mut_ptr() as *mut u8;
 // REWRITES-DAG: unsafe {
-// REWRITES-DAG:     std::ptr::copy_nonoverlapping({{_v[0-9]+}} as *const u8, {{_v[0-9]+}} as *mut u8, (4 as u64) as usize)
+// REWRITES-DAG:     std::ptr::copy_nonoverlapping({{__v[0-9]+}} as *const u8, {{__v[0-9]+}} as *mut u8, (4 as u64) as usize)
 // REWRITES-DAG: };
 // SLATE-FILECHECK-END rewrites

@@ -99,28 +99,28 @@ int main(void) {
 // LOWERING-NEXT:     };
 // LOWERING-NEXT:     let mut h: [i8; 2] = [0; 2];
 // LOWERING-NEXT:     let mut s: [i8; 2] = [0; 2];
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:     e.r#type = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: [i8; 2] = [72, 0];
-// LOWERING-NEXT:     h = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: [i8; 2] = [83, 0];
-// LOWERING-NEXT:     s = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = h.as_mut_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-NEXT:     e.r#type = {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: [i8; 2] = [72, 0];
+// LOWERING-NEXT:     h = {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: [i8; 2] = [83, 0];
+// LOWERING-NEXT:     s = {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = h.as_mut_ptr() as *mut i8;
 // LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         e.data.tag.handle = {{_v[0-9]+}};
+// LOWERING-NEXT:         e.data.tag.handle = {{__v[0-9]+}};
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = s.as_mut_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = s.as_mut_ptr() as *mut i8;
 // LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         e.data.tag.suffix = {{_v[0-9]+}};
+// LOWERING-NEXT:         e.data.tag.suffix = {{__v[0-9]+}};
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %s%s\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = e.r#type;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = unsafe { e.data.tag.handle };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = unsafe { e.data.tag.suffix };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d %s%s\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = e.r#type;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = unsafe { e.data.tag.handle };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = unsafe { e.data.tag.suffix };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -202,18 +202,18 @@ int main(void) {
 // REWRITES-NEXT:     e.r#type = 1;
 // REWRITES-NEXT:     h = [72, 0];
 // REWRITES-NEXT:     s = [83, 0];
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = h.as_mut_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i8 = h.as_mut_ptr() as *mut i8;
 // REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         e.data.tag.handle = {{_v[0-9]+}};
+// REWRITES-NEXT:         e.data.tag.handle = {{__v[0-9]+}};
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = s.as_mut_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i8 = s.as_mut_ptr() as *mut i8;
 // REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         e.data.tag.suffix = {{_v[0-9]+}};
+// REWRITES-NEXT:         e.data.tag.suffix = {{__v[0-9]+}};
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = e.r#type;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = unsafe { e.data.tag.handle };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = unsafe { e.data.tag.suffix };
-// REWRITES-NEXT:     unsafe { printf(c"%d %s%s\n".as_ptr(), {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = e.r#type;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i8 = unsafe { e.data.tag.handle };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i8 = unsafe { e.data.tag.suffix };
+// REWRITES-NEXT:     unsafe { printf(c"%d %s%s\n".as_ptr(), {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

@@ -49,28 +49,28 @@ int main(void) {
 // LOWERING-DAG:         cctx: 0,
 // LOWERING-DAG:         io: FIO_SyncCompressIO { y: 0 },
 // LOWERING-DAG:     };
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:     __retval = {{_v[0-9]+}};
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:     __retval = {{__v[0-9]+}};
 // LOWERING-DAG:     {
-// LOWERING-DAG:         let {{_v[0-9]+}}: cRess_t = cRess_t {
+// LOWERING-DAG:         let {{__v[0-9]+}}: cRess_t = cRess_t {
 // LOWERING-DAG:             dict: FIO_Dict_t { x: 5 },
 // LOWERING-DAG:             cctx: 9,
 // LOWERING-DAG:             io: FIO_SyncCompressIO { y: 7 },
 // LOWERING-DAG:         };
-// LOWERING-DAG:         r = {{_v[0-9]+}};
+// LOWERING-DAG:         r = {{__v[0-9]+}};
 // LOWERING-DAG:         freeCResources(std::ptr::addr_of_mut!(r));
-// LOWERING-DAG:         let {{_v[0-9]+}}: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
-// LOWERING-DAG:         let {{_v[0-9]+}}: i32 = r.dict.x;
-// LOWERING-DAG:         let {{_v[0-9]+}}: i32 = r.io.y;
-// LOWERING-DAG:         let {{_v[0-9]+}}: i32 = r.cctx;
-// LOWERING-DAG:         let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// LOWERING-DAG:         let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:         __retval = {{_v[0-9]+}};
-// LOWERING-DAG:         let {{_v[0-9]+}}: i32 = __retval;
-// LOWERING-DAG:         std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-DAG:         let {{__v[0-9]+}}: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
+// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = r.dict.x;
+// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = r.io.y;
+// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = r.cctx;
+// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:         __retval = {{__v[0-9]+}};
+// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = __retval;
+// LOWERING-DAG:         std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-DAG:     }
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = __retval;
-// LOWERING-DAG:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = __retval;
+// LOWERING-DAG:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-DAG: }
 // SLATE-FILECHECK-END lowering
 
@@ -90,10 +90,10 @@ int main(void) {
 // REWRITES-DAG:         io: FIO_SyncCompressIO { y: 7 },
 // REWRITES-DAG:     };
 // REWRITES-DAG:     freeCResources(unsafe { &mut (*std::ptr::addr_of_mut!(r)) });
-// REWRITES-DAG:     let {{_v[0-9]+}}: i32 = r.dict.x;
-// REWRITES-DAG:     let {{_v[0-9]+}}: i32 = r.io.y;
-// REWRITES-DAG:     let {{_v[0-9]+}}: i32 = r.cctx;
-// REWRITES-DAG:     unsafe { printf(c"%d %d %d\n".as_ptr(), {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = r.dict.x;
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = r.io.y;
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = r.cctx;
+// REWRITES-DAG:     unsafe { printf(c"%d %d %d\n".as_ptr(), {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
 // REWRITES-DAG:     __retval = 0;
 // REWRITES-DAG:     std::process::exit(__retval as i32);
 // REWRITES-DAG:     std::process::exit(__retval as i32);

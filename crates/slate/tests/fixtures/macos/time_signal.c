@@ -123,191 +123,227 @@ void slate_jump(sigjmp_buf environment) {
 
 // SLATE-FILECHECK-BEGIN lowering-macos
 // LOWERING-MACOS-DAG: fn slate_clock_now({{arg[0-9]+}}: *mut libc::timespec) -> i32 {
-// LOWERING-MACOS-DAG:     let {{_v[0-9]+}}: u32 = 6;
-// LOWERING-MACOS-DAG:     let {{_v[0-9]+}}: i32 = unsafe { clock_gettime({{_v[0-9]+}} as u32, {{arg[0-9]+}} as *mut libc::timespec) };
-// LOWERING-MACOS-DAG:     return {{_v[0-9]+}};
+// LOWERING-MACOS-DAG:     let {{__v[0-9]+}}: u32 = 6;
+// LOWERING-MACOS-DAG:     let {{__v[0-9]+}}: i32 = unsafe { clock_gettime({{__v[0-9]+}} as u32, {{arg[0-9]+}} as *mut libc::timespec) };
+// LOWERING-MACOS-DAG:     return {{__v[0-9]+}};
 // LOWERING-MACOS-DAG: }
 // LOWERING-MACOS-DAG: fn slate_arm_timer({{arg[0-9]+}}: *mut itimerval) -> i32 {
-// LOWERING-MACOS-DAG:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-MACOS-DAG:     let {{_v[0-9]+}}: *mut itimerval = std::ptr::null_mut();
-// LOWERING-MACOS-DAG:     let {{_v[0-9]+}}: i32 =
-// LOWERING-MACOS-DAG:         unsafe { setitimer({{_v[0-9]+}} as i32, {{arg[0-9]+}} as *const itimerval, {{_v[0-9]+}} as *mut itimerval) };
-// LOWERING-MACOS-DAG:     return {{_v[0-9]+}};
+// LOWERING-MACOS-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-MACOS-DAG:     let {{__v[0-9]+}}: *mut itimerval = std::ptr::null_mut();
+// LOWERING-MACOS-DAG:     let {{__v[0-9]+}}: i32 = unsafe {
+// LOWERING-MACOS-DAG:         setitimer(
+// LOWERING-MACOS-DAG:             {{__v[0-9]+}} as i32,
+// LOWERING-MACOS-DAG:             {{arg[0-9]+}} as *const itimerval,
+// LOWERING-MACOS-DAG:             {{__v[0-9]+}} as *mut itimerval,
+// LOWERING-MACOS-DAG:         )
+// LOWERING-MACOS-DAG:     };
+// LOWERING-MACOS-DAG:     return {{__v[0-9]+}};
 // LOWERING-MACOS-DAG: }
 // LOWERING-MACOS-DAG: unsafe fn slate_install_handler({{arg[0-9]+}}: *mut sigaction, {{arg[0-9]+}}: *mut __darwin_sigaltstack) -> i32 {
 // LOWERING-MACOS-DAG:     let mut action: *mut sigaction = std::ptr::null_mut();
 // LOWERING-MACOS-DAG:     action = {{arg[0-9]+}};
-// LOWERING-MACOS-DAG:     let {{_v[0-9]+}}: *mut sigaction = action;
+// LOWERING-MACOS-DAG:     let {{__v[0-9]+}}: *mut sigaction = action;
 // LOWERING-MACOS-DAG:     unsafe {
-// LOWERING-MACOS-DAG:         (*{{_v[0-9]+}}).__sigaction_u.__sa_sigaction = unsafe {
+// LOWERING-MACOS-DAG:         (*{{__v[0-9]+}}).__sigaction_u.__sa_sigaction = unsafe {
 // LOWERING-MACOS-DAG:             std::mem::transmute::<
 // LOWERING-MACOS-DAG:                 *const (),
 // LOWERING-MACOS-DAG:                 Option<unsafe extern "C-unwind" fn(i32, *mut __siginfo, *mut core::ffi::c_void)>,
 // LOWERING-MACOS-DAG:             >(slate_signal_handler as *const ())
 // LOWERING-MACOS-DAG:         };
 // LOWERING-MACOS-DAG:     }
-// LOWERING-MACOS-DAG:     let {{_v[0-9]+}}: i32 = 64;
-// LOWERING-MACOS-DAG:     let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-MACOS-DAG:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} | {{_v[0-9]+}};
-// LOWERING-MACOS-DAG:     let {{_v[0-9]+}}: *mut sigaction = action;
+// LOWERING-MACOS-DAG:     let {{__v[0-9]+}}: i32 = 64;
+// LOWERING-MACOS-DAG:     let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-MACOS-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} | {{__v[0-9]+}};
+// LOWERING-MACOS-DAG:     let {{__v[0-9]+}}: *mut sigaction = action;
 // LOWERING-MACOS-DAG:     unsafe {
-// LOWERING-MACOS-DAG:         (*{{_v[0-9]+}}).sa_flags = {{_v[0-9]+}};
+// LOWERING-MACOS-DAG:         (*{{__v[0-9]+}}).sa_flags = {{__v[0-9]+}};
 // LOWERING-MACOS-DAG:     }
-// LOWERING-MACOS-DAG:     let {{_v[0-9]+}}: *mut __darwin_sigaltstack = std::ptr::null_mut();
-// LOWERING-MACOS-DAG:     let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-MACOS-DAG:     let {{__v[0-9]+}}: *mut __darwin_sigaltstack = std::ptr::null_mut();
+// LOWERING-MACOS-DAG:     let {{__v[0-9]+}}: i32 = unsafe {
 // LOWERING-MACOS-DAG:         sigaltstack(
 // LOWERING-MACOS-DAG:             {{arg[0-9]+}} as *const __darwin_sigaltstack,
-// LOWERING-MACOS-DAG:             {{_v[0-9]+}} as *mut __darwin_sigaltstack,
+// LOWERING-MACOS-DAG:             {{__v[0-9]+}} as *mut __darwin_sigaltstack,
 // LOWERING-MACOS-DAG:         )
 // LOWERING-MACOS-DAG:     };
-// LOWERING-MACOS-DAG:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// LOWERING-MACOS-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-MACOS-DAG:         let {{_v[0-9]+}}: bool = true;
-// LOWERING-MACOS-DAG:         {{_v[0-9]+}}
+// LOWERING-MACOS-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
+// LOWERING-MACOS-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-MACOS-DAG:         let {{__v[0-9]+}}: bool = true;
+// LOWERING-MACOS-DAG:         {{__v[0-9]+}}
 // LOWERING-MACOS-DAG:     } else {
-// LOWERING-MACOS-DAG:         let {{_v[0-9]+}}: i32 = 30;
-// LOWERING-MACOS-DAG:         let {{_v[0-9]+}}: *mut sigaction = action;
-// LOWERING-MACOS-DAG:         let {{_v[0-9]+}}: *mut sigaction = std::ptr::null_mut();
-// LOWERING-MACOS-DAG:         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-MACOS-DAG:         let {{__v[0-9]+}}: i32 = 30;
+// LOWERING-MACOS-DAG:         let {{__v[0-9]+}}: *mut sigaction = action;
+// LOWERING-MACOS-DAG:         let {{__v[0-9]+}}: *mut sigaction = std::ptr::null_mut();
+// LOWERING-MACOS-DAG:         let {{__v[0-9]+}}: i32 = unsafe {
 // LOWERING-MACOS-DAG:             sigaction(
-// LOWERING-MACOS-DAG:                 {{_v[0-9]+}} as i32,
-// LOWERING-MACOS-DAG:                 {{_v[0-9]+}} as *const sigaction,
-// LOWERING-MACOS-DAG:                 {{_v[0-9]+}} as *mut sigaction,
+// LOWERING-MACOS-DAG:                 {{__v[0-9]+}} as i32,
+// LOWERING-MACOS-DAG:                 {{__v[0-9]+}} as *const sigaction,
+// LOWERING-MACOS-DAG:                 {{__v[0-9]+}} as *mut sigaction,
 // LOWERING-MACOS-DAG:             )
 // LOWERING-MACOS-DAG:         };
-// LOWERING-MACOS-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// LOWERING-MACOS-DAG:         {{_v[0-9]+}}
+// LOWERING-MACOS-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
+// LOWERING-MACOS-DAG:         {{__v[0-9]+}}
 // LOWERING-MACOS-DAG:     };
-// LOWERING-MACOS-DAG:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-MACOS-DAG:     return {{_v[0-9]+}};
+// LOWERING-MACOS-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-MACOS-DAG:     return {{__v[0-9]+}};
 // LOWERING-MACOS-DAG: }
 // LOWERING-MACOS-DAG: fn slate_block_signal({{arg[0-9]+}}: *mut u32) -> i32 {
 // LOWERING-MACOS-DAG:     let mut mask: *mut u32 = std::ptr::null_mut();
 // LOWERING-MACOS-DAG:     mask = {{arg[0-9]+}};
-// LOWERING-MACOS-DAG:     let {{_v[0-9]+}}: *mut u32 = mask;
-// LOWERING-MACOS-DAG:     let {{_v[0-9]+}}: i32 = unsafe { sigemptyset({{_v[0-9]+}} as *mut u32) };
-// LOWERING-MACOS-DAG:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// LOWERING-MACOS-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-MACOS-DAG:         let {{_v[0-9]+}}: bool = true;
-// LOWERING-MACOS-DAG:         {{_v[0-9]+}}
+// LOWERING-MACOS-DAG:     let {{__v[0-9]+}}: *mut u32 = mask;
+// LOWERING-MACOS-DAG:     let {{__v[0-9]+}}: i32 = unsafe { sigemptyset({{__v[0-9]+}} as *mut u32) };
+// LOWERING-MACOS-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
+// LOWERING-MACOS-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-MACOS-DAG:         let {{__v[0-9]+}}: bool = true;
+// LOWERING-MACOS-DAG:         {{__v[0-9]+}}
 // LOWERING-MACOS-DAG:     } else {
-// LOWERING-MACOS-DAG:         let {{_v[0-9]+}}: *mut u32 = mask;
-// LOWERING-MACOS-DAG:         let {{_v[0-9]+}}: i32 = 30;
-// LOWERING-MACOS-DAG:         let {{_v[0-9]+}}: i32 = unsafe { sigaddset({{_v[0-9]+}} as *mut u32, {{_v[0-9]+}} as i32) };
-// LOWERING-MACOS-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// LOWERING-MACOS-DAG:         {{_v[0-9]+}}
+// LOWERING-MACOS-DAG:         let {{__v[0-9]+}}: *mut u32 = mask;
+// LOWERING-MACOS-DAG:         let {{__v[0-9]+}}: i32 = 30;
+// LOWERING-MACOS-DAG:         let {{__v[0-9]+}}: i32 = unsafe { sigaddset({{__v[0-9]+}} as *mut u32, {{__v[0-9]+}} as i32) };
+// LOWERING-MACOS-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
+// LOWERING-MACOS-DAG:         {{__v[0-9]+}}
 // LOWERING-MACOS-DAG:     };
-// LOWERING-MACOS-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-MACOS-DAG:         let {{_v[0-9]+}}: bool = true;
-// LOWERING-MACOS-DAG:         {{_v[0-9]+}}
+// LOWERING-MACOS-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-MACOS-DAG:         let {{__v[0-9]+}}: bool = true;
+// LOWERING-MACOS-DAG:         {{__v[0-9]+}}
 // LOWERING-MACOS-DAG:     } else {
-// LOWERING-MACOS-DAG:         let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-MACOS-DAG:         let {{_v[0-9]+}}: *mut u32 = mask;
-// LOWERING-MACOS-DAG:         let {{_v[0-9]+}}: *mut u32 = std::ptr::null_mut();
-// LOWERING-MACOS-DAG:         let {{_v[0-9]+}}: i32 = unsafe { sigprocmask({{_v[0-9]+}} as i32, {{_v[0-9]+}} as *const u32, {{_v[0-9]+}} as *mut u32) };
-// LOWERING-MACOS-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// LOWERING-MACOS-DAG:         {{_v[0-9]+}}
+// LOWERING-MACOS-DAG:         let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-MACOS-DAG:         let {{__v[0-9]+}}: *mut u32 = mask;
+// LOWERING-MACOS-DAG:         let {{__v[0-9]+}}: *mut u32 = std::ptr::null_mut();
+// LOWERING-MACOS-DAG:         let {{__v[0-9]+}}: i32 =
+// LOWERING-MACOS-DAG:             unsafe { sigprocmask({{__v[0-9]+}} as i32, {{__v[0-9]+}} as *const u32, {{__v[0-9]+}} as *mut u32) };
+// LOWERING-MACOS-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
+// LOWERING-MACOS-DAG:         {{__v[0-9]+}}
 // LOWERING-MACOS-DAG:     };
-// LOWERING-MACOS-DAG:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-MACOS-DAG:     return {{_v[0-9]+}};
+// LOWERING-MACOS-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-MACOS-DAG:     return {{__v[0-9]+}};
 // LOWERING-MACOS-DAG: }
 // LOWERING-MACOS-DAG: fn slate_jump({{arg[0-9]+}}: *mut i32) {
 // LOWERING-MACOS-DAG:     let mut environment: *mut i32 = std::ptr::null_mut();
 // LOWERING-MACOS-DAG:     environment = {{arg[0-9]+}};
 // LOWERING-MACOS-DAG:     {
-// LOWERING-MACOS-DAG:         let {{_v[0-9]+}}: *mut i32 = environment;
-// LOWERING-MACOS-DAG:         let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-MACOS-DAG:         let {{_v[0-9]+}}: i32 = unsafe { sigsetjmp({{_v[0-9]+}} as *mut i32, {{_v[0-9]+}} as i32) };
-// LOWERING-MACOS-DAG:         let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-MACOS-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-MACOS-DAG:         if {{_v[0-9]+}} {
+// LOWERING-MACOS-DAG:         let {{__v[0-9]+}}: *mut i32 = environment;
+// LOWERING-MACOS-DAG:         let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-MACOS-DAG:         let {{__v[0-9]+}}: i32 = unsafe { sigsetjmp({{__v[0-9]+}} as *mut i32, {{__v[0-9]+}} as i32) };
+// LOWERING-MACOS-DAG:         let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-MACOS-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-MACOS-DAG:         if {{__v[0-9]+}} {
 // LOWERING-MACOS-DAG:             return;
 // LOWERING-MACOS-DAG:         }
 // LOWERING-MACOS-DAG:     }
-// LOWERING-MACOS-DAG:     let {{_v[0-9]+}}: *mut i32 = environment;
-// LOWERING-MACOS-DAG:     let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-MACOS-DAG:     unsafe { siglongjmp({{_v[0-9]+}} as *mut i32, {{_v[0-9]+}} as i32) };
+// LOWERING-MACOS-DAG:     let {{__v[0-9]+}}: *mut i32 = environment;
+// LOWERING-MACOS-DAG:     let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-MACOS-DAG:     unsafe { siglongjmp({{__v[0-9]+}} as *mut i32, {{__v[0-9]+}} as i32) };
 // LOWERING-MACOS-DAG:     return;
 // LOWERING-MACOS-DAG: }
 // SLATE-FILECHECK-END lowering-macos
 
 // SLATE-FILECHECK-BEGIN rewrites-macos
 // REWRITES-MACOS-DAG: fn slate_clock_now({{arg[0-9]+}}: *mut libc::timespec) -> i32 {
-// REWRITES-MACOS-DAG:     unsafe { clock_gettime(6 as u32, {{arg[0-9]+}} as *mut libc::timespec) }
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: u32 = 6;
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: i32 = unsafe { clock_gettime({{__v[0-9]+}} as u32, {{arg[0-9]+}} as *mut libc::timespec) };
+// REWRITES-MACOS-DAG:     {{__v[0-9]+}}
 // REWRITES-MACOS-DAG: }
 // REWRITES-MACOS-DAG: fn slate_arm_timer({{arg[0-9]+}}: *mut itimerval) -> i32 {
-// REWRITES-MACOS-DAG:     let {{_v[0-9]+}}: *mut itimerval = std::ptr::null_mut();
-// REWRITES-MACOS-DAG:     unsafe { setitimer(0 as i32, {{arg[0-9]+}} as *const itimerval, {{_v[0-9]+}} as *mut itimerval) }
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: *mut itimerval = std::ptr::null_mut();
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: i32 = unsafe {
+// REWRITES-MACOS-DAG:         setitimer(
+// REWRITES-MACOS-DAG:             {{__v[0-9]+}} as i32,
+// REWRITES-MACOS-DAG:             {{arg[0-9]+}} as *const itimerval,
+// REWRITES-MACOS-DAG:             {{__v[0-9]+}} as *mut itimerval,
+// REWRITES-MACOS-DAG:         )
+// REWRITES-MACOS-DAG:     };
+// REWRITES-MACOS-DAG:     {{__v[0-9]+}}
 // REWRITES-MACOS-DAG: }
 // REWRITES-MACOS-DAG: unsafe fn slate_install_handler(
 // REWRITES-MACOS-DAG:     mut action: *mut sigaction,
 // REWRITES-MACOS-DAG:     {{arg[0-9]+}}: *mut __darwin_sigaltstack,
 // REWRITES-MACOS-DAG: ) -> i32 {
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: *mut sigaction = action;
 // REWRITES-MACOS-DAG:     unsafe {
-// REWRITES-MACOS-DAG:         (*action).__sigaction_u.__sa_sigaction = unsafe {
+// REWRITES-MACOS-DAG:         (*{{__v[0-9]+}}).__sigaction_u.__sa_sigaction = unsafe {
 // REWRITES-MACOS-DAG:             std::mem::transmute::<
 // REWRITES-MACOS-DAG:                 *const (),
 // REWRITES-MACOS-DAG:                 Option<unsafe extern "C-unwind" fn(i32, *mut __siginfo, *mut core::ffi::c_void)>,
 // REWRITES-MACOS-DAG:             >(slate_signal_handler as *const ())
 // REWRITES-MACOS-DAG:         };
 // REWRITES-MACOS-DAG:     }
-// REWRITES-MACOS-DAG:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: i32 = 64;
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: i32 = 1;
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} | {{__v[0-9]+}};
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: *mut sigaction = action;
 // REWRITES-MACOS-DAG:     unsafe {
-// REWRITES-MACOS-DAG:         (*action).sa_flags = 64 | {{_v[0-9]+}};
+// REWRITES-MACOS-DAG:         (*{{__v[0-9]+}}).sa_flags = {{__v[0-9]+}};
 // REWRITES-MACOS-DAG:     }
-// REWRITES-MACOS-DAG:     let {{_v[0-9]+}}: *mut __darwin_sigaltstack = std::ptr::null_mut();
-// REWRITES-MACOS-DAG:     let {{_v[0-9]+}}: i32 = unsafe {
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: *mut __darwin_sigaltstack = std::ptr::null_mut();
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: i32 = unsafe {
 // REWRITES-MACOS-DAG:         sigaltstack(
 // REWRITES-MACOS-DAG:             {{arg[0-9]+}} as *const __darwin_sigaltstack,
-// REWRITES-MACOS-DAG:             {{_v[0-9]+}} as *mut __darwin_sigaltstack,
+// REWRITES-MACOS-DAG:             {{__v[0-9]+}} as *mut __darwin_sigaltstack,
 // REWRITES-MACOS-DAG:         )
 // REWRITES-MACOS-DAG:     };
-// REWRITES-MACOS-DAG:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// REWRITES-MACOS-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-MACOS-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-MACOS-DAG:         {{_v[0-9]+}}
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-MACOS-DAG:         {{__v[0-9]+}}
 // REWRITES-MACOS-DAG:     } else {
-// REWRITES-MACOS-DAG:         let {{_v[0-9]+}}: *mut sigaction = std::ptr::null_mut();
-// REWRITES-MACOS-DAG:         let {{_v[0-9]+}}: i32 = unsafe {
+// REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: i32 = 30;
+// REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: *mut sigaction = action;
+// REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: *mut sigaction = std::ptr::null_mut();
+// REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: i32 = unsafe {
 // REWRITES-MACOS-DAG:             sigaction(
-// REWRITES-MACOS-DAG:                 30 as i32,
-// REWRITES-MACOS-DAG:                 action as *const sigaction,
-// REWRITES-MACOS-DAG:                 {{_v[0-9]+}} as *mut sigaction,
+// REWRITES-MACOS-DAG:                 {{__v[0-9]+}} as i32,
+// REWRITES-MACOS-DAG:                 {{__v[0-9]+}} as *const sigaction,
+// REWRITES-MACOS-DAG:                 {{__v[0-9]+}} as *mut sigaction,
 // REWRITES-MACOS-DAG:             )
 // REWRITES-MACOS-DAG:         };
-// REWRITES-MACOS-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// REWRITES-MACOS-DAG:         {{_v[0-9]+}}
+// REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
+// REWRITES-MACOS-DAG:         {{__v[0-9]+}}
 // REWRITES-MACOS-DAG:     };
-// REWRITES-MACOS-DAG:     {{_v[0-9]+}} as i32
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// REWRITES-MACOS-DAG:     {{__v[0-9]+}}
 // REWRITES-MACOS-DAG: }
 // REWRITES-MACOS-DAG: fn slate_block_signal(mut mask: *mut u32) -> i32 {
-// REWRITES-MACOS-DAG:     let {{_v[0-9]+}}: i32 = unsafe { sigemptyset(mask as *mut u32) };
-// REWRITES-MACOS-DAG:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// REWRITES-MACOS-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-MACOS-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-MACOS-DAG:         {{_v[0-9]+}}
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: *mut u32 = mask;
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: i32 = unsafe { sigemptyset({{__v[0-9]+}} as *mut u32) };
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-MACOS-DAG:         {{__v[0-9]+}}
 // REWRITES-MACOS-DAG:     } else {
-// REWRITES-MACOS-DAG:         let {{_v[0-9]+}}: i32 = unsafe { sigaddset(mask as *mut u32, 30 as i32) };
-// REWRITES-MACOS-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// REWRITES-MACOS-DAG:         {{_v[0-9]+}}
+// REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: *mut u32 = mask;
+// REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: i32 = 30;
+// REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: i32 = unsafe { sigaddset({{__v[0-9]+}} as *mut u32, {{__v[0-9]+}} as i32) };
+// REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
+// REWRITES-MACOS-DAG:         {{__v[0-9]+}}
 // REWRITES-MACOS-DAG:     };
-// REWRITES-MACOS-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-MACOS-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-MACOS-DAG:         {{_v[0-9]+}}
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-MACOS-DAG:         {{__v[0-9]+}}
 // REWRITES-MACOS-DAG:     } else {
-// REWRITES-MACOS-DAG:         let {{_v[0-9]+}}: *mut u32 = std::ptr::null_mut();
-// REWRITES-MACOS-DAG:         let {{_v[0-9]+}}: i32 = unsafe { sigprocmask(1 as i32, mask as *const u32, {{_v[0-9]+}} as *mut u32) };
-// REWRITES-MACOS-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// REWRITES-MACOS-DAG:         {{_v[0-9]+}}
+// REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: i32 = 1;
+// REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: *mut u32 = mask;
+// REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: *mut u32 = std::ptr::null_mut();
+// REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: i32 =
+// REWRITES-MACOS-DAG:             unsafe { sigprocmask({{__v[0-9]+}} as i32, {{__v[0-9]+}} as *const u32, {{__v[0-9]+}} as *mut u32) };
+// REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
+// REWRITES-MACOS-DAG:         {{__v[0-9]+}}
 // REWRITES-MACOS-DAG:     };
-// REWRITES-MACOS-DAG:     {{_v[0-9]+}} as i32
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// REWRITES-MACOS-DAG:     {{__v[0-9]+}}
 // REWRITES-MACOS-DAG: }
 // REWRITES-MACOS-DAG: fn slate_jump(mut environment: *mut i32) {
-// REWRITES-MACOS-DAG:     let {{_v[0-9]+}}: i32 = unsafe { sigsetjmp(environment as *mut i32, 1 as i32) };
-// REWRITES-MACOS-DAG:     if {{_v[0-9]+}} != 0 {
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: *mut i32 = environment;
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: i32 = 1;
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: i32 = unsafe { sigsetjmp({{__v[0-9]+}} as *mut i32, {{__v[0-9]+}} as i32) };
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-MACOS-DAG:     if {{__v[0-9]+}} {
 // REWRITES-MACOS-DAG:         return;
 // REWRITES-MACOS-DAG:     }
-// REWRITES-MACOS-DAG:     unsafe { siglongjmp(environment as *mut i32, 1 as i32) };
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: *mut i32 = environment;
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: i32 = 1;
+// REWRITES-MACOS-DAG:     unsafe { siglongjmp({{__v[0-9]+}} as *mut i32, {{__v[0-9]+}} as i32) };
 // REWRITES-MACOS-DAG:     return;
 // REWRITES-MACOS-DAG: }
 // SLATE-FILECHECK-END rewrites-macos

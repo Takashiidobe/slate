@@ -33,8 +33,8 @@ int main(void) {
 // REWRITES-DAG:     let mut buf: aligned::Aligned<aligned::A16, [i8; 16]> = aligned::Aligned([0; 16]);
 // REWRITES-DAG:     unsafe { remove(c"slate_stdio_file_write.tmp".as_ptr()) };
 // REWRITES-DAG:     f = unsafe { fopen(c"slate_stdio_file_write.tmp".as_ptr(), c"w".as_ptr()) };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = !(f != std::ptr::null_mut());
-// REWRITES-DAG:     if {{_v[0-9]+}} {
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = !(f != std::ptr::null_mut());
+// REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { puts(c"open-fail".as_ptr()) };
 // REWRITES-DAG:         __retval = 0;
 // REWRITES-DAG:         std::process::exit(__retval as i32);
@@ -42,8 +42,8 @@ int main(void) {
 // REWRITES-DAG:     unsafe { fputs(c"owned\n".as_ptr(), f as *mut libc::FILE) };
 // REWRITES-DAG:     unsafe { fclose(f as *mut libc::FILE) };
 // REWRITES-DAG:     g = unsafe { fopen(c"slate_stdio_file_write.tmp".as_ptr(), c"r".as_ptr()) };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = !(g != std::ptr::null_mut());
-// REWRITES-DAG:     if {{_v[0-9]+}} {
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = !(g != std::ptr::null_mut());
+// REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { puts(c"reopen-fail".as_ptr()) };
 // REWRITES-DAG:         __retval = 0;
 // REWRITES-DAG:         std::process::exit(__retval as i32);

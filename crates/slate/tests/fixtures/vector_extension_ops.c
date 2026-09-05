@@ -32,29 +32,29 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: [i32; 4] = [1, 2, 3, 4];
-// LOWERING-NEXT:     let {{_v[0-9]+}}: [i32; 4] = [5, 6, 7, 8];
-// LOWERING-NEXT:     let {{_v[0-9]+}}: [i32; 4] = [
-// LOWERING-NEXT:         {{_v[0-9]+}}[0usize] + {{_v[0-9]+}}[0usize],
-// LOWERING-NEXT:         {{_v[0-9]+}}[1usize] + {{_v[0-9]+}}[1usize],
-// LOWERING-NEXT:         {{_v[0-9]+}}[2usize] + {{_v[0-9]+}}[2usize],
-// LOWERING-NEXT:         {{_v[0-9]+}}[3usize] + {{_v[0-9]+}}[3usize],
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: [i32; 4] = [1, 2, 3, 4];
+// LOWERING-NEXT:     let {{__v[0-9]+}}: [i32; 4] = [5, 6, 7, 8];
+// LOWERING-NEXT:     let {{__v[0-9]+}}: [i32; 4] = [
+// LOWERING-NEXT:         {{__v[0-9]+}}[0usize] + {{__v[0-9]+}}[0usize],
+// LOWERING-NEXT:         {{__v[0-9]+}}[1usize] + {{__v[0-9]+}}[1usize],
+// LOWERING-NEXT:         {{__v[0-9]+}}[2usize] + {{__v[0-9]+}}[2usize],
+// LOWERING-NEXT:         {{__v[0-9]+}}[3usize] + {{__v[0-9]+}}[3usize],
 // LOWERING-NEXT:     ];
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 20;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: [i32; 4] = [{{_v[0-9]+}}[0usize], {{_v[0-9]+}}, {{_v[0-9]+}}[2usize], {{_v[0-9]+}}[3usize]];
-// LOWERING-NEXT:     let {{_v[0-9]+}}: [i32; 4] = [{{_v[0-9]+}}[3usize], {{_v[0-9]+}}[2usize], {{_v[0-9]+}}[1usize], {{_v[0-9]+}}[0usize]];
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}}[({{_v[0-9]+}} as usize)];
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}}[({{_v[0-9]+}} as usize)];
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}}[({{_v[0-9]+}} as usize)];
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 20;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: [i32; 4] = [{{__v[0-9]+}}[0usize], {{__v[0-9]+}}, {{__v[0-9]+}}[2usize], {{__v[0-9]+}}[3usize]];
+// LOWERING-NEXT:     let {{__v[0-9]+}}: [i32; 4] = [{{__v[0-9]+}}[3usize], {{__v[0-9]+}}[2usize], {{__v[0-9]+}}[1usize], {{__v[0-9]+}}[0usize]];
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}}[({{__v[0-9]+}} as usize)];
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}}[({{__v[0-9]+}} as usize)];
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}}[({{__v[0-9]+}} as usize)];
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -78,22 +78,22 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: [i32; 4] = [1, 2, 3, 4];
-// REWRITES-NEXT:     let {{_v[0-9]+}}: [i32; 4] = [5, 6, 7, 8];
-// REWRITES-NEXT:     let {{_v[0-9]+}}: [i32; 4] = [
-// REWRITES-NEXT:         {{_v[0-9]+}}[0usize] + {{_v[0-9]+}}[0usize],
-// REWRITES-NEXT:         {{_v[0-9]+}}[1usize] + {{_v[0-9]+}}[1usize],
-// REWRITES-NEXT:         {{_v[0-9]+}}[2usize] + {{_v[0-9]+}}[2usize],
-// REWRITES-NEXT:         {{_v[0-9]+}}[3usize] + {{_v[0-9]+}}[3usize],
+// REWRITES-NEXT:     let {{__v[0-9]+}}: [i32; 4] = [1, 2, 3, 4];
+// REWRITES-NEXT:     let {{__v[0-9]+}}: [i32; 4] = [5, 6, 7, 8];
+// REWRITES-NEXT:     let {{__v[0-9]+}}: [i32; 4] = [
+// REWRITES-NEXT:         {{__v[0-9]+}}[0usize] + {{__v[0-9]+}}[0usize],
+// REWRITES-NEXT:         {{__v[0-9]+}}[1usize] + {{__v[0-9]+}}[1usize],
+// REWRITES-NEXT:         {{__v[0-9]+}}[2usize] + {{__v[0-9]+}}[2usize],
+// REWRITES-NEXT:         {{__v[0-9]+}}[3usize] + {{__v[0-9]+}}[3usize],
 // REWRITES-NEXT:     ];
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 20;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: [i32; 4] = [{{_v[0-9]+}}[0usize], {{_v[0-9]+}}, {{_v[0-9]+}}[2usize], {{_v[0-9]+}}[3usize]];
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 20;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: [i32; 4] = [{{__v[0-9]+}}[0usize], {{__v[0-9]+}}, {{__v[0-9]+}}[2usize], {{__v[0-9]+}}[3usize]];
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             c"%d %d %d\n".as_ptr(),
-// REWRITES-NEXT:             {{_v[0-9]+}}[0],
-// REWRITES-NEXT:             {{_v[0-9]+}}[1],
-// REWRITES-NEXT:             [{{_v[0-9]+}}[3usize], {{_v[0-9]+}}[2usize], {{_v[0-9]+}}[1usize], {{_v[0-9]+}}[0usize]][0],
+// REWRITES-NEXT:             {{__v[0-9]+}}[0],
+// REWRITES-NEXT:             {{__v[0-9]+}}[1],
+// REWRITES-NEXT:             [{{__v[0-9]+}}[3usize], {{__v[0-9]+}}[2usize], {{__v[0-9]+}}[1usize], {{__v[0-9]+}}[0usize]][0],
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     std::process::exit(0 as i32);

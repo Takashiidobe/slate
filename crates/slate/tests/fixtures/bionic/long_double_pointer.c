@@ -34,16 +34,16 @@ int main(void) { return 0; }
 // LOWERING-BIONIC-AARCH64-NEXT: fn probe() -> f128 {
 // LOWERING-BIONIC-AARCH64-NEXT:     let mut value: f128 = 0.0f128;
 // LOWERING-BIONIC-AARCH64-NEXT:     unsafe { store_long_double(std::ptr::addr_of_mut!(value) as *mut f128) };
-// LOWERING-BIONIC-AARCH64-NEXT:     let {{_v[0-9]+}}: *mut f128 =
+// LOWERING-BIONIC-AARCH64-NEXT:     let {{__v[0-9]+}}: *mut f128 =
 // LOWERING-BIONIC-AARCH64-NEXT:         (unsafe { load_long_double(std::ptr::addr_of_mut!(value) as *const f128) }) as *mut f128;
-// LOWERING-BIONIC-AARCH64-NEXT:     let {{_v[0-9]+}}: f128 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-BIONIC-AARCH64-NEXT:     return {{_v[0-9]+}};
+// LOWERING-BIONIC-AARCH64-NEXT:     let {{__v[0-9]+}}: f128 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-BIONIC-AARCH64-NEXT:     return {{__v[0-9]+}};
 // LOWERING-BIONIC-AARCH64-NEXT: }
 // LOWERING-BIONIC-AARCH64-EMPTY:
 // LOWERING-BIONIC-AARCH64-NEXT: fn main() {
-// LOWERING-BIONIC-AARCH64-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-BIONIC-AARCH64-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-BIONIC-AARCH64-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-BIONIC-AARCH64-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-BIONIC-AARCH64-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-BIONIC-AARCH64-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-BIONIC-AARCH64-NEXT: }
 // SLATE-FILECHECK-END lowering-bionic-aarch64
 
@@ -70,16 +70,16 @@ int main(void) { return 0; }
 // LOWERING-BIONIC-X86_64-NEXT: fn probe() -> f128 {
 // LOWERING-BIONIC-X86_64-NEXT:     let mut value: f128 = 0.0f128;
 // LOWERING-BIONIC-X86_64-NEXT:     unsafe { store_long_double(std::ptr::addr_of_mut!(value) as *mut f128) };
-// LOWERING-BIONIC-X86_64-NEXT:     let {{_v[0-9]+}}: *mut f128 =
+// LOWERING-BIONIC-X86_64-NEXT:     let {{__v[0-9]+}}: *mut f128 =
 // LOWERING-BIONIC-X86_64-NEXT:         (unsafe { load_long_double(std::ptr::addr_of_mut!(value) as *const f128) }) as *mut f128;
-// LOWERING-BIONIC-X86_64-NEXT:     let {{_v[0-9]+}}: f128 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-BIONIC-X86_64-NEXT:     return {{_v[0-9]+}};
+// LOWERING-BIONIC-X86_64-NEXT:     let {{__v[0-9]+}}: f128 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-BIONIC-X86_64-NEXT:     return {{__v[0-9]+}};
 // LOWERING-BIONIC-X86_64-NEXT: }
 // LOWERING-BIONIC-X86_64-EMPTY:
 // LOWERING-BIONIC-X86_64-NEXT: fn main() {
-// LOWERING-BIONIC-X86_64-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-BIONIC-X86_64-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-BIONIC-X86_64-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-BIONIC-X86_64-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-BIONIC-X86_64-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-BIONIC-X86_64-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-BIONIC-X86_64-NEXT: }
 // SLATE-FILECHECK-END lowering-bionic-x86_64
 
@@ -106,12 +106,14 @@ int main(void) { return 0; }
 // REWRITES-BIONIC-AARCH64-NEXT: fn probe() -> f128 {
 // REWRITES-BIONIC-AARCH64-NEXT:     let mut value: f128 = 0.0f128;
 // REWRITES-BIONIC-AARCH64-NEXT:     unsafe { store_long_double(std::ptr::addr_of_mut!(value) as *mut f128) };
-// REWRITES-BIONIC-AARCH64-NEXT:     let {{_v[0-9]+}}: *mut f128 =
+// REWRITES-BIONIC-AARCH64-NEXT:     let {{__v[0-9]+}}: *mut f128 =
 // REWRITES-BIONIC-AARCH64-NEXT:         (unsafe { load_long_double(std::ptr::addr_of_mut!(value) as *const f128) }) as *mut f128;
-// REWRITES-BIONIC-AARCH64-NEXT:     unsafe { *{{_v[0-9]+}} }
+// REWRITES-BIONIC-AARCH64-NEXT:     let {{__v[0-9]+}}: f128 = unsafe { *{{__v[0-9]+}} };
+// REWRITES-BIONIC-AARCH64-NEXT:     {{__v[0-9]+}}
 // REWRITES-BIONIC-AARCH64-NEXT: }
 // REWRITES-BIONIC-AARCH64-EMPTY:
 // REWRITES-BIONIC-AARCH64-NEXT: fn main() {
-// REWRITES-BIONIC-AARCH64-NEXT:     std::process::exit(0 as i32);
+// REWRITES-BIONIC-AARCH64-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// REWRITES-BIONIC-AARCH64-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // REWRITES-BIONIC-AARCH64-NEXT: }
 // SLATE-FILECHECK-END rewrites-bionic-aarch64

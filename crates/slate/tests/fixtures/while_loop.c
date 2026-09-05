@@ -27,31 +27,31 @@ int main(void) {
 // LOWERING-DAG:     let mut total: i32 = 0;
 // LOWERING-DAG:     let mut i: i32 = 0;
 // LOWERING-DAG:     n = {{arg[0-9]+}};
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:     total = {{_v[0-9]+}};
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-DAG:     i = {{_v[0-9]+}};
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:     total = {{__v[0-9]+}};
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-DAG:     i = {{__v[0-9]+}};
 // LOWERING-DAG:     {
 // LOWERING-DAG:         loop {
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = i;
-// LOWERING-DAG:             let {{_v[0-9]+}}: i32 = n;
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} <= {{_v[0-9]+}};
-// LOWERING-DAG:             if !{{_v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = i;
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = n;
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} <= {{__v[0-9]+}};
+// LOWERING-DAG:             if !{{__v[0-9]+}} {
 // LOWERING-DAG:                 break;
 // LOWERING-DAG:             }
 // LOWERING-DAG:             {
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i32 = i;
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i32 = total;
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-DAG:                 total = {{_v[0-9]+}};
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i32 = i;
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
-// LOWERING-DAG:                 i = {{_v[0-9]+}};
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = i;
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = total;
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-DAG:                 total = {{__v[0-9]+}};
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = i;
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + 1;
+// LOWERING-DAG:                 i = {{__v[0-9]+}};
 // LOWERING-DAG:             }
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = total;
-// LOWERING-DAG:     return {{_v[0-9]+}};
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = total;
+// LOWERING-DAG:     return {{__v[0-9]+}};
 // LOWERING-DAG: }
 // SLATE-FILECHECK-END lowering
 

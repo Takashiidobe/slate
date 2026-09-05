@@ -41,40 +41,40 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u32 = std::ptr::addr_of_mut!(values).cast::<u32>();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = update({{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u32 = std::ptr::addr_of_mut!(aligned_values).cast::<u32>();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = update({{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%u %u %u\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = middle(std::ptr::addr_of_mut!(values));
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut u32 = std::ptr::addr_of_mut!(values).cast::<u32>();
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = update({{__v[0-9]+}});
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut u32 = std::ptr::addr_of_mut!(aligned_values).cast::<u32>();
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = update({{__v[0-9]+}});
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%u %u %u\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = middle(std::ptr::addr_of_mut!(values));
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn update({{arg[0-9]+}}: *mut u32) -> u32 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = 10;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u32 = unsafe { {{arg[0-9]+}}.add(0) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = 10;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut u32 = unsafe { {{arg[0-9]+}}.add(0) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}} + {{__v[0-9]+}};
 // LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         *{{_v[0-9]+}} = {{_v[0-9]+}};
+// LOWERING-NEXT:         *{{__v[0-9]+}} = {{__v[0-9]+}};
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u32 = unsafe { {{arg[0-9]+}}.add(0) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u32 = unsafe { {{arg[0-9]+}}.add(2) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut u32 = unsafe { {{arg[0-9]+}}.add(0) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = 2;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut u32 = unsafe { {{arg[0-9]+}}.add(2) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-NEXT:     return {{__v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn middle({{arg[0-9]+}}: *mut [u32; 3]) -> u32 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 1;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = unsafe { (*{{arg[0-9]+}})[({{_v[0-9]+}} as usize)] };
-// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = 1;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = unsafe { (*{{arg[0-9]+}})[({{__v[0-9]+}} as usize)] };
+// LOWERING-NEXT:     return {{__v[0-9]+}};
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -102,14 +102,14 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut u32 = std::ptr::addr_of_mut!(values).cast::<u32>();
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u32 = update({{_v[0-9]+}});
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut u32 = std::ptr::addr_of_mut!(aligned_values).cast::<u32>();
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut u32 = std::ptr::addr_of_mut!(values).cast::<u32>();
+// REWRITES-NEXT:     let {{__v[0-9]+}}: u32 = update({{__v[0-9]+}});
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut u32 = std::ptr::addr_of_mut!(aligned_values).cast::<u32>();
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             c"%u %u %u\n".as_ptr(),
-// REWRITES-NEXT:             {{_v[0-9]+}},
-// REWRITES-NEXT:             update({{_v[0-9]+}}),
+// REWRITES-NEXT:             {{__v[0-9]+}},
+// REWRITES-NEXT:             update({{__v[0-9]+}}),
 // REWRITES-NEXT:             middle(unsafe { &(*std::ptr::addr_of_mut!(values)) }),
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
@@ -117,15 +117,15 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn update({{arg[0-9]+}}: *mut u32) -> u32 {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u32 = 10;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut u32 = unsafe { {{arg[0-9]+}}.add(0) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: u32 = 10;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut u32 = unsafe { {{arg[0-9]+}}.add(0) };
 // REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         *{{_v[0-9]+}} = (unsafe { *{{_v[0-9]+}} }) + {{_v[0-9]+}};
+// REWRITES-NEXT:         *{{__v[0-9]+}} = (unsafe { *{{__v[0-9]+}} }) + {{__v[0-9]+}};
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut u32 = unsafe { {{arg[0-9]+}}.add(0) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u32 = unsafe { *{{_v[0-9]+}} };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut u32 = unsafe { {{arg[0-9]+}}.add(2) };
-// REWRITES-NEXT:     {{_v[0-9]+}} + unsafe { *{{_v[0-9]+}} }
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut u32 = unsafe { {{arg[0-9]+}}.add(0) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: u32 = unsafe { *{{__v[0-9]+}} };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut u32 = unsafe { {{arg[0-9]+}}.add(2) };
+// REWRITES-NEXT:     {{__v[0-9]+}} + unsafe { *{{__v[0-9]+}} }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn middle({{arg[0-9]+}}: &[u32; 3]) -> u32 {

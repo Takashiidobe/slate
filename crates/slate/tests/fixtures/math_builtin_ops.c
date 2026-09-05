@@ -68,71 +68,71 @@ int main(void) {
 // LOWERING-NEXT:     let mut d: f64 = 0.0;
 // LOWERING-NEXT:     let mut e: f64 = 0.0;
 // LOWERING-NEXT:     let mut f: f64 = 0.0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 0.5;
-// LOWERING-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(a), {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 2.0;
-// LOWERING-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(b), {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 8.0;
-// LOWERING-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(c), {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 5.75;
-// LOWERING-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(d), {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 2.0;
-// LOWERING-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(e), {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 2.5;
-// LOWERING-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(f), {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(a)) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { sin({{_v[0-9]+}} as f64) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(a)) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { cos({{_v[0-9]+}} as f64) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(a)) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { tan({{_v[0-9]+}} as f64) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(c)) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { log({{_v[0-9]+}} as f64) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 100.0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { log10({{_v[0-9]+}} as f64) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(c)) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { log2({{_v[0-9]+}} as f64) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(b)) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 3.0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { pow({{_v[0-9]+}} as f64, {{_v[0-9]+}} as f64) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(c)) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { sqrt({{_v[0-9]+}} as f64) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 1.0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { exp({{_v[0-9]+}} as f64) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 3.0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { exp2({{_v[0-9]+}} as f64) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(d)) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(e)) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { fmod({{_v[0-9]+}} as f64, {{_v[0-9]+}} as f64) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(f)) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = unsafe { lround({{_v[0-9]+}} as f64) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(f)) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = unsafe { llround({{_v[0-9]+}} as f64) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 2.0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { __slate_builtin_exp10({{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%.3f %.3f %.3f %.3f %ld %lld %.3f\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = 0.5;
+// LOWERING-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(a), {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = 2.0;
+// LOWERING-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(b), {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = 8.0;
+// LOWERING-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(c), {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = 5.75;
+// LOWERING-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(d), {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = 2.0;
+// LOWERING-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(e), {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = 2.5;
+// LOWERING-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(f), {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(a)) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { sin({{__v[0-9]+}} as f64) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(a)) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { cos({{__v[0-9]+}} as f64) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(a)) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { tan({{__v[0-9]+}} as f64) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(c)) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { log({{__v[0-9]+}} as f64) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = 100.0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { log10({{__v[0-9]+}} as f64) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(c)) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { log2({{__v[0-9]+}} as f64) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(b)) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = 3.0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { pow({{__v[0-9]+}} as f64, {{__v[0-9]+}} as f64) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(c)) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { sqrt({{__v[0-9]+}} as f64) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = 1.0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { exp({{__v[0-9]+}} as f64) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = 3.0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { exp2({{__v[0-9]+}} as f64) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(d)) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(e)) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { fmod({{__v[0-9]+}} as f64, {{__v[0-9]+}} as f64) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(f)) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = unsafe { lround({{__v[0-9]+}} as f64) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(f)) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = unsafe { llround({{__v[0-9]+}} as f64) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = 2.0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { __slate_builtin_exp10({{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%.3f %.3f %.3f %.3f %ld %lld %.3f\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe {
 // LOWERING-NEXT:         printf(
-// LOWERING-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_char,
-// LOWERING-NEXT:             {{_v[0-9]+}},
-// LOWERING-NEXT:             {{_v[0-9]+}},
-// LOWERING-NEXT:             {{_v[0-9]+}},
-// LOWERING-NEXT:             {{_v[0-9]+}},
-// LOWERING-NEXT:             {{_v[0-9]+}},
-// LOWERING-NEXT:             {{_v[0-9]+}},
-// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:             {{__v[0-9]+}},
 // LOWERING-NEXT:         )
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -186,45 +186,45 @@ int main(void) {
 // REWRITES-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(d), 5.75 as f64) };
 // REWRITES-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(e), 2.0 as f64) };
 // REWRITES-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(f), 2.5 as f64) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(a)) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { sin({{_v[0-9]+}} as f64) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(a)) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { cos({{_v[0-9]+}} as f64) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(a)) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { tan({{_v[0-9]+}} as f64) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(c)) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { log({{_v[0-9]+}} as f64) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { log10(100.0 as f64) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(c)) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { log2({{_v[0-9]+}} as f64) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(b)) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { pow({{_v[0-9]+}} as f64, 3.0 as f64) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(c)) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { sqrt({{_v[0-9]+}} as f64) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { exp(1.0 as f64) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { exp2(3.0 as f64) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(d)) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(e)) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { fmod({{_v[0-9]+}} as f64, {{_v[0-9]+}} as f64) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(f)) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = unsafe { lround({{_v[0-9]+}} as f64) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(f)) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(a)) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { sin({{__v[0-9]+}} as f64) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(a)) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { cos({{__v[0-9]+}} as f64) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: f64 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// REWRITES-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(a)) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { tan({{__v[0-9]+}} as f64) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: f64 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// REWRITES-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(c)) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { log({{__v[0-9]+}} as f64) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { log10(100.0 as f64) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: f64 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// REWRITES-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(c)) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { log2({{__v[0-9]+}} as f64) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: f64 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// REWRITES-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(b)) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { pow({{__v[0-9]+}} as f64, 3.0 as f64) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(c)) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { sqrt({{__v[0-9]+}} as f64) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: f64 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// REWRITES-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { exp(1.0 as f64) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: f64 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// REWRITES-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { exp2(3.0 as f64) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: f64 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// REWRITES-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(d)) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(e)) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { fmod({{__v[0-9]+}} as f64, {{__v[0-9]+}} as f64) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(f)) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i64 = unsafe { lround({{__v[0-9]+}} as f64) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(f)) };
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             c"%.3f %.3f %.3f %.3f %ld %lld %.3f\n".as_ptr(),
-// REWRITES-NEXT:             {{_v[0-9]+}},
-// REWRITES-NEXT:             {{_v[0-9]+}},
-// REWRITES-NEXT:             {{_v[0-9]+}},
-// REWRITES-NEXT:             {{_v[0-9]+}},
-// REWRITES-NEXT:             {{_v[0-9]+}},
-// REWRITES-NEXT:             unsafe { llround({{_v[0-9]+}} as f64) },
+// REWRITES-NEXT:             {{__v[0-9]+}},
+// REWRITES-NEXT:             {{__v[0-9]+}},
+// REWRITES-NEXT:             {{__v[0-9]+}},
+// REWRITES-NEXT:             {{__v[0-9]+}},
+// REWRITES-NEXT:             {{__v[0-9]+}},
+// REWRITES-NEXT:             unsafe { llround({{__v[0-9]+}} as f64) },
 // REWRITES-NEXT:             unsafe { __slate_builtin_exp10(2.0 as f64) },
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };

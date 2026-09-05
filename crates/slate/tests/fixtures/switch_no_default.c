@@ -41,12 +41,12 @@ int main(void) {
 // LOWERING-NEXT:     let mut x: i32 = 0;
 // LOWERING-NEXT:     let mut out: i32 = 0;
 // LOWERING-NEXT:     x = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 5;
-// LOWERING-NEXT:     out = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 5;
+// LOWERING-NEXT:     out = {{__v[0-9]+}};
 // LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = x;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = x;
 // LOWERING-NEXT:         {
-// LOWERING-NEXT:             let __switch_value0 = {{_v[0-9]+}};
+// LOWERING-NEXT:             let __switch_value0 = {{__v[0-9]+}};
 // LOWERING-NEXT:             let mut __switch_case0: i32 = match __switch_value0 {
 // LOWERING-NEXT:                 4 => 0,
 // LOWERING-NEXT:                 9 => 1,
@@ -55,17 +55,17 @@ int main(void) {
 // LOWERING-NEXT:             '__switch0: loop {
 // LOWERING-NEXT:                 match __switch_case0 {
 // LOWERING-NEXT:                     0 => {
-// LOWERING-NEXT:                         let {{_v[0-9]+}}: i32 = 4;
-// LOWERING-NEXT:                         let {{_v[0-9]+}}: i32 = out;
-// LOWERING-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:                         out = {{_v[0-9]+}};
+// LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 4;
+// LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = out;
+// LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-NEXT:                         out = {{__v[0-9]+}};
 // LOWERING-NEXT:                         break '__switch0;
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                     1 => {
-// LOWERING-NEXT:                         let {{_v[0-9]+}}: i32 = 9;
-// LOWERING-NEXT:                         let {{_v[0-9]+}}: i32 = out;
-// LOWERING-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:                         out = {{_v[0-9]+}};
+// LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 9;
+// LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = out;
+// LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-NEXT:                         out = {{__v[0-9]+}};
 // LOWERING-NEXT:                         break '__switch0;
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                     _ => {
@@ -75,22 +75,22 @@ int main(void) {
 // LOWERING-NEXT:             }
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = out;
-// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = out;
+// LOWERING-NEXT:     return {{__v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 4;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = pick({{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 9;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = pick({{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 2;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = pick({{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 4;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = pick({{__v[0-9]+}});
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 9;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = pick({{__v[0-9]+}});
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 2;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = pick({{__v[0-9]+}});
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -113,9 +113,9 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn pick(mut {{_v[0-9]+}}: i32) -> i32 {
+// REWRITES-NEXT: fn pick(mut {{__v[0-9]+}}: i32) -> i32 {
 // REWRITES-NEXT:     let mut out: i32 = 5;
-// REWRITES-NEXT:     match {{_v[0-9]+}} {
+// REWRITES-NEXT:     match {{__v[0-9]+}} {
 // REWRITES-NEXT:         4 => {
 // REWRITES-NEXT:             out += 4;
 // REWRITES-NEXT:         }

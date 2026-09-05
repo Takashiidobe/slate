@@ -63,774 +63,793 @@ main ()
 
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: fn main() {
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-DAG:     {
-// LOWERING-DAG:         let {{_v[0-9]+}}: num_complex::Complex<f32> = unsafe { a };
-// LOWERING-DAG:         let {{_v[0-9]+}}: num_complex::Complex<f32> = unsafe { a };
-// LOWERING-DAG:         let {{_v[0-9]+}}: num_complex::Complex<f32> = unsafe { __mulsc3({{_v[0-9]+}}.re, {{_v[0-9]+}}.im, {{_v[0-9]+}}.re, {{_v[0-9]+}}.im) };
-// LOWERING-DAG:         let {{_v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex { re: -1.0, im: 0.0 };
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> = unsafe { a };
+// LOWERING-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> = unsafe { a };
+// LOWERING-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> =
+// LOWERING-DAG:             unsafe { __mulsc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
+// LOWERING-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex { re: -1.0, im: 0.0 };
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<f32> = unsafe { b };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<f32> = unsafe { b };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<f32> =
-// LOWERING-DAG:                 unsafe { __mulsc3({{_v[0-9]+}}.re, {{_v[0-9]+}}.im, {{_v[0-9]+}}.re, {{_v[0-9]+}}.im) };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex { re: -4.0, im: 0.0 };
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f32> = unsafe { b };
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f32> = unsafe { b };
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f32> =
+// LOWERING-DAG:                 unsafe { __mulsc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex { re: -4.0, im: 0.0 };
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<f32> = unsafe { c };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<f32> = unsafe { c };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<f32> =
-// LOWERING-DAG:                 unsafe { __mulsc3({{_v[0-9]+}}.re, {{_v[0-9]+}}.im, {{_v[0-9]+}}.re, {{_v[0-9]+}}.im) };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex { re: -9.0, im: 0.0 };
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f32> = unsafe { c };
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f32> = unsafe { c };
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f32> =
+// LOWERING-DAG:                 unsafe { __mulsc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex { re: -9.0, im: 0.0 };
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<f32> = unsafe { d };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<f32> = unsafe { d };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<f32> =
-// LOWERING-DAG:                 unsafe { __mulsc3({{_v[0-9]+}}.re, {{_v[0-9]+}}.im, {{_v[0-9]+}}.re, {{_v[0-9]+}}.im) };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex { re: -16.0, im: 0.0 };
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f32> = unsafe { d };
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f32> = unsafe { d };
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f32> =
+// LOWERING-DAG:                 unsafe { __mulsc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex { re: -16.0, im: 0.0 };
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<f64> = unsafe { e };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<f64> = unsafe { e };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<f64> =
-// LOWERING-DAG:                 unsafe { __muldc3({{_v[0-9]+}}.re, {{_v[0-9]+}}.im, {{_v[0-9]+}}.re, {{_v[0-9]+}}.im) };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex { re: -1.0, im: 0.0 };
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f64> = unsafe { e };
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f64> = unsafe { e };
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f64> =
+// LOWERING-DAG:                 unsafe { __muldc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex { re: -1.0, im: 0.0 };
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<f64> = unsafe { f };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<f64> = unsafe { f };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<f64> =
-// LOWERING-DAG:                 unsafe { __muldc3({{_v[0-9]+}}.re, {{_v[0-9]+}}.im, {{_v[0-9]+}}.re, {{_v[0-9]+}}.im) };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex { re: -4.0, im: 0.0 };
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f64> = unsafe { f };
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f64> = unsafe { f };
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f64> =
+// LOWERING-DAG:                 unsafe { __muldc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex { re: -4.0, im: 0.0 };
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<f64> = unsafe { g };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<f64> = unsafe { g };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<f64> =
-// LOWERING-DAG:                 unsafe { __muldc3({{_v[0-9]+}}.re, {{_v[0-9]+}}.im, {{_v[0-9]+}}.re, {{_v[0-9]+}}.im) };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex { re: -9.0, im: 0.0 };
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f64> = unsafe { g };
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f64> = unsafe { g };
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f64> =
+// LOWERING-DAG:                 unsafe { __muldc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex { re: -9.0, im: 0.0 };
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<f64> = unsafe { h };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<f64> = unsafe { h };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<f64> =
-// LOWERING-DAG:                 unsafe { __muldc3({{_v[0-9]+}}.re, {{_v[0-9]+}}.im, {{_v[0-9]+}}.re, {{_v[0-9]+}}.im) };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex { re: -16.0, im: 0.0 };
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f64> = unsafe { h };
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f64> = unsafe { h };
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f64> =
+// LOWERING-DAG:                 unsafe { __muldc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex { re: -16.0, im: 0.0 };
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { i };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { i };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { i };
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { i };
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
 // LOWERING-DAG:                 __slate_cf80_mul(
 // LOWERING-DAG:                     num_complex::Complex {
-// LOWERING-DAG:                         re: {{_v[0-9]+}}.re,
-// LOWERING-DAG:                         im: {{_v[0-9]+}}.im,
+// LOWERING-DAG:                         re: {{__v[0-9]+}}.re,
+// LOWERING-DAG:                         im: {{__v[0-9]+}}.im,
 // LOWERING-DAG:                     },
 // LOWERING-DAG:                     num_complex::Complex {
-// LOWERING-DAG:                         re: {{_v[0-9]+}}.re,
-// LOWERING-DAG:                         im: {{_v[0-9]+}}.im,
+// LOWERING-DAG:                         re: {{__v[0-9]+}}.re,
+// LOWERING-DAG:                         im: {{__v[0-9]+}}.im,
 // LOWERING-DAG:                     },
 // LOWERING-DAG:                 )
 // LOWERING-DAG:             };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // LOWERING-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 191]),
 // LOWERING-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // LOWERING-DAG:             };
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { j };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { j };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { j };
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { j };
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
 // LOWERING-DAG:                 __slate_cf80_mul(
 // LOWERING-DAG:                     num_complex::Complex {
-// LOWERING-DAG:                         re: {{_v[0-9]+}}.re,
-// LOWERING-DAG:                         im: {{_v[0-9]+}}.im,
+// LOWERING-DAG:                         re: {{__v[0-9]+}}.re,
+// LOWERING-DAG:                         im: {{__v[0-9]+}}.im,
 // LOWERING-DAG:                     },
 // LOWERING-DAG:                     num_complex::Complex {
-// LOWERING-DAG:                         re: {{_v[0-9]+}}.re,
-// LOWERING-DAG:                         im: {{_v[0-9]+}}.im,
+// LOWERING-DAG:                         re: {{__v[0-9]+}}.re,
+// LOWERING-DAG:                         im: {{__v[0-9]+}}.im,
 // LOWERING-DAG:                     },
 // LOWERING-DAG:                 )
 // LOWERING-DAG:             };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // LOWERING-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 192]),
 // LOWERING-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // LOWERING-DAG:             };
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { k };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { k };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { k };
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { k };
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
 // LOWERING-DAG:                 __slate_cf80_mul(
 // LOWERING-DAG:                     num_complex::Complex {
-// LOWERING-DAG:                         re: {{_v[0-9]+}}.re,
-// LOWERING-DAG:                         im: {{_v[0-9]+}}.im,
+// LOWERING-DAG:                         re: {{__v[0-9]+}}.re,
+// LOWERING-DAG:                         im: {{__v[0-9]+}}.im,
 // LOWERING-DAG:                     },
 // LOWERING-DAG:                     num_complex::Complex {
-// LOWERING-DAG:                         re: {{_v[0-9]+}}.re,
-// LOWERING-DAG:                         im: {{_v[0-9]+}}.im,
+// LOWERING-DAG:                         re: {{__v[0-9]+}}.re,
+// LOWERING-DAG:                         im: {{__v[0-9]+}}.im,
 // LOWERING-DAG:                     },
 // LOWERING-DAG:                 )
 // LOWERING-DAG:             };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // LOWERING-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 144, 2, 192]),
 // LOWERING-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // LOWERING-DAG:             };
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { l };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { l };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { l };
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { l };
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
 // LOWERING-DAG:                 __slate_cf80_mul(
 // LOWERING-DAG:                     num_complex::Complex {
-// LOWERING-DAG:                         re: {{_v[0-9]+}}.re,
-// LOWERING-DAG:                         im: {{_v[0-9]+}}.im,
+// LOWERING-DAG:                         re: {{__v[0-9]+}}.re,
+// LOWERING-DAG:                         im: {{__v[0-9]+}}.im,
 // LOWERING-DAG:                     },
 // LOWERING-DAG:                     num_complex::Complex {
-// LOWERING-DAG:                         re: {{_v[0-9]+}}.re,
-// LOWERING-DAG:                         im: {{_v[0-9]+}}.im,
+// LOWERING-DAG:                         re: {{__v[0-9]+}}.re,
+// LOWERING-DAG:                         im: {{__v[0-9]+}}.im,
 // LOWERING-DAG:                     },
 // LOWERING-DAG:                 )
 // LOWERING-DAG:             };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // LOWERING-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 3, 192]),
 // LOWERING-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // LOWERING-DAG:             };
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<f32> = unsafe { m };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<f32> = unsafe { m };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<f32> =
-// LOWERING-DAG:                 unsafe { __mulsc3({{_v[0-9]+}}.re, {{_v[0-9]+}}.im, {{_v[0-9]+}}.re, {{_v[0-9]+}}.im) };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex { re: -1.0, im: 0.0 };
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f32> = unsafe { m };
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f32> = unsafe { m };
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f32> =
+// LOWERING-DAG:                 unsafe { __mulsc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex { re: -1.0, im: 0.0 };
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<f32> = unsafe { n };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<f32> = unsafe { n };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<f32> =
-// LOWERING-DAG:                 unsafe { __mulsc3({{_v[0-9]+}}.re, {{_v[0-9]+}}.im, {{_v[0-9]+}}.re, {{_v[0-9]+}}.im) };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex { re: -4.0, im: 0.0 };
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f32> = unsafe { n };
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f32> = unsafe { n };
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f32> =
+// LOWERING-DAG:                 unsafe { __mulsc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex { re: -4.0, im: 0.0 };
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<f32> = unsafe { o };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<f32> = unsafe { o };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<f32> =
-// LOWERING-DAG:                 unsafe { __mulsc3({{_v[0-9]+}}.re, {{_v[0-9]+}}.im, {{_v[0-9]+}}.re, {{_v[0-9]+}}.im) };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex { re: -9.0, im: 0.0 };
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f32> = unsafe { o };
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f32> = unsafe { o };
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f32> =
+// LOWERING-DAG:                 unsafe { __mulsc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex { re: -9.0, im: 0.0 };
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<f32> = unsafe { p };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<f32> = unsafe { p };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<f32> =
-// LOWERING-DAG:                 unsafe { __mulsc3({{_v[0-9]+}}.re, {{_v[0-9]+}}.im, {{_v[0-9]+}}.re, {{_v[0-9]+}}.im) };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex { re: -16.0, im: 0.0 };
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f32> = unsafe { p };
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f32> = unsafe { p };
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f32> =
+// LOWERING-DAG:                 unsafe { __mulsc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex { re: -16.0, im: 0.0 };
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<f64> = unsafe { q };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<f64> = unsafe { q };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<f64> =
-// LOWERING-DAG:                 unsafe { __muldc3({{_v[0-9]+}}.re, {{_v[0-9]+}}.im, {{_v[0-9]+}}.re, {{_v[0-9]+}}.im) };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex { re: -1.0, im: 0.0 };
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f64> = unsafe { q };
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f64> = unsafe { q };
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f64> =
+// LOWERING-DAG:                 unsafe { __muldc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex { re: -1.0, im: 0.0 };
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<f64> = unsafe { r };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<f64> = unsafe { r };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<f64> =
-// LOWERING-DAG:                 unsafe { __muldc3({{_v[0-9]+}}.re, {{_v[0-9]+}}.im, {{_v[0-9]+}}.re, {{_v[0-9]+}}.im) };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex { re: -4.0, im: 0.0 };
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f64> = unsafe { r };
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f64> = unsafe { r };
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f64> =
+// LOWERING-DAG:                 unsafe { __muldc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex { re: -4.0, im: 0.0 };
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<f64> = unsafe { s };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<f64> = unsafe { s };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<f64> =
-// LOWERING-DAG:                 unsafe { __muldc3({{_v[0-9]+}}.re, {{_v[0-9]+}}.im, {{_v[0-9]+}}.re, {{_v[0-9]+}}.im) };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex { re: -9.0, im: 0.0 };
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f64> = unsafe { s };
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f64> = unsafe { s };
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f64> =
+// LOWERING-DAG:                 unsafe { __muldc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex { re: -9.0, im: 0.0 };
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<f64> = unsafe { t };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<f64> = unsafe { t };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<f64> =
-// LOWERING-DAG:                 unsafe { __muldc3({{_v[0-9]+}}.re, {{_v[0-9]+}}.im, {{_v[0-9]+}}.re, {{_v[0-9]+}}.im) };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex { re: -16.0, im: 0.0 };
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f64> = unsafe { t };
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f64> = unsafe { t };
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f64> =
+// LOWERING-DAG:                 unsafe { __muldc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex { re: -16.0, im: 0.0 };
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { u };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { u };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { u };
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { u };
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
 // LOWERING-DAG:                 __slate_cf80_mul(
 // LOWERING-DAG:                     num_complex::Complex {
-// LOWERING-DAG:                         re: {{_v[0-9]+}}.re,
-// LOWERING-DAG:                         im: {{_v[0-9]+}}.im,
+// LOWERING-DAG:                         re: {{__v[0-9]+}}.re,
+// LOWERING-DAG:                         im: {{__v[0-9]+}}.im,
 // LOWERING-DAG:                     },
 // LOWERING-DAG:                     num_complex::Complex {
-// LOWERING-DAG:                         re: {{_v[0-9]+}}.re,
-// LOWERING-DAG:                         im: {{_v[0-9]+}}.im,
+// LOWERING-DAG:                         re: {{__v[0-9]+}}.re,
+// LOWERING-DAG:                         im: {{__v[0-9]+}}.im,
 // LOWERING-DAG:                     },
 // LOWERING-DAG:                 )
 // LOWERING-DAG:             };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // LOWERING-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 191]),
 // LOWERING-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // LOWERING-DAG:             };
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { v };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { v };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { v };
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { v };
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
 // LOWERING-DAG:                 __slate_cf80_mul(
 // LOWERING-DAG:                     num_complex::Complex {
-// LOWERING-DAG:                         re: {{_v[0-9]+}}.re,
-// LOWERING-DAG:                         im: {{_v[0-9]+}}.im,
+// LOWERING-DAG:                         re: {{__v[0-9]+}}.re,
+// LOWERING-DAG:                         im: {{__v[0-9]+}}.im,
 // LOWERING-DAG:                     },
 // LOWERING-DAG:                     num_complex::Complex {
-// LOWERING-DAG:                         re: {{_v[0-9]+}}.re,
-// LOWERING-DAG:                         im: {{_v[0-9]+}}.im,
+// LOWERING-DAG:                         re: {{__v[0-9]+}}.re,
+// LOWERING-DAG:                         im: {{__v[0-9]+}}.im,
 // LOWERING-DAG:                     },
 // LOWERING-DAG:                 )
 // LOWERING-DAG:             };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // LOWERING-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 192]),
 // LOWERING-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // LOWERING-DAG:             };
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { w };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { w };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { w };
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { w };
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
 // LOWERING-DAG:                 __slate_cf80_mul(
 // LOWERING-DAG:                     num_complex::Complex {
-// LOWERING-DAG:                         re: {{_v[0-9]+}}.re,
-// LOWERING-DAG:                         im: {{_v[0-9]+}}.im,
+// LOWERING-DAG:                         re: {{__v[0-9]+}}.re,
+// LOWERING-DAG:                         im: {{__v[0-9]+}}.im,
 // LOWERING-DAG:                     },
 // LOWERING-DAG:                     num_complex::Complex {
-// LOWERING-DAG:                         re: {{_v[0-9]+}}.re,
-// LOWERING-DAG:                         im: {{_v[0-9]+}}.im,
+// LOWERING-DAG:                         re: {{__v[0-9]+}}.re,
+// LOWERING-DAG:                         im: {{__v[0-9]+}}.im,
 // LOWERING-DAG:                     },
 // LOWERING-DAG:                 )
 // LOWERING-DAG:             };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // LOWERING-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 144, 2, 192]),
 // LOWERING-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // LOWERING-DAG:             };
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { x };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { x };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { x };
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { x };
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
 // LOWERING-DAG:                 __slate_cf80_mul(
 // LOWERING-DAG:                     num_complex::Complex {
-// LOWERING-DAG:                         re: {{_v[0-9]+}}.re,
-// LOWERING-DAG:                         im: {{_v[0-9]+}}.im,
+// LOWERING-DAG:                         re: {{__v[0-9]+}}.re,
+// LOWERING-DAG:                         im: {{__v[0-9]+}}.im,
 // LOWERING-DAG:                     },
 // LOWERING-DAG:                     num_complex::Complex {
-// LOWERING-DAG:                         re: {{_v[0-9]+}}.re,
-// LOWERING-DAG:                         im: {{_v[0-9]+}}.im,
+// LOWERING-DAG:                         re: {{__v[0-9]+}}.re,
+// LOWERING-DAG:                         im: {{__v[0-9]+}}.im,
 // LOWERING-DAG:                     },
 // LOWERING-DAG:                 )
 // LOWERING-DAG:             };
-// LOWERING-DAG:             let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // LOWERING-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 3, 192]),
 // LOWERING-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // LOWERING-DAG:             };
-// LOWERING-DAG:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-DAG:             {{_v[0-9]+}}
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
-// LOWERING-DAG:         if {{_v[0-9]+}} {
+// LOWERING-DAG:         if {{__v[0-9]+}} {
 // LOWERING-DAG:             unsafe { abort() };
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
-// LOWERING-DAG:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-DAG:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-DAG: }
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: fn main() {
-// REWRITES-DAG:     let {{_v[0-9]+}}: num_complex::Complex<f32> = unsafe { a };
-// REWRITES-DAG:     let {{_v[0-9]+}}: num_complex::Complex<f32> = unsafe { a };
-// REWRITES-DAG:     let {{_v[0-9]+}}: num_complex::Complex<f32> = unsafe { __mulsc3({{_v[0-9]+}}.re, {{_v[0-9]+}}.im, {{_v[0-9]+}}.re, {{_v[0-9]+}}.im) };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != num_complex::Complex { re: -1.0, im: 0.0 };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// REWRITES-DAG:     let {{__v[0-9]+}}: num_complex::Complex<f32> = unsafe { a };
+// REWRITES-DAG:     let {{__v[0-9]+}}: num_complex::Complex<f32> = unsafe { a };
+// REWRITES-DAG:     let {{__v[0-9]+}}: num_complex::Complex<f32> = unsafe { __mulsc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
+// REWRITES-DAG:     let {{__v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex { re: -1.0, im: 0.0 };
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<f32> = unsafe { b };
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<f32> = unsafe { b };
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<f32> = unsafe { __mulsc3({{_v[0-9]+}}.re, {{_v[0-9]+}}.im, {{_v[0-9]+}}.re, {{_v[0-9]+}}.im) };
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != num_complex::Complex { re: -4.0, im: 0.0 };
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> = unsafe { b };
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> = unsafe { b };
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> =
+// REWRITES-DAG:             unsafe { __mulsc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex { re: -4.0, im: 0.0 };
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<f32> = unsafe { c };
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<f32> = unsafe { c };
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<f32> =
-// REWRITES-DAG:             unsafe { __mulsc3({{_v[0-9]+}}.re, {{_v[0-9]+}}.im, {{_v[0-9]+}}.re, {{_v[0-9]+}}.im) };
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != num_complex::Complex { re: -9.0, im: 0.0 };
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> = unsafe { c };
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> = unsafe { c };
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> =
+// REWRITES-DAG:             unsafe { __mulsc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex { re: -9.0, im: 0.0 };
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<f32> = unsafe { d };
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<f32> = unsafe { d };
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<f32> =
-// REWRITES-DAG:             unsafe { __mulsc3({{_v[0-9]+}}.re, {{_v[0-9]+}}.im, {{_v[0-9]+}}.re, {{_v[0-9]+}}.im) };
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != num_complex::Complex { re: -16.0, im: 0.0 };
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> = unsafe { d };
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> = unsafe { d };
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> =
+// REWRITES-DAG:             unsafe { __mulsc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex { re: -16.0, im: 0.0 };
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<f64> = unsafe { e };
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<f64> = unsafe { e };
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<f64> =
-// REWRITES-DAG:             unsafe { __muldc3({{_v[0-9]+}}.re, {{_v[0-9]+}}.im, {{_v[0-9]+}}.re, {{_v[0-9]+}}.im) };
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != num_complex::Complex { re: -1.0, im: 0.0 };
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> = unsafe { e };
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> = unsafe { e };
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> =
+// REWRITES-DAG:             unsafe { __muldc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex { re: -1.0, im: 0.0 };
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<f64> = unsafe { f };
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<f64> = unsafe { f };
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<f64> =
-// REWRITES-DAG:             unsafe { __muldc3({{_v[0-9]+}}.re, {{_v[0-9]+}}.im, {{_v[0-9]+}}.re, {{_v[0-9]+}}.im) };
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != num_complex::Complex { re: -4.0, im: 0.0 };
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> = unsafe { f };
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> = unsafe { f };
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> =
+// REWRITES-DAG:             unsafe { __muldc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex { re: -4.0, im: 0.0 };
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<f64> = unsafe { g };
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<f64> = unsafe { g };
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<f64> =
-// REWRITES-DAG:             unsafe { __muldc3({{_v[0-9]+}}.re, {{_v[0-9]+}}.im, {{_v[0-9]+}}.re, {{_v[0-9]+}}.im) };
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != num_complex::Complex { re: -9.0, im: 0.0 };
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> = unsafe { g };
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> = unsafe { g };
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> =
+// REWRITES-DAG:             unsafe { __muldc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex { re: -9.0, im: 0.0 };
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<f64> = unsafe { h };
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<f64> = unsafe { h };
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<f64> =
-// REWRITES-DAG:             unsafe { __muldc3({{_v[0-9]+}}.re, {{_v[0-9]+}}.im, {{_v[0-9]+}}.re, {{_v[0-9]+}}.im) };
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != num_complex::Complex { re: -16.0, im: 0.0 };
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> = unsafe { h };
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> = unsafe { h };
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> =
+// REWRITES-DAG:             unsafe { __muldc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex { re: -16.0, im: 0.0 };
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { i };
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { i };
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { i };
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { i };
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
 // REWRITES-DAG:             __slate_cf80_mul(
 // REWRITES-DAG:                 num_complex::Complex {
-// REWRITES-DAG:                     re: {{_v[0-9]+}}.re,
-// REWRITES-DAG:                     im: {{_v[0-9]+}}.im,
+// REWRITES-DAG:                     re: {{__v[0-9]+}}.re,
+// REWRITES-DAG:                     im: {{__v[0-9]+}}.im,
 // REWRITES-DAG:                 },
 // REWRITES-DAG:                 num_complex::Complex {
-// REWRITES-DAG:                     re: {{_v[0-9]+}}.re,
-// REWRITES-DAG:                     im: {{_v[0-9]+}}.im,
+// REWRITES-DAG:                     re: {{__v[0-9]+}}.re,
+// REWRITES-DAG:                     im: {{__v[0-9]+}}.im,
 // REWRITES-DAG:                 },
 // REWRITES-DAG:             )
 // REWRITES-DAG:         };
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}}
-// REWRITES-DAG:             != num_complex::Complex {
-// REWRITES-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 191]),
-// REWRITES-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
-// REWRITES-DAG:             };
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// REWRITES-DAG:             re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 191]),
+// REWRITES-DAG:             im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// REWRITES-DAG:         };
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { j };
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { j };
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { j };
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { j };
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
 // REWRITES-DAG:             __slate_cf80_mul(
 // REWRITES-DAG:                 num_complex::Complex {
-// REWRITES-DAG:                     re: {{_v[0-9]+}}.re,
-// REWRITES-DAG:                     im: {{_v[0-9]+}}.im,
+// REWRITES-DAG:                     re: {{__v[0-9]+}}.re,
+// REWRITES-DAG:                     im: {{__v[0-9]+}}.im,
 // REWRITES-DAG:                 },
 // REWRITES-DAG:                 num_complex::Complex {
-// REWRITES-DAG:                     re: {{_v[0-9]+}}.re,
-// REWRITES-DAG:                     im: {{_v[0-9]+}}.im,
+// REWRITES-DAG:                     re: {{__v[0-9]+}}.re,
+// REWRITES-DAG:                     im: {{__v[0-9]+}}.im,
 // REWRITES-DAG:                 },
 // REWRITES-DAG:             )
 // REWRITES-DAG:         };
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}}
-// REWRITES-DAG:             != num_complex::Complex {
-// REWRITES-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 192]),
-// REWRITES-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
-// REWRITES-DAG:             };
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// REWRITES-DAG:             re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 192]),
+// REWRITES-DAG:             im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// REWRITES-DAG:         };
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { k };
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { k };
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { k };
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { k };
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
 // REWRITES-DAG:             __slate_cf80_mul(
 // REWRITES-DAG:                 num_complex::Complex {
-// REWRITES-DAG:                     re: {{_v[0-9]+}}.re,
-// REWRITES-DAG:                     im: {{_v[0-9]+}}.im,
+// REWRITES-DAG:                     re: {{__v[0-9]+}}.re,
+// REWRITES-DAG:                     im: {{__v[0-9]+}}.im,
 // REWRITES-DAG:                 },
 // REWRITES-DAG:                 num_complex::Complex {
-// REWRITES-DAG:                     re: {{_v[0-9]+}}.re,
-// REWRITES-DAG:                     im: {{_v[0-9]+}}.im,
+// REWRITES-DAG:                     re: {{__v[0-9]+}}.re,
+// REWRITES-DAG:                     im: {{__v[0-9]+}}.im,
 // REWRITES-DAG:                 },
 // REWRITES-DAG:             )
 // REWRITES-DAG:         };
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}}
-// REWRITES-DAG:             != num_complex::Complex {
-// REWRITES-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 144, 2, 192]),
-// REWRITES-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
-// REWRITES-DAG:             };
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// REWRITES-DAG:             re: LongDouble([0, 0, 0, 0, 0, 0, 0, 144, 2, 192]),
+// REWRITES-DAG:             im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// REWRITES-DAG:         };
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { l };
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { l };
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { l };
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { l };
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
 // REWRITES-DAG:             __slate_cf80_mul(
 // REWRITES-DAG:                 num_complex::Complex {
-// REWRITES-DAG:                     re: {{_v[0-9]+}}.re,
-// REWRITES-DAG:                     im: {{_v[0-9]+}}.im,
+// REWRITES-DAG:                     re: {{__v[0-9]+}}.re,
+// REWRITES-DAG:                     im: {{__v[0-9]+}}.im,
 // REWRITES-DAG:                 },
 // REWRITES-DAG:                 num_complex::Complex {
-// REWRITES-DAG:                     re: {{_v[0-9]+}}.re,
-// REWRITES-DAG:                     im: {{_v[0-9]+}}.im,
+// REWRITES-DAG:                     re: {{__v[0-9]+}}.re,
+// REWRITES-DAG:                     im: {{__v[0-9]+}}.im,
 // REWRITES-DAG:                 },
 // REWRITES-DAG:             )
 // REWRITES-DAG:         };
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}}
-// REWRITES-DAG:             != num_complex::Complex {
-// REWRITES-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 3, 192]),
-// REWRITES-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
-// REWRITES-DAG:             };
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// REWRITES-DAG:             re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 3, 192]),
+// REWRITES-DAG:             im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// REWRITES-DAG:         };
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<f32> = unsafe { m };
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<f32> = unsafe { m };
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<f32> =
-// REWRITES-DAG:             unsafe { __mulsc3({{_v[0-9]+}}.re, {{_v[0-9]+}}.im, {{_v[0-9]+}}.re, {{_v[0-9]+}}.im) };
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != num_complex::Complex { re: -1.0, im: 0.0 };
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> = unsafe { m };
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> = unsafe { m };
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> =
+// REWRITES-DAG:             unsafe { __mulsc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex { re: -1.0, im: 0.0 };
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<f32> = unsafe { n };
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<f32> = unsafe { n };
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<f32> =
-// REWRITES-DAG:             unsafe { __mulsc3({{_v[0-9]+}}.re, {{_v[0-9]+}}.im, {{_v[0-9]+}}.re, {{_v[0-9]+}}.im) };
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != num_complex::Complex { re: -4.0, im: 0.0 };
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> = unsafe { n };
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> = unsafe { n };
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> =
+// REWRITES-DAG:             unsafe { __mulsc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex { re: -4.0, im: 0.0 };
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<f32> = unsafe { o };
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<f32> = unsafe { o };
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<f32> =
-// REWRITES-DAG:             unsafe { __mulsc3({{_v[0-9]+}}.re, {{_v[0-9]+}}.im, {{_v[0-9]+}}.re, {{_v[0-9]+}}.im) };
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != num_complex::Complex { re: -9.0, im: 0.0 };
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> = unsafe { o };
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> = unsafe { o };
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> =
+// REWRITES-DAG:             unsafe { __mulsc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex { re: -9.0, im: 0.0 };
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<f32> = unsafe { p };
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<f32> = unsafe { p };
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<f32> =
-// REWRITES-DAG:             unsafe { __mulsc3({{_v[0-9]+}}.re, {{_v[0-9]+}}.im, {{_v[0-9]+}}.re, {{_v[0-9]+}}.im) };
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != num_complex::Complex { re: -16.0, im: 0.0 };
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> = unsafe { p };
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> = unsafe { p };
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> =
+// REWRITES-DAG:             unsafe { __mulsc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex { re: -16.0, im: 0.0 };
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<f64> = unsafe { q };
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<f64> = unsafe { q };
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<f64> =
-// REWRITES-DAG:             unsafe { __muldc3({{_v[0-9]+}}.re, {{_v[0-9]+}}.im, {{_v[0-9]+}}.re, {{_v[0-9]+}}.im) };
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != num_complex::Complex { re: -1.0, im: 0.0 };
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> = unsafe { q };
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> = unsafe { q };
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> =
+// REWRITES-DAG:             unsafe { __muldc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex { re: -1.0, im: 0.0 };
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<f64> = unsafe { r };
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<f64> = unsafe { r };
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<f64> =
-// REWRITES-DAG:             unsafe { __muldc3({{_v[0-9]+}}.re, {{_v[0-9]+}}.im, {{_v[0-9]+}}.re, {{_v[0-9]+}}.im) };
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != num_complex::Complex { re: -4.0, im: 0.0 };
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> = unsafe { r };
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> = unsafe { r };
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> =
+// REWRITES-DAG:             unsafe { __muldc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex { re: -4.0, im: 0.0 };
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<f64> = unsafe { s };
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<f64> = unsafe { s };
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<f64> =
-// REWRITES-DAG:             unsafe { __muldc3({{_v[0-9]+}}.re, {{_v[0-9]+}}.im, {{_v[0-9]+}}.re, {{_v[0-9]+}}.im) };
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != num_complex::Complex { re: -9.0, im: 0.0 };
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> = unsafe { s };
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> = unsafe { s };
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> =
+// REWRITES-DAG:             unsafe { __muldc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex { re: -9.0, im: 0.0 };
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<f64> = unsafe { t };
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<f64> = unsafe { t };
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<f64> =
-// REWRITES-DAG:             unsafe { __muldc3({{_v[0-9]+}}.re, {{_v[0-9]+}}.im, {{_v[0-9]+}}.re, {{_v[0-9]+}}.im) };
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != num_complex::Complex { re: -16.0, im: 0.0 };
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> = unsafe { t };
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> = unsafe { t };
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> =
+// REWRITES-DAG:             unsafe { __muldc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex { re: -16.0, im: 0.0 };
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { u };
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { u };
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { u };
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { u };
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
 // REWRITES-DAG:             __slate_cf80_mul(
 // REWRITES-DAG:                 num_complex::Complex {
-// REWRITES-DAG:                     re: {{_v[0-9]+}}.re,
-// REWRITES-DAG:                     im: {{_v[0-9]+}}.im,
+// REWRITES-DAG:                     re: {{__v[0-9]+}}.re,
+// REWRITES-DAG:                     im: {{__v[0-9]+}}.im,
 // REWRITES-DAG:                 },
 // REWRITES-DAG:                 num_complex::Complex {
-// REWRITES-DAG:                     re: {{_v[0-9]+}}.re,
-// REWRITES-DAG:                     im: {{_v[0-9]+}}.im,
+// REWRITES-DAG:                     re: {{__v[0-9]+}}.re,
+// REWRITES-DAG:                     im: {{__v[0-9]+}}.im,
 // REWRITES-DAG:                 },
 // REWRITES-DAG:             )
 // REWRITES-DAG:         };
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}}
-// REWRITES-DAG:             != num_complex::Complex {
-// REWRITES-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 191]),
-// REWRITES-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
-// REWRITES-DAG:             };
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// REWRITES-DAG:             re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 191]),
+// REWRITES-DAG:             im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// REWRITES-DAG:         };
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { v };
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { v };
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { v };
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { v };
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
 // REWRITES-DAG:             __slate_cf80_mul(
 // REWRITES-DAG:                 num_complex::Complex {
-// REWRITES-DAG:                     re: {{_v[0-9]+}}.re,
-// REWRITES-DAG:                     im: {{_v[0-9]+}}.im,
+// REWRITES-DAG:                     re: {{__v[0-9]+}}.re,
+// REWRITES-DAG:                     im: {{__v[0-9]+}}.im,
 // REWRITES-DAG:                 },
 // REWRITES-DAG:                 num_complex::Complex {
-// REWRITES-DAG:                     re: {{_v[0-9]+}}.re,
-// REWRITES-DAG:                     im: {{_v[0-9]+}}.im,
+// REWRITES-DAG:                     re: {{__v[0-9]+}}.re,
+// REWRITES-DAG:                     im: {{__v[0-9]+}}.im,
 // REWRITES-DAG:                 },
 // REWRITES-DAG:             )
 // REWRITES-DAG:         };
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}}
-// REWRITES-DAG:             != num_complex::Complex {
-// REWRITES-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 192]),
-// REWRITES-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
-// REWRITES-DAG:             };
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// REWRITES-DAG:             re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 192]),
+// REWRITES-DAG:             im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// REWRITES-DAG:         };
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { w };
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { w };
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { w };
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { w };
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
 // REWRITES-DAG:             __slate_cf80_mul(
 // REWRITES-DAG:                 num_complex::Complex {
-// REWRITES-DAG:                     re: {{_v[0-9]+}}.re,
-// REWRITES-DAG:                     im: {{_v[0-9]+}}.im,
+// REWRITES-DAG:                     re: {{__v[0-9]+}}.re,
+// REWRITES-DAG:                     im: {{__v[0-9]+}}.im,
 // REWRITES-DAG:                 },
 // REWRITES-DAG:                 num_complex::Complex {
-// REWRITES-DAG:                     re: {{_v[0-9]+}}.re,
-// REWRITES-DAG:                     im: {{_v[0-9]+}}.im,
+// REWRITES-DAG:                     re: {{__v[0-9]+}}.re,
+// REWRITES-DAG:                     im: {{__v[0-9]+}}.im,
 // REWRITES-DAG:                 },
 // REWRITES-DAG:             )
 // REWRITES-DAG:         };
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}}
-// REWRITES-DAG:             != num_complex::Complex {
-// REWRITES-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 144, 2, 192]),
-// REWRITES-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
-// REWRITES-DAG:             };
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// REWRITES-DAG:             re: LongDouble([0, 0, 0, 0, 0, 0, 0, 144, 2, 192]),
+// REWRITES-DAG:             im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// REWRITES-DAG:         };
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { x };
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { x };
-// REWRITES-DAG:         let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { x };
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { x };
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
 // REWRITES-DAG:             __slate_cf80_mul(
 // REWRITES-DAG:                 num_complex::Complex {
-// REWRITES-DAG:                     re: {{_v[0-9]+}}.re,
-// REWRITES-DAG:                     im: {{_v[0-9]+}}.im,
+// REWRITES-DAG:                     re: {{__v[0-9]+}}.re,
+// REWRITES-DAG:                     im: {{__v[0-9]+}}.im,
 // REWRITES-DAG:                 },
 // REWRITES-DAG:                 num_complex::Complex {
-// REWRITES-DAG:                     re: {{_v[0-9]+}}.re,
-// REWRITES-DAG:                     im: {{_v[0-9]+}}.im,
+// REWRITES-DAG:                     re: {{__v[0-9]+}}.re,
+// REWRITES-DAG:                     im: {{__v[0-9]+}}.im,
 // REWRITES-DAG:                 },
 // REWRITES-DAG:             )
 // REWRITES-DAG:         };
-// REWRITES-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}}
-// REWRITES-DAG:             != num_complex::Complex {
-// REWRITES-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 3, 192]),
-// REWRITES-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
-// REWRITES-DAG:             };
-// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// REWRITES-DAG:             re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 3, 192]),
+// REWRITES-DAG:             im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// REWRITES-DAG:         };
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     if {{_v[0-9]+}} {
+// REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { std::process::abort() };
 // REWRITES-DAG:     }
-// REWRITES-DAG:     std::process::exit(0 as i32);
+// REWRITES-DAG:     std::process::exit({{__v[0-9]+}} as i32);
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

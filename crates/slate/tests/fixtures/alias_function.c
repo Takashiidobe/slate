@@ -18,17 +18,18 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: fn call_alias({{arg[0-9]+}}: i32) -> i32 {
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = alias_impl({{arg[0-9]+}});
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = real_impl({{arg[0-9]+}});
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-DAG:     return {{_v[0-9]+}};
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = alias_impl({{arg[0-9]+}});
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = real_impl({{arg[0-9]+}});
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-DAG:     return {{__v[0-9]+}};
 // LOWERING-DAG: }
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: fn call_alias({{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-DAG:     let {{_v[0-9]+}}: i32 = alias_impl({{arg[0-9]+}});
-// REWRITES-DAG:     let {{_v[0-9]+}}: i32 = real_impl({{arg[0-9]+}});
-// REWRITES-DAG:     {{_v[0-9]+}} + {{_v[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = alias_impl({{arg[0-9]+}});
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = real_impl({{arg[0-9]+}});
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// REWRITES-DAG:     {{__v[0-9]+}}
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

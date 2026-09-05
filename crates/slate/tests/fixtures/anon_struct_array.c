@@ -43,8 +43,8 @@ int main(void) {
 // REWRITES-DAG:             __slate_anon_2: 1.0,
 // REWRITES-DAG:         },
 // REWRITES-DAG:     ];
-// REWRITES-DAG:     let {{_v[0-9]+}}: i32 = error_log[0].code;
-// REWRITES-DAG:     unsafe { printf(c"%d\n".as_ptr(), {{_v[0-9]+}}) };
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = error_log[0].code;
+// REWRITES-DAG:     unsafe { printf(c"%d\n".as_ptr(), {{__v[0-9]+}}) };
 // REWRITES-DAG:     std::process::exit(0 as i32);
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

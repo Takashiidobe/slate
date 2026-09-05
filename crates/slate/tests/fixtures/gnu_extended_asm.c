@@ -69,52 +69,52 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 7;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = gnu_extended_asm({{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 19;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 4;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = gnu_numeric_operands({{_v[0-9]+}}, {{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = gnu_multiple_outputs();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 7;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = gnu_extended_asm({{__v[0-9]+}});
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 19;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 4;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = gnu_numeric_operands({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = gnu_multiple_outputs();
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn gnu_extended_asm({{arg[0-9]+}}: i32) -> i32 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32;
 // LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         core::arch::asm!("leal 3({1:e}), {0:e}", lateout(reg) {{_v[0-9]+}}, in(reg) {{arg[0-9]+}}, options(att_syntax));
+// LOWERING-NEXT:         core::arch::asm!("leal 3({1:e}), {0:e}", lateout(reg) {{__v[0-9]+}}, in(reg) {{arg[0-9]+}}, options(att_syntax));
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32;
 // LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         core::arch::asm!("addl $2, {0:e}", inlateout(reg) {{_v[0-9]+}} => {{_v[0-9]+}}, options(att_syntax));
+// LOWERING-NEXT:         core::arch::asm!("addl $2, {0:e}", inlateout(reg) {{__v[0-9]+}} => {{__v[0-9]+}}, options(att_syntax));
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 2;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 2;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32;
 // LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         core::arch::asm!("imull {1:e}, {0:e}", inlateout(reg) {{_v[0-9]+}} => {{_v[0-9]+}}, in(reg) {{_v[0-9]+}}, options(att_syntax));
+// LOWERING-NEXT:         core::arch::asm!("imull {1:e}, {0:e}", inlateout(reg) {{__v[0-9]+}} => {{__v[0-9]+}}, in(reg) {{__v[0-9]+}}, options(att_syntax));
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32;
 // LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         core::arch::asm!("movl {1:e}, {0:e}\n\taddl {2:e}, {0:e}", out(reg) {{_v[0-9]+}}, in(reg) {{_v[0-9]+}}, in(reg) {{_v[0-9]+}}, options(att_syntax));
+// LOWERING-NEXT:         core::arch::asm!("movl {1:e}, {0:e}\n\taddl {2:e}, {0:e}", out(reg) {{__v[0-9]+}}, in(reg) {{__v[0-9]+}}, in(reg) {{__v[0-9]+}}, options(att_syntax));
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 4;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 4;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32;
 // LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         core::arch::asm!("addl ${1}, {0:e}", inlateout(reg) {{_v[0-9]+}} => {{_v[0-9]+}}, const 4, options(att_syntax));
+// LOWERING-NEXT:         core::arch::asm!("addl ${1}, {0:e}", inlateout(reg) {{__v[0-9]+}} => {{__v[0-9]+}}, const 4, options(att_syntax));
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT:     return {{__v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn gnu_numeric_operands({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32;
 // LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         core::arch::asm!("subl {1:e}, {0:e}", inlateout(reg) {{arg[0-9]+}} => {{_v[0-9]+}}, in(reg) {{arg[0-9]+}}, options(att_syntax));
+// LOWERING-NEXT:         core::arch::asm!("subl {1:e}, {0:e}", inlateout(reg) {{arg[0-9]+}} => {{__v[0-9]+}}, in(reg) {{arg[0-9]+}}, options(att_syntax));
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT:     return {{__v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn gnu_multiple_outputs() -> i32 {
@@ -122,15 +122,15 @@ int main(void) {
 // LOWERING-NEXT:         __slate_anon_0: 0,
 // LOWERING-NEXT:         __slate_anon_1: 0,
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32;
 // LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         core::arch::asm!("movl $3, {0:e}\n\tmovl $4, {1:e}", lateout(reg) {{_v[0-9]+}}, lateout(reg) {{_v[0-9]+}}, options(att_syntax));
+// LOWERING-NEXT:         core::arch::asm!("movl $3, {0:e}\n\tmovl $4, {1:e}", lateout(reg) {{__v[0-9]+}}, lateout(reg) {{__v[0-9]+}}, options(att_syntax));
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 10;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} * {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 10;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} * {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-NEXT:     return {{__v[0-9]+}};
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -173,45 +173,45 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn gnu_extended_asm({{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32;
 // REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         core::arch::asm!("leal 3({1:e}), {0:e}", lateout(reg) {{_v[0-9]+}}, in(reg) {{arg[0-9]+}}, options(att_syntax));
+// REWRITES-NEXT:         core::arch::asm!("leal 3({1:e}), {0:e}", lateout(reg) {{__v[0-9]+}}, in(reg) {{arg[0-9]+}}, options(att_syntax));
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32;
 // REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         core::arch::asm!("addl $2, {0:e}", inlateout(reg) {{_v[0-9]+}} => {{_v[0-9]+}}, options(att_syntax));
+// REWRITES-NEXT:         core::arch::asm!("addl $2, {0:e}", inlateout(reg) {{__v[0-9]+}} => {{__v[0-9]+}}, options(att_syntax));
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 2;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32;
 // REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         core::arch::asm!("imull {1:e}, {0:e}", inlateout(reg) {{_v[0-9]+}} => {{_v[0-9]+}}, in(reg) {{_v[0-9]+}}, options(att_syntax));
+// REWRITES-NEXT:         core::arch::asm!("imull {1:e}, {0:e}", inlateout(reg) {{__v[0-9]+}} => {{__v[0-9]+}}, in(reg) {{__v[0-9]+}}, options(att_syntax));
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32;
 // REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         core::arch::asm!("movl {1:e}, {0:e}\n\taddl {2:e}, {0:e}", out(reg) {{_v[0-9]+}}, in(reg) {{_v[0-9]+}}, in(reg) {{_v[0-9]+}}, options(att_syntax));
+// REWRITES-NEXT:         core::arch::asm!("movl {1:e}, {0:e}\n\taddl {2:e}, {0:e}", out(reg) {{__v[0-9]+}}, in(reg) {{__v[0-9]+}}, in(reg) {{__v[0-9]+}}, options(att_syntax));
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32;
 // REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         core::arch::asm!("addl ${1}, {0:e}", inlateout(reg) {{_v[0-9]+}} => {{_v[0-9]+}}, const 4, options(att_syntax));
+// REWRITES-NEXT:         core::arch::asm!("addl ${1}, {0:e}", inlateout(reg) {{__v[0-9]+}} => {{__v[0-9]+}}, const 4, options(att_syntax));
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     {{_v[0-9]+}}
+// REWRITES-NEXT:     {{__v[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn gnu_numeric_operands({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32;
 // REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         core::arch::asm!("subl {1:e}, {0:e}", inlateout(reg) {{arg[0-9]+}} => {{_v[0-9]+}}, in(reg) {{arg[0-9]+}}, options(att_syntax));
+// REWRITES-NEXT:         core::arch::asm!("subl {1:e}, {0:e}", inlateout(reg) {{arg[0-9]+}} => {{__v[0-9]+}}, in(reg) {{arg[0-9]+}}, options(att_syntax));
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     {{_v[0-9]+}}
+// REWRITES-NEXT:     {{__v[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn gnu_multiple_outputs() -> i32 {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32;
 // REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         core::arch::asm!("movl $3, {0:e}\n\tmovl $4, {1:e}", lateout(reg) {{_v[0-9]+}}, lateout(reg) {{_v[0-9]+}}, options(att_syntax));
+// REWRITES-NEXT:         core::arch::asm!("movl $3, {0:e}\n\tmovl $4, {1:e}", lateout(reg) {{__v[0-9]+}}, lateout(reg) {{__v[0-9]+}}, options(att_syntax));
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     {{_v[0-9]+}} * 10 + {{_v[0-9]+}}
+// REWRITES-NEXT:     {{__v[0-9]+}} * 10 + {{__v[0-9]+}}
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

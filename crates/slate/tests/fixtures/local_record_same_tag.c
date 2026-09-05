@@ -75,13 +75,13 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = first();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = second();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d %d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = first();
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = second();
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn first() -> i32 {
@@ -92,7 +92,7 @@ int main(void) {
 // LOWERING-NEXT:         }; 2],
 // LOWERING-NEXT:     );
 // LOWERING-NEXT:     let mut total: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: [Rec; 2] = [
+// LOWERING-NEXT:     let {{__v[0-9]+}}: [Rec; 2] = [
 // LOWERING-NEXT:         Rec {
 // LOWERING-NEXT:             text: b"a\0".as_ptr() as *mut i8,
 // LOWERING-NEXT:             code: 0,
@@ -102,45 +102,45 @@ int main(void) {
 // LOWERING-NEXT:             code: 5,
 // LOWERING-NEXT:         },
 // LOWERING-NEXT:     ];
-// LOWERING-NEXT:     *items = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     total = {{_v[0-9]+}};
+// LOWERING-NEXT:     *items = {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     total = {{__v[0-9]+}};
 // LOWERING-NEXT:     {
 // LOWERING-NEXT:         let mut i: u32 = 0;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: u32 = 0;
-// LOWERING-NEXT:         i = {{_v[0-9]+}};
+// LOWERING-NEXT:         let {{__v[0-9]+}}: u32 = 0;
+// LOWERING-NEXT:         i = {{__v[0-9]+}};
 // LOWERING-NEXT:         loop {
-// LOWERING-NEXT:             let {{_v[0-9]+}}: u32 = i;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} as u64;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: u64 = 32;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: u64 = std::mem::size_of::<Rec>() as u64;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} / {{_v[0-9]+}};
-// LOWERING-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < {{_v[0-9]+}};
-// LOWERING-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-NEXT:             let {{__v[0-9]+}}: u32 = i;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} as u64;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: u64 = 32;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: u64 = std::mem::size_of::<Rec>() as u64;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} / {{__v[0-9]+}};
+// LOWERING-NEXT:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
+// LOWERING-NEXT:             if !{{__v[0-9]+}} {
 // LOWERING-NEXT:                 break;
 // LOWERING-NEXT:             }
-// LOWERING-NEXT:             let {{_v[0-9]+}}: u32 = i;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} as u64;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: u32 = items[({{_v[0-9]+}} as usize)].code;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i64 = 0;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: u32 = i;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} as u64;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: *mut i8 = items[({{_v[0-9]+}} as usize)].text;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(0) };
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i8 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = total;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:             total = {{_v[0-9]+}};
-// LOWERING-NEXT:             let {{_v[0-9]+}}: u32 = i;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: u32 = {{_v[0-9]+}} + 1;
-// LOWERING-NEXT:             i = {{_v[0-9]+}};
+// LOWERING-NEXT:             let {{__v[0-9]+}}: u32 = i;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} as u64;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: u32 = items[({{__v[0-9]+}} as usize)].code;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i64 = 0;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: u32 = i;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} as u64;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: *mut i8 = items[({{__v[0-9]+}} as usize)].text;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: *mut i8 = unsafe { {{__v[0-9]+}}.add(0) };
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i8 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = total;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-NEXT:             total = {{__v[0-9]+}};
+// LOWERING-NEXT:             let {{__v[0-9]+}}: u32 = i;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: u32 = {{__v[0-9]+}} + 1;
+// LOWERING-NEXT:             i = {{__v[0-9]+}};
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = total;
-// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = total;
+// LOWERING-NEXT:     return {{__v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn second() -> i32 {
@@ -152,7 +152,7 @@ int main(void) {
 // LOWERING-NEXT:         }; 2],
 // LOWERING-NEXT:     );
 // LOWERING-NEXT:     let mut total: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: [Rec_0; 2] = [
+// LOWERING-NEXT:     let {{__v[0-9]+}}: [Rec_0; 2] = [
 // LOWERING-NEXT:         Rec_0 {
 // LOWERING-NEXT:             n: 5,
 // LOWERING-NEXT:             text: b"x\0".as_ptr() as *mut i8,
@@ -164,50 +164,50 @@ int main(void) {
 // LOWERING-NEXT:             code: 5,
 // LOWERING-NEXT:         },
 // LOWERING-NEXT:     ];
-// LOWERING-NEXT:     *items = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     total = {{_v[0-9]+}};
+// LOWERING-NEXT:     *items = {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     total = {{__v[0-9]+}};
 // LOWERING-NEXT:     {
 // LOWERING-NEXT:         let mut i: u32 = 0;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: u32 = 0;
-// LOWERING-NEXT:         i = {{_v[0-9]+}};
+// LOWERING-NEXT:         let {{__v[0-9]+}}: u32 = 0;
+// LOWERING-NEXT:         i = {{__v[0-9]+}};
 // LOWERING-NEXT:         loop {
-// LOWERING-NEXT:             let {{_v[0-9]+}}: u32 = i;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} as u64;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: u64 = 48;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: u64 = 24;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} / {{_v[0-9]+}};
-// LOWERING-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < {{_v[0-9]+}};
-// LOWERING-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-NEXT:             let {{__v[0-9]+}}: u32 = i;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} as u64;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: u64 = 48;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: u64 = 24;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} / {{__v[0-9]+}};
+// LOWERING-NEXT:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
+// LOWERING-NEXT:             if !{{__v[0-9]+}} {
 // LOWERING-NEXT:                 break;
 // LOWERING-NEXT:             }
-// LOWERING-NEXT:             let {{_v[0-9]+}}: u32 = i;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} as u64;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: u64 = items[({{_v[0-9]+}} as usize)].n;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: u32 = i;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} as u64;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: u32 = items[({{_v[0-9]+}} as usize)].code;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i64 = 0;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: u32 = i;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} as u64;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: *mut i8 = items[({{_v[0-9]+}} as usize)].text;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(0) };
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i8 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = total;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:             total = {{_v[0-9]+}};
-// LOWERING-NEXT:             let {{_v[0-9]+}}: u32 = i;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: u32 = {{_v[0-9]+}} + 1;
-// LOWERING-NEXT:             i = {{_v[0-9]+}};
+// LOWERING-NEXT:             let {{__v[0-9]+}}: u32 = i;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} as u64;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: u64 = items[({{__v[0-9]+}} as usize)].n;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: u32 = i;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} as u64;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: u32 = items[({{__v[0-9]+}} as usize)].code;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i64 = 0;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: u32 = i;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} as u64;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: *mut i8 = items[({{__v[0-9]+}} as usize)].text;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: *mut i8 = unsafe { {{__v[0-9]+}}.add(0) };
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i8 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = total;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-NEXT:             total = {{__v[0-9]+}};
+// LOWERING-NEXT:             let {{__v[0-9]+}}: u32 = i;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: u32 = {{__v[0-9]+}} + 1;
+// LOWERING-NEXT:             i = {{__v[0-9]+}};
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = total;
-// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = total;
+// LOWERING-NEXT:     return {{__v[0-9]+}};
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -279,16 +279,16 @@ int main(void) {
 // REWRITES-NEXT:     let mut i: u32 = 0;
 // REWRITES-NEXT:     i = 0;
 // REWRITES-NEXT:     loop {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: u64 = i as u64;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: u64 = 32;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: u64 = std::mem::size_of::<Rec>() as u64;
-// REWRITES-NEXT:         if !({{_v[0-9]+}} < {{_v[0-9]+}} / {{_v[0-9]+}}) {
+// REWRITES-NEXT:         let {{__v[0-9]+}}: u64 = i as u64;
+// REWRITES-NEXT:         let {{__v[0-9]+}}: u64 = 32;
+// REWRITES-NEXT:         let {{__v[0-9]+}}: u64 = std::mem::size_of::<Rec>() as u64;
+// REWRITES-NEXT:         if !({{__v[0-9]+}} < {{__v[0-9]+}} / {{__v[0-9]+}}) {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = items[((i as u64) as usize)].code as i32;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i8 = items[((i as u64) as usize)].text;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(0) };
-// REWRITES-NEXT:         total += {{_v[0-9]+}} + ((unsafe { *{{_v[0-9]+}} }) as i32);
+// REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = items[((i as u64) as usize)].code as i32;
+// REWRITES-NEXT:         let {{__v[0-9]+}}: *mut i8 = items[((i as u64) as usize)].text;
+// REWRITES-NEXT:         let {{__v[0-9]+}}: *mut i8 = unsafe { {{__v[0-9]+}}.add(0) };
+// REWRITES-NEXT:         total += {{__v[0-9]+}} + ((unsafe { *{{__v[0-9]+}} }) as i32);
 // REWRITES-NEXT:         i += 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     total
@@ -318,15 +318,15 @@ int main(void) {
 // REWRITES-NEXT:     let mut i: u32 = 0;
 // REWRITES-NEXT:     i = 0;
 // REWRITES-NEXT:     loop {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: u64 = 24;
-// REWRITES-NEXT:         if !((i as u64) < 48 / {{_v[0-9]+}}) {
+// REWRITES-NEXT:         let {{__v[0-9]+}}: u64 = 24;
+// REWRITES-NEXT:         if !((i as u64) < 48 / {{__v[0-9]+}}) {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 =
+// REWRITES-NEXT:         let {{__v[0-9]+}}: i32 =
 // REWRITES-NEXT:             (items[((i as u64) as usize)].n as i32) + (items[((i as u64) as usize)].code as i32);
-// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i8 = items[((i as u64) as usize)].text;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(0) };
-// REWRITES-NEXT:         total += {{_v[0-9]+}} + ((unsafe { *{{_v[0-9]+}} }) as i32);
+// REWRITES-NEXT:         let {{__v[0-9]+}}: *mut i8 = items[((i as u64) as usize)].text;
+// REWRITES-NEXT:         let {{__v[0-9]+}}: *mut i8 = unsafe { {{__v[0-9]+}}.add(0) };
+// REWRITES-NEXT:         total += {{__v[0-9]+}} + ((unsafe { *{{__v[0-9]+}} }) as i32);
 // REWRITES-NEXT:         i += 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     total

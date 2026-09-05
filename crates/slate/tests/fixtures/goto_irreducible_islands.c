@@ -51,23 +51,23 @@ done:
 // LOWERING-DAG:     '{{__dispatch[0-9]+}}: loop {
 // LOWERING-DAG:         match {{__state[0-9]+}} {
 // LOWERING-DAG:             0 => {
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:                 __retval = {{_v[0-9]+}};
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-DAG:                 unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(pick_a), {{_v[0-9]+}}) };
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:                 unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(pick_b), {{_v[0-9]+}}) };
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:                 x = {{_v[0-9]+}};
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:                 y = {{_v[0-9]+}};
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:                 __retval = {{__v[0-9]+}};
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-DAG:                 unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(pick_a), {{__v[0-9]+}}) };
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:                 unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(pick_b), {{__v[0-9]+}}) };
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:                 x = {{__v[0-9]+}};
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:                 y = {{__v[0-9]+}};
 // LOWERING-DAG:                 {{__state[0-9]+}} = 1;
 // LOWERING-DAG:                 continue '{{__dispatch[0-9]+}};
 // LOWERING-DAG:             }
 // LOWERING-DAG:             1 => {
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(pick_a)) };
-// LOWERING-DAG:                 let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// LOWERING-DAG:                 if {{_v[0-9]+}} {
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(pick_a)) };
+// LOWERING-DAG:                 let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
+// LOWERING-DAG:                 if {{__v[0-9]+}} {
 // LOWERING-DAG:                     {{__state[0-9]+}} = 2;
 // LOWERING-DAG:                 } else {
 // LOWERING-DAG:                     {{__state[0-9]+}} = 3;
@@ -87,18 +87,18 @@ done:
 // LOWERING-DAG:                 continue '{{__dispatch[0-9]+}};
 // LOWERING-DAG:             }
 // LOWERING-DAG:             5 => {
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i32 = x;
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-DAG:                 x = {{_v[0-9]+}};
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = x;
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-DAG:                 x = {{__v[0-9]+}};
 // LOWERING-DAG:                 {{__state[0-9]+}} = 6;
 // LOWERING-DAG:                 continue '{{__dispatch[0-9]+}};
 // LOWERING-DAG:             }
 // LOWERING-DAG:             6 => {
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i32 = x;
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i32 = 3;
-// LOWERING-DAG:                 let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < {{_v[0-9]+}};
-// LOWERING-DAG:                 if {{_v[0-9]+}} {
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = x;
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = 3;
+// LOWERING-DAG:                 let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
+// LOWERING-DAG:                 if {{__v[0-9]+}} {
 // LOWERING-DAG:                     {{__state[0-9]+}} = 7;
 // LOWERING-DAG:                 } else {
 // LOWERING-DAG:                     {{__state[0-9]+}} = 8;
@@ -118,18 +118,18 @@ done:
 // LOWERING-DAG:                 continue '{{__dispatch[0-9]+}};
 // LOWERING-DAG:             }
 // LOWERING-DAG:             10 => {
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i32 = x;
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i32 = 2;
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-DAG:                 x = {{_v[0-9]+}};
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = x;
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = 2;
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-DAG:                 x = {{__v[0-9]+}};
 // LOWERING-DAG:                 {{__state[0-9]+}} = 11;
 // LOWERING-DAG:                 continue '{{__dispatch[0-9]+}};
 // LOWERING-DAG:             }
 // LOWERING-DAG:             11 => {
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i32 = x;
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i32 = 4;
-// LOWERING-DAG:                 let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < {{_v[0-9]+}};
-// LOWERING-DAG:                 if {{_v[0-9]+}} {
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = x;
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = 4;
+// LOWERING-DAG:                 let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
+// LOWERING-DAG:                 if {{__v[0-9]+}} {
 // LOWERING-DAG:                     {{__state[0-9]+}} = 12;
 // LOWERING-DAG:                 } else {
 // LOWERING-DAG:                     {{__state[0-9]+}} = 13;
@@ -153,9 +153,9 @@ done:
 // LOWERING-DAG:                 continue '{{__dispatch[0-9]+}};
 // LOWERING-DAG:             }
 // LOWERING-DAG:             16 => {
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(pick_b)) };
-// LOWERING-DAG:                 let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// LOWERING-DAG:                 if {{_v[0-9]+}} {
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(pick_b)) };
+// LOWERING-DAG:                 let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
+// LOWERING-DAG:                 if {{__v[0-9]+}} {
 // LOWERING-DAG:                     {{__state[0-9]+}} = 17;
 // LOWERING-DAG:                 } else {
 // LOWERING-DAG:                     {{__state[0-9]+}} = 18;
@@ -175,18 +175,18 @@ done:
 // LOWERING-DAG:                 continue '{{__dispatch[0-9]+}};
 // LOWERING-DAG:             }
 // LOWERING-DAG:             20 => {
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i32 = y;
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i32 = 3;
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-DAG:                 y = {{_v[0-9]+}};
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = y;
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = 3;
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-DAG:                 y = {{__v[0-9]+}};
 // LOWERING-DAG:                 {{__state[0-9]+}} = 21;
 // LOWERING-DAG:                 continue '{{__dispatch[0-9]+}};
 // LOWERING-DAG:             }
 // LOWERING-DAG:             21 => {
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i32 = y;
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i32 = 9;
-// LOWERING-DAG:                 let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < {{_v[0-9]+}};
-// LOWERING-DAG:                 if {{_v[0-9]+}} {
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = y;
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = 9;
+// LOWERING-DAG:                 let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
+// LOWERING-DAG:                 if {{__v[0-9]+}} {
 // LOWERING-DAG:                     {{__state[0-9]+}} = 22;
 // LOWERING-DAG:                 } else {
 // LOWERING-DAG:                     {{__state[0-9]+}} = 23;
@@ -206,18 +206,18 @@ done:
 // LOWERING-DAG:                 continue '{{__dispatch[0-9]+}};
 // LOWERING-DAG:             }
 // LOWERING-DAG:             25 => {
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i32 = y;
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i32 = 5;
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-DAG:                 y = {{_v[0-9]+}};
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = y;
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = 5;
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-DAG:                 y = {{__v[0-9]+}};
 // LOWERING-DAG:                 {{__state[0-9]+}} = 26;
 // LOWERING-DAG:                 continue '{{__dispatch[0-9]+}};
 // LOWERING-DAG:             }
 // LOWERING-DAG:             26 => {
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i32 = y;
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i32 = 11;
-// LOWERING-DAG:                 let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < {{_v[0-9]+}};
-// LOWERING-DAG:                 if {{_v[0-9]+}} {
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = y;
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = 11;
+// LOWERING-DAG:                 let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
+// LOWERING-DAG:                 if {{__v[0-9]+}} {
 // LOWERING-DAG:                     {{__state[0-9]+}} = 27;
 // LOWERING-DAG:                 } else {
 // LOWERING-DAG:                     {{__state[0-9]+}} = 28;
@@ -237,14 +237,14 @@ done:
 // LOWERING-DAG:                 continue '{{__dispatch[0-9]+}};
 // LOWERING-DAG:             }
 // LOWERING-DAG:             30 => {
-// LOWERING-DAG:                 let {{_v[0-9]+}}: *mut i8 = b"%d %d\n\0".as_ptr() as *mut i8;
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i32 = x;
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i32 = y;
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:                 __retval = {{_v[0-9]+}};
-// LOWERING-DAG:                 let {{_v[0-9]+}}: i32 = __retval;
-// LOWERING-DAG:                 std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-DAG:                 let {{__v[0-9]+}}: *mut i8 = b"%d %d\n\0".as_ptr() as *mut i8;
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = x;
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = y;
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:                 __retval = {{__v[0-9]+}};
+// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = __retval;
+// LOWERING-DAG:                 std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-DAG:             }
 // LOWERING-DAG:             _ => {
 // LOWERING-DAG:                 break '{{__dispatch[0-9]+}};
@@ -266,8 +266,8 @@ done:
 // REWRITES-DAG:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(pick_b), 0 as i32) };
 // REWRITES-DAG:     x = 0;
 // REWRITES-DAG:     y = 0;
-// REWRITES-DAG:     let {{_v[0-9]+}}: i32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(pick_a)) };
-// REWRITES-DAG:     if {{_v[0-9]+}} != 0 {
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(pick_a)) };
+// REWRITES-DAG:     if {{__v[0-9]+}} != 0 {
 // REWRITES-DAG:         {{__state[0-9]+}} = 4;
 // REWRITES-DAG:     } else {
 // REWRITES-DAG:         {{__state[0-9]+}} = 2;
@@ -292,8 +292,8 @@ done:
 // REWRITES-DAG:             }
 // REWRITES-DAG:         }
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{_v[0-9]+}}: i32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(pick_b)) };
-// REWRITES-DAG:     if {{_v[0-9]+}} != 0 {
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(pick_b)) };
+// REWRITES-DAG:     if {{__v[0-9]+}} != 0 {
 // REWRITES-DAG:         {{__state[0-9]+}} = 9;
 // REWRITES-DAG:     } else {
 // REWRITES-DAG:         {{__state[0-9]+}} = 7;

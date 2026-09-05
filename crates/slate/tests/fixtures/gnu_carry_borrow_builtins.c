@@ -48,69 +48,69 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: unsafe fn add_with_carry({{arg[0-9]+}}: u32, {{arg[0-9]+}}: u32, {{arg[0-9]+}}: u32, {{arg[0-9]+}}: *mut u32) -> u32 {
-// LOWERING-NEXT:     let {{_v[0-9]+}} = {{arg[0-9]+}}.overflowing_add({{arg[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}}.0 as u32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}}.1 || {{_v[0-9]+}}.0 > 4294967295;
-// LOWERING-NEXT:     let {{_v[0-9]+}} = {{_v[0-9]+}}.overflowing_add({{arg[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}}.0 as u32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}}.1 || {{_v[0-9]+}}.0 > 4294967295;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} | {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}} as u32;
+// LOWERING-NEXT:     let {{__v[0-9]+}} = {{arg[0-9]+}}.overflowing_add({{arg[0-9]+}});
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}}.0 as u32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.1 || {{__v[0-9]+}}.0 > 4294967295;
+// LOWERING-NEXT:     let {{__v[0-9]+}} = {{__v[0-9]+}}.overflowing_add({{arg[0-9]+}});
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}}.0 as u32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.1 || {{__v[0-9]+}}.0 > 4294967295;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} | {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}} as u32;
 // LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         *{{arg[0-9]+}} = {{_v[0-9]+}};
+// LOWERING-NEXT:         *{{arg[0-9]+}} = {{__v[0-9]+}};
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT:     return {{__v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: unsafe fn sub_with_borrow({{arg[0-9]+}}: u32, {{arg[0-9]+}}: u32, {{arg[0-9]+}}: u32, {{arg[0-9]+}}: *mut u32) -> u32 {
-// LOWERING-NEXT:     let {{_v[0-9]+}} = {{arg[0-9]+}}.overflowing_sub({{arg[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}}.0 as u32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}}.1 || {{_v[0-9]+}}.0 > 4294967295;
-// LOWERING-NEXT:     let {{_v[0-9]+}} = {{_v[0-9]+}}.overflowing_sub({{arg[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}}.0 as u32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}}.1 || {{_v[0-9]+}}.0 > 4294967295;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} | {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}} as u32;
+// LOWERING-NEXT:     let {{__v[0-9]+}} = {{arg[0-9]+}}.overflowing_sub({{arg[0-9]+}});
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}}.0 as u32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.1 || {{__v[0-9]+}}.0 > 4294967295;
+// LOWERING-NEXT:     let {{__v[0-9]+}} = {{__v[0-9]+}}.overflowing_sub({{arg[0-9]+}});
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}}.0 as u32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.1 || {{__v[0-9]+}}.0 > 4294967295;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} | {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}} as u32;
 // LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         *{{arg[0-9]+}} = {{_v[0-9]+}};
+// LOWERING-NEXT:         *{{arg[0-9]+}} = {{__v[0-9]+}};
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT:     return {{__v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let mut carry: u32 = 0;
 // LOWERING-NEXT:     let mut borrow: u32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = 4294967295u32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = 1;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = unsafe { add_with_carry({{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, std::ptr::addr_of_mut!(carry)) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%u %u\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = carry;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = 1;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = 1;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = unsafe { add_with_carry({{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, std::ptr::addr_of_mut!(carry)) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%u %u\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = carry;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = 1;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = unsafe { sub_with_borrow({{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, std::ptr::addr_of_mut!(borrow)) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%u %u\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = borrow;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = 5;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = 3;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = unsafe { sub_with_borrow({{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, std::ptr::addr_of_mut!(borrow)) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%u %u\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = borrow;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = 4294967295u32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = 1;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = unsafe { add_with_carry({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}, std::ptr::addr_of_mut!(carry)) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%u %u\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = carry;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = 1;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = 1;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = unsafe { add_with_carry({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}, std::ptr::addr_of_mut!(carry)) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%u %u\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = carry;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = 1;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = unsafe { sub_with_borrow({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}, std::ptr::addr_of_mut!(borrow)) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%u %u\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = borrow;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = 5;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = 3;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = unsafe { sub_with_borrow({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}, std::ptr::addr_of_mut!(borrow)) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%u %u\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = borrow;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -134,37 +134,37 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe fn add_with_carry({{arg[0-9]+}}: u32, {{arg[0-9]+}}: u32, {{arg[0-9]+}}: u32, {{arg[0-9]+}}: *mut u32) -> u32 {
-// REWRITES-NEXT:     let {{_v[0-9]+}} = {{arg[0-9]+}}.overflowing_add({{arg[0-9]+}});
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}}.0 as u32;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}}.1 || {{_v[0-9]+}}.0 > 4294967295;
-// REWRITES-NEXT:     let {{_v[0-9]+}} = {{_v[0-9]+}}.overflowing_add({{arg[0-9]+}});
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}}.0 as u32;
+// REWRITES-NEXT:     let {{__v[0-9]+}} = {{arg[0-9]+}}.overflowing_add({{arg[0-9]+}});
+// REWRITES-NEXT:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}}.0 as u32;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.1 || {{__v[0-9]+}}.0 > 4294967295;
+// REWRITES-NEXT:     let {{__v[0-9]+}} = {{__v[0-9]+}}.overflowing_add({{arg[0-9]+}});
+// REWRITES-NEXT:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}}.0 as u32;
 // REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         *{{arg[0-9]+}} = ({{_v[0-9]+}} | ({{_v[0-9]+}}.1 || {{_v[0-9]+}}.0 > 4294967295)) as u32;
+// REWRITES-NEXT:         *{{arg[0-9]+}} = ({{__v[0-9]+}} | ({{__v[0-9]+}}.1 || {{__v[0-9]+}}.0 > 4294967295)) as u32;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     {{_v[0-9]+}}
+// REWRITES-NEXT:     {{__v[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe fn sub_with_borrow({{arg[0-9]+}}: u32, {{arg[0-9]+}}: u32, {{arg[0-9]+}}: u32, {{arg[0-9]+}}: *mut u32) -> u32 {
-// REWRITES-NEXT:     let {{_v[0-9]+}} = {{arg[0-9]+}}.overflowing_sub({{arg[0-9]+}});
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}}.0 as u32;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}}.1 || {{_v[0-9]+}}.0 > 4294967295;
-// REWRITES-NEXT:     let {{_v[0-9]+}} = {{_v[0-9]+}}.overflowing_sub({{arg[0-9]+}});
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}}.0 as u32;
+// REWRITES-NEXT:     let {{__v[0-9]+}} = {{arg[0-9]+}}.overflowing_sub({{arg[0-9]+}});
+// REWRITES-NEXT:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}}.0 as u32;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.1 || {{__v[0-9]+}}.0 > 4294967295;
+// REWRITES-NEXT:     let {{__v[0-9]+}} = {{__v[0-9]+}}.overflowing_sub({{arg[0-9]+}});
+// REWRITES-NEXT:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}}.0 as u32;
 // REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         *{{arg[0-9]+}} = ({{_v[0-9]+}} | ({{_v[0-9]+}}.1 || {{_v[0-9]+}}.0 > 4294967295)) as u32;
+// REWRITES-NEXT:         *{{arg[0-9]+}} = ({{__v[0-9]+}} | ({{__v[0-9]+}}.1 || {{__v[0-9]+}}.0 > 4294967295)) as u32;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     {{_v[0-9]+}}
+// REWRITES-NEXT:     {{__v[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut carry: u32 = 0;
 // REWRITES-NEXT:     let mut borrow: u32 = 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u32 = 4294967295u32;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: u32 = 4294967295u32;
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             c"%u %u\n".as_ptr(),
-// REWRITES-NEXT:             unsafe { add_with_carry({{_v[0-9]+}}, 1, 0, std::ptr::addr_of_mut!(carry)) },
+// REWRITES-NEXT:             unsafe { add_with_carry({{__v[0-9]+}}, 1, 0, std::ptr::addr_of_mut!(carry)) },
 // REWRITES-NEXT:             carry,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };

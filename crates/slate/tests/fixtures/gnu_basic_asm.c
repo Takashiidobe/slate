@@ -36,8 +36,8 @@ int main(void) {
 // LOWERING-DAG:             options(att_syntax, raw)
 // LOWERING-DAG:         );
 // LOWERING-DAG:     }
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = unsafe { gnu_basic_asm_value };
-// LOWERING-DAG:     return {{_v[0-9]+}};
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = unsafe { gnu_basic_asm_value };
+// LOWERING-DAG:     return {{__v[0-9]+}};
 // LOWERING-DAG: }
 // SLATE-FILECHECK-END lowering
 

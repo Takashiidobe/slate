@@ -25,18 +25,21 @@ int main(void) {
 }
 
 // SLATE-FILECHECK-BEGIN lowering
-// LOWERING-DAG: let {{_v[0-9]+}}: i32 = int_score({{_v[0-9]+}});
-// LOWERING-DAG: let {{_v[0-9]+}}: i64 = 8;
-// LOWERING-DAG: let {{_v[0-9]+}}: i32 = long_score({{_v[0-9]+}});
-// LOWERING-DAG: let {{_v[0-9]+}}: *mut i32 = array.as_mut_ptr() as *mut i32;
-// LOWERING-DAG: let {{_v[0-9]+}}: i32 = pointer_score({{_v[0-9]+}});
-// LOWERING-DAG: let {{_v[0-9]+}}: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
-// LOWERING-DAG: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-DAG: let {{__v[0-9]+}}: i32 = int_score({{__v[0-9]+}});
+// LOWERING-DAG: let {{__v[0-9]+}}: i64 = 8;
+// LOWERING-DAG: let {{__v[0-9]+}}: i32 = long_score({{__v[0-9]+}});
+// LOWERING-DAG: let {{__v[0-9]+}}: *mut i32 = array.as_mut_ptr() as *mut i32;
+// LOWERING-DAG: let {{__v[0-9]+}}: i32 = pointer_score({{__v[0-9]+}});
+// LOWERING-DAG: let {{__v[0-9]+}}: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
+// LOWERING-DAG: let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = int_score(7 as i32);
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = long_score(8 as i64);
-// REWRITES-DAG: let {{_v[0-9]+}}: *mut i32 = array.as_mut_ptr() as *mut i32;
-// REWRITES-DAG: unsafe { printf(c"%d %d %d\n".as_ptr(), {{_v[0-9]+}}, {{_v[0-9]+}}, pointer_score({{_v[0-9]+}})) };
+// REWRITES-DAG: let {{__v[0-9]+}}: i32 = int_score({{__v[0-9]+}});
+// REWRITES-DAG: let {{__v[0-9]+}}: i64 = 8;
+// REWRITES-DAG: let {{__v[0-9]+}}: i32 = long_score({{__v[0-9]+}});
+// REWRITES-DAG: let {{__v[0-9]+}}: *mut i32 = array.as_mut_ptr() as *mut i32;
+// REWRITES-DAG: let {{__v[0-9]+}}: i32 = pointer_score({{__v[0-9]+}});
+// REWRITES-DAG: let {{__v[0-9]+}}: *mut i8 = c"%d %d %d\n".as_ptr() as *mut i8;
+// REWRITES-DAG: unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
 // SLATE-FILECHECK-END rewrites

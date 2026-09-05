@@ -22,29 +22,29 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: {
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = index;
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
-// LOWERING-DAG:     index = {{_v[0-9]+}};
-// LOWERING-DAG:     let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} as i64;
-// LOWERING-DAG:     let {{_v[0-9]+}}: i64 = values[({{_v[0-9]+}} as usize)];
-// LOWERING-DAG:     let {{_v[0-9]+}}: i64 = 25;
-// LOWERING-DAG:     values[({{_v[0-9]+}} as usize)] = {{_v[0-9]+}};
-// LOWERING-DAG:     tmp = {{_v[0-9]+}};
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = index;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + 1;
+// LOWERING-DAG:     index = {{__v[0-9]+}};
+// LOWERING-DAG:     let {{__v[0-9]+}}: i64 = {{__v[0-9]+}} as i64;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i64 = values[({{__v[0-9]+}} as usize)];
+// LOWERING-DAG:     let {{__v[0-9]+}}: i64 = 25;
+// LOWERING-DAG:     values[({{__v[0-9]+}} as usize)] = {{__v[0-9]+}};
+// LOWERING-DAG:     tmp = {{__v[0-9]+}};
 // LOWERING-DAG: }
-// LOWERING-DAG: let {{_v[0-9]+}}: i64 = tmp;
-// LOWERING-DAG: let {{_v[0-9]+}}: *mut i8 = b"%ld %ld %d\n\0".as_ptr() as *mut i8;
-// LOWERING-DAG: let {{_v[0-9]+}}: i64 = 0;
-// LOWERING-DAG: let {{_v[0-9]+}}: i64 = values[({{_v[0-9]+}} as usize)];
-// LOWERING-DAG: let {{_v[0-9]+}}: i32 = index;
-// LOWERING-DAG: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-DAG: let {{__v[0-9]+}}: i64 = tmp;
+// LOWERING-DAG: let {{__v[0-9]+}}: *mut i8 = b"%ld %ld %d\n\0".as_ptr() as *mut i8;
+// LOWERING-DAG: let {{__v[0-9]+}}: i64 = 0;
+// LOWERING-DAG: let {{__v[0-9]+}}: i64 = values[({{__v[0-9]+}} as usize)];
+// LOWERING-DAG: let {{__v[0-9]+}}: i32 = index;
+// LOWERING-DAG: let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = index;
-// REWRITES-DAG: index = {{_v[0-9]+}} + 1;
-// REWRITES-DAG: let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} as i64;
-// REWRITES-DAG: let {{_v[0-9]+}}: i64 = values[({{_v[0-9]+}} as usize)];
-// REWRITES-DAG: values[({{_v[0-9]+}} as usize)] = 25;
-// REWRITES-DAG: tmp = {{_v[0-9]+}};
+// REWRITES-DAG: let {{__v[0-9]+}}: i32 = index;
+// REWRITES-DAG: index = {{__v[0-9]+}} + 1;
+// REWRITES-DAG: let {{__v[0-9]+}}: i64 = {{__v[0-9]+}} as i64;
+// REWRITES-DAG: let {{__v[0-9]+}}: i64 = values[({{__v[0-9]+}} as usize)];
+// REWRITES-DAG: values[({{__v[0-9]+}} as usize)] = 25;
+// REWRITES-DAG: tmp = {{__v[0-9]+}};
 // REWRITES-DAG: unsafe { printf(c"%ld %ld %d\n".as_ptr(), tmp, values[0], index) };
 // SLATE-FILECHECK-END rewrites

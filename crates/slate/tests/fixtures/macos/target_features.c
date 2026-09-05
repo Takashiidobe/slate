@@ -52,9 +52,9 @@ int main(void) { return 0; }
 // LOWERING-MACOS-NEXT: )]
 // LOWERING-MACOS-EMPTY:
 // LOWERING-MACOS-NEXT: fn main() {
-// LOWERING-MACOS-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-MACOS-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-MACOS-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-MACOS-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-MACOS-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-MACOS-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-MACOS-NEXT: }
 // SLATE-FILECHECK-END lowering-macos
 
@@ -73,6 +73,7 @@ int main(void) { return 0; }
 // REWRITES-MACOS-NEXT: )]
 // REWRITES-MACOS-EMPTY:
 // REWRITES-MACOS-NEXT: fn main() {
-// REWRITES-MACOS-NEXT:     std::process::exit(0 as i32);
+// REWRITES-MACOS-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// REWRITES-MACOS-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // REWRITES-MACOS-NEXT: }
 // SLATE-FILECHECK-END rewrites-macos

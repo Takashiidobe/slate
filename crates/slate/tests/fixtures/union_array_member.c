@@ -41,29 +41,29 @@ int main(void) {
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let mut word: Word = unsafe { std::mem::zeroed::<Word>() };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: Word = Word { value: 0 };
-// LOWERING-NEXT:     word = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u8 = 65;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: Word = Word { value: 0 };
+// LOWERING-NEXT:     word = {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u8 = 65;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = 0;
 // LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         word.bytes[({{_v[0-9]+}} as usize)] = {{_v[0-9]+}};
+// LOWERING-NEXT:         word.bytes[({{__v[0-9]+}} as usize)] = {{__v[0-9]+}};
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u8 = 66;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 1;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u8 = 66;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = 1;
 // LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         word.bytes[({{_v[0-9]+}} as usize)] = {{_v[0-9]+}};
+// LOWERING-NEXT:         word.bytes[({{__v[0-9]+}} as usize)] = {{__v[0-9]+}};
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u8 = unsafe { word.bytes[({{_v[0-9]+}} as usize)] };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 1;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u8 = unsafe { word.bytes[({{_v[0-9]+}} as usize)] };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d %d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u8 = unsafe { word.bytes[({{__v[0-9]+}} as usize)] };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = 1;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u8 = unsafe { word.bytes[({{__v[0-9]+}} as usize)] };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -96,13 +96,13 @@ int main(void) {
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut word: Word = unsafe { std::mem::zeroed::<Word>() };
 // REWRITES-NEXT:     word = Word { value: 0 };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 0;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i64 = 0;
 // REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         word.bytes[({{_v[0-9]+}} as usize)] = 65;
+// REWRITES-NEXT:         word.bytes[({{__v[0-9]+}} as usize)] = 65;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 1;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i64 = 1;
 // REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         word.bytes[({{_v[0-9]+}} as usize)] = 66;
+// REWRITES-NEXT:         word.bytes[({{__v[0-9]+}} as usize)] = 66;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(

@@ -16,18 +16,23 @@ int main(void) {
 }
 
 // SLATE-FILECHECK-BEGIN lowering
-// LOWERING-DAG: let {{_v[0-9]+}}: u64 = i;
-// LOWERING-DAG: let {{_v[0-9]+}}: *mut core::ffi::c_void = src;
-// LOWERING-DAG: let {{_v[0-9]+}}: *mut i32 = {{_v[0-9]+}} as *mut i32;
-// LOWERING-DAG: let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add({{_v[0-9]+}} as usize) };
-// LOWERING-DAG: let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-DAG: let {{_v[0-9]+}}: i32 = total;
-// LOWERING-DAG: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-DAG: total = {{_v[0-9]+}};
+// LOWERING-DAG: let {{__v[0-9]+}}: u64 = i;
+// LOWERING-DAG: let {{__v[0-9]+}}: *mut core::ffi::c_void = src;
+// LOWERING-DAG: let {{__v[0-9]+}}: *mut i32 = {{__v[0-9]+}} as *mut i32;
+// LOWERING-DAG: let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add({{__v[0-9]+}} as usize) };
+// LOWERING-DAG: let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-DAG: let {{__v[0-9]+}}: i32 = total;
+// LOWERING-DAG: let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-DAG: total = {{__v[0-9]+}};
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: let {{_v[0-9]+}}: *mut i32 = src as *mut i32;
-// REWRITES-DAG: unsafe { {{_v[0-9]+}}.add(i as usize) };
-// REWRITES-DAG: total += unsafe { __arg0_view[(i as usize)] };
+// REWRITES-DAG: let {{__v[0-9]+}}: u64 = i;
+// REWRITES-DAG: let {{__v[0-9]+}}: *mut core::ffi::c_void = src;
+// REWRITES-DAG: let {{__v[0-9]+}}: *mut i32 = {{__v[0-9]+}} as *mut i32;
+// REWRITES-DAG: unsafe { {{__v[0-9]+}}.add({{__v[0-9]+}} as usize) };
+// REWRITES-DAG: let {{__v[0-9]+}}: i32 = unsafe { __arg0_view[(i as usize)] };
+// REWRITES-DAG: let {{__v[0-9]+}}: i32 = total;
+// REWRITES-DAG: let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// REWRITES-DAG: total = {{__v[0-9]+}};
 // SLATE-FILECHECK-END rewrites

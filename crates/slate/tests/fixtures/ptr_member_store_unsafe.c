@@ -64,40 +64,40 @@ int main(void) {
 // LOWERING-NEXT:         buf: inner { start: 0, end: 0 },
 // LOWERING-NEXT:         error: 0,
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     init(std::ptr::addr_of_mut!(o));
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = o.buf.start;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = o.buf.end;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = o.error;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = o.buf.start;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = o.buf.end;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = o.error;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn init({{arg[0-9]+}}: *mut outer) {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 1;
 // LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         (*{{arg[0-9]+}}).buf.start = {{_v[0-9]+}};
+// LOWERING-NEXT:         (*{{arg[0-9]+}}).buf.start = {{__v[0-9]+}};
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 2;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 2;
 // LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         (*{{arg[0-9]+}}).buf.end = {{_v[0-9]+}};
+// LOWERING-NEXT:         (*{{arg[0-9]+}}).buf.end = {{__v[0-9]+}};
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         (*{{arg[0-9]+}}).error = {{_v[0-9]+}};
+// LOWERING-NEXT:         (*{{arg[0-9]+}}).error = {{__v[0-9]+}};
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     bump(unsafe { std::ptr::addr_of_mut!((*{{arg[0-9]+}}).buf.start) });
 // LOWERING-NEXT:     return;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn bump({{arg[0-9]+}}: *mut i32) {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{arg[0-9]+}} };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 10;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { *{{arg[0-9]+}} };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 10;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
 // LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         *{{arg[0-9]+}} = {{_v[0-9]+}};
+// LOWERING-NEXT:         *{{arg[0-9]+}} = {{__v[0-9]+}};
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     return;
 // LOWERING-NEXT: }
@@ -142,10 +142,10 @@ int main(void) {
 // REWRITES-NEXT:         error: 0,
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     init(unsafe { &mut (*std::ptr::addr_of_mut!(o)) });
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = o.buf.start;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = o.buf.end;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = o.error;
-// REWRITES-NEXT:     unsafe { printf(c"%d %d %d\n".as_ptr(), {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = o.buf.start;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = o.buf.end;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = o.error;
+// REWRITES-NEXT:     unsafe { printf(c"%d %d %d\n".as_ptr(), {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

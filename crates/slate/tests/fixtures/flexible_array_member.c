@@ -61,110 +61,110 @@ int main(void) {
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut flexible: *mut FlexibleArray = std::ptr::null_mut();
 // LOWERING-NEXT:     let mut total: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: u64 = std::mem::size_of::<FlexibleArray>() as u64;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: u64 = 8;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-NEXT:         if {{_v[0-9]+}} {
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:             __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:             std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT:         let {{__v[0-9]+}}: u64 = std::mem::size_of::<FlexibleArray>() as u64;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: u64 = 8;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-NEXT:         if {{__v[0-9]+}} {
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-NEXT:             __retval = {{__v[0-9]+}};
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = __retval;
+// LOWERING-NEXT:             std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 3;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 4;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} * {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc({{_v[0-9]+}} as usize) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut FlexibleArray = {{_v[0-9]+}} as *mut FlexibleArray;
-// LOWERING-NEXT:     flexible = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = 8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = 3;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = 4;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} * {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc({{__v[0-9]+}} as usize) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut FlexibleArray = {{__v[0-9]+}} as *mut FlexibleArray;
+// LOWERING-NEXT:     flexible = {{__v[0-9]+}};
 // LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut FlexibleArray = flexible;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut FlexibleArray = std::ptr::null_mut();
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
-// LOWERING-NEXT:         if {{_v[0-9]+}} {
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = 2;
-// LOWERING-NEXT:             __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:             std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT:         let {{__v[0-9]+}}: *mut FlexibleArray = flexible;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: *mut FlexibleArray = std::ptr::null_mut();
+// LOWERING-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
+// LOWERING-NEXT:         if {{__v[0-9]+}} {
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = 2;
+// LOWERING-NEXT:             __retval = {{__v[0-9]+}};
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = __retval;
+// LOWERING-NEXT:             std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 3;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut FlexibleArray = flexible;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = 3;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut FlexibleArray = flexible;
 // LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         (*{{_v[0-9]+}}).count = {{_v[0-9]+}};
+// LOWERING-NEXT:         (*{{__v[0-9]+}}).count = {{__v[0-9]+}};
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     {
 // LOWERING-NEXT:         let mut index: u64 = 0;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: u64 = 0;
-// LOWERING-NEXT:         index = {{_v[0-9]+}};
+// LOWERING-NEXT:         let {{__v[0-9]+}}: u64 = 0;
+// LOWERING-NEXT:         index = {{__v[0-9]+}};
 // LOWERING-NEXT:         loop {
-// LOWERING-NEXT:             let {{_v[0-9]+}}: u64 = index;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: *mut FlexibleArray = flexible;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: u64 = unsafe { (*{{_v[0-9]+}}).count };
-// LOWERING-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < {{_v[0-9]+}};
-// LOWERING-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-NEXT:             let {{__v[0-9]+}}: u64 = index;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: *mut FlexibleArray = flexible;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: u64 = unsafe { (*{{__v[0-9]+}}).count };
+// LOWERING-NEXT:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
+// LOWERING-NEXT:             if !{{__v[0-9]+}} {
 // LOWERING-NEXT:                 break;
 // LOWERING-NEXT:             }
 // LOWERING-NEXT:             {
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: u64 = index;
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: u64 = index;
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: *mut FlexibleArray = flexible;
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: u64 = index;
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: u64 = index;
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: *mut FlexibleArray = flexible;
 // LOWERING-NEXT:                 unsafe {
-// LOWERING-NEXT:                     *(*{{_v[0-9]+}}).values.as_mut_ptr().add({{_v[0-9]+}} as usize) = {{_v[0-9]+}};
+// LOWERING-NEXT:                     *(*{{__v[0-9]+}}).values.as_mut_ptr().add({{__v[0-9]+}} as usize) = {{__v[0-9]+}};
 // LOWERING-NEXT:                 }
 // LOWERING-NEXT:             }
-// LOWERING-NEXT:             let {{_v[0-9]+}}: u64 = index;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} + 1;
-// LOWERING-NEXT:             index = {{_v[0-9]+}};
+// LOWERING-NEXT:             let {{__v[0-9]+}}: u64 = index;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} + 1;
+// LOWERING-NEXT:             index = {{__v[0-9]+}};
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     total = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     total = {{__v[0-9]+}};
 // LOWERING-NEXT:     {
 // LOWERING-NEXT:         let mut index2: u64 = 0;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: u64 = 0;
-// LOWERING-NEXT:         index2 = {{_v[0-9]+}};
+// LOWERING-NEXT:         let {{__v[0-9]+}}: u64 = 0;
+// LOWERING-NEXT:         index2 = {{__v[0-9]+}};
 // LOWERING-NEXT:         loop {
-// LOWERING-NEXT:             let {{_v[0-9]+}}: u64 = index2;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: *mut FlexibleArray = flexible;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: u64 = unsafe { (*{{_v[0-9]+}}).count };
-// LOWERING-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < {{_v[0-9]+}};
-// LOWERING-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-NEXT:             let {{__v[0-9]+}}: u64 = index2;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: *mut FlexibleArray = flexible;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: u64 = unsafe { (*{{__v[0-9]+}}).count };
+// LOWERING-NEXT:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
+// LOWERING-NEXT:             if !{{__v[0-9]+}} {
 // LOWERING-NEXT:                 break;
 // LOWERING-NEXT:             }
 // LOWERING-NEXT:             {
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: u64 = index2;
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: *mut FlexibleArray = flexible;
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { *(*{{_v[0-9]+}}).values.as_mut_ptr().add({{_v[0-9]+}} as usize) };
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = total;
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:                 total = {{_v[0-9]+}};
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: u64 = index2;
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: *mut FlexibleArray = flexible;
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = unsafe { *(*{{__v[0-9]+}}).values.as_mut_ptr().add({{__v[0-9]+}} as usize) };
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = total;
+// LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-NEXT:                 total = {{__v[0-9]+}};
 // LOWERING-NEXT:             }
-// LOWERING-NEXT:             let {{_v[0-9]+}}: u64 = index2;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} + 1;
-// LOWERING-NEXT:             index2 = {{_v[0-9]+}};
+// LOWERING-NEXT:             let {{__v[0-9]+}}: u64 = index2;
+// LOWERING-NEXT:             let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} + 1;
+// LOWERING-NEXT:             index2 = {{__v[0-9]+}};
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut FlexibleArray = flexible;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
-// LOWERING-NEXT:     unsafe { free({{_v[0-9]+}} as *mut core::ffi::c_void) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = total;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 6;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 3;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut FlexibleArray = flexible;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = {{__v[0-9]+}} as *mut core::ffi::c_void;
+// LOWERING-NEXT:     unsafe { free({{__v[0-9]+}} as *mut core::ffi::c_void) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = total;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 6;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 3;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = if {{__v[0-9]+}} { {{__v[0-9]+}} } else { {{__v[0-9]+}} };
+// LOWERING-NEXT:     __retval = {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = __retval;
+// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -198,18 +198,18 @@ int main(void) {
 // REWRITES-NEXT:     let mut __retval: i32 = 0;
 // REWRITES-NEXT:     let mut flexible: *mut FlexibleArray = std::ptr::null_mut();
 // REWRITES-NEXT:     let mut total: i32 = 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = std::mem::size_of::<FlexibleArray>() as u64;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 8;
-// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:     let {{__v[0-9]+}}: u64 = std::mem::size_of::<FlexibleArray>() as u64;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 8;
+// REWRITES-NEXT:     if {{__v[0-9]+}} {
 // REWRITES-NEXT:         __retval = 1;
 // REWRITES-NEXT:         std::process::exit(__retval as i32);
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 4;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 8 + 3 * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc({{_v[0-9]+}} as usize) };
-// REWRITES-NEXT:     flexible = {{_v[0-9]+}} as *mut FlexibleArray;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = flexible == std::ptr::null_mut();
-// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:     let {{__v[0-9]+}}: u64 = 4;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: u64 = 8 + 3 * {{__v[0-9]+}};
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc({{__v[0-9]+}} as usize) };
+// REWRITES-NEXT:     flexible = {{__v[0-9]+}} as *mut FlexibleArray;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = flexible == std::ptr::null_mut();
+// REWRITES-NEXT:     if {{__v[0-9]+}} {
 // REWRITES-NEXT:         __retval = 2;
 // REWRITES-NEXT:         std::process::exit(__retval as i32);
 // REWRITES-NEXT:     }
@@ -217,23 +217,23 @@ int main(void) {
 // REWRITES-NEXT:         (*flexible).count = 3;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     for index in 0..unsafe { (*flexible).count } {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = (index as i32) + 1;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: u64 = index;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut FlexibleArray = flexible;
+// REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = (index as i32) + 1;
+// REWRITES-NEXT:         let {{__v[0-9]+}}: u64 = index;
+// REWRITES-NEXT:         let {{__v[0-9]+}}: *mut FlexibleArray = flexible;
 // REWRITES-NEXT:         unsafe {
-// REWRITES-NEXT:             *(*{{_v[0-9]+}}).values.as_mut_ptr().add({{_v[0-9]+}} as usize) = {{_v[0-9]+}};
+// REWRITES-NEXT:             *(*{{__v[0-9]+}}).values.as_mut_ptr().add({{__v[0-9]+}} as usize) = {{__v[0-9]+}};
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     for index2 in 0..unsafe { (*flexible).count } {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: u64 = index2;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut FlexibleArray = flexible;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { *(*{{_v[0-9]+}}).values.as_mut_ptr().add({{_v[0-9]+}} as usize) };
-// REWRITES-NEXT:         total += {{_v[0-9]+}};
+// REWRITES-NEXT:         let {{__v[0-9]+}}: u64 = index2;
+// REWRITES-NEXT:         let {{__v[0-9]+}}: *mut FlexibleArray = flexible;
+// REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = unsafe { *(*{{__v[0-9]+}}).values.as_mut_ptr().add({{__v[0-9]+}} as usize) };
+// REWRITES-NEXT:         total += {{__v[0-9]+}};
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     unsafe { free(flexible as *mut core::ffi::c_void) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 3;
-// REWRITES-NEXT:     __retval = if total == 6 { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 3;
+// REWRITES-NEXT:     __retval = if total == 6 { {{__v[0-9]+}} } else { {{__v[0-9]+}} };
 // REWRITES-NEXT:     std::process::exit(__retval as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

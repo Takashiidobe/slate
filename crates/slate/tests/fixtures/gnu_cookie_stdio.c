@@ -62,35 +62,35 @@ int main(void) {
 // LOWERING-DAG:     {{arg[0-9]+}}: *mut i8,
 // LOWERING-DAG:     {{arg[0-9]+}}: u64,
 // LOWERING-DAG: ) -> i64 {
-// LOWERING-DAG:     let {{_v[0-9]+}}: *mut GNUCookie = {{arg[0-9]+}} as *mut GNUCookie;
-// LOWERING-DAG:     let {{_v[0-9]+}}: *mut i8 = (unsafe { std::ptr::addr_of_mut!((*{{_v[0-9]+}}).bytes) }) as *mut i8;
-// LOWERING-DAG:     let {{_v[0-9]+}}: u64 = unsafe { (*{{_v[0-9]+}}).length };
-// LOWERING-DAG:     let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add({{_v[0-9]+}} as usize) };
-// LOWERING-DAG:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
-// LOWERING-DAG:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{arg[0-9]+}} as *mut core::ffi::c_void;
-// LOWERING-DAG:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe {
+// LOWERING-DAG:     let {{__v[0-9]+}}: *mut GNUCookie = {{arg[0-9]+}} as *mut GNUCookie;
+// LOWERING-DAG:     let {{__v[0-9]+}}: *mut i8 = (unsafe { std::ptr::addr_of_mut!((*{{__v[0-9]+}}).bytes) }) as *mut i8;
+// LOWERING-DAG:     let {{__v[0-9]+}}: u64 = unsafe { (*{{__v[0-9]+}}).length };
+// LOWERING-DAG:     let {{__v[0-9]+}}: *mut i8 = unsafe { {{__v[0-9]+}}.add({{__v[0-9]+}} as usize) };
+// LOWERING-DAG:     let {{__v[0-9]+}}: *mut core::ffi::c_void = {{__v[0-9]+}} as *mut core::ffi::c_void;
+// LOWERING-DAG:     let {{__v[0-9]+}}: *mut core::ffi::c_void = {{arg[0-9]+}} as *mut core::ffi::c_void;
+// LOWERING-DAG:     let {{__v[0-9]+}}: *mut core::ffi::c_void = unsafe {
 // LOWERING-DAG:         memcpy(
-// LOWERING-DAG:             {{_v[0-9]+}} as *mut core::ffi::c_void,
-// LOWERING-DAG:             {{_v[0-9]+}} as *const core::ffi::c_void,
+// LOWERING-DAG:             {{__v[0-9]+}} as *mut core::ffi::c_void,
+// LOWERING-DAG:             {{__v[0-9]+}} as *const core::ffi::c_void,
 // LOWERING-DAG:             {{arg[0-9]+}} as usize,
 // LOWERING-DAG:         )
 // LOWERING-DAG:     };
-// LOWERING-DAG:     let {{_v[0-9]+}}: u64 = unsafe { (*{{_v[0-9]+}}).length };
-// LOWERING-DAG:     let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} + {{arg[0-9]+}};
+// LOWERING-DAG:     let {{__v[0-9]+}}: u64 = unsafe { (*{{__v[0-9]+}}).length };
+// LOWERING-DAG:     let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} + {{arg[0-9]+}};
 // LOWERING-DAG:     unsafe {
-// LOWERING-DAG:         (*{{_v[0-9]+}}).length = {{_v[0-9]+}};
+// LOWERING-DAG:         (*{{__v[0-9]+}}).length = {{__v[0-9]+}};
 // LOWERING-DAG:     }
-// LOWERING-DAG:     let {{_v[0-9]+}}: i64 = {{arg[0-9]+}} as i64;
-// LOWERING-DAG:     return {{_v[0-9]+}};
+// LOWERING-DAG:     let {{__v[0-9]+}}: i64 = {{arg[0-9]+}} as i64;
+// LOWERING-DAG:     return {{__v[0-9]+}};
 // LOWERING-DAG: }
 // LOWERING-DAG: extern "C-unwind" fn gnu_cookie_close({{arg[0-9]+}}: *mut core::ffi::c_void) -> i32 {
-// LOWERING-DAG:     let {{_v[0-9]+}}: *mut GNUCookie = {{arg[0-9]+}} as *mut GNUCookie;
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 1;
+// LOWERING-DAG:     let {{__v[0-9]+}}: *mut GNUCookie = {{arg[0-9]+}} as *mut GNUCookie;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 1;
 // LOWERING-DAG:     unsafe {
-// LOWERING-DAG:         (*{{_v[0-9]+}}).closed = {{_v[0-9]+}};
+// LOWERING-DAG:         (*{{__v[0-9]+}}).closed = {{__v[0-9]+}};
 // LOWERING-DAG:     }
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:     return {{_v[0-9]+}};
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:     return {{__v[0-9]+}};
 // LOWERING-DAG: }
 // LOWERING-DAG: functions.write = unsafe {
 // LOWERING-DAG:     std::mem::transmute::<
@@ -104,14 +104,14 @@ int main(void) {
 // LOWERING-DAG:         Option<unsafe extern "C-unwind" fn(*mut core::ffi::c_void) -> i32>,
 // LOWERING-DAG:     >(gnu_cookie_close as *const ())
 // LOWERING-DAG: };
-// LOWERING-DAG: let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(cookie) as *mut core::ffi::c_void;
-// LOWERING-DAG: let {{_v[0-9]+}}: *mut i8 = b"w\0".as_ptr() as *mut i8;
-// LOWERING-DAG: let {{_v[0-9]+}}: _IO_cookie_io_functions_t = functions;
-// LOWERING-DAG: let {{_v[0-9]+}}: *mut libc::FILE = unsafe {
+// LOWERING-DAG: let {{__v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(cookie) as *mut core::ffi::c_void;
+// LOWERING-DAG: let {{__v[0-9]+}}: *mut i8 = b"w\0".as_ptr() as *mut i8;
+// LOWERING-DAG: let {{__v[0-9]+}}: _IO_cookie_io_functions_t = functions;
+// LOWERING-DAG: let {{__v[0-9]+}}: *mut libc::FILE = unsafe {
 // LOWERING-DAG:     fopencookie(
-// LOWERING-DAG:         {{_v[0-9]+}} as *mut core::ffi::c_void,
-// LOWERING-DAG:         {{_v[0-9]+}} as *const core::ffi::c_char,
-// LOWERING-DAG:         {{_v[0-9]+}} as _IO_cookie_io_functions_t,
+// LOWERING-DAG:         {{__v[0-9]+}} as *mut core::ffi::c_void,
+// LOWERING-DAG:         {{__v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-DAG:         {{__v[0-9]+}} as _IO_cookie_io_functions_t,
 // LOWERING-DAG:     )
 // LOWERING-DAG: };
 // SLATE-FILECHECK-END lowering
@@ -122,13 +122,13 @@ int main(void) {
 // REWRITES-DAG:     {{arg[0-9]+}}: *mut i8,
 // REWRITES-DAG:     {{arg[0-9]+}}: u64,
 // REWRITES-DAG: ) -> i64 {
-// REWRITES-DAG:     let {{_v[0-9]+}}: *mut GNUCookie = {{arg[0-9]+}} as *mut GNUCookie;
-// REWRITES-DAG:     let {{_v[0-9]+}}: *mut i8 = (unsafe { std::ptr::addr_of_mut!((*{{_v[0-9]+}}).bytes) }) as *mut i8;
-// REWRITES-DAG:     let {{_v[0-9]+}}: u64 = unsafe { (*{{_v[0-9]+}}).length };
-// REWRITES-DAG:     let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add({{_v[0-9]+}} as usize) };
-// REWRITES-DAG:     unsafe { std::ptr::copy_nonoverlapping({{arg[0-9]+}} as *const u8, {{_v[0-9]+}} as *mut u8, {{arg[0-9]+}} as usize) };
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut GNUCookie = {{arg[0-9]+}} as *mut GNUCookie;
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut i8 = (unsafe { std::ptr::addr_of_mut!((*{{__v[0-9]+}}).bytes) }) as *mut i8;
+// REWRITES-DAG:     let {{__v[0-9]+}}: u64 = unsafe { (*{{__v[0-9]+}}).length };
+// REWRITES-DAG:     let {{__v[0-9]+}}: *mut i8 = unsafe { {{__v[0-9]+}}.add({{__v[0-9]+}} as usize) };
+// REWRITES-DAG:     unsafe { std::ptr::copy_nonoverlapping({{arg[0-9]+}} as *const u8, {{__v[0-9]+}} as *mut u8, {{arg[0-9]+}} as usize) };
 // REWRITES-DAG:     unsafe {
-// REWRITES-DAG:         (*{{_v[0-9]+}}).length = (unsafe { (*{{_v[0-9]+}}).length }) + {{arg[0-9]+}};
+// REWRITES-DAG:         (*{{__v[0-9]+}}).length = (unsafe { (*{{__v[0-9]+}}).length }) + {{arg[0-9]+}};
 // REWRITES-DAG:     }
 // REWRITES-DAG:     {{arg[0-9]+}} as i64
 // REWRITES-DAG: }
@@ -150,10 +150,10 @@ int main(void) {
 // REWRITES-DAG:         Option<unsafe extern "C-unwind" fn(*mut core::ffi::c_void) -> i32>,
 // REWRITES-DAG:     >(gnu_cookie_close as *const ())
 // REWRITES-DAG: };
-// REWRITES-DAG: let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(cookie) as *mut core::ffi::c_void;
-// REWRITES-DAG: let {{_v[0-9]+}}: *mut libc::FILE = unsafe {
+// REWRITES-DAG: let {{__v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(cookie) as *mut core::ffi::c_void;
+// REWRITES-DAG: let {{__v[0-9]+}}: *mut libc::FILE = unsafe {
 // REWRITES-DAG:     fopencookie(
-// REWRITES-DAG:         {{_v[0-9]+}} as *mut core::ffi::c_void,
+// REWRITES-DAG:         {{__v[0-9]+}} as *mut core::ffi::c_void,
 // REWRITES-DAG:         c"w".as_ptr(),
 // REWRITES-DAG:         functions as _IO_cookie_io_functions_t,
 // REWRITES-DAG:     )

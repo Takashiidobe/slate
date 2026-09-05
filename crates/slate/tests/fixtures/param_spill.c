@@ -18,37 +18,38 @@ int main(void) {
 // LOWERING-DAG: fn adjust({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
 // LOWERING-DAG:     let mut value: i32 = 0;
 // LOWERING-DAG:     value = {{arg[0-9]+}};
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = unsafe {
 // LOWERING-DAG:         std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(value))
 // LOWERING-DAG:             .load(std::sync::atomic::Ordering::SeqCst)
 // LOWERING-DAG:     };
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{arg[0-9]+}};
 // LOWERING-DAG:     unsafe {
 // LOWERING-DAG:         std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(value))
-// LOWERING-DAG:             .store({{_v[0-9]+}}, std::sync::atomic::Ordering::SeqCst)
+// LOWERING-DAG:             .store({{__v[0-9]+}}, std::sync::atomic::Ordering::SeqCst)
 // LOWERING-DAG:     };
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = unsafe {
 // LOWERING-DAG:         std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(value))
 // LOWERING-DAG:             .load(std::sync::atomic::Ordering::SeqCst)
 // LOWERING-DAG:     };
-// LOWERING-DAG:     return {{_v[0-9]+}};
+// LOWERING-DAG:     return {{__v[0-9]+}};
 // LOWERING-DAG: }
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: fn adjust(mut value: i32, {{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-DAG:     let {{_v[0-9]+}}: i32 = unsafe {
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = unsafe {
 // REWRITES-DAG:         std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(value))
 // REWRITES-DAG:             .load(std::sync::atomic::Ordering::SeqCst)
 // REWRITES-DAG:     };
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{arg[0-9]+}};
 // REWRITES-DAG:     unsafe {
 // REWRITES-DAG:         std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(value))
-// REWRITES-DAG:             .store({{_v[0-9]+}} + {{arg[0-9]+}}, std::sync::atomic::Ordering::SeqCst)
+// REWRITES-DAG:             .store({{__v[0-9]+}}, std::sync::atomic::Ordering::SeqCst)
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{_v[0-9]+}}: i32 = unsafe {
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = unsafe {
 // REWRITES-DAG:         std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(value))
 // REWRITES-DAG:             .load(std::sync::atomic::Ordering::SeqCst)
 // REWRITES-DAG:     };
-// REWRITES-DAG:     {{_v[0-9]+}}
+// REWRITES-DAG:     {{__v[0-9]+}}
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

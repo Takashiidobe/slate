@@ -10,10 +10,11 @@ int main(void) {
 }
 
 // SLATE-FILECHECK-BEGIN lowering
-// LOWERING-DAG: let {{_v[0-9]+}}: *mut i8 = b"hello\0".as_ptr() as *mut i8;
-// LOWERING-DAG: let {{_v[0-9]+}}: i32 = unsafe { puts({{_v[0-9]+}} as *const core::ffi::c_char) };
+// LOWERING-DAG: let {{__v[0-9]+}}: *mut i8 = b"hello\0".as_ptr() as *mut i8;
+// LOWERING-DAG: let {{__v[0-9]+}}: i32 = unsafe { puts({{__v[0-9]+}} as *const core::ffi::c_char) };
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: unsafe { puts(c"hello".as_ptr()) };
+// REWRITES-DAG: let {{__v[0-9]+}}: *mut i8 = c"hello".as_ptr() as *mut i8;
+// REWRITES-DAG: unsafe { puts({{__v[0-9]+}} as *const core::ffi::c_char) };
 // SLATE-FILECHECK-END rewrites

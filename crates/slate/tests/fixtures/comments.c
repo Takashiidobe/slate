@@ -84,41 +84,51 @@ int main(void) {
 // REWRITES-NEXT:     let mut holder: Holder = Holder {
 // REWRITES-NEXT:         mode: Mode::MODE_OFF,
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: Holder = Holder {
+// REWRITES-NEXT:     let {{__v[0-9]+}}: Holder = Holder {
 // REWRITES-NEXT:         mode: Mode::MODE_ON,
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     holder = {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = (holder.mode as u32) == 1;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = increment(1);
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 2;
-// REWRITES-NEXT:         {{_v[0-9]+}}
+// REWRITES-NEXT:     holder = {{__v[0-9]+}};
+// REWRITES-NEXT:     let {{__v[0-9]+}}: u32 = holder.mode as u32;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: u32 = 1;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
+// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = increment({{__v[0-9]+}});
+// REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 2;
+// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
+// REWRITES-NEXT:         {{__v[0-9]+}}
 // REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{_v[0-9]+}}
+// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
+// REWRITES-NEXT:         {{__v[0-9]+}}
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = (unsafe { completed_count }) == 2;
-// REWRITES-NEXT:         {{_v[0-9]+}}
+// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = unsafe { completed_count };
+// REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 2;
+// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
+// REWRITES-NEXT:         {{__v[0-9]+}}
 // REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{_v[0-9]+}}
+// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
+// REWRITES-NEXT:         {{__v[0-9]+}}
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// REWRITES-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = if {{__v[0-9]+}} { {{__v[0-9]+}} } else { {{__v[0-9]+}} };
+// REWRITES-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: /// increments a value and records the operation
 // REWRITES-NEXT: /// stores the intermediate result
 // REWRITES-NEXT: fn increment({{arg[0-9]+}}: i32) -> i32 {
 // REWRITES-NEXT:     let mut next: i32 = 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{arg[0-9]+}} + 1;
-// REWRITES-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(next), {{_v[0-9]+}}) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = {{arg[0-9]+}} + {{__v[0-9]+}};
+// REWRITES-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(next), {{__v[0-9]+}}) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { completed_count };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + 1;
 // REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         completed_count = (unsafe { completed_count }) + 1;
+// REWRITES-NEXT:         completed_count = {{__v[0-9]+}};
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     unsafe { std::ptr::read_volatile(std::ptr::addr_of!(next)) }
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(next)) };
+// REWRITES-NEXT:     {{__v[0-9]+}}
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

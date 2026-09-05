@@ -54,10 +54,14 @@ int main(void) { return 0; }
 // LOWERING-MSVC-NEXT:     unused_comparisons
 // LOWERING-MSVC-NEXT: )]
 // LOWERING-MSVC-EMPTY:
+// LOWERING-MSVC-NEXT: compile_error!("\"MSVC float.h must not expose C23 DBL_NORM_MAX\"");
+// LOWERING-MSVC-EMPTY:
+// LOWERING-MSVC-NEXT: compile_error!("\"MSVC float.h must not expose C23 LDBL_SNAN\"");
+// LOWERING-MSVC-EMPTY:
 // LOWERING-MSVC-NEXT: fn main() {
-// LOWERING-MSVC-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-MSVC-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-MSVC-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-MSVC-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-MSVC-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-MSVC-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-MSVC-NEXT: }
 // SLATE-FILECHECK-END lowering-msvc
 
@@ -75,7 +79,12 @@ int main(void) { return 0; }
 // REWRITES-MSVC-NEXT:     unused_comparisons
 // REWRITES-MSVC-NEXT: )]
 // REWRITES-MSVC-EMPTY:
+// REWRITES-MSVC-NEXT: compile_error!("\"MSVC float.h must not expose C23 DBL_NORM_MAX\"");
+// REWRITES-MSVC-EMPTY:
+// REWRITES-MSVC-NEXT: compile_error!("\"MSVC float.h must not expose C23 LDBL_SNAN\"");
+// REWRITES-MSVC-EMPTY:
 // REWRITES-MSVC-NEXT: fn main() {
-// REWRITES-MSVC-NEXT:     std::process::exit(0 as i32);
+// REWRITES-MSVC-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// REWRITES-MSVC-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // REWRITES-MSVC-NEXT: }
 // SLATE-FILECHECK-END rewrites-msvc

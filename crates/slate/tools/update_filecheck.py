@@ -82,7 +82,7 @@ RUST_STRING_PATTERN = re.compile(
     r'(?:(?:b|c)?r(?P<hash>#{0,16})".*?"(?P=hash)|(?:b|c)?"(?:\\.|[^"\\])*")'
 )
 UNSTABLE_IDENTIFIER_PATTERNS = (
-    (re.compile(r"\b_v[0-9]+\b"), "{{_v[0-9]+}}"),
+    (re.compile(r"\b__v[0-9]+\b"), "{{__v[0-9]+}}"),
     (re.compile(r"\barg[0-9]+\b"), "{{arg[0-9]+}}"),
     (
         re.compile(r"\banon_struct[0-9A-Za-z_]*\b"),

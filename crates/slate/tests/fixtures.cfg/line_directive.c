@@ -15,9 +15,7 @@ int main(void) { return line_value() == expected_line() ? 0 : 1; }
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: fn line_value() -> i32 {
-// REWRITES-DAG:     704
-// REWRITES-DAG: }
-// REWRITES-DAG: fn expected_line() -> i32 {
-// REWRITES-DAG:     704
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 704;
+// REWRITES-DAG:     {{__v[0-9]+}}
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

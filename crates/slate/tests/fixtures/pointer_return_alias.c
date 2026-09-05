@@ -44,8 +44,8 @@ int main(void) {
 // LOWERING-DAG:     return {{arg[0-9]+}};
 // LOWERING-DAG: }
 // LOWERING-DAG: fn forward_mut({{arg[0-9]+}}: *mut i32) -> *mut i32 {
-// LOWERING-DAG:     let {{_v[0-9]+}}: *mut i32 = identity_mut({{arg[0-9]+}});
-// LOWERING-DAG:     return {{_v[0-9]+}};
+// LOWERING-DAG:     let {{__v[0-9]+}}: *mut i32 = identity_mut({{arg[0-9]+}});
+// LOWERING-DAG:     return {{__v[0-9]+}};
 // LOWERING-DAG: }
 // LOWERING-DAG: fn identity_const({{arg[0-9]+}}: *mut i32) -> *mut i32 {
 // LOWERING-DAG:     return {{arg[0-9]+}};
@@ -57,18 +57,18 @@ int main(void) {
 // LOWERING-DAG:     first = {{arg[0-9]+}};
 // LOWERING-DAG:     choose_first = {{arg[0-9]+}};
 // LOWERING-DAG:     {
-// LOWERING-DAG:         let {{_v[0-9]+}}: i32 = choose_first;
-// LOWERING-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// LOWERING-DAG:         if {{_v[0-9]+}} {
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut i32 = first;
-// LOWERING-DAG:             __retval = {{_v[0-9]+}};
-// LOWERING-DAG:             let {{_v[0-9]+}}: *mut i32 = __retval;
-// LOWERING-DAG:             return {{_v[0-9]+}};
+// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = choose_first;
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
+// LOWERING-DAG:         if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut i32 = first;
+// LOWERING-DAG:             __retval = {{__v[0-9]+}};
+// LOWERING-DAG:             let {{__v[0-9]+}}: *mut i32 = __retval;
+// LOWERING-DAG:             return {{__v[0-9]+}};
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
 // LOWERING-DAG:     __retval = {{arg[0-9]+}};
-// LOWERING-DAG:     let {{_v[0-9]+}}: *mut i32 = __retval;
-// LOWERING-DAG:     return {{_v[0-9]+}};
+// LOWERING-DAG:     let {{__v[0-9]+}}: *mut i32 = __retval;
+// LOWERING-DAG:     return {{__v[0-9]+}};
 // LOWERING-DAG: }
 // SLATE-FILECHECK-END lowering
 
@@ -82,8 +82,8 @@ int main(void) {
 // REWRITES-DAG: fn identity_const({{arg[0-9]+}}: &i32) -> *mut i32 {
 // REWRITES-DAG:     ({{arg[0-9]+}} as *const i32) as *mut i32
 // REWRITES-DAG: }
-// REWRITES-DAG: fn choose_value(mut first: *mut i32, {{arg[0-9]+}}: *mut i32, mut {{_v[0-9]+}}: i32) -> *mut i32 {
-// REWRITES-DAG:     if {{_v[0-9]+}} != 0 {
+// REWRITES-DAG: fn choose_value(mut first: *mut i32, {{arg[0-9]+}}: *mut i32, mut {{__v[0-9]+}}: i32) -> *mut i32 {
+// REWRITES-DAG:     if {{__v[0-9]+}} != 0 {
 // REWRITES-DAG:         return first;
 // REWRITES-DAG:     }
 // REWRITES-DAG:     {{arg[0-9]+}}

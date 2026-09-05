@@ -47,9 +47,9 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: {
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = x;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = x;
 // LOWERING-DAG:     {
-// LOWERING-DAG:         let __switch_value0 = {{_v[0-9]+}};
+// LOWERING-DAG:         let __switch_value0 = {{__v[0-9]+}};
 // LOWERING-DAG:         let mut __switch_case0: i32 = match __switch_value0 {
 // LOWERING-DAG:             -500..=-1 => 0,
 // LOWERING-DAG:             0 => 1,
@@ -66,10 +66,10 @@ int main(void) {
 // LOWERING-DAG:         '__switch0: loop {
 // LOWERING-DAG:             match __switch_case0 {
 // LOWERING-DAG:                 0 => {
-// LOWERING-DAG:                     let {{_v[0-9]+}}: i32 = 100;
-// LOWERING-DAG:                     let {{_v[0-9]+}}: i32 = out;
-// LOWERING-DAG:                     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-DAG:                     out = {{_v[0-9]+}};
+// LOWERING-DAG:                     let {{__v[0-9]+}}: i32 = 100;
+// LOWERING-DAG:                     let {{__v[0-9]+}}: i32 = out;
+// LOWERING-DAG:                     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-DAG:                     out = {{__v[0-9]+}};
 // LOWERING-DAG:                     __switch_case0 = 1;
 // LOWERING-DAG:                     continue '__switch0;
 // LOWERING-DAG:                 }
@@ -78,45 +78,45 @@ int main(void) {
 // LOWERING-DAG:                     continue '__switch0;
 // LOWERING-DAG:                 }
 // LOWERING-DAG:                 2 => {
-// LOWERING-DAG:                     let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-DAG:                     let {{_v[0-9]+}}: i32 = out;
-// LOWERING-DAG:                     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-DAG:                     out = {{_v[0-9]+}};
+// LOWERING-DAG:                     let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-DAG:                     let {{__v[0-9]+}}: i32 = out;
+// LOWERING-DAG:                     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-DAG:                     out = {{__v[0-9]+}};
 // LOWERING-DAG:                     __switch_case0 = 3;
 // LOWERING-DAG:                     continue '__switch0;
 // LOWERING-DAG:                 }
 // LOWERING-DAG:                 3 => {
-// LOWERING-DAG:                     let {{_v[0-9]+}}: i32 = 2;
-// LOWERING-DAG:                     let {{_v[0-9]+}}: i32 = out;
-// LOWERING-DAG:                     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-DAG:                     out = {{_v[0-9]+}};
+// LOWERING-DAG:                     let {{__v[0-9]+}}: i32 = 2;
+// LOWERING-DAG:                     let {{__v[0-9]+}}: i32 = out;
+// LOWERING-DAG:                     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-DAG:                     out = {{__v[0-9]+}};
 // LOWERING-DAG:                     {
-// LOWERING-DAG:                         let {{_v[0-9]+}}: i32 = out;
-// LOWERING-DAG:                         let {{_v[0-9]+}}: i32 = 50;
-// LOWERING-DAG:                         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} > {{_v[0-9]+}};
-// LOWERING-DAG:                         if {{_v[0-9]+}} {
+// LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = out;
+// LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = 50;
+// LOWERING-DAG:                         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} > {{__v[0-9]+}};
+// LOWERING-DAG:                         if {{__v[0-9]+}} {
 // LOWERING-DAG:                             break '__switch0;
 // LOWERING-DAG:                         }
 // LOWERING-DAG:                     }
-// LOWERING-DAG:                     let {{_v[0-9]+}}: i32 = 3;
-// LOWERING-DAG:                     let {{_v[0-9]+}}: i32 = out;
-// LOWERING-DAG:                     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-DAG:                     out = {{_v[0-9]+}};
+// LOWERING-DAG:                     let {{__v[0-9]+}}: i32 = 3;
+// LOWERING-DAG:                     let {{__v[0-9]+}}: i32 = out;
+// LOWERING-DAG:                     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-DAG:                     out = {{__v[0-9]+}};
 // LOWERING-DAG:                     __switch_case0 = 4;
 // LOWERING-DAG:                     continue '__switch0;
 // LOWERING-DAG:                 }
 // LOWERING-DAG:                 4 => {
-// LOWERING-DAG:                     let {{_v[0-9]+}}: i32 = 4;
-// LOWERING-DAG:                     let {{_v[0-9]+}}: i32 = out;
-// LOWERING-DAG:                     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-DAG:                     out = {{_v[0-9]+}};
+// LOWERING-DAG:                     let {{__v[0-9]+}}: i32 = 4;
+// LOWERING-DAG:                     let {{__v[0-9]+}}: i32 = out;
+// LOWERING-DAG:                     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-DAG:                     out = {{__v[0-9]+}};
 // LOWERING-DAG:                     {
-// LOWERING-DAG:                         let {{_v[0-9]+}}: i32 = x;
-// LOWERING-DAG:                         let {{_v[0-9]+}}: i32 = 2;
-// LOWERING-DAG:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} % {{_v[0-9]+}};
-// LOWERING-DAG:                         let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:                         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
-// LOWERING-DAG:                         if {{_v[0-9]+}} {
+// LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = x;
+// LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = 2;
+// LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} % {{__v[0-9]+}};
+// LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:                         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
+// LOWERING-DAG:                         if {{__v[0-9]+}} {
 // LOWERING-DAG:                             break '__switch0;
 // LOWERING-DAG:                         }
 // LOWERING-DAG:                     }
@@ -124,10 +124,10 @@ int main(void) {
 // LOWERING-DAG:                     continue '__switch0;
 // LOWERING-DAG:                 }
 // LOWERING-DAG:                 5 => {
-// LOWERING-DAG:                     let {{_v[0-9]+}}: i32 = 5;
-// LOWERING-DAG:                     let {{_v[0-9]+}}: i32 = out;
-// LOWERING-DAG:                     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-DAG:                     out = {{_v[0-9]+}};
+// LOWERING-DAG:                     let {{__v[0-9]+}}: i32 = 5;
+// LOWERING-DAG:                     let {{__v[0-9]+}}: i32 = out;
+// LOWERING-DAG:                     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-DAG:                     out = {{__v[0-9]+}};
 // LOWERING-DAG:                     __switch_case0 = 6;
 // LOWERING-DAG:                     continue '__switch0;
 // LOWERING-DAG:                 }
@@ -140,25 +140,25 @@ int main(void) {
 // LOWERING-DAG:                     continue '__switch0;
 // LOWERING-DAG:                 }
 // LOWERING-DAG:                 8 => {
-// LOWERING-DAG:                     let {{_v[0-9]+}}: i32 = 6;
-// LOWERING-DAG:                     let {{_v[0-9]+}}: i32 = out;
-// LOWERING-DAG:                     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-DAG:                     out = {{_v[0-9]+}};
+// LOWERING-DAG:                     let {{__v[0-9]+}}: i32 = 6;
+// LOWERING-DAG:                     let {{__v[0-9]+}}: i32 = out;
+// LOWERING-DAG:                     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-DAG:                     out = {{__v[0-9]+}};
 // LOWERING-DAG:                     break '__switch0;
 // LOWERING-DAG:                 }
 // LOWERING-DAG:                 9 => {
-// LOWERING-DAG:                     let {{_v[0-9]+}}: i32 = 7;
-// LOWERING-DAG:                     let {{_v[0-9]+}}: i32 = out;
-// LOWERING-DAG:                     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-DAG:                     out = {{_v[0-9]+}};
+// LOWERING-DAG:                     let {{__v[0-9]+}}: i32 = 7;
+// LOWERING-DAG:                     let {{__v[0-9]+}}: i32 = out;
+// LOWERING-DAG:                     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-DAG:                     out = {{__v[0-9]+}};
 // LOWERING-DAG:                     __switch_case0 = 10;
 // LOWERING-DAG:                     continue '__switch0;
 // LOWERING-DAG:                 }
 // LOWERING-DAG:                 10 => {
-// LOWERING-DAG:                     let {{_v[0-9]+}}: i32 = 8;
-// LOWERING-DAG:                     let {{_v[0-9]+}}: i32 = out;
-// LOWERING-DAG:                     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-DAG:                     out = {{_v[0-9]+}};
+// LOWERING-DAG:                     let {{__v[0-9]+}}: i32 = 8;
+// LOWERING-DAG:                     let {{__v[0-9]+}}: i32 = out;
+// LOWERING-DAG:                     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-DAG:                     out = {{__v[0-9]+}};
 // LOWERING-DAG:                     break '__switch0;
 // LOWERING-DAG:                 }
 // LOWERING-DAG:                 _ => {
@@ -171,70 +171,118 @@ int main(void) {
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: match x {
-// REWRITES-DAG:     -500..=-1 => {
-// REWRITES-DAG:         out += 100;
-// REWRITES-DAG:         out += 1;
-// REWRITES-DAG:         out += 2;
-// REWRITES-DAG:         if out > 50 {
-// REWRITES-DAG:         } else {
-// REWRITES-DAG:             out += 3;
-// REWRITES-DAG:             out += 4;
-// REWRITES-DAG:             if x % 2 == 0 {
-// REWRITES-DAG:             } else {
-// REWRITES-DAG:                 out += 5;
-// REWRITES-DAG:                 out += 6;
+// REWRITES-DAG: let {{__v[0-9]+}}: i32 = x;
+// REWRITES-DAG: let __switch_value0 = {{__v[0-9]+}};
+// REWRITES-DAG: let mut __switch_case0: i32 = match __switch_value0 {
+// REWRITES-DAG:     -500..=-1 => 0,
+// REWRITES-DAG:     0 => 1,
+// REWRITES-DAG:     1 => 2,
+// REWRITES-DAG:     2..=100 => 3,
+// REWRITES-DAG:     101 => 4,
+// REWRITES-DAG:     200..=500 => 6,
+// REWRITES-DAG:     600 => 7,
+// REWRITES-DAG:     700..=900 => 8,
+// REWRITES-DAG:     999 => 9,
+// REWRITES-DAG:     1000 => 10,
+// REWRITES-DAG:     _ => 5,
+// REWRITES-DAG: };
+// REWRITES-DAG: '__switch0: loop {
+// REWRITES-DAG:     match __switch_case0 {
+// REWRITES-DAG:         0 => {
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 100;
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = out;
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// REWRITES-DAG:             out = {{__v[0-9]+}};
+// REWRITES-DAG:             __switch_case0 = 1;
+// REWRITES-DAG:             continue '__switch0;
+// REWRITES-DAG:         }
+// REWRITES-DAG:         1 => {
+// REWRITES-DAG:             __switch_case0 = 2;
+// REWRITES-DAG:             continue '__switch0;
+// REWRITES-DAG:         }
+// REWRITES-DAG:         2 => {
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 1;
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = out;
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// REWRITES-DAG:             out = {{__v[0-9]+}};
+// REWRITES-DAG:             __switch_case0 = 3;
+// REWRITES-DAG:             continue '__switch0;
+// REWRITES-DAG:         }
+// REWRITES-DAG:         3 => {
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 2;
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = out;
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// REWRITES-DAG:             out = {{__v[0-9]+}};
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = out;
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 50;
+// REWRITES-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} > {{__v[0-9]+}};
+// REWRITES-DAG:             if {{__v[0-9]+}} {
+// REWRITES-DAG:                 break '__switch0;
 // REWRITES-DAG:             }
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 3;
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = out;
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// REWRITES-DAG:             out = {{__v[0-9]+}};
+// REWRITES-DAG:             __switch_case0 = 4;
+// REWRITES-DAG:             continue '__switch0;
 // REWRITES-DAG:         }
-// REWRITES-DAG:     }
-// REWRITES-DAG:     0 | 1 => {
-// REWRITES-DAG:         out += 1;
-// REWRITES-DAG:         out += 2;
-// REWRITES-DAG:         if out > 50 {
-// REWRITES-DAG:         } else {
-// REWRITES-DAG:             out += 3;
-// REWRITES-DAG:             out += 4;
-// REWRITES-DAG:             if x % 2 == 0 {
-// REWRITES-DAG:             } else {
-// REWRITES-DAG:                 out += 5;
-// REWRITES-DAG:                 out += 6;
+// REWRITES-DAG:         4 => {
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 4;
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = out;
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// REWRITES-DAG:             out = {{__v[0-9]+}};
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = x;
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 2;
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} % {{__v[0-9]+}};
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 0;
+// REWRITES-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
+// REWRITES-DAG:             if {{__v[0-9]+}} {
+// REWRITES-DAG:                 break '__switch0;
 // REWRITES-DAG:             }
+// REWRITES-DAG:             __switch_case0 = 5;
+// REWRITES-DAG:             continue '__switch0;
 // REWRITES-DAG:         }
-// REWRITES-DAG:     }
-// REWRITES-DAG:     2..=100 => {
-// REWRITES-DAG:         out += 2;
-// REWRITES-DAG:         if out > 50 {
-// REWRITES-DAG:         } else {
-// REWRITES-DAG:             out += 3;
-// REWRITES-DAG:             out += 4;
-// REWRITES-DAG:             if x % 2 == 0 {
-// REWRITES-DAG:             } else {
-// REWRITES-DAG:                 out += 5;
-// REWRITES-DAG:                 out += 6;
-// REWRITES-DAG:             }
+// REWRITES-DAG:         5 => {
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 5;
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = out;
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// REWRITES-DAG:             out = {{__v[0-9]+}};
+// REWRITES-DAG:             __switch_case0 = 6;
+// REWRITES-DAG:             continue '__switch0;
 // REWRITES-DAG:         }
-// REWRITES-DAG:     }
-// REWRITES-DAG:     101 => {
-// REWRITES-DAG:         out += 4;
-// REWRITES-DAG:         if x % 2 == 0 {
-// REWRITES-DAG:         } else {
-// REWRITES-DAG:             out += 5;
-// REWRITES-DAG:             out += 6;
+// REWRITES-DAG:         6 => {
+// REWRITES-DAG:             __switch_case0 = 7;
+// REWRITES-DAG:             continue '__switch0;
 // REWRITES-DAG:         }
-// REWRITES-DAG:     }
-// REWRITES-DAG:     200..=500 | 600 | 700..=900 => {
-// REWRITES-DAG:         out += 6;
-// REWRITES-DAG:     }
-// REWRITES-DAG:     999 => {
-// REWRITES-DAG:         out += 7;
-// REWRITES-DAG:         out += 8;
-// REWRITES-DAG:     }
-// REWRITES-DAG:     1000 => {
-// REWRITES-DAG:         out += 8;
-// REWRITES-DAG:     }
-// REWRITES-DAG:     _ => {
-// REWRITES-DAG:         out += 5;
-// REWRITES-DAG:         out += 6;
+// REWRITES-DAG:         7 => {
+// REWRITES-DAG:             __switch_case0 = 8;
+// REWRITES-DAG:             continue '__switch0;
+// REWRITES-DAG:         }
+// REWRITES-DAG:         8 => {
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 6;
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = out;
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// REWRITES-DAG:             out = {{__v[0-9]+}};
+// REWRITES-DAG:             break '__switch0;
+// REWRITES-DAG:         }
+// REWRITES-DAG:         9 => {
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 7;
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = out;
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// REWRITES-DAG:             out = {{__v[0-9]+}};
+// REWRITES-DAG:             __switch_case0 = 10;
+// REWRITES-DAG:             continue '__switch0;
+// REWRITES-DAG:         }
+// REWRITES-DAG:         10 => {
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 8;
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = out;
+// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// REWRITES-DAG:             out = {{__v[0-9]+}};
+// REWRITES-DAG:             break '__switch0;
+// REWRITES-DAG:         }
+// REWRITES-DAG:         _ => {
+// REWRITES-DAG:             break '__switch0;
+// REWRITES-DAG:         }
 // REWRITES-DAG:     }
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

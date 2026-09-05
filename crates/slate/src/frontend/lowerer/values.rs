@@ -472,7 +472,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn next_temp(&mut self) -> String {
-        let name = format!("_v{}", self.temp_counter);
+        let name = format!("__v{}", self.temp_counter);
         self.temp_counter += 1;
         name
     }

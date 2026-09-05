@@ -73,88 +73,100 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: fn shift_by_promoted_types({{arg[0-9]+}}: i32) -> i32 {
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 4;
-// LOWERING-DAG:     let {{_v[0-9]+}}: u32 = 3;
-// LOWERING-DAG:     let {{_v[0-9]+}}: i64 = 5;
-// LOWERING-DAG:     let {{_v[0-9]+}}: u64 = 6;
-// LOWERING-DAG:     let {{_v[0-9]+}}: i16 = 2;
-// LOWERING-DAG:     let {{_v[0-9]+}}: bitint::BUint<129, 3, 24> = bitint::BUint::<129, 3, 24>::from_decimal_str("1");
-// LOWERING-DAG:     let {{_v[0-9]+}}: bitint::BUint<129, 3, 24> = {{_v[0-9]+}} << {{_v[0-9]+}};
-// LOWERING-DAG:     let {{_v[0-9]+}}: bitint::BUint<129, 3, 24> = {{_v[0-9]+}} >> {{_v[0-9]+}};
-// LOWERING-DAG:     let {{_v[0-9]+}}: bitint::BUint<129, 3, 24> = {{_v[0-9]+}} << {{_v[0-9]+}};
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-DAG:     let {{_v[0-9]+}}: bitint::BUint<129, 3, 24> = {{_v[0-9]+}} >> {{_v[0-9]+}};
-// LOWERING-DAG:     let {{_v[0-9]+}}: bitint::BUint<129, 3, 24> = {{_v[0-9]+}} << {{_v[0-9]+}};
-// LOWERING-DAG:     let {{_v[0-9]+}}: bitint::BUint<129, 3, 24> = bitint::BUint::<129, 3, 24>::from_i128({{arg[0-9]+}} as i128);
-// LOWERING-DAG:     let {{_v[0-9]+}}: bitint::BUint<129, 3, 24> = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}}.to_u128() as i32;
-// LOWERING-DAG:     return {{_v[0-9]+}};
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 4;
+// LOWERING-DAG:     let {{__v[0-9]+}}: u32 = 3;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i64 = 5;
+// LOWERING-DAG:     let {{__v[0-9]+}}: u64 = 6;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i16 = 2;
+// LOWERING-DAG:     let {{__v[0-9]+}}: bitint::BUint<129, 3, 24> = bitint::BUint::<129, 3, 24>::from_decimal_str("1");
+// LOWERING-DAG:     let {{__v[0-9]+}}: bitint::BUint<129, 3, 24> = {{__v[0-9]+}} << {{__v[0-9]+}};
+// LOWERING-DAG:     let {{__v[0-9]+}}: bitint::BUint<129, 3, 24> = {{__v[0-9]+}} >> {{__v[0-9]+}};
+// LOWERING-DAG:     let {{__v[0-9]+}}: bitint::BUint<129, 3, 24> = {{__v[0-9]+}} << {{__v[0-9]+}};
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-DAG:     let {{__v[0-9]+}}: bitint::BUint<129, 3, 24> = {{__v[0-9]+}} >> {{__v[0-9]+}};
+// LOWERING-DAG:     let {{__v[0-9]+}}: bitint::BUint<129, 3, 24> = {{__v[0-9]+}} << {{__v[0-9]+}};
+// LOWERING-DAG:     let {{__v[0-9]+}}: bitint::BUint<129, 3, 24> = bitint::BUint::<129, 3, 24>::from_i128({{arg[0-9]+}} as i128);
+// LOWERING-DAG:     let {{__v[0-9]+}}: bitint::BUint<129, 3, 24> = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}}.to_u128() as i32;
+// LOWERING-DAG:     return {{__v[0-9]+}};
 // LOWERING-DAG: }
 // LOWERING-DAG: fn shift_across_limbs({{arg[0-9]+}}: i32) -> i32 {
-// LOWERING-DAG:     let {{_v[0-9]+}}: bitint::BUint<129, 3, 24> = bitint::BUint::<129, 3, 24>::from_decimal_str("1");
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 128;
-// LOWERING-DAG:     let {{_v[0-9]+}}: bitint::BUint<129, 3, 24> = {{_v[0-9]+}} << {{_v[0-9]+}};
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 127;
-// LOWERING-DAG:     let {{_v[0-9]+}}: bitint::BUint<129, 3, 24> = {{_v[0-9]+}} >> {{_v[0-9]+}};
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}}.to_u128() as i32;
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
-// LOWERING-DAG:     return {{_v[0-9]+}};
+// LOWERING-DAG:     let {{__v[0-9]+}}: bitint::BUint<129, 3, 24> = bitint::BUint::<129, 3, 24>::from_decimal_str("1");
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 128;
+// LOWERING-DAG:     let {{__v[0-9]+}}: bitint::BUint<129, 3, 24> = {{__v[0-9]+}} << {{__v[0-9]+}};
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 127;
+// LOWERING-DAG:     let {{__v[0-9]+}}: bitint::BUint<129, 3, 24> = {{__v[0-9]+}} >> {{__v[0-9]+}};
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}}.to_u128() as i32;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{arg[0-9]+}};
+// LOWERING-DAG:     return {{__v[0-9]+}};
 // LOWERING-DAG: }
 // LOWERING-DAG: fn shift_signed_arithmetic({{arg[0-9]+}}: i32) -> i32 {
-// LOWERING-DAG:     let {{_v[0-9]+}}: bitint::BInt<256, 4, 32> = bitint::BInt::<256, 4, 32>::from_decimal_str("-1024");
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 3;
-// LOWERING-DAG:     let {{_v[0-9]+}}: bitint::BInt<256, 4, 32> = {{_v[0-9]+}} >> {{_v[0-9]+}};
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 2;
-// LOWERING-DAG:     let {{_v[0-9]+}}: bitint::BInt<256, 4, 32> = {{_v[0-9]+}} << {{_v[0-9]+}};
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}}.to_i128() as i32;
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
-// LOWERING-DAG:     return {{_v[0-9]+}};
+// LOWERING-DAG:     let {{__v[0-9]+}}: bitint::BInt<256, 4, 32> = bitint::BInt::<256, 4, 32>::from_decimal_str("-1024");
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 3;
+// LOWERING-DAG:     let {{__v[0-9]+}}: bitint::BInt<256, 4, 32> = {{__v[0-9]+}} >> {{__v[0-9]+}};
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 2;
+// LOWERING-DAG:     let {{__v[0-9]+}}: bitint::BInt<256, 4, 32> = {{__v[0-9]+}} << {{__v[0-9]+}};
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}}.to_i128() as i32;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{arg[0-9]+}};
+// LOWERING-DAG:     return {{__v[0-9]+}};
 // LOWERING-DAG: }
 // LOWERING-DAG: fn shift_by_bitint({{arg[0-9]+}}: i32) -> i32 {
-// LOWERING-DAG:     let {{_v[0-9]+}}: bitint::BInt<256, 4, 32> = bitint::BInt::<256, 4, 32>::from_decimal_str("4");
-// LOWERING-DAG:     let {{_v[0-9]+}}: bitint::BInt<256, 4, 32> = bitint::BInt::<256, 4, 32>::from_decimal_str("3");
-// LOWERING-DAG:     let {{_v[0-9]+}}: bitint::BInt<256, 4, 32> = {{_v[0-9]+}} << {{_v[0-9]+}};
-// LOWERING-DAG:     let {{_v[0-9]+}}: bitint::BInt<256, 4, 32> = {{_v[0-9]+}} >> {{_v[0-9]+}};
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}}.to_i128() as i32;
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
-// LOWERING-DAG:     return {{_v[0-9]+}};
+// LOWERING-DAG:     let {{__v[0-9]+}}: bitint::BInt<256, 4, 32> = bitint::BInt::<256, 4, 32>::from_decimal_str("4");
+// LOWERING-DAG:     let {{__v[0-9]+}}: bitint::BInt<256, 4, 32> = bitint::BInt::<256, 4, 32>::from_decimal_str("3");
+// LOWERING-DAG:     let {{__v[0-9]+}}: bitint::BInt<256, 4, 32> = {{__v[0-9]+}} << {{__v[0-9]+}};
+// LOWERING-DAG:     let {{__v[0-9]+}}: bitint::BInt<256, 4, 32> = {{__v[0-9]+}} >> {{__v[0-9]+}};
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}}.to_i128() as i32;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{arg[0-9]+}};
+// LOWERING-DAG:     return {{__v[0-9]+}};
 // LOWERING-DAG: }
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: fn shift_by_promoted_types({{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-DAG:     let {{_v[0-9]+}}: i32 = 4;
-// REWRITES-DAG:     let {{_v[0-9]+}}: u32 = 3;
-// REWRITES-DAG:     let {{_v[0-9]+}}: i64 = 5;
-// REWRITES-DAG:     let {{_v[0-9]+}}: u64 = 6;
-// REWRITES-DAG:     let {{_v[0-9]+}}: bitint::BUint<129, 3, 24> = bitint::BUint::<129, 3, 24>::from_decimal_str("1");
-// REWRITES-DAG:     let {{_v[0-9]+}}: i32 = (2 as i16) as i32;
-// REWRITES-DAG:     let {{_v[0-9]+}}: bitint::BUint<129, 3, 24> = {{_v[0-9]+}} << {{_v[0-9]+}} >> {{_v[0-9]+}} << {{_v[0-9]+}} >> {{_v[0-9]+}} << {{_v[0-9]+}};
-// REWRITES-DAG:     let {{_v[0-9]+}}: bitint::BUint<129, 3, 24> = bitint::BUint::<129, 3, 24>::from_i128({{arg[0-9]+}} as i128);
-// REWRITES-DAG:     let {{_v[0-9]+}}: bitint::BUint<129, 3, 24> = {{_v[0-9]+}} + {{_v[0-9]+}};
-// REWRITES-DAG:     {{_v[0-9]+}}.to_u128() as i32
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 4;
+// REWRITES-DAG:     let {{__v[0-9]+}}: u32 = 3;
+// REWRITES-DAG:     let {{__v[0-9]+}}: i64 = 5;
+// REWRITES-DAG:     let {{__v[0-9]+}}: u64 = 6;
+// REWRITES-DAG:     let {{__v[0-9]+}}: i16 = 2;
+// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<129, 3, 24> = bitint::BUint::<129, 3, 24>::from_decimal_str("1");
+// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<129, 3, 24> = {{__v[0-9]+}} << {{__v[0-9]+}};
+// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<129, 3, 24> = {{__v[0-9]+}} >> {{__v[0-9]+}};
+// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<129, 3, 24> = {{__v[0-9]+}} << {{__v[0-9]+}};
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<129, 3, 24> = {{__v[0-9]+}} >> {{__v[0-9]+}};
+// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<129, 3, 24> = {{__v[0-9]+}} << {{__v[0-9]+}};
+// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<129, 3, 24> = bitint::BUint::<129, 3, 24>::from_i128({{arg[0-9]+}} as i128);
+// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<129, 3, 24> = {{__v[0-9]+}} + {{__v[0-9]+}};
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}}.to_u128() as i32;
+// REWRITES-DAG:     {{__v[0-9]+}}
 // REWRITES-DAG: }
 // REWRITES-DAG: fn shift_across_limbs({{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-DAG:     let {{_v[0-9]+}}: bitint::BUint<129, 3, 24> = bitint::BUint::<129, 3, 24>::from_decimal_str("1");
-// REWRITES-DAG:     let {{_v[0-9]+}}: i32 = 128;
-// REWRITES-DAG:     let {{_v[0-9]+}}: i32 = 127;
-// REWRITES-DAG:     let {{_v[0-9]+}}: bitint::BUint<129, 3, 24> = {{_v[0-9]+}} << {{_v[0-9]+}} >> {{_v[0-9]+}};
-// REWRITES-DAG:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}}.to_u128() as i32;
-// REWRITES-DAG:     {{_v[0-9]+}} + {{arg[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<129, 3, 24> = bitint::BUint::<129, 3, 24>::from_decimal_str("1");
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 128;
+// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<129, 3, 24> = {{__v[0-9]+}} << {{__v[0-9]+}};
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 127;
+// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<129, 3, 24> = {{__v[0-9]+}} >> {{__v[0-9]+}};
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}}.to_u128() as i32;
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{arg[0-9]+}};
+// REWRITES-DAG:     {{__v[0-9]+}}
 // REWRITES-DAG: }
 // REWRITES-DAG: fn shift_signed_arithmetic({{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-DAG:     let {{_v[0-9]+}}: bitint::BInt<256, 4, 32> = bitint::BInt::<256, 4, 32>::from_decimal_str("-1024");
-// REWRITES-DAG:     let {{_v[0-9]+}}: i32 = 3;
-// REWRITES-DAG:     let {{_v[0-9]+}}: i32 = 2;
-// REWRITES-DAG:     let {{_v[0-9]+}}: bitint::BInt<256, 4, 32> = {{_v[0-9]+}} >> {{_v[0-9]+}} << {{_v[0-9]+}};
-// REWRITES-DAG:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}}.to_i128() as i32;
-// REWRITES-DAG:     {{_v[0-9]+}} + {{arg[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BInt<256, 4, 32> = bitint::BInt::<256, 4, 32>::from_decimal_str("-1024");
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 3;
+// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BInt<256, 4, 32> = {{__v[0-9]+}} >> {{__v[0-9]+}};
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 2;
+// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BInt<256, 4, 32> = {{__v[0-9]+}} << {{__v[0-9]+}};
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}}.to_i128() as i32;
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{arg[0-9]+}};
+// REWRITES-DAG:     {{__v[0-9]+}}
 // REWRITES-DAG: }
 // REWRITES-DAG: fn shift_by_bitint({{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-DAG:     let {{_v[0-9]+}}: bitint::BInt<256, 4, 32> = bitint::BInt::<256, 4, 32>::from_decimal_str("4");
-// REWRITES-DAG:     let {{_v[0-9]+}}: bitint::BInt<256, 4, 32> = bitint::BInt::<256, 4, 32>::from_decimal_str("3");
-// REWRITES-DAG:     let {{_v[0-9]+}}: bitint::BInt<256, 4, 32> = {{_v[0-9]+}} << {{_v[0-9]+}} >> {{_v[0-9]+}};
-// REWRITES-DAG:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}}.to_i128() as i32;
-// REWRITES-DAG:     {{_v[0-9]+}} + {{arg[0-9]+}}
+// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BInt<256, 4, 32> = bitint::BInt::<256, 4, 32>::from_decimal_str("4");
+// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BInt<256, 4, 32> = bitint::BInt::<256, 4, 32>::from_decimal_str("3");
+// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BInt<256, 4, 32> = {{__v[0-9]+}} << {{__v[0-9]+}};
+// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BInt<256, 4, 32> = {{__v[0-9]+}} >> {{__v[0-9]+}};
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}}.to_i128() as i32;
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{arg[0-9]+}};
+// REWRITES-DAG:     {{__v[0-9]+}}
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

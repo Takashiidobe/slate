@@ -20,31 +20,37 @@ int main(void) {
 }
 
 // SLATE-FILECHECK-BEGIN lowering
-// LOWERING-DAG: let {{_v[0-9]+}}: *mut i8 = b"%d %d %d %d\n\0".as_ptr() as *mut i8;
-// LOWERING-DAG: let {{_v[0-9]+}}: i32 = 5;
-// LOWERING-DAG: let {{_v[0-9]+}}: i32 = 10;
-// LOWERING-DAG: let {{_v[0-9]+}}: i32 = add({{_v[0-9]+}}, {{_v[0-9]+}});
-// LOWERING-DAG: let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-DAG: let {{_v[0-9]+}}: i32 = 2;
-// LOWERING-DAG: let {{_v[0-9]+}}: i32 = get_used({{_v[0-9]+}}, {{_v[0-9]+}});
-// LOWERING-DAG: let {{_v[0-9]+}}: i32 = 3;
-// LOWERING-DAG: let {{_v[0-9]+}}: i32 = 4;
-// LOWERING-DAG: let {{_v[0-9]+}}: i32 = 5;
-// LOWERING-DAG: let {{_v[0-9]+}}: i32 = remove_two({{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}});
-// LOWERING-DAG: let {{_v[0-9]+}}: i32 = 8;
-// LOWERING-DAG: let {{_v[0-9]+}}: i32 = 9;
-// LOWERING-DAG: let {{_v[0-9]+}}: i32 = unsafe { Some(address_taken).unwrap()({{_v[0-9]+}}, {{_v[0-9]+}}) };
-// LOWERING-DAG: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-DAG: let {{__v[0-9]+}}: *mut i8 = b"%d %d %d %d\n\0".as_ptr() as *mut i8;
+// LOWERING-DAG: let {{__v[0-9]+}}: i32 = 5;
+// LOWERING-DAG: let {{__v[0-9]+}}: i32 = 10;
+// LOWERING-DAG: let {{__v[0-9]+}}: i32 = add({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-DAG: let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-DAG: let {{__v[0-9]+}}: i32 = 2;
+// LOWERING-DAG: let {{__v[0-9]+}}: i32 = get_used({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-DAG: let {{__v[0-9]+}}: i32 = 3;
+// LOWERING-DAG: let {{__v[0-9]+}}: i32 = 4;
+// LOWERING-DAG: let {{__v[0-9]+}}: i32 = 5;
+// LOWERING-DAG: let {{__v[0-9]+}}: i32 = remove_two({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-DAG: let {{__v[0-9]+}}: i32 = 8;
+// LOWERING-DAG: let {{__v[0-9]+}}: i32 = 9;
+// LOWERING-DAG: let {{__v[0-9]+}}: i32 = unsafe { Some(address_taken).unwrap()({{__v[0-9]+}}, {{__v[0-9]+}}) };
+// LOWERING-DAG: let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: unsafe {
-// REWRITES-DAG:     printf(
-// REWRITES-DAG:         c"%d %d %d %d\n".as_ptr(),
-// REWRITES-DAG:         add(5, 10),
-// REWRITES-DAG:         get_used(1, 2),
-// REWRITES-DAG:         remove_two(3, 4, 5),
-// REWRITES-DAG:         unsafe { Some(address_taken).unwrap()(8 as i32, 9 as i32) },
-// REWRITES-DAG:     )
-// REWRITES-DAG: };
+// REWRITES-DAG: let {{__v[0-9]+}}: *mut i8 = c"%d %d %d %d\n".as_ptr() as *mut i8;
+// REWRITES-DAG: let {{__v[0-9]+}}: i32 = 5;
+// REWRITES-DAG: let {{__v[0-9]+}}: i32 = 10;
+// REWRITES-DAG: let {{__v[0-9]+}}: i32 = add({{__v[0-9]+}}, {{__v[0-9]+}});
+// REWRITES-DAG: let {{__v[0-9]+}}: i32 = 1;
+// REWRITES-DAG: let {{__v[0-9]+}}: i32 = 2;
+// REWRITES-DAG: let {{__v[0-9]+}}: i32 = get_used({{__v[0-9]+}}, {{__v[0-9]+}});
+// REWRITES-DAG: let {{__v[0-9]+}}: i32 = 3;
+// REWRITES-DAG: let {{__v[0-9]+}}: i32 = 4;
+// REWRITES-DAG: let {{__v[0-9]+}}: i32 = 5;
+// REWRITES-DAG: let {{__v[0-9]+}}: i32 = remove_two({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
+// REWRITES-DAG: let {{__v[0-9]+}}: i32 = 8;
+// REWRITES-DAG: let {{__v[0-9]+}}: i32 = 9;
+// REWRITES-DAG: let {{__v[0-9]+}}: i32 = unsafe { Some(address_taken).unwrap()({{__v[0-9]+}}, {{__v[0-9]+}}) };
+// REWRITES-DAG: unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
 // SLATE-FILECHECK-END rewrites

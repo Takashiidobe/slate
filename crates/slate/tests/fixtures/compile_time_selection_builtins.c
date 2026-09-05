@@ -27,29 +27,29 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: fn main() {
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 3;
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 4;
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 7;
-// LOWERING-DAG:     let {{_v[0-9]+}}: f64 = 2.5;
-// LOWERING-DAG:     let {{_v[0-9]+}}: *mut i8 = b"int\0".as_ptr() as *mut i8;
-// LOWERING-DAG:     let {{_v[0-9]+}}: *mut i8 = b"double\0".as_ptr() as *mut i8;
-// LOWERING-DAG:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d %d %s %s\n\0".as_ptr() as *mut i8;
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 3;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 4;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 7;
+// LOWERING-DAG:     let {{__v[0-9]+}}: f64 = 2.5;
+// LOWERING-DAG:     let {{__v[0-9]+}}: *mut i8 = b"int\0".as_ptr() as *mut i8;
+// LOWERING-DAG:     let {{__v[0-9]+}}: *mut i8 = b"double\0".as_ptr() as *mut i8;
+// LOWERING-DAG:     let {{__v[0-9]+}}: *mut i8 = b"%d %d %d %d %s %s\n\0".as_ptr() as *mut i8;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = unsafe {
 // LOWERING-DAG:         printf(
-// LOWERING-DAG:             {{_v[0-9]+}} as *const core::ffi::c_char,
-// LOWERING-DAG:             {{_v[0-9]+}},
-// LOWERING-DAG:             {{_v[0-9]+}},
-// LOWERING-DAG:             {{_v[0-9]+}},
-// LOWERING-DAG:             {{_v[0-9]+}},
-// LOWERING-DAG:             {{_v[0-9]+}},
-// LOWERING-DAG:             {{_v[0-9]+}},
+// LOWERING-DAG:             {{__v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-DAG:             {{__v[0-9]+}},
+// LOWERING-DAG:             {{__v[0-9]+}},
+// LOWERING-DAG:             {{__v[0-9]+}},
+// LOWERING-DAG:             {{__v[0-9]+}},
+// LOWERING-DAG:             {{__v[0-9]+}},
+// LOWERING-DAG:             {{__v[0-9]+}},
 // LOWERING-DAG:         )
 // LOWERING-DAG:     };
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-DAG: }
 // SLATE-FILECHECK-END lowering
 

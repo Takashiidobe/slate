@@ -391,101 +391,101 @@ NOINLINE size_t ext_alignof_union(void) { return ALIGNOF(union ld_union); }
 // LOWERING-X86_64-GNU-EMPTY:
 // LOWERING-X86_64-GNU-NEXT: #[inline(never)]
 // LOWERING-X86_64-GNU-NEXT: fn ext_add({{arg[0-9]+}}: LongDouble, {{arg[0-9]+}}: LongDouble) -> LongDouble {
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = {{arg[0-9]+}} + {{arg[0-9]+}};
-// LOWERING-X86_64-GNU-NEXT:     return {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{arg[0-9]+}} + {{arg[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     return {{__v[0-9]+}};
 // LOWERING-X86_64-GNU-NEXT: }
 // LOWERING-X86_64-GNU-EMPTY:
 // LOWERING-X86_64-GNU-NEXT: #[inline(never)]
 // LOWERING-X86_64-GNU-NEXT: fn ext_sub({{arg[0-9]+}}: LongDouble, {{arg[0-9]+}}: LongDouble) -> LongDouble {
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = {{arg[0-9]+}} - {{arg[0-9]+}};
-// LOWERING-X86_64-GNU-NEXT:     return {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{arg[0-9]+}} - {{arg[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     return {{__v[0-9]+}};
 // LOWERING-X86_64-GNU-NEXT: }
 // LOWERING-X86_64-GNU-EMPTY:
 // LOWERING-X86_64-GNU-NEXT: #[inline(never)]
 // LOWERING-X86_64-GNU-NEXT: fn ext_mul({{arg[0-9]+}}: LongDouble, {{arg[0-9]+}}: LongDouble) -> LongDouble {
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = {{arg[0-9]+}} * {{arg[0-9]+}};
-// LOWERING-X86_64-GNU-NEXT:     return {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{arg[0-9]+}} * {{arg[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     return {{__v[0-9]+}};
 // LOWERING-X86_64-GNU-NEXT: }
 // LOWERING-X86_64-GNU-EMPTY:
 // LOWERING-X86_64-GNU-NEXT: #[inline(never)]
 // LOWERING-X86_64-GNU-NEXT: fn ext_div({{arg[0-9]+}}: LongDouble, {{arg[0-9]+}}: LongDouble) -> LongDouble {
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = {{arg[0-9]+}} / {{arg[0-9]+}};
-// LOWERING-X86_64-GNU-NEXT:     return {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{arg[0-9]+}} / {{arg[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     return {{__v[0-9]+}};
 // LOWERING-X86_64-GNU-NEXT: }
 // LOWERING-X86_64-GNU-EMPTY:
 // LOWERING-X86_64-GNU-NEXT: #[inline(never)]
 // LOWERING-X86_64-GNU-NEXT: fn ext_neg({{arg[0-9]+}}: LongDouble) -> LongDouble {
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = -{{arg[0-9]+}};
-// LOWERING-X86_64-GNU-NEXT:     return {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = -{{arg[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     return {{__v[0-9]+}};
 // LOWERING-X86_64-GNU-NEXT: }
 // LOWERING-X86_64-GNU-EMPTY:
 // LOWERING-X86_64-GNU-NEXT: #[inline(never)]
 // LOWERING-X86_64-GNU-NEXT: fn ext_eq({{arg[0-9]+}}: LongDouble, {{arg[0-9]+}}: LongDouble) -> i32 {
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} == {{arg[0-9]+}};
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-X86_64-GNU-NEXT:     return {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: bool = {{arg[0-9]+}} == {{arg[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-X86_64-GNU-NEXT:     return {{__v[0-9]+}};
 // LOWERING-X86_64-GNU-NEXT: }
 // LOWERING-X86_64-GNU-EMPTY:
 // LOWERING-X86_64-GNU-NEXT: #[inline(never)]
 // LOWERING-X86_64-GNU-NEXT: fn ext_lt({{arg[0-9]+}}: LongDouble, {{arg[0-9]+}}: LongDouble) -> i32 {
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} < {{arg[0-9]+}};
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-X86_64-GNU-NEXT:     return {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: bool = {{arg[0-9]+}} < {{arg[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-X86_64-GNU-NEXT:     return {{__v[0-9]+}};
 // LOWERING-X86_64-GNU-NEXT: }
 // LOWERING-X86_64-GNU-EMPTY:
 // LOWERING-X86_64-GNU-NEXT: #[inline(never)]
 // LOWERING-X86_64-GNU-NEXT: fn ext_le({{arg[0-9]+}}: LongDouble, {{arg[0-9]+}}: LongDouble) -> i32 {
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} <= {{arg[0-9]+}};
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-X86_64-GNU-NEXT:     return {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: bool = {{arg[0-9]+}} <= {{arg[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-X86_64-GNU-NEXT:     return {{__v[0-9]+}};
 // LOWERING-X86_64-GNU-NEXT: }
 // LOWERING-X86_64-GNU-EMPTY:
 // LOWERING-X86_64-GNU-NEXT: #[inline(never)]
 // LOWERING-X86_64-GNU-NEXT: fn ext_from_i64({{arg[0-9]+}}: i64) -> LongDouble {
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_i64({{arg[0-9]+}});
-// LOWERING-X86_64-GNU-NEXT:     return {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_i64({{arg[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     return {{__v[0-9]+}};
 // LOWERING-X86_64-GNU-NEXT: }
 // LOWERING-X86_64-GNU-EMPTY:
 // LOWERING-X86_64-GNU-NEXT: #[inline(never)]
 // LOWERING-X86_64-GNU-NEXT: fn ext_from_u64({{arg[0-9]+}}: u64) -> LongDouble {
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_u64({{arg[0-9]+}});
-// LOWERING-X86_64-GNU-NEXT:     return {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_u64({{arg[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     return {{__v[0-9]+}};
 // LOWERING-X86_64-GNU-NEXT: }
 // LOWERING-X86_64-GNU-EMPTY:
 // LOWERING-X86_64-GNU-NEXT: #[inline(never)]
 // LOWERING-X86_64-GNU-NEXT: fn ext_to_i64({{arg[0-9]+}}: LongDouble) -> i64 {
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: i64 = __slate_f80_to_i64({{arg[0-9]+}});
-// LOWERING-X86_64-GNU-NEXT:     return {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i64 = __slate_f80_to_i64({{arg[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     return {{__v[0-9]+}};
 // LOWERING-X86_64-GNU-NEXT: }
 // LOWERING-X86_64-GNU-EMPTY:
 // LOWERING-X86_64-GNU-NEXT: #[inline(never)]
 // LOWERING-X86_64-GNU-NEXT: fn ext_to_u64({{arg[0-9]+}}: LongDouble) -> u64 {
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: u64 = __slate_f80_to_u64({{arg[0-9]+}});
-// LOWERING-X86_64-GNU-NEXT:     return {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u64 = __slate_f80_to_u64({{arg[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     return {{__v[0-9]+}};
 // LOWERING-X86_64-GNU-NEXT: }
 // LOWERING-X86_64-GNU-EMPTY:
 // LOWERING-X86_64-GNU-NEXT: #[inline(never)]
 // LOWERING-X86_64-GNU-NEXT: fn ext_from_double({{arg[0-9]+}}: f64) -> LongDouble {
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f64({{arg[0-9]+}});
-// LOWERING-X86_64-GNU-NEXT:     return {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_f64({{arg[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     return {{__v[0-9]+}};
 // LOWERING-X86_64-GNU-NEXT: }
 // LOWERING-X86_64-GNU-EMPTY:
 // LOWERING-X86_64-GNU-NEXT: #[inline(never)]
 // LOWERING-X86_64-GNU-NEXT: fn ext_to_double({{arg[0-9]+}}: LongDouble) -> f64 {
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: f64 = __slate_f80_to_f64({{arg[0-9]+}});
-// LOWERING-X86_64-GNU-NEXT:     return {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: f64 = __slate_f80_to_f64({{arg[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     return {{__v[0-9]+}};
 // LOWERING-X86_64-GNU-NEXT: }
 // LOWERING-X86_64-GNU-EMPTY:
 // LOWERING-X86_64-GNU-NEXT: #[inline(never)]
 // LOWERING-X86_64-GNU-NEXT: fn ext_from_float({{arg[0-9]+}}: f32) -> LongDouble {
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f32({{arg[0-9]+}});
-// LOWERING-X86_64-GNU-NEXT:     return {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_f32({{arg[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     return {{__v[0-9]+}};
 // LOWERING-X86_64-GNU-NEXT: }
 // LOWERING-X86_64-GNU-EMPTY:
 // LOWERING-X86_64-GNU-NEXT: #[inline(never)]
 // LOWERING-X86_64-GNU-NEXT: fn ext_to_float({{arg[0-9]+}}: LongDouble) -> f32 {
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: f32 = __slate_f80_to_f32({{arg[0-9]+}});
-// LOWERING-X86_64-GNU-NEXT:     return {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: f32 = __slate_f80_to_f32({{arg[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     return {{__v[0-9]+}};
 // LOWERING-X86_64-GNU-NEXT: }
 // LOWERING-X86_64-GNU-EMPTY:
 // LOWERING-X86_64-GNU-NEXT: #[inline(never)]
@@ -501,16 +501,16 @@ NOINLINE size_t ext_alignof_union(void) { return ALIGNOF(union ld_union); }
 // LOWERING-X86_64-GNU-NEXT:     {{arg[0-9]+}}: LongDouble,
 // LOWERING-X86_64-GNU-NEXT:     {{arg[0-9]+}}: LongDouble,
 // LOWERING-X86_64-GNU-NEXT: ) -> LongDouble {
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = {{arg[0-9]+}} + {{arg[0-9]+}};
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} + {{arg[0-9]+}};
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} + {{arg[0-9]+}};
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} + {{arg[0-9]+}};
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = {{arg[0-9]+}} + {{arg[0-9]+}};
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} + {{arg[0-9]+}};
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} + {{arg[0-9]+}};
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} + {{arg[0-9]+}};
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-X86_64-GNU-NEXT:     return {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{arg[0-9]+}} + {{arg[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} + {{arg[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} + {{arg[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} + {{arg[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{arg[0-9]+}} + {{arg[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} + {{arg[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} + {{arg[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} + {{arg[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     return {{__v[0-9]+}};
 // LOWERING-X86_64-GNU-NEXT: }
 // LOWERING-X86_64-GNU-EMPTY:
 // LOWERING-X86_64-GNU-NEXT: /// Mix integer, double, float and long-double arguments so each ABI has to
@@ -531,41 +531,41 @@ NOINLINE size_t ext_alignof_union(void) { return ALIGNOF(union ld_union); }
 // LOWERING-X86_64-GNU-NEXT: ) -> LongDouble {
 // LOWERING-X86_64-GNU-NEXT:     let mut r: LongDouble = LongDouble([0; 10]);
 // LOWERING-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(r), {{arg[0-9]+}}) };
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(r)) };
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} + {{arg[0-9]+}};
-// LOWERING-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(r), {{_v[0-9]+}}) };
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(r)) };
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} - {{arg[0-9]+}};
-// LOWERING-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(r), {{_v[0-9]+}}) };
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(r)) };
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} + {{arg[0-9]+}};
-// LOWERING-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(r), {{_v[0-9]+}}) };
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(r)) };
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_i64({{arg[0-9]+}});
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(r), {{_v[0-9]+}}) };
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(r)) };
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_u32({{arg[0-9]+}});
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} - {{_v[0-9]+}};
-// LOWERING-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(r), {{_v[0-9]+}}) };
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(r)) };
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f64({{arg[0-9]+}});
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(r), {{_v[0-9]+}}) };
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(r)) };
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f32({{arg[0-9]+}});
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} - {{_v[0-9]+}};
-// LOWERING-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(r), {{_v[0-9]+}}) };
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(r)) };
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_i32({{arg[0-9]+}});
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(r), {{_v[0-9]+}}) };
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(r)) };
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f64({{arg[0-9]+}});
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} - {{_v[0-9]+}};
-// LOWERING-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(r), {{_v[0-9]+}}) };
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(r)) };
-// LOWERING-X86_64-GNU-NEXT:     return {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(r)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} + {{arg[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(r), {{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(r)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} - {{arg[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(r), {{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(r)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} + {{arg[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(r), {{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(r)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_i64({{arg[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(r), {{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(r)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_u32({{arg[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} - {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(r), {{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(r)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_f64({{arg[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(r), {{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(r)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_f32({{arg[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} - {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(r), {{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(r)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_i32({{arg[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(r), {{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(r)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_f64({{arg[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} - {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(r), {{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(r)) };
+// LOWERING-X86_64-GNU-NEXT:     return {{__v[0-9]+}};
 // LOWERING-X86_64-GNU-NEXT: }
 // LOWERING-X86_64-GNU-EMPTY:
 // LOWERING-X86_64-GNU-NEXT: #[inline(never)]
@@ -576,22 +576,22 @@ NOINLINE size_t ext_alignof_union(void) { return ALIGNOF(union ld_union); }
 // LOWERING-X86_64-GNU-NEXT:         tail: 0,
 // LOWERING-X86_64-GNU-NEXT:     };
 // LOWERING-X86_64-GNU-NEXT:     b = {{arg[0-9]+}};
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = b.x;
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 246, 63]);
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-X86_64-GNU-NEXT:     b.x = {{_v[0-9]+}};
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: u8 = b.tag;
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}} as u32;
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: u32 = 90;
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}} ^ {{_v[0-9]+}};
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: u8 = {{_v[0-9]+}} as u8;
-// LOWERING-X86_64-GNU-NEXT:     b.tag = {{_v[0-9]+}};
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: u32 = 2779077210u32;
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: u32 = b.tail;
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}} ^ {{_v[0-9]+}};
-// LOWERING-X86_64-GNU-NEXT:     b.tail = {{_v[0-9]+}};
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: ld_box = b;
-// LOWERING-X86_64-GNU-NEXT:     return {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = b.x;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 246, 63]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     b.x = {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u8 = b.tag;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}} as u32;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u32 = 90;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}} ^ {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u8 = {{__v[0-9]+}} as u8;
+// LOWERING-X86_64-GNU-NEXT:     b.tag = {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u32 = 2779077210u32;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u32 = b.tail;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}} ^ {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     b.tail = {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: ld_box = b;
+// LOWERING-X86_64-GNU-NEXT:     return {{__v[0-9]+}};
 // LOWERING-X86_64-GNU-NEXT: }
 // LOWERING-X86_64-GNU-EMPTY:
 // LOWERING-X86_64-GNU-NEXT: #[inline(never)]
@@ -602,8 +602,8 @@ NOINLINE size_t ext_alignof_union(void) { return ALIGNOF(union ld_union); }
 // LOWERING-X86_64-GNU-NEXT:     };
 // LOWERING-X86_64-GNU-NEXT:     __retval.a = {{arg[0-9]+}};
 // LOWERING-X86_64-GNU-NEXT:     __retval.b = {{arg[0-9]+}};
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: ld_pair = __retval;
-// LOWERING-X86_64-GNU-NEXT:     return {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: ld_pair = __retval;
+// LOWERING-X86_64-GNU-NEXT:     return {{__v[0-9]+}};
 // LOWERING-X86_64-GNU-NEXT: }
 // LOWERING-X86_64-GNU-EMPTY:
 // LOWERING-X86_64-GNU-NEXT: #[inline(never)]
@@ -618,47 +618,47 @@ NOINLINE size_t ext_alignof_union(void) { return ALIGNOF(union ld_union); }
 // LOWERING-X86_64-GNU-NEXT:         z: LongDouble([0; 10]),
 // LOWERING-X86_64-GNU-NEXT:     };
 // LOWERING-X86_64-GNU-NEXT:     n = {{arg[0-9]+}};
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = n.pair.a;
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-X86_64-GNU-NEXT:     n.pair.a = {{_v[0-9]+}};
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]);
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = n.pair.b;
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} - {{_v[0-9]+}};
-// LOWERING-X86_64-GNU-NEXT:     n.pair.b = {{_v[0-9]+}};
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 254, 63]);
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = n.z;
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} * {{_v[0-9]+}};
-// LOWERING-X86_64-GNU-NEXT:     n.z = {{_v[0-9]+}};
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: i32 = 21930;
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: u16 = n.head;
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} ^ {{_v[0-9]+}};
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: u16 = {{_v[0-9]+}} as u16;
-// LOWERING-X86_64-GNU-NEXT:     n.head = {{_v[0-9]+}};
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: u32 = 1;
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: i64 = 0;
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: u8 = n.bytes[({{_v[0-9]+}} as usize)];
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}} as u32;
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}} ^ {{_v[0-9]+}};
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: u8 = {{_v[0-9]+}} as u8;
-// LOWERING-X86_64-GNU-NEXT:     n.bytes[({{_v[0-9]+}} as usize)] = {{_v[0-9]+}};
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: u32 = 2;
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: i64 = 1;
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: u8 = n.bytes[({{_v[0-9]+}} as usize)];
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}} as u32;
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}} ^ {{_v[0-9]+}};
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: u8 = {{_v[0-9]+}} as u8;
-// LOWERING-X86_64-GNU-NEXT:     n.bytes[({{_v[0-9]+}} as usize)] = {{_v[0-9]+}};
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: u32 = 4;
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: u8 = n.bytes[({{_v[0-9]+}} as usize)];
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}} as u32;
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}} ^ {{_v[0-9]+}};
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: u8 = {{_v[0-9]+}} as u8;
-// LOWERING-X86_64-GNU-NEXT:     n.bytes[({{_v[0-9]+}} as usize)] = {{_v[0-9]+}};
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: ld_nested = n;
-// LOWERING-X86_64-GNU-NEXT:     return {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = n.pair.a;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     n.pair.a = {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = n.pair.b;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} - {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     n.pair.b = {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 254, 63]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = n.z;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} * {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     n.z = {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = 21930;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u16 = n.head;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} ^ {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u16 = {{__v[0-9]+}} as u16;
+// LOWERING-X86_64-GNU-NEXT:     n.head = {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u32 = 1;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i64 = 0;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u8 = n.bytes[({{__v[0-9]+}} as usize)];
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}} as u32;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}} ^ {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u8 = {{__v[0-9]+}} as u8;
+// LOWERING-X86_64-GNU-NEXT:     n.bytes[({{__v[0-9]+}} as usize)] = {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u32 = 2;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i64 = 1;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u8 = n.bytes[({{__v[0-9]+}} as usize)];
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}} as u32;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}} ^ {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u8 = {{__v[0-9]+}} as u8;
+// LOWERING-X86_64-GNU-NEXT:     n.bytes[({{__v[0-9]+}} as usize)] = {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u32 = 4;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i64 = 2;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u8 = n.bytes[({{__v[0-9]+}} as usize)];
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}} as u32;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}} ^ {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u8 = {{__v[0-9]+}} as u8;
+// LOWERING-X86_64-GNU-NEXT:     n.bytes[({{__v[0-9]+}} as usize)] = {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: ld_nested = n;
+// LOWERING-X86_64-GNU-NEXT:     return {{__v[0-9]+}};
 // LOWERING-X86_64-GNU-NEXT: }
 // LOWERING-X86_64-GNU-EMPTY:
 // LOWERING-X86_64-GNU-NEXT: #[inline(never)]
@@ -669,32 +669,32 @@ NOINLINE size_t ext_alignof_union(void) { return ALIGNOF(union ld_union); }
 // LOWERING-X86_64-GNU-NEXT:     let mut i: u64 = 0;
 // LOWERING-X86_64-GNU-NEXT:     p = {{arg[0-9]+}};
 // LOWERING-X86_64-GNU-NEXT:     n = {{arg[0-9]+}};
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// LOWERING-X86_64-GNU-NEXT:     r = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// LOWERING-X86_64-GNU-NEXT:     r = {{__v[0-9]+}};
 // LOWERING-X86_64-GNU-NEXT:     {
-// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: u64 = 0;
-// LOWERING-X86_64-GNU-NEXT:         i = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: u64 = 0;
+// LOWERING-X86_64-GNU-NEXT:         i = {{__v[0-9]+}};
 // LOWERING-X86_64-GNU-NEXT:         loop {
-// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: u64 = i;
-// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: u64 = n;
-// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < {{_v[0-9]+}};
-// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:             let {{__v[0-9]+}}: u64 = i;
+// LOWERING-X86_64-GNU-NEXT:             let {{__v[0-9]+}}: u64 = n;
+// LOWERING-X86_64-GNU-NEXT:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:             if !{{__v[0-9]+}} {
 // LOWERING-X86_64-GNU-NEXT:                 break;
 // LOWERING-X86_64-GNU-NEXT:             }
-// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: u64 = i;
-// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: *mut LongDouble = p;
-// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: *mut LongDouble = unsafe { {{_v[0-9]+}}.add({{_v[0-9]+}} as usize) };
-// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: LongDouble = unsafe { *{{_v[0-9]+}} };
-// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: LongDouble = r;
-// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-X86_64-GNU-NEXT:             r = {{_v[0-9]+}};
-// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: u64 = i;
-// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} + 1;
-// LOWERING-X86_64-GNU-NEXT:             i = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:             let {{__v[0-9]+}}: u64 = i;
+// LOWERING-X86_64-GNU-NEXT:             let {{__v[0-9]+}}: *mut LongDouble = p;
+// LOWERING-X86_64-GNU-NEXT:             let {{__v[0-9]+}}: *mut LongDouble = unsafe { {{__v[0-9]+}}.add({{__v[0-9]+}} as usize) };
+// LOWERING-X86_64-GNU-NEXT:             let {{__v[0-9]+}}: LongDouble = unsafe { *{{__v[0-9]+}} };
+// LOWERING-X86_64-GNU-NEXT:             let {{__v[0-9]+}}: LongDouble = r;
+// LOWERING-X86_64-GNU-NEXT:             let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:             r = {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:             let {{__v[0-9]+}}: u64 = i;
+// LOWERING-X86_64-GNU-NEXT:             let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:             i = {{__v[0-9]+}};
 // LOWERING-X86_64-GNU-NEXT:         }
 // LOWERING-X86_64-GNU-NEXT:     }
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = r;
-// LOWERING-X86_64-GNU-NEXT:     return {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = r;
+// LOWERING-X86_64-GNU-NEXT:     return {{__v[0-9]+}};
 // LOWERING-X86_64-GNU-NEXT: }
 // LOWERING-X86_64-GNU-EMPTY:
 // LOWERING-X86_64-GNU-NEXT: #[inline(never)]
@@ -707,8 +707,8 @@ NOINLINE size_t ext_alignof_union(void) { return ALIGNOF(union ld_union); }
 // LOWERING-X86_64-GNU-EMPTY:
 // LOWERING-X86_64-GNU-NEXT: #[inline(never)]
 // LOWERING-X86_64-GNU-NEXT: unsafe fn ext_load({{arg[0-9]+}}: *mut LongDouble) -> LongDouble {
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { *{{arg[0-9]+}} };
-// LOWERING-X86_64-GNU-NEXT:     return {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { *{{arg[0-9]+}} };
+// LOWERING-X86_64-GNU-NEXT:     return {{__v[0-9]+}};
 // LOWERING-X86_64-GNU-NEXT: }
 // LOWERING-X86_64-GNU-EMPTY:
 // LOWERING-X86_64-GNU-NEXT: #[inline(never)]
@@ -717,8 +717,8 @@ NOINLINE size_t ext_alignof_union(void) { return ALIGNOF(union ld_union); }
 // LOWERING-X86_64-GNU-NEXT:     {{arg[0-9]+}}: LongDouble,
 // LOWERING-X86_64-GNU-NEXT:     {{arg[0-9]+}}: LongDouble,
 // LOWERING-X86_64-GNU-NEXT: ) -> LongDouble {
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { {{arg[0-9]+}}.unwrap()({{arg[0-9]+}}, {{arg[0-9]+}}) };
-// LOWERING-X86_64-GNU-NEXT:     return {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { {{arg[0-9]+}}.unwrap()({{arg[0-9]+}}, {{arg[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     return {{__v[0-9]+}};
 // LOWERING-X86_64-GNU-NEXT: }
 // LOWERING-X86_64-GNU-EMPTY:
 // LOWERING-X86_64-GNU-NEXT: #[inline(never)]
@@ -728,32 +728,32 @@ NOINLINE size_t ext_alignof_union(void) { return ALIGNOF(union ld_union); }
 // LOWERING-X86_64-GNU-NEXT:     let mut r: LongDouble = LongDouble([0; 10]);
 // LOWERING-X86_64-GNU-NEXT:     let mut i: i32 = 0;
 // LOWERING-X86_64-GNU-NEXT:     n = {{arg[0-9]+}};
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// LOWERING-X86_64-GNU-NEXT:     r = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// LOWERING-X86_64-GNU-NEXT:     r = {{__v[0-9]+}};
 // LOWERING-X86_64-GNU-NEXT:     unsafe {
 // LOWERING-X86_64-GNU-NEXT:         ap = __slate_va_args.clone();
 // LOWERING-X86_64-GNU-NEXT:     }
 // LOWERING-X86_64-GNU-NEXT:     {
-// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-X86_64-GNU-NEXT:         i = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:         i = {{__v[0-9]+}};
 // LOWERING-X86_64-GNU-NEXT:         loop {
-// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = i;
-// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = n;
-// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < {{_v[0-9]+}};
-// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:             let {{__v[0-9]+}}: i32 = i;
+// LOWERING-X86_64-GNU-NEXT:             let {{__v[0-9]+}}: i32 = n;
+// LOWERING-X86_64-GNU-NEXT:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:             if !{{__v[0-9]+}} {
 // LOWERING-X86_64-GNU-NEXT:                 break;
 // LOWERING-X86_64-GNU-NEXT:             }
-// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: LongDouble = unsafe { ap.next_arg::<LongDouble>() };
-// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: LongDouble = r;
-// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-X86_64-GNU-NEXT:             r = {{_v[0-9]+}};
-// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = i;
-// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
-// LOWERING-X86_64-GNU-NEXT:             i = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:             let {{__v[0-9]+}}: LongDouble = unsafe { ap.next_arg::<LongDouble>() };
+// LOWERING-X86_64-GNU-NEXT:             let {{__v[0-9]+}}: LongDouble = r;
+// LOWERING-X86_64-GNU-NEXT:             let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:             r = {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:             let {{__v[0-9]+}}: i32 = i;
+// LOWERING-X86_64-GNU-NEXT:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:             i = {{__v[0-9]+}};
 // LOWERING-X86_64-GNU-NEXT:         }
 // LOWERING-X86_64-GNU-NEXT:     }
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = r;
-// LOWERING-X86_64-GNU-NEXT:     return {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = r;
+// LOWERING-X86_64-GNU-NEXT:     return {{__v[0-9]+}};
 // LOWERING-X86_64-GNU-NEXT: }
 // LOWERING-X86_64-GNU-EMPTY:
 // LOWERING-X86_64-GNU-NEXT: #[inline(never)]
@@ -766,92 +766,92 @@ NOINLINE size_t ext_alignof_union(void) { return ALIGNOF(union ld_union); }
 // LOWERING-X86_64-GNU-EMPTY:
 // LOWERING-X86_64-GNU-NEXT: #[inline(never)]
 // LOWERING-X86_64-GNU-NEXT: fn ext_global_get() -> LongDouble {
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { ext_global_ld };
-// LOWERING-X86_64-GNU-NEXT:     return {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { ext_global_ld };
+// LOWERING-X86_64-GNU-NEXT:     return {{__v[0-9]+}};
 // LOWERING-X86_64-GNU-NEXT: }
 // LOWERING-X86_64-GNU-EMPTY:
 // LOWERING-X86_64-GNU-NEXT: #[inline(never)]
 // LOWERING-X86_64-GNU-NEXT: fn ext_sizeof_ld() -> u64 {
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: u64 = 16;
-// LOWERING-X86_64-GNU-NEXT:     return {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u64 = 16;
+// LOWERING-X86_64-GNU-NEXT:     return {{__v[0-9]+}};
 // LOWERING-X86_64-GNU-NEXT: }
 // LOWERING-X86_64-GNU-EMPTY:
 // LOWERING-X86_64-GNU-NEXT: #[inline(never)]
 // LOWERING-X86_64-GNU-NEXT: fn ext_alignof_ld() -> u64 {
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: u64 = 16;
-// LOWERING-X86_64-GNU-NEXT:     return {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u64 = 16;
+// LOWERING-X86_64-GNU-NEXT:     return {{__v[0-9]+}};
 // LOWERING-X86_64-GNU-NEXT: }
 // LOWERING-X86_64-GNU-EMPTY:
 // LOWERING-X86_64-GNU-NEXT: #[inline(never)]
 // LOWERING-X86_64-GNU-NEXT: fn ext_sizeof_box() -> u64 {
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: u64 = std::mem::size_of::<ld_box>() as u64;
-// LOWERING-X86_64-GNU-NEXT:     return {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u64 = std::mem::size_of::<ld_box>() as u64;
+// LOWERING-X86_64-GNU-NEXT:     return {{__v[0-9]+}};
 // LOWERING-X86_64-GNU-NEXT: }
 // LOWERING-X86_64-GNU-EMPTY:
 // LOWERING-X86_64-GNU-NEXT: #[inline(never)]
 // LOWERING-X86_64-GNU-NEXT: fn ext_alignof_box() -> u64 {
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: u64 = std::mem::align_of::<ld_box>() as u64;
-// LOWERING-X86_64-GNU-NEXT:     return {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u64 = std::mem::align_of::<ld_box>() as u64;
+// LOWERING-X86_64-GNU-NEXT:     return {{__v[0-9]+}};
 // LOWERING-X86_64-GNU-NEXT: }
 // LOWERING-X86_64-GNU-EMPTY:
 // LOWERING-X86_64-GNU-NEXT: #[inline(never)]
 // LOWERING-X86_64-GNU-NEXT: fn ext_offset_box_x() -> u64 {
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: u64 = std::mem::offset_of!(ld_box, x) as u64;
-// LOWERING-X86_64-GNU-NEXT:     return {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u64 = std::mem::offset_of!(ld_box, x) as u64;
+// LOWERING-X86_64-GNU-NEXT:     return {{__v[0-9]+}};
 // LOWERING-X86_64-GNU-NEXT: }
 // LOWERING-X86_64-GNU-EMPTY:
 // LOWERING-X86_64-GNU-NEXT: #[inline(never)]
 // LOWERING-X86_64-GNU-NEXT: fn ext_offset_box_tail() -> u64 {
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: u64 = std::mem::offset_of!(ld_box, tail) as u64;
-// LOWERING-X86_64-GNU-NEXT:     return {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u64 = std::mem::offset_of!(ld_box, tail) as u64;
+// LOWERING-X86_64-GNU-NEXT:     return {{__v[0-9]+}};
 // LOWERING-X86_64-GNU-NEXT: }
 // LOWERING-X86_64-GNU-EMPTY:
 // LOWERING-X86_64-GNU-NEXT: #[inline(never)]
 // LOWERING-X86_64-GNU-NEXT: fn ext_sizeof_pair() -> u64 {
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: u64 = std::mem::size_of::<ld_pair>() as u64;
-// LOWERING-X86_64-GNU-NEXT:     return {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u64 = std::mem::size_of::<ld_pair>() as u64;
+// LOWERING-X86_64-GNU-NEXT:     return {{__v[0-9]+}};
 // LOWERING-X86_64-GNU-NEXT: }
 // LOWERING-X86_64-GNU-EMPTY:
 // LOWERING-X86_64-GNU-NEXT: #[inline(never)]
 // LOWERING-X86_64-GNU-NEXT: fn ext_alignof_pair() -> u64 {
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: u64 = std::mem::align_of::<ld_pair>() as u64;
-// LOWERING-X86_64-GNU-NEXT:     return {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u64 = std::mem::align_of::<ld_pair>() as u64;
+// LOWERING-X86_64-GNU-NEXT:     return {{__v[0-9]+}};
 // LOWERING-X86_64-GNU-NEXT: }
 // LOWERING-X86_64-GNU-EMPTY:
 // LOWERING-X86_64-GNU-NEXT: #[inline(never)]
 // LOWERING-X86_64-GNU-NEXT: fn ext_sizeof_nested() -> u64 {
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: u64 = std::mem::size_of::<ld_nested>() as u64;
-// LOWERING-X86_64-GNU-NEXT:     return {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u64 = std::mem::size_of::<ld_nested>() as u64;
+// LOWERING-X86_64-GNU-NEXT:     return {{__v[0-9]+}};
 // LOWERING-X86_64-GNU-NEXT: }
 // LOWERING-X86_64-GNU-EMPTY:
 // LOWERING-X86_64-GNU-NEXT: #[inline(never)]
 // LOWERING-X86_64-GNU-NEXT: fn ext_alignof_nested() -> u64 {
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: u64 = std::mem::align_of::<ld_nested>() as u64;
-// LOWERING-X86_64-GNU-NEXT:     return {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u64 = std::mem::align_of::<ld_nested>() as u64;
+// LOWERING-X86_64-GNU-NEXT:     return {{__v[0-9]+}};
 // LOWERING-X86_64-GNU-NEXT: }
 // LOWERING-X86_64-GNU-EMPTY:
 // LOWERING-X86_64-GNU-NEXT: #[inline(never)]
 // LOWERING-X86_64-GNU-NEXT: fn ext_offset_nested_pair() -> u64 {
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: u64 = std::mem::offset_of!(ld_nested, pair) as u64;
-// LOWERING-X86_64-GNU-NEXT:     return {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u64 = std::mem::offset_of!(ld_nested, pair) as u64;
+// LOWERING-X86_64-GNU-NEXT:     return {{__v[0-9]+}};
 // LOWERING-X86_64-GNU-NEXT: }
 // LOWERING-X86_64-GNU-EMPTY:
 // LOWERING-X86_64-GNU-NEXT: #[inline(never)]
 // LOWERING-X86_64-GNU-NEXT: fn ext_offset_nested_z() -> u64 {
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: u64 = std::mem::offset_of!(ld_nested, z) as u64;
-// LOWERING-X86_64-GNU-NEXT:     return {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u64 = std::mem::offset_of!(ld_nested, z) as u64;
+// LOWERING-X86_64-GNU-NEXT:     return {{__v[0-9]+}};
 // LOWERING-X86_64-GNU-NEXT: }
 // LOWERING-X86_64-GNU-EMPTY:
 // LOWERING-X86_64-GNU-NEXT: #[inline(never)]
 // LOWERING-X86_64-GNU-NEXT: fn ext_sizeof_union() -> u64 {
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: u64 = std::mem::size_of::<ld_union>() as u64;
-// LOWERING-X86_64-GNU-NEXT:     return {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u64 = std::mem::size_of::<ld_union>() as u64;
+// LOWERING-X86_64-GNU-NEXT:     return {{__v[0-9]+}};
 // LOWERING-X86_64-GNU-NEXT: }
 // LOWERING-X86_64-GNU-EMPTY:
 // LOWERING-X86_64-GNU-NEXT: #[inline(never)]
 // LOWERING-X86_64-GNU-NEXT: fn ext_alignof_union() -> u64 {
-// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: u64 = std::mem::align_of::<ld_union>() as u64;
-// LOWERING-X86_64-GNU-NEXT:     return {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u64 = std::mem::align_of::<ld_union>() as u64;
+// LOWERING-X86_64-GNU-NEXT:     return {{__v[0-9]+}};
 // LOWERING-X86_64-GNU-NEXT: }
 // LOWERING-X86_64-GNU-EMPTY:
 // LOWERING-X86_64-GNU-NEXT: unsafe extern "C" {
@@ -863,16 +863,31 @@ NOINLINE size_t ext_alignof_union(void) { return ALIGNOF(union ld_union); }
 // LOWERING-X86_64-GNU-NEXT:         __a: num_complex::Complex<LongDouble>,
 // LOWERING-X86_64-GNU-NEXT:         __b: num_complex::Complex<LongDouble>,
 // LOWERING-X86_64-GNU-NEXT:     ) -> num_complex::Complex<LongDouble>;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f128_nexttoward(__from: f128, __toward: f128) -> f128;
 // LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_abs(__a: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_acos(__a: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_acosh(__a: LongDouble) -> LongDouble;
 // LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_add(__a: LongDouble, __b: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_asin(__a: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_asinh(__a: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_atan(__a: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_atanh(__a: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_cbrt(__a: LongDouble) -> LongDouble;
 // LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_ceil(__a: LongDouble) -> LongDouble;
 // LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_copysign(__a: LongDouble, __b: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_cos(__a: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_cosh(__a: LongDouble) -> LongDouble;
 // LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_div(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_eq(__a: LongDouble, __b: LongDouble) -> bool;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_exp(__a: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_exp2(__a: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_expm1(__a: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_fdim(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_floor(__a: LongDouble) -> LongDouble;
 // LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_fma(__a: LongDouble, __b: LongDouble, __c: LongDouble) -> LongDouble;
 // LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_fmax(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_fmin(__a: LongDouble, __b: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_fmod(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_fract(__a: LongDouble) -> LongDouble;
 // LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_from_bool(__a: bool) -> LongDouble;
 // LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_from_f32(__a: f32) -> LongDouble;
@@ -889,16 +904,30 @@ NOINLINE size_t ext_alignof_union(void) { return ALIGNOF(union ld_union); }
 // LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_from_u8(__a: u8) -> LongDouble;
 // LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_ge(__a: LongDouble, __b: LongDouble) -> bool;
 // LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_gt(__a: LongDouble, __b: LongDouble) -> bool;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_hypot(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_is_fp_class(__a: LongDouble, __flags: i32) -> bool;
 // LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_le(__a: LongDouble, __b: LongDouble) -> bool;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_log(__a: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_log10(__a: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_log1p(__a: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_log2(__a: LongDouble) -> LongDouble;
 // LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_lt(__a: LongDouble, __b: LongDouble) -> bool;
 // LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_mul(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_ne(__a: LongDouble, __b: LongDouble) -> bool;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_nearbyint(__a: LongDouble) -> LongDouble;
 // LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_neg(__a: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_pow(__a: LongDouble, __b: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_powi(__a: LongDouble, __n: i32) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_remainder(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_rint(__a: LongDouble) -> LongDouble;
 // LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_round(__a: LongDouble) -> LongDouble;
 // LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_signbit(__a: LongDouble) -> bool;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_sin(__a: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_sinh(__a: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_sqrt(__a: LongDouble) -> LongDouble;
 // LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_sub(__a: LongDouble, __b: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_tan(__a: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_tanh(__a: LongDouble) -> LongDouble;
 // LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_to_bool(__a: LongDouble) -> bool;
 // LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_to_f32(__a: LongDouble) -> f32;
 // LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_to_f64(__a: LongDouble) -> f64;
@@ -1124,82 +1153,101 @@ NOINLINE size_t ext_alignof_union(void) { return ALIGNOF(union ld_union); }
 // REWRITES-X86_64-GNU-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: #[inline(never)]
 // REWRITES-X86_64-GNU-NEXT: fn ext_add({{arg[0-9]+}}: LongDouble, {{arg[0-9]+}}: LongDouble) -> LongDouble {
-// REWRITES-X86_64-GNU-NEXT:     {{arg[0-9]+}} + {{arg[0-9]+}}
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{arg[0-9]+}} + {{arg[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:     {{__v[0-9]+}}
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: #[inline(never)]
 // REWRITES-X86_64-GNU-NEXT: fn ext_sub({{arg[0-9]+}}: LongDouble, {{arg[0-9]+}}: LongDouble) -> LongDouble {
-// REWRITES-X86_64-GNU-NEXT:     {{arg[0-9]+}} - {{arg[0-9]+}}
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{arg[0-9]+}} - {{arg[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:     {{__v[0-9]+}}
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: #[inline(never)]
 // REWRITES-X86_64-GNU-NEXT: fn ext_mul({{arg[0-9]+}}: LongDouble, {{arg[0-9]+}}: LongDouble) -> LongDouble {
-// REWRITES-X86_64-GNU-NEXT:     {{arg[0-9]+}} * {{arg[0-9]+}}
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{arg[0-9]+}} * {{arg[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:     {{__v[0-9]+}}
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: #[inline(never)]
 // REWRITES-X86_64-GNU-NEXT: fn ext_div({{arg[0-9]+}}: LongDouble, {{arg[0-9]+}}: LongDouble) -> LongDouble {
-// REWRITES-X86_64-GNU-NEXT:     {{arg[0-9]+}} / {{arg[0-9]+}}
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{arg[0-9]+}} / {{arg[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:     {{__v[0-9]+}}
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: #[inline(never)]
 // REWRITES-X86_64-GNU-NEXT: fn ext_neg({{arg[0-9]+}}: LongDouble) -> LongDouble {
-// REWRITES-X86_64-GNU-NEXT:     -{{arg[0-9]+}}
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = -{{arg[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:     {{__v[0-9]+}}
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: #[inline(never)]
 // REWRITES-X86_64-GNU-NEXT: fn ext_eq({{arg[0-9]+}}: LongDouble, {{arg[0-9]+}}: LongDouble) -> i32 {
-// REWRITES-X86_64-GNU-NEXT:     ({{arg[0-9]+}} == {{arg[0-9]+}}) as i32
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: bool = {{arg[0-9]+}} == {{arg[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// REWRITES-X86_64-GNU-NEXT:     {{__v[0-9]+}}
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: #[inline(never)]
 // REWRITES-X86_64-GNU-NEXT: fn ext_lt({{arg[0-9]+}}: LongDouble, {{arg[0-9]+}}: LongDouble) -> i32 {
-// REWRITES-X86_64-GNU-NEXT:     ({{arg[0-9]+}} < {{arg[0-9]+}}) as i32
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: bool = {{arg[0-9]+}} < {{arg[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// REWRITES-X86_64-GNU-NEXT:     {{__v[0-9]+}}
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: #[inline(never)]
 // REWRITES-X86_64-GNU-NEXT: fn ext_le({{arg[0-9]+}}: LongDouble, {{arg[0-9]+}}: LongDouble) -> i32 {
-// REWRITES-X86_64-GNU-NEXT:     ({{arg[0-9]+}} <= {{arg[0-9]+}}) as i32
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: bool = {{arg[0-9]+}} <= {{arg[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// REWRITES-X86_64-GNU-NEXT:     {{__v[0-9]+}}
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: #[inline(never)]
 // REWRITES-X86_64-GNU-NEXT: fn ext_from_i64({{arg[0-9]+}}: i64) -> LongDouble {
-// REWRITES-X86_64-GNU-NEXT:     __slate_f80_from_i64({{arg[0-9]+}})
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_i64({{arg[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:     {{__v[0-9]+}}
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: #[inline(never)]
 // REWRITES-X86_64-GNU-NEXT: fn ext_from_u64({{arg[0-9]+}}: u64) -> LongDouble {
-// REWRITES-X86_64-GNU-NEXT:     __slate_f80_from_u64({{arg[0-9]+}})
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_u64({{arg[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:     {{__v[0-9]+}}
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: #[inline(never)]
 // REWRITES-X86_64-GNU-NEXT: fn ext_to_i64({{arg[0-9]+}}: LongDouble) -> i64 {
-// REWRITES-X86_64-GNU-NEXT:     __slate_f80_to_i64({{arg[0-9]+}})
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i64 = __slate_f80_to_i64({{arg[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:     {{__v[0-9]+}}
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: #[inline(never)]
 // REWRITES-X86_64-GNU-NEXT: fn ext_to_u64({{arg[0-9]+}}: LongDouble) -> u64 {
-// REWRITES-X86_64-GNU-NEXT:     __slate_f80_to_u64({{arg[0-9]+}})
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u64 = __slate_f80_to_u64({{arg[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:     {{__v[0-9]+}}
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: #[inline(never)]
 // REWRITES-X86_64-GNU-NEXT: fn ext_from_double({{arg[0-9]+}}: f64) -> LongDouble {
-// REWRITES-X86_64-GNU-NEXT:     __slate_f80_from_f64({{arg[0-9]+}})
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_f64({{arg[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:     {{__v[0-9]+}}
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: #[inline(never)]
 // REWRITES-X86_64-GNU-NEXT: fn ext_to_double({{arg[0-9]+}}: LongDouble) -> f64 {
-// REWRITES-X86_64-GNU-NEXT:     __slate_f80_to_f64({{arg[0-9]+}})
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: f64 = __slate_f80_to_f64({{arg[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:     {{__v[0-9]+}}
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: #[inline(never)]
 // REWRITES-X86_64-GNU-NEXT: fn ext_from_float({{arg[0-9]+}}: f32) -> LongDouble {
-// REWRITES-X86_64-GNU-NEXT:     __slate_f80_from_f32({{arg[0-9]+}})
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_f32({{arg[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:     {{__v[0-9]+}}
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: #[inline(never)]
 // REWRITES-X86_64-GNU-NEXT: fn ext_to_float({{arg[0-9]+}}: LongDouble) -> f32 {
-// REWRITES-X86_64-GNU-NEXT:     __slate_f80_to_f32({{arg[0-9]+}})
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: f32 = __slate_f80_to_f32({{arg[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:     {{__v[0-9]+}}
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: #[inline(never)]
@@ -1215,7 +1263,16 @@ NOINLINE size_t ext_alignof_union(void) { return ALIGNOF(union ld_union); }
 // REWRITES-X86_64-GNU-NEXT:     {{arg[0-9]+}}: LongDouble,
 // REWRITES-X86_64-GNU-NEXT:     {{arg[0-9]+}}: LongDouble,
 // REWRITES-X86_64-GNU-NEXT: ) -> LongDouble {
-// REWRITES-X86_64-GNU-NEXT:     {{arg[0-9]+}} + {{arg[0-9]+}} + {{arg[0-9]+}} + {{arg[0-9]+}} + {{arg[0-9]+}} + ({{arg[0-9]+}} + {{arg[0-9]+}} + {{arg[0-9]+}} + {{arg[0-9]+}} + {{arg[0-9]+}})
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{arg[0-9]+}} + {{arg[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} + {{arg[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} + {{arg[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} + {{arg[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{arg[0-9]+}} + {{arg[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} + {{arg[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} + {{arg[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} + {{arg[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} + {{__v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:     {{__v[0-9]+}}
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: /// Mix integer, double, float and long-double arguments so each ABI has to
@@ -1236,39 +1293,61 @@ NOINLINE size_t ext_alignof_union(void) { return ALIGNOF(union ld_union); }
 // REWRITES-X86_64-GNU-NEXT: ) -> LongDouble {
 // REWRITES-X86_64-GNU-NEXT:     let mut r: LongDouble = LongDouble([0; 10]);
 // REWRITES-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(r), {{arg[0-9]+}}) };
-// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(r)) };
-// REWRITES-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(r), {{_v[0-9]+}} + {{arg[0-9]+}}) };
-// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(r)) };
-// REWRITES-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(r), {{_v[0-9]+}} - {{arg[0-9]+}}) };
-// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(r)) };
-// REWRITES-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(r), {{_v[0-9]+}} + {{arg[0-9]+}}) };
-// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(r)) };
-// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_i64({{arg[0-9]+}});
-// REWRITES-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(r), {{_v[0-9]+}} + {{_v[0-9]+}}) };
-// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(r)) };
-// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_u32({{arg[0-9]+}});
-// REWRITES-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(r), {{_v[0-9]+}} - {{_v[0-9]+}}) };
-// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(r)) };
-// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f64({{arg[0-9]+}});
-// REWRITES-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(r), {{_v[0-9]+}} + {{_v[0-9]+}}) };
-// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(r)) };
-// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f32({{arg[0-9]+}});
-// REWRITES-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(r), {{_v[0-9]+}} - {{_v[0-9]+}}) };
-// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(r)) };
-// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_i32({{arg[0-9]+}});
-// REWRITES-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(r), {{_v[0-9]+}} + {{_v[0-9]+}}) };
-// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(r)) };
-// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f64({{arg[0-9]+}});
-// REWRITES-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(r), {{_v[0-9]+}} - {{_v[0-9]+}}) };
-// REWRITES-X86_64-GNU-NEXT:     unsafe { std::ptr::read_volatile(std::ptr::addr_of!(r)) }
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(r)) };
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} + {{arg[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(r), {{__v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(r)) };
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} - {{arg[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(r), {{__v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(r)) };
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} + {{arg[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(r), {{__v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(r)) };
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_i64({{arg[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} + {{__v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(r), {{__v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(r)) };
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_u32({{arg[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} - {{__v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(r), {{__v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(r)) };
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_f64({{arg[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} + {{__v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(r), {{__v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(r)) };
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_f32({{arg[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} - {{__v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(r), {{__v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(r)) };
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_i32({{arg[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} + {{__v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(r), {{__v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(r)) };
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_f64({{arg[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} - {{__v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(r), {{__v[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(r)) };
+// REWRITES-X86_64-GNU-NEXT:     {{__v[0-9]+}}
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: #[inline(never)]
 // REWRITES-X86_64-GNU-NEXT: fn ext_box_roundtrip(mut b: ld_box) -> ld_box {
-// REWRITES-X86_64-GNU-NEXT:     b.x += LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 246, 63]);
-// REWRITES-X86_64-GNU-NEXT:     b.tag = ((b.tag as u32) ^ 90) as u8;
-// REWRITES-X86_64-GNU-NEXT:     b.tail ^= 2779077210u32;
-// REWRITES-X86_64-GNU-NEXT:     return b;
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = b.x;
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 246, 63]);
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} + {{__v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:     b.x = {{__v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u8 = b.tag;
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}} as u32;
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u32 = 90;
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}} ^ {{__v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u8 = {{__v[0-9]+}} as u8;
+// REWRITES-X86_64-GNU-NEXT:     b.tag = {{__v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u32 = 2779077210u32;
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u32 = b.tail;
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}} ^ {{__v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:     b.tail = {{__v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: ld_box = b;
+// REWRITES-X86_64-GNU-NEXT:     return {{__v[0-9]+}};
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: #[inline(never)]
@@ -1279,33 +1358,83 @@ NOINLINE size_t ext_alignof_union(void) { return ALIGNOF(union ld_union); }
 // REWRITES-X86_64-GNU-NEXT:     };
 // REWRITES-X86_64-GNU-NEXT:     __retval.a = {{arg[0-9]+}};
 // REWRITES-X86_64-GNU-NEXT:     __retval.b = {{arg[0-9]+}};
-// REWRITES-X86_64-GNU-NEXT:     return __retval;
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: ld_pair = __retval;
+// REWRITES-X86_64-GNU-NEXT:     return {{__v[0-9]+}};
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: #[inline(never)]
 // REWRITES-X86_64-GNU-NEXT: fn ext_nested_roundtrip(mut n: ld_nested) -> ld_nested {
-// REWRITES-X86_64-GNU-NEXT:     n.pair.a += LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
-// REWRITES-X86_64-GNU-NEXT:     n.pair.b -= LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]);
-// REWRITES-X86_64-GNU-NEXT:     n.z *= LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 254, 63]);
-// REWRITES-X86_64-GNU-NEXT:     n.head = ((n.head as i32) ^ 21930) as u16;
-// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: i64 = 0;
-// REWRITES-X86_64-GNU-NEXT:     n.bytes[({{_v[0-9]+}} as usize)] = ((n.bytes[({{_v[0-9]+}} as usize)] as u32) ^ 1) as u8;
-// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: i64 = 1;
-// REWRITES-X86_64-GNU-NEXT:     n.bytes[({{_v[0-9]+}} as usize)] = ((n.bytes[({{_v[0-9]+}} as usize)] as u32) ^ 2) as u8;
-// REWRITES-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-X86_64-GNU-NEXT:     n.bytes[({{_v[0-9]+}} as usize)] = ((n.bytes[({{_v[0-9]+}} as usize)] as u32) ^ 4) as u8;
-// REWRITES-X86_64-GNU-NEXT:     return n;
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = n.pair.a;
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} + {{__v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:     n.pair.a = {{__v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]);
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = n.pair.b;
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} - {{__v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:     n.pair.b = {{__v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 254, 63]);
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = n.z;
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} * {{__v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:     n.z = {{__v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = 21930;
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u16 = n.head;
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} ^ {{__v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u16 = {{__v[0-9]+}} as u16;
+// REWRITES-X86_64-GNU-NEXT:     n.head = {{__v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u32 = 1;
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i64 = 0;
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u8 = n.bytes[({{__v[0-9]+}} as usize)];
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}} as u32;
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}} ^ {{__v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u8 = {{__v[0-9]+}} as u8;
+// REWRITES-X86_64-GNU-NEXT:     n.bytes[({{__v[0-9]+}} as usize)] = {{__v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u32 = 2;
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i64 = 1;
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u8 = n.bytes[({{__v[0-9]+}} as usize)];
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}} as u32;
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}} ^ {{__v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u8 = {{__v[0-9]+}} as u8;
+// REWRITES-X86_64-GNU-NEXT:     n.bytes[({{__v[0-9]+}} as usize)] = {{__v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u32 = 4;
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i64 = 2;
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u8 = n.bytes[({{__v[0-9]+}} as usize)];
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}} as u32;
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}} ^ {{__v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u8 = {{__v[0-9]+}} as u8;
+// REWRITES-X86_64-GNU-NEXT:     n.bytes[({{__v[0-9]+}} as usize)] = {{__v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: ld_nested = n;
+// REWRITES-X86_64-GNU-NEXT:     return {{__v[0-9]+}};
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: #[inline(never)]
 // REWRITES-X86_64-GNU-NEXT: unsafe fn ext_array_sum(mut p: *mut LongDouble, mut n: u64) -> LongDouble {
-// REWRITES-X86_64-GNU-NEXT:     let mut r: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// REWRITES-X86_64-GNU-NEXT:     for i in 0..n {
-// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: *mut LongDouble = p;
-// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: *mut LongDouble = unsafe { {{_v[0-9]+}}.add(i as usize) };
-// REWRITES-X86_64-GNU-NEXT:         r += unsafe { *{{_v[0-9]+}} };
+// REWRITES-X86_64-GNU-NEXT:     let mut r: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:     let mut i: u64 = 0;
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// REWRITES-X86_64-GNU-NEXT:     r = {{__v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u64 = 0;
+// REWRITES-X86_64-GNU-NEXT:     i = {{__v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: u64 = i;
+// REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: u64 = n;
+// REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:         if !{{__v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: u64 = i;
+// REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: *mut LongDouble = p;
+// REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: *mut LongDouble = unsafe { {{__v[0-9]+}}.add({{__v[0-9]+}} as usize) };
+// REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: LongDouble = unsafe { *{{__v[0-9]+}} };
+// REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: LongDouble = r;
+// REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} + {{__v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:         r = {{__v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: u64 = i;
+// REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} + 1;
+// REWRITES-X86_64-GNU-NEXT:         i = {{__v[0-9]+}};
 // REWRITES-X86_64-GNU-NEXT:     }
-// REWRITES-X86_64-GNU-NEXT:     r
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = r;
+// REWRITES-X86_64-GNU-NEXT:     {{__v[0-9]+}}
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: #[inline(never)]
@@ -1318,7 +1447,8 @@ NOINLINE size_t ext_alignof_union(void) { return ALIGNOF(union ld_union); }
 // REWRITES-X86_64-GNU-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: #[inline(never)]
 // REWRITES-X86_64-GNU-NEXT: unsafe fn ext_load({{arg[0-9]+}}: *mut LongDouble) -> LongDouble {
-// REWRITES-X86_64-GNU-NEXT:     unsafe { *{{arg[0-9]+}} }
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { *{{arg[0-9]+}} };
+// REWRITES-X86_64-GNU-NEXT:     {{__v[0-9]+}}
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: #[inline(never)]
@@ -1327,21 +1457,39 @@ NOINLINE size_t ext_alignof_union(void) { return ALIGNOF(union ld_union); }
 // REWRITES-X86_64-GNU-NEXT:     {{arg[0-9]+}}: LongDouble,
 // REWRITES-X86_64-GNU-NEXT:     {{arg[0-9]+}}: LongDouble,
 // REWRITES-X86_64-GNU-NEXT: ) -> LongDouble {
-// REWRITES-X86_64-GNU-NEXT:     unsafe { {{arg[0-9]+}}.unwrap()({{arg[0-9]+}}, {{arg[0-9]+}}) }
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { {{arg[0-9]+}}.unwrap()({{arg[0-9]+}}, {{arg[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:     {{__v[0-9]+}}
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: #[inline(never)]
 // REWRITES-X86_64-GNU-NEXT: unsafe fn ext_vsum(mut n: i32, mut __slate_va_args: __SlateVaArgs) -> LongDouble {
 // REWRITES-X86_64-GNU-NEXT:     let mut ap: __SlateVaArgs = __SlateVaArgs::empty();
-// REWRITES-X86_64-GNU-NEXT:     let mut r: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// REWRITES-X86_64-GNU-NEXT:     let mut r: LongDouble = LongDouble([0; 10]);
+// REWRITES-X86_64-GNU-NEXT:     let mut i: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// REWRITES-X86_64-GNU-NEXT:     r = {{__v[0-9]+}};
 // REWRITES-X86_64-GNU-NEXT:     unsafe {
 // REWRITES-X86_64-GNU-NEXT:         ap = __slate_va_args.clone();
 // REWRITES-X86_64-GNU-NEXT:     }
-// REWRITES-X86_64-GNU-NEXT:     for i in 0..n {
-// REWRITES-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = unsafe { ap.next_arg::<LongDouble>() };
-// REWRITES-X86_64-GNU-NEXT:         r += {{_v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:     i = {{__v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:     loop {
+// REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = i;
+// REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = n;
+// REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:         if !{{__v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             break;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: LongDouble = unsafe { ap.next_arg::<LongDouble>() };
+// REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: LongDouble = r;
+// REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} + {{__v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:         r = {{__v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = i;
+// REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + 1;
+// REWRITES-X86_64-GNU-NEXT:         i = {{__v[0-9]+}};
 // REWRITES-X86_64-GNU-NEXT:     }
-// REWRITES-X86_64-GNU-NEXT:     r
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = r;
+// REWRITES-X86_64-GNU-NEXT:     {{__v[0-9]+}}
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: #[inline(never)]
@@ -1354,77 +1502,92 @@ NOINLINE size_t ext_alignof_union(void) { return ALIGNOF(union ld_union); }
 // REWRITES-X86_64-GNU-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: #[inline(never)]
 // REWRITES-X86_64-GNU-NEXT: fn ext_global_get() -> LongDouble {
-// REWRITES-X86_64-GNU-NEXT:     unsafe { ext_global_ld }
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { ext_global_ld };
+// REWRITES-X86_64-GNU-NEXT:     {{__v[0-9]+}}
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: #[inline(never)]
 // REWRITES-X86_64-GNU-NEXT: fn ext_sizeof_ld() -> u64 {
-// REWRITES-X86_64-GNU-NEXT:     16
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u64 = 16;
+// REWRITES-X86_64-GNU-NEXT:     {{__v[0-9]+}}
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: #[inline(never)]
 // REWRITES-X86_64-GNU-NEXT: fn ext_alignof_ld() -> u64 {
-// REWRITES-X86_64-GNU-NEXT:     16
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u64 = 16;
+// REWRITES-X86_64-GNU-NEXT:     {{__v[0-9]+}}
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: #[inline(never)]
 // REWRITES-X86_64-GNU-NEXT: fn ext_sizeof_box() -> u64 {
-// REWRITES-X86_64-GNU-NEXT:     std::mem::size_of::<ld_box>() as u64
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u64 = std::mem::size_of::<ld_box>() as u64;
+// REWRITES-X86_64-GNU-NEXT:     {{__v[0-9]+}}
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: #[inline(never)]
 // REWRITES-X86_64-GNU-NEXT: fn ext_alignof_box() -> u64 {
-// REWRITES-X86_64-GNU-NEXT:     std::mem::align_of::<ld_box>() as u64
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u64 = std::mem::align_of::<ld_box>() as u64;
+// REWRITES-X86_64-GNU-NEXT:     {{__v[0-9]+}}
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: #[inline(never)]
 // REWRITES-X86_64-GNU-NEXT: fn ext_offset_box_x() -> u64 {
-// REWRITES-X86_64-GNU-NEXT:     std::mem::offset_of!(ld_box, x) as u64
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u64 = std::mem::offset_of!(ld_box, x) as u64;
+// REWRITES-X86_64-GNU-NEXT:     {{__v[0-9]+}}
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: #[inline(never)]
 // REWRITES-X86_64-GNU-NEXT: fn ext_offset_box_tail() -> u64 {
-// REWRITES-X86_64-GNU-NEXT:     std::mem::offset_of!(ld_box, tail) as u64
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u64 = std::mem::offset_of!(ld_box, tail) as u64;
+// REWRITES-X86_64-GNU-NEXT:     {{__v[0-9]+}}
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: #[inline(never)]
 // REWRITES-X86_64-GNU-NEXT: fn ext_sizeof_pair() -> u64 {
-// REWRITES-X86_64-GNU-NEXT:     std::mem::size_of::<ld_pair>() as u64
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u64 = std::mem::size_of::<ld_pair>() as u64;
+// REWRITES-X86_64-GNU-NEXT:     {{__v[0-9]+}}
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: #[inline(never)]
 // REWRITES-X86_64-GNU-NEXT: fn ext_alignof_pair() -> u64 {
-// REWRITES-X86_64-GNU-NEXT:     std::mem::align_of::<ld_pair>() as u64
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u64 = std::mem::align_of::<ld_pair>() as u64;
+// REWRITES-X86_64-GNU-NEXT:     {{__v[0-9]+}}
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: #[inline(never)]
 // REWRITES-X86_64-GNU-NEXT: fn ext_sizeof_nested() -> u64 {
-// REWRITES-X86_64-GNU-NEXT:     std::mem::size_of::<ld_nested>() as u64
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u64 = std::mem::size_of::<ld_nested>() as u64;
+// REWRITES-X86_64-GNU-NEXT:     {{__v[0-9]+}}
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: #[inline(never)]
 // REWRITES-X86_64-GNU-NEXT: fn ext_alignof_nested() -> u64 {
-// REWRITES-X86_64-GNU-NEXT:     std::mem::align_of::<ld_nested>() as u64
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u64 = std::mem::align_of::<ld_nested>() as u64;
+// REWRITES-X86_64-GNU-NEXT:     {{__v[0-9]+}}
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: #[inline(never)]
 // REWRITES-X86_64-GNU-NEXT: fn ext_offset_nested_pair() -> u64 {
-// REWRITES-X86_64-GNU-NEXT:     std::mem::offset_of!(ld_nested, pair) as u64
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u64 = std::mem::offset_of!(ld_nested, pair) as u64;
+// REWRITES-X86_64-GNU-NEXT:     {{__v[0-9]+}}
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: #[inline(never)]
 // REWRITES-X86_64-GNU-NEXT: fn ext_offset_nested_z() -> u64 {
-// REWRITES-X86_64-GNU-NEXT:     std::mem::offset_of!(ld_nested, z) as u64
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u64 = std::mem::offset_of!(ld_nested, z) as u64;
+// REWRITES-X86_64-GNU-NEXT:     {{__v[0-9]+}}
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: #[inline(never)]
 // REWRITES-X86_64-GNU-NEXT: fn ext_sizeof_union() -> u64 {
-// REWRITES-X86_64-GNU-NEXT:     std::mem::size_of::<ld_union>() as u64
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u64 = std::mem::size_of::<ld_union>() as u64;
+// REWRITES-X86_64-GNU-NEXT:     {{__v[0-9]+}}
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: #[inline(never)]
 // REWRITES-X86_64-GNU-NEXT: fn ext_alignof_union() -> u64 {
-// REWRITES-X86_64-GNU-NEXT:     std::mem::align_of::<ld_union>() as u64
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u64 = std::mem::align_of::<ld_union>() as u64;
+// REWRITES-X86_64-GNU-NEXT:     {{__v[0-9]+}}
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: unsafe extern "C" {
@@ -1436,16 +1599,31 @@ NOINLINE size_t ext_alignof_union(void) { return ALIGNOF(union ld_union); }
 // REWRITES-X86_64-GNU-NEXT:         __a: num_complex::Complex<LongDouble>,
 // REWRITES-X86_64-GNU-NEXT:         __b: num_complex::Complex<LongDouble>,
 // REWRITES-X86_64-GNU-NEXT:     ) -> num_complex::Complex<LongDouble>;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f128_nexttoward(__from: f128, __toward: f128) -> f128;
 // REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_abs(__a: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_acos(__a: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_acosh(__a: LongDouble) -> LongDouble;
 // REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_add(__a: LongDouble, __b: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_asin(__a: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_asinh(__a: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_atan(__a: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_atanh(__a: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_cbrt(__a: LongDouble) -> LongDouble;
 // REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_ceil(__a: LongDouble) -> LongDouble;
 // REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_copysign(__a: LongDouble, __b: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_cos(__a: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_cosh(__a: LongDouble) -> LongDouble;
 // REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_div(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_eq(__a: LongDouble, __b: LongDouble) -> bool;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_exp(__a: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_exp2(__a: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_expm1(__a: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_fdim(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_floor(__a: LongDouble) -> LongDouble;
 // REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_fma(__a: LongDouble, __b: LongDouble, __c: LongDouble) -> LongDouble;
 // REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_fmax(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_fmin(__a: LongDouble, __b: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_fmod(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_fract(__a: LongDouble) -> LongDouble;
 // REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_from_bool(__a: bool) -> LongDouble;
 // REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_from_f32(__a: f32) -> LongDouble;
@@ -1462,16 +1640,30 @@ NOINLINE size_t ext_alignof_union(void) { return ALIGNOF(union ld_union); }
 // REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_from_u8(__a: u8) -> LongDouble;
 // REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_ge(__a: LongDouble, __b: LongDouble) -> bool;
 // REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_gt(__a: LongDouble, __b: LongDouble) -> bool;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_hypot(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_is_fp_class(__a: LongDouble, __flags: i32) -> bool;
 // REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_le(__a: LongDouble, __b: LongDouble) -> bool;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_log(__a: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_log10(__a: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_log1p(__a: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_log2(__a: LongDouble) -> LongDouble;
 // REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_lt(__a: LongDouble, __b: LongDouble) -> bool;
 // REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_mul(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_ne(__a: LongDouble, __b: LongDouble) -> bool;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_nearbyint(__a: LongDouble) -> LongDouble;
 // REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_neg(__a: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_pow(__a: LongDouble, __b: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_powi(__a: LongDouble, __n: i32) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_remainder(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_rint(__a: LongDouble) -> LongDouble;
 // REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_round(__a: LongDouble) -> LongDouble;
 // REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_signbit(__a: LongDouble) -> bool;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_sin(__a: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_sinh(__a: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_sqrt(__a: LongDouble) -> LongDouble;
 // REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_sub(__a: LongDouble, __b: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_tan(__a: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_tanh(__a: LongDouble) -> LongDouble;
 // REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_to_bool(__a: LongDouble) -> bool;
 // REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_to_f32(__a: LongDouble) -> f32;
 // REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_to_f64(__a: LongDouble) -> f64;

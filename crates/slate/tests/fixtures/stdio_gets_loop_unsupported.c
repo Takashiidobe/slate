@@ -33,16 +33,19 @@ int main(void) {
 }
 
 // SLATE-FILECHECK-BEGIN lowering
-// LOWERING-DAG: let {{_v[0-9]+}}: *mut i8 = line.as_mut_ptr() as *mut i8;
-// LOWERING-DAG: let {{_v[0-9]+}}: u64 = (unsafe { strlen({{_v[0-9]+}} as *const core::ffi::c_char) }) as u64;
-// LOWERING-DAG: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-DAG: let {{_v[0-9]+}}: i32 = count;
-// LOWERING-DAG: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-DAG: count = {{_v[0-9]+}};
+// LOWERING-DAG: let {{__v[0-9]+}}: *mut i8 = line.as_mut_ptr() as *mut i8;
+// LOWERING-DAG: let {{__v[0-9]+}}: u64 = (unsafe { strlen({{__v[0-9]+}} as *const core::ffi::c_char) }) as u64;
+// LOWERING-DAG: let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-DAG: let {{__v[0-9]+}}: i32 = count;
+// LOWERING-DAG: let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-DAG: count = {{__v[0-9]+}};
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: let {{_v[0-9]+}}: *mut i8 = line.as_mut_ptr() as *mut i8;
-// REWRITES-DAG: let {{_v[0-9]+}}: u64 = (unsafe { strlen({{_v[0-9]+}} as *const core::ffi::c_char) }) as u64;
-// REWRITES-DAG: count += {{_v[0-9]+}} as i32;
+// REWRITES-DAG: let {{__v[0-9]+}}: *mut i8 = line.as_mut_ptr() as *mut i8;
+// REWRITES-DAG: let {{__v[0-9]+}}: u64 = (unsafe { strlen({{__v[0-9]+}} as *const core::ffi::c_char) }) as u64;
+// REWRITES-DAG: let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// REWRITES-DAG: let {{__v[0-9]+}}: i32 = count;
+// REWRITES-DAG: let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// REWRITES-DAG: count = {{__v[0-9]+}};
 // SLATE-FILECHECK-END rewrites
