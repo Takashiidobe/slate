@@ -611,7 +611,10 @@ pub(super) fn long_double_shim_type_tag(ty: &Type) -> String {
 }
 
 pub(super) fn is_complex_runtime_call(name: &str) -> bool {
-    matches!(name, "__muldc3" | "__divdc3" | "__mulsc3" | "__divsc3")
+    matches!(
+        name,
+        "__muldc3" | "__divdc3" | "__mulsc3" | "__divsc3" | "__multc3" | "__divtc3"
+    )
 }
 
 pub(super) fn complex_ty(inner: Type) -> Type {
@@ -639,15 +642,20 @@ pub(super) fn complex_runtime_decl(name: &str, prim: Prim) -> ExternDecl {
 
 // C `_Complex` is `num_complex::Complex`; the extern runtime routines keep
 // float/double `*`/`/` bit-identical to clang's libgcc lowering.
-pub(super) fn complex_prelude() -> Vec<Item> {
+pub(super) fn complex_prelude(uses_f128: bool) -> Vec<Item> {
+    let mut decls = vec![
+        complex_runtime_decl("__muldc3", Prim::F64),
+        complex_runtime_decl("__divdc3", Prim::F64),
+        complex_runtime_decl("__mulsc3", Prim::F32),
+        complex_runtime_decl("__divsc3", Prim::F32),
+    ];
+    if uses_f128 {
+        decls.push(complex_runtime_decl("__multc3", Prim::F128));
+        decls.push(complex_runtime_decl("__divtc3", Prim::F128));
+    }
     vec![Item::ExternBlock {
         abi: "C".into(),
-        decls: vec![
-            complex_runtime_decl("__muldc3", Prim::F64),
-            complex_runtime_decl("__divdc3", Prim::F64),
-            complex_runtime_decl("__mulsc3", Prim::F32),
-            complex_runtime_decl("__divsc3", Prim::F32),
-        ],
+        decls,
     }]
 }
 

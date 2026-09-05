@@ -1615,7 +1615,7 @@ impl __SlateVaArgs {
             items.splice(1..1, long_double_prelude(vis));
         }
         if self.uses_complex.get() {
-            items.splice(1..1, complex_prelude());
+            items.splice(1..1, complex_prelude(self.uses_f128.get()));
         }
         if self.uses_memchr.get() {
             items.splice(1..1, vec![memchr_prelude()]);
@@ -2025,6 +2025,9 @@ impl __SlateVaArgs {
             .any(|field| ctype_uses_long_double(&field.ty))
         {
             self.uses_long_double.set(true);
+        }
+        if record.fields.iter().any(|field| ctype_uses_f128(&field.ty)) {
+            self.uses_f128.set(true);
         }
         let storage_record;
         let mut synthesized_storage = false;
@@ -3272,6 +3275,20 @@ fn ctype_uses_long_double(ty: &crate::frontend::c_ast::CType) -> bool {
         }
         CType::Enum(_) => false,
         CType::Complex(inner) => ctype_uses_long_double(inner),
+        _ => false,
+    }
+}
+
+fn ctype_uses_f128(ty: &crate::frontend::c_ast::CType) -> bool {
+    use crate::frontend::c_ast::CType;
+    match ty {
+        CType::Float { bits: 128 } => true,
+        CType::Ptr(inner) | CType::Array(inner, _) => ctype_uses_f128(inner),
+        CType::FuncPtr { ret, params } => {
+            ctype_uses_f128(ret) || params.iter().any(ctype_uses_f128)
+        }
+        CType::Enum(_) => false,
+        CType::Complex(inner) => ctype_uses_f128(inner),
         _ => false,
     }
 }

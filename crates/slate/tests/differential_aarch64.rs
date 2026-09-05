@@ -17,14 +17,6 @@ fn skip_reason(name: &str) -> Option<&'static str> {
             "SLATE_CLANG's CIR frontend does not support _BitInt > 128 bits or __float128 \
              for aarch64-unknown-linux-gnu (slate-sdks.1)",
         ),
-        "long_double_complex" | "long_double_f80_arithmetic" => Some(
-            "known bug: f128 (binary128) division produces wrong results on non-x86 \
-             targets (slate-sdks.3)",
-        ),
-        "long_double_struct" => Some(
-            "known bug: long double lowering inconsistently picks f128 vs the LongDouble \
-             wrapper type for the same field (slate-sdks.3)",
-        ),
         "stat_struct" => Some(
             "known bug: aarch64 struct stat field layout is wrong under raw lowering \
              (likely the same root cause as slate-jxmx's nlink_t widening bug)",
