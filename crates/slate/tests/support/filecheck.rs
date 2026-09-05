@@ -176,6 +176,18 @@ fn expand_label_group(group: &[String]) -> Result<Vec<Vec<String>>, String> {
 fn directive<'a>(line: &'a str, profile: Profile, prefixes: &[&str]) -> Option<(&'a str, &'a str)> {
     let line = line.trim_start().strip_prefix("//")?.trim_start();
     let (name, pattern) = line.split_once(':')?;
+    let profile_common = match profile {
+        Profile::Lowering => "COMMON-LOWERING",
+        Profile::Rewrites => "COMMON-REWRITES",
+    };
+    if name == profile_common {
+        return Some(("", pattern.trim_start()));
+    }
+    if let Some(suffix) = name.strip_prefix(profile_common)
+        && normalize_directive(suffix).is_some()
+    {
+        return Some((suffix, pattern.trim_start()));
+    }
     for prefix in prefixes.iter().copied().chain(["COMMON", profile.prefix()]) {
         if name == prefix {
             return Some(("", pattern.trim_start()));

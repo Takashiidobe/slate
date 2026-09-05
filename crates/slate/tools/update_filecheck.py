@@ -341,6 +341,58 @@ def render_checks(rust, prefix):
     return checks
 
 
+def commonize_checks(checks_by_prefix, common_prefix="COMMON"):
+    if len(checks_by_prefix) < 2:
+        return [], dict(checks_by_prefix)
+
+    prefixes = list(checks_by_prefix)
+    normalized = {
+        prefix: [
+            re.sub(
+                rf"^// {re.escape(prefix)}(?P<suffix>-[A-Z]+)?:",
+                r"//\g<suffix>:",
+                check,
+            )
+            for check in checks
+        ]
+        for prefix, checks in checks_by_prefix.items()
+    }
+    common_counts = Counter(normalized[prefixes[0]])
+    for prefix in prefixes[1:]:
+        common_counts &= Counter(normalized[prefix])
+    common = []
+    remaining_common = common_counts.copy()
+    for check in normalized[prefixes[0]]:
+        if remaining_common[check]:
+            common.append(
+                re.sub(
+                    r"^//(?P<suffix>-[A-Z]+)?:",
+                    rf"// {common_prefix}\g<suffix>:",
+                    check,
+                )
+            )
+            remaining_common[check] -= 1
+
+    residuals = {}
+    for prefix, checks in checks_by_prefix.items():
+        to_remove = Counter()
+        for check in common:
+            normalized_check = re.sub(
+                rf"^// {re.escape(common_prefix)}(?P<suffix>-[A-Z]+)?:",
+                r"//\g<suffix>:",
+                check,
+            )
+            to_remove[normalized_check] += 1
+        residual = []
+        for check, normalized_check in zip(checks, normalized[prefix]):
+            if to_remove[normalized_check]:
+                to_remove[normalized_check] -= 1
+            else:
+                residual.append(check)
+        residuals[prefix] = residual
+    return common, residuals
+
+
 def escape_check_pattern(line):
     escaped = (
         line.replace("{{", "{{[{][{]}}")
@@ -498,11 +550,13 @@ def update_path(path, profiles, in_place, target_mode):
     source = path.read_text()
     instrumented, annotations, fn_targets = instrument_annotations(source)
     if target_mode:
-        source = remove_generated_block(
-            remove_generated_block(source, "LOWERING"), "REWRITES"
-        )
+        source = remove_generated_block(source, "LOWERING")
+        source = remove_generated_block(source, "REWRITES")
+        source = remove_generated_block(source, "COMMON-LOWERING")
+        source = remove_generated_block(source, "COMMON-REWRITES")
     updated = source
-    blocks = []
+    checks_by_profile = {}
+    profile_order = []
     annotation_outputs = {}
     for profile, command, environment in profiles:
         annotation_profile = profile.partition("-")[0].lower().removesuffix("s")
@@ -559,7 +613,31 @@ def update_path(path, profiles, in_place, target_mode):
             raise
         if not checks:
             raise RuntimeError(f"{path}: generated Rust contains no functions")
-        blocks.append(generated_block(checks, profile))
+        checks_by_profile[profile] = checks
+        profile_order.append(profile)
+    blocks = []
+    if target_mode:
+        grouped = {}
+        for profile in profile_order:
+            grouped.setdefault(profile.partition("-")[0], {})[profile] = (
+                checks_by_profile[profile]
+            )
+        for base_profile in ("LOWERING", "REWRITES"):
+            checks_by_prefix = grouped.get(base_profile, {})
+            if not checks_by_prefix:
+                continue
+            common_prefix = f"COMMON-{base_profile}"
+            common, residuals = commonize_checks(checks_by_prefix, common_prefix)
+            if common:
+                blocks.append(generated_block(common, common_prefix))
+            for profile in checks_by_prefix:
+                if residuals[profile]:
+                    blocks.append(generated_block(residuals[profile], profile))
+    else:
+        blocks = [
+            generated_block(checks_by_profile[profile], profile)
+            for profile in profile_order
+        ]
     if blocks:
         updated = insert_generated_blocks(updated, blocks)
     if in_place:
