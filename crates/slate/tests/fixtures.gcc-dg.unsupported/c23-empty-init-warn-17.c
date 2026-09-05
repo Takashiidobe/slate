@@ -4,6 +4,7 @@
  */
 /* { dg-do run } */
 /* { dg-options "-std=c23 -Wzero-init-padding-bits=all" } */
+/* Blocked by CIR emission: designated initializer updates are not implemented. */
 
 struct A { unsigned char a; long long b; };
 struct B { unsigned char a; long long b; struct A c[3]; };

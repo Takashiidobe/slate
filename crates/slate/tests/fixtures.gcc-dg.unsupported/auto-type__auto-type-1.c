@@ -1,6 +1,7 @@
 /* Test __auto_type.  Test correct uses.  */
 /* { dg-do run } */
 /* { dg-options "" } */
+/* Blocked by CIR emission: Clang crashes while emitting CIR for this __auto_type case. */
 
 extern void abort (void);
 extern void exit (int);

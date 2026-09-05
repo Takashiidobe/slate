@@ -3,6 +3,9 @@
 /* { dg-do run } */
 /* { dg-options "-std=c99" } */
 
+/* Blocked by CIR emission: discarded VLA casts omit the required ++i bound
+   evaluation, while equivalent compound-literal casts emit cir.inc. */
+
 extern void exit (int);
 extern void abort (void);
 

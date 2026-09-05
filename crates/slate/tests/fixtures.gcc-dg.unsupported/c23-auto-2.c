@@ -1,6 +1,7 @@
 /* Test C23 auto.  Valid code, execution tests.  Based on auto-type-1.c.  */
 /* { dg-do run } */
 /* { dg-options "-std=c23 -pedantic-errors" } */
+/* Blocked by CIR emission: Clang crashes while emitting CIR for this C23 auto case. */
 
 extern void abort (void);
 extern void exit (int);

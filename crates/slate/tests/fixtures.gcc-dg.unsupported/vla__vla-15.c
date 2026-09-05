@@ -2,6 +2,7 @@
 /* Origin: Joseph Myers <joseph@codesourcery.com> */
 /* { dg-do run } */
 /* { dg-options "-std=gnu99" } */
+/* Blocked by CIR emission: Clang crashes while emitting CIR for this VLA type expression. */
 
 #include <stdarg.h>
 

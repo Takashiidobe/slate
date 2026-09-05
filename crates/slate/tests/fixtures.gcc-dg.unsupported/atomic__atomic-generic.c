@@ -3,6 +3,7 @@
 /* { dg-options "-w" } */
 /* { dg-do run } */
 /* { dg-additional-sources "atomic-generic-aux.c" } */
+/* Blocked by CIR emission: generic atomic compare-and-exchange is not implemented. */
 
 /* Test that the generioc atomic builtins execute as expected..
    sync-mem-generic-aux.c supplies a functional external entry point for 
@@ -55,4 +56,3 @@ main ()
 
   return 0;
 }
-
