@@ -134,7 +134,8 @@ def strip_attribute_groups(text):
 
 
 def c_function_definition_name(lines):
-    head = strip_attribute_groups("\n".join(lines).split("{", 1)[0])
+    body_lines = [line for line in lines if not line.lstrip().startswith("#")]
+    head = strip_attribute_groups("\n".join(body_lines).split("{", 1)[0])
     for match in re.finditer(r"\b([^\W\d]\w*)\s*\(", head):
         if match.group(1) not in C_DECLARATOR_KEYWORDS:
             return match.group(1)

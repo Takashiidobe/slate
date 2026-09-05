@@ -18,8 +18,8 @@ int main(void) {
 // DIRECTIVES-DAG: #[cfg(target_pointer_width = "32")]
 // DIRECTIVES-DAG: #[cfg(not(any(target_pointer_width = "64", target_pointer_width = "32")))]
 
-// SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: fn pointer_width_code() -> i32 {
-// REWRITES-DAG:     64
-// REWRITES-DAG: }
-// SLATE-FILECHECK-END rewrites
+// SLATE-FILECHECK-BEGIN common-rewrites
+// COMMON-REWRITES-DAG: fn pointer_width_code() -> i32 {
+// COMMON-REWRITES-DAG:     64
+// COMMON-REWRITES-DAG: }
+// SLATE-FILECHECK-END common-rewrites
