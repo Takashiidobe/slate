@@ -52,7 +52,7 @@ fn f80_assign_impl(trait_: StdTrait, shim: &str) -> Item {
         name: trait_.method().into(),
         self_kind: SelfKind::RefMut,
         params: vec![FnParam {
-            name: "o".into(),
+            name: shim_param("o"),
             mutable: false,
             ty: Type::LongDouble,
         }],
@@ -60,7 +60,7 @@ fn f80_assign_impl(trait_: StdTrait, shim: &str) -> Item {
         body: Expr::Block(Box::new(crate::backend::rust_ast::Block {
             stmts: vec![Stmt::Assign {
                 target: self_value.clone(),
-                value: f80_call(shim, vec![self_value, Expr::Var("o".into())]),
+                value: f80_call(shim, vec![self_value, Expr::Var(shim_param("o").into())]),
             }],
             tail: None,
         })),
@@ -78,12 +78,15 @@ fn f80_binop_impl(trait_: StdTrait, shim: &str) -> Item {
         name: trait_.method().into(),
         self_kind: SelfKind::Value,
         params: vec![FnParam {
-            name: "o".into(),
+            name: shim_param("o"),
             mutable: false,
             ty: Type::LongDouble,
         }],
         ret: Some(Type::LongDouble),
-        body: f80_call(shim, vec![Expr::Var("self".into()), Expr::Var("o".into())]),
+        body: f80_call(
+            shim,
+            vec![Expr::Var("self".into()), Expr::Var(shim_param("o").into())],
+        ),
     };
     Item::Impl(ImplBlock {
         generics: vec![],
@@ -126,7 +129,7 @@ fn f80_partial_eq_impl() -> Item {
         name: StdTrait::PartialEq.method().into(),
         self_kind: SelfKind::Ref,
         params: vec![FnParam {
-            name: "other".into(),
+            name: shim_param("other"),
             mutable: false,
             ty: Type::Ref {
                 mutable: false,
@@ -143,7 +146,7 @@ fn f80_partial_eq_impl() -> Item {
                 },
                 Expr::Unary {
                     op: UnaryOp::Deref,
-                    expr: Box::new(Expr::Var("other".into())),
+                    expr: Box::new(Expr::Var(shim_param("other").into())),
                 },
             ],
         ),
@@ -178,7 +181,7 @@ fn f80_partial_ord_impl() -> Item {
                 },
                 Expr::Unary {
                     op: UnaryOp::Deref,
-                    expr: Box::new(Expr::Var("other".into())),
+                    expr: Box::new(Expr::Var(shim_param("other").into())),
                 },
             ],
         )
@@ -200,7 +203,7 @@ fn f80_partial_ord_impl() -> Item {
         name: StdTrait::PartialOrd.method().into(),
         self_kind: SelfKind::Ref,
         params: vec![FnParam {
-            name: "other".into(),
+            name: shim_param("other"),
             mutable: false,
             ty: Type::Ref {
                 mutable: false,
@@ -228,10 +231,14 @@ fn f80_call(name: &str, args: Vec<Expr>) -> Expr {
 
 fn f80_param(name: &str, ty: Type) -> FnParam {
     FnParam {
-        name: name.into(),
+        name: shim_param(name),
         mutable: false,
         ty,
     }
+}
+
+fn shim_param(name: &str) -> String {
+    format!("__{name}")
 }
 
 fn f80_extern_decl(name: &str, params: Vec<FnParam>, ret: Option<Type>) -> ExternFnDecl {
@@ -445,7 +452,7 @@ pub(super) fn f80_shim_decls() -> Vec<ExternFnDecl> {
 
 fn fenv_param(name: &str, ty: Type) -> FnParam {
     FnParam {
-        name: name.into(),
+        name: shim_param(name),
         mutable: false,
         ty,
     }
@@ -623,7 +630,7 @@ pub(super) fn complex_ty(inner: Type) -> Type {
 
 pub(super) fn complex_runtime_decl(name: &str, prim: Prim) -> ExternDecl {
     let param = |n: &str| FnParam {
-        name: n.into(),
+        name: shim_param(n),
         mutable: false,
         ty: Type::Prim(prim),
     };
@@ -670,7 +677,7 @@ pub(super) fn memchr_prelude() -> Item {
         mutable: false,
         inner: Box::new(Type::Prim(Prim::U8)),
     };
-    let var = |name: &str| Expr::Var(name.into());
+    let var = |name: &str| Expr::Var(shim_param(name).into());
     let byte_at = || Expr::MethodCall {
         recv: Box::new(var("bytes")),
         method: "add".into(),
@@ -747,17 +754,17 @@ pub(super) fn memchr_prelude() -> Item {
         name: "__slate_memchr".into(),
         params: vec![
             FnParam {
-                name: "s".into(),
+                name: shim_param("s"),
                 mutable: false,
                 ty: void_ptr(false),
             },
             FnParam {
-                name: "c".into(),
+                name: shim_param("c"),
                 mutable: false,
                 ty: Type::Prim(Prim::I32),
             },
             FnParam {
-                name: "n".into(),
+                name: shim_param("n"),
                 mutable: false,
                 ty: Type::Prim(Prim::Usize),
             },
