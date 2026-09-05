@@ -996,7 +996,7 @@ impl ClassifyCtx<'_> {
                 {
                     self.observe(&canonical, PointerFact::observe_offset);
                 } else {
-                    self.expr(recv);
+                    self.place(recv, true);
                 }
                 for arg in args {
                     self.expr(arg);
@@ -1049,7 +1049,7 @@ impl ClassifyCtx<'_> {
             }
             Expr::Closure { body, .. } => self.expr(body),
             Expr::MethodCallGeneric { recv, args, .. } => {
-                self.expr(recv);
+                self.place(recv, true);
                 for arg in args {
                     self.expr(arg);
                 }

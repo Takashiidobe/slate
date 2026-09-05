@@ -211,7 +211,7 @@ fn normalize_record_shape(ty: &crate::frontend::c_ast::CType) -> crate::frontend
     match ty {
         CType::Record(_) => CType::Record(String::new()),
         CType::Ptr(inner) => CType::Ptr(Box::new(normalize_record_shape(inner))),
-        CType::Array(inner, len) => CType::Array(Box::new(normalize_record_shape(inner)), *len),
+        CType::Array(inner, _) => CType::Array(Box::new(normalize_record_shape(inner)), None),
         CType::FuncPtr { ret, params } => CType::FuncPtr {
             ret: Box::new(normalize_record_shape(ret)),
             params: params.iter().map(normalize_record_shape).collect(),
