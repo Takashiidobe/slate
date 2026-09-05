@@ -992,6 +992,7 @@ fn find_intrinsic_signature(
     llvm_name: &str,
 ) -> Option<&'static intrinsics_table::IntrinsicSignature> {
     [
+        intrinsics_table::GENERAL_INTRINSICS,
         intrinsics_table::X86_INTRINSICS,
         intrinsics_table::AARCH64_INTRINSICS,
         intrinsics_table::ARM_INTRINSICS,
@@ -1011,6 +1012,7 @@ fn mangle_llvm_type(ty: &Type) -> Option<String> {
         Type::Prim(Prim::I128 | Prim::U128) => Some("i128".into()),
         Type::Prim(Prim::F32) => Some("f32".into()),
         Type::Prim(Prim::F64) => Some("f64".into()),
+        Type::LongDouble => Some("f80".into()),
         Type::Array { elem, len } => Some(format!("v{len}{}", mangle_llvm_type(elem)?)),
         Type::Ptr { .. } => Some("p0".into()),
         _ => bitint_generic_parts(ty).map(|(_, bits, _, _)| format!("i{bits}")),
