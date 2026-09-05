@@ -511,6 +511,76 @@ pub const MACROS: &[MacroDefinition] = &[
             rust_bits: 1,
         },
     },
+    MacroDefinition {
+        name: "FLT_NORM_MAX",
+        header: "float.h",
+        value: MacroValue::Float {
+            source: "3.40282347E+38",
+            rust_bits: 0x7f7fffff,
+        },
+    },
+    MacroDefinition {
+        name: "DBL_NORM_MAX",
+        header: "float.h",
+        value: MacroValue::Double {
+            source: "1.7976931348623157E+308",
+            rust_bits: 0x7fefffffffffffff,
+        },
+    },
+    MacroDefinition {
+        name: "LDBL_NORM_MAX",
+        header: "float.h",
+        value: MacroValue::LongDouble {
+            source: "1.18973149535723176502E+4932",
+            f64_source: "1.7976931348623157E+308",
+            f128_source: "1.18973149535723176508575932662800702E+4932",
+            rust_bits: 0x7fefffffffffffff,
+            f80_bytes: [0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xfe, 0x7f],
+        },
+    },
+    MacroDefinition {
+        name: "INFINITY",
+        header: "math.h",
+        value: MacroValue::Float {
+            source: "inf",
+            rust_bits: 0x7f800000,
+        },
+    },
+    MacroDefinition {
+        name: "NAN",
+        header: "math.h",
+        value: MacroValue::Float {
+            source: "nan",
+            rust_bits: 0x7fc00001,
+        },
+    },
+    MacroDefinition {
+        name: "FLT_SNAN",
+        header: "float.h",
+        value: MacroValue::Float {
+            source: "nan",
+            rust_bits: 0x7f800001,
+        },
+    },
+    MacroDefinition {
+        name: "DBL_SNAN",
+        header: "float.h",
+        value: MacroValue::Double {
+            source: "nan",
+            rust_bits: 0x7ff0000000000001,
+        },
+    },
+    MacroDefinition {
+        name: "LDBL_SNAN",
+        header: "float.h",
+        value: MacroValue::LongDouble {
+            source: "nan",
+            f64_source: "nan",
+            f128_source: "nan",
+            rust_bits: 0x7fefffffffffffff,
+            f80_bytes: [1, 0, 0, 0, 0, 0, 0, 0, 0x80, 0x7f],
+        },
+    },
 ];
 
 impl MacroDefinition {
