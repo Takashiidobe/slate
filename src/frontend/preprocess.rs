@@ -764,6 +764,9 @@ fn resolve_directive_activity(
     initial_macros: &BTreeMap<String, String>,
 ) {
     let mut macros = initial_macros.clone();
+    for macro_definition in crate::frontend::macros::MACROS {
+        macros.entry(macro_definition.name.to_string()).or_default();
+    }
     let mut stack: Vec<ConditionalState> = Vec::new();
     for directive in directives {
         let parsed = conditional_directive(directive.name.as_str(), &directive.raw_payload);
