@@ -2753,12 +2753,7 @@ impl __SlateVaArgs {
                 bitint_from_int_expr(ty, int_value_expr(*value), name == "bitint::BInt")
             }
             Attr::CirInt { value, .. } if bitint_generic_parts(ty).is_some() => {
-                let (name, ..) = bitint_generic_parts(ty)?;
-                bitint_from_int_expr(
-                    ty,
-                    int_value_expr(value.parse().ok()?),
-                    name == "bitint::BInt",
-                )
+                bitint_from_decimal_str_expr(ty, value)
             }
             _ => scalar_attr_expr(attr),
         }
