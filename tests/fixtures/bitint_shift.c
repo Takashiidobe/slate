@@ -127,46 +127,34 @@ int main(void) {
 // REWRITES-DAG:     let {{__v[0-9]+}}: u32 = 3;
 // REWRITES-DAG:     let {{__v[0-9]+}}: i64 = 5;
 // REWRITES-DAG:     let {{__v[0-9]+}}: u64 = 6;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i16 = 2;
 // REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<129, 3, 24> = bitint::BUint::<129, 3, 24>::from_decimal_str("1");
-// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<129, 3, 24> = {{__v[0-9]+}} << {{__v[0-9]+}};
-// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<129, 3, 24> = {{__v[0-9]+}} >> {{__v[0-9]+}};
-// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<129, 3, 24> = {{__v[0-9]+}} << {{__v[0-9]+}};
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<129, 3, 24> = {{__v[0-9]+}} >> {{__v[0-9]+}};
-// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<129, 3, 24> = {{__v[0-9]+}} << {{__v[0-9]+}};
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = (2 as i16) as i32;
+// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<129, 3, 24> = {{__v[0-9]+}} << {{__v[0-9]+}} >> {{__v[0-9]+}} << {{__v[0-9]+}} >> {{__v[0-9]+}} << {{__v[0-9]+}};
 // REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<129, 3, 24> = bitint::BUint::<129, 3, 24>::from_i128({{arg[0-9]+}} as i128);
 // REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<129, 3, 24> = {{__v[0-9]+}} + {{__v[0-9]+}};
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}}.to_u128() as i32;
-// REWRITES-DAG:     {{__v[0-9]+}}
+// REWRITES-DAG:     {{__v[0-9]+}}.to_u128() as i32
 // REWRITES-DAG: }
 // REWRITES-DAG: fn shift_across_limbs({{arg[0-9]+}}: i32) -> i32 {
 // REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<129, 3, 24> = bitint::BUint::<129, 3, 24>::from_decimal_str("1");
 // REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 128;
-// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<129, 3, 24> = {{__v[0-9]+}} << {{__v[0-9]+}};
 // REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 127;
-// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<129, 3, 24> = {{__v[0-9]+}} >> {{__v[0-9]+}};
+// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<129, 3, 24> = {{__v[0-9]+}} << {{__v[0-9]+}} >> {{__v[0-9]+}};
 // REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}}.to_u128() as i32;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{arg[0-9]+}};
-// REWRITES-DAG:     {{__v[0-9]+}}
+// REWRITES-DAG:     {{__v[0-9]+}} + {{arg[0-9]+}}
 // REWRITES-DAG: }
 // REWRITES-DAG: fn shift_signed_arithmetic({{arg[0-9]+}}: i32) -> i32 {
 // REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BInt<256, 4, 32> = bitint::BInt::<256, 4, 32>::from_decimal_str("-1024");
 // REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 3;
-// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BInt<256, 4, 32> = {{__v[0-9]+}} >> {{__v[0-9]+}};
 // REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 2;
-// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BInt<256, 4, 32> = {{__v[0-9]+}} << {{__v[0-9]+}};
+// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BInt<256, 4, 32> = {{__v[0-9]+}} >> {{__v[0-9]+}} << {{__v[0-9]+}};
 // REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}}.to_i128() as i32;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{arg[0-9]+}};
-// REWRITES-DAG:     {{__v[0-9]+}}
+// REWRITES-DAG:     {{__v[0-9]+}} + {{arg[0-9]+}}
 // REWRITES-DAG: }
 // REWRITES-DAG: fn shift_by_bitint({{arg[0-9]+}}: i32) -> i32 {
 // REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BInt<256, 4, 32> = bitint::BInt::<256, 4, 32>::from_decimal_str("4");
 // REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BInt<256, 4, 32> = bitint::BInt::<256, 4, 32>::from_decimal_str("3");
-// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BInt<256, 4, 32> = {{__v[0-9]+}} << {{__v[0-9]+}};
-// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BInt<256, 4, 32> = {{__v[0-9]+}} >> {{__v[0-9]+}};
+// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BInt<256, 4, 32> = {{__v[0-9]+}} << {{__v[0-9]+}} >> {{__v[0-9]+}};
 // REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}}.to_i128() as i32;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{arg[0-9]+}};
-// REWRITES-DAG:     {{__v[0-9]+}}
+// REWRITES-DAG:     {{__v[0-9]+}} + {{arg[0-9]+}}
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

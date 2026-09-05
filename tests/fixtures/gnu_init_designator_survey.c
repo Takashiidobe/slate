@@ -65,6 +65,14 @@ int main(void) {
 // LOWERING-NEXT: )]
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[repr(C)]
+// LOWERING-NEXT: #[allow(non_camel_case_types)]
+// LOWERING-NEXT: #[derive(Clone, Copy, PartialEq, Eq, Debug, Hash)]
+// LOWERING-NEXT: enum Forward {
+// LOWERING-NEXT:     FORWARD_A = 0,
+// LOWERING-NEXT:     FORWARD_B = 1,
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[derive(Clone, Copy)]
 // LOWERING-NEXT: union Castable {
 // LOWERING-NEXT:     i: i32,
@@ -199,6 +207,14 @@ int main(void) {
 // REWRITES-NEXT:     unpredictable_function_pointer_comparisons,
 // REWRITES-NEXT:     unused_comparisons
 // REWRITES-NEXT: )]
+// REWRITES-EMPTY:
+// REWRITES-NEXT: #[repr(C)]
+// REWRITES-NEXT: #[allow(non_camel_case_types)]
+// REWRITES-NEXT: #[derive(Clone, Copy, PartialEq, Eq, Debug, Hash)]
+// REWRITES-NEXT: enum Forward {
+// REWRITES-NEXT:     FORWARD_A = 0,
+// REWRITES-NEXT:     FORWARD_B = 1,
+// REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[repr(C)]
 // REWRITES-NEXT: #[derive(Clone, Copy)]

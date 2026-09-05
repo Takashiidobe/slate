@@ -17,8 +17,7 @@ int call_root_helper(void) { return root_helper(); }
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: #[unsafe(no_mangle)]
 // REWRITES-DAG: pub extern "C-unwind" fn call_root_helper() -> i32 {
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = root_helper();
-// REWRITES-DAG:     {{__v[0-9]+}}
+// REWRITES-DAG:     root_helper()
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites
 

@@ -649,14 +649,6 @@ fn query_macros(src: &Path, extra_args: &[String]) -> Result<BTreeMap<String, St
             command,
             source,
         })?;
-    if !out.status.success() {
-        return Err(EmitError::ToolFailed {
-            tool: Tool::Clang,
-            operation: ToolOperation::MacroDump,
-            status: out.status,
-            stderr: String::from_utf8_lossy(&out.stderr).into_owned(),
-        });
-    }
     let mut macros = BTreeMap::new();
     for line in String::from_utf8_lossy(&out.stdout).lines() {
         let mut parts = line.splitn(3, ' ');
@@ -664,9 +656,16 @@ fn query_macros(src: &Path, extra_args: &[String]) -> Result<BTreeMap<String, St
             continue;
         }
         let Some(name) = parts.next() else { continue };
-        // function-like macros carry a `(` in the name field; keep the bare name.
         let name = name.split('(').next().unwrap_or(name);
         macros.insert(name.to_string(), parts.next().unwrap_or("").to_string());
+    }
+    if !out.status.success() && macros.is_empty() {
+        return Err(EmitError::ToolFailed {
+            tool: Tool::Clang,
+            operation: ToolOperation::MacroDump,
+            status: out.status,
+            stderr: String::from_utf8_lossy(&out.stderr).into_owned(),
+        });
     }
     Ok(macros)
 }

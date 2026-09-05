@@ -25,13 +25,11 @@ void init_flags(struct Flags *flags, void *owner, int count) {
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: let {{__v[0-9]+}}: u32 = 1;
 // REWRITES-DAG: unsafe {
-// REWRITES-DAG:     (*{{arg[0-9]+}}).__bitfield_2.set_ready(({{__v[0-9]+}} as u32) << 31 >> 31);
+// REWRITES-DAG:     (*{{arg[0-9]+}}).__bitfield_2.set_ready((1 as u32) << 31 >> 31);
 // REWRITES-DAG: }
-// REWRITES-DAG: let {{__v[0-9]+}}: u32 = 5;
 // REWRITES-DAG: unsafe {
-// REWRITES-DAG:     (*{{arg[0-9]+}}).__bitfield_2.set_mode(({{__v[0-9]+}} as u32) << 29 >> 29);
+// REWRITES-DAG:     (*{{arg[0-9]+}}).__bitfield_2.set_mode((5 as u32) << 29 >> 29);
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites
 

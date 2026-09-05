@@ -16,9 +16,7 @@ int compute(int x) { return local(x) + 1; }
 // REWRITES-DAG: #[unsafe(no_mangle)]
 // REWRITES-DAG: pub extern "C-unwind" fn compute({{arg[0-9]+}}: i32) -> i32 {
 // REWRITES-DAG:     let {{__v[0-9]+}}: i32 = local({{arg[0-9]+}});
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 1;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
-// REWRITES-DAG:     {{__v[0-9]+}}
+// REWRITES-DAG:     {{__v[0-9]+}} + 1
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites
 

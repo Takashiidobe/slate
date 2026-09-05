@@ -40,19 +40,14 @@ int root_to_int(void) { return sqrtl(4.0L) == 2.0L; }
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
-// REWRITES-DAG: let {{__v[0-9]+}}: LongDouble = {{arg[0-9]+}} + {{__v[0-9]+}};
 // REWRITES-DAG: unsafe {
-// REWRITES-DAG:     (*{{arg[0-9]+}}).value = {{__v[0-9]+}};
+// REWRITES-DAG:     (*{{arg[0-9]+}}).value = {{arg[0-9]+}} + LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
 // REWRITES-DAG: }
 // REWRITES-DAG: #[unsafe(no_mangle)]
 // REWRITES-DAG: pub extern "C-unwind" fn root_to_int() -> i32 {
 // REWRITES-DAG:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 64]);
 // REWRITES-DAG:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_sqrtl__rf80_f80({{__v[0-9]+}}) };
-// REWRITES-DAG:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]);
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// REWRITES-DAG:     {{__v[0-9]+}}
+// REWRITES-DAG:     ({{__v[0-9]+}} == LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64])) as i32
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites
 

@@ -1057,9 +1057,25 @@ fn long_double_intrinsic_shim(
     }
 }
 
+static TOOLCHAIN_SIGNATURE_OVERRIDES: &[intrinsics_table::IntrinsicSignature] = &[
+    intrinsics_table::IntrinsicSignature {
+        name: "llvm.clear_cache",
+        overloaded: false,
+        ret: None,
+        params: None,
+        overloaded_positions: None,
+    },
+];
+
 fn find_intrinsic_signature(
     llvm_name: &str,
 ) -> Option<&'static intrinsics_table::IntrinsicSignature> {
+    if let Some(entry) = TOOLCHAIN_SIGNATURE_OVERRIDES
+        .iter()
+        .find(|entry| entry.name == llvm_name)
+    {
+        return Some(entry);
+    }
     [
         intrinsics_table::GENERAL_INTRINSICS,
         intrinsics_table::X86_INTRINSICS,

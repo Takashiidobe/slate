@@ -74,7 +74,8 @@ int main(void) {
 // LOWERING-NEXT:     let {{__v[0-9]+}}: [i64; 2] = _mm_set1_epi32({{__v[0-9]+}});
 // LOWERING-NEXT:     let {{__v[0-9]+}}: u8 = {{arg[0-9]+}} as u8;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = {{arg[0-9]+}} as *mut core::ffi::c_void;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: [i64; 2] = unsafe { _mm_mask_loadu_epi32({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}} as *mut core::ffi::c_void) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: [i64; 2] =
+// LOWERING-NEXT:         unsafe { _mm_mask_loadu_epi32({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}} as *mut core::ffi::c_void) };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: *mut [i64; 2] = {{arg[0-9]+}} as *mut [i64; 2];
 // LOWERING-NEXT:     _mm_storeu_si128({{__v[0-9]+}}, {{__v[0-9]+}});
 // LOWERING-NEXT:     return;
