@@ -1,0 +1,26 @@
+/* { dg-do run { target { weak_undefined } } } */
+/* { dg-add-options weak_undefined } */
+
+int x(int a)
+{
+  return a;
+}
+int y(int a) __attribute__ ((weak));
+int g = 0;
+// @lowering-fn-begin
+// @rewrite-fn-begin
+int main()
+{
+  int (*scan_func)(int);
+  if (g)
+    scan_func = x;
+  else
+    scan_func = y;
+
+  if (scan_func)
+    g = scan_func(10);
+
+  return 0;
+}
+// @rewrite-fn-end
+// @lowering-fn-end
