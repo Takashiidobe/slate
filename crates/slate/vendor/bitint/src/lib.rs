@@ -67,6 +67,27 @@ const fn limbs_to_bytes<const LIMBS: usize, const BYTES: usize>(
     bytes
 }
 
+const fn cast_bytes<const DBITS: usize, const DBYTES: usize, const SBITS: usize, const SBYTES: usize>(
+    bytes: &[u8; SBYTES],
+    signed: bool,
+) -> [u8; DBYTES] {
+    let sign = signed && (bytes[(SBITS - 1) / 8] & (1 << ((SBITS - 1) % 8))) != 0;
+    let mut out = [0; DBYTES];
+    let mut i = 0;
+    while i < DBYTES && i < SBYTES {
+        out[i] = bytes[i];
+        i += 1;
+    }
+    if sign {
+        let mut bit = SBITS;
+        while bit < DBITS {
+            out[bit / 8] |= 1 << (bit % 8);
+            bit += 1;
+        }
+    }
+    out
+}
+
 impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> BUint<BITS, LIMBS, BYTES> {
     pub const ZERO: Self = Self { bytes: [0; BYTES] };
     pub const ONE: Self = Self::from_limbs(BUintLimbs::<BITS, LIMBS>::ONE);
@@ -87,6 +108,22 @@ impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> BUint<BITS, LIMB
 
     pub const fn from_u128(v: u128) -> Self {
         Self::from_limbs(BUintLimbs::from_u128(v))
+    }
+
+    pub const fn from_buint<const SBITS: usize, const SLIMBS: usize, const SBYTES: usize>(
+        v: BUint<SBITS, SLIMBS, SBYTES>,
+    ) -> Self {
+        Self {
+            bytes: cast_bytes::<BITS, BYTES, SBITS, SBYTES>(&v.bytes, false),
+        }
+    }
+
+    pub const fn from_bint<const SBITS: usize, const SLIMBS: usize, const SBYTES: usize>(
+        v: BInt<SBITS, SLIMBS, SBYTES>,
+    ) -> Self {
+        Self {
+            bytes: cast_bytes::<BITS, BYTES, SBITS, SBYTES>(&v.bytes, true),
+        }
     }
 
     pub const fn to_u128(self) -> u128 {
@@ -392,6 +429,22 @@ impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> BInt<BITS, LIMBS
 
     pub const fn from_u128(v: u128) -> Self {
         Self::from_limbs(BIntLimbs::from_u128(v))
+    }
+
+    pub const fn from_buint<const SBITS: usize, const SLIMBS: usize, const SBYTES: usize>(
+        v: BUint<SBITS, SLIMBS, SBYTES>,
+    ) -> Self {
+        Self {
+            bytes: cast_bytes::<BITS, BYTES, SBITS, SBYTES>(&v.bytes, false),
+        }
+    }
+
+    pub const fn from_bint<const SBITS: usize, const SLIMBS: usize, const SBYTES: usize>(
+        v: BInt<SBITS, SLIMBS, SBYTES>,
+    ) -> Self {
+        Self {
+            bytes: cast_bytes::<BITS, BYTES, SBITS, SBYTES>(&v.bytes, true),
+        }
     }
 
     pub const fn to_i128(self) -> i128 {

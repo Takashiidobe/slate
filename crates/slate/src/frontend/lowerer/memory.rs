@@ -419,6 +419,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return;
         }
         if bitint_generic_parts(&result_rust_ty).is_some()
+            && bitint_generic_parts(&src_rust_ty).is_some()
+            && let Some(value) =
+                bitint_cast_expr(&result_rust_ty, &src_rust_ty, self.operand_expr(src))
+        {
+            self.materialize_expr(result, value, Some(result_ty));
+            return;
+        }
+        if bitint_generic_parts(&result_rust_ty).is_some()
             && bitint_generic_parts(&src_rust_ty).is_none()
             && resolved_integer_parts(src_ty, &self.parent.aliases).is_some()
         {

@@ -253,6 +253,24 @@ pub(super) fn bitint_to_int_expr(ty: &Type, value: Expr) -> Option<(Expr, bool)>
     ))
 }
 
+pub(super) fn bitint_cast_expr(result_ty: &Type, src_ty: &Type, value: Expr) -> Option<Expr> {
+    let (result_name, result_bits, result_limbs, result_bytes) = bitint_generic_parts(result_ty)?;
+    let (src_name, ..) = bitint_generic_parts(src_ty)?;
+    let method = if src_name == "bitint::BInt" {
+        "from_bint"
+    } else {
+        "from_buint"
+    };
+    Some(Expr::Call {
+        binding: crate::function_identity::CallBinding::Generated,
+        func: Box::new(Expr::Var(
+            format!("{result_name}::<{result_bits}, {result_limbs}, {result_bytes}>::{method}")
+                .into(),
+        )),
+        args: vec![value],
+    })
+}
+
 pub(super) fn bitint_zero_expr(ty: &Type) -> Option<Expr> {
     let (name, bits, limbs, bytes) = bitint_generic_parts(ty)?;
     Some(Expr::Var(
