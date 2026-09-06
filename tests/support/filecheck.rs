@@ -23,8 +23,51 @@ impl Profile {
     }
 }
 
+pub fn host_gnu_arch_suffix() -> Option<&'static str> {
+    let target = std::env::var("SLATE_TARGET")
+        .ok()
+        .filter(|target| !target.trim().is_empty())
+        .unwrap_or_else(|| env!("SLATE_BUILD_TARGET").to_string());
+    if target.starts_with("x86_64") && target.contains("gnu") {
+        Some("X86_64-GNU")
+    } else if target.starts_with("aarch64") && target.contains("gnu") {
+        Some("AARCH64-GNU")
+    } else {
+        None
+    }
+}
+
+pub fn host_prefixes(profile: Profile) -> &'static [&'static str] {
+    match (profile, host_gnu_arch_suffix()) {
+        (Profile::Lowering, Some("X86_64-GNU")) => &["LOWERING-X86_64-GNU"],
+        (Profile::Lowering, Some("AARCH64-GNU")) => &["LOWERING-AARCH64-GNU"],
+        (Profile::Rewrites, Some("X86_64-GNU")) => &["REWRITES-X86_64-GNU"],
+        (Profile::Rewrites, Some("AARCH64-GNU")) => &["REWRITES-AARCH64-GNU"],
+        _ => &[],
+    }
+}
+
 pub fn has_checks(fixture: &str, profile: Profile) -> bool {
     has_checks_with_prefixes(fixture, profile, &[])
+}
+
+pub fn has_host_checks(fixture: &str, profile: Profile) -> bool {
+    has_checks_with_prefixes(fixture, profile, host_prefixes(profile))
+}
+
+pub fn check_generated_rust_for_host(
+    fixture: &str,
+    generated: &str,
+    profile: Profile,
+    work_dir: &Path,
+) -> Result<(), String> {
+    check_generated_rust_with_prefixes(
+        fixture,
+        generated,
+        profile,
+        host_prefixes(profile),
+        work_dir,
+    )
 }
 
 pub fn has_checks_with_prefixes(fixture: &str, profile: Profile, prefixes: &[&str]) -> bool {

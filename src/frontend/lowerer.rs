@@ -86,6 +86,7 @@ pub struct ProjectInfo {
     pub cross_referenced_functions: BTreeSet<String>,
     pub cross_referenced_globals: BTreeSet<String>,
     pub address_taken_functions: BTreeSet<String>,
+    pub strong_symbols: BTreeSet<String>,
 }
 
 pub fn lower(cir: &Module, c: &Unit, ctx: &mut Ctx) -> Program {
@@ -160,7 +161,7 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
             .entry(sanitize_ident(&record.name).into_string())
             .or_insert(record);
     }
-    for record in reconcile_anonymous_member_types(cir, &mut records, &c.anonymous_header_records) {
+    for record in reconcile_anonymous_member_types(cir, &mut records, &local_record_candidates) {
         let name = sanitize_ident(&record.name).into_string();
         if anon_record_names.insert(name) {
             anon_records.push(record);
@@ -346,6 +347,28 @@ fn cir_data_members<'a>(
         .collect()
 }
 
+fn cir_source_members<'a>(
+    members: &'a [CirType],
+    member_kinds: &[CirRecordMemberKind],
+) -> Vec<&'a CirType> {
+    if member_kinds.len() != members.len() {
+        return members.iter().collect();
+    }
+    members
+        .iter()
+        .zip(member_kinds)
+        .filter(|(_, kind)| {
+            matches!(
+                kind,
+                CirRecordMemberKind::Data
+                    | CirRecordMemberKind::BitField
+                    | CirRecordMemberKind::Empty
+            )
+        })
+        .map(|(member, _)| member)
+        .collect()
+}
+
 fn cir_record_field_types_from_aliases(
     record: &crate::frontend::c_ast::Record,
     aliases: &BTreeMap<String, CirType>,
@@ -368,7 +391,7 @@ fn cir_record_field_types_from_aliases(
         }
         _ => None,
     })?;
-    let data_members = cir_data_members(members, member_kinds);
+    let data_members = cir_source_members(members, member_kinds);
     (data_members.len() == record.fields.len()).then(|| {
         data_members
             .into_iter()
@@ -404,7 +427,9 @@ fn cir_record_members_from_aliases(
         .filter(|kind| {
             matches!(
                 kind,
-                CirRecordMemberKind::Data | CirRecordMemberKind::BitField
+                CirRecordMemberKind::Data
+                    | CirRecordMemberKind::BitField
+                    | CirRecordMemberKind::Empty
             )
         })
         .count();
@@ -415,6 +440,7 @@ fn cir_record_members_from_aliases(
                 kind,
                 CirRecordMemberKind::Data
                     | CirRecordMemberKind::BitField
+                    | CirRecordMemberKind::Empty
                     | CirRecordMemberKind::Pad
             )
         }))
@@ -683,10 +709,22 @@ fn lower_record_def(
     let is_union = record.kind == RecordKind::Union;
     let lower_field = |index: usize, field: &crate::frontend::c_ast::Decl| {
         let cir_ty = cir_field_types.and_then(|types| types.get(index));
+        let c_ty = c_record_field_type(&field.ty, va_list_boxed);
+        let anonymous_record_type = matches!(
+            (&field.ty, cir_ty),
+            (CType::Record(name), Some(Type::Custom(cir_name)))
+                if sanitize_ident(name).as_str().starts_with("_unnamed_at_")
+                    && cir_name.starts_with("anon_")
+        ) || matches!(
+            (&field.ty, cir_ty),
+            (CType::Array(inner, _), Some(Type::Array { elem, .. }))
+                if matches!(inner.as_ref(), CType::Record(name) if sanitize_ident(name).as_str().starts_with("_unnamed_at_"))
+                    && matches!(elem.as_ref(), Type::Custom(cir_name) if cir_name.starts_with("anon_"))
+        );
         let trust_cir = matches!(field.ty, CType::FuncPtr { .. })
             || (field.bit_width.is_none()
-                && matches!(cir_ty, Some(Type::Array { .. }))
-                && !matches!(field.ty, CType::Array(..)));
+                && cir_ty.is_some_and(|cir_ty| cir_array_shape_is_deeper(&field.ty, cir_ty)))
+            || anonymous_record_type;
         let char_cir_ty = matches!(field.ty, CType::Char { .. })
             .then(|| match cir_ty {
                 Some(ty @ (Type::Prim(Prim::I8) | Type::Prim(Prim::U8))) => Some(ty.clone()),
@@ -703,7 +741,7 @@ fn lower_record_def(
             name: sanitize_ident(&field.name),
             ty: if trust_cir { cir_ty.cloned() } else { None }
                 .or(char_cir_ty)
-                .unwrap_or_else(|| c_record_field_type(&field.ty, va_list_boxed)),
+                .unwrap_or(c_ty),
         }
     };
     let fields: Vec<RecordField> = if !is_union {
@@ -722,13 +760,14 @@ fn lower_record_def(
                             ty: cir_ty.clone(),
                         }
                     }
-                    CirRecordMemberKind::Data | CirRecordMemberKind::BitField => {
+                    CirRecordMemberKind::Data
+                    | CirRecordMemberKind::BitField
+                    | CirRecordMemberKind::Empty => {
                         let field = &record.fields[data_index];
                         let lowered = lower_field(data_index, field);
                         data_index += 1;
                         lowered
                     }
-                    CirRecordMemberKind::Empty => unreachable!(),
                 })
                 .collect()
         } else {
@@ -1070,6 +1109,7 @@ struct ElementPtr {
     unsafe_access: bool,
     unbounded: bool,
     out_of_bounds: bool,
+    unaligned: bool,
     elem_ty: Option<Type>,
 }
 
@@ -1315,6 +1355,7 @@ impl<'a> Lowerer<'a> {
             .functions
             .iter()
             .filter(|function| function.linkage == GlobalLinkageKind::WeakAny)
+            .filter(|function| !self.project.strong_symbols.contains(&function.name))
             .filter_map(|function| Some((function.name.clone(), function.aliasee.clone()?)))
             .collect();
         self.external_weak_targets = self
@@ -2202,6 +2243,22 @@ impl __SlateVaArgs {
         index: usize,
     ) -> Option<Type> {
         let field = record.fields.get(index)?;
+        if let Some(field_ty) = self
+            .cir_record_field_types(record)
+            .and_then(|types| types.get(index).cloned())
+            && matches!(&field.ty, CType::Record(name) if sanitize_ident(name).as_str().starts_with("_unnamed_at_"))
+            && matches!(&field_ty, Type::Custom(cir_name) if cir_name.starts_with("anon_"))
+        {
+            return Some(field_ty);
+        }
+        if let Some(field_ty) = self
+            .cir_record_field_types(record)
+            .and_then(|types| types.get(index).cloned())
+            && matches!(&field.ty, CType::Array(inner, _) if matches!(inner.as_ref(), CType::Record(name) if sanitize_ident(name).as_str().starts_with("_unnamed_at_")))
+            && matches!(&field_ty, Type::Array { elem, .. } if matches!(elem.as_ref(), Type::Custom(cir_name) if cir_name.starts_with("anon_")))
+        {
+            return Some(field_ty);
+        }
         if matches!(field.ty, CType::FuncPtr { .. })
             && let Some(field_ty) = self
                 .cir_record_field_types(record)
@@ -2213,8 +2270,7 @@ impl __SlateVaArgs {
             && let Some(field_ty) = self
                 .cir_record_field_types(record)
                 .and_then(|types| types.get(index).cloned())
-            && matches!(field_ty, Type::Array { .. })
-            && !matches!(field.ty, CType::Array(..))
+            && cir_array_shape_is_deeper(&field.ty, &field_ty)
         {
             return Some(field_ty);
         }
@@ -2761,7 +2817,9 @@ impl __SlateVaArgs {
                             .filter(|(_, kind)| {
                                 matches!(
                                     kind,
-                                    CirRecordMemberKind::Data | CirRecordMemberKind::BitField
+                                    CirRecordMemberKind::Data
+                                        | CirRecordMemberKind::BitField
+                                        | CirRecordMemberKind::Empty
                                 )
                             })
                             .map(|(i, _)| i);
@@ -3464,6 +3522,25 @@ fn ctype_uses_long_double(ty: &crate::frontend::c_ast::CType) -> bool {
         CType::Complex(inner) => ctype_uses_long_double(inner),
         _ => false,
     }
+}
+
+fn ctype_array_depth(ty: &CType) -> usize {
+    match ty {
+        CType::Array(inner, _) => 1 + ctype_array_depth(inner),
+        _ => 0,
+    }
+}
+
+fn rust_type_array_depth(ty: &Type) -> usize {
+    match ty {
+        Type::Array { elem, .. } => 1 + rust_type_array_depth(elem),
+        _ => 0,
+    }
+}
+
+fn cir_array_shape_is_deeper(ast_ty: &CType, cir_ty: &Type) -> bool {
+    matches!(cir_ty, Type::Array { .. })
+        && rust_type_array_depth(cir_ty) > ctype_array_depth(ast_ty)
 }
 
 fn ctype_uses_f128(ty: &crate::frontend::c_ast::CType) -> bool {

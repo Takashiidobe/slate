@@ -167,6 +167,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .member_ptrs
             .get(ptr)
             .is_some_and(|member| member.unaligned)
+            || self
+                .element_ptrs
+                .get(ptr)
+                .is_some_and(|element| element.unaligned)
             || self.packed_pointer_values.contains(ptr);
         let mut value = if volatile {
             let method = if unaligned {
@@ -282,6 +286,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 .member_ptrs
                 .get(ptr)
                 .is_some_and(|member| member.unaligned)
+                || self
+                    .element_ptrs
+                    .get(ptr)
+                    .is_some_and(|element| element.unaligned)
             {
                 "write_unaligned"
             } else {
@@ -291,6 +299,22 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 binding: crate::function_identity::CallBinding::Generated,
                 func: Box::new(Expr::Path(Path::new(
                     ["std", "ptr", method].map(Ident::from),
+                ))),
+                args: vec![self.store_address_expr(ptr), value],
+            })));
+        } else if self
+            .member_ptrs
+            .get(ptr)
+            .is_some_and(|member| member.unaligned)
+            || self
+                .element_ptrs
+                .get(ptr)
+                .is_some_and(|element| element.unaligned)
+        {
+            self.push_stmt(Stmt::Expr(Self::unsafe_expr(Expr::Call {
+                binding: crate::function_identity::CallBinding::Generated,
+                func: Box::new(Expr::Path(Path::new(
+                    ["std", "ptr", "write_unaligned"].map(Ident::from),
                 ))),
                 args: vec![self.store_address_expr(ptr), value],
             })));

@@ -20,65 +20,6 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN rewrites
-// REWRITES: #![feature(c_variadic)]
-// REWRITES-NEXT: #![allow(
-// REWRITES-NEXT:     dead_code,
-// REWRITES-NEXT:     unused,
-// REWRITES-NEXT:     non_camel_case_types,
-// REWRITES-NEXT:     non_snake_case,
-// REWRITES-NEXT:     non_upper_case_globals,
-// REWRITES-NEXT:     arithmetic_overflow,
-// REWRITES-NEXT:     unconditional_panic,
-// REWRITES-NEXT:     suspicious_runtime_symbol_definitions,
-// REWRITES-NEXT:     unpredictable_function_pointer_comparisons,
-// REWRITES-NEXT:     unused_comparisons
-// REWRITES-NEXT: )]
-// REWRITES-EMPTY:
-// REWRITES-NEXT: #[repr(C, packed)]
-// REWRITES-NEXT: #[derive(Clone, Copy)]
-// REWRITES-NEXT: struct Packed {
-// REWRITES-NEXT:     a: i8,
-// REWRITES-NEXT:     b: i32,
-// REWRITES-NEXT:     c: i8,
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: unsafe extern "C" {
-// REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     let mut p: Packed = Packed { a: 0, b: 0, c: 0 };
-// REWRITES-NEXT:     p.a = 1;
-// REWRITES-NEXT:     p.b = 287454020;
-// REWRITES-NEXT:     p.c = 2;
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"%zu %zu\n".as_ptr(),
-// REWRITES-NEXT:             std::mem::size_of::<Packed>() as u64,
-// REWRITES-NEXT:             std::mem::align_of::<Packed>() as u64,
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"%zu %zu %zu\n".as_ptr(),
-// REWRITES-NEXT:             std::mem::offset_of!(Packed, a) as u64,
-// REWRITES-NEXT:             std::mem::offset_of!(Packed, b) as u64,
-// REWRITES-NEXT:             std::mem::offset_of!(Packed, c) as u64,
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"%d %x %d\n".as_ptr(),
-// REWRITES-NEXT:             p.a as i32,
-// REWRITES-NEXT:             unsafe { std::ptr::read_unaligned(std::ptr::addr_of!(p.b)) },
-// REWRITES-NEXT:             p.c as i32,
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     std::process::exit(0 as i32);
-// REWRITES-NEXT: }
-// SLATE-FILECHECK-END rewrites
-
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![feature(c_variadic)]
 // LOWERING-NEXT: #![allow(
@@ -110,11 +51,11 @@ int main(void) {
 // LOWERING-NEXT:     let mut p: Packed = Packed { a: 0, b: 0, c: 0 };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i8 = 1;
-// LOWERING-NEXT:     p.a = {{__v[0-9]+}};
+// LOWERING-NEXT:     unsafe { std::ptr::write_unaligned(std::ptr::addr_of_mut!(p.a), {{__v[0-9]+}}) };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 287454020;
-// LOWERING-NEXT:     p.b = {{__v[0-9]+}};
+// LOWERING-NEXT:     unsafe { std::ptr::write_unaligned(std::ptr::addr_of_mut!(p.b), {{__v[0-9]+}}) };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i8 = 2;
-// LOWERING-NEXT:     p.c = {{__v[0-9]+}};
+// LOWERING-NEXT:     unsafe { std::ptr::write_unaligned(std::ptr::addr_of_mut!(p.c), {{__v[0-9]+}}) };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%zu %zu\n\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = std::mem::size_of::<Packed>() as u64;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = std::mem::align_of::<Packed>() as u64;
@@ -125,13 +66,74 @@ int main(void) {
 // LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = std::mem::offset_of!(Packed, c) as u64;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d %x %d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i8 = p.a;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i8 = unsafe { std::ptr::read_unaligned(std::ptr::addr_of!(p.a)) };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { std::ptr::read_unaligned(std::ptr::addr_of!(p.b)) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i8 = p.c;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i8 = unsafe { std::ptr::read_unaligned(std::ptr::addr_of!(p.c)) };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
+
+// SLATE-FILECHECK-BEGIN rewrites
+// REWRITES: #![feature(c_variadic)]
+// REWRITES-NEXT: #![allow(
+// REWRITES-NEXT:     dead_code,
+// REWRITES-NEXT:     unused,
+// REWRITES-NEXT:     non_camel_case_types,
+// REWRITES-NEXT:     non_snake_case,
+// REWRITES-NEXT:     non_upper_case_globals,
+// REWRITES-NEXT:     arithmetic_overflow,
+// REWRITES-NEXT:     unconditional_panic,
+// REWRITES-NEXT:     suspicious_runtime_symbol_definitions,
+// REWRITES-NEXT:     unpredictable_function_pointer_comparisons,
+// REWRITES-NEXT:     unused_comparisons
+// REWRITES-NEXT: )]
+// REWRITES-EMPTY:
+// REWRITES-NEXT: #[repr(C, packed)]
+// REWRITES-NEXT: #[derive(Clone, Copy)]
+// REWRITES-NEXT: struct Packed {
+// REWRITES-NEXT:     a: i8,
+// REWRITES-NEXT:     b: i32,
+// REWRITES-NEXT:     c: i8,
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT:     let mut p: Packed = Packed { a: 0, b: 0, c: 0 };
+// REWRITES-NEXT:     unsafe { std::ptr::write_unaligned(std::ptr::addr_of_mut!(p.a), 1 as i8) };
+// REWRITES-NEXT:     unsafe { std::ptr::write_unaligned(std::ptr::addr_of_mut!(p.b), 287454020 as i32) };
+// REWRITES-NEXT:     unsafe { std::ptr::write_unaligned(std::ptr::addr_of_mut!(p.c), 2 as i8) };
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         printf(
+// REWRITES-NEXT:             c"%zu %zu\n".as_ptr(),
+// REWRITES-NEXT:             std::mem::size_of::<Packed>() as u64,
+// REWRITES-NEXT:             std::mem::align_of::<Packed>() as u64,
+// REWRITES-NEXT:         )
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         printf(
+// REWRITES-NEXT:             c"%zu %zu %zu\n".as_ptr(),
+// REWRITES-NEXT:             std::mem::offset_of!(Packed, a) as u64,
+// REWRITES-NEXT:             std::mem::offset_of!(Packed, b) as u64,
+// REWRITES-NEXT:             std::mem::offset_of!(Packed, c) as u64,
+// REWRITES-NEXT:         )
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i8 = c"%d %x %d\n".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i8 = unsafe { std::ptr::read_unaligned(std::ptr::addr_of!(p.a)) };
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         printf(
+// REWRITES-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
+// REWRITES-NEXT:             {{__v[0-9]+}} as i32,
+// REWRITES-NEXT:             unsafe { std::ptr::read_unaligned(std::ptr::addr_of!(p.b)) },
+// REWRITES-NEXT:             (unsafe { std::ptr::read_unaligned(std::ptr::addr_of!(p.c)) }) as i32,
+// REWRITES-NEXT:         )
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT: }
+// SLATE-FILECHECK-END rewrites

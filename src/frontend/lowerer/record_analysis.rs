@@ -41,18 +41,25 @@ fn adopt_cir_int_signedness(
 pub(super) fn reconcile_anonymous_member_types(
     module: &Module,
     records: &mut BTreeMap<String, crate::frontend::c_ast::Record>,
-    anonymous_header_records: &[crate::frontend::c_ast::Record],
+    record_candidates: &[crate::frontend::c_ast::Record],
 ) -> Vec<crate::frontend::c_ast::Record> {
     use crate::frontend::c_ast::CType;
 
-    let anonymous_header_records: BTreeMap<String, &crate::frontend::c_ast::Record> =
-        anonymous_header_records
-            .iter()
-            .map(|record| (sanitize_ident(&record.name).into_string(), record))
-            .collect();
+    let anonymous_records: BTreeMap<String, &crate::frontend::c_ast::Record> = record_candidates
+        .iter()
+        .filter(|record| {
+            sanitize_ident(&record.name)
+                .as_str()
+                .starts_with("_unnamed_at_")
+        })
+        .map(|record| (sanitize_ident(&record.name).into_string(), record))
+        .collect();
     let mut reconciled = Vec::new();
     loop {
-        let present_names: BTreeSet<String> = records.keys().cloned().collect();
+        let source_records: BTreeMap<String, crate::frontend::c_ast::Record> = records
+            .iter()
+            .map(|(name, record)| (name.clone(), record.clone()))
+            .collect();
         let bitfield_storage_names: BTreeSet<String> = records
             .iter()
             .filter(|(_, record)| {
@@ -113,15 +120,15 @@ pub(super) fn reconcile_anonymous_member_types(
                     field.ty = cir_ty;
                     continue;
                 }
-                if present_names.contains(&ast_name) {
-                    continue;
-                }
-                let Some(header_record) = anonymous_header_records.get(&ast_name) else {
+                let Some(source_record) = source_records
+                    .get(&ast_name)
+                    .or_else(|| anonymous_records.get(&ast_name).copied())
+                else {
                     continue;
                 };
-                let mut header_record = (*header_record).clone();
-                header_record.name = cir_name.clone();
-                additions.entry(cir_key).or_insert(header_record);
+                let mut source_record = source_record.clone();
+                source_record.name = cir_name.clone();
+                additions.entry(cir_key).or_insert(source_record);
                 field.ty = cir_ty;
             }
         }

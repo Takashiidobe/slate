@@ -47,67 +47,49 @@ int main(void) {
 // LOWERING-NEXT: #[derive(Clone, Copy)]
 // LOWERING-NEXT: union BitIntOrArray {
 // LOWERING-NEXT:     bits: bitint::BInt<65, 2, 16>,
-// LOWERING-X86_64-GNU-NEXT:     bytes: [i8; 20],
-// LOWERING-AARCH64-GNU-NEXT:     bytes: [u8; 20],
+// LOWERING-NEXT:     bytes: [i8; 20],
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[derive(Clone, Copy)]
 // LOWERING-NEXT: struct NestedBitInt {
-// LOWERING-X86_64-GNU-NEXT:     tag: i8,
-// LOWERING-X86_64-GNU-NEXT:     __pad_1: [u8; 7],
-// LOWERING-AARCH64-GNU-NEXT:     tag: u8,
-// LOWERING-AARCH64-GNU-NEXT:     __pad_1: [u8; 15],
-// LOWERING-NEXT:     inner: {{_unnamed_at_[0-9A-Za-z_]+}},
-// LOWERING-AARCH64-GNU-NEXT:     __pad_2: [u8; 8],
+// LOWERING-NEXT:     tag: i8,
+// LOWERING-NEXT:     __pad_1: [u8; 7],
+// LOWERING-NEXT:     inner: {{anon_[0-9]+}},
 // LOWERING-NEXT:     tail: i16,
-// LOWERING-X86_64-GNU-NEXT:     __pad_2: [u8; 6],
-// LOWERING-AARCH64-GNU-NEXT:     __pad_3: [u8; 14],
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: #[repr(C)]
-// LOWERING-NEXT: #[derive(Clone, Copy)]
-// LOWERING-NEXT: struct {{_unnamed_at_[0-9A-Za-z_]+}} {
-// LOWERING-NEXT:     prefix: i32,
-// LOWERING-NEXT:     value: bitint::BInt<65, 2, 16>,
+// LOWERING-NEXT:     __pad_2: [u8; 6],
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[derive(Clone, Copy)]
 // LOWERING-NEXT: struct {{anon_[0-9]+}} {
 // LOWERING-NEXT:     prefix: i32,
-// LOWERING-X86_64-GNU-NEXT:     __slate_anon_1: [u8; 4],
+// LOWERING-NEXT:     __pad_1: [u8; 4],
 // LOWERING-NEXT:     value: bitint::BInt<65, 2, 16>,
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: static mut values: aligned::Aligned<aligned::A16, [NestedBitInt; 2]> = aligned::Aligned([
 // LOWERING-NEXT:     NestedBitInt {
 // LOWERING-NEXT:         tag: 1,
-// LOWERING-NEXT:         inner:
-// LOWERING-NEXT:             {{_unnamed_at_[0-9A-Za-z_]+}} {
-// LOWERING-NEXT:                 prefix: 2,
-// LOWERING-NEXT:                 value: bitint::BInt::<65, 2, 16>::from_decimal_str("333"),
-// LOWERING-NEXT:             },
+// LOWERING-NEXT:         inner: {{anon_[0-9]+}} {
+// LOWERING-NEXT:             prefix: 2,
+// LOWERING-NEXT:             value: bitint::BInt::<65, 2, 16>::from_decimal_str("333"),
+// LOWERING-NEXT:             __pad_1: [0; 4],
+// LOWERING-NEXT:         },
 // LOWERING-NEXT:         tail: 4,
-// LOWERING-X86_64-GNU-NEXT:         __pad_1: [0; 7],
-// LOWERING-X86_64-GNU-NEXT:         __pad_2: [0; 6],
-// LOWERING-AARCH64-GNU-NEXT:         __pad_1: [0; 15],
-// LOWERING-AARCH64-GNU-NEXT:         __pad_2: [0; 8],
-// LOWERING-AARCH64-GNU-NEXT:         __pad_3: [0; 14],
+// LOWERING-NEXT:         __pad_1: [0; 7],
+// LOWERING-NEXT:         __pad_2: [0; 6],
 // LOWERING-NEXT:     },
 // LOWERING-NEXT:     NestedBitInt {
 // LOWERING-NEXT:         tag: 5,
-// LOWERING-NEXT:         inner:
-// LOWERING-NEXT:             {{_unnamed_at_[0-9A-Za-z_]+}} {
-// LOWERING-NEXT:                 prefix: 6,
-// LOWERING-NEXT:                 value: bitint::BInt::<65, 2, 16>::from_decimal_str("777"),
-// LOWERING-NEXT:             },
+// LOWERING-NEXT:         inner: {{anon_[0-9]+}} {
+// LOWERING-NEXT:             prefix: 6,
+// LOWERING-NEXT:             value: bitint::BInt::<65, 2, 16>::from_decimal_str("777"),
+// LOWERING-NEXT:             __pad_1: [0; 4],
+// LOWERING-NEXT:         },
 // LOWERING-NEXT:         tail: 8,
-// LOWERING-X86_64-GNU-NEXT:         __pad_1: [0; 7],
-// LOWERING-X86_64-GNU-NEXT:         __pad_2: [0; 6],
-// LOWERING-AARCH64-GNU-NEXT:         __pad_1: [0; 15],
-// LOWERING-AARCH64-GNU-NEXT:         __pad_2: [0; 8],
-// LOWERING-AARCH64-GNU-NEXT:         __pad_3: [0; 14],
+// LOWERING-NEXT:         __pad_1: [0; 7],
+// LOWERING-NEXT:         __pad_2: [0; 6],
 // LOWERING-NEXT:     },
 // LOWERING-NEXT: ]);
 // LOWERING-EMPTY:
@@ -116,26 +98,19 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-X86_64-GNU-NEXT:     let mut item: BitIntOrArray = unsafe { std::mem::zeroed::<BitIntOrArray>() };
-// LOWERING-AARCH64-GNU-NEXT:     let mut item: aligned::Aligned<aligned::A16, BitIntOrArray> =
-// LOWERING-AARCH64-GNU-NEXT:         aligned::Aligned(unsafe { std::mem::zeroed::<BitIntOrArray>() });
+// LOWERING-NEXT:     let mut item: BitIntOrArray = unsafe { std::mem::zeroed::<BitIntOrArray>() };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: BitIntOrArray = BitIntOrArray {
 // LOWERING-NEXT:         bytes: [
 // LOWERING-NEXT:             97, 98, 99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 // LOWERING-NEXT:         ],
 // LOWERING-NEXT:     };
-// LOWERING-X86_64-GNU-NEXT:     item = {{__v[0-9]+}};
-// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%zu %zu %d %d %lld %d %c%c%c\n\0".as_ptr() as *mut i8;
-// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u64 = 24;
-// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u64 = 40;
-// LOWERING-AARCH64-GNU-NEXT:     *item = {{__v[0-9]+}};
-// LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = b"%zu %zu %d %d %lld %d %c%c%c\n\0".as_ptr() as *mut u8;
-// LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: u64 = 32;
-// LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: u64 = 64;
+// LOWERING-NEXT:     item = {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%zu %zu %d %d %lld %d %c%c%c\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = 24;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = 40;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = 1;
-// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i8 = unsafe { (*values)[({{__v[0-9]+}} as usize)].tag };
-// LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: u8 = unsafe { (*values)[({{__v[0-9]+}} as usize)].tag };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i8 = unsafe { (*values)[({{__v[0-9]+}} as usize)].tag };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = 1;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { (*values)[({{__v[0-9]+}} as usize)].inner.prefix };
@@ -146,16 +121,13 @@ int main(void) {
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i16 = unsafe { (*values)[({{__v[0-9]+}} as usize)].tail };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = 0;
-// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i8 = unsafe { item.bytes[({{__v[0-9]+}} as usize)] };
-// LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: u8 = unsafe { item.bytes[({{__v[0-9]+}} as usize)] };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i8 = unsafe { item.bytes[({{__v[0-9]+}} as usize)] };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = 1;
-// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i8 = unsafe { item.bytes[({{__v[0-9]+}} as usize)] };
-// LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: u8 = unsafe { item.bytes[({{__v[0-9]+}} as usize)] };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i8 = unsafe { item.bytes[({{__v[0-9]+}} as usize)] };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = 2;
-// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i8 = unsafe { item.bytes[({{__v[0-9]+}} as usize)] };
-// LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: u8 = unsafe { item.bytes[({{__v[0-9]+}} as usize)] };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i8 = unsafe { item.bytes[({{__v[0-9]+}} as usize)] };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe {
 // LOWERING-NEXT:         printf(
@@ -195,67 +167,49 @@ int main(void) {
 // REWRITES-NEXT: #[derive(Clone, Copy)]
 // REWRITES-NEXT: union BitIntOrArray {
 // REWRITES-NEXT:     bits: bitint::BInt<65, 2, 16>,
-// REWRITES-X86_64-GNU-NEXT:     bytes: [i8; 20],
-// REWRITES-AARCH64-GNU-NEXT:     bytes: [u8; 20],
+// REWRITES-NEXT:     bytes: [i8; 20],
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[repr(C)]
 // REWRITES-NEXT: #[derive(Clone, Copy)]
 // REWRITES-NEXT: struct NestedBitInt {
-// REWRITES-X86_64-GNU-NEXT:     tag: i8,
-// REWRITES-X86_64-GNU-NEXT:     __pad_1: [u8; 7],
-// REWRITES-AARCH64-GNU-NEXT:     tag: u8,
-// REWRITES-AARCH64-GNU-NEXT:     __pad_1: [u8; 15],
-// REWRITES-NEXT:     inner: {{_unnamed_at_[0-9A-Za-z_]+}},
-// REWRITES-AARCH64-GNU-NEXT:     __pad_2: [u8; 8],
+// REWRITES-NEXT:     tag: i8,
+// REWRITES-NEXT:     __pad_1: [u8; 7],
+// REWRITES-NEXT:     inner: {{anon_[0-9]+}},
 // REWRITES-NEXT:     tail: i16,
-// REWRITES-X86_64-GNU-NEXT:     __pad_2: [u8; 6],
-// REWRITES-AARCH64-GNU-NEXT:     __pad_3: [u8; 14],
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: #[repr(C)]
-// REWRITES-NEXT: #[derive(Clone, Copy)]
-// REWRITES-NEXT: struct {{_unnamed_at_[0-9A-Za-z_]+}} {
-// REWRITES-NEXT:     prefix: i32,
-// REWRITES-NEXT:     value: bitint::BInt<65, 2, 16>,
+// REWRITES-NEXT:     __pad_2: [u8; 6],
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[repr(C)]
 // REWRITES-NEXT: #[derive(Clone, Copy)]
 // REWRITES-NEXT: struct {{anon_[0-9]+}} {
 // REWRITES-NEXT:     prefix: i32,
-// REWRITES-X86_64-GNU-NEXT:     __slate_anon_1: [u8; 4],
+// REWRITES-NEXT:     __pad_1: [u8; 4],
 // REWRITES-NEXT:     value: bitint::BInt<65, 2, 16>,
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: static mut values: aligned::Aligned<aligned::A16, [NestedBitInt; 2]> = aligned::Aligned([
 // REWRITES-NEXT:     NestedBitInt {
 // REWRITES-NEXT:         tag: 1,
-// REWRITES-NEXT:         inner:
-// REWRITES-NEXT:             {{_unnamed_at_[0-9A-Za-z_]+}} {
-// REWRITES-NEXT:                 prefix: 2,
-// REWRITES-NEXT:                 value: bitint::BInt::<65, 2, 16>::from_decimal_str("333"),
-// REWRITES-NEXT:             },
+// REWRITES-NEXT:         inner: {{anon_[0-9]+}} {
+// REWRITES-NEXT:             prefix: 2,
+// REWRITES-NEXT:             value: bitint::BInt::<65, 2, 16>::from_decimal_str("333"),
+// REWRITES-NEXT:             __pad_1: [0; 4],
+// REWRITES-NEXT:         },
 // REWRITES-NEXT:         tail: 4,
-// REWRITES-X86_64-GNU-NEXT:         __pad_1: [0; 7],
-// REWRITES-X86_64-GNU-NEXT:         __pad_2: [0; 6],
-// REWRITES-AARCH64-GNU-NEXT:         __pad_1: [0; 15],
-// REWRITES-AARCH64-GNU-NEXT:         __pad_2: [0; 8],
-// REWRITES-AARCH64-GNU-NEXT:         __pad_3: [0; 14],
+// REWRITES-NEXT:         __pad_1: [0; 7],
+// REWRITES-NEXT:         __pad_2: [0; 6],
 // REWRITES-NEXT:     },
 // REWRITES-NEXT:     NestedBitInt {
 // REWRITES-NEXT:         tag: 5,
-// REWRITES-NEXT:         inner:
-// REWRITES-NEXT:             {{_unnamed_at_[0-9A-Za-z_]+}} {
-// REWRITES-NEXT:                 prefix: 6,
-// REWRITES-NEXT:                 value: bitint::BInt::<65, 2, 16>::from_decimal_str("777"),
-// REWRITES-NEXT:             },
+// REWRITES-NEXT:         inner: {{anon_[0-9]+}} {
+// REWRITES-NEXT:             prefix: 6,
+// REWRITES-NEXT:             value: bitint::BInt::<65, 2, 16>::from_decimal_str("777"),
+// REWRITES-NEXT:             __pad_1: [0; 4],
+// REWRITES-NEXT:         },
 // REWRITES-NEXT:         tail: 8,
-// REWRITES-X86_64-GNU-NEXT:         __pad_1: [0; 7],
-// REWRITES-X86_64-GNU-NEXT:         __pad_2: [0; 6],
-// REWRITES-AARCH64-GNU-NEXT:         __pad_1: [0; 15],
-// REWRITES-AARCH64-GNU-NEXT:         __pad_2: [0; 8],
-// REWRITES-AARCH64-GNU-NEXT:         __pad_3: [0; 14],
+// REWRITES-NEXT:         __pad_1: [0; 7],
+// REWRITES-NEXT:         __pad_2: [0; 6],
 // REWRITES-NEXT:     },
 // REWRITES-NEXT: ]);
 // REWRITES-EMPTY:
@@ -264,11 +218,8 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-X86_64-GNU-NEXT:     let mut item: BitIntOrArray = unsafe { std::mem::zeroed::<BitIntOrArray>() };
-// REWRITES-X86_64-GNU-NEXT:     item = BitIntOrArray {
-// REWRITES-AARCH64-GNU-NEXT:     let mut item: aligned::Aligned<aligned::A16, BitIntOrArray> =
-// REWRITES-AARCH64-GNU-NEXT:         aligned::Aligned(unsafe { std::mem::zeroed::<BitIntOrArray>() });
-// REWRITES-AARCH64-GNU-NEXT:     *item = BitIntOrArray {
+// REWRITES-NEXT:     let mut item: BitIntOrArray = unsafe { std::mem::zeroed::<BitIntOrArray>() };
+// REWRITES-NEXT:     item = BitIntOrArray {
 // REWRITES-NEXT:         bytes: [
 // REWRITES-NEXT:             97, 98, 99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 // REWRITES-NEXT:         ],
@@ -278,10 +229,8 @@ int main(void) {
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             c"%zu %zu %d %d %lld %d %c%c%c\n".as_ptr(),
-// REWRITES-X86_64-GNU-NEXT:             24 as u64,
-// REWRITES-X86_64-GNU-NEXT:             40 as u64,
-// REWRITES-AARCH64-GNU-NEXT:             32 as u64,
-// REWRITES-AARCH64-GNU-NEXT:             64 as u64,
+// REWRITES-NEXT:             24 as u64,
+// REWRITES-NEXT:             40 as u64,
 // REWRITES-NEXT:             (unsafe { (*values)[1].tag }) as i32,
 // REWRITES-NEXT:             {{__v[0-9]+}},
 // REWRITES-NEXT:             {{__v[0-9]+}}.to_i128() as i64,

@@ -57,11 +57,21 @@ pub(super) fn widen_flexible_array_members(
     records: &mut BTreeMap<String, crate::frontend::c_ast::Record>,
 ) {
     for global in &cir.globals {
-        let expanded = cir.resolve_type(&global.ty);
-        let Some(record_name) = slate_record_name(expanded) else {
+        let record_name = slate_record_name(cir.resolve_type(&global.ty))
+            .map(str::to_owned)
+            .or_else(|| slate_record_name(&global.ty).map(str::to_owned))
+            .or_else(|| {
+                let CirType::Named(alias) = &global.ty else {
+                    return None;
+                };
+                cir.type_aliases
+                    .get(alias)
+                    .and_then(|ty| canonical_alias_record_name(alias, ty, &cir.type_aliases))
+            });
+        let Some(record_name) = record_name else {
             continue;
         };
-        let record_name = sanitize_ident(record_name).into_string();
+        let record_name = sanitize_ident(&record_name).into_string();
         let Some(record) = records.get(&record_name) else {
             continue;
         };

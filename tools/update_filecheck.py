@@ -545,7 +545,46 @@ def default_targets_for_path(path):
         return [
             ("X86_64-GNU", target_environment("x86_64-unknown-linux-gnu")),
         ]
-    return []
+    return [
+        ("X86_64-GNU", target_environment("x86_64-unknown-linux-gnu")),
+        ("AARCH64-GNU", target_environment("aarch64-unknown-linux-gnu")),
+    ]
+
+
+TARGET_MODE_STALE_PREFIXES = (
+    "LOWERING",
+    "REWRITES",
+    "COMMON-LOWERING",
+    "COMMON-REWRITES",
+)
+
+
+def assemble_blocks(checks_by_profile, profile_order, target_mode):
+    if not target_mode:
+        return [
+            generated_block(checks_by_profile[profile], profile)
+            for profile in profile_order
+        ]
+    grouped = {}
+    for profile in profile_order:
+        grouped.setdefault(profile.partition("-")[0], {})[profile] = checks_by_profile[
+            profile
+        ]
+    blocks = []
+    for base_profile in ("LOWERING", "REWRITES"):
+        checks_by_prefix = grouped.get(base_profile, {})
+        if not checks_by_prefix:
+            continue
+        merged = interleave_checks(checks_by_prefix, base_profile)
+        if merged:
+            blocks.append(generated_block(merged, base_profile))
+    return blocks
+
+
+def remove_target_mode_blocks(source):
+    for prefix in TARGET_MODE_STALE_PREFIXES:
+        source = remove_generated_block(source, prefix)
+    return source
 
 
 def update_path(path, profiles, in_place, target_mode):
@@ -554,10 +593,7 @@ def update_path(path, profiles, in_place, target_mode):
     source = path.read_text()
     instrumented, annotations, fn_targets = instrument_annotations(source)
     if target_mode:
-        source = remove_generated_block(source, "LOWERING")
-        source = remove_generated_block(source, "REWRITES")
-        source = remove_generated_block(source, "COMMON-LOWERING")
-        source = remove_generated_block(source, "COMMON-REWRITES")
+        source = remove_target_mode_blocks(source)
     updated = source
     checks_by_profile = {}
     profile_order = []
@@ -619,31 +655,17 @@ def update_path(path, profiles, in_place, target_mode):
             raise RuntimeError(f"{path}: generated Rust contains no functions")
         checks_by_profile[profile] = checks
         profile_order.append(profile)
-    blocks = []
-    if target_mode:
-        grouped = {}
-        for profile in profile_order:
-            grouped.setdefault(profile.partition("-")[0], {})[profile] = (
-                checks_by_profile[profile]
-            )
-        for base_profile in ("LOWERING", "REWRITES"):
-            checks_by_prefix = grouped.get(base_profile, {})
-            if not checks_by_prefix:
-                continue
-            merged = interleave_checks(checks_by_prefix, base_profile)
-            if merged:
-                blocks.append(generated_block(merged, base_profile))
-    else:
-        blocks = [
-            generated_block(checks_by_profile[profile], profile)
-            for profile in profile_order
-        ]
+    blocks = assemble_blocks(checks_by_profile, profile_order, target_mode)
     if blocks:
         updated = insert_generated_blocks(updated, blocks)
     if in_place:
         path.write_text(updated)
     else:
         sys.stdout.write(updated)
+
+
+def environment_key(environment):
+    return tuple(sorted(environment.items()))
 
 
 def project_sources(project, library):
@@ -696,7 +718,7 @@ def module_with_marker(modules, marker_id, fn_targets):
     return matches[0]
 
 
-def update_project(project, profiles, in_place, slate, library):
+def update_project(project, profiles, in_place, slate, library, target_mode):
     source_entries = []
     next_id = 0
     for path in project_sources(project, library):
@@ -707,6 +729,14 @@ def update_project(project, profiles, in_place, slate, library):
             source_entries.append(
                 (path, source, instrumented, annotations, fn_targets)
             )
+            continue
+        for profile, _, _ in profiles:
+            if has_handwritten_block(source, profile):
+                print(
+                    f"skip: {path}: handwritten {profile} directives without "
+                    "@lowering/@rewrite markers; not regenerable",
+                    file=sys.stderr,
+                )
     if not source_entries:
         raise RuntimeError(f"{project}: project contains no FileCheck annotations")
 
@@ -719,7 +749,9 @@ def update_project(project, profiles, in_place, slate, library):
     needs_both = any(kind.endswith("-not") for kind in kinds)
     needs_lowering = needs_both or "LOWERING" in requested
     needs_rewrites = needs_both or "REWRITES" in requested
-    environment = profiles[0][2]
+    environments = {}
+    for _, _, environment in profiles:
+        environments.setdefault(environment_key(environment), environment)
 
     with tempfile.TemporaryDirectory(
         prefix=f".{project.name}.filecheck-", dir=project.parent
@@ -730,48 +762,54 @@ def update_project(project, profiles, in_place, slate, library):
         for path, _, instrumented, _, _ in source_entries:
             relative = path.relative_to(project)
             (instrumented_project / relative).write_text(instrumented)
-        lowered_modules = (
-            run_project_translation(
-                instrumented_project,
-                temporary / "lowered",
-                slate,
-                True,
-                library,
-                environment,
+        translations = {}
+        for index, (key, environment) in enumerate(environments.items()):
+            translations[key] = (
+                run_project_translation(
+                    instrumented_project,
+                    temporary / f"lowered-{index}",
+                    slate,
+                    True,
+                    library,
+                    environment,
+                )
+                if needs_lowering
+                else {},
+                run_project_translation(
+                    instrumented_project,
+                    temporary / f"rewritten-{index}",
+                    slate,
+                    False,
+                    library,
+                    environment,
+                )
+                if needs_rewrites
+                else {},
             )
-            if needs_lowering
-            else {}
-        )
-        rewritten_modules = (
-            run_project_translation(
-                instrumented_project,
-                temporary / "rewritten",
-                slate,
-                False,
-                library,
-                environment,
-            )
-            if needs_rewrites
-            else {}
-        )
 
         for path, source, _, annotations, fn_targets in source_entries:
             marker_id = next(iter(annotations))
-            lowered = (
-                module_with_marker(lowered_modules, marker_id, fn_targets)
-                if needs_lowering
-                else ""
-            )
-            rewritten = (
-                module_with_marker(rewritten_modules, marker_id, fn_targets)
-                if needs_rewrites
-                else ""
-            )
-            lowered = normalize_source_paths(lowered, path)
-            rewritten = normalize_source_paths(rewritten, path)
+            if target_mode:
+                source = remove_target_mode_blocks(source)
             updated = source
-            blocks = []
-            for profile, _, _ in profiles:
+            checks_by_profile = {}
+            profile_order = []
+            for profile, _, environment in profiles:
+                lowered_modules, rewritten_modules = translations[
+                    environment_key(environment)
+                ]
+                lowered = normalize_source_paths(
+                    module_with_marker(lowered_modules, marker_id, fn_targets)
+                    if needs_lowering
+                    else "",
+                    path,
+                )
+                rewritten = normalize_source_paths(
+                    module_with_marker(rewritten_modules, marker_id, fn_targets)
+                    if needs_rewrites
+                    else "",
+                    path,
+                )
                 annotation_profile = profile.partition("-")[0].lower().removesuffix("s")
                 if not any(
                     kind.removesuffix("-not") == annotation_profile
@@ -786,10 +824,11 @@ def update_project(project, profiles, in_place, slate, library):
                     )
                     continue
                 updated = remove_generated_block(updated, profile)
-                checks = render_annotation_checks(
+                checks_by_profile[profile] = render_annotation_checks(
                     annotations, fn_targets, rewritten, lowered, profile
                 )
-                blocks.append(generated_block(checks, profile))
+                profile_order.append(profile)
+            blocks = assemble_blocks(checks_by_profile, profile_order, target_mode)
             if blocks:
                 updated = insert_generated_blocks(updated, blocks)
             if in_place:
@@ -877,8 +916,6 @@ def main(argv):
         help="generate target-qualified checks; may be repeated",
     )
     args = parser.parse_args(argv)
-    if (args.project or args.library_project) and args.target:
-        parser.error("project FileCheck generation does not support --target")
     slate = args.slate.split()
     explicit_targets = []
     for target in args.target or []:
@@ -910,8 +947,9 @@ def main(argv):
                 )
                 else [path]
             )
-            profiles = make_profiles(slate, explicit_targets, args.profile)
             for proj in sub_projects:
+                targets = explicit_targets or default_targets_for_path(proj)
+                profiles = make_profiles(slate, targets, args.profile)
                 try:
                     update_project(
                         proj,
@@ -919,6 +957,7 @@ def main(argv):
                         args.in_place,
                         slate,
                         library,
+                        bool(targets),
                     )
                 except RuntimeError as error:
                     print(f"skip: {proj}: {error}", file=sys.stderr)

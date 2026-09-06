@@ -66,7 +66,7 @@ fn run_cases(group: &str, dir: &Path) -> Vec<(String, Result<(), String>)> {
                 .map_err(|e| format!("read {}: {e}", path.display()))?;
             let rust = std::fs::read_to_string(&generated)
                 .map_err(|e| format!("read {}: {e}", generated.display()))?;
-            support::filecheck::check_generated_rust(
+            support::filecheck::check_generated_rust_for_host(
                 &fixture,
                 &rust,
                 support::filecheck::Profile::active(),
