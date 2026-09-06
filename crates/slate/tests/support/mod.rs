@@ -410,8 +410,18 @@ pub fn compile_rs_project(crate_dir: &Path) -> Result<PathBuf, String> {
         .output()
         .map_err(|e| format!("spawn {}: {e}", cargo()))?;
     if !o.status.success() {
+        let rendered: Vec<String> = String::from_utf8_lossy(&o.stdout)
+            .lines()
+            .filter_map(|line| serde_json::from_str::<serde_json::Value>(line).ok())
+            .filter(|message| {
+                message.get("reason").and_then(serde_json::Value::as_str)
+                    == Some("compiler-message")
+            })
+            .filter_map(|message| message["message"]["rendered"].as_str().map(str::to_string))
+            .collect();
         return Err(format!(
-            "Rust cargo build failed:\n{}",
+            "Rust cargo build failed:\n{}\n{}",
+            rendered.join("\n"),
             String::from_utf8_lossy(&o.stderr)
         ));
     }

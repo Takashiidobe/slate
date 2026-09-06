@@ -56,11 +56,12 @@ main(void) {
 // LOWERING-DAG:     let mut r: f16 = 0.0f16;
 // LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-DAG:     let {{__v[0-9]+}}: f16 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(nan_cst)) };
-// LOWERING-DAG:     let {{__v[0-9]+}}: f32 = {{__v[0-9]+}} as f32;
+// LOWERING-X86_64-GNU-DAG:     let {{__v[0-9]+}}: f32 = {{__v[0-9]+}} as f32;
 // LOWERING-DAG:     let {{__v[0-9]+}}: f16 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(nan_cst)) };
-// LOWERING-DAG:     let {{__v[0-9]+}}: f32 = {{__v[0-9]+}} as f32;
-// LOWERING-DAG:     let {{__v[0-9]+}}: f32 = {{__v[0-9]+}} + {{__v[0-9]+}};
-// LOWERING-DAG:     let {{__v[0-9]+}}: f16 = {{__v[0-9]+}} as f16;
+// LOWERING-X86_64-GNU-DAG:     let {{__v[0-9]+}}: f32 = {{__v[0-9]+}} as f32;
+// LOWERING-X86_64-GNU-DAG:     let {{__v[0-9]+}}: f32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-DAG:     let {{__v[0-9]+}}: f16 = {{__v[0-9]+}} as f16;
+// LOWERING-AARCH64-GNU-DAG:     let {{__v[0-9]+}}: f16 = {{__v[0-9]+}} + {{__v[0-9]+}};
 // LOWERING-DAG:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(r), {{__v[0-9]+}}) };
 // LOWERING-DAG:     {
 // LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 1;
@@ -71,11 +72,12 @@ main(void) {
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
 // LOWERING-DAG:     let {{__v[0-9]+}}: f16 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(nans_cst)) };
-// LOWERING-DAG:     let {{__v[0-9]+}}: f32 = {{__v[0-9]+}} as f32;
+// LOWERING-X86_64-GNU-DAG:     let {{__v[0-9]+}}: f32 = {{__v[0-9]+}} as f32;
 // LOWERING-DAG:     let {{__v[0-9]+}}: f16 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(nans_cst)) };
-// LOWERING-DAG:     let {{__v[0-9]+}}: f32 = {{__v[0-9]+}} as f32;
-// LOWERING-DAG:     let {{__v[0-9]+}}: f32 = {{__v[0-9]+}} + {{__v[0-9]+}};
-// LOWERING-DAG:     let {{__v[0-9]+}}: f16 = {{__v[0-9]+}} as f16;
+// LOWERING-X86_64-GNU-DAG:     let {{__v[0-9]+}}: f32 = {{__v[0-9]+}} as f32;
+// LOWERING-X86_64-GNU-DAG:     let {{__v[0-9]+}}: f32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-DAG:     let {{__v[0-9]+}}: f16 = {{__v[0-9]+}} as f16;
+// LOWERING-AARCH64-GNU-DAG:     let {{__v[0-9]+}}: f16 = {{__v[0-9]+}} + {{__v[0-9]+}};
 // LOWERING-DAG:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(r), {{__v[0-9]+}}) };
 // LOWERING-DAG:     {
 // LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 1;
@@ -96,18 +98,20 @@ main(void) {
 // REWRITES-DAG: fn main() {
 // REWRITES-DAG:     let mut r: f16 = 0.0f16;
 // REWRITES-DAG:     let {{__v[0-9]+}}: f16 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(nan_cst)) };
-// REWRITES-DAG:     let {{__v[0-9]+}}: f32 = {{__v[0-9]+}} as f32;
+// REWRITES-X86_64-GNU-DAG:     let {{__v[0-9]+}}: f32 = {{__v[0-9]+}} as f32;
 // REWRITES-DAG:     let {{__v[0-9]+}}: f16 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(nan_cst)) };
-// REWRITES-DAG:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(r), ({{__v[0-9]+}} + ({{__v[0-9]+}} as f32)) as f16) };
+// REWRITES-X86_64-GNU-DAG:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(r), ({{__v[0-9]+}} + ({{__v[0-9]+}} as f32)) as f16) };
+// REWRITES-AARCH64-GNU-DAG:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(r), {{__v[0-9]+}} + {{__v[0-9]+}}) };
 // REWRITES-DAG:     let {{__v[0-9]+}}: i32 = unsafe { fetestexcept(1 as i32) };
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
 // REWRITES-DAG:     let {{__v[0-9]+}}: f16 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(nans_cst)) };
-// REWRITES-DAG:     let {{__v[0-9]+}}: f32 = {{__v[0-9]+}} as f32;
+// REWRITES-X86_64-GNU-DAG:     let {{__v[0-9]+}}: f32 = {{__v[0-9]+}} as f32;
 // REWRITES-DAG:     let {{__v[0-9]+}}: f16 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(nans_cst)) };
-// REWRITES-DAG:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(r), ({{__v[0-9]+}} + ({{__v[0-9]+}} as f32)) as f16) };
+// REWRITES-X86_64-GNU-DAG:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(r), ({{__v[0-9]+}} + ({{__v[0-9]+}} as f32)) as f16) };
+// REWRITES-AARCH64-GNU-DAG:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(r), {{__v[0-9]+}} + {{__v[0-9]+}}) };
 // REWRITES-DAG:     let {{__v[0-9]+}}: i32 = unsafe { fetestexcept(1 as i32) };
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = !({{__v[0-9]+}} != 0);
 // REWRITES-DAG:     if {{__v[0-9]+}} {

@@ -106,31 +106,37 @@ fn build_and_diff_in(scope: &Path, name: &str) -> PathBuf {
         .join("target/cross-tu")
         .join(scope)
         .join(name);
-    std::fs::create_dir_all(&work).expect("create work dir");
+    std::fs::create_dir_all(&work).unwrap_or_else(|e| panic!("[{name}] create work dir: {e}"));
 
     let c_bin = work.join("c_bin");
-    support::compile_c_multi(&c_sources(&dir), &c_bin).expect("compile C");
+    support::compile_c_multi(&c_sources(&dir), &c_bin)
+        .unwrap_or_else(|e| panic!("[{name}] compile C: {e}"));
 
     let rs_dir = work.join("rs");
     let _ = std::fs::remove_dir_all(&rs_dir);
-    support::translate_project(&dir, &rs_dir).expect("translate project");
+    support::translate_project(&dir, &rs_dir)
+        .unwrap_or_else(|e| panic!("[{name}] translate project: {e}"));
     check_project_modules(
         &dir,
         &rs_dir.join("src"),
         support::filecheck::Profile::active(),
         &work.join("filecheck"),
     )
-    .expect("check generated project modules");
+    .unwrap_or_else(|e| panic!("[{name}] check generated project modules: {e}"));
 
-    let rs_bin = support::compile_rs_project(&rs_dir).expect("compile Rust");
+    let rs_bin = support::compile_rs_project(&rs_dir)
+        .unwrap_or_else(|e| panic!("[{name}] compile Rust: {e}"));
 
     let run_dir = work.join("run");
     let _ = std::fs::remove_dir_all(&run_dir);
-    std::fs::create_dir_all(&run_dir).expect("create run dir");
+    std::fs::create_dir_all(&run_dir).unwrap_or_else(|e| panic!("[{name}] create run dir: {e}"));
     let cfg = support::RunConfig::default();
-    let c = support::run_with_config(&c_bin, &cfg, &run_dir).expect("run C");
-    let r = support::run_with_config(&rs_bin, &cfg, &run_dir).expect("run Rust");
-    support::compare_runs(&c, &r, false).expect("C and Rust outputs differ");
+    let c = support::run_with_config(&c_bin, &cfg, &run_dir)
+        .unwrap_or_else(|e| panic!("[{name}] run C: {e}"));
+    let r = support::run_with_config(&rs_bin, &cfg, &run_dir)
+        .unwrap_or_else(|e| panic!("[{name}] run Rust: {e}"));
+    support::compare_runs(&c, &r, false)
+        .unwrap_or_else(|e| panic!("[{name}] C and Rust outputs differ: {e}"));
 
     rs_dir.join("src")
 }
