@@ -30,7 +30,7 @@ pub struct CrossTarget {
 }
 
 fn cc() -> String {
-    std::env::var("SLATE_CC").unwrap_or_else(|_| "clang".into())
+    slate::frontend::toolchain::clang()
 }
 
 fn cargo() -> String {

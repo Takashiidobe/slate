@@ -22,7 +22,6 @@ instead (all optional, all overriding a local-build default):
 | ----------------------------------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------- |
 | `SLATE_CLANG`                       | `~/llvm-project/build-cir/bin/clang`         | emit CIR + Clang AST JSON                                                                         |
 | `SLATE_CIR_OPT`                     | `~/llvm-project/build-cir/bin/cir-opt`       | CIR -> MLIR generic form                                                                          |
-| `SLATE_CC`                          | `clang` (from `PATH`)                        | compile the C side of differential tests                                                          |
 | `SLATE_CARGO`                       | `cargo`                                      | compile the generated Rust                                                                        |
 | `SLATE_FILECHECK`                   | sibling of `SLATE_CLANG`, then `FileCheck`   | match profile-specific generated-Rust assertions in C fixtures                                    |
 | `SLATE_TARGET` / `SLATE_CLANG_ARGS` | N/A                                          | shared target triple / extra clang flags                                                          |

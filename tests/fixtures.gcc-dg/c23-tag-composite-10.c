@@ -229,46 +229,33 @@ int main() {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut p: *mut fo = std::ptr::null_mut();
-// REWRITES-NEXT:     let {{__v[0-9]+}}: u64 = 4;
-// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc({{__v[0-9]+}} as u64) };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut fo = {{__v[0-9]+}} as *mut fo;
-// REWRITES-NEXT:     p = {{__v[0-9]+}};
-// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut fo = p;
-// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = {{__v[0-9]+}} as *mut core::ffi::c_void;
-// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 65535;
-// REWRITES-NEXT:     let {{__v[0-9]+}}: u64 = 4;
-// REWRITES-NEXT:     unsafe { std::ptr::write_bytes({{__v[0-9]+}} as *mut u8, ({{__v[0-9]+}} as i32) as u8, ({{__v[0-9]+}} as u64) as usize) };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut fo = p;
-// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = {{__v[0-9]+}} as *mut core::ffi::c_void;
-// REWRITES-NEXT:     foo({{__v[0-9]+}} as *mut core::ffi::c_void);
-// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc(4 as u64) };
+// REWRITES-NEXT:     p = {{__v[0-9]+}} as *mut fo;
+// REWRITES-NEXT:     unsafe { std::ptr::write_bytes(p as *mut u8, (65535 as i32) as u8, (4 as u64) as usize) };
+// REWRITES-NEXT:     foo(p as *mut core::ffi::c_void);
 // REWRITES-NEXT:     let {{__v[0-9]+}}: *mut fo = p;
 // REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         (*{{__v[0-9]+}}).__bitfield_0.set_a(({{__v[0-9]+}} as i32) << 31 >> 31);
+// REWRITES-NEXT:         (*{{__v[0-9]+}}).__bitfield_0.set_a((0 as i32) << 31 >> 31);
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: *mut fo = p;
 // REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         (*{{__v[0-9]+}}).__bitfield_0.set_b(({{__v[0-9]+}} as i32) << 31 >> 31);
+// REWRITES-NEXT:         (*{{__v[0-9]+}}).__bitfield_0.set_b((0 as i32) << 31 >> 31);
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut fo = p;
-// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = {{__v[0-9]+}} as *mut core::ffi::c_void;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = p as *mut core::ffi::c_void;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(x) as *mut core::ffi::c_void;
-// REWRITES-NEXT:     let {{__v[0-9]+}}: u64 = 4;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe {
 // REWRITES-NEXT:         memcmp(
 // REWRITES-NEXT:             {{__v[0-9]+}} as *mut core::ffi::c_void,
 // REWRITES-NEXT:             {{__v[0-9]+}} as *mut core::ffi::c_void,
-// REWRITES-NEXT:             {{__v[0-9]+}} as u64,
+// REWRITES-NEXT:             4 as u64,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
 // REWRITES-NEXT:     if {{__v[0-9]+}} {
 // REWRITES-NEXT:         unsafe { std::process::abort() };
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn foo({{arg[0-9]+}}: *mut core::ffi::c_void) {

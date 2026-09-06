@@ -130,7 +130,7 @@ looks plausible") needs a cross-compile + cross-execute loop this machine
 didn't have as of the initial extension effort: `qemu-user-static` (binfmt
 direct-binary execution, not full-system emulation), a RISC-V glibc rustup
 target (`riscv64gc-unknown-linux-gnu`, not the bare-metal `-none-elf` one),
-and cross-glibc/cross-binutils for both `SLATE_CC` and the generated Rust's
+and cross-glibc/cross-binutils for both `SLATE_CLANG` and the generated Rust's
 linker. `tests/differential.rs` being disabled compounds this — no automated
 regression harness exists for any arch, x86 included, only manual verification
 per change.
