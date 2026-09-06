@@ -1,0 +1,38 @@
+[
+  {
+    "file": "check.c",
+    "arguments": [
+      "/usr/bin/clang",
+      "-std=c23",
+      "-c",
+      "check.c",
+      "-o",
+      "check.o"
+    ],
+    "directory": "."
+  },
+  {
+    "file": "main.c",
+    "arguments": [
+      "/usr/bin/clang",
+      "-std=c23",
+      "-c",
+      "main.c",
+      "-o",
+      "main.o"
+    ],
+    "directory": "."
+  },
+  {
+    "file": "runner.c",
+    "arguments": [
+      "/usr/bin/clang",
+      "-std=c23",
+      "-c",
+      "runner.c",
+      "-o",
+      "runner.o"
+    ],
+    "directory": "."
+  }
+]

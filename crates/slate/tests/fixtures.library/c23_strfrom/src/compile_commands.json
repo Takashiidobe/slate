@@ -1,0 +1,14 @@
+[
+  {
+    "file": "strfrom.c",
+    "arguments": [
+      "/usr/bin/clang",
+      "-std=c23",
+      "-c",
+      "strfrom.c",
+      "-o",
+      "strfrom.o"
+    ],
+    "directory": "."
+  }
+]

@@ -1,0 +1,28 @@
+[
+  {
+    "file": "handler.c",
+    "arguments": [
+      "/usr/bin/clang",
+      "-std=c23",
+      "-fvisibility=hidden",
+      "-c",
+      "handler.c",
+      "-o",
+      "handler.o"
+    ],
+    "directory": "."
+  },
+  {
+    "file": "user.c",
+    "arguments": [
+      "/usr/bin/clang",
+      "-std=c23",
+      "-fvisibility=hidden",
+      "-c",
+      "user.c",
+      "-o",
+      "user.o"
+    ],
+    "directory": "."
+  }
+]

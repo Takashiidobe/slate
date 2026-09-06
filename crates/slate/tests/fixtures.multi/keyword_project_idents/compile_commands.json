@@ -1,0 +1,26 @@
+[
+  {
+    "file": "main.c",
+    "arguments": [
+      "/usr/bin/clang",
+      "-std=c23",
+      "-c",
+      "main.c",
+      "-o",
+      "main.o"
+    ],
+    "directory": "."
+  },
+  {
+    "file": "type.c",
+    "arguments": [
+      "/usr/bin/clang",
+      "-std=c23",
+      "-c",
+      "type.c",
+      "-o",
+      "type.o"
+    ],
+    "directory": "."
+  }
+]

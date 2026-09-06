@@ -35,28 +35,6 @@ main() {
 // @rewrite-fn-end
 // @lowering-fn-end
 
-// SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: fn main() {
-// REWRITES-DAG:     let mut t: T = T {
-// REWRITES-DAG:         c: 0,
-// REWRITES-DAG:         s: S { b: [0; 2] },
-// REWRITES-DAG:     };
-// REWRITES-DAG:     t.s.b = [3, 4];
-// REWRITES-DAG:     unsafe { foo(std::ptr::addr_of_mut!(t.s)) };
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if t.s.b[0] != 3 {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = t.s.b[1] != 5;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     };
-// REWRITES-DAG:     if {{__v[0-9]+}} {
-// REWRITES-DAG:         unsafe { abort() };
-// REWRITES-DAG:     }
-// REWRITES-DAG:     std::process::exit(0 as i32);
-// REWRITES-DAG: }
-// SLATE-FILECHECK-END rewrites
-
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: fn main() {
 // LOWERING-DAG:     let mut t: T = T {
@@ -92,3 +70,29 @@ main() {
 // LOWERING-DAG:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-DAG: }
 // SLATE-FILECHECK-END lowering
+
+// SLATE-FILECHECK-BEGIN rewrites
+// REWRITES-DAG: fn main() {
+// REWRITES-DAG:     let mut t: T = T {
+// REWRITES-DAG:         c: 0,
+// REWRITES-DAG:         s: S { b: [0; 2] },
+// REWRITES-DAG:     };
+// REWRITES-DAG:     let {{__v[0-9]+}}: [i64; 2] = [3, 4];
+// REWRITES-DAG:     unsafe { std::ptr::write_unaligned(std::ptr::addr_of_mut!(t.s.b), {{__v[0-9]+}}) };
+// REWRITES-DAG:     unsafe { foo(std::ptr::addr_of_mut!(t.s)) };
+// REWRITES-DAG:     let {{__v[0-9]+}}: [i64; 2] = unsafe { std::ptr::read_unaligned(std::ptr::addr_of!(t.s.b)) };
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}}[0] != 3;
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-DAG:         {{__v[0-9]+}}
+// REWRITES-DAG:     } else {
+// REWRITES-DAG:         let {{__v[0-9]+}}: [i64; 2] = unsafe { std::ptr::read_unaligned(std::ptr::addr_of!(t.s.b)) };
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}}[1] != 5;
+// REWRITES-DAG:         {{__v[0-9]+}}
+// REWRITES-DAG:     };
+// REWRITES-DAG:     if {{__v[0-9]+}} {
+// REWRITES-DAG:         unsafe { abort() };
+// REWRITES-DAG:     }
+// REWRITES-DAG:     std::process::exit(0 as i32);
+// REWRITES-DAG: }
+// SLATE-FILECHECK-END rewrites
