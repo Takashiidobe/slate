@@ -58,7 +58,7 @@ attempt:
   programs linking `std`/`libc`. `aarch64-unknown-linux-gnu` is typically
   already installed.
 - Cross-glibc + cross-binutils (`aarch64-linux-gnu-gcc`/
-  `riscv64-linux-gnu-gcc` packages) for both `SLATE_CC`'s C baseline and the
+  `riscv64-linux-gnu-gcc` packages) for both `SLATE_CLANG`'s C baseline and the
   generated Rust's linker.
 - clang's backend support (`aarch64`/`arm`/`riscv32`/`riscv64` in
   `--print-targets`) is typically already present — no clang rebuild needed,

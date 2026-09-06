@@ -9,7 +9,7 @@ This mapping covers the C fixtures in this directory. It was produced from the r
 | `slate-os0h.3.1.62` | blocked: ClangIR designated/empty initializers | `c23-empty-init-1`, `c23-empty-init-5`, `c23-empty-init-warn-17`, `c2y-if-decls-6`, `gnu11-empty-init-1`, `gnu11-empty-init-warn-17` |
 | `slate-os0h.3.1.63` | blocked: ClangIR auto-type and VLA emission | `auto-type-1`, `auto-type__auto-type-1`, `c23-auto-2`, `typename-vla-2`, `vla-14`, `vla-15`, `vla-16`, `vla__vla-14`, `vla__vla-15` |
 | `slate-os0h.3.1.64` | blocked: ClangIR wide _BitInt ABI | `bitint-38`, `torture__bitint-18`, `torture__bitint-21`, `torture__bitint-22`, `torture__bitint-23`, `torture__bitint-24`, `torture__bitint-42`, `torture__bitint-62`, `torture__bitint-75`, `torture__bitint-79`, `torture__bitint-80`, `torture__bitint-81`, `torture__bitint-87`, `torture__bitint-91`, `torture__bitint-92` |
-| `slate-os0h.3.1.65` | bitfield parsing and target layout | `bitint-34`, `c23-tag-composite-10` |
+| `slate-os0h.3.1.65` | bitfield parsing and target layout | `bitint-34` |
 | `slate-os0h.3.1.66` | inline-asm constraints | `guality__pr36728-2`, `guality__pr36728-3`, `guality__pr36728-4`, `guality__pr68860-1`, `guality__pr68860-2`, `guality__vla-2`, `torture__20180712-1`, `torture__fp-compare`, `torture__pr19683-1`, `torture__pr58670`, `torture__pr77648-1`, `torture__pr78482` |
 | `slate-os0h.3.1.67` | aggregate/array initializer shape | `gnu99-init-1`, `torture__pr52402`, `torture__pr52419`, `torture__pr58041` |
 | `slate-os0h.3.1.68` | missing generated symbols/constants | `c2y-complex-1`, `imag-1`, `torture__float128-extend-inf`, `torture__pr125250`, `torture__pr53922` |
