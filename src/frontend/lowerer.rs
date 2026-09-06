@@ -2927,7 +2927,7 @@ impl __SlateVaArgs {
                 self.global_view_init_expr(symbol, &indices, ty)
             }
             Attr::Float { text, .. } | Attr::CirFloat { value: text, .. } => {
-                Some(fp_literal_expr_for_type(Some(ty), fp_text_value(text)?))
+                Some(fp_literal_expr_for_type(Some(ty), text.clone()))
             }
             Attr::Int { value, .. } if bitint_generic_parts(ty).is_some() => {
                 let (name, ..) = bitint_generic_parts(ty)?;

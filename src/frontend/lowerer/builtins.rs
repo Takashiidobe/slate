@@ -405,9 +405,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             parts.push(Expr::Binary {
                 op: BinOp::Eq,
                 lhs: Box::new(value.clone()),
-                rhs: Box::new(Expr::Path(Path::new(
-                    ["f64", "NEG_INFINITY"].map(Ident::from),
-                ))),
+                rhs: Box::new(self.float_infinity_expr(operand_ty, true)),
             });
         }
         if flags & 0x8 != 0 {
@@ -443,7 +441,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 Expr::Binary {
                     op: BinOp::Eq,
                     lhs: Box::new(value.clone()),
-                    rhs: Box::new(Expr::Value(0.0.into())),
+                    rhs: Box::new(self.float_zero_expr(operand_ty)),
                 },
                 Expr::MethodCall {
                     recv: Box::new(value.clone()),
@@ -457,7 +455,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 Expr::Binary {
                     op: BinOp::Eq,
                     lhs: Box::new(value.clone()),
-                    rhs: Box::new(Expr::Value(0.0.into())),
+                    rhs: Box::new(self.float_zero_expr(operand_ty)),
                 },
                 Expr::Unary {
                     op: UnaryOp::Not,
@@ -507,7 +505,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             parts.push(Expr::Binary {
                 op: BinOp::Eq,
                 lhs: Box::new(value),
-                rhs: Box::new(Expr::Path(Path::new(["f64", "INFINITY"].map(Ident::from)))),
+                rhs: Box::new(self.float_infinity_expr(operand_ty, false)),
             });
         }
         let expr = if parts.is_empty() {
@@ -525,12 +523,31 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 base: Box::new(value),
                 field: "0".into(),
             },
-            Some(CirType::Single) => Expr::Cast {
-                expr: Box::new(value),
-                ty: Type::Prim(Prim::F64),
-            },
             _ => value,
         }
+    }
+
+    fn float_infinity_expr(&self, ty: Option<&CirType>, negative: bool) -> Expr {
+        let name = match ty {
+            Some(CirType::Fp16) => "f16",
+            Some(CirType::Single) => "f32",
+            Some(CirType::Double) => "f64",
+            Some(CirType::Fp128) => "f128",
+            _ => "f64",
+        };
+        let constant = if negative { "NEG_INFINITY" } else { "INFINITY" };
+        Expr::Path(Path::new([name, constant].map(Ident::from)))
+    }
+
+    fn float_zero_expr(&self, ty: Option<&CirType>) -> Expr {
+        let literal = match ty {
+            Some(CirType::Fp16) => "0.0f16",
+            Some(CirType::Single) => "0.0f32",
+            Some(CirType::Double) => "0.0f64",
+            Some(CirType::Fp128) => "0.0f128",
+            _ => "0.0f64",
+        };
+        Expr::HexFloat(literal.into())
     }
 
     pub(super) fn lower_modf(&mut self, op: &inst::Modf) {
