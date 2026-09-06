@@ -82,6 +82,7 @@ int main(void) {
 // LOWERING-X86_64-GNU-NEXT:     a: i8,
 // LOWERING-AARCH64-GNU-NEXT:     a: u8,
 // LOWERING-NEXT:     b: i32,
+// LOWERING-NEXT:     __pad_1: [u8; 8],
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: static mut counter: i32 = 0;
@@ -91,7 +92,11 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut s: aligned::Aligned<aligned::A16, Aligned> = aligned::Aligned(Aligned { a: 0, b: 0 });
+// LOWERING-NEXT:     let mut s: aligned::Aligned<aligned::A16, Aligned> = aligned::Aligned(Aligned {
+// LOWERING-NEXT:         a: 0,
+// LOWERING-NEXT:         b: 0,
+// LOWERING-NEXT:         __pad_1: [0; 8],
+// LOWERING-NEXT:     });
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i8 = 5;
 // LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: u8 = 5;
@@ -135,8 +140,11 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn effectful_case() -> i32 {
-// LOWERING-NEXT:     let mut effectful: aligned::Aligned<aligned::A16, Aligned> =
-// LOWERING-NEXT:         aligned::Aligned(Aligned { a: 0, b: 0 });
+// LOWERING-NEXT:     let mut effectful: aligned::Aligned<aligned::A16, Aligned> = aligned::Aligned(Aligned {
+// LOWERING-NEXT:         a: 0,
+// LOWERING-NEXT:         b: 0,
+// LOWERING-NEXT:         __pad_1: [0; 8],
+// LOWERING-NEXT:     });
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = next_value();
 // LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i8 = {{__v[0-9]+}} as i8;
 // LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: u8 = {{__v[0-9]+}} as u8;
@@ -152,8 +160,11 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn repeated_case() -> i32 {
-// LOWERING-NEXT:     let mut repeated: aligned::Aligned<aligned::A16, Aligned> =
-// LOWERING-NEXT:         aligned::Aligned(Aligned { a: 0, b: 0 });
+// LOWERING-NEXT:     let mut repeated: aligned::Aligned<aligned::A16, Aligned> = aligned::Aligned(Aligned {
+// LOWERING-NEXT:         a: 0,
+// LOWERING-NEXT:         b: 0,
+// LOWERING-NEXT:         __pad_1: [0; 8],
+// LOWERING-NEXT:     });
 // LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i8 = 1;
 // LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: u8 = 1;
 // LOWERING-NEXT:     repeated.a = {{__v[0-9]+}};
@@ -171,8 +182,11 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn dependent_case() -> i32 {
-// LOWERING-NEXT:     let mut dependent: aligned::Aligned<aligned::A16, Aligned> =
-// LOWERING-NEXT:         aligned::Aligned(Aligned { a: 0, b: 0 });
+// LOWERING-NEXT:     let mut dependent: aligned::Aligned<aligned::A16, Aligned> = aligned::Aligned(Aligned {
+// LOWERING-NEXT:         a: 0,
+// LOWERING-NEXT:         b: 0,
+// LOWERING-NEXT:         __pad_1: [0; 8],
+// LOWERING-NEXT:     });
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 8;
 // LOWERING-NEXT:     dependent.b = {{__v[0-9]+}};
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = dependent.b;
@@ -188,8 +202,11 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn interrupted_case() -> i32 {
-// LOWERING-NEXT:     let mut interrupted: aligned::Aligned<aligned::A16, Aligned> =
-// LOWERING-NEXT:         aligned::Aligned(Aligned { a: 0, b: 0 });
+// LOWERING-NEXT:     let mut interrupted: aligned::Aligned<aligned::A16, Aligned> = aligned::Aligned(Aligned {
+// LOWERING-NEXT:         a: 0,
+// LOWERING-NEXT:         b: 0,
+// LOWERING-NEXT:         __pad_1: [0; 8],
+// LOWERING-NEXT:     });
 // LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i8 = 4;
 // LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: u8 = 4;
 // LOWERING-NEXT:     interrupted.a = {{__v[0-9]+}};
@@ -242,6 +259,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:     a: i8,
 // REWRITES-AARCH64-GNU-NEXT:     a: u8,
 // REWRITES-NEXT:     b: i32,
+// REWRITES-NEXT:     __pad_1: [u8; 8],
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: static mut counter: i32 = 0;
@@ -251,7 +269,11 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     let mut s: aligned::Aligned<aligned::A16, Aligned> = aligned::Aligned(Aligned { a: 0, b: 0 });
+// REWRITES-NEXT:     let mut s: aligned::Aligned<aligned::A16, Aligned> = aligned::Aligned(Aligned {
+// REWRITES-NEXT:         a: 0,
+// REWRITES-NEXT:         b: 0,
+// REWRITES-NEXT:         __pad_1: [0; 8],
+// REWRITES-NEXT:     });
 // REWRITES-NEXT:     s.a = 5;
 // REWRITES-NEXT:     s.b = 4660;
 // REWRITES-NEXT:     unsafe {
@@ -283,8 +305,11 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn effectful_case() -> i32 {
-// REWRITES-NEXT:     let mut effectful: aligned::Aligned<aligned::A16, Aligned> =
-// REWRITES-NEXT:         aligned::Aligned(Aligned { a: 0, b: 0 });
+// REWRITES-NEXT:     let mut effectful: aligned::Aligned<aligned::A16, Aligned> = aligned::Aligned(Aligned {
+// REWRITES-NEXT:         a: 0,
+// REWRITES-NEXT:         b: 0,
+// REWRITES-NEXT:         __pad_1: [0; 8],
+// REWRITES-NEXT:     });
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = next_value();
 // REWRITES-X86_64-GNU-NEXT:     effectful.a = {{__v[0-9]+}} as i8;
 // REWRITES-AARCH64-GNU-NEXT:     effectful.a = {{__v[0-9]+}} as u8;
@@ -293,8 +318,11 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn repeated_case() -> i32 {
-// REWRITES-NEXT:     let mut repeated: aligned::Aligned<aligned::A16, Aligned> =
-// REWRITES-NEXT:         aligned::Aligned(Aligned { a: 0, b: 0 });
+// REWRITES-NEXT:     let mut repeated: aligned::Aligned<aligned::A16, Aligned> = aligned::Aligned(Aligned {
+// REWRITES-NEXT:         a: 0,
+// REWRITES-NEXT:         b: 0,
+// REWRITES-NEXT:         __pad_1: [0; 8],
+// REWRITES-NEXT:     });
 // REWRITES-NEXT:     repeated.a = 1;
 // REWRITES-NEXT:     repeated.a = 2;
 // REWRITES-NEXT:     repeated.b = 3;
@@ -302,8 +330,11 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn dependent_case() -> i32 {
-// REWRITES-NEXT:     let mut dependent: aligned::Aligned<aligned::A16, Aligned> =
-// REWRITES-NEXT:         aligned::Aligned(Aligned { a: 0, b: 0 });
+// REWRITES-NEXT:     let mut dependent: aligned::Aligned<aligned::A16, Aligned> = aligned::Aligned(Aligned {
+// REWRITES-NEXT:         a: 0,
+// REWRITES-NEXT:         b: 0,
+// REWRITES-NEXT:         __pad_1: [0; 8],
+// REWRITES-NEXT:     });
 // REWRITES-NEXT:     dependent.b = 8;
 // REWRITES-X86_64-GNU-NEXT:     dependent.a = dependent.b as i8;
 // REWRITES-AARCH64-GNU-NEXT:     dependent.a = dependent.b as u8;
@@ -311,8 +342,11 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn interrupted_case() -> i32 {
-// REWRITES-NEXT:     let mut interrupted: aligned::Aligned<aligned::A16, Aligned> =
-// REWRITES-NEXT:         aligned::Aligned(Aligned { a: 0, b: 0 });
+// REWRITES-NEXT:     let mut interrupted: aligned::Aligned<aligned::A16, Aligned> = aligned::Aligned(Aligned {
+// REWRITES-NEXT:         a: 0,
+// REWRITES-NEXT:         b: 0,
+// REWRITES-NEXT:         __pad_1: [0; 8],
+// REWRITES-NEXT:     });
 // REWRITES-NEXT:     interrupted.a = 4;
 // REWRITES-NEXT:     touch();
 // REWRITES-NEXT:     interrupted.b = 6;

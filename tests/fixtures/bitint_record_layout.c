@@ -55,9 +55,14 @@ int main(void) {
 // LOWERING-NEXT: #[derive(Clone, Copy)]
 // LOWERING-NEXT: struct NestedBitInt {
 // LOWERING-X86_64-GNU-NEXT:     tag: i8,
+// LOWERING-X86_64-GNU-NEXT:     __pad_1: [u8; 7],
 // LOWERING-AARCH64-GNU-NEXT:     tag: u8,
+// LOWERING-AARCH64-GNU-NEXT:     __pad_1: [u8; 15],
 // LOWERING-NEXT:     inner: {{_unnamed_at_[0-9A-Za-z_]+}},
+// LOWERING-AARCH64-GNU-NEXT:     __pad_2: [u8; 8],
 // LOWERING-NEXT:     tail: i16,
+// LOWERING-X86_64-GNU-NEXT:     __pad_2: [u8; 6],
+// LOWERING-AARCH64-GNU-NEXT:     __pad_3: [u8; 14],
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[repr(C)]
@@ -84,6 +89,11 @@ int main(void) {
 // LOWERING-NEXT:                 value: bitint::BInt::<65, 2, 16>::from_decimal_str("333"),
 // LOWERING-NEXT:             },
 // LOWERING-NEXT:         tail: 4,
+// LOWERING-X86_64-GNU-NEXT:         __pad_1: [0; 7],
+// LOWERING-X86_64-GNU-NEXT:         __pad_2: [0; 6],
+// LOWERING-AARCH64-GNU-NEXT:         __pad_1: [0; 15],
+// LOWERING-AARCH64-GNU-NEXT:         __pad_2: [0; 8],
+// LOWERING-AARCH64-GNU-NEXT:         __pad_3: [0; 14],
 // LOWERING-NEXT:     },
 // LOWERING-NEXT:     NestedBitInt {
 // LOWERING-NEXT:         tag: 5,
@@ -93,6 +103,11 @@ int main(void) {
 // LOWERING-NEXT:                 value: bitint::BInt::<65, 2, 16>::from_decimal_str("777"),
 // LOWERING-NEXT:             },
 // LOWERING-NEXT:         tail: 8,
+// LOWERING-X86_64-GNU-NEXT:         __pad_1: [0; 7],
+// LOWERING-X86_64-GNU-NEXT:         __pad_2: [0; 6],
+// LOWERING-AARCH64-GNU-NEXT:         __pad_1: [0; 15],
+// LOWERING-AARCH64-GNU-NEXT:         __pad_2: [0; 8],
+// LOWERING-AARCH64-GNU-NEXT:         __pad_3: [0; 14],
 // LOWERING-NEXT:     },
 // LOWERING-NEXT: ]);
 // LOWERING-EMPTY:
@@ -188,9 +203,14 @@ int main(void) {
 // REWRITES-NEXT: #[derive(Clone, Copy)]
 // REWRITES-NEXT: struct NestedBitInt {
 // REWRITES-X86_64-GNU-NEXT:     tag: i8,
+// REWRITES-X86_64-GNU-NEXT:     __pad_1: [u8; 7],
 // REWRITES-AARCH64-GNU-NEXT:     tag: u8,
+// REWRITES-AARCH64-GNU-NEXT:     __pad_1: [u8; 15],
 // REWRITES-NEXT:     inner: {{_unnamed_at_[0-9A-Za-z_]+}},
+// REWRITES-AARCH64-GNU-NEXT:     __pad_2: [u8; 8],
 // REWRITES-NEXT:     tail: i16,
+// REWRITES-X86_64-GNU-NEXT:     __pad_2: [u8; 6],
+// REWRITES-AARCH64-GNU-NEXT:     __pad_3: [u8; 14],
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[repr(C)]
@@ -217,6 +237,11 @@ int main(void) {
 // REWRITES-NEXT:                 value: bitint::BInt::<65, 2, 16>::from_decimal_str("333"),
 // REWRITES-NEXT:             },
 // REWRITES-NEXT:         tail: 4,
+// REWRITES-X86_64-GNU-NEXT:         __pad_1: [0; 7],
+// REWRITES-X86_64-GNU-NEXT:         __pad_2: [0; 6],
+// REWRITES-AARCH64-GNU-NEXT:         __pad_1: [0; 15],
+// REWRITES-AARCH64-GNU-NEXT:         __pad_2: [0; 8],
+// REWRITES-AARCH64-GNU-NEXT:         __pad_3: [0; 14],
 // REWRITES-NEXT:     },
 // REWRITES-NEXT:     NestedBitInt {
 // REWRITES-NEXT:         tag: 5,
@@ -226,6 +251,11 @@ int main(void) {
 // REWRITES-NEXT:                 value: bitint::BInt::<65, 2, 16>::from_decimal_str("777"),
 // REWRITES-NEXT:             },
 // REWRITES-NEXT:         tail: 8,
+// REWRITES-X86_64-GNU-NEXT:         __pad_1: [0; 7],
+// REWRITES-X86_64-GNU-NEXT:         __pad_2: [0; 6],
+// REWRITES-AARCH64-GNU-NEXT:         __pad_1: [0; 15],
+// REWRITES-AARCH64-GNU-NEXT:         __pad_2: [0; 8],
+// REWRITES-AARCH64-GNU-NEXT:         __pad_3: [0; 14],
 // REWRITES-NEXT:     },
 // REWRITES-NEXT: ]);
 // REWRITES-EMPTY:
