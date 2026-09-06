@@ -1,0 +1,38 @@
+[
+  {
+    "file": "main.c",
+    "arguments": [
+      "/usr/bin/clang",
+      "-std=c23",
+      "-c",
+      "main.c",
+      "-o",
+      "main.o"
+    ],
+    "directory": "."
+  },
+  {
+    "file": "translated_b.c",
+    "arguments": [
+      "/usr/bin/clang",
+      "-std=c23",
+      "-c",
+      "translated_b.c",
+      "-o",
+      "translated_b.o"
+    ],
+    "directory": "."
+  },
+  {
+    "file": "native.c",
+    "arguments": [
+      "/usr/bin/clang",
+      "-std=c23",
+      "-c",
+      "native.c",
+      "-o",
+      "native.o"
+    ],
+    "directory": "."
+  }
+]
