@@ -12,8 +12,6 @@ int main(void) {
   printf("%d\n", feature_code());
   return 0;
 }
-// DIRECTIVES-DAG: #[cfg(feature = "my_feature")]
-// DIRECTIVES-DAG: #[cfg(not(feature = "my_feature"))]
 
 // SLATE-FILECHECK-BEGIN common-rewrites
 // COMMON-REWRITES-DAG: fn feature_code() -> i32 {

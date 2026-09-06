@@ -81,6 +81,8 @@ pub enum Error {
     UnknownSkipPass { name: String },
     #[error("format generated Rust: {message}")]
     Format { message: String },
+    #[error(transparent)]
+    Directive(#[from] directive_translate::DirectiveError),
 }
 
 pub fn translate(path: &Path) -> Result<String, Error> {
@@ -88,6 +90,16 @@ pub fn translate(path: &Path) -> Result<String, Error> {
 }
 
 pub fn translate_with_args(path: &Path, extra_args: &[String]) -> Result<String, Error> {
+    let (contents, _raw) = preprocess::read_source(path).map_err(|source| Error::Read {
+        path: path.to_path_buf(),
+        source,
+    })?;
+    if frontend::toolchain::target_is_host_default()
+        && directive_translate::should_auto_expand(&contents)
+    {
+        return directive_translate::translate_directives_with_args(path, extra_args)
+            .map_err(Error::Directive);
+    }
     let (_, program) = lowered_program_with_args(path, extra_args)?;
     let source = backend::apply_with(program, &skip_set_from_env()?).emit();
     backend::format_rust(&source).map_err(|message| Error::Format { message })

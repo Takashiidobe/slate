@@ -17,11 +17,12 @@ fn usage() -> ExitCode {
     eprintln!(
         "  fixup-debug  <file.c> [--up-to-pass <pass>|--only-pass <pass>|--debug-only-pass <pass>]  print fixup pass trace"
     );
-    eprintln!("  translate   [clang args...] <file.c>  C -> Rust");
+    eprintln!(
+        "  translate   [clang args...] <file.c>  C -> Rust (auto-expands target/arch #if regions into cfg items)"
+    );
     eprintln!(
         "  translate-lowered  <file.c>  C -> Rust, raw lowered output with no fixup passes applied"
     );
-    eprintln!("  translate-directives   experimental multi-config C -> Rust");
     eprintln!("  record-cfg   <file.c> [clang args...]  print preprocessor cfg regions as JSON");
     eprintln!(
         "  translate-project --compile-commands <file>... <project_dir> <crate_dir>  cross-TU C project -> Cargo crate (bin if a unit defines main, else lib)"
@@ -43,12 +44,6 @@ fn main() -> ExitCode {
         },
         Some("translate-lowered") => match args.get(2) {
             Some(path) => run(lowered_rust(Path::new(path))),
-            None => usage(),
-        },
-        Some("translate-directives") => match args.get(2) {
-            Some(path) => run(cli_report(directive_translate::translate_directives(
-                Path::new(path),
-            ))),
             None => usage(),
         },
         Some("record-cfg") => match args.get(2) {
@@ -120,6 +115,7 @@ impl Diagnosable for api::Error {
     fn nyi_diagnostic(&self) -> Option<Vec<&str>> {
         match self {
             Self::Cir { source, .. } => source.nyi_diagnostic(),
+            Self::Directive(source) => source.nyi_diagnostic(),
             _ => None,
         }
     }
