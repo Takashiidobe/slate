@@ -2209,6 +2209,15 @@ impl __SlateVaArgs {
         {
             return Some(field_ty);
         }
+        if field.bit_width.is_none()
+            && let Some(field_ty) = self
+                .cir_record_field_types(record)
+                .and_then(|types| types.get(index).cloned())
+            && matches!(field_ty, Type::Array { .. })
+            && !matches!(field.ty, CType::Array(..))
+        {
+            return Some(field_ty);
+        }
         if matches!(field.ty, CType::Char { .. }) {
             match self
                 .cir_record_field_types(record)
@@ -2514,12 +2523,14 @@ impl __SlateVaArgs {
                             let mut fields: Vec<(String, Expr)> = record
                                 .fields
                                 .iter()
-                                .map(|field| {
+                                .enumerate()
+                                .map(|(index, field)| {
+                                    let field_ty = self
+                                        .record_field_type_at(record, index)
+                                        .unwrap_or_else(|| self.c_record_field_type(&field.ty));
                                     (
                                         sanitize_ident(&field.name).into_string(),
-                                        self.default_value_expr(
-                                            &self.c_record_field_type(&field.ty),
-                                        ),
+                                        self.default_value_expr(&field_ty),
                                     )
                                 })
                                 .collect();
