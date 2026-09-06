@@ -214,14 +214,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             write: bool,
         }
         let mut ebx_fixups: Vec<EbxFixup> = Vec::new();
-        let mut used_reg_letters: BTreeSet<char> = output_specs
+        let mut used_regs: BTreeSet<X86Reg> = output_specs
             .iter()
-            .filter_map(|(spec, _)| reg_constraint_letter(spec))
+            .filter_map(|(spec, _)| reg_constraint_family(spec))
             .chain(
                 input_specs
                     .iter()
                     .flatten()
-                    .filter_map(reg_constraint_letter),
+                    .filter_map(reg_constraint_family),
             )
             .collect();
         if asm_goto.is_some()
@@ -252,37 +252,40 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 });
                 (Expr::Var(name.clone().into()), Some(name))
             };
-            let Some(mut reg) = asm_reg_for_constraint(spec, &template_types[output_index]) else {
-                unsupported!(
-                    "lower: unsupported inline asm output register in `{}`",
-                    op.constraints
-                );
-            };
-            if let AsmReg::Explicit(name) = &reg
-                && is_ebx_family_reg(name)
+            let mut resolved = asm_reg_for_constraint(spec);
+            let bits = asm_operand_bits(&template_types[output_index]);
+            if let ResolvedAsmReg::Family(family) = resolved
+                && family.is_ebx_like()
             {
-                let Some(scratch_letter) = pick_ebx_scratch_letter(&used_reg_letters) else {
+                let Some(scratch) = X86Reg::pick_ebx_scratch(&used_regs) else {
                     unsupported!(
                         "lower: inline asm needs a spare register to save/restore ebx around `{}`",
                         op.constraints
                     );
                 };
-                used_reg_letters.insert(scratch_letter);
-                let bits = asm_operand_bits(&template_types[output_index]);
-                let Some(scratch_literal) = x86_fixed_register_name(scratch_letter, bits) else {
+                used_regs.insert(scratch);
+                let Some(width) = RegWidth::from_bits(bits) else {
                     unsupported!(
                         "lower: unsupported inline asm output register in `{}`",
                         op.constraints
                     );
                 };
+                let ebx_literal = family.sized_name(width);
+                let scratch_literal = scratch.sized_name(width);
                 ebx_fixups.push(EbxFixup {
-                    ebx_literal: name.clone(),
+                    ebx_literal: ebx_literal.into(),
                     scratch_literal: scratch_literal.into(),
                     read: tied_outputs[output_index].is_some(),
                     write: true,
                 });
-                reg = AsmReg::Explicit(scratch_literal.into());
+                resolved = ResolvedAsmReg::Family(scratch);
             }
+            let Some(reg) = resolved_asm_reg_to_backend(&resolved, bits) else {
+                unsupported!(
+                    "lower: unsupported inline asm output register in `{}`",
+                    op.constraints
+                );
+            };
             let late = !early_clobber;
             if let Some(operand_index) = tied_outputs[output_index] {
                 operands.push(AsmOperand::InOut {
@@ -321,40 +324,40 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 AsmOperand::Const(int_value_expr(value))
             } else {
                 let spec = input_specs[operand_index].clone().unwrap();
-                let Some(mut reg) =
-                    asm_reg_for_constraint(spec, &template_types[output_count + operand_index])
-                else {
-                    unsupported!(
-                        "lower: unsupported inline asm input register in `{}`",
-                        op.constraints
-                    );
-                };
-                if let AsmReg::Explicit(name) = &reg
-                    && is_ebx_family_reg(name)
+                let mut resolved = asm_reg_for_constraint(spec);
+                let bits = asm_operand_bits(&template_types[output_count + operand_index]);
+                if let ResolvedAsmReg::Family(family) = resolved
+                    && family.is_ebx_like()
                 {
-                    let Some(scratch_letter) = pick_ebx_scratch_letter(&used_reg_letters) else {
+                    let Some(scratch) = X86Reg::pick_ebx_scratch(&used_regs) else {
                         unsupported!(
                             "lower: inline asm needs a spare register to save/restore ebx around `{}`",
                             op.constraints
                         );
                     };
-                    used_reg_letters.insert(scratch_letter);
-                    let bits = asm_operand_bits(&template_types[output_count + operand_index]);
-                    let Some(scratch_literal) = x86_fixed_register_name(scratch_letter, bits)
-                    else {
+                    used_regs.insert(scratch);
+                    let Some(width) = RegWidth::from_bits(bits) else {
                         unsupported!(
                             "lower: unsupported inline asm input register in `{}`",
                             op.constraints
                         );
                     };
+                    let ebx_literal = family.sized_name(width);
+                    let scratch_literal = scratch.sized_name(width);
                     ebx_fixups.push(EbxFixup {
-                        ebx_literal: name.clone(),
+                        ebx_literal: ebx_literal.into(),
                         scratch_literal: scratch_literal.into(),
                         read: true,
                         write: false,
                     });
-                    reg = AsmReg::Explicit(scratch_literal.into());
+                    resolved = ResolvedAsmReg::Family(scratch);
                 }
+                let Some(reg) = resolved_asm_reg_to_backend(&resolved, bits) else {
+                    unsupported!(
+                        "lower: unsupported inline asm input register in `{}`",
+                        op.constraints
+                    );
+                };
                 AsmOperand::In {
                     reg,
                     value: self.operand_expr(input_operands[operand_index]),

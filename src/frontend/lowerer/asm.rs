@@ -1,5 +1,256 @@
 use super::*;
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub(super) enum X86Reg {
+    Eax,
+    Ebx,
+    Ecx,
+    Edx,
+    Esi,
+    Edi,
+}
+
+impl X86Reg {
+    fn from_spelling(spelling: &str) -> Option<Self> {
+        Some(match spelling {
+            "al" | "ah" | "ax" | "eax" | "rax" => Self::Eax,
+            "bl" | "bh" | "bx" | "ebx" | "rbx" => Self::Ebx,
+            "cl" | "ch" | "cx" | "ecx" | "rcx" => Self::Ecx,
+            "dl" | "dh" | "dx" | "edx" | "rdx" => Self::Edx,
+            "sil" | "si" | "esi" | "rsi" => Self::Esi,
+            "dil" | "di" | "edi" | "rdi" => Self::Edi,
+            _ => return None,
+        })
+    }
+
+    pub(super) fn sized_name(self, width: RegWidth) -> &'static str {
+        match (self, width) {
+            (Self::Eax, RegWidth::Byte) => "al",
+            (Self::Eax, RegWidth::Word) => "ax",
+            (Self::Eax, RegWidth::Dword) => "eax",
+            (Self::Eax, RegWidth::Qword) => "rax",
+            (Self::Ebx, RegWidth::Byte) => "bl",
+            (Self::Ebx, RegWidth::Word) => "bx",
+            (Self::Ebx, RegWidth::Dword) => "ebx",
+            (Self::Ebx, RegWidth::Qword) => "rbx",
+            (Self::Ecx, RegWidth::Byte) => "cl",
+            (Self::Ecx, RegWidth::Word) => "cx",
+            (Self::Ecx, RegWidth::Dword) => "ecx",
+            (Self::Ecx, RegWidth::Qword) => "rcx",
+            (Self::Edx, RegWidth::Byte) => "dl",
+            (Self::Edx, RegWidth::Word) => "dx",
+            (Self::Edx, RegWidth::Dword) => "edx",
+            (Self::Edx, RegWidth::Qword) => "rdx",
+            (Self::Esi, RegWidth::Byte) => "sil",
+            (Self::Esi, RegWidth::Word) => "si",
+            (Self::Esi, RegWidth::Dword) => "esi",
+            (Self::Esi, RegWidth::Qword) => "rsi",
+            (Self::Edi, RegWidth::Byte) => "dil",
+            (Self::Edi, RegWidth::Word) => "di",
+            (Self::Edi, RegWidth::Dword) => "edi",
+            (Self::Edi, RegWidth::Qword) => "rdi",
+        }
+    }
+
+    pub(super) fn is_ebx_like(self) -> bool {
+        matches!(self, Self::Ebx)
+    }
+
+    pub(super) fn pick_ebx_scratch(used: &BTreeSet<X86Reg>) -> Option<X86Reg> {
+        [Self::Edi, Self::Esi, Self::Eax, Self::Ecx, Self::Edx]
+            .into_iter()
+            .find(|reg| !used.contains(reg))
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum Constraint {
+    Reg,
+    General,
+    FixedReg(X86Reg),
+    ConstantEligible,
+    Address,
+    Memory,
+    Offsettable,
+    NonOffsettable,
+    SseReg,
+    AvxReg,
+    ByteAddressableReg,
+    EdxEaxPair,
+    Other,
+}
+
+fn parse_constraint_atoms(constraint: &str) -> impl Iterator<Item = Constraint> + '_ {
+    constraint.chars().map(|ch| match ch {
+        'r' => Constraint::Reg,
+        'g' => Constraint::General,
+        'a' => Constraint::FixedReg(X86Reg::Eax),
+        'b' => Constraint::FixedReg(X86Reg::Ebx),
+        'c' => Constraint::FixedReg(X86Reg::Ecx),
+        'd' => Constraint::FixedReg(X86Reg::Edx),
+        'S' => Constraint::FixedReg(X86Reg::Esi),
+        'D' => Constraint::FixedReg(X86Reg::Edi),
+        'i' | 'n' | 'I' | 'J' | 'K' | 'L' | 'M' | 'N' | 'O' => Constraint::ConstantEligible,
+        'p' => Constraint::Address,
+        'm' => Constraint::Memory,
+        'o' => Constraint::Offsettable,
+        'V' => Constraint::NonOffsettable,
+        'x' => Constraint::SseReg,
+        'y' => Constraint::AvxReg,
+        'q' | 'Q' => Constraint::ByteAddressableReg,
+        'A' => Constraint::EdxEaxPair,
+        _ => Constraint::Other,
+    })
+}
+
+fn constraint_allows_generic_reg(constraint: &str) -> bool {
+    parse_constraint_atoms(constraint)
+        .any(|atom| matches!(atom, Constraint::Reg | Constraint::General))
+}
+
+fn constraint_wants_register_modifier(constraint: &str, constraints: &[&str]) -> bool {
+    constraint_allows_generic_reg(constraint)
+        || constraint
+            .parse::<usize>()
+            .ok()
+            .and_then(|output| constraints.get(output))
+            .is_some_and(|output| constraint_allows_generic_reg(output))
+}
+
+fn constraint_is_explicit_register(mut constraint: &str) -> bool {
+    constraint = constraint.strip_prefix('=').unwrap_or(constraint);
+    constraint = constraint.strip_prefix('&').unwrap_or(constraint);
+    if constraint.starts_with('{') {
+        return true;
+    }
+    matches!(
+        parse_constraint_atoms(constraint)
+            .collect::<Vec<_>>()
+            .as_slice(),
+        [Constraint::FixedReg(_)]
+    )
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum RegWidth {
+    Byte,
+    Word,
+    Dword,
+    Qword,
+}
+
+impl RegWidth {
+    pub(super) fn from_bits(bits: u32) -> Option<Self> {
+        Some(match bits {
+            8 => Self::Byte,
+            16 => Self::Word,
+            32 => Self::Dword,
+            64 => Self::Qword,
+            _ => return None,
+        })
+    }
+
+    fn att_size_modifier(self) -> char {
+        match self {
+            Self::Byte => 'l',
+            Self::Word => 'x',
+            Self::Dword => 'e',
+            Self::Qword => 'r',
+        }
+    }
+
+    fn zero_extend_from_byte_mnemonic(self) -> Option<&'static str> {
+        match self {
+            Self::Byte => None,
+            Self::Word => Some("movzbw"),
+            Self::Dword => Some("movzbl"),
+            Self::Qword => Some("movzbq"),
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(super) enum AsmRegConstraint {
+    Generic,
+    FixedLetter(X86Reg),
+    ExplicitName(String),
+}
+
+pub(super) fn parse_output_reg_constraint(constraint: &str) -> Option<(AsmRegConstraint, bool)> {
+    let rest = constraint.strip_prefix('=')?;
+    let (early_clobber, rest) = match rest.strip_prefix('&') {
+        Some(rest) => (true, rest),
+        None => (false, rest),
+    };
+    let kind = parse_reg_constraint(rest)?;
+    Some((kind, early_clobber))
+}
+
+pub(super) fn parse_input_reg_constraint(constraint: &str) -> Option<AsmRegConstraint> {
+    parse_reg_constraint(constraint)
+}
+
+fn parse_reg_constraint(constraint: &str) -> Option<AsmRegConstraint> {
+    if let Some(name) = constraint
+        .strip_prefix('{')
+        .and_then(|rest| rest.strip_suffix('}'))
+    {
+        return (!name.is_empty()).then(|| AsmRegConstraint::ExplicitName(name.to_string()));
+    }
+    if constraint_allows_generic_reg(constraint) {
+        return Some(AsmRegConstraint::Generic);
+    }
+    match parse_constraint_atoms(constraint)
+        .collect::<Vec<_>>()
+        .as_slice()
+    {
+        [Constraint::FixedReg(reg)] => Some(AsmRegConstraint::FixedLetter(*reg)),
+        _ => None,
+    }
+}
+
+pub(super) fn parse_x86_flag_output_constraint(constraint: &str) -> Option<&str> {
+    let condition = constraint.strip_prefix("={@cc")?.strip_suffix('}')?;
+    (!condition.is_empty() && condition.chars().all(|ch| ch.is_ascii_alphabetic()))
+        .then_some(condition)
+}
+
+#[derive(Debug, Clone)]
+pub(super) enum ResolvedAsmReg {
+    Generic,
+    Family(X86Reg),
+    Literal(String),
+}
+
+pub(super) fn asm_reg_for_constraint(kind: AsmRegConstraint) -> ResolvedAsmReg {
+    match kind {
+        AsmRegConstraint::Generic => ResolvedAsmReg::Generic,
+        AsmRegConstraint::FixedLetter(reg) => ResolvedAsmReg::Family(reg),
+        AsmRegConstraint::ExplicitName(name) => match X86Reg::from_spelling(&name) {
+            Some(reg) => ResolvedAsmReg::Family(reg),
+            None => ResolvedAsmReg::Literal(name),
+        },
+    }
+}
+
+pub(super) fn resolved_asm_reg_to_backend(resolved: &ResolvedAsmReg, bits: u32) -> Option<AsmReg> {
+    Some(match resolved {
+        ResolvedAsmReg::Generic => AsmReg::Class("reg".into()),
+        ResolvedAsmReg::Family(reg) => {
+            AsmReg::Explicit(reg.sized_name(RegWidth::from_bits(bits)?).into())
+        }
+        ResolvedAsmReg::Literal(name) => AsmReg::Explicit(name.clone()),
+    })
+}
+
+pub(super) fn reg_constraint_family(kind: &AsmRegConstraint) -> Option<X86Reg> {
+    match kind {
+        AsmRegConstraint::Generic => None,
+        AsmRegConstraint::FixedLetter(reg) => Some(*reg),
+        AsmRegConstraint::ExplicitName(name) => X86Reg::from_spelling(name),
+    }
+}
+
 pub(super) fn collect_assembly_strings(module: &Module, out: &mut Vec<String>) {
     out.extend(module.module_asm.iter().cloned());
     for function in &module.functions {
@@ -45,19 +296,19 @@ pub(super) fn lower_module_asm(
         diagnostics.error("lower: file-scope assembly has no CIR target triple");
         return Vec::new();
     };
-    let Some(target_arch) = rust_target_arch(triple) else {
+    let Ok(target_arch) = TargetArch::try_from(triple) else {
         diagnostics.error(format!(
             "lower: unsupported file-scope assembly target `{triple}`"
         ));
         return Vec::new();
     };
-    let dialect = matches!(target_arch, "x86" | "x86_64").then_some(AsmDialect::Att);
+    let dialect = target_arch.is_x86().then_some(AsmDialect::Att);
     templates
         .iter()
         .map(|template| Item::Cfg {
             cfg: Cfg::Opt {
                 key: "target_arch".into(),
-                value: target_arch.into(),
+                value: target_arch.rustc_name().into(),
             },
             item: Box::new(Item::Macro {
                 name: "core::arch::global_asm".into(),
@@ -79,17 +330,17 @@ pub(super) fn lower_weak_alias_asm(
         diagnostics.error("lower: weak aliases require a CIR target triple");
         return Vec::new();
     };
-    let Some(target_arch) = rust_target_arch(triple) else {
+    let Ok(target_arch) = TargetArch::try_from(triple) else {
         diagnostics.error(format!("lower: unsupported weak alias target `{triple}`"));
         return Vec::new();
     };
-    let dialect = matches!(target_arch, "x86" | "x86_64").then_some(AsmDialect::Att);
+    let dialect = target_arch.is_x86().then_some(AsmDialect::Att);
     aliases
         .iter()
         .map(|(name, target)| Item::Cfg {
             cfg: Cfg::Opt {
                 key: "target_arch".into(),
-                value: target_arch.into(),
+                value: target_arch.rustc_name().into(),
             },
             item: Box::new(Item::Macro {
                 name: "core::arch::global_asm".into(),
@@ -99,30 +350,47 @@ pub(super) fn lower_weak_alias_asm(
         .collect()
 }
 
-pub(super) fn rust_target_arch(triple: &str) -> Option<&'static str> {
-    let arch = triple.split('-').next()?;
-    match arch {
-        "x86_64" | "x86_64h" => Some("x86_64"),
-        "i386" | "i486" | "i586" | "i686" => Some("x86"),
-        "aarch64" | "aarch64_be" | "arm64" => Some("aarch64"),
-        arch if arch.starts_with("arm") || arch.starts_with("thumb") => Some("arm"),
-        "powerpc" => Some("powerpc"),
-        "powerpc64" | "powerpc64le" => Some("powerpc64"),
-        "riscv32" | "riscv32gc" | "riscv32imac" => Some("riscv32"),
-        "riscv64" | "riscv64gc" | "riscv64imac" => Some("riscv64"),
-        "s390x" => Some("s390x"),
-        "wasm32" => Some("wasm32"),
-        "wasm64" => Some("wasm64"),
-        "mips" | "mipsel" => Some("mips"),
-        "mips64" | "mips64el" => Some("mips64"),
-        "sparc" => Some("sparc"),
-        "sparc64" => Some("sparc64"),
-        "loongarch64" => Some("loongarch64"),
-        "hexagon" => Some("hexagon"),
-        "bpfeb" | "bpfel" => Some("bpf"),
-        "nvptx64" => Some("nvptx64"),
-        "xtensa" => Some("xtensa"),
-        _ => None,
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum TargetArch {
+    X86,
+    X86_64,
+    Arm,
+    Arm64,
+    RiscV32,
+    RiscV64,
+}
+
+impl TargetArch {
+    pub(super) fn rustc_name(self) -> &'static str {
+        match self {
+            Self::X86 => "x86",
+            Self::X86_64 => "x86_64",
+            Self::Arm => "arm",
+            Self::Arm64 => "aarch64",
+            Self::RiscV32 => "riscv32",
+            Self::RiscV64 => "riscv64",
+        }
+    }
+
+    pub(super) fn is_x86(self) -> bool {
+        matches!(self, Self::X86 | Self::X86_64)
+    }
+}
+
+impl TryFrom<&str> for TargetArch {
+    type Error = ();
+
+    fn try_from(triple: &str) -> Result<Self, Self::Error> {
+        let arch = triple.split('-').next().ok_or(())?;
+        match arch {
+            "x86_64" | "x86_64h" => Ok(Self::X86_64),
+            "i386" | "i486" | "i586" | "i686" => Ok(Self::X86),
+            "aarch64" | "aarch64_be" | "arm64" => Ok(Self::Arm64),
+            arch if arch.starts_with("arm") || arch.starts_with("thumb") => Ok(Self::Arm),
+            "riscv32" | "riscv32gc" | "riscv32imac" => Ok(Self::RiscV32),
+            "riscv64" | "riscv64gc" | "riscv64imac" => Ok(Self::RiscV64),
+            _ => Err(()),
+        }
     }
 }
 
@@ -148,12 +416,6 @@ pub(super) fn normalize_asm_dialect_wrapper(
         return (template, dialect);
     };
     (body.trim().to_string(), Some(AsmDialect::Intel))
-}
-
-pub(super) fn parse_x86_flag_output_constraint(constraint: &str) -> Option<&str> {
-    let condition = constraint.strip_prefix("={@cc")?.strip_suffix('}')?;
-    (!condition.is_empty() && condition.chars().all(|ch| ch.is_ascii_alphabetic()))
-        .then_some(condition)
 }
 
 pub(super) fn x86_flag_output_suffix(
@@ -196,12 +458,9 @@ pub(super) fn x86_flag_output_suffix(
     ) {
         return None;
     }
-    let (modifier, att_mov) = match asm_operand_bits(ty) {
-        16 => ('x', "movzbw"),
-        32 => ('e', "movzbl"),
-        64 => ('r', "movzbq"),
-        _ => return None,
-    };
+    let width = RegWidth::from_bits(asm_operand_bits(ty))?;
+    let att_mov = width.zero_extend_from_byte_mnemonic()?;
+    let modifier = width.att_size_modifier();
     let set = format!("set{condition} {{{rust_slot}:l}}");
     let extend = if matches!(dialect, Some(AsmDialect::Att)) {
         format!("{att_mov} {{{rust_slot}:l}}, {{{rust_slot}:{modifier}}}")
@@ -274,6 +533,22 @@ pub(super) fn asm_template_label_count(template: &str) -> usize {
     slots.len()
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum TemplateModifier {
+    Const,
+    Label,
+}
+
+impl TemplateModifier {
+    fn parse(modifier: &str) -> Option<Self> {
+        match modifier {
+            "c" => Some(Self::Const),
+            "l" => Some(Self::Label),
+            _ => None,
+        }
+    }
+}
+
 pub(super) fn translate_asm_template(
     template: &str,
     slot_to_rust: &[usize],
@@ -314,7 +589,7 @@ pub(super) fn translate_asm_template(
                 .unwrap_or((body.as_str(), None));
             (
                 slot.parse::<usize>().ok()?,
-                matches!(modifier, Some("c" | "l")),
+                modifier.and_then(TemplateModifier::parse).is_some(),
             )
         } else {
             let mut digits = String::new();
@@ -335,7 +610,9 @@ pub(super) fn translate_asm_template(
         referenced_operands.insert(rust_slot);
         if constraint_is_explicit_register(constraint) {
             let kind = parse_reg_constraint(constraint.strip_prefix('=').unwrap_or(constraint))?;
-            let AsmReg::Explicit(name) = asm_reg_for_constraint(kind, types.get(slot)?)? else {
+            let resolved = asm_reg_for_constraint(kind);
+            let bits = asm_operand_bits(types.get(slot)?);
+            let AsmReg::Explicit(name) = resolved_asm_reg_to_backend(&resolved, bits)? else {
                 return None;
             };
             if matches!(dialect, Some(AsmDialect::Att)) {
@@ -347,12 +624,7 @@ pub(super) fn translate_asm_template(
         translated.push('{');
         translated.push_str(&rust_slot.to_string());
         if !suppress_modifier
-            && (constraint.contains('r')
-                || constraint
-                    .parse::<usize>()
-                    .ok()
-                    .and_then(|output| constraints.get(output))
-                    .is_some_and(|output| output.contains('r')))
+            && constraint_wants_register_modifier(constraint, constraints)
             && let Some(modifier) = rust_asm_register_modifier(types.get(slot)?)
         {
             translated.push(':');
@@ -373,12 +645,7 @@ pub(super) fn translate_asm_template(
         }
         translated.push_str("\n/* {");
         translated.push_str(&rust_slot.to_string());
-        if (constraint.contains('r')
-            || constraint
-                .parse::<usize>()
-                .ok()
-                .and_then(|output| constraints.get(output))
-                .is_some_and(|output| output.contains('r')))
+        if constraint_wants_register_modifier(constraint, constraints)
             && let Some(modifier) = rust_asm_register_modifier(types.get(source_slot)?)
         {
             translated.push(':');
@@ -389,69 +656,8 @@ pub(super) fn translate_asm_template(
     Some(translated)
 }
 
-fn constraint_is_explicit_register(mut constraint: &str) -> bool {
-    constraint = constraint.strip_prefix('=').unwrap_or(constraint);
-    constraint = constraint.strip_prefix('&').unwrap_or(constraint);
-    constraint.starts_with('{') || matches!(constraint, "a" | "b" | "c" | "d" | "S" | "D")
-}
-
 pub(super) fn rust_asm_register_modifier(ty: &Type) -> Option<char> {
-    match int_bits(&ty.render())? {
-        8 => Some('l'),
-        16 => Some('x'),
-        32 => Some('e'),
-        64 => Some('r'),
-        _ => None,
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub(super) enum AsmRegConstraint {
-    Generic,
-    FixedLetter(char),
-    ExplicitName(String),
-}
-
-pub(super) fn parse_output_reg_constraint(constraint: &str) -> Option<(AsmRegConstraint, bool)> {
-    let rest = constraint.strip_prefix('=')?;
-    let (early_clobber, rest) = match rest.strip_prefix('&') {
-        Some(rest) => (true, rest),
-        None => (false, rest),
-    };
-    let kind = parse_reg_constraint(rest)?;
-    Some((kind, early_clobber))
-}
-
-pub(super) fn parse_input_reg_constraint(constraint: &str) -> Option<AsmRegConstraint> {
-    parse_reg_constraint(constraint)
-}
-
-fn parse_reg_constraint(constraint: &str) -> Option<AsmRegConstraint> {
-    if let Some(name) = constraint
-        .strip_prefix('{')
-        .and_then(|rest| rest.strip_suffix('}'))
-    {
-        return (!name.is_empty()).then(|| AsmRegConstraint::ExplicitName(name.to_string()));
-    }
-    match constraint {
-        "r" | "g" | "imr" => Some(AsmRegConstraint::Generic),
-        "a" | "b" | "c" | "d" | "S" | "D" => {
-            Some(AsmRegConstraint::FixedLetter(constraint.chars().next()?))
-        }
-        _ => None,
-    }
-}
-
-pub(super) fn asm_reg_for_constraint(kind: AsmRegConstraint, ty: &Type) -> Option<AsmReg> {
-    let letter = match &kind {
-        AsmRegConstraint::Generic => return Some(AsmReg::Class("reg".into())),
-        AsmRegConstraint::FixedLetter(letter) => *letter,
-        AsmRegConstraint::ExplicitName(name) => match x86_register_letter_from_spelling(name) {
-            Some(letter) => letter,
-            None => return Some(AsmReg::Explicit(name.clone())),
-        },
-    };
-    x86_fixed_register_name(letter, asm_operand_bits(ty)).map(|name| AsmReg::Explicit(name.into()))
+    Some(RegWidth::from_bits(int_bits(&ty.render())?)?.att_size_modifier())
 }
 
 pub(super) fn asm_operand_bits(ty: &Type) -> u32 {
@@ -459,64 +665,4 @@ pub(super) fn asm_operand_bits(ty: &Type) -> u32 {
         Type::Ptr { .. } | Type::FnPtr { .. } => 64,
         _ => int_bits(&ty.render()).unwrap_or(32),
     }
-}
-
-pub(super) fn reg_constraint_letter(kind: &AsmRegConstraint) -> Option<char> {
-    match kind {
-        AsmRegConstraint::Generic => None,
-        AsmRegConstraint::FixedLetter(letter) => Some(*letter),
-        AsmRegConstraint::ExplicitName(name) => x86_register_letter_from_spelling(name),
-    }
-}
-
-pub(super) fn pick_ebx_scratch_letter(used: &BTreeSet<char>) -> Option<char> {
-    ['D', 'S', 'a', 'c', 'd']
-        .into_iter()
-        .find(|letter| !used.contains(letter))
-}
-
-fn x86_register_letter_from_spelling(spelling: &str) -> Option<char> {
-    Some(match spelling {
-        "al" | "ah" | "ax" | "eax" | "rax" => 'a',
-        "bl" | "bh" | "bx" | "ebx" | "rbx" => 'b',
-        "cl" | "ch" | "cx" | "ecx" | "rcx" => 'c',
-        "dl" | "dh" | "dx" | "edx" | "rdx" => 'd',
-        "sil" | "si" | "esi" | "rsi" => 'S',
-        "dil" | "di" | "edi" | "rdi" => 'D',
-        _ => return None,
-    })
-}
-
-pub(super) fn is_ebx_family_reg(name: &str) -> bool {
-    matches!(name, "bl" | "bh" | "bx" | "ebx" | "rbx")
-}
-
-pub(super) fn x86_fixed_register_name(letter: char, bits: u32) -> Option<&'static str> {
-    Some(match (letter, bits) {
-        ('a', 8) => "al",
-        ('a', 16) => "ax",
-        ('a', 32) => "eax",
-        ('a', 64) => "rax",
-        ('b', 8) => "bl",
-        ('b', 16) => "bx",
-        ('b', 32) => "ebx",
-        ('b', 64) => "rbx",
-        ('c', 8) => "cl",
-        ('c', 16) => "cx",
-        ('c', 32) => "ecx",
-        ('c', 64) => "rcx",
-        ('d', 8) => "dl",
-        ('d', 16) => "dx",
-        ('d', 32) => "edx",
-        ('d', 64) => "rdx",
-        ('S', 8) => "sil",
-        ('S', 16) => "si",
-        ('S', 32) => "esi",
-        ('S', 64) => "rsi",
-        ('D', 8) => "dil",
-        ('D', 16) => "di",
-        ('D', 32) => "edi",
-        ('D', 64) => "rdi",
-        _ => return None,
-    })
 }
