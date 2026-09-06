@@ -85,6 +85,15 @@ const fn cast_bytes<const DBITS: usize, const DBYTES: usize, const SBITS: usize,
             bit += 1;
         }
     }
+    let used_bytes = DBITS.div_ceil(8);
+    let mut i = used_bytes;
+    while i < DBYTES {
+        out[i] = 0;
+        i += 1;
+    }
+    if DBITS % 8 != 0 {
+        out[used_bytes - 1] &= (1 << (DBITS % 8)) - 1;
+    }
     out
 }
 

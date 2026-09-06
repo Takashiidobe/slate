@@ -393,8 +393,33 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 return;
             }
         }
-        let lhs = self.operand_expr(lhs);
-        let rhs = self.operand_expr(rhs);
+        let result_rust_ty = ty.map(|ty| self.parent.rust_type(ty));
+        let is_bitint_result = result_rust_ty
+            .as_ref()
+            .is_some_and(|ty| bitint_generic_parts(ty).is_some());
+        let coerce_operand = |this: &Self, name: &str| {
+            if !is_bitint_result {
+                return None;
+            }
+            let operand_ty = this.value_type(name)?;
+            let operand_rust_ty = this.parent.rust_type(operand_ty);
+            if bitint_generic_parts(&operand_rust_ty).is_some() {
+                return None;
+            }
+            let (signed, _) = resolved_integer_parts(operand_ty, &this.parent.aliases)?;
+            bitint_from_int_expr(result_rust_ty.as_ref()?, this.operand_expr(name), signed)
+        };
+        let lhs = coerce_operand(self, lhs).unwrap_or_else(|| self.operand_expr(lhs));
+        let rhs = if matches!(rust_op, BinOp::Shl | BinOp::Shr)
+            && let Some(operand_ty) = self.value_type(rhs)
+            && let operand_rust_ty = self.parent.rust_type(operand_ty)
+            && bitint_generic_parts(&operand_rust_ty).is_some()
+            && let Some((amount, _)) = bitint_to_int_expr(&operand_rust_ty, self.operand_expr(rhs))
+        {
+            amount
+        } else {
+            coerce_operand(self, rhs).unwrap_or_else(|| self.operand_expr(rhs))
+        };
         self.materialize_expr(
             result,
             Expr::Binary {
@@ -546,12 +571,16 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         value: &str,
         rust_op: BinOp,
     ) {
+        let rust_ty = self.parent.rust_type(result_ty);
+        let one = bitint_generic_parts(&rust_ty)
+            .and_then(|_| bitint_from_int_expr(&rust_ty, Expr::Value(RustValue::I64(1)), true))
+            .unwrap_or_else(|| Expr::Value(RustValue::I64(1)));
         self.materialize_expr(
             result,
             Expr::Binary {
                 op: rust_op,
                 lhs: Box::new(self.operand_expr(value)),
-                rhs: Box::new(Expr::Value(RustValue::I64(1))),
+                rhs: Box::new(one),
             },
             Some(result_ty),
         );

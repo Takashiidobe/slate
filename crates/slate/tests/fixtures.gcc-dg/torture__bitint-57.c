@@ -54,7 +54,7 @@ int main() {
 // LOWERING-DAG:     let {{__v[0-9]+}}: bitint::BUint<257, 5, 40> = {{__v[0-9]+}} * {{__v[0-9]+}};
 // LOWERING-DAG:     let {{__v[0-9]+}}: bitint::BUint<512, 8, 64> = bitint::BUint::<512, 8, 64>::from_buint({{__v[0-9]+}});
 // LOWERING-DAG:     let {{__v[0-9]+}}: bitint::BUint<512, 8, 64> = unsafe { *u };
-// LOWERING-DAG:     let {{__v[0-9]+}}: bitint::BUint<512, 8, 64> = {{__v[0-9]+}} >> {{__v[0-9]+}};
+// LOWERING-DAG:     let {{__v[0-9]+}}: bitint::BUint<512, 8, 64> = {{__v[0-9]+}} >> {{__v[0-9]+}}.to_u128();
 // LOWERING-DAG:     unsafe {
 // LOWERING-DAG:         *{{arg[0-9]+}} = {{__v[0-9]+}};
 // LOWERING-DAG:     }
@@ -97,8 +97,10 @@ int main() {
 // REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<257, 5, 40> = {{__v[0-9]+}} | {{__v[0-9]+}} - {{__v[0-9]+}};
 // REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<257, 5, 40> = bitint::BUint::<257, 5, 40>::from_decimal_str("6");
 // REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<512, 8, 64> = bitint::BUint::<512, 8, 64>::from_buint({{__v[0-9]+}} * {{__v[0-9]+}});
+// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<512, 8, 64> = unsafe { *u };
+// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<512, 8, 64> = {{__v[0-9]+}} >> {{__v[0-9]+}}.to_u128();
 // REWRITES-DAG:     unsafe {
-// REWRITES-DAG:         *{{arg[0-9]+}} = {{__v[0-9]+}} >> unsafe { *u };
+// REWRITES-DAG:         *{{arg[0-9]+}} = {{__v[0-9]+}};
 // REWRITES-DAG:     }
 // REWRITES-DAG:     return;
 // REWRITES-DAG: }
