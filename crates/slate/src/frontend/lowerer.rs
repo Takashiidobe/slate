@@ -2942,6 +2942,12 @@ impl __SlateVaArgs {
                         {
                             Some(self.default_value_expr(ty))
                         }
+                        Attr::Float { text, .. } | Attr::CirFloat { value: text, .. } => {
+                            match text.strip_prefix("0x").or_else(|| text.strip_prefix("0X")) {
+                                Some(bits) => f80_literal_bits_expr(bits),
+                                None => f80_literal_expr(text),
+                            }
+                        }
                         _ => None,
                     }
                 }
