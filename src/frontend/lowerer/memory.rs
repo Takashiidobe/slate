@@ -448,6 +448,26 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             self.materialize_expr(result, value, Some(result_ty));
             return;
         }
+        if let Some((name, ..)) = bitint_generic_parts(&result_rust_ty)
+            && matches!(
+                src_ty,
+                CirType::Fp16 | CirType::Single | CirType::Double | CirType::Fp128
+            )
+        {
+            let signed = name == "bitint::BInt";
+            let value = Expr::Cast {
+                expr: Box::new(self.operand_expr(src)),
+                ty: if signed {
+                    Type::Prim(Prim::I128)
+                } else {
+                    Type::Prim(Prim::U128)
+                },
+            };
+            let value = bitint_from_int_expr(&result_rust_ty, value, signed)
+                .expect("checked bitint result type");
+            self.materialize_expr(result, value, Some(result_ty));
+            return;
+        }
         if bitint_generic_parts(&src_rust_ty).is_some()
             && bitint_generic_parts(&result_rust_ty).is_none()
             && resolved_integer_parts(result_ty, &self.parent.aliases).is_some()
