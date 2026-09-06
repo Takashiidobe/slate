@@ -76,3 +76,4 @@ superseded each one for what actually applies now.
 - [Fix four differential failures exposed by FileCheck generation](concepts/fix-four-differential-failures-exposed-by-filecheck-generation.md)
 - [atoi/atol/atoll/atof const-fold lift (Tier A)](concepts/atoi-atol-atoll-atof-const-fold-lift-tier-a.md)
 - [atoi/atol/atoll Tier B prelude helper + handwritten filecheck](concepts/atoi-atol-atoll-tier-b-prelude-helper-handwritten-filecheck.md)
+- [Goto Lowering](concepts/goto-lowering.md)
