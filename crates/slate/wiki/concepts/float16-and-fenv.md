@@ -59,7 +59,7 @@ deeper than headers: no `f16`-suffixed symbol is exported by either shared
 object, so there is nothing to link a reference binary against even if a
 declaration were forced. This is a toolchain/platform ceiling, not a Slate
 gap — same shape as the `_Float32`/`_Float64`/`_Float128` rejection above,
-one layer down (Clang accepts the *type*; glibc has no *library* for it).
+one layer down (Clang accepts the _type_; glibc has no _library_ for it).
 
 **Disposition**: no differential fixture is possible for this surface on the
 configured toolchain — there's no working C reference to diff against.

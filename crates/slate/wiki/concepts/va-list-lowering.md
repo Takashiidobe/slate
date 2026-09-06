@@ -2,11 +2,11 @@
 
 Two representations, chosen per translation unit. `module_requires_native_va_list`
 (`src/frontend/lowerer/analysis.rs`) decides **once per file**, not per
-function: every va_list use in the file can be the boxed `__SlateVaArgs`
+function: every va*list use in the file can be the boxed `__SlateVaArgs`
 (`Rc<Vec<__SlateVaArg>>` + cursor index, `Clone` = independent cursor over
 shared storage) unless something in the file needs genuine C ABI — a
 pub-exported/`c_abi_functions` function touching va_list, or a call to a
-function _not defined in this module_ with a va_list argument (real
+function \_not defined in this module* with a va_list argument (real
 `vprintf`/`vfprintf`). Native mode falls back to real `core::ffi::VaList`.
 No fixture in the corpus mixes both needs in one file, so the whole-file
 simplification is unverified against that case.
