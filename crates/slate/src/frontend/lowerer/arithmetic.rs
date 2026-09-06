@@ -574,7 +574,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let rust_ty = self.parent.rust_type(result_ty);
         let one = bitint_generic_parts(&rust_ty)
             .and_then(|_| bitint_from_int_expr(&rust_ty, Expr::Value(RustValue::I64(1)), true))
-            .unwrap_or_else(|| Expr::Value(RustValue::I64(1)));
+            .unwrap_or(Expr::Value(RustValue::I64(1)));
         self.materialize_expr(
             result,
             Expr::Binary {
