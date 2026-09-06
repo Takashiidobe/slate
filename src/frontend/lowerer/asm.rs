@@ -64,7 +64,7 @@ impl X86Reg {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum Constraint {
+enum ConstraintAtom {
     Reg,
     General,
     FixedReg(X86Reg),
@@ -80,55 +80,37 @@ enum Constraint {
     Other,
 }
 
-fn parse_constraint_atoms(constraint: &str) -> impl Iterator<Item = Constraint> + '_ {
+fn parse_constraint_atoms(constraint: &str) -> impl Iterator<Item = ConstraintAtom> + '_ {
     constraint.chars().map(|ch| match ch {
-        'r' => Constraint::Reg,
-        'g' => Constraint::General,
-        'a' => Constraint::FixedReg(X86Reg::Eax),
-        'b' => Constraint::FixedReg(X86Reg::Ebx),
-        'c' => Constraint::FixedReg(X86Reg::Ecx),
-        'd' => Constraint::FixedReg(X86Reg::Edx),
-        'S' => Constraint::FixedReg(X86Reg::Esi),
-        'D' => Constraint::FixedReg(X86Reg::Edi),
-        'i' | 'n' | 'I' | 'J' | 'K' | 'L' | 'M' | 'N' | 'O' => Constraint::ConstantEligible,
-        'p' => Constraint::Address,
-        'm' => Constraint::Memory,
-        'o' => Constraint::Offsettable,
-        'V' => Constraint::NonOffsettable,
-        'x' => Constraint::SseReg,
-        'y' => Constraint::AvxReg,
-        'q' | 'Q' => Constraint::ByteAddressableReg,
-        'A' => Constraint::EdxEaxPair,
-        _ => Constraint::Other,
+        'r' => ConstraintAtom::Reg,
+        'g' => ConstraintAtom::General,
+        'a' => ConstraintAtom::FixedReg(X86Reg::Eax),
+        'b' => ConstraintAtom::FixedReg(X86Reg::Ebx),
+        'c' => ConstraintAtom::FixedReg(X86Reg::Ecx),
+        'd' => ConstraintAtom::FixedReg(X86Reg::Edx),
+        'S' => ConstraintAtom::FixedReg(X86Reg::Esi),
+        'D' => ConstraintAtom::FixedReg(X86Reg::Edi),
+        'i' | 'n' | 'I' | 'J' | 'K' | 'L' | 'M' | 'N' | 'O' => ConstraintAtom::ConstantEligible,
+        'p' => ConstraintAtom::Address,
+        'm' => ConstraintAtom::Memory,
+        'o' => ConstraintAtom::Offsettable,
+        'V' => ConstraintAtom::NonOffsettable,
+        'x' => ConstraintAtom::SseReg,
+        'y' => ConstraintAtom::AvxReg,
+        'q' | 'Q' => ConstraintAtom::ByteAddressableReg,
+        'A' => ConstraintAtom::EdxEaxPair,
+        _ => ConstraintAtom::Other,
     })
 }
 
 fn constraint_allows_generic_reg(constraint: &str) -> bool {
     parse_constraint_atoms(constraint)
-        .any(|atom| matches!(atom, Constraint::Reg | Constraint::General))
+        .any(|atom| matches!(atom, ConstraintAtom::Reg | ConstraintAtom::General))
 }
 
-fn constraint_wants_register_modifier(constraint: &str, constraints: &[&str]) -> bool {
-    constraint_allows_generic_reg(constraint)
-        || constraint
-            .parse::<usize>()
-            .ok()
-            .and_then(|output| constraints.get(output))
-            .is_some_and(|output| constraint_allows_generic_reg(output))
-}
-
-fn constraint_is_explicit_register(mut constraint: &str) -> bool {
-    constraint = constraint.strip_prefix('=').unwrap_or(constraint);
-    constraint = constraint.strip_prefix('&').unwrap_or(constraint);
-    if constraint.starts_with('{') {
-        return true;
-    }
-    matches!(
-        parse_constraint_atoms(constraint)
-            .collect::<Vec<_>>()
-            .as_slice(),
-        [Constraint::FixedReg(_)]
-    )
+fn constraint_is_constant_only(constraint: &str) -> bool {
+    !constraint.is_empty()
+        && parse_constraint_atoms(constraint).all(|atom| atom == ConstraintAtom::ConstantEligible)
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -176,20 +158,6 @@ pub(super) enum AsmRegConstraint {
     ExplicitName(String),
 }
 
-pub(super) fn parse_output_reg_constraint(constraint: &str) -> Option<(AsmRegConstraint, bool)> {
-    let rest = constraint.strip_prefix('=')?;
-    let (early_clobber, rest) = match rest.strip_prefix('&') {
-        Some(rest) => (true, rest),
-        None => (false, rest),
-    };
-    let kind = parse_reg_constraint(rest)?;
-    Some((kind, early_clobber))
-}
-
-pub(super) fn parse_input_reg_constraint(constraint: &str) -> Option<AsmRegConstraint> {
-    parse_reg_constraint(constraint)
-}
-
 fn parse_reg_constraint(constraint: &str) -> Option<AsmRegConstraint> {
     if let Some(name) = constraint
         .strip_prefix('{')
@@ -204,15 +172,106 @@ fn parse_reg_constraint(constraint: &str) -> Option<AsmRegConstraint> {
         .collect::<Vec<_>>()
         .as_slice()
     {
-        [Constraint::FixedReg(reg)] => Some(AsmRegConstraint::FixedLetter(*reg)),
+        [ConstraintAtom::FixedReg(reg)] => Some(AsmRegConstraint::FixedLetter(*reg)),
         _ => None,
     }
 }
 
-pub(super) fn parse_x86_flag_output_constraint(constraint: &str) -> Option<&str> {
+fn parse_x86_flag_output_constraint(constraint: &str) -> Option<&str> {
     let condition = constraint.strip_prefix("={@cc")?.strip_suffix('}')?;
     (!condition.is_empty() && condition.chars().all(|ch| ch.is_ascii_alphabetic()))
         .then_some(condition)
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(super) enum Constraint {
+    Tied(usize),
+    FlagOutput(String),
+    Constant,
+    Reg {
+        kind: AsmRegConstraint,
+        early_clobber: bool,
+    },
+    Unsupported,
+}
+
+impl Constraint {
+    pub(super) fn parse(raw: &str, is_output: bool) -> Self {
+        if !is_output && let Ok(index) = raw.parse::<usize>() {
+            return Self::Tied(index);
+        }
+        if is_output {
+            if let Some(condition) = parse_x86_flag_output_constraint(raw) {
+                return Self::FlagOutput(condition.to_string());
+            }
+            let Some(rest) = raw.strip_prefix('=') else {
+                return Self::Unsupported;
+            };
+            let (early_clobber, rest) = match rest.strip_prefix('&') {
+                Some(rest) => (true, rest),
+                None => (false, rest),
+            };
+            return match parse_reg_constraint(rest) {
+                Some(kind) => Self::Reg {
+                    kind,
+                    early_clobber,
+                },
+                None => Self::Unsupported,
+            };
+        }
+        if constraint_is_constant_only(raw) {
+            return Self::Constant;
+        }
+        match parse_reg_constraint(raw) {
+            Some(kind) => Self::Reg {
+                kind,
+                early_clobber: false,
+            },
+            None => Self::Unsupported,
+        }
+    }
+
+    pub(super) fn constant_only(&self) -> bool {
+        matches!(self, Self::Constant)
+    }
+
+    pub(super) fn flag_condition(&self) -> Option<&str> {
+        match self {
+            Self::FlagOutput(condition) => Some(condition),
+            _ => None,
+        }
+    }
+
+    pub(super) fn reg_kind(&self) -> Option<&AsmRegConstraint> {
+        match self {
+            Self::Reg { kind, .. } => Some(kind),
+            _ => None,
+        }
+    }
+
+    pub(super) fn is_explicit_register(&self) -> bool {
+        matches!(
+            self.reg_kind(),
+            Some(AsmRegConstraint::FixedLetter(_) | AsmRegConstraint::ExplicitName(_))
+        )
+    }
+
+    pub(super) fn has_out_of_band_placement(&self) -> bool {
+        self.is_explicit_register() || matches!(self, Self::FlagOutput(_))
+    }
+
+    pub(super) fn wants_register_modifier(&self, constraints: &[Constraint]) -> bool {
+        match self {
+            Self::Reg {
+                kind: AsmRegConstraint::Generic,
+                ..
+            } => true,
+            Self::Tied(output_index) => constraints
+                .get(*output_index)
+                .is_some_and(|target| target.wants_register_modifier(constraints)),
+            _ => false,
+        }
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -552,7 +611,7 @@ impl TemplateModifier {
 pub(super) fn translate_asm_template(
     template: &str,
     slot_to_rust: &[usize],
-    constraints: &[&str],
+    constraints: &[Constraint],
     types: &[Type],
     dialect: Option<AsmDialect>,
 ) -> Option<String> {
@@ -606,11 +665,10 @@ pub(super) fn translate_asm_template(
             (digits.parse::<usize>().ok()?, false)
         };
         let rust_slot = *slot_to_rust.get(slot)?;
-        let constraint = *constraints.get(slot)?;
+        let constraint = constraints.get(slot)?;
         referenced_operands.insert(rust_slot);
-        if constraint_is_explicit_register(constraint) {
-            let kind = parse_reg_constraint(constraint.strip_prefix('=').unwrap_or(constraint))?;
-            let resolved = asm_reg_for_constraint(kind);
+        if constraint.is_explicit_register() {
+            let resolved = asm_reg_for_constraint(constraint.reg_kind()?.clone());
             let bits = asm_operand_bits(types.get(slot)?);
             let AsmReg::Explicit(name) = resolved_asm_reg_to_backend(&resolved, bits)? else {
                 return None;
@@ -624,7 +682,7 @@ pub(super) fn translate_asm_template(
         translated.push('{');
         translated.push_str(&rust_slot.to_string());
         if !suppress_modifier
-            && constraint_wants_register_modifier(constraint, constraints)
+            && constraint.wants_register_modifier(constraints)
             && let Some(modifier) = rust_asm_register_modifier(types.get(slot)?)
         {
             translated.push(':');
@@ -639,13 +697,13 @@ pub(super) fn translate_asm_template(
         let source_slot = slot_to_rust
             .iter()
             .position(|mapped| *mapped == rust_slot)?;
-        let constraint = constraints[source_slot];
-        if constraint_is_explicit_register(constraint) {
+        let constraint = &constraints[source_slot];
+        if constraint.has_out_of_band_placement() {
             continue;
         }
         translated.push_str("\n/* {");
         translated.push_str(&rust_slot.to_string());
-        if constraint_wants_register_modifier(constraint, constraints)
+        if constraint.wants_register_modifier(constraints)
             && let Some(modifier) = rust_asm_register_modifier(types.get(source_slot)?)
         {
             translated.push(':');
