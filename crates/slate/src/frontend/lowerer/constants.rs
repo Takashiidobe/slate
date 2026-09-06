@@ -184,12 +184,36 @@ pub(super) fn int_pattern(n: i128) -> Pattern {
 }
 
 pub(super) fn fp_literal_expr(fp: String) -> Expr {
+    if let Some(bits) = fp.strip_prefix("0x").or_else(|| fp.strip_prefix("0X")) {
+        let name = match bits.len() {
+            4 => "f16",
+            8 => "f32",
+            16 => "f64",
+            32 => "f128",
+            _ => return Expr::HexFloat(fp),
+        };
+        if u128::from_str_radix(bits, 16).is_ok() {
+            return Expr::HexFloat(format!("{name}::from_bits(0x{bits})"));
+        }
+    }
     fp.parse::<f64>()
         .map(|n| Expr::Value(n.into()))
         .unwrap_or_else(|_| Expr::HexFloat(fp))
 }
 
 pub(super) fn fp_literal_expr_for_type(ty: Option<&Type>, fp: String) -> Expr {
+    if let Some(bits) = fp.strip_prefix("0x").or_else(|| fp.strip_prefix("0X"))
+        && let Ok(bits) = u128::from_str_radix(bits, 16)
+    {
+        let (name, width) = match ty {
+            Some(Type::Prim(Prim::F16)) => ("f16", 4),
+            Some(Type::Prim(Prim::F32)) => ("f32", 8),
+            Some(Type::Prim(Prim::F64)) => ("f64", 16),
+            Some(Type::Prim(Prim::F128)) => ("f128", 32),
+            _ => return fp_literal_expr(fp),
+        };
+        return Expr::HexFloat(format!("{name}::from_bits(0x{bits:0width$x})"));
+    }
     if matches!(ty, Some(Type::LongDouble))
         && !crate::frontend::toolchain::uses_f64_long_double_abi()
     {
@@ -289,8 +313,8 @@ pub(super) fn complex_component_from_attr(attr: &Attr) -> Option<CirComplexCompo
     match attr {
         Attr::Int { value, .. } => Some(CirComplexComponent::Int(*value)),
         Attr::CirInt { value, .. } => value.parse().ok().map(CirComplexComponent::Int),
-        Attr::Float { text, .. } => fp_text_value(text).map(CirComplexComponent::Float),
-        Attr::CirFloat { value, .. } => fp_text_value(value).map(CirComplexComponent::Float),
+        Attr::Float { text, .. } => Some(CirComplexComponent::Float(text.clone())),
+        Attr::CirFloat { value, .. } => Some(CirComplexComponent::Float(value.clone())),
         _ => None,
     }
 }
@@ -303,8 +327,8 @@ pub(super) fn scalar_attr_expr(attr: &Attr) -> Option<Expr> {
     match attr {
         Attr::Int { value, .. } => Some(int_value_expr(*value)),
         Attr::CirInt { value, .. } => value.parse().ok().map(int_value_expr),
-        Attr::Float { text, .. } => fp_text_value(text).map(fp_literal_expr),
-        Attr::CirFloat { value, .. } => fp_text_value(value).map(fp_literal_expr),
+        Attr::Float { text, .. } => Some(fp_literal_expr(text.clone())),
+        Attr::CirFloat { value, .. } => Some(fp_literal_expr(value.clone())),
         Attr::CirBool { value, .. } | Attr::Bool(value) => {
             Some(Expr::Value(RustValue::Bool(*value)))
         }
@@ -320,21 +344,6 @@ pub(super) fn scalar_attr_expr(attr: &Attr) -> Option<Expr> {
 /// MLIR's own printer renders both the same way, so this is the only signal.
 pub(super) fn is_null_ptr_value(value: &Attr) -> bool {
     matches!(value, Attr::Int { value: 0, ty: None })
-}
-
-/// Renders a `#cir.fp<...>` literal's already-extracted text (e.g.
-/// `Attribute::CirFloat::text`) as a Rust float literal or `fN::from_bits` call.
-pub(super) fn fp_text_value(text: &str) -> Option<String> {
-    let text = text.trim();
-    if text.starts_with("0x") || text.starts_with("0X") {
-        let bits = u64::from_str_radix(&text[2..], 16).ok()?;
-        return match text.len() - 2 {
-            8 => Some(format!("f32::from_bits(0x{bits:08x})")),
-            16 => Some(format!("f64::from_bits(0x{bits:016x})")),
-            _ => None,
-        };
-    }
-    Some(text.to_string())
 }
 
 pub(super) fn decode_cir_string(s: &str) -> Vec<u8> {
