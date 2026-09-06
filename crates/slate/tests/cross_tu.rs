@@ -27,7 +27,7 @@ fn check_project_modules(
     for c_source in c_sources(fixture_dir) {
         let fixture = std::fs::read_to_string(&c_source)
             .map_err(|error| format!("read {}: {error}", c_source.display()))?;
-        if !support::filecheck::has_checks(&fixture, profile) {
+        if !support::filecheck::has_host_checks(&fixture, profile) {
             continue;
         }
         let stem = c_source
@@ -37,7 +37,7 @@ fn check_project_modules(
         let rust_source = rust_src_dir.join(format!("{stem}.rs"));
         let generated = std::fs::read_to_string(&rust_source)
             .map_err(|error| format!("read {}: {error}", rust_source.display()))?;
-        support::filecheck::check_generated_rust(
+        support::filecheck::check_generated_rust_for_host(
             &fixture,
             &generated,
             profile,
@@ -63,7 +63,7 @@ fn project_filecheck_fixtures(profile: support::filecheck::Profile) -> Vec<Strin
         .filter(|entry| {
             c_sources(&entry.path()).into_iter().any(|source| {
                 std::fs::read_to_string(source)
-                    .is_ok_and(|fixture| support::filecheck::has_checks(&fixture, profile))
+                    .is_ok_and(|fixture| support::filecheck::has_host_checks(&fixture, profile))
             })
         })
         .map(|entry| entry.file_name().to_string_lossy().into_owned())
@@ -83,7 +83,7 @@ fn library_filecheck_fixtures(profile: support::filecheck::Profile) -> Vec<Strin
                 .into_iter()
                 .any(|source| {
                     std::fs::read_to_string(source)
-                        .is_ok_and(|fixture| support::filecheck::has_checks(&fixture, profile))
+                        .is_ok_and(|fixture| support::filecheck::has_host_checks(&fixture, profile))
                 })
         })
         .map(|entry| entry.file_name().to_string_lossy().into_owned())

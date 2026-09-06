@@ -54,90 +54,6 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN rewrites
-// REWRITES: #![feature(c_variadic)]
-// REWRITES-NEXT: #![allow(
-// REWRITES-NEXT:     dead_code,
-// REWRITES-NEXT:     unused,
-// REWRITES-NEXT:     non_camel_case_types,
-// REWRITES-NEXT:     non_snake_case,
-// REWRITES-NEXT:     non_upper_case_globals,
-// REWRITES-NEXT:     arithmetic_overflow,
-// REWRITES-NEXT:     unconditional_panic,
-// REWRITES-NEXT:     suspicious_runtime_symbol_definitions,
-// REWRITES-NEXT:     unpredictable_function_pointer_comparisons,
-// REWRITES-NEXT:     unused_comparisons
-// REWRITES-NEXT: )]
-// REWRITES-EMPTY:
-// REWRITES-NEXT: #[repr(C, packed)]
-// REWRITES-NEXT: #[derive(Clone, Copy)]
-// REWRITES-NEXT: struct GNUPragmaPacked {
-// REWRITES-NEXT:     tag: u8,
-// REWRITES-NEXT:     value: u32,
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: #[cfg(target_arch = "x86_64")]
-// REWRITES-NEXT: core::arch::global_asm!(
-// REWRITES-NEXT:     ".weak gnu_pragma_weak_alias\n.set gnu_pragma_weak_alias, gnu_pragma_weak_target",
-// REWRITES-NEXT:     options(att_syntax, raw)
-// REWRITES-NEXT: );
-// REWRITES-EMPTY:
-// REWRITES-NEXT: static mut gnu_pragma_inner_macro: i32 = 11;
-// REWRITES-EMPTY:
-// REWRITES-NEXT: static mut gnu_pragma_outer_macro: i32 = 7;
-// REWRITES-EMPTY:
-// REWRITES-NEXT: unsafe extern "C" {
-// REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
-// REWRITES-NEXT:     fn gnu_pragma_weak_alias() -> i32;
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: fn gnu_pragma_hidden({{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     {{arg[0-9]+}} + 13
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: #[unsafe(no_mangle)]
-// REWRITES-NEXT: pub extern "C-unwind" fn gnu_pragma_weak_target() -> i32 {
-// REWRITES-NEXT:     17
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: fn gnu_pragma_actual() -> i32 {
-// REWRITES-NEXT:     19
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     let mut packed: GNUPragmaPacked = GNUPragmaPacked { tag: 0, value: 0 };
-// REWRITES-NEXT:     packed = GNUPragmaPacked { tag: 29, value: 31 };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i8 = c"%d %d %d %d %d %d %d %d\n".as_ptr() as *mut i8;
-// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { gnu_pragma_inner_macro };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { gnu_pragma_outer_macro };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = std::mem::offset_of!(GNUPragmaPacked, value) as i32;
-// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = gnu_pragma_hidden(37);
-// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { gnu_pragma_weak_alias() };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = gnu_pragma_actual();
-// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = gnu_pragma_diagnostic();
-// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}} + (packed.tag as i32);
-// REWRITES-NEXT:     let {{__v[0-9]+}}: u32 = unsafe { std::ptr::read_unaligned(std::ptr::addr_of!(packed.value)) };
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
-// REWRITES-NEXT:             5 as i32,
-// REWRITES-NEXT:             {{__v[0-9]+}},
-// REWRITES-NEXT:             {{__v[0-9]+}},
-// REWRITES-NEXT:             5 as i32,
-// REWRITES-NEXT:             {{__v[0-9]+}},
-// REWRITES-NEXT:             {{__v[0-9]+}},
-// REWRITES-NEXT:             {{__v[0-9]+}},
-// REWRITES-NEXT:             {{__v[0-9]+}} + ({{__v[0-9]+}} as i32),
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     std::process::exit(0 as i32);
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: fn gnu_pragma_diagnostic() -> i32 {
-// REWRITES-NEXT:     23
-// REWRITES-NEXT: }
-// SLATE-FILECHECK-END rewrites
-
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![feature(c_variadic)]
 // LOWERING-NEXT: #![allow(
@@ -209,7 +125,7 @@ int main(void) {
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = gnu_pragma_actual();
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = gnu_pragma_diagnostic();
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
-// LOWERING-NEXT:     let {{__v[0-9]+}}: u8 = packed.tag;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u8 = unsafe { std::ptr::read_unaligned(std::ptr::addr_of!(packed.tag)) };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
 // LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = unsafe { std::ptr::read_unaligned(std::ptr::addr_of!(packed.value)) };
@@ -238,3 +154,89 @@ int main(void) {
 // LOWERING-NEXT:     return {{__v[0-9]+}};
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
+
+// SLATE-FILECHECK-BEGIN rewrites
+// REWRITES: #![feature(c_variadic)]
+// REWRITES-NEXT: #![allow(
+// REWRITES-NEXT:     dead_code,
+// REWRITES-NEXT:     unused,
+// REWRITES-NEXT:     non_camel_case_types,
+// REWRITES-NEXT:     non_snake_case,
+// REWRITES-NEXT:     non_upper_case_globals,
+// REWRITES-NEXT:     arithmetic_overflow,
+// REWRITES-NEXT:     unconditional_panic,
+// REWRITES-NEXT:     suspicious_runtime_symbol_definitions,
+// REWRITES-NEXT:     unpredictable_function_pointer_comparisons,
+// REWRITES-NEXT:     unused_comparisons
+// REWRITES-NEXT: )]
+// REWRITES-EMPTY:
+// REWRITES-NEXT: #[repr(C, packed)]
+// REWRITES-NEXT: #[derive(Clone, Copy)]
+// REWRITES-NEXT: struct GNUPragmaPacked {
+// REWRITES-NEXT:     tag: u8,
+// REWRITES-NEXT:     value: u32,
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: #[cfg(target_arch = "x86_64")]
+// REWRITES-NEXT: core::arch::global_asm!(
+// REWRITES-NEXT:     ".weak gnu_pragma_weak_alias\n.set gnu_pragma_weak_alias, gnu_pragma_weak_target",
+// REWRITES-NEXT:     options(att_syntax, raw)
+// REWRITES-NEXT: );
+// REWRITES-EMPTY:
+// REWRITES-NEXT: static mut gnu_pragma_inner_macro: i32 = 11;
+// REWRITES-EMPTY:
+// REWRITES-NEXT: static mut gnu_pragma_outer_macro: i32 = 7;
+// REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
+// REWRITES-NEXT:     fn gnu_pragma_weak_alias() -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn gnu_pragma_hidden({{arg[0-9]+}}: i32) -> i32 {
+// REWRITES-NEXT:     {{arg[0-9]+}} + 13
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: #[unsafe(no_mangle)]
+// REWRITES-NEXT: pub extern "C-unwind" fn gnu_pragma_weak_target() -> i32 {
+// REWRITES-NEXT:     17
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn gnu_pragma_actual() -> i32 {
+// REWRITES-NEXT:     19
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT:     let mut packed: GNUPragmaPacked = GNUPragmaPacked { tag: 0, value: 0 };
+// REWRITES-NEXT:     packed = GNUPragmaPacked { tag: 29, value: 31 };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i8 = c"%d %d %d %d %d %d %d %d\n".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { gnu_pragma_inner_macro };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { gnu_pragma_outer_macro };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = std::mem::offset_of!(GNUPragmaPacked, value) as i32;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = gnu_pragma_hidden(37);
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { gnu_pragma_weak_alias() };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = gnu_pragma_actual();
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = gnu_pragma_diagnostic();
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// REWRITES-NEXT:     let {{__v[0-9]+}}: u8 = unsafe { std::ptr::read_unaligned(std::ptr::addr_of!(packed.tag)) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + ({{__v[0-9]+}} as i32);
+// REWRITES-NEXT:     let {{__v[0-9]+}}: u32 = unsafe { std::ptr::read_unaligned(std::ptr::addr_of!(packed.value)) };
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         printf(
+// REWRITES-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
+// REWRITES-NEXT:             5 as i32,
+// REWRITES-NEXT:             {{__v[0-9]+}},
+// REWRITES-NEXT:             {{__v[0-9]+}},
+// REWRITES-NEXT:             5 as i32,
+// REWRITES-NEXT:             {{__v[0-9]+}},
+// REWRITES-NEXT:             {{__v[0-9]+}},
+// REWRITES-NEXT:             {{__v[0-9]+}},
+// REWRITES-NEXT:             {{__v[0-9]+}} + ({{__v[0-9]+}} as i32),
+// REWRITES-NEXT:         )
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn gnu_pragma_diagnostic() -> i32 {
+// REWRITES-NEXT:     23
+// REWRITES-NEXT: }
+// SLATE-FILECHECK-END rewrites

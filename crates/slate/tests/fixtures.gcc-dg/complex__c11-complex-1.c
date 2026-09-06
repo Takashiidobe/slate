@@ -44,174 +44,6 @@ int main(void) {
 // @rewrite-fn-end
 // @lowering-fn-end
 
-// SLATE-FILECHECK-BEGIN lowering
-// LOWERING-DAG: fn main() {
-// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:     let {{__v[0-9]+}}: num_complex::Complex<f32> =
-// LOWERING-DAG:         unsafe { std::ptr::read_volatile(std::ptr::addr_of!(num_f)) };
-// LOWERING-DAG:     let {{__v[0-9]+}}: num_complex::Complex<f32> =
-// LOWERING-DAG:         unsafe { std::ptr::read_volatile(std::ptr::addr_of!(den_f)) };
-// LOWERING-DAG:     let {{__v[0-9]+}}: num_complex::Complex<f32> = unsafe { __divsc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
-// LOWERING-DAG:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(res_f), {{__v[0-9]+}}) };
-// LOWERING-DAG:     {
-// LOWERING-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> =
-// LOWERING-DAG:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(res_f)) };
-// LOWERING-DAG:         let {{__v[0-9]+}}: f32 = {{__v[0-9]+}}.re;
-// LOWERING-DAG:         let {{__v[0-9]+}}: bool = ({{__v[0-9]+}} as f64).is_nan();
-// LOWERING-DAG:         let {{__v[0-9]+}}: bool = !{{__v[0-9]+}};
-// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{__v[0-9]+}}
-// LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f32> =
-// LOWERING-DAG:                 unsafe { std::ptr::read_volatile(std::ptr::addr_of!(res_f)) };
-// LOWERING-DAG:             let {{__v[0-9]+}}: f32 = {{__v[0-9]+}}.im;
-// LOWERING-DAG:             let {{__v[0-9]+}}: bool = ({{__v[0-9]+}} as f64).is_nan();
-// LOWERING-DAG:             let {{__v[0-9]+}}: bool = !{{__v[0-9]+}};
-// LOWERING-DAG:             {{__v[0-9]+}}
-// LOWERING-DAG:         };
-// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{__v[0-9]+}}
-// LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f32> =
-// LOWERING-DAG:                 unsafe { std::ptr::read_volatile(std::ptr::addr_of!(cres_f)) };
-// LOWERING-DAG:             let {{__v[0-9]+}}: f32 = {{__v[0-9]+}}.re;
-// LOWERING-DAG:             let {{__v[0-9]+}}: bool = ({{__v[0-9]+}} as f64).is_nan();
-// LOWERING-DAG:             let {{__v[0-9]+}}: bool = !{{__v[0-9]+}};
-// LOWERING-DAG:             {{__v[0-9]+}}
-// LOWERING-DAG:         };
-// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{__v[0-9]+}}
-// LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f32> =
-// LOWERING-DAG:                 unsafe { std::ptr::read_volatile(std::ptr::addr_of!(cres_f)) };
-// LOWERING-DAG:             let {{__v[0-9]+}}: f32 = {{__v[0-9]+}}.im;
-// LOWERING-DAG:             let {{__v[0-9]+}}: bool = ({{__v[0-9]+}} as f64).is_nan();
-// LOWERING-DAG:             let {{__v[0-9]+}}: bool = !{{__v[0-9]+}};
-// LOWERING-DAG:             {{__v[0-9]+}}
-// LOWERING-DAG:         };
-// LOWERING-DAG:         if {{__v[0-9]+}} {
-// LOWERING-DAG:             unsafe { abort() };
-// LOWERING-DAG:         }
-// LOWERING-DAG:     }
-// LOWERING-DAG:     let {{__v[0-9]+}}: num_complex::Complex<f64> =
-// LOWERING-DAG:         unsafe { std::ptr::read_volatile(std::ptr::addr_of!(num_d)) };
-// LOWERING-DAG:     let {{__v[0-9]+}}: num_complex::Complex<f64> =
-// LOWERING-DAG:         unsafe { std::ptr::read_volatile(std::ptr::addr_of!(den_d)) };
-// LOWERING-DAG:     let {{__v[0-9]+}}: num_complex::Complex<f64> =
-// LOWERING-DAG:         unsafe { __divdc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
-// LOWERING-DAG:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(res_d), {{__v[0-9]+}}) };
-// LOWERING-DAG:     {
-// LOWERING-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> =
-// LOWERING-DAG:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(res_d)) };
-// LOWERING-DAG:         let {{__v[0-9]+}}: f64 = {{__v[0-9]+}}.re;
-// LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.is_nan();
-// LOWERING-DAG:         let {{__v[0-9]+}}: bool = !{{__v[0-9]+}};
-// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{__v[0-9]+}}
-// LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f64> =
-// LOWERING-DAG:                 unsafe { std::ptr::read_volatile(std::ptr::addr_of!(res_d)) };
-// LOWERING-DAG:             let {{__v[0-9]+}}: f64 = {{__v[0-9]+}}.im;
-// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.is_nan();
-// LOWERING-DAG:             let {{__v[0-9]+}}: bool = !{{__v[0-9]+}};
-// LOWERING-DAG:             {{__v[0-9]+}}
-// LOWERING-DAG:         };
-// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{__v[0-9]+}}
-// LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f64> =
-// LOWERING-DAG:                 unsafe { std::ptr::read_volatile(std::ptr::addr_of!(cres_d)) };
-// LOWERING-DAG:             let {{__v[0-9]+}}: f64 = {{__v[0-9]+}}.re;
-// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.is_nan();
-// LOWERING-DAG:             let {{__v[0-9]+}}: bool = !{{__v[0-9]+}};
-// LOWERING-DAG:             {{__v[0-9]+}}
-// LOWERING-DAG:         };
-// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{__v[0-9]+}}
-// LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f64> =
-// LOWERING-DAG:                 unsafe { std::ptr::read_volatile(std::ptr::addr_of!(cres_d)) };
-// LOWERING-DAG:             let {{__v[0-9]+}}: f64 = {{__v[0-9]+}}.im;
-// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.is_nan();
-// LOWERING-DAG:             let {{__v[0-9]+}}: bool = !{{__v[0-9]+}};
-// LOWERING-DAG:             {{__v[0-9]+}}
-// LOWERING-DAG:         };
-// LOWERING-DAG:         if {{__v[0-9]+}} {
-// LOWERING-DAG:             unsafe { abort() };
-// LOWERING-DAG:         }
-// LOWERING-DAG:     }
-// LOWERING-DAG:     let {{__v[0-9]+}}: num_complex::Complex<LongDouble> =
-// LOWERING-DAG:         unsafe { std::ptr::read_volatile(std::ptr::addr_of!(num_ld)) };
-// LOWERING-DAG:     let {{__v[0-9]+}}: num_complex::Complex<LongDouble> =
-// LOWERING-DAG:         unsafe { std::ptr::read_volatile(std::ptr::addr_of!(den_ld)) };
-// LOWERING-DAG:     let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
-// LOWERING-DAG:         __slate_cf80_div(
-// LOWERING-DAG:             num_complex::Complex {
-// LOWERING-DAG:                 re: {{__v[0-9]+}}.re,
-// LOWERING-DAG:                 im: {{__v[0-9]+}}.im,
-// LOWERING-DAG:             },
-// LOWERING-DAG:             num_complex::Complex {
-// LOWERING-DAG:                 re: {{__v[0-9]+}}.re,
-// LOWERING-DAG:                 im: {{__v[0-9]+}}.im,
-// LOWERING-DAG:             },
-// LOWERING-DAG:         )
-// LOWERING-DAG:     };
-// LOWERING-DAG:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(res_ld), {{__v[0-9]+}}) };
-// LOWERING-DAG:     {
-// LOWERING-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> =
-// LOWERING-DAG:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(res_ld)) };
-// LOWERING-DAG:         let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}}.re;
-// LOWERING-DAG:         let {{__v[0-9]+}}: bool = __slate_f80_is_fp_class({{__v[0-9]+}}, 3);
-// LOWERING-DAG:         let {{__v[0-9]+}}: bool = !{{__v[0-9]+}};
-// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{__v[0-9]+}}
-// LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> =
-// LOWERING-DAG:                 unsafe { std::ptr::read_volatile(std::ptr::addr_of!(res_ld)) };
-// LOWERING-DAG:             let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}}.im;
-// LOWERING-DAG:             let {{__v[0-9]+}}: bool = __slate_f80_is_fp_class({{__v[0-9]+}}, 3);
-// LOWERING-DAG:             let {{__v[0-9]+}}: bool = !{{__v[0-9]+}};
-// LOWERING-DAG:             {{__v[0-9]+}}
-// LOWERING-DAG:         };
-// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{__v[0-9]+}}
-// LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> =
-// LOWERING-DAG:                 unsafe { std::ptr::read_volatile(std::ptr::addr_of!(cres_ld)) };
-// LOWERING-DAG:             let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}}.re;
-// LOWERING-DAG:             let {{__v[0-9]+}}: bool = __slate_f80_is_fp_class({{__v[0-9]+}}, 3);
-// LOWERING-DAG:             let {{__v[0-9]+}}: bool = !{{__v[0-9]+}};
-// LOWERING-DAG:             {{__v[0-9]+}}
-// LOWERING-DAG:         };
-// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{__v[0-9]+}}
-// LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> =
-// LOWERING-DAG:                 unsafe { std::ptr::read_volatile(std::ptr::addr_of!(cres_ld)) };
-// LOWERING-DAG:             let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}}.im;
-// LOWERING-DAG:             let {{__v[0-9]+}}: bool = __slate_f80_is_fp_class({{__v[0-9]+}}, 3);
-// LOWERING-DAG:             let {{__v[0-9]+}}: bool = !{{__v[0-9]+}};
-// LOWERING-DAG:             {{__v[0-9]+}}
-// LOWERING-DAG:         };
-// LOWERING-DAG:         if {{__v[0-9]+}} {
-// LOWERING-DAG:             unsafe { abort() };
-// LOWERING-DAG:         }
-// LOWERING-DAG:     }
-// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:     unsafe { exit({{__v[0-9]+}} as i32) };
-// LOWERING-DAG:     std::process::exit({{__v[0-9]+}} as i32);
-// LOWERING-DAG: }
-// SLATE-FILECHECK-END lowering
-
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: fn main() {
 // REWRITES-DAG:     let {{__v[0-9]+}}: num_complex::Complex<f32> =
@@ -377,3 +209,171 @@ int main(void) {
 // REWRITES-DAG:     std::process::exit(0 as i32);
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites
+
+// SLATE-FILECHECK-BEGIN lowering
+// LOWERING-DAG: fn main() {
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:     let {{__v[0-9]+}}: num_complex::Complex<f32> =
+// LOWERING-DAG:         unsafe { std::ptr::read_volatile(std::ptr::addr_of!(num_f)) };
+// LOWERING-DAG:     let {{__v[0-9]+}}: num_complex::Complex<f32> =
+// LOWERING-DAG:         unsafe { std::ptr::read_volatile(std::ptr::addr_of!(den_f)) };
+// LOWERING-DAG:     let {{__v[0-9]+}}: num_complex::Complex<f32> = unsafe { __divsc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
+// LOWERING-DAG:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(res_f), {{__v[0-9]+}}) };
+// LOWERING-DAG:     {
+// LOWERING-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> =
+// LOWERING-DAG:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(res_f)) };
+// LOWERING-DAG:         let {{__v[0-9]+}}: f32 = {{__v[0-9]+}}.re;
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.is_nan();
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = !{{__v[0-9]+}};
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
+// LOWERING-DAG:         } else {
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f32> =
+// LOWERING-DAG:                 unsafe { std::ptr::read_volatile(std::ptr::addr_of!(res_f)) };
+// LOWERING-DAG:             let {{__v[0-9]+}}: f32 = {{__v[0-9]+}}.im;
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.is_nan();
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = !{{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
+// LOWERING-DAG:         };
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
+// LOWERING-DAG:         } else {
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f32> =
+// LOWERING-DAG:                 unsafe { std::ptr::read_volatile(std::ptr::addr_of!(cres_f)) };
+// LOWERING-DAG:             let {{__v[0-9]+}}: f32 = {{__v[0-9]+}}.re;
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.is_nan();
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = !{{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
+// LOWERING-DAG:         };
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
+// LOWERING-DAG:         } else {
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f32> =
+// LOWERING-DAG:                 unsafe { std::ptr::read_volatile(std::ptr::addr_of!(cres_f)) };
+// LOWERING-DAG:             let {{__v[0-9]+}}: f32 = {{__v[0-9]+}}.im;
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.is_nan();
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = !{{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
+// LOWERING-DAG:         };
+// LOWERING-DAG:         if {{__v[0-9]+}} {
+// LOWERING-DAG:             unsafe { abort() };
+// LOWERING-DAG:         }
+// LOWERING-DAG:     }
+// LOWERING-DAG:     let {{__v[0-9]+}}: num_complex::Complex<f64> =
+// LOWERING-DAG:         unsafe { std::ptr::read_volatile(std::ptr::addr_of!(num_d)) };
+// LOWERING-DAG:     let {{__v[0-9]+}}: num_complex::Complex<f64> =
+// LOWERING-DAG:         unsafe { std::ptr::read_volatile(std::ptr::addr_of!(den_d)) };
+// LOWERING-DAG:     let {{__v[0-9]+}}: num_complex::Complex<f64> =
+// LOWERING-DAG:         unsafe { __divdc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
+// LOWERING-DAG:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(res_d), {{__v[0-9]+}}) };
+// LOWERING-DAG:     {
+// LOWERING-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> =
+// LOWERING-DAG:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(res_d)) };
+// LOWERING-DAG:         let {{__v[0-9]+}}: f64 = {{__v[0-9]+}}.re;
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.is_nan();
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = !{{__v[0-9]+}};
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
+// LOWERING-DAG:         } else {
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f64> =
+// LOWERING-DAG:                 unsafe { std::ptr::read_volatile(std::ptr::addr_of!(res_d)) };
+// LOWERING-DAG:             let {{__v[0-9]+}}: f64 = {{__v[0-9]+}}.im;
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.is_nan();
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = !{{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
+// LOWERING-DAG:         };
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
+// LOWERING-DAG:         } else {
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f64> =
+// LOWERING-DAG:                 unsafe { std::ptr::read_volatile(std::ptr::addr_of!(cres_d)) };
+// LOWERING-DAG:             let {{__v[0-9]+}}: f64 = {{__v[0-9]+}}.re;
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.is_nan();
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = !{{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
+// LOWERING-DAG:         };
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
+// LOWERING-DAG:         } else {
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f64> =
+// LOWERING-DAG:                 unsafe { std::ptr::read_volatile(std::ptr::addr_of!(cres_d)) };
+// LOWERING-DAG:             let {{__v[0-9]+}}: f64 = {{__v[0-9]+}}.im;
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.is_nan();
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = !{{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
+// LOWERING-DAG:         };
+// LOWERING-DAG:         if {{__v[0-9]+}} {
+// LOWERING-DAG:             unsafe { abort() };
+// LOWERING-DAG:         }
+// LOWERING-DAG:     }
+// LOWERING-DAG:     let {{__v[0-9]+}}: num_complex::Complex<LongDouble> =
+// LOWERING-DAG:         unsafe { std::ptr::read_volatile(std::ptr::addr_of!(num_ld)) };
+// LOWERING-DAG:     let {{__v[0-9]+}}: num_complex::Complex<LongDouble> =
+// LOWERING-DAG:         unsafe { std::ptr::read_volatile(std::ptr::addr_of!(den_ld)) };
+// LOWERING-DAG:     let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
+// LOWERING-DAG:         __slate_cf80_div(
+// LOWERING-DAG:             num_complex::Complex {
+// LOWERING-DAG:                 re: {{__v[0-9]+}}.re,
+// LOWERING-DAG:                 im: {{__v[0-9]+}}.im,
+// LOWERING-DAG:             },
+// LOWERING-DAG:             num_complex::Complex {
+// LOWERING-DAG:                 re: {{__v[0-9]+}}.re,
+// LOWERING-DAG:                 im: {{__v[0-9]+}}.im,
+// LOWERING-DAG:             },
+// LOWERING-DAG:         )
+// LOWERING-DAG:     };
+// LOWERING-DAG:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(res_ld), {{__v[0-9]+}}) };
+// LOWERING-DAG:     {
+// LOWERING-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> =
+// LOWERING-DAG:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(res_ld)) };
+// LOWERING-DAG:         let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}}.re;
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = __slate_f80_is_fp_class({{__v[0-9]+}}, 3);
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = !{{__v[0-9]+}};
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
+// LOWERING-DAG:         } else {
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> =
+// LOWERING-DAG:                 unsafe { std::ptr::read_volatile(std::ptr::addr_of!(res_ld)) };
+// LOWERING-DAG:             let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}}.im;
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = __slate_f80_is_fp_class({{__v[0-9]+}}, 3);
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = !{{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
+// LOWERING-DAG:         };
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
+// LOWERING-DAG:         } else {
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> =
+// LOWERING-DAG:                 unsafe { std::ptr::read_volatile(std::ptr::addr_of!(cres_ld)) };
+// LOWERING-DAG:             let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}}.re;
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = __slate_f80_is_fp_class({{__v[0-9]+}}, 3);
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = !{{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
+// LOWERING-DAG:         };
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
+// LOWERING-DAG:         } else {
+// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> =
+// LOWERING-DAG:                 unsafe { std::ptr::read_volatile(std::ptr::addr_of!(cres_ld)) };
+// LOWERING-DAG:             let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}}.im;
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = __slate_f80_is_fp_class({{__v[0-9]+}}, 3);
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = !{{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
+// LOWERING-DAG:         };
+// LOWERING-DAG:         if {{__v[0-9]+}} {
+// LOWERING-DAG:             unsafe { abort() };
+// LOWERING-DAG:         }
+// LOWERING-DAG:     }
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:     unsafe { exit({{__v[0-9]+}} as i32) };
+// LOWERING-DAG:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-DAG: }
+// SLATE-FILECHECK-END lowering

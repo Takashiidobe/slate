@@ -1214,6 +1214,7 @@ fn translate_project_lib_crate_with_manifest(
         }
     }
 
+    let strong_symbols = defined.keys().cloned().collect();
     let project = frontend::ProjectInfo {
         cross_module: defined,
         cross_module_globals: defined_globals,
@@ -1230,6 +1231,7 @@ fn translate_project_lib_crate_with_manifest(
         cross_referenced_functions,
         cross_referenced_globals,
         address_taken_functions,
+        strong_symbols,
     };
     let fixup_skip = if has_setlocale {
         backend::SkipSet::skip(backend::Pass::CTypeLibc)
@@ -1617,6 +1619,7 @@ fn translate_project_lib_crate_with_compile_commands(
                 emit_pub: true,
                 cross_referenced_functions: variant_facts.cross_referenced_functions.clone(),
                 cross_referenced_globals: variant_facts.cross_referenced_globals.clone(),
+                strong_symbols: variant_facts.defined.keys().cloned().collect(),
             };
             let mut context = ctx::Ctx::default();
             let mut program = frontend::lower_with_project(
@@ -1972,6 +1975,7 @@ fn translate_project_with_targets(
             },
             cross_referenced_functions: cross_referenced_functions.clone(),
             cross_referenced_globals: cross_referenced_globals.clone(),
+            strong_symbols: defined.keys().cloned().collect(),
         };
         let mut variant_programs = Vec::new();
         for target in &targets {
@@ -2344,6 +2348,7 @@ fn translate_project_with_compile_commands(
             },
             cross_referenced_functions: cross_referenced_functions.clone(),
             cross_referenced_globals: cross_referenced_globals.clone(),
+            strong_symbols: defined.keys().cloned().collect(),
         };
         let variants = variants_by_path
             .get(path)

@@ -123,12 +123,23 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             ty: Type::Prim(Prim::Usize),
         };
         if element.unbounded || element.out_of_bounds {
-            let array_ptr = self
-                .global_array_ptr_expr(&element.base, element.elem_ty.as_ref())
-                .unwrap_or_else(|| Expr::ArrayPtr {
-                    array: Box::new(element.base.clone()),
-                    mutable: true,
-                });
+            let array_ptr = if element.unaligned {
+                Expr::MethodCallGeneric {
+                    recv: Box::new(Expr::AddrOf {
+                        mutable: true,
+                        expr: Box::new(element.base.clone()),
+                    }),
+                    method: "cast".into(),
+                    type_args: vec![element.elem_ty.clone().unwrap_or(Type::Prim(Prim::U8))],
+                    args: Vec::new(),
+                }
+            } else {
+                self.global_array_ptr_expr(&element.base, element.elem_ty.as_ref())
+                    .unwrap_or_else(|| Expr::ArrayPtr {
+                        array: Box::new(element.base.clone()),
+                        mutable: true,
+                    })
+            };
             return Expr::Unary {
                 op: UnaryOp::Deref,
                 expr: Box::new(Expr::MethodCall {

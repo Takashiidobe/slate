@@ -197,9 +197,7 @@ int main(void) {
 // LOWERING-NEXT: #[inline(always)]
 // LOWERING-NEXT: fn _mm_storeu_si128({{arg[0-9]+}}: *mut [i64; 2], {{arg[0-9]+}}: [i64; 2]) {
 // LOWERING-NEXT:     let {{__v[0-9]+}}: *mut __storeu_si128 = {{arg[0-9]+}} as *mut __storeu_si128;
-// LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         (*{{__v[0-9]+}}).__v = {{arg[0-9]+}};
-// LOWERING-NEXT:     }
+// LOWERING-NEXT:     unsafe { std::ptr::write_unaligned(unsafe { std::ptr::addr_of_mut!((*{{__v[0-9]+}}).__v) }, {{arg[0-9]+}}) };
 // LOWERING-NEXT:     return;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
@@ -320,9 +318,7 @@ int main(void) {
 // LOWERING-NEXT: #[target_feature(enable = "avx,popcnt,sse3,sse4.1,sse4.2,ssse3,xsave")]
 // LOWERING-NEXT: unsafe fn _mm256_storeu_si256({{arg[0-9]+}}: *mut [i64; 4], {{arg[0-9]+}}: [i64; 4]) {
 // LOWERING-NEXT:     let {{__v[0-9]+}}: *mut __storeu_si256 = {{arg[0-9]+}} as *mut __storeu_si256;
-// LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         (*{{__v[0-9]+}}).__v = {{arg[0-9]+}};
-// LOWERING-NEXT:     }
+// LOWERING-NEXT:     unsafe { std::ptr::write_unaligned(unsafe { std::ptr::addr_of_mut!((*{{__v[0-9]+}}).__v) }, {{arg[0-9]+}}) };
 // LOWERING-NEXT:     return;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
@@ -477,9 +473,8 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[inline(always)]
 // REWRITES-NEXT: fn _mm_storeu_si128({{arg[0-9]+}}: *mut [i64; 2], {{arg[0-9]+}}: [i64; 2]) {
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         (*({{arg[0-9]+}} as *mut __storeu_si128)).__v = {{arg[0-9]+}};
-// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut __storeu_si128 = {{arg[0-9]+}} as *mut __storeu_si128;
+// REWRITES-NEXT:     unsafe { std::ptr::write_unaligned(unsafe { std::ptr::addr_of_mut!((*{{__v[0-9]+}}).__v) }, {{arg[0-9]+}}) };
 // REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
@@ -597,9 +592,8 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[target_feature(enable = "avx,popcnt,sse3,sse4.1,sse4.2,ssse3,xsave")]
 // REWRITES-NEXT: unsafe fn _mm256_storeu_si256({{arg[0-9]+}}: *mut [i64; 4], {{arg[0-9]+}}: [i64; 4]) {
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         (*({{arg[0-9]+}} as *mut __storeu_si256)).__v = {{arg[0-9]+}};
-// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut __storeu_si256 = {{arg[0-9]+}} as *mut __storeu_si256;
+// REWRITES-NEXT:     unsafe { std::ptr::write_unaligned(unsafe { std::ptr::addr_of_mut!((*{{__v[0-9]+}}).__v) }, {{arg[0-9]+}}) };
 // REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

@@ -35,42 +35,6 @@ main() {
 // @rewrite-fn-end
 // @lowering-fn-end
 
-// SLATE-FILECHECK-BEGIN lowering
-// LOWERING-DAG: fn main() {
-// LOWERING-DAG:     let mut t: T = T {
-// LOWERING-DAG:         c: 0,
-// LOWERING-DAG:         s: S { b: [0; 2] },
-// LOWERING-DAG:     };
-// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:     let {{__v[0-9]+}}: [i64; 2] = [3, 4];
-// LOWERING-DAG:     t.s.b = {{__v[0-9]+}};
-// LOWERING-DAG:     unsafe { foo(std::ptr::addr_of_mut!(t.s)) };
-// LOWERING-DAG:     {
-// LOWERING-DAG:         let {{__v[0-9]+}}: [i64; 2] = t.s.b;
-// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:         let {{__v[0-9]+}}: i64 = {{__v[0-9]+}}[({{__v[0-9]+}} as usize)];
-// LOWERING-DAG:         let {{__v[0-9]+}}: i64 = 3;
-// LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{__v[0-9]+}}
-// LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{__v[0-9]+}}: [i64; 2] = t.s.b;
-// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = 1;
-// LOWERING-DAG:             let {{__v[0-9]+}}: i64 = {{__v[0-9]+}}[({{__v[0-9]+}} as usize)];
-// LOWERING-DAG:             let {{__v[0-9]+}}: i64 = 5;
-// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// LOWERING-DAG:             {{__v[0-9]+}}
-// LOWERING-DAG:         };
-// LOWERING-DAG:         if {{__v[0-9]+}} {
-// LOWERING-DAG:             unsafe { abort() };
-// LOWERING-DAG:         }
-// LOWERING-DAG:     }
-// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:     std::process::exit({{__v[0-9]+}} as i32);
-// LOWERING-DAG: }
-// SLATE-FILECHECK-END lowering
-
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: fn main() {
 // REWRITES-DAG:     let mut t: T = T {
@@ -92,3 +56,39 @@ main() {
 // REWRITES-DAG:     std::process::exit(0 as i32);
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites
+
+// SLATE-FILECHECK-BEGIN lowering
+// LOWERING-DAG: fn main() {
+// LOWERING-DAG:     let mut t: T = T {
+// LOWERING-DAG:         c: 0,
+// LOWERING-DAG:         s: S { b: [0; 2] },
+// LOWERING-DAG:     };
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:     let {{__v[0-9]+}}: [i64; 2] = [3, 4];
+// LOWERING-DAG:     unsafe { std::ptr::write_unaligned(std::ptr::addr_of_mut!(t.s.b), {{__v[0-9]+}}) };
+// LOWERING-DAG:     unsafe { foo(std::ptr::addr_of_mut!(t.s)) };
+// LOWERING-DAG:     {
+// LOWERING-DAG:         let {{__v[0-9]+}}: [i64; 2] = unsafe { std::ptr::read_unaligned(std::ptr::addr_of!(t.s.b)) };
+// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:         let {{__v[0-9]+}}: i64 = {{__v[0-9]+}}[({{__v[0-9]+}} as usize)];
+// LOWERING-DAG:         let {{__v[0-9]+}}: i64 = 3;
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
+// LOWERING-DAG:         } else {
+// LOWERING-DAG:             let {{__v[0-9]+}}: [i64; 2] = unsafe { std::ptr::read_unaligned(std::ptr::addr_of!(t.s.b)) };
+// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-DAG:             let {{__v[0-9]+}}: i64 = {{__v[0-9]+}}[({{__v[0-9]+}} as usize)];
+// LOWERING-DAG:             let {{__v[0-9]+}}: i64 = 5;
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
+// LOWERING-DAG:         };
+// LOWERING-DAG:         if {{__v[0-9]+}} {
+// LOWERING-DAG:             unsafe { abort() };
+// LOWERING-DAG:         }
+// LOWERING-DAG:     }
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-DAG: }
+// SLATE-FILECHECK-END lowering

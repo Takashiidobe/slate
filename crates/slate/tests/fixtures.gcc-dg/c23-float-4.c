@@ -34,41 +34,6 @@ int main(void) {
 /* @rewrite-fn-end */
 /* @lowering-fn-end */
 
-// SLATE-FILECHECK-BEGIN lowering
-// LOWERING-DAG: fn main() {
-// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:     {
-// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 1;
-// LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
-// LOWERING-DAG:         let {{__v[0-9]+}}: bool = !{{__v[0-9]+}};
-// LOWERING-DAG:         if {{__v[0-9]+}} {
-// LOWERING-DAG:             unsafe { abort() };
-// LOWERING-DAG:         }
-// LOWERING-DAG:     }
-// LOWERING-DAG:     {
-// LOWERING-DAG:         let {{__v[0-9]+}}: f32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(f)) };
-// LOWERING-DAG:         let {{__v[0-9]+}}: bool = ({{__v[0-9]+}} as f64).is_nan();
-// LOWERING-DAG:         let {{__v[0-9]+}}: bool = !{{__v[0-9]+}};
-// LOWERING-DAG:         if {{__v[0-9]+}} {
-// LOWERING-DAG:             unsafe { abort() };
-// LOWERING-DAG:         }
-// LOWERING-DAG:     }
-// LOWERING-DAG:     {
-// LOWERING-DAG:         let {{__v[0-9]+}}: f32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(f)) };
-// LOWERING-DAG:         let {{__v[0-9]+}}: f32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(f)) };
-// LOWERING-DAG:         let {{__v[0-9]+}}: f32 = {{__v[0-9]+}} + {{__v[0-9]+}};
-// LOWERING-DAG:         let {{__v[0-9]+}}: bool = ({{__v[0-9]+}} as f64).is_nan();
-// LOWERING-DAG:         let {{__v[0-9]+}}: bool = !{{__v[0-9]+}};
-// LOWERING-DAG:         if {{__v[0-9]+}} {
-// LOWERING-DAG:             unsafe { abort() };
-// LOWERING-DAG:         }
-// LOWERING-DAG:     }
-// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:     unsafe { exit({{__v[0-9]+}} as i32) };
-// LOWERING-DAG:     std::process::exit({{__v[0-9]+}} as i32);
-// LOWERING-DAG: }
-// SLATE-FILECHECK-END lowering
-
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: fn main() {
 // REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 1;
@@ -94,3 +59,38 @@ int main(void) {
 // REWRITES-DAG:     std::process::exit(0 as i32);
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites
+
+// SLATE-FILECHECK-BEGIN lowering
+// LOWERING-DAG: fn main() {
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:     {
+// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = !{{__v[0-9]+}};
+// LOWERING-DAG:         if {{__v[0-9]+}} {
+// LOWERING-DAG:             unsafe { abort() };
+// LOWERING-DAG:         }
+// LOWERING-DAG:     }
+// LOWERING-DAG:     {
+// LOWERING-DAG:         let {{__v[0-9]+}}: f32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(f)) };
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.is_nan();
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = !{{__v[0-9]+}};
+// LOWERING-DAG:         if {{__v[0-9]+}} {
+// LOWERING-DAG:             unsafe { abort() };
+// LOWERING-DAG:         }
+// LOWERING-DAG:     }
+// LOWERING-DAG:     {
+// LOWERING-DAG:         let {{__v[0-9]+}}: f32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(f)) };
+// LOWERING-DAG:         let {{__v[0-9]+}}: f32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(f)) };
+// LOWERING-DAG:         let {{__v[0-9]+}}: f32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.is_nan();
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = !{{__v[0-9]+}};
+// LOWERING-DAG:         if {{__v[0-9]+}} {
+// LOWERING-DAG:             unsafe { abort() };
+// LOWERING-DAG:         }
+// LOWERING-DAG:     }
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:     unsafe { exit({{__v[0-9]+}} as i32) };
+// LOWERING-DAG:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-DAG: }
+// SLATE-FILECHECK-END lowering

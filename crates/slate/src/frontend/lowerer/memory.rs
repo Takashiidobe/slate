@@ -179,6 +179,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         unsafe_access: false,
                         unbounded: false,
                         out_of_bounds: false,
+                        unaligned: false,
                         elem_ty,
                     },
                 );
@@ -188,6 +189,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let base_expr = self.place_or_deref_expr(&op.base);
         let unsafe_access =
             unbounded || self.place_expr(&op.base).is_none() || self.ptr_requires_unsafe(&op.base);
+        let unaligned = unbounded
+            || self
+                .member_ptrs
+                .get(&op.base)
+                .is_some_and(|member| member.unaligned)
+            || self.packed_pointer_values.contains(&op.base);
         self.element_ptrs.insert(
             op.result.clone(),
             ElementPtr {
@@ -196,6 +203,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 unsafe_access,
                 unbounded,
                 out_of_bounds,
+                unaligned,
                 elem_ty,
             },
         );
@@ -789,7 +797,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                             .packed
                             .is_some_and(|packed| u64::from(type_alignment(ty)) > u64::from(packed))
                     })
-            });
+            })
+            || self
+                .member_ptrs
+                .get(&op.addr)
+                .is_some_and(|member| member.unaligned)
+            || self.packed_pointer_values.contains(&op.addr);
         self.member_ptrs.insert(
             op.result.clone(),
             MemberPtr {
