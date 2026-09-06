@@ -438,6 +438,7 @@ int main(void) {
 // LOWERING-NEXT: #[derive(Clone, Copy)]
 // LOWERING-NEXT: struct C11OverAligned {
 // LOWERING-NEXT:     value: u8,
+// LOWERING-NEXT:     __pad_1: [u8; 31],
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[repr(C)]
@@ -565,7 +566,10 @@ int main(void) {
 // LOWERING-NEXT:         __slate_anon_1: {{anon_[0-9]+}} { x: 0, y: 0 },
 // LOWERING-NEXT:     };
 // LOWERING-NEXT:     let mut aligned_object: aligned::Aligned<aligned::A32, C11OverAligned> =
-// LOWERING-NEXT:         aligned::Aligned(C11OverAligned { value: 0 });
+// LOWERING-NEXT:         aligned::Aligned(C11OverAligned {
+// LOWERING-NEXT:             value: 0,
+// LOWERING-NEXT:             __pad_1: [0; 31],
+// LOWERING-NEXT:         });
 // LOWERING-NEXT:     let mut utf16_state: __mbstate_t = __mbstate_t {
 // LOWERING-NEXT:         __count: 0,
 // LOWERING-NEXT:         __value: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() },
@@ -604,7 +608,10 @@ int main(void) {
 // LOWERING-NEXT:         __slate_anon_1: {{anon_[0-9]+}} { x: 0, y: 0 },
 // LOWERING-NEXT:     };
 // LOWERING-NEXT:     anonymous = {{__v[0-9]+}};
-// LOWERING-NEXT:     let {{__v[0-9]+}}: C11OverAligned = C11OverAligned { value: 0 };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: C11OverAligned = C11OverAligned {
+// LOWERING-NEXT:         value: 0,
+// LOWERING-NEXT:         __pad_1: [0; 31],
+// LOWERING-NEXT:     };
 // LOWERING-NEXT:     *aligned_object = {{__v[0-9]+}};
 // LOWERING-NEXT:     let {{__v[0-9]+}}: __mbstate_t = __mbstate_t {
 // LOWERING-NEXT:         __count: 0,
@@ -1482,6 +1489,7 @@ int main(void) {
 // REWRITES-NEXT: #[derive(Clone, Copy)]
 // REWRITES-NEXT: struct C11OverAligned {
 // REWRITES-NEXT:     value: u8,
+// REWRITES-NEXT:     __pad_1: [u8; 31],
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[repr(C)]
@@ -1609,7 +1617,10 @@ int main(void) {
 // REWRITES-NEXT:         __slate_anon_1: {{anon_[0-9]+}} { x: 0, y: 0 },
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let mut aligned_object: aligned::Aligned<aligned::A32, C11OverAligned> =
-// REWRITES-NEXT:         aligned::Aligned(C11OverAligned { value: 0 });
+// REWRITES-NEXT:         aligned::Aligned(C11OverAligned {
+// REWRITES-NEXT:             value: 0,
+// REWRITES-NEXT:             __pad_1: [0; 31],
+// REWRITES-NEXT:         });
 // REWRITES-NEXT:     let mut utf16_state: __mbstate_t = __mbstate_t {
 // REWRITES-NEXT:         __count: 0,
 // REWRITES-NEXT:         __value: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() },
@@ -1644,7 +1655,10 @@ int main(void) {
 // REWRITES-NEXT:         __slate_anon_0: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() },
 // REWRITES-NEXT:         __slate_anon_1: {{anon_[0-9]+}} { x: 0, y: 0 },
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     *aligned_object = C11OverAligned { value: 0 };
+// REWRITES-NEXT:     *aligned_object = C11OverAligned {
+// REWRITES-NEXT:         value: 0,
+// REWRITES-NEXT:         __pad_1: [0; 31],
+// REWRITES-NEXT:     };
 // REWRITES-NEXT:     utf16_state = __mbstate_t {
 // REWRITES-NEXT:         __count: 0,
 // REWRITES-NEXT:         __value: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() },

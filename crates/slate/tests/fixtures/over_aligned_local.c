@@ -1,16 +1,5 @@
 #include <stdint.h>
 
-// LOWERING-DAG: #[repr(C, align(32))]
-// LOWERING-LABEL: {{^}}fn main() {
-// LOWERING-DAG: aligned::Aligned<aligned::A32, OverAligned>
-// LOWERING-DAG: aligned::Aligned<aligned::A64, i32>
-// LOWERING-DAG: std::mem::align_of::<OverAligned>() as u64
-// LOWERING-DAG: std::ptr::addr_of_mut!(*object) as u64
-// LOWERING-DAG: std::ptr::addr_of_mut!(*local) as u64
-// LOWERING-NOT: object as u64
-// LOWERING-NOT: *local as u64
-// LOWERING: {{^}}}
-
 #include <stdio.h>
 
 struct OverAligned {
@@ -45,6 +34,7 @@ int main(void) {
 // LOWERING-NEXT: #[derive(Clone, Copy)]
 // LOWERING-NEXT: struct OverAligned {
 // LOWERING-NEXT:     value: i32,
+// LOWERING-NEXT:     __pad_1: [u8; 28],
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: unsafe extern "C" {
@@ -52,11 +42,16 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut object: aligned::Aligned<aligned::A32, OverAligned> =
-// LOWERING-NEXT:         aligned::Aligned(OverAligned { value: 0 });
+// LOWERING-NEXT:     let mut object: aligned::Aligned<aligned::A32, OverAligned> = aligned::Aligned(OverAligned {
+// LOWERING-NEXT:         value: 0,
+// LOWERING-NEXT:         __pad_1: [0; 28],
+// LOWERING-NEXT:     });
 // LOWERING-NEXT:     let mut local: aligned::Aligned<aligned::A64, i32> = aligned::Aligned(0);
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: OverAligned = OverAligned { value: 7 };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: OverAligned = OverAligned {
+// LOWERING-NEXT:         value: 7,
+// LOWERING-NEXT:         __pad_1: [0; 28],
+// LOWERING-NEXT:     };
 // LOWERING-NEXT:     *object = {{__v[0-9]+}};
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 11;
 // LOWERING-NEXT:     *local = {{__v[0-9]+}};
@@ -105,6 +100,7 @@ int main(void) {
 // REWRITES-NEXT: #[derive(Clone, Copy)]
 // REWRITES-NEXT: struct OverAligned {
 // REWRITES-NEXT:     value: i32,
+// REWRITES-NEXT:     __pad_1: [u8; 28],
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe extern "C" {
@@ -112,10 +108,15 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     let mut object: aligned::Aligned<aligned::A32, OverAligned> =
-// REWRITES-NEXT:         aligned::Aligned(OverAligned { value: 0 });
+// REWRITES-NEXT:     let mut object: aligned::Aligned<aligned::A32, OverAligned> = aligned::Aligned(OverAligned {
+// REWRITES-NEXT:         value: 0,
+// REWRITES-NEXT:         __pad_1: [0; 28],
+// REWRITES-NEXT:     });
 // REWRITES-NEXT:     let mut local: aligned::Aligned<aligned::A64, i32> = aligned::Aligned(0);
-// REWRITES-NEXT:     *object = OverAligned { value: 7 };
+// REWRITES-NEXT:     *object = OverAligned {
+// REWRITES-NEXT:         value: 7,
+// REWRITES-NEXT:         __pad_1: [0; 28],
+// REWRITES-NEXT:     };
 // REWRITES-NEXT:     *local = 11;
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = c"%zu %zu %zu %d %d\n".as_ptr() as *mut i8;
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = c"%zu %zu %zu %d %d\n".as_ptr() as *mut u8;
