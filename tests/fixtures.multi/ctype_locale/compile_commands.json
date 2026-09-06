@@ -1,0 +1,26 @@
+[
+  {
+    "file": "locale_setup.c",
+    "arguments": [
+      "/usr/bin/clang",
+      "-std=c23",
+      "-c",
+      "locale_setup.c",
+      "-o",
+      "locale_setup.o"
+    ],
+    "directory": "."
+  },
+  {
+    "file": "main.c",
+    "arguments": [
+      "/usr/bin/clang",
+      "-std=c23",
+      "-c",
+      "main.c",
+      "-o",
+      "main.o"
+    ],
+    "directory": "."
+  }
+]

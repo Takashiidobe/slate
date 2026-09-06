@@ -342,11 +342,8 @@ fn compile_c_cached(
     Ok(())
 }
 
-/// Invoke `slate translate-project <dir> <crate_dir>`, writing a Cargo crate
-/// (Cargo.toml, vendored `aligned`, one Rust module per C translation unit
-/// under `src/`; the unit with `main` becomes `src/main.rs`) at `crate_dir`.
 pub fn translate_project(dir: &Path, crate_dir: &Path) -> Result<(), String> {
-    translate_project_with_clang_args(dir, crate_dir, c23_clang_args())
+    translate_project_with_std_and_args(dir, crate_dir, "c23", &[])
 }
 
 pub fn translate_project_with_std(dir: &Path, crate_dir: &Path, std: &str) -> Result<(), String> {
@@ -359,24 +356,66 @@ pub fn translate_project_with_std_and_args(
     std: &str,
     extra_args: &[String],
 ) -> Result<(), String> {
-    let mut clang_args = format!("{} -I{} -fcommon", std_clang_args(std), dir.display());
-    for arg in extra_args {
-        clang_args.push(' ');
-        clang_args.push_str(arg);
-    }
-    translate_project_with_clang_args(dir, crate_dir, clang_args)
+    let mut synth_args = vec![
+        "-I".to_string(),
+        dir.display().to_string(),
+        "-fcommon".into(),
+    ];
+    synth_args.extend(extra_args.iter().cloned());
+    let database = compile_commands_database(dir, crate_dir, std, &synth_args)?;
+    translate_project_from_database(dir, crate_dir, &database)
 }
 
-fn translate_project_with_clang_args(
+fn compile_commands_database(
+    dir: &Path,
+    work: &Path,
+    std: &str,
+    extra_args: &[String],
+) -> Result<PathBuf, String> {
+    let checked_in = dir.join("compile_commands.json");
+    if checked_in.is_file() {
+        return Ok(checked_in);
+    }
+    let mut sources: Vec<PathBuf> = std::fs::read_dir(dir)
+        .map_err(|e| format!("read {}: {e}", dir.display()))?
+        .filter_map(|e| e.ok().map(|e| e.path()))
+        .filter(|p| p.extension().and_then(|e| e.to_str()) == Some("c"))
+        .collect();
+    sources.sort();
+    let entries: Vec<serde_json::Value> = sources
+        .iter()
+        .map(|source| {
+            let mut arguments = vec!["clang".to_string(), format!("-std={std}")];
+            arguments.extend(extra_args.iter().cloned());
+            arguments.push("-c".to_string());
+            arguments.push(source.display().to_string());
+            serde_json::json!({
+                "directory": dir,
+                "file": source,
+                "arguments": arguments,
+            })
+        })
+        .collect();
+    std::fs::create_dir_all(work).map_err(|e| format!("create {}: {e}", work.display()))?;
+    let database = work.join("compile_commands.json");
+    std::fs::write(
+        &database,
+        serde_json::to_vec(&entries).map_err(|e| format!("encode compile commands: {e}"))?,
+    )
+    .map_err(|e| format!("write {}: {e}", database.display()))?;
+    Ok(database)
+}
+
+pub fn translate_project_from_database(
     dir: &Path,
     crate_dir: &Path,
-    clang_args: String,
+    database: &Path,
 ) -> Result<(), String> {
     let o = Command::new(env!("CARGO_BIN_EXE_slate"))
-        .arg("translate-project")
+        .args(["translate-project", "--compile-commands"])
+        .arg(database)
         .arg(dir)
         .arg(crate_dir)
-        .env("SLATE_CLANG_ARGS", clang_args)
         .output()
         .map_err(|e| format!("spawn slate translate-project: {e}"))?;
     if !o.status.success() {

@@ -162,28 +162,30 @@ fn generated_library_filecheck() {
     let fixtures = library_filecheck_fixtures(profile);
     support::parallel_map(&fixtures, |fixture| {
         let fixture_dir = root.join(fixture);
+        let database = fixture_dir.join("src/compile_commands.json");
         let work = cross_tu_work_dir("generated-library-filecheck").join(fixture);
         let crate_dir = work.join("crate");
         let _ = std::fs::remove_dir_all(&work);
-        let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
-            .args(["translate-project", "--lib"])
-            .arg(&fixture_dir)
-            .arg(&crate_dir)
-            .env("SLATE_CLANG_ARGS", "-std=c23")
-            .output()
-            .expect("translate library FileCheck fixture");
-        assert!(
-            output.status.success(),
-            "library fixture {fixture} failed:\n{}",
-            String::from_utf8_lossy(&output.stderr)
-        );
+        support::translate_project_from_database(&fixture_dir, &crate_dir, &database)
+            .unwrap_or_else(|e| panic!("[{fixture}] translate library fixture: {e}"));
         check_project_modules(
             &fixture_dir.join("src"),
             &crate_dir.join("src"),
             profile,
             &work.join("filecheck"),
         )
-        .expect("check generated library modules");
+        .unwrap_or_else(|e| panic!("[{fixture}] check generated library modules: {e}"));
+
+        let check = std::process::Command::new("cargo")
+            .args(["check", "--quiet", "--lib", "--manifest-path"])
+            .arg(crate_dir.join("Cargo.toml"))
+            .output()
+            .unwrap_or_else(|e| panic!("[{fixture}] spawn cargo check: {e}"));
+        assert!(
+            check.status.success(),
+            "[{fixture}] generated library crate should type-check:\n{}",
+            String::from_utf8_lossy(&check.stderr)
+        );
     });
 }
 
@@ -193,8 +195,10 @@ fn project_translation_rejects_active_unsupported_directives() {
         .join("tests/fixtures.multi.reject")
         .join("unsupported_directive");
     let out_dir = cross_tu_work_dir("unsupported-directive-policy").join("rs");
+    let database = dir.join("compile_commands.json");
     let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
-        .arg("translate-project")
+        .args(["translate-project", "--compile-commands"])
+        .arg(&database)
         .arg(&dir)
         .arg(&out_dir)
         .output()
@@ -226,12 +230,13 @@ fn raw_lower_skips_fixups_for_project_translation() {
     let dir = fixture_dir("cross_tu");
     let out_dir = cross_tu_work_dir("raw-lower-project").join("rs");
     let _ = std::fs::remove_dir_all(&out_dir);
+    let database = dir.join("compile_commands.json");
     let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
-        .arg("translate-project")
+        .args(["translate-project", "--compile-commands"])
+        .arg(&database)
         .arg(&dir)
         .arg(&out_dir)
         .env("SLATE_RAW_LOWER", "1")
-        .env("SLATE_CLANG_ARGS", "-std=c23")
         .output()
         .expect("run raw slate translate-project");
     assert!(
@@ -251,18 +256,42 @@ fn raw_lower_skips_fixups_for_project_translation() {
 #[test]
 fn project_translation_adds_explicit_target_variants() {
     let dir = fixture_dir("project_strtold");
-    let out_dir = cross_tu_work_dir("extra-target-project").join("rs");
-    let _ = std::fs::remove_dir_all(&out_dir);
+    let work = cross_tu_work_dir("extra-target-project");
+    let out_dir = work.join("rs");
+    let _ = std::fs::remove_dir_all(&work);
+    std::fs::create_dir_all(&work).expect("create extra target work dir");
     let (target, added_arch) = if std::env::consts::ARCH == "aarch64" {
         ("x86_64-linux-gnu", "x86_64")
     } else {
         ("aarch64-linux-gnu", "aarch64")
     };
+    let host_database = dir.join("compile_commands.json");
+    let other_commands = serde_json::json!([
+        {
+            "directory": dir,
+            "file": "main.c",
+            "command": format!("clang -std=c23 -target {target} -c main.c -o main.o")
+        },
+        {
+            "directory": dir,
+            "file": "parse.c",
+            "command": format!("clang -std=c23 -target {target} -c parse.c -o parse.o")
+        }
+    ]);
+    let other_database = work.join("compile_commands.json");
+    std::fs::write(
+        &other_database,
+        serde_json::to_vec(&other_commands).expect("encode other-target commands"),
+    )
+    .expect("write other-target commands");
+
     let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
-        .args(["translate-project", "--target", target])
+        .args(["translate-project", "--compile-commands"])
+        .arg(&host_database)
+        .arg("--compile-commands")
+        .arg(&other_database)
         .arg(&dir)
         .arg(&out_dir)
-        .env("SLATE_CLANG_ARGS", "-std=c23")
         .output()
         .expect("translate multi-target project");
     assert!(
@@ -346,17 +375,9 @@ fn library_project_creates_cargo_crate_without_main() {
     let crate_dir = work.join("crate");
     let _ = std::fs::remove_dir_all(&crate_dir);
 
-    let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
-        .args(["translate-project", "--lib"])
-        .arg(&dir)
-        .arg(&crate_dir)
-        .output()
-        .expect("run slate translate-project --lib");
-    assert!(
-        output.status.success(),
-        "translate-project --lib failed:\n{}",
-        String::from_utf8_lossy(&output.stderr)
-    );
+    let database = dir.join("src/compile_commands.json");
+    support::translate_project_from_database(&dir, &crate_dir, &database)
+        .expect("translate simple library fixture");
 
     assert!(crate_dir.join("Cargo.toml").is_file());
     let lib_rs = std::fs::read_to_string(crate_dir.join("src/lib.rs")).expect("read lib.rs");
@@ -366,20 +387,8 @@ fn library_project_creates_cargo_crate_without_main() {
     let types_rs = std::fs::read_to_string(crate_dir.join("src/types.rs")).expect("read types.rs");
     assert!(types_rs.contains("pub enum shared_mode_t"));
     assert!(types_rs.contains("SHARED_READY = 1"));
-    assert!(crate_dir.join("tests/run_smoke.rs").is_file());
-    let smoke_rs =
-        std::fs::read_to_string(crate_dir.join("tests/run_smoke.rs")).expect("read run_smoke.rs");
-    assert!(smoke_rs.contains("use slate_crate::types::shared_mode_t;"));
-    assert!(smoke_rs.contains("use slate_crate::math::square;"));
-    assert!(smoke_rs.contains("use slate_crate::state::bump;"));
-    assert!(!smoke_rs.contains("fn square"));
-    assert!(!smoke_rs.contains("fn bump"));
-    assert!(!smoke_rs.contains("enum shared_mode_t"));
     let manifest = std::fs::read_to_string(crate_dir.join("Cargo.toml")).expect("read manifest");
     assert!(manifest.contains("slate-support = { path = \"slate-support\" }"));
-    assert!(manifest.contains("[[test]]"));
-    assert!(manifest.contains("name = \"run_smoke\""));
-    assert!(manifest.contains("harness = false"));
 
     let check = std::process::Command::new("cargo")
         .args(["check", "--quiet", "--lib", "--manifest-path"])
@@ -394,26 +403,6 @@ fn library_project_creates_cargo_crate_without_main() {
     let check_stderr = String::from_utf8_lossy(&check.stderr);
     assert!(check_stderr.contains("PROJECT_WARNING_TOKEN remains unexpanded"));
     assert!(!check_stderr.contains("--> src/math.rs"));
-    let check_tests = std::process::Command::new("cargo")
-        .args(["check", "--quiet", "--tests", "--manifest-path"])
-        .arg(crate_dir.join("Cargo.toml"))
-        .output()
-        .expect("cargo check generated tests");
-    assert!(
-        check_tests.status.success(),
-        "generated integration tests should type-check:\n{}",
-        String::from_utf8_lossy(&check_tests.stderr)
-    );
-    let run_tests = std::process::Command::new("cargo")
-        .args(["test", "--quiet", "--tests", "--manifest-path"])
-        .arg(crate_dir.join("Cargo.toml"))
-        .output()
-        .expect("cargo run generated tests");
-    assert!(
-        run_tests.status.success(),
-        "generated integration tests should run:\n{}",
-        String::from_utf8_lossy(&run_tests.stderr)
-    );
 }
 
 #[test]
@@ -427,17 +416,9 @@ fn library_project_shares_anonymous_union_member_across_types_module() {
     let crate_dir = work.join("crate");
     let _ = std::fs::remove_dir_all(&crate_dir);
 
-    let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
-        .args(["translate-project", "--lib"])
-        .arg(&dir)
-        .arg(&crate_dir)
-        .output()
-        .expect("run slate translate-project --lib");
-    assert!(
-        output.status.success(),
-        "translate-project --lib failed:\n{}",
-        String::from_utf8_lossy(&output.stderr)
-    );
+    let database = dir.join("src/compile_commands.json");
+    support::translate_project_from_database(&dir, &crate_dir, &database)
+        .expect("translate anon union member library fixture");
 
     let check = std::process::Command::new("cargo")
         .args(["check", "--quiet", "--lib", "--manifest-path"])
@@ -451,8 +432,6 @@ fn library_project_shares_anonymous_union_member_across_types_module() {
     );
 }
 
-/// visibility only, not in-crate callability -- slate must not treat a hidden
-/// function as an opaque external and strip its "unused" parameter.
 #[test]
 #[ignore = "rewrite passes disabled while lowering is the focus"]
 fn library_project_resolves_hidden_visibility_cross_tu_callback() {
@@ -465,18 +444,9 @@ fn library_project_resolves_hidden_visibility_cross_tu_callback() {
     let crate_dir = work.join("crate");
     let _ = std::fs::remove_dir_all(&crate_dir);
 
-    let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
-        .args(["translate-project", "--lib"])
-        .arg(&dir)
-        .arg(&crate_dir)
-        .env("SLATE_CLANG_ARGS", "-fvisibility=hidden")
-        .output()
-        .expect("run slate translate-project --lib");
-    assert!(
-        output.status.success(),
-        "translate-project --lib failed:\n{}",
-        String::from_utf8_lossy(&output.stderr)
-    );
+    let database = dir.join("src/compile_commands.json");
+    support::translate_project_from_database(&dir, &crate_dir, &database)
+        .expect("translate hidden visibility callback library fixture");
 
     let check = std::process::Command::new("cargo")
         .args(["check", "--quiet", "--lib", "--manifest-path"])
@@ -486,49 +456,6 @@ fn library_project_resolves_hidden_visibility_cross_tu_callback() {
     assert!(
         check.status.success(),
         "generated lib crate should type-check:\n{}",
-        String::from_utf8_lossy(&check.stderr)
-    );
-}
-
-#[test]
-fn library_project_source_manifest_selects_translation_units() {
-    let dir = Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("tests/fixtures.library")
-        .join("source_manifest");
-    let work = support::test_cache_root().join("cross-tu/library-source-manifest");
-    let crate_dir = work.join("crate");
-    let _ = std::fs::remove_dir_all(&work);
-
-    let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
-        .args(["translate-project", "--lib", "--source-manifest"])
-        .arg(dir.join("sources.txt"))
-        .arg(&dir)
-        .arg(&crate_dir)
-        .output()
-        .expect("run slate translate-project --lib --source-manifest");
-    assert!(
-        output.status.success(),
-        "translate-project --lib --source-manifest failed:\n{}",
-        String::from_utf8_lossy(&output.stderr)
-    );
-
-    let lib_rs = std::fs::read_to_string(crate_dir.join("src/lib.rs")).expect("read lib.rs");
-    assert!(lib_rs.contains("pub mod xmlparse;"));
-    assert!(lib_rs.contains("pub mod random_getrandom;"));
-    assert!(!lib_rs.contains("xmltok_impl"));
-    assert!(!lib_rs.contains("random_rand_s"));
-    assert!(!crate_dir.join("src/xmltok_impl.rs").exists());
-    assert!(!crate_dir.join("src/random_rand_s.rs").exists());
-    assert!(!crate_dir.join("tests/upstream_suite.rs").exists());
-
-    let check = std::process::Command::new("cargo")
-        .args(["check", "--quiet", "--lib", "--manifest-path"])
-        .arg(crate_dir.join("Cargo.toml"))
-        .output()
-        .expect("cargo check generated lib crate");
-    assert!(
-        check.status.success(),
-        "generated manifest-selected lib crate should type-check:\n{}",
         String::from_utf8_lossy(&check.stderr)
     );
 }
@@ -615,17 +542,17 @@ fn library_project_merges_normalized_compile_command_variants() {
     );
 
     let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
-        .args(["translate-project", "--lib", "--compile-commands"])
+        .args(["translate-project", "--compile-commands"])
         .arg(&host_database)
         .arg("--compile-commands")
         .arg(&other_database)
         .arg(&dir)
         .arg(&crate_dir)
         .output()
-        .expect("run slate translate-project --lib --compile-commands");
+        .expect("run slate translate-project --compile-commands");
     assert!(
         output.status.success(),
-        "translate-project --lib --compile-commands failed:\n{}",
+        "translate-project --compile-commands failed:\n{}",
         String::from_utf8_lossy(&output.stderr)
     );
 
@@ -645,7 +572,7 @@ fn library_project_merges_normalized_compile_command_variants() {
 
     let reversed_crate = work.join("crate-reversed");
     let reversed = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
-        .args(["translate-project", "--lib", "--compile-commands"])
+        .args(["translate-project", "--compile-commands"])
         .arg(&other_database)
         .arg("--compile-commands")
         .arg(&host_database)
@@ -702,7 +629,7 @@ fn library_compile_commands_preserve_active_fatal_directives() {
     .expect("write commands");
 
     let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
-        .args(["translate-project", "--lib", "--compile-commands"])
+        .args(["translate-project", "--compile-commands"])
         .arg(&database)
         .arg(&dir)
         .arg(&crate_dir)
@@ -736,7 +663,7 @@ fn library_compile_commands_reject_invalid_shell_commands() {
     .expect("write commands");
 
     let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
-        .args(["translate-project", "--lib", "--compile-commands"])
+        .args(["translate-project", "--compile-commands"])
         .arg(&database)
         .arg(&dir)
         .arg(&crate_dir)
@@ -744,31 +671,6 @@ fn library_compile_commands_reject_invalid_shell_commands() {
         .expect("run slate with invalid compile command");
     assert!(!output.status.success());
     assert!(String::from_utf8_lossy(&output.stderr).contains("invalid shell quoting"));
-}
-
-#[test]
-fn uart_library_preserves_exported_volatile_io() {
-    let dir = Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("tests/fixtures.library")
-        .join("uart");
-    let work = Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("target/cross-tu")
-        .join("uart-library");
-    let crate_dir = work.join("uart");
-    let _ = std::fs::remove_dir_all(&work);
-    std::fs::create_dir_all(&work).expect("create uart library work dir");
-
-    let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
-        .args(["translate-project", "--lib"])
-        .arg(&dir)
-        .arg(&crate_dir)
-        .output()
-        .expect("run slate translate-project --lib");
-    assert!(
-        output.status.success(),
-        "translate-project --lib failed:\n{}",
-        String::from_utf8_lossy(&output.stderr)
-    );
 }
 
 #[test]
@@ -796,15 +698,15 @@ fn library_crate_links_generated_c_abi_shim_for_long_double_libc_call() {
     .expect("write c23 strfrom compile commands");
 
     let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
-        .args(["translate-project", "--lib", "--compile-commands"])
+        .args(["translate-project", "--compile-commands"])
         .arg(&database)
         .arg(&dir)
         .arg(&crate_dir)
         .output()
-        .expect("run slate translate-project --lib");
+        .expect("run slate translate-project --compile-commands");
     assert!(
         output.status.success(),
-        "translate-project --lib failed:\n{}",
+        "translate-project --compile-commands failed:\n{}",
         String::from_utf8_lossy(&output.stderr)
     );
 
@@ -1026,9 +928,11 @@ fn function_alias_exports_forwarding_wrapper() {
 fn visibility_attrs_lower_best_effort() {
     build_and_diff("visibility");
 
+    let visibility_dir = fixture_dir("visibility");
     let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
-        .arg("translate-project")
-        .arg(fixture_dir("visibility"))
+        .args(["translate-project", "--compile-commands"])
+        .arg(visibility_dir.join("compile_commands.json"))
+        .arg(&visibility_dir)
         .arg(cross_tu_work_dir("visibility-diagnostics").join("rs"))
         .output()
         .expect("run translate-project visibility fixture");

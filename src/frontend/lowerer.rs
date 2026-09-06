@@ -64,8 +64,8 @@ pub use module_index::{
     target_feature_functions, unsafe_defined_functions,
 };
 use op_utils::*;
-pub use record_analysis::anon_local_records;
 use record_analysis::*;
+pub use record_analysis::{anon_local_records, reconcile_anonymous_member_types};
 use runtime_support::*;
 use types::*;
 

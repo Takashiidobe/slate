@@ -1,0 +1,38 @@
+[
+  {
+    "file": "math.c",
+    "arguments": [
+      "/usr/bin/clang",
+      "-std=c23",
+      "-c",
+      "math.c",
+      "-o",
+      "math.o"
+    ],
+    "directory": "."
+  },
+  {
+    "file": "shared.c",
+    "arguments": [
+      "/usr/bin/clang",
+      "-std=c23",
+      "-c",
+      "shared.c",
+      "-o",
+      "shared.o"
+    ],
+    "directory": "."
+  },
+  {
+    "file": "state.c",
+    "arguments": [
+      "/usr/bin/clang",
+      "-std=c23",
+      "-c",
+      "state.c",
+      "-o",
+      "state.o"
+    ],
+    "directory": "."
+  }
+]

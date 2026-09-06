@@ -1,0 +1,38 @@
+[
+  {
+    "file": "main.c",
+    "arguments": [
+      "/usr/bin/clang",
+      "-std=c23",
+      "-c",
+      "main.c",
+      "-o",
+      "main.o"
+    ],
+    "directory": "."
+  },
+  {
+    "file": "strong.c",
+    "arguments": [
+      "/usr/bin/clang",
+      "-std=c23",
+      "-c",
+      "strong.c",
+      "-o",
+      "strong.o"
+    ],
+    "directory": "."
+  },
+  {
+    "file": "symbols.c",
+    "arguments": [
+      "/usr/bin/clang",
+      "-std=c23",
+      "-c",
+      "symbols.c",
+      "-o",
+      "symbols.o"
+    ],
+    "directory": "."
+  }
+]

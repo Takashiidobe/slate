@@ -1,0 +1,14 @@
+[
+  {
+    "file": "op.c",
+    "arguments": [
+      "/usr/bin/clang",
+      "-std=c23",
+      "-c",
+      "op.c",
+      "-o",
+      "op.o"
+    ],
+    "directory": "."
+  }
+]

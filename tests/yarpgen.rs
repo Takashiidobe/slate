@@ -16,6 +16,42 @@ fn default_clang_args() -> Vec<String> {
     ]
 }
 
+fn write_compile_commands(
+    dir: &Path,
+    database: &Path,
+    clang_args: &[String],
+) -> Result<(), String> {
+    let mut names: Vec<String> = fs::read_dir(dir)
+        .map_err(|e| format!("read {}: {e}", dir.display()))?
+        .filter_map(|e| e.ok().map(|e| e.path()))
+        .filter(|p| p.extension().and_then(|e| e.to_str()) == Some("c"))
+        .filter_map(|p| {
+            p.file_name()
+                .map(|name| name.to_string_lossy().into_owned())
+        })
+        .collect();
+    names.sort();
+    let entries: Vec<serde_json::Value> = names
+        .iter()
+        .map(|name| {
+            let mut arguments = vec!["clang".to_string()];
+            arguments.extend(clang_args.iter().cloned());
+            arguments.push("-c".to_string());
+            arguments.push(name.clone());
+            serde_json::json!({
+                "directory": ".",
+                "file": name,
+                "arguments": arguments,
+            })
+        })
+        .collect();
+    fs::write(
+        database,
+        serde_json::to_vec(&entries).map_err(|e| format!("encode compile commands: {e}"))?,
+    )
+    .map_err(|e| format!("write {}: {e}", database.display()))
+}
+
 #[derive(Debug, Clone)]
 struct FuzzConfig {
     yarpgen_bin: PathBuf,
@@ -539,15 +575,17 @@ fn run_single_case(
     }
     let c_hash = String::from_utf8_lossy(&c_run.stdout).trim().to_string();
 
-    // 4. Translate with Slate translate-project
+    let database = c_dir.join("compile_commands.json");
+    write_compile_commands(&c_dir, &database, &config.clang_args)
+        .map_err(CaseFailure::SlateTranslate)?;
     let slate_bin = config.slate_bin.as_ref().unwrap();
     let mut slate_cmd = Command::new(slate_bin);
     slate_cmd
-        .arg("translate-project")
+        .args(["translate-project", "--compile-commands"])
+        .arg(&database)
         .arg(&c_dir)
         .arg(&crate_dir)
-        .env("SLATE_CLANG", &config.clang_bin)
-        .env("SLATE_CLANG_ARGS", config.clang_args.join(" "));
+        .env("SLATE_CLANG", &config.clang_bin);
 
     let translate_timeout = config.timeout.max(Duration::from_secs(30)) * 2;
     let slate_run = run_command_with_timeout(slate_cmd, translate_timeout)
@@ -636,9 +674,8 @@ fn save_failure_bundle(
     let work_c_dir = work_case_dir.join("c");
     let work_crate_dir = work_case_dir.join("rs_crate");
 
-    // Copy C sources
     if work_c_dir.is_dir() {
-        for file in ["driver.c", "func.c", "init.h"] {
+        for file in ["driver.c", "func.c", "init.h", "compile_commands.json"] {
             let src = work_c_dir.join(file);
             if src.is_file() {
                 let _ = fs::copy(&src, failure_dir.join(file));
@@ -668,7 +705,7 @@ echo "=== 1. Compiling and running C oracle ==="
 echo "C output: $(cat "$DIR/c_output.actual")"
 
 echo "=== 2. Translating with Slate ==="
-"$SLATE" translate-project "$DIR" "$DIR/repro_crate"
+"$SLATE" translate-project --compile-commands "$DIR/compile_commands.json" "$DIR" "$DIR/repro_crate"
 
 echo "=== 3. Compiling and running Rust crate ==="
 cargo run --manifest-path "$DIR/repro_crate/Cargo.toml" > "$DIR/rust_output.actual" 2>&1 || true

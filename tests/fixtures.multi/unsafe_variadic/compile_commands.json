@@ -1,0 +1,26 @@
+[
+  {
+    "file": "helper.c",
+    "arguments": [
+      "/usr/bin/clang",
+      "-std=c23",
+      "-c",
+      "helper.c",
+      "-o",
+      "helper.o"
+    ],
+    "directory": "."
+  },
+  {
+    "file": "main.c",
+    "arguments": [
+      "/usr/bin/clang",
+      "-std=c23",
+      "-c",
+      "main.c",
+      "-o",
+      "main.o"
+    ],
+    "directory": "."
+  }
+]

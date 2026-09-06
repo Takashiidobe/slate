@@ -1,0 +1,26 @@
+[
+  {
+    "file": "strong_main.c",
+    "arguments": [
+      "/usr/bin/clang",
+      "-std=c23",
+      "-c",
+      "strong_main.c",
+      "-o",
+      "strong_main.o"
+    ],
+    "directory": "."
+  },
+  {
+    "file": "weak.c",
+    "arguments": [
+      "/usr/bin/clang",
+      "-std=c23",
+      "-c",
+      "weak.c",
+      "-o",
+      "weak.o"
+    ],
+    "directory": "."
+  }
+]

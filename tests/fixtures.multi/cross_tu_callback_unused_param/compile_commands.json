@@ -1,0 +1,26 @@
+[
+  {
+    "file": "handler.c",
+    "arguments": [
+      "/usr/bin/clang",
+      "-std=c23",
+      "-c",
+      "handler.c",
+      "-o",
+      "handler.o"
+    ],
+    "directory": "."
+  },
+  {
+    "file": "main.c",
+    "arguments": [
+      "/usr/bin/clang",
+      "-std=c23",
+      "-c",
+      "main.c",
+      "-o",
+      "main.o"
+    ],
+    "directory": "."
+  }
+]

@@ -1085,6 +1085,23 @@ fn translate_project_with_compile_commands(
         .filter_map(|(name, (enm, count))| (count >= min_occurrences).then_some((name, enm)))
         .collect();
     let mut referenced_record_types = BTreeSet::new();
+    for variant in loaded_by_stem.values().flatten() {
+        let local_candidates: Vec<c_ast::Record> = variant
+            .unit
+            .records
+            .iter()
+            .chain(&variant.unit.anonymous_header_records)
+            .chain(&variant.unit.named_header_records)
+            .cloned()
+            .collect();
+        for record in frontend::reconcile_anonymous_member_types(
+            &variant.module,
+            &mut shared_records,
+            &local_candidates,
+        ) {
+            collect_record_field_type_names(&record, &mut referenced_record_types);
+        }
+    }
     for record in shared_records.values() {
         collect_record_field_type_names(record, &mut referenced_record_types);
     }

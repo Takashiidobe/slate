@@ -38,7 +38,7 @@ fn adopt_cir_int_signedness(
     }
 }
 
-pub(super) fn reconcile_anonymous_member_types(
+pub fn reconcile_anonymous_member_types(
     module: &Module,
     records: &mut BTreeMap<String, crate::frontend::c_ast::Record>,
     record_candidates: &[crate::frontend::c_ast::Record],
