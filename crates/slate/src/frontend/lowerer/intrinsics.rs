@@ -62,13 +62,13 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         {
             unsupported!("lower: asm goto label count differs between CIR and the Clang AST");
         }
-        let constraints = op
+        let raw_constraints = op
             .constraints
             .split(',')
             .map(str::trim)
             .take_while(|constraint| !constraint.starts_with("~{"))
             .collect::<Vec<_>>();
-        let Some(output_count) = constraints.len().checked_sub(input_operands.len()) else {
+        let Some(output_count) = raw_constraints.len().checked_sub(input_operands.len()) else {
             unsupported!(
                 "lower: inline asm has more operands than constraints in `{}`",
                 op.constraints
@@ -81,16 +81,20 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 op.constraints
             );
         }
-        let flag_outputs: Vec<Option<&str>> = constraints[..output_count]
+        let constraints: Vec<Constraint> = raw_constraints
             .iter()
-            .map(|constraint| parse_x86_flag_output_constraint(constraint))
+            .enumerate()
+            .map(|(index, raw)| Constraint::parse(raw, index < output_count))
             .collect();
         let Some(output_specs): Option<Vec<(AsmRegConstraint, bool)>> = constraints[..output_count]
             .iter()
-            .zip(&flag_outputs)
-            .map(|(constraint, flag)| {
-                flag.map(|_| (AsmRegConstraint::Generic, false))
-                    .or_else(|| parse_output_reg_constraint(constraint))
+            .map(|constraint| match constraint {
+                Constraint::FlagOutput(_) => Some((AsmRegConstraint::Generic, false)),
+                Constraint::Reg {
+                    kind,
+                    early_clobber,
+                } => Some((kind.clone(), *early_clobber)),
+                _ => None,
             })
             .collect()
         else {
@@ -100,24 +104,26 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             );
         };
         let mut tied_outputs = vec![None; output_count];
-        let mut input_specs: Vec<Option<AsmRegConstraint>> =
-            Vec::with_capacity(input_operands.len());
         for (operand_index, constraint) in constraints[output_count..].iter().enumerate() {
-            if let Ok(output_index) = constraint.parse::<usize>() {
-                if output_index >= output_count || tied_outputs[output_index].is_some() {
+            match constraint {
+                Constraint::Tied(output_index) => {
+                    let output_index = *output_index;
+                    if output_index >= output_count || tied_outputs[output_index].is_some() {
+                        unsupported!(
+                            "lower: inline asm tied constraint `{}` is out of range or duplicated in `{}`",
+                            raw_constraints[output_count + operand_index],
+                            op.constraints
+                        );
+                    }
+                    tied_outputs[output_index] = Some(operand_index);
+                }
+                Constraint::Constant | Constraint::Reg { .. } => {}
+                Constraint::FlagOutput(_) | Constraint::Unsupported => {
                     unsupported!(
-                        "lower: inline asm tied constraint `{constraint}` is out of range or duplicated in `{}`",
-                        op.constraints
+                        "lower: unsupported inline asm input constraint `{}`",
+                        raw_constraints[output_count + operand_index]
                     );
                 }
-                tied_outputs[output_index] = Some(operand_index);
-                input_specs.push(None);
-            } else if *constraint == "i" {
-                input_specs.push(None);
-            } else if let Some(spec) = parse_input_reg_constraint(constraint) {
-                input_specs.push(Some(spec));
-            } else {
-                unsupported!("lower: unsupported inline asm input constraint `{constraint}`");
             }
         }
         let result_types: Vec<CirType> = if output_count == 0 {
@@ -141,7 +147,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .iter()
             .zip(input_operands)
             .any(|(constraint, operand)| {
-                *constraint == "i" && self.known_arith_value(operand).is_none()
+                constraint.constant_only() && self.known_arith_value(operand).is_none()
             })
         {
             unsupported!("lower: inline asm immediate operand is not a known constant");
@@ -153,8 +159,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let mut next_rust_operand = output_count;
         for (operand_index, constraint) in constraints[output_count..].iter().enumerate() {
             let slot = output_count + operand_index;
-            if let Ok(output_index) = constraint.parse::<usize>() {
-                slot_to_rust[slot] = output_index;
+            if let Constraint::Tied(output_index) = constraint {
+                slot_to_rust[slot] = *output_index;
             } else {
                 slot_to_rust[slot] = next_rust_operand;
                 next_rust_operand += 1;
@@ -165,7 +171,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             next_rust_operand += 1;
         }
         let mut template_constraints = constraints.clone();
-        template_constraints.extend(std::iter::repeat_n("X", label_count));
+        template_constraints.extend(std::iter::repeat_n(Constraint::Unsupported, label_count));
         let mut template_types: Vec<Type> = result_types
             .iter()
             .chain(operand_types.iter())
@@ -186,8 +192,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 op.constraints
             );
         };
-        for (output_index, condition) in flag_outputs.iter().enumerate() {
-            let Some(condition) = condition else {
+        for (output_index, constraint) in constraints[..output_count].iter().enumerate() {
+            let Some(condition) = constraint.flag_condition() else {
                 continue;
             };
             let Some(suffix) = x86_flag_output_suffix(
@@ -198,7 +204,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             ) else {
                 unsupported!(
                     "lower: unsupported inline asm flag-output constraint `{}`",
-                    constraints[output_index]
+                    raw_constraints[output_index]
                 );
             };
             template.push_str("\n\t");
@@ -218,9 +224,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .iter()
             .filter_map(|(spec, _)| reg_constraint_family(spec))
             .chain(
-                input_specs
+                constraints[output_count..]
                     .iter()
-                    .flatten()
+                    .filter_map(Constraint::reg_kind)
                     .filter_map(reg_constraint_family),
             )
             .collect();
@@ -314,53 +320,56 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             output_names.push(output_name);
         }
         for (operand_index, constraint) in constraints[output_count..].iter().enumerate() {
-            if constraint.parse::<usize>().is_ok() {
-                continue;
-            }
-            let value = if *constraint == "i" {
-                let value = self
-                    .known_arith_value(input_operands[operand_index])
-                    .unwrap();
-                AsmOperand::Const(int_value_expr(value))
-            } else {
-                let spec = input_specs[operand_index].clone().unwrap();
-                let mut resolved = asm_reg_for_constraint(spec);
-                let bits = asm_operand_bits(&template_types[output_count + operand_index]);
-                if let ResolvedAsmReg::Family(family) = resolved
-                    && family.is_ebx_like()
-                {
-                    let Some(scratch) = X86Reg::pick_ebx_scratch(&used_regs) else {
-                        unsupported!(
-                            "lower: inline asm needs a spare register to save/restore ebx around `{}`",
-                            op.constraints
-                        );
-                    };
-                    used_regs.insert(scratch);
-                    let Some(width) = RegWidth::from_bits(bits) else {
+            let value = match constraint {
+                Constraint::Tied(_) => continue,
+                Constraint::Constant => {
+                    let value = self
+                        .known_arith_value(input_operands[operand_index])
+                        .unwrap();
+                    AsmOperand::Const(int_value_expr(value))
+                }
+                Constraint::Reg { kind, .. } => {
+                    let mut resolved = asm_reg_for_constraint(kind.clone());
+                    let bits = asm_operand_bits(&template_types[output_count + operand_index]);
+                    if let ResolvedAsmReg::Family(family) = resolved
+                        && family.is_ebx_like()
+                    {
+                        let Some(scratch) = X86Reg::pick_ebx_scratch(&used_regs) else {
+                            unsupported!(
+                                "lower: inline asm needs a spare register to save/restore ebx around `{}`",
+                                op.constraints
+                            );
+                        };
+                        used_regs.insert(scratch);
+                        let Some(width) = RegWidth::from_bits(bits) else {
+                            unsupported!(
+                                "lower: unsupported inline asm input register in `{}`",
+                                op.constraints
+                            );
+                        };
+                        let ebx_literal = family.sized_name(width);
+                        let scratch_literal = scratch.sized_name(width);
+                        ebx_fixups.push(EbxFixup {
+                            ebx_literal: ebx_literal.into(),
+                            scratch_literal: scratch_literal.into(),
+                            read: true,
+                            write: false,
+                        });
+                        resolved = ResolvedAsmReg::Family(scratch);
+                    }
+                    let Some(reg) = resolved_asm_reg_to_backend(&resolved, bits) else {
                         unsupported!(
                             "lower: unsupported inline asm input register in `{}`",
                             op.constraints
                         );
                     };
-                    let ebx_literal = family.sized_name(width);
-                    let scratch_literal = scratch.sized_name(width);
-                    ebx_fixups.push(EbxFixup {
-                        ebx_literal: ebx_literal.into(),
-                        scratch_literal: scratch_literal.into(),
-                        read: true,
-                        write: false,
-                    });
-                    resolved = ResolvedAsmReg::Family(scratch);
+                    AsmOperand::In {
+                        reg,
+                        value: self.operand_expr(input_operands[operand_index]),
+                    }
                 }
-                let Some(reg) = resolved_asm_reg_to_backend(&resolved, bits) else {
-                    unsupported!(
-                        "lower: unsupported inline asm input register in `{}`",
-                        op.constraints
-                    );
-                };
-                AsmOperand::In {
-                    reg,
-                    value: self.operand_expr(input_operands[operand_index]),
+                Constraint::FlagOutput(_) | Constraint::Unsupported => {
+                    unreachable!("input constraints are validated as tied, constant, or reg above")
                 }
             };
             operands.push(value);
