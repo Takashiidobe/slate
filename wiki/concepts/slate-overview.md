@@ -30,22 +30,13 @@ surface:
 - `bd list --status=blocked` - blocked tasks by upstream clang IR or
   rust.
 
-Generated Rust trees are ignored inspection artifacts and are not regenerated
-as part of feature work or completion. When explicitly requested for manual
-inspection, they can be written with:
-
-```bash
-cargo run -- emit-fixtures
-```
-
-That command translates every currently supported fixture suite into an ignored
-sibling `*.generated/` tree while preserving its relative layout. This includes
-the primary, cfg, multi-TU, supported chibicc, supported c-testsuite, supported
-gcc-torture, library, and stdlib fixtures;
-explicit reject/unsupported cases are skipped. The checked fixture trees remain
-C-only. To inspect raw lowered Rust before fixups, use
-`cargo run -- emit-lowered-fixtures`; it writes ignored files under
-`tests/fixtures.lowered.generated/`.
+Generated code shape is asserted in place via FileCheck directives embedded in
+each fixture (`SLATE-FILECHECK-BEGIN`/`END` blocks, see
+[differential-fixtures.md](differential-fixtures.md)), so there is no separate
+`emit-fixtures`/`emit-lowered-fixtures` step to regenerate or inspect sibling
+`*.generated/` trees. To look at generated Rust directly, run
+`cargo run -- translate <file.c>` (or `translate-lowered` for raw lowered
+output before fixups) on the fixture in question.
 
 ## Not handled yet
 

@@ -58,8 +58,10 @@ int main(void) {
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
 // LOWERING-DAG:     {
-// LOWERING-DAG:         let {{__v[0-9]+}}: LongDouble = LongDouble([255, 255, 255, 255, 255, 255, 255, 255, 254, 127]);
-// LOWERING-DAG:         let {{__v[0-9]+}}: LongDouble = LongDouble([255, 255, 255, 255, 255, 255, 255, 255, 254, 127]);
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: LongDouble = LongDouble([255, 255, 255, 255, 255, 255, 255, 255, 254, 127]);
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: LongDouble = LongDouble([255, 255, 255, 255, 255, 255, 255, 255, 254, 127]);
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: f128 = 1.18973149535723176508575932662800702E+4932f128;
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: f128 = 1.18973149535723176508575932662800702E+4932f128;
 // LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
 // LOWERING-DAG:         if {{__v[0-9]+}} {
 // LOWERING-DAG:             unsafe { abort() };
@@ -83,8 +85,11 @@ int main(void) {
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = LongDouble([255, 255, 255, 255, 255, 255, 255, 255, 254, 127])
-// REWRITES-DAG:         != LongDouble([255, 255, 255, 255, 255, 255, 255, 255, 254, 127]);
+// REWRITES-X86_64-GNU-DAG:     let {{__v[0-9]+}}: bool = LongDouble([255, 255, 255, 255, 255, 255, 255, 255, 254, 127])
+// REWRITES-X86_64-GNU-DAG:         != LongDouble([255, 255, 255, 255, 255, 255, 255, 255, 254, 127]);
+// REWRITES-AARCH64-GNU-DAG:     let {{__v[0-9]+}}: f128 = 1.18973149535723176508575932662800702E+4932f128;
+// REWRITES-AARCH64-GNU-DAG:     let {{__v[0-9]+}}: f128 = 1.18973149535723176508575932662800702E+4932f128;
+// REWRITES-AARCH64-GNU-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }

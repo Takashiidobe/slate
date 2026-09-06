@@ -36,15 +36,16 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: fn main() {
 // LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 32;
-// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 4;
-// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} | {{__v[0-9]+}};
-// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 16;
-// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} | {{__v[0-9]+}};
-// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 8;
-// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} | {{__v[0-9]+}};
-// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 1;
-// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} | {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-DAG:     let {{__v[0-9]+}}: i32 = 32;
+// LOWERING-X86_64-GNU-DAG:     let {{__v[0-9]+}}: i32 = 4;
+// LOWERING-X86_64-GNU-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} | {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-DAG:     let {{__v[0-9]+}}: i32 = 16;
+// LOWERING-X86_64-GNU-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} | {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-DAG:     let {{__v[0-9]+}}: i32 = 8;
+// LOWERING-X86_64-GNU-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} | {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-DAG:     let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-X86_64-GNU-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} | {{__v[0-9]+}};
+// LOWERING-AARCH64-GNU-DAG:     let {{__v[0-9]+}}: i32 = 31;
 // LOWERING-DAG:     let {{__v[0-9]+}}: i32 = unsafe { feclearexcept({{__v[0-9]+}} as i32) };
 // LOWERING-DAG:     let {{__v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(d)) };
 // LOWERING-DAG:     let {{__v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(d)) };
@@ -67,9 +68,10 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: fn main() {
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 4;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 32 | {{__v[0-9]+}} | 16 | 8 | 1;
-// REWRITES-DAG:     unsafe { feclearexcept({{__v[0-9]+}} as i32) };
+// REWRITES-X86_64-GNU-DAG:     let {{__v[0-9]+}}: i32 = 4;
+// REWRITES-X86_64-GNU-DAG:     let {{__v[0-9]+}}: i32 = 32 | {{__v[0-9]+}} | 16 | 8 | 1;
+// REWRITES-X86_64-GNU-DAG:     unsafe { feclearexcept({{__v[0-9]+}} as i32) };
+// REWRITES-AARCH64-GNU-DAG:     unsafe { feclearexcept(31 as i32) };
 // REWRITES-DAG:     let {{__v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(d)) };
 // REWRITES-DAG:     let {{__v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(d)) };
 // REWRITES-DAG:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(d), {{__v[0-9]+}} + {{__v[0-9]+}}) };
