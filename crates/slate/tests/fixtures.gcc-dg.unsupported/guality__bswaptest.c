@@ -3,33 +3,28 @@
 
 volatile int vv;
 
-__attribute__((noclone, noinline)) long
-foo (long x)
-{
-  long f = __builtin_bswap64 (x);
+__attribute__((noclone, noinline)) long foo(long x) {
+  long f = __builtin_bswap64(x);
   long g = f;
-  asm volatile ("" : "+r" (f));
-  vv++;		/* { dg-final { gdb-test . "g" "f" } } */
+  asm volatile("" : "+r"(f));
+  vv++; /* { dg-final { gdb-test . "g" "f" } } */
   return f;
 }
 
-__attribute__((noclone, noinline)) int
-bar (int x)
-{
-  int f = __builtin_bswap32 (x);
+__attribute__((noclone, noinline)) int bar(int x) {
+  int f = __builtin_bswap32(x);
   int g = f;
-  asm volatile ("" : "+r" (f));
-  vv++;		/* { dg-final { gdb-test . "g" "f" } } */
+  asm volatile("" : "+r"(f));
+  vv++; /* { dg-final { gdb-test . "g" "f" } } */
   return f;
 }
 
 int
 // @lowering-fn-begin
 // @rewrite-fn-begin
-main ()
-{
-  foo (0x123456789abcde0fUL);
-  bar (0x12345678);
+main() {
+  foo(0x123456789abcde0fUL);
+  bar(0x12345678);
   return 0;
 }
 // @rewrite-fn-end

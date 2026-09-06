@@ -12,22 +12,21 @@
 int
 // @lowering-fn-begin
 // @rewrite-fn-begin
-main (void)
-{
+main(void) {
 #ifdef FE_TOWARDZERO
-  volatile unsigned long long h = 0x8000000000000000LL;
-  volatile unsigned long long l = 0xdLL;
-  volatile unsigned __int128 u128 = (((unsigned __int128) h) << 64) | l;
-  volatile __int128 s128 = u128;
-  fesetround (FE_TOWARDZERO);
+  volatile unsigned long long h    = 0x8000000000000000LL;
+  volatile unsigned long long l    = 0xdLL;
+  volatile unsigned __int128  u128 = (((unsigned __int128)h) << 64) | l;
+  volatile __int128           s128 = u128;
+  fesetround(FE_TOWARDZERO);
   float fs = s128;
   if (fs != -0x1.fffffep+126)
-    abort ();
+    abort();
   double ds = s128;
   if (ds != -0x1.fffffffffffffp+126)
-    abort ();
+    abort();
 #endif
-  exit (0);
+  exit(0);
 }
 // @rewrite-fn-end
 // @lowering-fn-end

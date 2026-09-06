@@ -1,7 +1,7 @@
 /* { dg-do run } */
 /* { dg-options "-ansi" } */
 
-extern void abort (void);
+extern void abort(void);
 
 /* Basic tests for trigraph conversion.
    All of them are here, but not in all possible contexts.  *??/
@@ -25,12 +25,10 @@ main(void)
     abort ();
 
   /* Test ^=, the only multi-character token to come from trigraphs.  */
-  x ??'= 3;
-  if (x != 6)
-    abort ();
+x ? ?'= 3; if (x != 6) abort();
 
   if ((5 ??! 3) != 7)
-    abort ();
+    abort();
 
   return 0;
-??>
+  ? ? >

@@ -4,28 +4,22 @@
 
 #include <stdio.h>
 
-static int __attribute__((noinline))
-     implementation (void *ptr)
-{
+static int __attribute__((noinline)) implementation(void *ptr) {
   if (ptr)
-    return ((int (*) (void *))ptr) (0);
-  
-  printf ("'ere I am JH\n");
+    return ((int (*)(void *))ptr)(0);
+
+  printf("'ere I am JH\n");
   return 0;
 }
 
-static __typeof__ (implementation) *resolver (void)
-{
+static __typeof__(implementation) *resolver(void) {
   return (void *)implementation;
 }
 
-extern int magic (void *) __attribute__ ((ifunc ("resolver")));
+extern int magic(void *) __attribute__((ifunc("resolver")));
 
 // @lowering-fn-begin
 // @rewrite-fn-begin
-int main ()
-{
-  return magic ((void *)magic);
-}
+int main() { return magic((void *)magic); }
 // @rewrite-fn-end
 // @lowering-fn-end

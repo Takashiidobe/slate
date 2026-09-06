@@ -1,35 +1,33 @@
 /* { dg-do run } */
 
-extern void abort (void) __attribute__((noreturn));
+extern void abort(void) __attribute__((noreturn));
 
-union setconflict
-{
+union setconflict {
   short a[20];
-  int b[10];
+  int   b[10];
 };
 
 int
 // @lowering-fn-begin
 // @rewrite-fn-begin
-main ()
-{
+main() {
   int sum = 0;
   {
     union setconflict a;
-    short *c;
+    short            *c;
     c = a.a;
-    asm ("": "=r" (c):"0" (c));
+    asm("" : "=r"(c) : "0"(c));
     *c = 0;
-    asm ("": "=r" (c):"0" (c));
+    asm("" : "=r"(c) : "0"(c));
     sum += *c;
   }
   {
     union setconflict a;
-    int *c;
+    int              *c;
     c = a.b;
-    asm ("": "=r" (c):"0" (c));
+    asm("" : "=r"(c) : "0"(c));
     *c = 1;
-    asm ("": "=r" (c):"0" (c));
+    asm("" : "=r"(c) : "0"(c));
     sum += *c;
   }
 

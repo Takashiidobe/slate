@@ -166,7 +166,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let unaligned = self
             .member_ptrs
             .get(ptr)
-            .is_some_and(|member| member.unaligned);
+            .is_some_and(|member| member.unaligned)
+            || self.packed_pointer_values.contains(ptr);
         let mut value = if volatile {
             let method = if unaligned {
                 "read_unaligned"
@@ -177,6 +178,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 binding: crate::function_identity::CallBinding::Generated,
                 func: Box::new(Expr::Path(Path::new(
                     ["std", "ptr", method].map(Ident::from),
+                ))),
+                args: vec![self.load_address_expr(ptr)],
+            })
+        } else if unaligned {
+            Self::unsafe_expr(Expr::Call {
+                binding: crate::function_identity::CallBinding::Generated,
+                func: Box::new(Expr::Path(Path::new(
+                    ["std", "ptr", "read_unaligned"].map(Ident::from),
                 ))),
                 args: vec![self.load_address_expr(ptr)],
             })
@@ -391,6 +400,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
 
         for (field_index, op) in ops.iter().rev().enumerate() {
             self.value_types.insert(op.addr.clone(), op.addr_ty.clone());
+            if self.record_name_from_base_type(&op.addr).is_some() && op.alignment == 1 {
+                self.packed_pointer_values.insert(op.addr.clone());
+            }
             let ty = self
                 .pointee_type(&op.addr_ty)
                 .unwrap_or(Type::Prim(Prim::I32));
@@ -565,6 +577,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     pub(super) fn lower_alloca(&mut self, op: &inst::Alloca) {
         let result = &op.addr;
         let cir_ty = &op.addr_ty;
+        if self.record_name_from_base_type(result).is_some() && op.alignment == 1 {
+            self.packed_pointer_values.insert(result.clone());
+        }
         if self.resolved_bi_allocas.contains(result) {
             return;
         }

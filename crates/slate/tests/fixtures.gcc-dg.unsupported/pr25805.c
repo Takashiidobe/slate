@@ -3,23 +3,25 @@
 /* { dg-do run } */
 /* { dg-options "" } */
 /* { dg-skip-if "packed attribute missing for d1" { "epiphany-*-*" } } */
-extern void abort (void);
-extern void exit (int);
+extern void abort(void);
+extern void exit(int);
 
-struct { int a; int x[]; } d1 = { 0, 0 };
+struct {
+  int a;
+  int x[];
+} d1   = {0, 0};
 int d2 = 0;
 
 int
 // @lowering-fn-begin
 // @rewrite-fn-begin
-main ()
-{
+main() {
   d2 = 1;
-  if (sizeof (d1) != sizeof (int))
-    abort ();
+  if (sizeof(d1) != sizeof(int))
+    abort();
   if (d1.x[0] != 0)
-    abort ();
-  exit (0);
+    abort();
+  exit(0);
 }
 // @rewrite-fn-end
 // @lowering-fn-end

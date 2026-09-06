@@ -11,34 +11,31 @@
 #include <stdlib.h>
 
 volatile sig_atomic_t caught_sigfpe;
-sigjmp_buf buf;
+sigjmp_buf            buf;
 
-static void
-handle_sigfpe (int sig)
-{
+static void handle_sigfpe(int sig) {
   caught_sigfpe = 1;
-  siglongjmp (buf, 1);
+  siglongjmp(buf, 1);
 }
 
 int
 // @lowering-fn-begin
 // @rewrite-fn-begin
-main (void)
-{
+main(void) {
   volatile long double a = 0x1p-16384L;
-  volatile __float128 r;
+  volatile __float128  r;
   r = a;
-  if (fetestexcept (FE_UNDERFLOW))
-    abort ();
+  if (fetestexcept(FE_UNDERFLOW))
+    abort();
   if (r != 0x1p-16384q)
-    abort ();
-  feenableexcept (FE_UNDERFLOW);
-  signal (SIGFPE, handle_sigfpe);
-  if (sigsetjmp (buf, 1) == 0)
+    abort();
+  feenableexcept(FE_UNDERFLOW);
+  signal(SIGFPE, handle_sigfpe);
+  if (sigsetjmp(buf, 1) == 0)
     r = a;
   if (!caught_sigfpe)
-    abort ();
-  exit (0);
+    abort();
+  exit(0);
 }
 // @rewrite-fn-end
 // @lowering-fn-end

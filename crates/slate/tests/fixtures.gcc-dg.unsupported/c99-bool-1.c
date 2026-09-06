@@ -21,7 +21,8 @@ _Bool foo;
 #error "bad stdbool false" /* { dg-bogus "#error" "bad stdbool.h" } */
 #endif
 
-#if !defined(__bool_true_false_are_defined) || (__bool_true_false_are_defined != 1)
+#if !defined(__bool_true_false_are_defined) ||                                 \
+    (__bool_true_false_are_defined != 1)
 #error "bad stdbool __bool_true_false_are_defined" /* { dg-bogus "#error" "bad stdbool.h" } */
 #endif
 
@@ -29,224 +30,221 @@ int a = true;
 int b = false;
 int c = __bool_true_false_are_defined;
 
-struct foo
-{
+struct foo {
   _Bool a : 1;
 } sf;
 
-#define str(x) xstr(x)
+#define str(x)  xstr(x)
 #define xstr(x) #x
 
-
-extern void abort (void);
-extern void exit (int);
-extern int strcmp (const char *, const char *);
+extern void abort(void);
+extern void exit(int);
+extern int  strcmp(const char *, const char *);
 
 int
 // @lowering-fn-begin
 // @rewrite-fn-begin
-main (void)
-{
+main(void) {
   /* The macro `bool' must expand to _Bool.  */
-  const char *t = str (bool);
-  _Bool u, v;
-  if (strcmp (t, "_Bool"))
-    abort ();
+  const char *t = str(bool);
+  _Bool       u, v;
+  if (strcmp(t, "_Bool"))
+    abort();
   if (a != 1 || b != 0 || c != 1)
-    abort ();
+    abort();
   /* Casts to _Bool have a specified behavior.  */
   if ((int)(_Bool)2 != 1)
-    abort ();
+    abort();
   if ((int)(_Bool)0.2 != 1)
-    abort ();
+    abort();
   /* Pointers may be assigned to _Bool.  */
   if ((u = t) != 1)
-    abort ();
+    abort();
   /* _Bool may be used to subscript arrays.  */
   u = 0;
   if (t[u] != '_')
-    abort ();
+    abort();
   if (u[t] != '_')
-    abort ();
+    abort();
   u = 1;
   if (t[u] != 'B')
-    abort ();
+    abort();
   if (u[t] != 'B')
-    abort ();
+    abort();
   /* Test increment and decrement operators.  */
   u = 0;
   if (u++ != 0)
-    abort ();
+    abort();
   if (u != 1)
-    abort ();
+    abort();
   if (u++ != 1)
-    abort ();
+    abort();
   if (u != 1)
-    abort ();
+    abort();
   u = 0;
   if (++u != 1)
-    abort ();
+    abort();
   if (u != 1)
-    abort ();
+    abort();
   if (++u != 1)
-    abort ();
+    abort();
   if (u != 1)
-    abort ();
+    abort();
   u = 0;
   if (u-- != 0)
-    abort ();
+    abort();
   if (u != 1)
-    abort ();
+    abort();
   if (u-- != 1)
-    abort ();
+    abort();
   if (u != 0)
-    abort ();
+    abort();
   u = 0;
   if (--u != 1)
-    abort ();
+    abort();
   if (u != 1)
-    abort ();
+    abort();
   if (--u != 0)
-    abort ();
+    abort();
   if (u != 0)
-    abort ();
+    abort();
   /* Test unary + - ~ !.  */
   u = 0;
   if (+u != 0)
-    abort ();
+    abort();
   if (-u != 0)
-    abort ();
+    abort();
   u = 1;
   if (+u != 1)
-    abort ();
+    abort();
   if (-u != -1)
-    abort ();
+    abort();
   u = 2;
   if (+u != 1)
-    abort ();
+    abort();
   if (-u != -1)
-    abort ();
+    abort();
   u = 0;
   if (~u != ~(int)0)
-    abort ();
+    abort();
   u = 1;
   if (~u != ~(int)1)
-    abort ();
+    abort();
   u = 0;
   if (!u != 1)
-    abort ();
+    abort();
   u = 1;
   if (!u != 0)
-    abort ();
+    abort();
   /* Test arithmetic * / % + - (which all apply promotions).  */
   u = 0;
   if (u + 2 != 2)
-    abort ();
+    abort();
   u = 1;
   if (u * 4 != 4)
-    abort ();
+    abort();
   if (u % 3 != 1)
-    abort ();
+    abort();
   if (u / 1 != 1)
-    abort ();
+    abort();
   if (4 / u != 4)
-    abort ();
+    abort();
   if (u - 7 != -6)
-    abort ();
+    abort();
   /* Test bitwise shift << >>.  */
   u = 1;
   if (u << 1 != 2)
-    abort ();
+    abort();
   if (u >> 1 != 0)
-    abort ();
+    abort();
   /* Test relational and equality operators < > <= >= == !=.  */
   u = 0;
   v = 0;
   if (u < v || u > v || !(u <= v) || !(u >= v) || !(u == v) || u != v)
-    abort ();
+    abort();
   u = 0;
   v = 1;
   if (!(u < v) || u > v || !(u <= v) || u >= v || u == v || !(u != v))
-    abort ();
+    abort();
   /* Test bitwise operators & ^ |.  */
   u = 1;
   if ((u | 2) != 3)
-    abort ();
+    abort();
   if ((u ^ 3) != 2)
-    abort ();
+    abort();
   if ((u & 1) != 1)
-    abort ();
+    abort();
   if ((u & 0) != 0)
-    abort ();
+    abort();
   /* Test logical && ||.  */
   u = 0;
   v = 1;
   if (!(u || v))
-    abort ();
+    abort();
   if (!(v || u))
-    abort ();
+    abort();
   if (u && v)
-    abort ();
+    abort();
   if (v && u)
-    abort ();
+    abort();
   u = 1;
   v = 1;
   if (!(u && v))
-    abort ();
+    abort();
   /* Test conditional ? :.  */
   u = 0;
   if ((u ? 4 : 7) != 7)
-    abort ();
+    abort();
   u = 1;
   v = 0;
   if ((1 ? u : v) != 1)
-    abort ();
+    abort();
   if ((1 ? 4 : u) != 4)
-    abort ();
+    abort();
   /* Test assignment operators = *= /= %= += -= <<= >>= &= ^= |=.  */
   if ((u = 2) != 1)
-    abort ();
+    abort();
   if (u != 1)
-    abort ();
+    abort();
   if ((u *= -1) != 1)
-    abort ();
+    abort();
   if (u != 1)
-    abort ();
+    abort();
   if ((u /= 2) != 0)
-    abort ();
+    abort();
   if ((u += 3) != 1)
-    abort ();
+    abort();
   if ((u -= 1) != 0)
-    abort ();
+    abort();
   u = 1;
   if ((u <<= 4) != 1)
-    abort ();
+    abort();
   if ((u >>= 1) != 0)
-    abort ();
+    abort();
   u = 1;
   if ((u &= 0) != 0)
-    abort ();
+    abort();
   if ((u |= 2) != 1)
-    abort ();
+    abort();
   if ((u ^= 3) != 1)
-    abort ();
+    abort();
   /* Test comma expressions.  */
   u = 1;
   if ((4, u) != 1)
-    abort ();
+    abort();
   /* Test bitfields.  */
   {
     int i;
-    for (i = 0; i < sizeof (struct foo); i++)
-      *((unsigned char *)&sf + i) = (unsigned char) -1;
+    for (i = 0; i < sizeof(struct foo); i++)
+      *((unsigned char *)&sf + i) = (unsigned char)-1;
     sf.a = 1;
     if (sf.a != 1)
-      abort ();
+      abort();
     sf.a = 0;
     if (sf.a != 0)
-      abort ();
+      abort();
   }
-  exit (0);
+  exit(0);
 }
 // @rewrite-fn-end
 // @lowering-fn-end

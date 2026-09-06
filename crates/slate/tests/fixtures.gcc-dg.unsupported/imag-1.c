@@ -3,19 +3,18 @@
 /* { dg-do run } */
 /* { dg-options "-std=gnu99" } */
 
-extern void abort (void);
-extern void exit (int);
+extern void abort(void);
+extern void exit(int);
 
 int
 // @lowering-fn-begin
 // @rewrite-fn-begin
-main (void)
-{
+main(void) {
   int i, j;
   i = 1;
   j = __imag__ ++i;
   if (i != 2 || j != 0)
-    abort ();
+    abort();
   return 0;
 }
 // @rewrite-fn-end

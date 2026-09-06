@@ -2,20 +2,18 @@
 /* { dg-do run } */
 /* { dg-options "-g" } */
 
-#if defined (__ia64__) || defined (__s390__) || defined (__s390x__)
+#if defined(__ia64__) || defined(__s390__) || defined(__s390x__)
 #define NOP "nop 0"
-#elif defined (__MMIX__)
+#elif defined(__MMIX__)
 #define NOP "swym 0"
-#elif defined (__or1k__)
+#elif defined(__or1k__)
 #define NOP "l.nop"
 #else
 #define NOP "nop"
 #endif
 
-__attribute__((noinline, noclone)) int
-foo (unsigned char c)
-{
-  int ret;
+__attribute__((noinline, noclone)) int foo(unsigned char c) {
+  int   ret;
   _Bool a, b, d, e, f;
 
   a = c == 34;
@@ -24,24 +22,29 @@ foo (unsigned char c)
   f = !d;
   if (d)
     ret = 1;
-  else
-    {
-      e = c <= 31;
-      ret = e;
-    }
+  else {
+    e   = c <= 31;
+    ret = e;
+  }
 
-  asm volatile (NOP : : : "memory");     /* { dg-final { gdb-test pr58791-2.c:27 "d & 1" "1" } } */
-  asm volatile (NOP : : : "memory");     /* { dg-final { gdb-test pr58791-2.c:27 "f & 1" "0" } } */
+  asm volatile(
+      NOP
+      :
+      :
+      : "memory"); /* { dg-final { gdb-test pr58791-2.c:27 "d & 1" "1" } } */
+  asm volatile(
+      NOP
+      :
+      :
+      : "memory"); /* { dg-final { gdb-test pr58791-2.c:27 "f & 1" "0" } } */
   return ret;
 }
-
 
 int
 // @lowering-fn-begin
 // @rewrite-fn-begin
-main ()
-{
-  foo (32);
+main() {
+  foo(32);
   return 0;
 }
 // @rewrite-fn-end

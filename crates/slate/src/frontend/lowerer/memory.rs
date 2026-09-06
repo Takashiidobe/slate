@@ -202,6 +202,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_ptr_stride(&mut self, op: &inst::PtrStride) {
+        if self.packed_pointer_values.contains(&op.base) {
+            self.packed_pointer_values.insert(op.result.clone());
+        }
         if let Some(state_expr) = self.indirect_target_values.get(&op.stride).cloned() {
             self.indirect_target_values
                 .insert(op.result.clone(), state_expr);
@@ -271,6 +274,15 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return;
         };
         let src_ty = &src_ty;
+        if matches!(result_ty, CirType::Pointer { .. })
+            && (self.packed_pointer_values.contains(src)
+                || self
+                    .record_name_from_base_type(src)
+                    .and_then(|name| self.parent.records.get(&name))
+                    .is_some_and(|record| record.packed.is_some()))
+        {
+            self.packed_pointer_values.insert(result.clone());
+        }
         if matches!(src_ty, CirType::Complex { .. }) || matches!(result_ty, CirType::Complex { .. })
         {
             self.lower_complex_cast(op, src_ty);
@@ -560,10 +572,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 self.materialize_expr(
                     result,
                     Expr::Cast {
-                        expr: Box::new(Expr::AddrOf {
-                            mutable: true,
-                            expr: Box::new(Expr::Var(sanitize_ident(&name))),
-                        }),
+                        expr: Box::new(self.store_address_expr(src)),
                         ty: result_rust_ty.clone(),
                     },
                     Some(result_ty),
@@ -1010,7 +1019,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         None
     }
 
-    fn record_name_from_base_type(&self, base_ptr: &str) -> Option<String> {
+    pub(super) fn record_name_from_base_type(&self, base_ptr: &str) -> Option<String> {
         let record_name = self
             .value_type(base_ptr)
             .and_then(CirType::pointee)

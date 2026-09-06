@@ -2,33 +2,34 @@
 /* { dg-do run { target { { i?86-*-* x86_64-*-* } && lp64 } } } */
 /* { dg-options "-g" } */
 
-int __attribute__((noinline))
-foo (unsigned short *p)
-{
+int __attribute__((noinline)) foo(unsigned short *p) {
   int a = *p;
-  asm volatile ("nop" : : "D" ((int) *p));
-  asm volatile ("nop" : : "D" ((int) *p));	/* { dg-final { gdb-test . "a" "0x8078" } } */
+  asm volatile("nop" : : "D"((int)*p));
+  asm volatile("nop"
+               :
+               : "D"((int)*p)); /* { dg-final { gdb-test . "a" "0x8078" } } */
   return 0;
 }
 
-int __attribute__((noinline))
-bar (short *p)
-{
+int __attribute__((noinline)) bar(short *p) {
   unsigned int a = *p;
-  asm volatile ("nop" : : "D" ((unsigned int) *p));
-  asm volatile ("nop" : : "D" ((unsigned int) *p));	/* { dg-final { gdb-test . "a" "0xffff8078" } } */
+  asm volatile("nop" : : "D"((unsigned int)*p));
+  asm volatile(
+      "nop"
+      :
+      : "D"(
+          (unsigned int)*p)); /* { dg-final { gdb-test . "a" "0xffff8078" } } */
   return 0;
 }
 
 int
 // @lowering-fn-begin
 // @rewrite-fn-begin
-main ()
-{
+main() {
   unsigned short us = 0x8078;
-  foo (&us);
+  foo(&us);
   short s = -32648;
-  bar (&s);
+  bar(&s);
   return 0;
 }
 // @rewrite-fn-end

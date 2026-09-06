@@ -3,18 +3,21 @@
 /* { dg-do run { target bitint } } */
 /* { dg-options "-std=c23 -funsigned-bitfields" } */
 
-struct S { _BitInt(22) a : 7; signed _BitInt(22) b : 7; unsigned _BitInt(22) c : 7; } s;
+struct S {
+  _BitInt(22) a          : 7;
+  signed _BitInt(22) b   : 7;
+  unsigned _BitInt(22) c : 7;
+} s;
 
 int
 // @lowering-fn-begin
 // @rewrite-fn-begin
-main ()
-{
+main() {
   s.a = -64;
   s.b = -64;
   s.c = -64;
   if (s.a != -64 || s.b != -64 || s.c != 64)
-    __builtin_abort ();
+    __builtin_abort();
 }
 // @rewrite-fn-end
 // @lowering-fn-end

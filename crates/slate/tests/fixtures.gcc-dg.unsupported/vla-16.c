@@ -6,69 +6,59 @@
 
 #include <stdarg.h>
 
-extern void exit (int);
-extern void abort (void);
+extern void exit(int);
+extern void abort(void);
 
 int a[1];
 
-void
-f1 (void)
-{
-  int i = 0;
-  int (**p)[1] = &(typeof (++i, (int (*)[i])a)){&a};
+void f1(void) {
+  int i        = 0;
+  int (**p)[1] = &(typeof(++i, (int (*)[i])a)){&a};
   if (*p != &a)
-    abort ();
+    abort();
   if (i != 1)
-    abort ();
+    abort();
 }
 
-void
-f2 (void)
-{
-  int i = 0;
-  (typeof (++i, (int (*)[i])a)){&a} = 0;
+void f2(void) {
+  int i                             = 0;
+  (typeof(++i, (int (*)[i])a)){ &a} = 0;
   if (i != 1)
-    abort ();
+    abort();
 }
 
-void
-f3 (void)
-{
-  int i = 0;
-  (typeof (++i, (int (*)[i])a)){&a} += 1;
+void f3(void) {
+  int i                              = 0;
+  (typeof(++i, (int (*)[i])a)){ &a} += 1;
   if (i != 1)
-    abort ();
+    abort();
 }
 
-void
-f4 (void)
-{
+void f4(void) {
   int i = 0;
-  --(typeof (++i, (int (*)[i])a)){&a + 1};
+  --(typeof(++i, (int (*)[i])a)){&a + 1};
   if (i != 1)
-    abort ();
+    abort();
 }
 
-void
-f5 (void)
-{
+void f5(void) {
   int i = 0;
-  (typeof (++i, (int (*)[i])a)){&a}++;
+  (typeof(++i, (int (*)[i])a)) { &a }
+  ++;
   if (i != 1)
-    abort ();
+    abort();
 }
 
 int
 // @lowering-fn-begin
 // @rewrite-fn-begin
-main (void)
-{
-  f1 ();
-  f2 ();
-  f3 ();
-  f4 ();
-  f5 ();
-  exit (0);
+main(void) {
+  f1();
+  f2();
+  f3();
+  f4();
+  f5();
+  exit(0);
 }
 // @rewrite-fn-end
 // @lowering-fn-end

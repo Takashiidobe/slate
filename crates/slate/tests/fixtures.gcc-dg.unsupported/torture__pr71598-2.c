@@ -5,19 +5,15 @@
 
 enum e1 { c1 = -__INT_MAX__ };
 
-__attribute__((noinline,noclone))
-int f(enum e1 *p, signed int *q)
-{
+__attribute__((noinline, noclone)) int f(enum e1 *p, signed int *q) {
   *p = c1;
   *q = 2;
   return *p;
 }
 
-enum e2 { c2 = __SHRT_MAX__ + 1};
+enum e2 { c2 = __SHRT_MAX__ + 1 };
 
-__attribute__((noinline,noclone))
-int g(enum e2 *p, unsigned short *q)
-{
+__attribute__((noinline, noclone)) int g(enum e2 *p, unsigned short *q) {
   *p = c2;
   *q = 2;
   return *p;
@@ -25,9 +21,7 @@ int g(enum e2 *p, unsigned short *q)
 
 enum e3 { c3 = __SCHAR_MAX__ };
 
-__attribute__((noinline,noclone))
-int h(enum e3 *p, unsigned char *q)
-{
+__attribute__((noinline, noclone)) int h(enum e3 *p, unsigned char *q) {
   *p = c3;
   *q = 2;
   return *p;
@@ -35,11 +29,10 @@ int h(enum e3 *p, unsigned char *q)
 
 // @lowering-fn-begin
 // @rewrite-fn-begin
-int main()
-{
-  signed x;
+int main() {
+  signed         x;
   unsigned short y;
-  unsigned char z;
+  unsigned char  z;
 
   if (f(&x, &x) != 2)
     __builtin_abort();

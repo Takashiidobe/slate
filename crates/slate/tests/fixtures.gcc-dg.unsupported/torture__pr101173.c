@@ -4,8 +4,7 @@
 int a[6][9];
 // @lowering-fn-begin
 // @rewrite-fn-begin
-int main()
-{
+int main() {
   a[1][3] = 8;
   for (int b = 1; b <= 5; b++)
     for (int d = 0; d <= 5; d++)
@@ -15,7 +14,7 @@ int main()
   for (int e = 0; e < 6; e++)
     for (int f = 0; f < 9; f++)
       if (a[e][f] != 0)
-        __builtin_abort ();
+        __builtin_abort();
   return 0;
 }
 // @rewrite-fn-end

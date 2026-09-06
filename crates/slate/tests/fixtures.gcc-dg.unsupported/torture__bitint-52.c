@@ -7,20 +7,15 @@
 unsigned _BitInt(1) a;
 unsigned _BitInt(8) b;
 
-void
-foo (unsigned _BitInt(16) x)
-{
-  a += (x << 2) | b;
-}
+void foo(unsigned _BitInt(16) x) { a += (x << 2) | b; }
 
 int
 // @lowering-fn-begin
 // @rewrite-fn-begin
-main ()
-{
-  foo (0xfef1uwb);
+main() {
+  foo(0xfef1uwb);
   if (a)
-    __builtin_abort ();
+    __builtin_abort();
   return 0;
 }
 // @rewrite-fn-end

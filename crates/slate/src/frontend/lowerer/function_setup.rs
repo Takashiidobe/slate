@@ -437,6 +437,7 @@ impl<'a> Lowerer<'a> {
             needs_alloca_layout_preservation,
             member_ptrs: BTreeMap::new(),
             element_ptrs: BTreeMap::new(),
+            packed_pointer_values: BTreeSet::new(),
             block_addr_element_ptrs: BTreeMap::new(),
             local_block_addr_arrays: BTreeMap::new(),
             block_addr_array_values: BTreeMap::new(),
