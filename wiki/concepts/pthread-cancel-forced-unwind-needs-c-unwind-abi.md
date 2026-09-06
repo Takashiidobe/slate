@@ -41,7 +41,7 @@ Per Rust's ABI contract (RFC 2945, the `C`/`C-unwind` split), a plain
 `extern "C" fn` **asserts nothing unwinds across its frame boundary** — not
 just Rust panics, any unwind, including a foreign one. The compiler can't
 prove that statically (dead branches aren't provably dead at the ABI level),
-so the codegen it emits is: if an unwind *does* reach this frame, run a
+so the codegen it emits is: if an unwind _does_ reach this frame, run a
 guard that calls `core::panicking::panic_cannot_unwind`, which aborts.
 
 `pthread_cancel()` delivers cancellation via glibc's own foreign forced
@@ -182,7 +182,7 @@ The tempting fix is: tag libc functions that are POSIX cancellation points
 `pthread_cancel(3)`) in slate's known-function table, and only mark
 generated functions `extern "C-unwind"` if they transitively reach one.
 
-That's exact and cheap for the *known-function* tier, but incomplete on its
+That's exact and cheap for the _known-function_ tier, but incomplete on its
 own:
 
 - Unwind-tolerance is a per-frame property. Every function between the
@@ -231,7 +231,7 @@ attribute, not about how its libc callees are declared.
 - `strace -f -e trace=write,openat` ruled out the "libgcc_s.so.1 missing"
   fatal path in one shot (the dlopen it does succeeds; no diagnostic write
   ever happens), which killed a plausible-looking red herring fast.
-- `objdump -d` on the whole `.text` section, anchored on a nearby *exported*
+- `objdump -d` on the whole `.text` section, anchored on a nearby _exported_
   symbol (`__pthread_unwind_next`) for alignment, let the unknown `??`
   frames in the gdb backtrace be read directly as real glibc source shape
   (`_Unwind_ForcedUnwind(...); abort();`) without needing matching debug
@@ -245,6 +245,6 @@ attribute, not about how its libc callees are declared.
   original, much larger generated fixture) gave a deterministic 10-vs-11
   threshold before the real cause was understood — worth noting as a trap:
   the sharp threshold looked like it implicated a specific call site count
-  or size boundary, but was actually just "does *this* function have a
+  or size boundary, but was actually just "does _this_ function have a
   Rust-call-shaped landing pad or not," which happened to correlate with
   count in that specific file's call ordering.

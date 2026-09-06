@@ -249,7 +249,7 @@ Signal numbers 1–33 match Darwin's assignment exactly (`SIGHUP=1` ..
 and a realtime range `SIGRTMIN=65`/`SIGRTMAX=126` that Darwin has neither
 of. `struct sigaction` is 32 bytes: the handler union at offset 0,
 `sa_flags` at offset 8, then `sigset_t sa_mask` at offset 12 — note the
-field order is `sa_flags` *before* `sa_mask`, the reverse of Darwin's
+field order is `sa_flags` _before_ `sa_mask`, the reverse of Darwin's
 `sa_mask`-before-`sa_flags` layout, both verified via `offsetof` against
 the oracle. `siginfo_t` is 80 bytes: `si_signo`, `si_errno`, `si_code`,
 `si_pid`, `si_uid`, `si_status`, `si_addr`, `si_value` (union sigval, 8

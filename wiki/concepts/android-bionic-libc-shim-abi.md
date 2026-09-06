@@ -114,12 +114,12 @@ kernel-arch divergence, not a libc one, so it applies identically to any
 libc built for those architectures:
 
 | macro         | x86 (generic) | arm/aarch64 |
-| ------------- | -------------:| -----------:|
-| `O_DIRECTORY` |      `0200000`|    `040000` |
-| `O_NOFOLLOW`  |      `0400000`|   `0100000` |
-| `O_DIRECT`    |       `040000`|   `0200000` |
-| `O_LARGEFILE` |      `0100000`|   `0400000` |
-| `O_TMPFILE`   |    `020200000`| `020040000` |
+| ------------- | ------------: | ----------: |
+| `O_DIRECTORY` |     `0200000` |    `040000` |
+| `O_NOFOLLOW`  |     `0400000` |   `0100000` |
+| `O_DIRECT`    |      `040000` |   `0200000` |
+| `O_LARGEFILE` |     `0100000` |   `0400000` |
+| `O_TMPFILE`   |   `020200000` | `020040000` |
 
 `bits/aarch64/fcntl.h`/`bits/arm/fcntl.h` already had the correct values,
 but they were dead: the top-level `libc-shim/include/fcntl.h` unconditionally
