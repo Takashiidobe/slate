@@ -385,6 +385,10 @@ pub fn active_target() -> String {
         .unwrap_or_else(|| env!("SLATE_BUILD_TARGET").to_string())
 }
 
+pub fn target_is_host_default() -> bool {
+    active_target() == env!("SLATE_BUILD_TARGET")
+}
+
 pub struct TargetConfig {
     pub arch: &'static str,
     pub endian: &'static str,

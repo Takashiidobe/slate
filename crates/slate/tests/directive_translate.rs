@@ -49,38 +49,6 @@ fn directive_filecheck_fixtures() -> Vec<String> {
     fixtures
 }
 
-fn translate_directives(name: &str) -> String {
-    let src = cfg_fixtures_dir().join(name);
-    let out = Command::new(env!("CARGO_BIN_EXE_slate"))
-        .arg("translate-directives")
-        .arg(&src)
-        .output()
-        .expect("run slate translate-directives");
-    assert!(
-        out.status.success(),
-        "translate-directives failed for {name}:\n{}",
-        String::from_utf8_lossy(&out.stderr)
-    );
-    let rust = String::from_utf8(out.stdout).expect("generated Rust is utf8");
-    check_directive_output(name, &rust);
-    rust
-}
-
-fn translate_directives_err(name: &str) -> String {
-    let src = cfg_fixtures_dir().join(name);
-    let out = Command::new(env!("CARGO_BIN_EXE_slate"))
-        .arg("translate-directives")
-        .arg(&src)
-        .output()
-        .expect("run slate translate-directives");
-    assert!(
-        !out.status.success(),
-        "translate-directives unexpectedly succeeded for {name}:\n{}",
-        String::from_utf8_lossy(&out.stdout)
-    );
-    String::from_utf8(out.stderr).expect("diagnostics are utf8")
-}
-
 fn translate(name: &str) -> String {
     translate_with_clang_args(name, None)
 }
@@ -176,8 +144,17 @@ fn write_generated(name: &str, rust: &str) -> PathBuf {
 #[test]
 fn generated_directive_filecheck() {
     for fixture in directive_filecheck_fixtures() {
-        translate_directives(&fixture);
+        let rust = translate(&fixture);
+        check_directive_output(&fixture, &rust);
     }
+}
+
+#[test]
+fn target_macro_conditionals_auto_expand_and_run_correctly_on_host() {
+    let rust = translate("os_targets.c");
+    let output = compile_and_run("os_targets", &rust);
+    assert!(output.status.success());
+    assert_eq!(String::from_utf8_lossy(&output.stdout), "20\n");
 }
 
 #[test]
@@ -191,48 +168,12 @@ fn unconditional_error_is_typed_preserved_and_fails_rust_compilation() {
 }
 
 #[test]
-fn conditional_error_fails_only_when_its_cfg_is_selected() {
+fn conditional_error_only_triggers_when_its_macro_is_defined() {
     let single = translate("error_conditional.c");
     assert!(!single.contains("compile_error!"));
     let active_single = translate_with_clang_args("error_conditional.c", Some("-DFAIL_BUILD"));
     assert!(active_single.contains("compile_error!(\"selected failure\");"));
     assert!(!active_single.contains("#[cfg("));
-
-    let rust = translate_directives("error_conditional.c");
-    assert!(
-        compile_with_cfgs("error_conditional_inactive", &rust, &[])
-            .status
-            .success()
-    );
-    let active = compile_with_cfgs("error_conditional_active", &rust, &["fail_build"]);
-    assert!(!active.status.success());
-    assert!(String::from_utf8_lossy(&active.stderr).contains("selected failure"));
-}
-
-#[test]
-fn nested_error_uses_the_effective_cfg_condition() {
-    let rust = translate_directives("error_nested.c");
-
-    assert!(
-        compile_with_cfgs("error_nested_outer_only", &rust, &["outer_failure"])
-            .status
-            .success()
-    );
-    let active = compile_with_cfgs(
-        "error_nested_active",
-        &rust,
-        &["outer_failure", "inner_failure"],
-    );
-    assert!(!active.status.success());
-    assert!(String::from_utf8_lossy(&active.stderr).contains("nested failure"));
-}
-
-#[test]
-fn conditional_error_with_unmappable_predicate_is_refused() {
-    let err = translate_directives_err("reject/error_unmapped.c");
-
-    assert!(err.contains("does not map to a known Rust cfg"));
-    assert!(err.contains("FAILURE_LEVEL == 2"));
 }
 
 #[test]
@@ -247,18 +188,6 @@ fn warning_uses_a_self_contained_compile_time_fallback() {
     assert!(output.status.success());
     let stderr = String::from_utf8_lossy(&output.stderr);
     assert!(stderr.contains("WARNING_TOKEN \"quoted\" C:\\tmp"));
-}
-
-#[test]
-fn warning_follows_its_recovered_cfg_without_becoming_an_error() {
-    let rust = translate_directives("warning_directives.c");
-
-    let inactive = compile_with_cfgs("warning_cfg_inactive", &rust, &[]);
-    assert!(inactive.status.success());
-    assert!(!String::from_utf8_lossy(&inactive.stderr).contains("selected warning"));
-    let active = compile_with_cfgs("warning_cfg_active", &rust, &["slate_warning_feature"]);
-    assert!(active.status.success());
-    assert!(String::from_utf8_lossy(&active.stderr).contains("selected warning"));
 }
 
 #[test]
@@ -333,16 +262,10 @@ fn semantic_and_unknown_pragmas_remain_explicitly_unsupported() {
 }
 
 #[test]
-fn pack_pragmas_are_consumed_in_single_config_translation() {
+fn pack_pragma_is_consumed_by_clang_and_does_not_block_translation() {
     let pragma = translate("reject/unsupported_pragma.c");
     assert!(
         compile_and_run("single_config_pack_pragma", &pragma)
-            .status
-            .success()
-    );
-    let pragma = translate_directives("reject/unsupported_pragma.c");
-    assert!(
-        compile_and_run("unconditional_directive_pack_pragma", &pragma)
             .status
             .success()
     );
@@ -353,126 +276,13 @@ fn pack_pragmas_are_consumed_in_single_config_translation() {
 }
 
 #[test]
-fn conditional_pack_remains_unsupported_only_in_multi_config_translation() {
+fn conditional_pack_pragma_is_a_no_op_when_its_macro_is_undefined() {
     let single = translate("unsupported_conditional.c");
     assert!(!single.contains("compile_error!"));
 
     let active_single =
         translate_with_clang_args("unsupported_conditional.c", Some("-DPACKED_LAYOUT"));
     assert!(!active_single.contains("compile_error!"));
-
-    let rust = translate_directives("unsupported_conditional.c");
-    assert!(
-        compile_with_cfgs("unsupported_conditional_inactive", &rust, &[])
-            .status
-            .success()
-    );
-    let active = compile_with_cfgs("unsupported_conditional_active", &rust, &["packed_layout"]);
-    assert!(!active.status.success());
-    assert!(
-        String::from_utf8_lossy(&active.stderr)
-            .contains("unsupported semantic directive #pragma at line 2")
-    );
-}
-
-#[test]
-fn conditional_visibility_remains_unsupported_only_in_multi_config_translation() {
-    let single = translate("unsupported_conditional_visibility.c");
-    assert!(!single.contains("compile_error!"));
-
-    let active_single =
-        translate_with_clang_args("unsupported_conditional_visibility.c", Some("-DHIDDEN_API"));
-    assert!(!active_single.contains("compile_error!"));
-
-    let rust = translate_directives("unsupported_conditional_visibility.c");
-    assert!(
-        compile_with_cfgs("unsupported_conditional_visibility_inactive", &rust, &[])
-            .status
-            .success()
-    );
-    let active = compile_with_cfgs(
-        "unsupported_conditional_visibility_active",
-        &rust,
-        &["hidden_api"],
-    );
-    assert!(!active.status.success());
-    assert!(
-        String::from_utf8_lossy(&active.stderr)
-            .contains("unsupported semantic directive #pragma at line 2")
-    );
-}
-
-#[test]
-fn conditional_symbol_pragmas_remain_unsupported_only_in_multi_config_translation() {
-    let single = translate("unsupported_conditional_symbol_pragmas.c");
-    assert!(!single.contains("compile_error!"));
-
-    let active_single = translate_with_clang_args(
-        "unsupported_conditional_symbol_pragmas.c",
-        Some("-DSYMBOL_PRAGMAS"),
-    );
-    assert!(!active_single.contains("compile_error!"));
-
-    let rust = translate_directives("unsupported_conditional_symbol_pragmas.c");
-    assert!(
-        compile_with_cfgs(
-            "unsupported_conditional_symbol_pragmas_inactive",
-            &rust,
-            &[]
-        )
-        .status
-        .success()
-    );
-    let active = compile_with_cfgs(
-        "unsupported_conditional_symbol_pragmas_active",
-        &rust,
-        &["symbol_pragmas"],
-    );
-    assert!(!active.status.success());
-    assert!(
-        String::from_utf8_lossy(&active.stderr)
-            .contains("unsupported semantic directive #pragma at line 2")
-    );
-}
-
-#[test]
-fn conditional_macro_state_remains_unsupported_only_in_multi_config_translation() {
-    let single = translate("unsupported_conditional_macro_state.c");
-    assert!(!single.contains("compile_error!"));
-
-    let active_single = translate_with_clang_args(
-        "unsupported_conditional_macro_state.c",
-        Some("-DNESTED_MACRO_STATE"),
-    );
-    assert!(!active_single.contains("compile_error!"));
-
-    let rust = translate_directives("unsupported_conditional_macro_state.c");
-    assert!(
-        compile_with_cfgs("unsupported_conditional_macro_state_inactive", &rust, &[])
-            .status
-            .success()
-    );
-    let active = compile_with_cfgs(
-        "unsupported_conditional_macro_state_active",
-        &rust,
-        &["nested_macro_state"],
-    );
-    assert!(!active.status.success());
-}
-
-#[test]
-fn unused_conditional_poison_needs_no_generated_error() {
-    let rust = translate_directives("conditional_poison_unused.c");
-    assert!(
-        compile_with_cfgs("conditional_poison_unused_inactive", &rust, &[])
-            .status
-            .success()
-    );
-    assert!(
-        compile_with_cfgs("conditional_poison_unused_active", &rust, &["strict_names"],)
-            .status
-            .success()
-    );
 }
 
 #[test]
@@ -483,15 +293,6 @@ fn poison_use_surfaces_the_clang_frontend_error() {
     assert!(error.contains("attempt to use a poisoned identifier"));
     assert!(error.contains("forbidden_identifier"));
     assert!(!error.contains("unsupported semantic directive"));
-}
-
-#[test]
-fn unsupported_directive_with_unmappable_condition_stops_translation() {
-    let err = translate_directives_err("reject/unsupported_unmapped.c");
-
-    assert!(err.contains("unsupported semantic directive #pragma at line 2"));
-    assert!(err.contains("PACK_LEVEL == 1"));
-    assert!(err.contains("does not map to a known Rust cfg"));
 }
 
 #[test]
@@ -510,16 +311,11 @@ fn include_next_uses_the_clang_header_search_order() {
 }
 
 #[test]
-fn line_directive_preserves_cfg_item_joins_and_presumed_values() {
-    let rust = translate_directives("line_directive.c");
+fn line_directive_presumed_location_is_correct_by_default() {
+    let rust = translate("line_directive.c");
 
     assert!(
         compile_and_run("line_directive_default", &rust)
-            .status
-            .success()
-    );
-    assert!(
-        compile_and_run_with_cfgs("line_directive_feature", &rust, &["line_feature"])
             .status
             .success()
     );
@@ -527,14 +323,14 @@ fn line_directive_preserves_cfg_item_joins_and_presumed_values() {
 
 #[test]
 fn embed_bytes_are_consumed_by_clang_and_lowered() {
-    let rust = translate_directives("embed_basic.c");
+    let rust = translate("embed_basic.c");
 
     assert!(compile_and_run("embed_basic", &rust).status.success());
 }
 
 #[test]
 fn unsupported_embed_input_fails_explicitly() {
-    let err = translate_directives_err("reject/embed_missing.c");
+    let err = translate_err_with_clang_args("reject/embed_missing.c", None);
 
     assert!(err.contains("missing-embed-data.bin"));
     assert!(err.contains("file not found"));
@@ -564,7 +360,7 @@ fn directive_translated_fixtures_compile_for_current_host() {
         "unsupported_conditional.c",
     ];
     let cases = support::parallel_map(&names, |name| {
-        let rust = translate_directives(name);
+        let rust = translate(name);
         let rs = write_generated(name, &rust);
         support::RustCase {
             name: format!("cfg_{}", name.trim_end_matches(".c")),
@@ -584,43 +380,16 @@ fn directive_translated_fixtures_compile_for_current_host() {
 }
 
 #[test]
-fn refuses_conditional_inside_a_function_body() {
-    let err = translate_directives_err("reject/fragment_stmt.c");
-    assert!(
-        err.contains("inside a function or record body"),
-        "expected fragment-cut diagnostic, got:\n{err}"
-    );
-}
-
-#[test]
-fn refuses_predicate_without_a_known_cfg_mapping() {
-    let err = translate_directives_err("reject/system_macro_feature.c");
-    assert!(
-        err.contains("does not map to a known Rust cfg"),
-        "expected unmapped-predicate diagnostic, got:\n{err}"
-    );
-}
-
-#[test]
-fn refuses_cfg_plans_above_the_variant_cap() {
-    let err = translate_directives_err("reject/too_many_feature_chains.c");
-    assert!(
-        err.contains("configuration variant cap"),
-        "expected variant-cap diagnostic, got:\n{err}"
-    );
-}
-
-#[test]
 fn passes_through_sources_without_conditional_regions() {
     let src = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/add.c");
     let out = Command::new(env!("CARGO_BIN_EXE_slate"))
-        .arg("translate-directives")
+        .arg("translate")
         .arg(&src)
         .output()
-        .expect("run slate translate-directives");
+        .expect("run slate translate");
     assert!(
         out.status.success(),
-        "translate-directives failed on a plain source:\n{}",
+        "translate failed on a plain source:\n{}",
         String::from_utf8_lossy(&out.stderr)
     );
     let rust = String::from_utf8(out.stdout).expect("generated Rust is utf8");
@@ -629,17 +398,17 @@ fn passes_through_sources_without_conditional_regions() {
 }
 
 #[test]
-fn raw_lower_skips_fixups_for_directive_translation() {
+fn raw_lower_skips_fixups_for_translation() {
     let src = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/add.c");
     let out = Command::new(env!("CARGO_BIN_EXE_slate"))
-        .arg("translate-directives")
+        .arg("translate")
         .arg(&src)
         .env("SLATE_RAW_LOWER", "1")
         .output()
-        .expect("run raw slate translate-directives");
+        .expect("run raw slate translate");
     assert!(
         out.status.success(),
-        "raw translate-directives failed:\n{}",
+        "raw translate failed:\n{}",
         String::from_utf8_lossy(&out.stderr)
     );
     let rust = String::from_utf8(out.stdout).expect("generated Rust is utf8");

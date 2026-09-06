@@ -14,6 +14,34 @@ configuration and then merge the results back into one file, using
 
 ## Translating Directives (`src/frontend/directive_translate.rs`)
 
+`slate translate` runs this automatically -- there is no separate
+subcommand. Two things must both hold for a source to get it:
+
+- `SLATE_TARGET` is unset (or set to the host's own default target). Under
+  an explicit non-host `SLATE_TARGET`, clang's predefined macros for that
+  triple and `-D`/`-U` pins from a second synthetic config can disagree with
+  target-specific ABI facts (struct layouts, `va_list` shape, ...) that
+  aren't macro-driven, so cross-target builds always go through
+  `translate-project --target` instead, which spawns one real clang
+  invocation per target rather than pinning macros on a single triple.
+- `should_auto_expand` says the source qualifies: every conditional chain in
+  the file is a whole top-level `#if` region (not nested inside a function
+  or struct body) whose non-`#else` branches each reference at least one
+  macro, and every referenced macro is a recognized clang-builtin
+  target/arch/os macro (`known_cfg` in `preprocess.rs` -- not Slate's own
+  `__SLATE_*` toolchain-identity macros, which `target_args()` re-asserts on
+  every invocation and so can't be selectively pinned per variant either).
+
+If either check fails -- a non-host target is active, a region sits inside a
+function body, a branch is gated by a project-defined feature macro, or a
+branch's condition is a literal/opaque predicate with no macro to pin at
+all -- the whole file falls back to ordinary single-config translation of
+whichever branch the active macro state happens to select, silently, with no
+error. Feature-flag macros (project build config, not target detection) are
+explicitly out of scope for this expansion.
+
+When a file passes the gate:
+
 1. Scan the source for conditional chains without touching Clang at all
    (`preprocess::record`) every `#if`/`#ifdef`/`#elif`/`#else`/`#endif`
    region and its predicate expression.
@@ -24,8 +52,7 @@ configuration and then merge the results back into one file, using
    `__LP64__`/`_ILP32` = `target_pointer_width`, `__ARMEB__`/`__AARCH64EB__`
    = a combined `target_arch` + `target_endian = "big"`, `NDEBUG` =
    `not(debug_assertions)`, and so on plus boolean combinations
-   (`&&`/`||`/`!`) of those atoms. A branch whose predicate doesn't reduce to
-   one of these is left unmapped.
+   (`&&`/`||`/`!`) of those atoms.
 3. Enumerate one clang invocation per branch (`plan_configs`), each
    pinning the cfgs that decide branching with `-D`/`-U` flags so Clang
    only ever sees one selected configuration at a time this is what keeps
@@ -38,12 +65,9 @@ configuration and then merge the results back into one file, using
    file. Code outside any conditional region is taken once from a baseline
    (unconfigured) translation.
 
-Only whole top-level items can be merged this way a `#if` that opens or
-closes partway through a function or struct body is rejected
-(`ConditionalInBody`), since there's no Rust `#[cfg(...)]` that can gate part
-of an item. There's also a cap (`MAX_CFG_VARIANTS`, currently 16) on how many
-branch variants a file can expand to, since each one is a full clang
-invocation and we don't want to run exponentially long.
+There's also a cap (`MAX_CFG_VARIANTS`, currently 16) on how many branch
+variants a file can expand to, since each one is a full clang invocation and
+we don't want to run exponentially long.
 
 ## Example
 
@@ -68,7 +92,7 @@ int main(void) {
 }
 ```
 
-`slate translate-directives arch_targets.c` produces one `arch_code` per
+`slate translate arch_targets.c` produces one `arch_code` per
 branch, each gated by the matching `target_arch`, with the final `#else`
 becoming the negation of every other branch's condition (bodies abbreviated
 below; the real output is baseline, unfixed-up lowering):
@@ -111,10 +135,10 @@ can also handle that case too.
 
 ## Supported pragma table
 
-Recognized pragmas translate cleanly on their own. Inside a `#if` branch,
-`translate-directives` still hard-errors on all of them (per-branch record
-layout / attribute merging isn't supported), so "recognized" below means
-"unconditional use is fine," not "safe everywhere."
+Recognized pragmas translate cleanly on their own. Inside a target-gated
+`#if` branch, multi-config expansion still hard-errors on all of them
+(per-branch record layout / attribute merging isn't supported), so
+"recognized" below means "unconditional use is fine," not "safe everywhere."
 
 | Pragma                                                                  | Recognized? | Notes                                                                                       |
 | ----------------------------------------------------------------------- | ----------- | ------------------------------------------------------------------------------------------- |

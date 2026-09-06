@@ -10,8 +10,6 @@ int expected_line(void) { return 704; }
 // @rewrite-fn-end
 
 int main(void) { return line_value() == expected_line() ? 0 : 1; }
-// DIRECTIVES-DAG: #[cfg(feature = "line_feature")]
-// DIRECTIVES-DAG: #[cfg(not(feature = "line_feature"))]
 
 // SLATE-FILECHECK-BEGIN common-rewrites
 // COMMON-REWRITES-DAG: fn line_value() -> i32 {

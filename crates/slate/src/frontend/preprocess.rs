@@ -1569,6 +1569,10 @@ fn macro_cfg(macro_name: &str) -> Option<Cfg> {
         .or_else(|| feature_cfg(macro_name))
 }
 
+pub fn is_target_macro(name: &str) -> bool {
+    known_cfg(name).is_some()
+}
+
 pub fn pred_to_cfg(expr: &PredExpr) -> Option<Cfg> {
     match expr {
         PredExpr::Constant(true) => Some(Cfg::All(Vec::new())),

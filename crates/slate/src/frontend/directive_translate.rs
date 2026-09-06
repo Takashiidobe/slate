@@ -34,10 +34,10 @@ pub enum DirectiveError {
         #[source]
         source: std::io::Error,
     },
-    #[error("translate-directives: {message}")]
+    #[error("translate: {message}")]
     UnsupportedDirective { line: usize, message: String },
     #[error(
-        "translate-directives: {directive} is guarded by predicate `{predicate}` which does not map to a known Rust cfg"
+        "translate: {directive} is guarded by predicate `{predicate}` which does not map to a known Rust cfg"
     )]
     UnmappableDirectiveGuard {
         line: usize,
@@ -45,14 +45,14 @@ pub enum DirectiveError {
         predicate: String,
     },
     #[error(
-        "translate-directives: {boundary} at line {line} is inside a function or record body; only whole-item (top-level) #if regions can be merged as Rust cfg items"
+        "translate: {boundary} at line {line} is inside a function or record body; only whole-item (top-level) #if regions can be merged as Rust cfg items"
     )]
     ConditionalInBody {
         line: usize,
         boundary: ConditionalBoundary,
     },
     #[error(
-        "translate-directives: configuration variant cap exceeded: {variants} branch variants across {regions} conditional region(s), cap is {cap}; region at line {line} would make cfg recovery too expensive"
+        "translate: configuration variant cap exceeded: {variants} branch variants across {regions} conditional region(s), cap is {cap}; region at line {line} would make cfg recovery too expensive"
     )]
     VariantCapExceeded {
         variants: usize,
@@ -61,11 +61,11 @@ pub enum DirectiveError {
         line: usize,
     },
     #[error(
-        "translate-directives: predicate `{predicate}` at line {line} does not map to a known Rust cfg; cannot emit a whole-item cfg attribute"
+        "translate: predicate `{predicate}` at line {line} does not map to a known Rust cfg; cannot emit a whole-item cfg attribute"
     )]
     UnmappablePredicate { line: usize, predicate: String },
     #[error(
-        "translate-directives: could not construct a configuration selecting the branch at line {line} (predicate `{predicate}`); negated or interdependent predicates are not yet supported"
+        "translate: could not construct a configuration selecting the branch at line {line} (predicate `{predicate}`); negated or interdependent predicates are not yet supported"
     )]
     UnselectableBranch { line: usize, predicate: String },
     #[error("preprocess {path}: {source}")]
@@ -120,6 +120,13 @@ struct CfgPlan {
 }
 
 pub fn translate_directives(path: &Path) -> Result<String, DirectiveError> {
+    translate_directives_with_args(path, &[])
+}
+
+pub fn translate_directives_with_args(
+    path: &Path,
+    extra_args: &[String],
+) -> Result<String, DirectiveError> {
     let (source, _raw) = preprocess::read_source(path).map_err(|source| DirectiveError::Read {
         path: path.to_path_buf(),
         source,
@@ -128,17 +135,19 @@ pub fn translate_directives(path: &Path) -> Result<String, DirectiveError> {
     let directive_items = directive_items(&directive_pp)?;
     let plan = match plan_configs(&source)? {
         None => {
-            let mut program = translate_one(path, &[])?.program;
+            let mut program = translate_one(path, extra_args)?.program;
             insert_directive_items(&mut program, directive_items);
             return format_program(&program);
         }
         Some(plan) => plan,
     };
 
-    let baseline = translate_one(path, &[])?;
+    let baseline = translate_one(path, extra_args)?;
     let mut variants = Vec::new();
     for config in plan.configs {
-        let translation = translate_one(path, &config.clang_args)?;
+        let mut clang_args = extra_args.to_vec();
+        clang_args.extend(config.clang_args.iter().cloned());
+        let translation = translate_one(path, &clang_args)?;
         variants.push(Variant {
             config,
             program: translation.program,
@@ -148,6 +157,26 @@ pub fn translate_directives(path: &Path) -> Result<String, DirectiveError> {
     let mut program = merge_variants(&baseline, &variants, &plan.pp);
     insert_directive_items(&mut program, directive_items);
     format_program(&program)
+}
+
+pub fn should_auto_expand(source: &str) -> bool {
+    let pp = preprocess::record(source, &BTreeMap::new());
+    if pp.chains.is_empty() {
+        return false;
+    }
+    let depths = line_start_depths(source);
+    let depth_at = |line: usize| depths.get(line.saturating_sub(1)).copied().unwrap_or(0);
+    pp.chains.iter().all(|chain| {
+        depth_at(chain.endif_line) == 0
+            && chain.branches.iter().all(|branch| {
+                depth_at(branch.directive_line) == 0 && branch.rust_cfg.is_some() && {
+                    let mut atoms = BTreeSet::new();
+                    collect_atoms(&branch.predicate, &mut atoms);
+                    (branch.kind == DirectiveKind::Else || !atoms.is_empty())
+                        && atoms.iter().all(|atom| preprocess::is_target_macro(atom))
+                }
+            })
+    })
 }
 
 fn format_program(program: &Program) -> Result<String, DirectiveError> {
