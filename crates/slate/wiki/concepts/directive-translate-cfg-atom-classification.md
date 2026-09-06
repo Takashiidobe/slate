@@ -16,7 +16,7 @@ exactly one possible value once the target/compiler is fixed.
 
 - `lib/common/mem.h:131` — `MEM_FORCE_MEMORY_ACCESS` is `#ifndef`-guarded,
   defaulting from `__GNUC__` alone. Comment: "can be defined externally, on
-  command line for example" — it is only free if a *build* overrides it.
+  command line for example" — it is only free if a _build_ overrides it.
 - `lib/common/portability_macros.h:87-149` — `DYNAMIC_BMI2` →
   `ZSTD_ASM_SUPPORTED` → `ZSTD_ENABLE_ASM_X86_64_BMI2` is a derivation chain,
   each link `#ifndef`-guarded and computed only from `__clang__`, `__GNUC__`,
@@ -31,7 +31,7 @@ exactly one possible value once the target/compiler is fixed.
 - **Fixed** — atoms `known_cfg`/`pred_to_cfg` already resolve per compile
   (target arch/os/vendor/endian, compiler family). One value per
   (target, compiler) pin.
-- **Derived** — atoms whose *every* definition site in the TU is
+- **Derived** — atoms whose _every_ definition site in the TU is
   `#ifndef X ... #define X <expr over fixed/derived atoms only> ... #endif`.
   Fold to a concrete value by the same fixed-point pass, no branching.
 - **Free** — the residual: no unconditional fallback, or a fallback that
@@ -53,14 +53,14 @@ extra variants per target; `threading.h` keeps its real branch on
 `ZSTD_MULTITHREAD`/`DEBUGLEVEL`.
 
 This composes with clustering coupled chains (connected components over a
-def/use graph, for the case where two *free* atoms are cross-referenced):
+def/use graph, for the case where two _free_ atoms are cross-referenced):
 clustering only needs to run over the free-atom residual, which is far
 smaller than the raw atom count in the source text.
 
 ## Feature macros belong in the fixed bucket
 
 `known_cfg` (`src/frontend/preprocess.rs:1414`) maps `__x86_64__`,
-`__aarch64__`, etc. to `target_arch`, but not CPU *feature* macros
+`__aarch64__`, etc. to `target_arch`, but not CPU _feature_ macros
 (`__BMI2__`, `__AVX2__`, `__SSE4_2__`, `__ARM_NEON`, ...). Without an entry,
 `__BMI2__` is opaque to the classifier and stalls `DYNAMIC_BMI2`'s
 derivation at "unknown atom" instead of folding it away. Adding these,
@@ -68,7 +68,7 @@ mapped to `cfg(target_feature = "bmi2")` etc. (a real Rust cfg key), moves
 them into the fixed bucket the same way `known_cfg` already handles arch/os
 — tracked as `slate-c16q.2`.
 
-**Caveat**: `DYNAMIC_BMI2` itself is a *runtime*-dispatch flag — its C use
+**Caveat**: `DYNAMIC_BMI2` itself is a _runtime_-dispatch flag — its C use
 selects between "always call the generic path" and "compile both paths,
 pick at runtime via CPUID." Translating that selection to a static
 `#[cfg(target_feature = "bmi2")]` fork is a semantic mismatch: it bakes in
