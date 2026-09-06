@@ -5,22 +5,15 @@
 extern void exit(int);
 extern void abort(void);
 
-static void handler(void *p __attribute__((unused)))
-{
-  exit (0);
-}
+static void handler(void *p __attribute__((unused))) { exit(0); }
 
-static void doit(void)
-{
-  int x __attribute__((cleanup (handler)));
-}
+static void doit(void) { int x __attribute__((cleanup(handler))); }
 
 // @lowering-fn-begin
 // @rewrite-fn-begin
-int main()
-{
-  doit ();
-  abort ();
+int main() {
+  doit();
+  abort();
 }
 // @rewrite-fn-end
 // @lowering-fn-end

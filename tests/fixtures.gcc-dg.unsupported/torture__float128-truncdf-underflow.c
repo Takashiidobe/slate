@@ -11,21 +11,21 @@
 int
 // @lowering-fn-begin
 // @rewrite-fn-begin
-main (void)
-{
-  volatile __float128 a = 0x0.fffffffffffffffp-1022q, b = 0x0.fffffffffffff8p-1022q;
-  volatile double r;
-  r = (double) a;
-  if (fetestexcept (FE_UNDERFLOW))
-    abort ();
+main(void) {
+  volatile __float128 a = 0x0.fffffffffffffffp-1022q,
+                      b = 0x0.fffffffffffff8p-1022q;
+  volatile double     r;
+  r = (double)a;
+  if (fetestexcept(FE_UNDERFLOW))
+    abort();
   if (r != 0x1p-1022)
-    abort ();
-  r = (double) b;
-  if (!fetestexcept (FE_UNDERFLOW))
-    abort ();
+    abort();
+  r = (double)b;
+  if (!fetestexcept(FE_UNDERFLOW))
+    abort();
   if (r != 0x1p-1022)
-    abort ();
-  exit (0);
+    abort();
+  exit(0);
 }
 // @rewrite-fn-end
 // @lowering-fn-end

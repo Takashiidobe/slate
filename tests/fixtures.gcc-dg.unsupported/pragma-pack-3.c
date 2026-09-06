@@ -3,17 +3,15 @@
 /* Epiphany makes struct S 8-byte aligned.  */
 /* { dg-do run { target { ! epiphany-*-* } } } */
 
-extern void abort (void);
+extern void abort(void);
 
-struct S
-{
+struct S {
   char a[3];
 #pragma pack(1) /* A block comment
 		   that ends on the next line.  */
-  struct T
-  {
+  struct T {
     char b;
-    int c;
+    int  c;
   } d;
 #pragma pack /*/ */ () // C++ comment
   int e;
@@ -22,10 +20,9 @@ struct S
 int
 // @lowering-fn-begin
 // @rewrite-fn-begin
-main ()
-{
-  if (sizeof (int) == 4 && sizeof (s) != 12)
-    abort ();
+main() {
+  if (sizeof(int) == 4 && sizeof(s) != 12)
+    abort();
   return 0;
 }
 // @rewrite-fn-end

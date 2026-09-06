@@ -4,18 +4,13 @@
 
 #include <stdlib.h>
 
-void
-__stack_chk_fail (void)
-{
-  exit (0); /* pass */
-}
+void __stack_chk_fail(void) { exit(0); /* pass */ }
 
 // @lowering-fn-begin
 // @rewrite-fn-begin
-int main ()
-{
+int main() {
   register int i;
-  char foo[255];
+  char         foo[255];
 
   // smash stack
   for (i = 0; i <= 400; i++)

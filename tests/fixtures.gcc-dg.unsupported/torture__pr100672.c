@@ -1,22 +1,17 @@
 /* { dg-do run } */
 /* { dg-additional-options "-w -Wno-psabi" } */
 
-typedef long long __attribute__((__vector_size__ (4 * sizeof (long long)))) V;
+typedef long long __attribute__((__vector_size__(4 * sizeof(long long)))) V;
 
-V
-foo (V v)
-{
-  return -(v >> 1);
-}
+V foo(V v) { return -(v >> 1); }
 
 int
 // @lowering-fn-begin
 // @rewrite-fn-begin
-main (void)
-{
-  V v = foo ((V) { -2, -4, -6, -8 });
+main(void) {
+  V v = foo((V){-2, -4, -6, -8});
   if (v[0] != 1 || v[1] != 2 || v[2] != 3 || v[3] != 4)
-    __builtin_abort ();
+    __builtin_abort();
   return 0;
 }
 // @rewrite-fn-end

@@ -1,14 +1,18 @@
 /* { dg-do run } */
 /* { dg-options "-g" } */
 
-#if defined (__ia64__) || defined (__s390__) || defined (__s390x__)
+#if defined(__ia64__) || defined(__s390__) || defined(__s390x__)
 #define NOP "nop 0"
-#elif defined (__MMIX__)
+#elif defined(__MMIX__)
 #define NOP "swym 0"
-#elif defined (__or1k__)
+#elif defined(__or1k__)
 #define NOP "l.nop"
 #else
 #define NOP "nop"
 #endif
 
-struct A { int x; unsigned short y; char z[64]; };
+struct A {
+  int            x;
+  unsigned short y;
+  char           z[64];
+};

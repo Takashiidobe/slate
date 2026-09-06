@@ -44,114 +44,6 @@ int main(void) {
   return packed.tag == 29 && packed.value == 31 ? 0 : 1;
 }
 
-// SLATE-FILECHECK-BEGIN lowering
-// LOWERING: #![feature(c_variadic)]
-// LOWERING-NEXT: #![allow(
-// LOWERING-NEXT:     dead_code,
-// LOWERING-NEXT:     unused,
-// LOWERING-NEXT:     non_camel_case_types,
-// LOWERING-NEXT:     non_snake_case,
-// LOWERING-NEXT:     non_upper_case_globals,
-// LOWERING-NEXT:     arithmetic_overflow,
-// LOWERING-NEXT:     unconditional_panic,
-// LOWERING-NEXT:     suspicious_runtime_symbol_definitions,
-// LOWERING-NEXT:     unpredictable_function_pointer_comparisons,
-// LOWERING-NEXT:     unused_comparisons
-// LOWERING-NEXT: )]
-// LOWERING-EMPTY:
-// LOWERING-NEXT: #[repr(C)]
-// LOWERING-NEXT: #[derive(Clone, Copy)]
-// LOWERING-NEXT: struct NaturalAfter {
-// LOWERING-NEXT:     tag: u8,
-// LOWERING-NEXT:     value: u32,
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: #[repr(C)]
-// LOWERING-NEXT: #[derive(Clone, Copy)]
-// LOWERING-NEXT: struct NaturalBefore {
-// LOWERING-NEXT:     tag: u8,
-// LOWERING-NEXT:     value: u32,
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: #[repr(C, packed)]
-// LOWERING-NEXT: #[derive(Clone, Copy)]
-// LOWERING-NEXT: struct PackedOne {
-// LOWERING-NEXT:     tag: u8,
-// LOWERING-NEXT:     value: u32,
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: #[repr(C, packed(2))]
-// LOWERING-NEXT: #[derive(Clone, Copy)]
-// LOWERING-NEXT: struct PackedTwo {
-// LOWERING-NEXT:     tag: u8,
-// LOWERING-NEXT:     value: u32,
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: #[repr(C, packed(2))]
-// LOWERING-NEXT: #[derive(Clone, Copy)]
-// LOWERING-NEXT: struct PackedTwoAgain {
-// LOWERING-NEXT:     tag: u8,
-// LOWERING-NEXT:     value: u32,
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: unsafe extern "C" {
-// LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut packed: PackedOne = PackedOne { tag: 0, value: 0 };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: PackedOne = PackedOne { tag: 29, value: 31 };
-// LOWERING-NEXT:     packed = {{__v[0-9]+}};
-// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d %d %d %d %d %d %d %d %d %d %d\n\0".as_ptr() as *mut i8;
-// LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = b"%d %d %d %d %d %d %d %d %d %d %d\n\0".as_ptr() as *mut u8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = std::mem::size_of::<NaturalBefore>() as i32;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = std::mem::offset_of!(NaturalBefore, value) as i32;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = std::mem::size_of::<PackedTwo>() as i32;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = std::mem::align_of::<PackedTwo>() as i32;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = std::mem::offset_of!(PackedTwo, value) as i32;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 5;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = std::mem::align_of::<PackedOne>() as i32;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = std::mem::offset_of!(PackedOne, value) as i32;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = std::mem::size_of::<PackedTwoAgain>() as i32;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = std::mem::offset_of!(PackedTwoAgain, value) as i32;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = std::mem::offset_of!(NaturalAfter, value) as i32;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe {
-// LOWERING-NEXT:         printf(
-// LOWERING-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
-// LOWERING-NEXT:             {{__v[0-9]+}},
-// LOWERING-NEXT:             {{__v[0-9]+}},
-// LOWERING-NEXT:             {{__v[0-9]+}},
-// LOWERING-NEXT:             {{__v[0-9]+}},
-// LOWERING-NEXT:             {{__v[0-9]+}},
-// LOWERING-NEXT:             {{__v[0-9]+}},
-// LOWERING-NEXT:             {{__v[0-9]+}},
-// LOWERING-NEXT:             {{__v[0-9]+}},
-// LOWERING-NEXT:             {{__v[0-9]+}},
-// LOWERING-NEXT:             {{__v[0-9]+}},
-// LOWERING-NEXT:             {{__v[0-9]+}},
-// LOWERING-NEXT:         )
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: u8 = packed.tag;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 29;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
-// LOWERING-NEXT:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// LOWERING-NEXT:         let {{__v[0-9]+}}: u32 = packed.value;
-// LOWERING-NEXT:         let {{__v[0-9]+}}: u32 = 31;
-// LOWERING-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
-// LOWERING-NEXT:         {{__v[0-9]+}}
-// LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{__v[0-9]+}}: bool = false;
-// LOWERING-NEXT:         {{__v[0-9]+}}
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = if {{__v[0-9]+}} { {{__v[0-9]+}} } else { {{__v[0-9]+}} };
-// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
-// LOWERING-NEXT: }
-// SLATE-FILECHECK-END lowering
-
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES: #![feature(c_variadic)]
 // REWRITES-NEXT: #![allow(
@@ -225,8 +117,10 @@ int main(void) {
 // REWRITES-NEXT:             std::mem::offset_of!(NaturalAfter, value) as i32,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if (packed.tag as i32) == 29 {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = packed.value == 31;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = (packed.tag as i32) == 29;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-NEXT:         let {{__v[0-9]+}}: u32 = unsafe { std::ptr::read_unaligned(std::ptr::addr_of!(packed.value)) };
+// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == 31;
 // REWRITES-NEXT:         {{__v[0-9]+}}
 // REWRITES-NEXT:     } else {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
@@ -238,3 +132,110 @@ int main(void) {
 // REWRITES-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites
+
+// SLATE-FILECHECK-BEGIN lowering
+// LOWERING: #![feature(c_variadic)]
+// LOWERING-NEXT: #![allow(
+// LOWERING-NEXT:     dead_code,
+// LOWERING-NEXT:     unused,
+// LOWERING-NEXT:     non_camel_case_types,
+// LOWERING-NEXT:     non_snake_case,
+// LOWERING-NEXT:     non_upper_case_globals,
+// LOWERING-NEXT:     arithmetic_overflow,
+// LOWERING-NEXT:     unconditional_panic,
+// LOWERING-NEXT:     suspicious_runtime_symbol_definitions,
+// LOWERING-NEXT:     unpredictable_function_pointer_comparisons,
+// LOWERING-NEXT:     unused_comparisons
+// LOWERING-NEXT: )]
+// LOWERING-EMPTY:
+// LOWERING-NEXT: #[repr(C)]
+// LOWERING-NEXT: #[derive(Clone, Copy)]
+// LOWERING-NEXT: struct NaturalAfter {
+// LOWERING-NEXT:     tag: u8,
+// LOWERING-NEXT:     value: u32,
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: #[repr(C)]
+// LOWERING-NEXT: #[derive(Clone, Copy)]
+// LOWERING-NEXT: struct NaturalBefore {
+// LOWERING-NEXT:     tag: u8,
+// LOWERING-NEXT:     value: u32,
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: #[repr(C, packed)]
+// LOWERING-NEXT: #[derive(Clone, Copy)]
+// LOWERING-NEXT: struct PackedOne {
+// LOWERING-NEXT:     tag: u8,
+// LOWERING-NEXT:     value: u32,
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: #[repr(C, packed(2))]
+// LOWERING-NEXT: #[derive(Clone, Copy)]
+// LOWERING-NEXT: struct PackedTwo {
+// LOWERING-NEXT:     tag: u8,
+// LOWERING-NEXT:     value: u32,
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: #[repr(C, packed(2))]
+// LOWERING-NEXT: #[derive(Clone, Copy)]
+// LOWERING-NEXT: struct PackedTwoAgain {
+// LOWERING-NEXT:     tag: u8,
+// LOWERING-NEXT:     value: u32,
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: unsafe extern "C" {
+// LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT:     let mut packed: PackedOne = PackedOne { tag: 0, value: 0 };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: PackedOne = PackedOne { tag: 29, value: 31 };
+// LOWERING-NEXT:     packed = {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d %d %d %d %d %d %d %d %d %d %d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = std::mem::size_of::<NaturalBefore>() as i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = std::mem::offset_of!(NaturalBefore, value) as i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = std::mem::size_of::<PackedTwo>() as i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = std::mem::align_of::<PackedTwo>() as i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = std::mem::offset_of!(PackedTwo, value) as i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 5;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = std::mem::align_of::<PackedOne>() as i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = std::mem::offset_of!(PackedOne, value) as i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = std::mem::size_of::<PackedTwoAgain>() as i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = std::mem::offset_of!(PackedTwoAgain, value) as i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = std::mem::offset_of!(NaturalAfter, value) as i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe {
+// LOWERING-NEXT:         printf(
+// LOWERING-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:             {{__v[0-9]+}},
+// LOWERING-NEXT:         )
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u8 = packed.tag;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 29;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
+// LOWERING-NEXT:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-NEXT:         let {{__v[0-9]+}}: u32 = unsafe { std::ptr::read_unaligned(std::ptr::addr_of!(packed.value)) };
+// LOWERING-NEXT:         let {{__v[0-9]+}}: u32 = 31;
+// LOWERING-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
+// LOWERING-NEXT:         {{__v[0-9]+}}
+// LOWERING-NEXT:     } else {
+// LOWERING-NEXT:         let {{__v[0-9]+}}: bool = false;
+// LOWERING-NEXT:         {{__v[0-9]+}}
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = if {{__v[0-9]+}} { {{__v[0-9]+}} } else { {{__v[0-9]+}} };
+// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT: }
+// SLATE-FILECHECK-END lowering

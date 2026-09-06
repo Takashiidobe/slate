@@ -10,5 +10,5 @@
 /* { dg-do run } */
 /* { dg-options "-std=c11" } */
 
-extern void abort (void);
-extern void exit (int);
+extern void abort(void);
+extern void exit(int);

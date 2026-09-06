@@ -4,24 +4,19 @@
 
 #include <stdio.h>
 
-static int implementation (void)
-{
-  printf ("'ere I am JH\n");
+static int implementation(void) {
+  printf("'ere I am JH\n");
   return 0;
 }
 
-static __typeof__ (implementation)* resolver (void)
-{
+static __typeof__(implementation) *resolver(void) {
   return (void *)implementation;
 }
 
-extern int magic (void) __attribute__ ((ifunc ("resolver"),visibility ("hidden")));
+extern int magic(void) __attribute__((ifunc("resolver"), visibility("hidden")));
 
 // @lowering-fn-begin
 // @rewrite-fn-begin
-int main ()
-{
-  return magic () != 0;
-}
+int main() { return magic() != 0; }
 // @rewrite-fn-end
 // @lowering-fn-end

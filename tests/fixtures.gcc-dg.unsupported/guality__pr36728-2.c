@@ -2,11 +2,11 @@
 /* { dg-do run } */
 /* { dg-options "-g" } */
 
-#if defined (__ia64__) || defined (__s390__) || defined (__s390x__)
+#if defined(__ia64__) || defined(__s390__) || defined(__s390x__)
 #define NOP "nop 0"
-#elif defined (__MMIX__)
+#elif defined(__MMIX__)
 #define NOP "swym 0"
-#elif defined (__or1k__)
+#elif defined(__or1k__)
 #define NOP "l.nop"
 #else
 #define NOP "nop"
@@ -14,16 +14,15 @@
 
 int a, b;
 
-int __attribute__((noinline))
-foo (int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7)
-{
-  char x[30];
-  int __attribute__ ((aligned(32))) y;
+int __attribute__((noinline)) foo(int arg1, int arg2, int arg3, int arg4,
+                                  int arg5, int arg6, int arg7) {
+  char                             x[30];
+  int __attribute__((aligned(32))) y;
 
   y = 2;
-  asm (NOP : "=m" (y), "=m" (b) : "m" (y));
+  asm(NOP : "=m"(y), "=m"(b) : "m"(y));
   x[0] = 25;
-  asm (NOP : "=m" (x[0]), "=m" (a) : "m" (x[0]), "m" (b));
+  asm(NOP : "=m"(x[0]), "=m"(a) : "m"(x[0]), "m"(b));
   return y;
 }
 
@@ -54,12 +53,11 @@ foo (int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7)
 int
 // @lowering-fn-begin
 // @rewrite-fn-begin
-main ()
-{
+main() {
   int l = 0;
-  asm ("" : "=r" (l) : "0" (l));
-  a = foo (l + 1, l + 2, l + 3, l + 4, l + 5, l + 6, l + 30);
-  asm volatile ("" :: "r" (l));
+  asm("" : "=r"(l) : "0"(l));
+  a = foo(l + 1, l + 2, l + 3, l + 4, l + 5, l + 6, l + 30);
+  asm volatile("" ::"r"(l));
   return 0;
 }
 // @rewrite-fn-end

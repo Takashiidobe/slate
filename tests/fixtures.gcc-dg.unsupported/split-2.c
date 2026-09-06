@@ -3,56 +3,46 @@
 /* { dg-require-effective-target pthread_h } */
 /* { dg-options "-pthread -fsplit-stack" } */
 
-#include <stdlib.h>
 #include <pthread.h>
+#include <stdlib.h>
 
 /* Use a noinline function to ensure that the buffer is not removed
    from the stack.  */
-static void use_buffer (char *buf) __attribute__ ((noinline));
-static void
-use_buffer (char *buf)
-{
-  buf[0] = '\0';
-}
+static void use_buffer(char *buf) __attribute__((noinline));
+static void use_buffer(char *buf) { buf[0] = '\0'; }
 
 /* Each recursive call uses 10,000 bytes.  We call it 1000 times,
    using a total of 10,000,000 bytes.  If -fsplit-stack is not
    working, that will overflow our stack limit.  */
 
-static void
-down (int i)
-{
+static void down(int i) {
   char buf[10000];
 
-  if (i > 0)
-    {
-      use_buffer (buf);
-      down (i - 1);
-    }
+  if (i > 0) {
+    use_buffer(buf);
+    down(i - 1);
+  }
 }
 
-static void *
-thread_routine (void *arg __attribute__ ((unused)))
-{
-  down (1000);
+static void *thread_routine(void *arg __attribute__((unused))) {
+  down(1000);
   return NULL;
 }
 
 int
 // @lowering-fn-begin
 // @rewrite-fn-begin
-main (void)
-{
-  int i;
+main(void) {
+  int       i;
   pthread_t tid;
-  void *dummy;
+  void     *dummy;
 
-  i = pthread_create (&tid, NULL, thread_routine, NULL);
+  i = pthread_create(&tid, NULL, thread_routine, NULL);
   if (i != 0)
-    abort ();
-  i = pthread_join (tid, &dummy);
+    abort();
+  i = pthread_join(tid, &dummy);
   if (i != 0)
-    abort ();
+    abort();
   return 0;
 }
 // @rewrite-fn-end

@@ -3,31 +3,27 @@
 /* { dg-require-effective-target int32plus } */
 
 typedef int v4si __attribute__((vector_size(16)));
-struct T { v4si i[2]; int j; } __attribute__((packed));
+struct T {
+  v4si i[2];
+  int  j;
+} __attribute__((packed));
 
-static v4si __attribute__((noinline))
-foo (struct T t)
-{
-  return t.i[0];
-}
+static v4si __attribute__((noinline)) foo(struct T t) { return t.i[0]; }
 
-static struct T *__attribute__((noinline))
-init ()
-{
-  char *p = __builtin_malloc (sizeof (struct T) + 1);
+static struct T *__attribute__((noinline)) init() {
+  char *p = __builtin_malloc(sizeof(struct T) + 1);
   p++;
-  __builtin_memset (p, 1, sizeof (struct T));
+  __builtin_memset(p, 1, sizeof(struct T));
   return (struct T *)p;
 }
 
 // @lowering-fn-begin
 // @rewrite-fn-begin
-int main()
-{
+int main() {
   struct T *p;
-  p = init ();
-  if (foo (*p)[0] != 0x01010101)
-    __builtin_abort ();
+  p = init();
+  if (foo(*p)[0] != 0x01010101)
+    __builtin_abort();
   return 0;
 }
 // @rewrite-fn-end

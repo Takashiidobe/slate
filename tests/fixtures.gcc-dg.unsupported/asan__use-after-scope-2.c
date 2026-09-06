@@ -1,14 +1,13 @@
 // { dg-do run }
 // { dg-shouldfail "asan" }
 
-int *bar (int *x, int *y) { return y; }
+int *bar(int *x, int *y) { return y; }
 
-int foo (void)
-{
+int foo(void) {
   char *p;
   {
     char a = 0;
-    p = &a;
+    p      = &a;
   }
 
   if (*p)
@@ -20,31 +19,29 @@ int foo (void)
 int
 // @lowering-fn-begin
 // @rewrite-fn-begin
-main (void)
-{
+main(void) {
   char *ptr;
   {
     char my_char[9];
     ptr = &my_char[0];
   }
 
-  int a[16];
+  int  a[16];
   int *p, *q = a;
   {
     int b[16];
-    p = bar (a, b);
+    p = bar(a, b);
   }
-  bar (a, q);
+  bar(a, q);
   {
     int c[16];
-    q = bar (a, c);
+    q = bar(a, c);
   }
-  int v = *bar (a, q);
+  int v = *bar(a, q);
   return v;
 }
 // @rewrite-fn-end
 // @lowering-fn-end
-
 
 // { dg-output "ERROR: AddressSanitizer: stack-use-after-scope on address.*(\n|\r\n|\r)" }
 // { dg-output "READ of size 4 at.*" }

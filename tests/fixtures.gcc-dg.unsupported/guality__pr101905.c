@@ -2,17 +2,17 @@
 /* { dg-options "-g -ffixed-r15" } */
 /* { dg-skip-if "" { *-*-* }  { "*" } { "-O0" } } */
 
-register unsigned long long regVar asm ("r15");
+register unsigned long long regVar asm("r15");
 
 int
 // @lowering-fn-begin
 // @rewrite-fn-begin
-main()
-{
+main() {
   regVar = 0xdeadbeefcafebabeULL;
-  asm ("nop" : "+r" (regVar));
-  asm volatile ("nop");		/* { dg-final { gdb-test . "regVar" "0xdeadbeefcafebabeULL" } } */
-  asm volatile ("nop" : : "r" (regVar));
+  asm("nop" : "+r"(regVar));
+  asm volatile(
+      "nop"); /* { dg-final { gdb-test . "regVar" "0xdeadbeefcafebabeULL" } } */
+  asm volatile("nop" : : "r"(regVar));
   return 0;
 }
 // @rewrite-fn-end

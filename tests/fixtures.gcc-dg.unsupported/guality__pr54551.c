@@ -2,30 +2,22 @@
 /* { dg-do run } */
 /* { dg-options "-g" } */
 
-void  __attribute__((__noinline__))
-bar (void)
-{
-  asm volatile ("");
-}
+void __attribute__((__noinline__)) bar(void) { asm volatile(""); }
 
-int __attribute__((__noinline__))
-foo (int x, int y, int z)
-{
-  if (x != z)
-    {
-      int a = z + 1;
-      bar (); /* { dg-final { gdb-test .+1 "a" "4" } } */
-      bar (); /* { dg-final { gdb-test . "z" "3" } } */
-    }
+int __attribute__((__noinline__)) foo(int x, int y, int z) {
+  if (x != z) {
+    int a = z + 1;
+    bar(); /* { dg-final { gdb-test .+1 "a" "4" } } */
+    bar(); /* { dg-final { gdb-test . "z" "3" } } */
+  }
   return y;
 }
 
 int
 // @lowering-fn-begin
 // @rewrite-fn-begin
-main ()
-{
-  foo (1, 2, 3);
+main() {
+  foo(1, 2, 3);
   return 0;
 }
 // @rewrite-fn-end

@@ -877,6 +877,7 @@ struct FunctionLowerer<'a, 'b> {
     needs_alloca_layout_preservation: bool,
     member_ptrs: BTreeMap<String, MemberPtr>,
     element_ptrs: BTreeMap<String, ElementPtr>,
+    packed_pointer_values: BTreeSet<String>,
     block_addr_element_ptrs: BTreeMap<String, BlockAddrElementPtr>,
     local_block_addr_arrays: BTreeMap<String, Vec<String>>,
     block_addr_array_values: BTreeMap<String, Vec<String>>,

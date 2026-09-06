@@ -125,7 +125,7 @@ fn member_storage(
     let backing = op
         .result_ty
         .pointee()
-        .map(|ty| rust_type_with_aliases(ty, aliases, false))?;
+        .map(|ty| unsigned_bitfield_storage_type(ty, aliases))?;
     let field = sanitize_ident(&op.name).into_string();
     Some(MemberStorage {
         record,
@@ -133,6 +133,17 @@ fn member_storage(
         backing,
         field,
     })
+}
+
+fn unsigned_bitfield_storage_type(ty: &CirType, aliases: &BTreeMap<String, CirType>) -> Type {
+    match rust_type_with_aliases(ty, aliases, false) {
+        Type::Prim(Prim::I8) => Type::Prim(Prim::U8),
+        Type::Prim(Prim::I16) => Type::Prim(Prim::U16),
+        Type::Prim(Prim::I32) => Type::Prim(Prim::U32),
+        Type::Prim(Prim::I64) => Type::Prim(Prim::U64),
+        Type::Prim(Prim::I128) => Type::Prim(Prim::U128),
+        other => other,
+    }
 }
 
 fn bitfield_info(info: &Attr, module: &Module) -> Option<(u32, u32)> {

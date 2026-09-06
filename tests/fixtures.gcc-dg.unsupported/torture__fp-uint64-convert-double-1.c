@@ -7,72 +7,62 @@
 #include <fenv.h>
 #include <stdlib.h>
 
-void __attribute__((noipa))
-fooa ()
-{
+void __attribute__((noipa)) fooa() {
 #if __DBL_MANT_DIG__ == 53
 #ifdef FE_TONEAREST
   fesetround(FE_TONEAREST);
   __UINT64_TYPE__ x = 0x7fffffffffffffff;
-  double f = x;
+  double          f = x;
   if (f != 0x1p+63)
-    abort ();
+    abort();
 #endif
 #endif
 }
 
-void __attribute__((noipa))
-foob ()
-{
+void __attribute__((noipa)) foob() {
 #if __DBL_MANT_DIG__ == 53
 #ifdef FE_DOWNWARD
   fesetround(FE_DOWNWARD);
   __UINT64_TYPE__ x = 0x7fffffffffffffff;
-  double f = x;
+  double          f = x;
   if (f != 0x1.fffffffffffffp+62)
-    abort ();
+    abort();
 #endif
 #endif
 }
 
-void __attribute__((noipa))
-fooc ()
-{
+void __attribute__((noipa)) fooc() {
 #if __DBL_MANT_DIG__ == 53
 #ifdef FE_UPWARD
   fesetround(FE_UPWARD);
   __UINT64_TYPE__ x = 0x7fffffffffffffff;
-  double f = x;
+  double          f = x;
   if (f != 0x1p+63)
-    abort ();
+    abort();
 #endif
 #endif
 }
 
-void __attribute__((noipa))
-food ()
-{
+void __attribute__((noipa)) food() {
 #if __DBL_MANT_DIG__ == 53
 #ifdef FE_TOWARDZERO
   fesetround(FE_TOWARDZERO);
   __UINT64_TYPE__ x = 0x7fffffffffffffff;
-  double f = x;
+  double          f = x;
   if (f != 0x1.fffffffffffffp+62)
-    abort ();
+    abort();
 #endif
 #endif
 }
 
-
 int
 // @lowering-fn-begin
 // @rewrite-fn-begin
-main ()
-{
-  fooa ();
-  foob ();
-  fooc ();
-  food ();
+main() {
+  fooa();
+  foob();
+  fooc();
+  food();
   return 0;
 }
 // @rewrite-fn-end
