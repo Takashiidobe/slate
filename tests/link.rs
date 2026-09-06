@@ -6,8 +6,6 @@ fn link_fixtures_dir() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures.link")
 }
 
-const KNOWN_BROKEN_FIXTURES: &[&str] = &["long_double", "long_double_aggregate"];
-
 #[test]
 fn link_fixture_runs_match_c() {
     let root = link_fixtures_dir();
@@ -20,10 +18,6 @@ fn link_fixture_runs_match_c() {
             continue;
         }
         let name = dir.file_name().unwrap().to_string_lossy().into_owned();
-        if KNOWN_BROKEN_FIXTURES.contains(&name.as_str()) {
-            eprintln!("skipping known-broken link fixture: {name}");
-            continue;
-        }
         eprintln!("running link fixture: {name}");
 
         let main_c = dir.join("main.c");
