@@ -102,7 +102,15 @@ restriction, not one either C compiler imposes.
 
 ## Todo
 
-No CIR shape investigated yet: `o`/`V` distinguished from plain `m`. No
-lowering attempted regardless of soundness: `x`/`y`/`q`/`Q`/`A` register
+No lowering attempted regardless of soundness: `x`/`y`/`q`/`Q`/`A` register
 classes. Also unverified: an `asm_operand_bits` bug hardcoding pointer operands
-to 64 bits regardless of target. Tracked as `slate-3f8g.4.15.{5,6,8}`.
+to 64 bits regardless of target. Tracked as `slate-3f8g.4.15.{6,8}`.
+
+`o`/`V` confirmed CIR-identical to `m` (`slate-3f8g.4.15.5`): both arrive as
+`*o`/`*V` in the raw constraint string with the same `maybe_memory` address
+shape. `strip_memory_marker` treats `Offsettable`/`NonOffsettable` atoms as
+memory-like alongside `Memory`, so `o`/`V` (and their `+o`/`+V` ties) fold
+into the same `Constraint::Memory` address-passthrough path as `m` — no
+distinct offsettable-vs-not handling exists or is needed, since Slate always
+materializes the address in a register rather than picking a displacement
+form.
