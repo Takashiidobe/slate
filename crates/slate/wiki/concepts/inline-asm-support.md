@@ -175,6 +175,12 @@ subset of `reg`, so mapping it there would be unsound.
 
 Fixture: `tests/fixtures/arm/asm_arm_general_low_reg.c`.
 
+Immediate constraints: scalar `I` and `M` resolve to Rust `const` operands when
+CIR proves the input constant. `J`, `K`, `L`, and `N` use the same path; `O` is
+not fixture-covered because the CIR-enabled Clang rejects it for the ARM target
+even with Thumb enabled. ARM NEON vector-immediate letters are out of scope:
+Rust `asm!` has no equivalent vector-constant operand class.
+
 ## Fixture layout
 
 Arch-exclusive fixtures live in `tests/fixtures/{arm,aarch64,x86_64}/` (mirrors `bionic`/`macos`/`msvc`) instead of by-name skip-lists or FileCheck-prefix tricks; each differential runner reads only its own directory plus the shared root, and `update_filecheck.py` auto-generates single-target checks for paths under them.
