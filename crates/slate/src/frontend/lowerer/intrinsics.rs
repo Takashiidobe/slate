@@ -60,13 +60,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
     }
 
-    fn aarch64_simd_type(&self, constraint: &Constraint, cir_ty: &CirType) -> Option<Type> {
-        if !matches!(
-            constraint.reg_kind(),
-            Some(AsmRegConstraint::Aarch64Float(_))
-        ) {
-            return None;
-        }
+    fn asm_simd_type(&self, constraint: &Constraint, cir_ty: &CirType) -> Option<Type> {
         let CirType::Vector {
             element_type, size, ..
         } = cir_ty
@@ -74,21 +68,44 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return None;
         };
         let element_type = self.parent.rust_type(element_type);
-        let name = match (element_type, *size) {
-            (Type::Prim(Prim::I8), 16) => "int8x16_t",
-            (Type::Prim(Prim::U8), 16) => "uint8x16_t",
-            (Type::Prim(Prim::I16), 8) => "int16x8_t",
-            (Type::Prim(Prim::U16), 8) => "uint16x8_t",
-            (Type::Prim(Prim::I32), 4) => "int32x4_t",
-            (Type::Prim(Prim::U32), 4) => "uint32x4_t",
-            (Type::Prim(Prim::I64), 2) => "int64x2_t",
-            (Type::Prim(Prim::U64), 2) => "uint64x2_t",
-            (Type::Prim(Prim::F16), 8) => "float16x8_t",
-            (Type::Prim(Prim::F32), 4) => "float32x4_t",
-            (Type::Prim(Prim::F64), 2) => "float64x2_t",
+        let (module, name) = match (self.parent.target_arch, constraint.reg_kind()) {
+            (TargetArch::Arm64, Some(AsmRegConstraint::Aarch64Float(_))) => {
+                let name = match (element_type, *size) {
+                    (Type::Prim(Prim::I8), 16) => "int8x16_t",
+                    (Type::Prim(Prim::U8), 16) => "uint8x16_t",
+                    (Type::Prim(Prim::I16), 8) => "int16x8_t",
+                    (Type::Prim(Prim::U16), 8) => "uint16x8_t",
+                    (Type::Prim(Prim::I32), 4) => "int32x4_t",
+                    (Type::Prim(Prim::U32), 4) => "uint32x4_t",
+                    (Type::Prim(Prim::I64), 2) => "int64x2_t",
+                    (Type::Prim(Prim::U64), 2) => "uint64x2_t",
+                    (Type::Prim(Prim::F16), 8) => "float16x8_t",
+                    (Type::Prim(Prim::F32), 4) => "float32x4_t",
+                    (Type::Prim(Prim::F64), 2) => "float64x2_t",
+                    _ => return None,
+                };
+                ("aarch64", name)
+            }
+            (TargetArch::X86 | TargetArch::X86_64, Some(AsmRegConstraint::Sse)) => {
+                let name = match (element_type, *size) {
+                    (Type::Prim(Prim::F32), 4) => "__m128",
+                    (Type::Prim(Prim::F64), 2) => "__m128d",
+                    (Type::Prim(Prim::I8 | Prim::U8), 16)
+                    | (Type::Prim(Prim::I16 | Prim::U16), 8)
+                    | (Type::Prim(Prim::I32 | Prim::U32), 4)
+                    | (Type::Prim(Prim::I64 | Prim::U64), 2) => "__m128i",
+                    _ => return None,
+                };
+                let module = if self.parent.target_arch == TargetArch::X86_64 {
+                    "x86_64"
+                } else {
+                    "x86"
+                };
+                (module, name)
+            }
             _ => return None,
         };
-        Some(Type::Custom(format!("core::arch::aarch64::{name}")))
+        Some(Type::Custom(format!("core::arch::{module}::{name}")))
     }
 
     fn lower_extended_asm(&mut self, op: &inst::Asm) {
@@ -297,12 +314,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let mut asm_operand_types: Vec<Option<Type>> = constraints[..total_output_count]
             .iter()
             .zip(&output_cir_types)
-            .map(|(constraint, ty)| self.aarch64_simd_type(constraint, ty))
+            .map(|(constraint, ty)| self.asm_simd_type(constraint, ty))
             .chain(
                 constraints[total_output_count..]
                     .iter()
                     .zip(&operand_types)
-                    .map(|(constraint, ty)| self.aarch64_simd_type(constraint, ty)),
+                    .map(|(constraint, ty)| self.asm_simd_type(constraint, ty)),
             )
             .collect();
         asm_operand_types.extend(std::iter::repeat_n(None, label_count));
@@ -586,9 +603,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 } else {
                     input
                 };
-                let input = if let Some(simd_ty) =
-                    asm_operand_types[total_output_count + operand_index].clone()
-                {
+                let input = if let Some(simd_ty) = asm_operand_types[output_index].clone() {
                     Expr::Transmute {
                         from: self.parent.rust_type(&operand_types[operand_index]),
                         to: simd_ty,

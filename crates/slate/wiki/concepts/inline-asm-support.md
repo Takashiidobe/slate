@@ -48,6 +48,11 @@ needing a register-pressure heuristic.
 | `q` in 64-bit mode, on a byte operand                                                                              | `reg_byte`                                                                                                                                                                                                  |
 | `y` (MMX register), `Q` on a byte operand, `q` in 32-bit mode on a byte operand, `A` (edx:eax pair)                 | **error** — see below                                                                                                                                                                                       |
 
+Fixed-width x86 vector operands using `x` are bridged from Slate's array
+representation to `core::arch::x86`/`x86_64` `__m128`/`__m128d`/`__m128i`
+types at the asm boundary, then transmuted back after register outputs. Scalar
+SSE operands continue to bind directly to `xmm_reg`.
+
 CIR evidence for the memory row: an `m`/`g`/`imr` operand arrives as an
 address (`!cir.ptr<T>`, `maybe_memory` marker) rather than a plain SSA value,
 for both directions — Clang has already resolved "register or memory" down
