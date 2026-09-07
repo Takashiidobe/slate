@@ -46,7 +46,8 @@ needing a register-pressure heuristic.
 | `Q` (always abcd), `q` in 32-bit mode, on a non-byte operand                                                        | `reg_abcd` (`AsmRegConstraint::ByteAddressableAbcd`/`ByteAddressableGpr`)                                                                                                                                    |
 | `q` in 64-bit mode, on a non-byte operand                                                                          | `reg` (equivalent to unrestricted `Generic`, since GCC's `q` means "any GPR" there)                                                                                                                          |
 | `q` in 64-bit mode, on a byte operand                                                                              | `reg_byte`                                                                                                                                                                                                  |
-| `y` (MMX register), `Q` on a byte operand, `q` in 32-bit mode on a byte operand, `A` (edx:eax pair)                 | **error** — see below                                                                                                                                                                                       |
+| `Q` on a byte operand, `q` in 32-bit mode on a byte operand                                                        | `reg_abcd`, widened to a 32-bit temp (`ah`/`bh`/`ch`/`dh` cannot be named as an explicit Rust operand; the low byte view uses `{N:l}`, the high byte view uses `{N:h}` — see the widen-hack subsection below) |
+| `y` (MMX register), `A` (edx:eax pair)                                                                             | **error** — see below                                                                                                                                                                                       |
 
 Fixed-width x86 vector operands using `x` are bridged from Slate's array
 representation to `core::arch::x86`/`x86_64` `__m128`/`__m128d`/`__m128i`
@@ -101,6 +102,26 @@ restriction, not one either C compiler imposes.
 | not `bl`/`bh`/`bx`/`ebx`/`rbx` | used as-is                                                                                                                                                                                |
 | in that family                 | rewritten: push `rbx`, move the real value in/out of a spare fixed-letter scratch register (`D`,`S`,`a`,`c`,`d`, first unused in the block), bind the scratch register instead, pop `rbx` |
 
+## Byte-sized `Q`/`q` widen hack
+
+`reg_abcd` has no `i8` arm (only `i16/i32/i64/f16/f32/f64`), and naming
+`ah`/`bh`/`ch`/`dh` as an explicit register operand is rejected by rustc
+("high byte registers cannot be used as an operand on x86_64"). Byte-sized
+`Q` (any mode) and byte-sized `q` (32-bit target only) are handled by
+widening to an `i32` temp bound via `reg_abcd`, then narrowing:
+
+- low-byte view (`%b`/bare `%N` on a byte operand): zero/sign-extend in,
+  `{N:l}` in the template, truncate out.
+- high-byte view (`%h` on a byte-sized `Q`/`q` operand): **unsupported** —
+  real Clang's own data movement never populates the high byte for a
+  byte-typed operand regardless of template modifier, so there is no
+  faithful translation to bind. `%h` on a wide (>=32-bit) operand is a
+  different, already-supported path (register-width modifier, not a byte
+  widen).
+
+Fixtures: `tests/fixtures/x86_64/asm_byte_abcd_widen_hack.c`,
+`tests/fixtures/x86_64/asm_x86_high_byte_view_wide_operand.c`.
+
 ## Explicit / non-constraint operands
 
 | Form                                                     | Handling                                                                                                                      |
@@ -110,53 +131,32 @@ restriction, not one either C compiler imposes.
 | Operand-free template (no placeholders referenced)       | operand bindings omitted; volatility and memory clobber preserved                                                             |
 | Clobber list (`"cc"`, `"memory"`)                        | passed through directly                                                                                                       |
 
-## Todo
+## Known x86 gaps
 
-`x` (SSE) implemented (`slate-3f8g.4.15.6`). `q`/`Q` on non-byte operands
-implemented (`slate-3f8g.4.15.8`), which also threads target pointer-bitness
-(`TargetArch::pointer_bits`, computed from `module.triple` once in
-`Lowerer::target_pointer_bits`) down through `asm_operand_bits`,
-`asm_reg_for_constraint`, and the template-modifier-suffix machinery —
-fixing the pre-existing `asm_operand_bits` bug where pointer/fn-pointer
-operands were hardcoded to 64 bits regardless of target. `y`, byte-sized
-`Q`/`q`, and `A` remain unconditional errors — audited via GitHub code
-search (exact-case, x86 context) before deciding scope:
+- **`y`** (MMX register): unconditional error. Rust's `mmx_reg` register
+  class can only be used as a clobber, never bound as an input or output
+  (`rustc`: "register class `mmx_reg` can only be used as a clobber") — no
+  lowering is possible against stable `asm!`, so this is a permanent
+  language-level block, not a scoping choice.
+- **`A`** (edx:eax pair): unconditional error, declined rather than deferred.
+  One constraint spanning two tied registers is a different lattice shape
+  than every other row in the storage-class table (which map one constraint
+  to one operand). GitHub code search confirmed this is legacy-only, all
+  hits the old `rdtsc` idiom, superseded everywhere in practice by writing
+  `"=a","=d"` directly — not worth the new lattice shape.
 
-- **`y`** (MMX register): real but rare/legacy usage (msieve/yafu lanczos,
-  kvm-unit-tests, pm123 3DNow). Blocked regardless of demand — Rust's
-  `mmx_reg` register class can only be used as a clobber, never bound as an
-  input or output (`rustc` error: "register class `mmx_reg` can only be used
-  as a clobber"). No lowering is possible against stable `asm!`.
-- **byte-sized `Q`, and byte-sized `q` under a 32-bit target**: confirmed via
-  real Clang codegen that GCC/Clang fully support this, including the `%h`
-  high-byte modifier (`ah`/`bh`/`ch`/`dh`) — not a rare corner case. The gap
-  is entirely Rust's: `reg_abcd` has no `i8` arm at all (only
-  `i16/i32/i64/f16/f32/f64`), and naming `ah`/`bh`/`ch`/`dh` as an explicit
-  register operand is flatly rejected (`rustc`: "high byte registers cannot
-  be used as an operand on x86_64"). `q` under a 64-bit target sidesteps
-  this entirely — it resolves to `reg_byte`, which does support `i8`
-  directly. A sound workaround exists (verified empirically, same shape as
-  the `ebx`/`rbx` fixup below): bind a wider temp via `reg_abcd` and use
-  Rust's `{N:l}`/`{N:h}` template modifiers, which *are* permitted on a
-  class-bound operand even though naming the register directly isn't —
-  `asm!("incb {0:h}", inlateout(reg_abcd) v)` on `0x1234` correctly produced
-  `0x1334`, disassembling to a bare `inc %ah` with no REX prefix. Filed as
-  `slate-3f8g.4.15.10` (needs a new `TemplateModifier::HighByte` for CIR's
-  `${N:h}`, confirmed distinct from bare `$N`, plus widen/narrow glue
-  analogous to the `EbxFixup` machinery).
-- **`A`** (edx:eax pair): very rare (~4 hits, all the legacy `rdtsc` idiom;
-  modern code mostly writes `"=a","=d"` directly instead). Not a
-  register-class mapping like the others — one constraint spanning two tied
-  registers is a new lattice shape, lowest priority given the frequency.
+`o`/`V` are CIR-identical to `m`: `strip_memory_marker` treats
+`Offsettable`/`NonOffsettable` atoms as memory-like alongside `Memory`, so
+`o`/`V` (and their `+o`/`+V` ties) fold into the same `Constraint::Memory`
+address-passthrough path as `m` — no distinct offsettable-vs-not handling
+exists or is needed, since Slate always materializes the address in a
+register rather than picking a displacement form.
 
-`o`/`V` confirmed CIR-identical to `m` (`slate-3f8g.4.15.5`): both arrive as
-`*o`/`*V` in the raw constraint string with the same `maybe_memory` address
-shape. `strip_memory_marker` treats `Offsettable`/`NonOffsettable` atoms as
-memory-like alongside `Memory`, so `o`/`V` (and their `+o`/`+V` ties) fold
-into the same `Constraint::Memory` address-passthrough path as `m` — no
-distinct offsettable-vs-not handling exists or is needed, since Slate always
-materializes the address in a register rather than picking a displacement
-form.
+Tracked separately in `bd` (not duplicated here since these move faster than
+this doc): `slate-os0h.3.1.66` and children cover no-template memory/
+multi-alternative constraints and asm-goto memory operands hit by the
+gcc-torture corpus; `slate-2o6o.8` covers the `gnu_inline_asm.c` extended-asm
+fixture.
 
 ## AArch64
 

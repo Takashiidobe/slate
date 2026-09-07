@@ -1216,6 +1216,12 @@ pub fn run_with_config_for_target(
     })
 }
 
+pub fn gnu_dg_option_flags(path: &Path) -> Vec<String> {
+    std::iter::once("-std=gnu23".to_string())
+        .chain(dg_option_flags(path))
+        .collect()
+}
+
 pub fn dg_option_flags(path: &Path) -> Vec<String> {
     let Ok(text) = std::fs::read_to_string(path) else {
         return Vec::new();
