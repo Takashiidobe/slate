@@ -27,10 +27,6 @@ fn skip_reason(name: &str) -> Option<&'static str> {
              official 15.2.rel1 toolchain, glibc 2.42) doesn't export free_sized/\
              free_aligned_sized despite advertising the GLIBC_2.42 version node",
         ),
-        "gnu_libc_platform" => Some(
-            "environment limitation, not a slate bug: the armv7 sysroot's <sys/syscall.h> \
-             doesn't define SYS_gettid",
-        ),
         "int128_arith" | "int128_struct" | "f128_intrinsics" | "c99" | "local_vla"
         | "builtin_alloca" => Some(
             "known bug (slate-3f8g.4.16.14): ClangIR frontend limitation for \
