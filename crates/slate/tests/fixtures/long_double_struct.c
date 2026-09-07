@@ -418,14 +418,16 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:     b.value = LongDouble([0, 0, 0, 0, 0, 0, 0, 144, 1, 64]);
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: f128 = 4.500000e+00f128;
 // REWRITES-AARCH64-GNU-NEXT:     b.value = {{__v[0-9]+}};
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), sum_box(b)) };
+// REWRITES-NEXT:     println!("{}", sum_box(b));
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:     b.value *= LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]);
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = b.value;
-// REWRITES-X86_64-GNU-NEXT:     unsafe { printf(c"%d\n".as_ptr(), __slate_f80_to_i32({{__v[0-9]+}})) };
+// REWRITES-X86_64-GNU-NEXT:     println!("{}", __slate_f80_to_i32({{__v[0-9]+}}));
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: f128 = b.value;
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: f128 = 2.000000e+00f128;
 // REWRITES-AARCH64-GNU-NEXT:     b.value = {{__v[0-9]+}} * {{__v[0-9]+}};
-// REWRITES-AARCH64-GNU-NEXT:     unsafe { printf(c"%d\n".as_ptr(), b.value as i32) };
+// REWRITES-AARCH64-GNU-NEXT:     println!("{}", b.value as i32);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

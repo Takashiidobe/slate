@@ -66,13 +66,15 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn greet() {
-// REWRITES-NEXT:     unsafe { printf(c"constructor ran\n".as_ptr()) };
+// REWRITES-NEXT:     println!("constructor ran");
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     greet();
-// REWRITES-NEXT:     unsafe { printf(c"main ran\n".as_ptr()) };
+// REWRITES-NEXT:     println!("main ran");
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

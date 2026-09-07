@@ -381,24 +381,22 @@ int main(void) {
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: f128 = 0.000000e+00f128;
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: f128 = 6.475180e-4966f128;
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: f128 = 1.000000e+00f128;
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"%d %d %d %d\n".as_ptr(),
-// REWRITES-NEXT:             ({{__v[0-9]+}} > {{__v[0-9]+}}) as i32,
-// REWRITES-NEXT:             ({{__v[0-9]+}} < {{__v[0-9]+}}) as i32,
-// REWRITES-NEXT:             ({{__v[0-9]+}} >= {{__v[0-9]+}}) as i32,
-// REWRITES-NEXT:             ({{__v[0-9]+}} <= {{__v[0-9]+}}) as i32,
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"%d %d %d %d\n".as_ptr(),
-// REWRITES-NEXT:             ({{__v[0-9]+}} < {{__v[0-9]+}}) as i32,
-// REWRITES-NEXT:             ({{__v[0-9]+}} > {{__v[0-9]+}}) as i32,
-// REWRITES-NEXT:             ({{__v[0-9]+}} <= {{__v[0-9]+}}) as i32,
-// REWRITES-NEXT:             ({{__v[0-9]+}} >= {{__v[0-9]+}}) as i32,
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
+// REWRITES-NEXT:     println!(
+// REWRITES-NEXT:         "{} {} {} {}",
+// REWRITES-NEXT:         ({{__v[0-9]+}} > {{__v[0-9]+}}) as i32,
+// REWRITES-NEXT:         ({{__v[0-9]+}} < {{__v[0-9]+}}) as i32,
+// REWRITES-NEXT:         ({{__v[0-9]+}} >= {{__v[0-9]+}}) as i32,
+// REWRITES-NEXT:         ({{__v[0-9]+}} <= {{__v[0-9]+}}) as i32
+// REWRITES-NEXT:     );
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     println!(
+// REWRITES-NEXT:         "{} {} {} {}",
+// REWRITES-NEXT:         ({{__v[0-9]+}} < {{__v[0-9]+}}) as i32,
+// REWRITES-NEXT:         ({{__v[0-9]+}} > {{__v[0-9]+}}) as i32,
+// REWRITES-NEXT:         ({{__v[0-9]+}} <= {{__v[0-9]+}}) as i32,
+// REWRITES-NEXT:         ({{__v[0-9]+}} >= {{__v[0-9]+}}) as i32
+// REWRITES-NEXT:     );
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:

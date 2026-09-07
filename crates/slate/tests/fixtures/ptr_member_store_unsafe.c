@@ -146,7 +146,8 @@ int main(void) {
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = o.buf.start;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = o.buf.end;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = o.error;
-// REWRITES-NEXT:     unsafe { printf(c"%d %d %d\n".as_ptr(), {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// REWRITES-NEXT:     println!("{} {} {}", {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

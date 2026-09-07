@@ -106,7 +106,8 @@ int main(void) {
 // REWRITES-NEXT:     for i in a.iter().copied() {
 // REWRITES-NEXT:         sum += i;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), sum) };
+// REWRITES-NEXT:     println!("{}", sum);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

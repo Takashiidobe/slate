@@ -26,9 +26,12 @@ int main(void) {
 // COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} * {{__v[0-9]+}};
 // SLATE-FILECHECK-END common-lowering
 
-// SLATE-FILECHECK-BEGIN common-rewrites
-// COMMON-REWRITES-DAG: let {{__v[0-9]+}}: i32 = 7;
-// COMMON-REWRITES-DAG: let {{__v[0-9]+}}: i32 = 6 * {{__v[0-9]+}};
-// COMMON-REWRITES-DAG: unsafe { printf(c"%d %d %d\n".as_ptr(), {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
-// COMMON-REWRITES-DAG: unsafe { puts(c"_v9 anon_4 anon_struct_i32".as_ptr()) };
-// SLATE-FILECHECK-END common-rewrites
+// SLATE-FILECHECK-BEGIN rewrites
+// REWRITES-DAG: let {{__v[0-9]+}}: i32 = 7;
+// REWRITES-DAG: let {{__v[0-9]+}}: i32 = 6 * {{__v[0-9]+}};
+// REWRITES-DAG: println!("{} {} {}", {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
+// REWRITES-DAG: let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-DAG: let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-DAG: unsafe { puts(c"_v9 anon_4 anon_struct_i32".as_ptr()) };
+// REWRITES-DAG: unsafe { fflush(std::ptr::null_mut()) };
+// SLATE-FILECHECK-END rewrites

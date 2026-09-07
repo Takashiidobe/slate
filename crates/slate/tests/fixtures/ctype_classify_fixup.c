@@ -405,95 +405,122 @@ int main(void) {
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { isalpha(alpha as i32) };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
 // REWRITES-NEXT:     if {{__v[0-9]+}} {
-// REWRITES-NEXT:         unsafe { printf(c"alpha-yes\n".as_ptr()) };
+// REWRITES-NEXT:         println!("alpha-yes");
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         unsafe { printf(c"alpha-no\n".as_ptr()) };
+// REWRITES-NEXT:         println!("alpha-no");
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { isalpha(digit as i32) };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: bool = !({{__v[0-9]+}} != 0);
 // REWRITES-NEXT:     if {{__v[0-9]+}} {
-// REWRITES-NEXT:         unsafe { printf(c"not-alpha-yes\n".as_ptr()) };
+// REWRITES-NEXT:         println!("not-alpha-yes");
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         unsafe { printf(c"not-alpha-no\n".as_ptr()) };
+// REWRITES-NEXT:         println!("not-alpha-no");
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { isdigit(digit as i32) };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
 // REWRITES-NEXT:     if {{__v[0-9]+}} {
-// REWRITES-NEXT:         unsafe { printf(c"digit-yes\n".as_ptr()) };
+// REWRITES-NEXT:         println!("digit-yes");
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         unsafe { printf(c"digit-no\n".as_ptr()) };
+// REWRITES-NEXT:         println!("digit-no");
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { isupper(alpha as i32) };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
 // REWRITES-NEXT:     if {{__v[0-9]+}} {
-// REWRITES-NEXT:         unsafe { printf(c"upper-yes\n".as_ptr()) };
+// REWRITES-NEXT:         println!("upper-yes");
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         unsafe { printf(c"upper-no\n".as_ptr()) };
+// REWRITES-NEXT:         println!("upper-no");
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { islower(alpha as i32) };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
 // REWRITES-NEXT:     if {{__v[0-9]+}} {
-// REWRITES-NEXT:         unsafe { printf(c"lower-yes\n".as_ptr()) };
+// REWRITES-NEXT:         println!("lower-yes");
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         unsafe { printf(c"lower-no\n".as_ptr()) };
+// REWRITES-NEXT:         println!("lower-no");
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { isalnum(punct as i32) };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
 // REWRITES-NEXT:     if {{__v[0-9]+}} {
-// REWRITES-NEXT:         unsafe { printf(c"alnum-yes\n".as_ptr()) };
+// REWRITES-NEXT:         println!("alnum-yes");
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         unsafe { printf(c"alnum-no\n".as_ptr()) };
+// REWRITES-NEXT:         println!("alnum-no");
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { isxdigit(alpha as i32) };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
 // REWRITES-NEXT:     if {{__v[0-9]+}} {
-// REWRITES-NEXT:         unsafe { printf(c"xdigit-yes\n".as_ptr()) };
+// REWRITES-NEXT:         println!("xdigit-yes");
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         unsafe { printf(c"xdigit-no\n".as_ptr()) };
+// REWRITES-NEXT:         println!("xdigit-no");
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { ispunct(punct as i32) };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
 // REWRITES-NEXT:     if {{__v[0-9]+}} {
-// REWRITES-NEXT:         unsafe { printf(c"punct-yes\n".as_ptr()) };
+// REWRITES-NEXT:         println!("punct-yes");
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         unsafe { printf(c"punct-no\n".as_ptr()) };
+// REWRITES-NEXT:         println!("punct-no");
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { iscntrl(vtab as i32) };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
 // REWRITES-NEXT:     if {{__v[0-9]+}} {
-// REWRITES-NEXT:         unsafe { printf(c"cntrl-yes\n".as_ptr()) };
+// REWRITES-NEXT:         println!("cntrl-yes");
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         unsafe { printf(c"cntrl-no\n".as_ptr()) };
+// REWRITES-NEXT:         println!("cntrl-no");
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { isgraph(punct as i32) };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
 // REWRITES-NEXT:     if {{__v[0-9]+}} {
-// REWRITES-NEXT:         unsafe { printf(c"graph-yes\n".as_ptr()) };
+// REWRITES-NEXT:         println!("graph-yes");
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         unsafe { printf(c"graph-no\n".as_ptr()) };
+// REWRITES-NEXT:         println!("graph-no");
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { isprint(space as i32) };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
 // REWRITES-NEXT:     if {{__v[0-9]+}} {
-// REWRITES-NEXT:         unsafe { printf(c"print-yes\n".as_ptr()) };
+// REWRITES-NEXT:         println!("print-yes");
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         unsafe { printf(c"print-no\n".as_ptr()) };
+// REWRITES-NEXT:         println!("print-no");
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { isspace(space as i32) };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
 // REWRITES-NEXT:     if {{__v[0-9]+}} {
-// REWRITES-NEXT:         unsafe { printf(c"space-yes\n".as_ptr()) };
+// REWRITES-NEXT:         println!("space-yes");
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         unsafe { printf(c"space-no\n".as_ptr()) };
+// REWRITES-NEXT:         println!("space-no");
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { isspace(vtab as i32) };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
 // REWRITES-NEXT:     if {{__v[0-9]+}} {
-// REWRITES-NEXT:         unsafe { printf(c"vtab-space-yes\n".as_ptr()) };
+// REWRITES-NEXT:         println!("vtab-space-yes");
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         unsafe { printf(c"vtab-space-no\n".as_ptr()) };
+// REWRITES-NEXT:         println!("vtab-space-no");
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), unsafe { isalpha(alpha as i32) }) };
+// REWRITES-NEXT:     println!("{}", unsafe { isalpha(alpha as i32) });
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

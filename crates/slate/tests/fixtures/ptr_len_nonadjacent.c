@@ -116,6 +116,10 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-X86_64-GNU-NEXT:     let mut values: aligned::Aligned<aligned::A16, [i32; 4]> = aligned::Aligned([0; 4]);
 // REWRITES-X86_64-GNU-NEXT:     *values = [2, 4, 6, 8];
@@ -124,6 +128,7 @@ int main(void) {
 // REWRITES-AARCH64-GNU-NEXT:     values = [2, 4, 6, 8];
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = c"%d\n".as_ptr() as *mut u8;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i32 = values.as_mut_ptr() as *mut i32;
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
@@ -133,6 +138,7 @@ int main(void) {
 // REWRITES-NEXT:             ),
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
@@ -140,7 +146,8 @@ int main(void) {
 // REWRITES-NEXT:     let mut items: *mut i32 = {{arg[0-9]+}}.as_ptr() as *mut i32;
 // REWRITES-NEXT:     let mut length: i32 = {{arg[0-9]+}}.len() as i32;
 // REWRITES-NEXT:     let mut total: i32 = 0;
-// REWRITES-NEXT:     unsafe { printf(c"this is another number: %d\n".as_ptr(), {{arg[0-9]+}}) };
+// REWRITES-NEXT:     println!("this is another number: {}", {{arg[0-9]+}});
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     for i in 0..length {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: *mut i32 = items;
 // REWRITES-NEXT:         let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.offset((i as i64) as isize) };

@@ -182,14 +182,13 @@ int main(void) {
 // REWRITES-NEXT:             ({{__v[0-9]+}} as u64) as usize,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"%d\n".as_ptr(),
-// REWRITES-NEXT:             forward_text_owner(unsafe {
-// REWRITES-NEXT:                 String::from_raw_parts({{__v[0-9]+}} as *mut u8, {{__v[0-9]+}} as usize, {{__v[0-9]+}} as usize)
-// REWRITES-NEXT:             }),
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
+// REWRITES-NEXT:     println!(
+// REWRITES-NEXT:         "{}",
+// REWRITES-NEXT:         forward_text_owner(unsafe {
+// REWRITES-NEXT:             String::from_raw_parts({{__v[0-9]+}} as *mut u8, {{__v[0-9]+}} as usize, {{__v[0-9]+}} as usize)
+// REWRITES-NEXT:         })
+// REWRITES-NEXT:     );
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

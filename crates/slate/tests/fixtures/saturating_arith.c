@@ -131,60 +131,66 @@ int main(void) {
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES: #![feature(c_variadic)]
-// REWRITES-NEXT: #![allow(
-// REWRITES-NEXT:     dead_code,
-// REWRITES-NEXT:     unused,
-// REWRITES-NEXT:     non_camel_case_types,
-// REWRITES-NEXT:     non_snake_case,
-// REWRITES-NEXT:     non_upper_case_globals,
-// REWRITES-NEXT:     arithmetic_overflow,
-// REWRITES-NEXT:     unconditional_panic,
-// REWRITES-NEXT:     suspicious_runtime_symbol_definitions,
-// REWRITES-NEXT:     unpredictable_function_pointer_comparisons,
-// REWRITES-NEXT:     unused_comparisons
-// REWRITES-NEXT: )]
-// REWRITES-EMPTY:
-// REWRITES-NEXT: unsafe extern "C" {
-// REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), i32::MAX as i32) };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), 5 as i32) };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), (-32768 as i16) as i32) };
-// REWRITES-NEXT:     unsafe { printf(c"%u\n".as_ptr(), 0 as u32) };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: u128 = 1;
-// REWRITES-NEXT:     let {{__v[0-9]+}}: u128 = 0 - {{__v[0-9]+}};
-// REWRITES-NEXT:     let {{__v[0-9]+}}: u128 = {{__v[0-9]+}}.saturating_add(5 as u128);
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), ({{__v[0-9]+}} == 0 - (1 as u128)) as i32) };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bitint::BInt<200, 4, 32> = bitint::BInt::<200, 4, 32>::from_decimal_str("-1");
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bitint::BInt<200, 4, 32> = bitint::BInt::<200, 4, 32>::from_decimal_str("5");
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bitint::BInt<200, 4, 32> = {{__v[0-9]+}}.saturating_add({{__v[0-9]+}});
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), {{__v[0-9]+}}.to_i128() as i32) };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bitint::BUint<200, 4, 32> = bitint::BUint::<200, 4, 32>::from_decimal_str("3");
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bitint::BUint<200, 4, 32> = bitint::BUint::<200, 4, 32>::from_decimal_str("10");
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bitint::BUint<200, 4, 32> = {{__v[0-9]+}}.saturating_sub({{__v[0-9]+}});
-// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i8 = c"%d\n".as_ptr() as *mut i8;
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bitint::BUint<200, 4, 32> = bitint::BUint::<200, 4, 32>::from_decimal_str("0");
-// REWRITES-NEXT:     unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, ({{__v[0-9]+}} == {{__v[0-9]+}}) as i32) };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: [i32; 4] = [2147483647, 1, -2147483648, 0];
-// REWRITES-NEXT:     let {{__v[0-9]+}}: [i32; 4] = [10, 1, -10, 0];
-// REWRITES-NEXT:     let {{__v[0-9]+}}: [i32; 4] = [
-// REWRITES-NEXT:         {{__v[0-9]+}}[0usize].saturating_add({{__v[0-9]+}}[0usize]),
-// REWRITES-NEXT:         {{__v[0-9]+}}[1usize].saturating_add({{__v[0-9]+}}[1usize]),
-// REWRITES-NEXT:         {{__v[0-9]+}}[2usize].saturating_add({{__v[0-9]+}}[2usize]),
-// REWRITES-NEXT:         {{__v[0-9]+}}[3usize].saturating_add({{__v[0-9]+}}[3usize]),
-// REWRITES-NEXT:     ];
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"%d %d %d %d\n".as_ptr(),
-// REWRITES-NEXT:             {{__v[0-9]+}}[0],
-// REWRITES-NEXT:             {{__v[0-9]+}}[1],
-// REWRITES-NEXT:             {{__v[0-9]+}}[2],
-// REWRITES-NEXT:             {{__v[0-9]+}}[3],
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     std::process::exit(0 as i32);
-// REWRITES-NEXT: }
+// REWRITES-X86_64-GNU: #![feature(c_variadic)]
+// REWRITES-X86_64-GNU-NEXT: #![allow(
+// REWRITES-X86_64-GNU-NEXT:     dead_code,
+// REWRITES-X86_64-GNU-NEXT:     unused,
+// REWRITES-X86_64-GNU-NEXT:     non_camel_case_types,
+// REWRITES-X86_64-GNU-NEXT:     non_snake_case,
+// REWRITES-X86_64-GNU-NEXT:     non_upper_case_globals,
+// REWRITES-X86_64-GNU-NEXT:     arithmetic_overflow,
+// REWRITES-X86_64-GNU-NEXT:     unconditional_panic,
+// REWRITES-X86_64-GNU-NEXT:     suspicious_runtime_symbol_definitions,
+// REWRITES-X86_64-GNU-NEXT:     unpredictable_function_pointer_comparisons,
+// REWRITES-X86_64-GNU-NEXT:     unused_comparisons
+// REWRITES-X86_64-GNU-NEXT: )]
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: unsafe extern "C" {
+// REWRITES-X86_64-GNU-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: unsafe extern "C" {
+// REWRITES-X86_64-GNU-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: fn main() {
+// REWRITES-X86_64-GNU-NEXT:     println!("{}", i32::MAX as i32);
+// REWRITES-X86_64-GNU-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-X86_64-GNU-NEXT:     println!("{}", 5 as i32);
+// REWRITES-X86_64-GNU-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-X86_64-GNU-NEXT:     println!("{}", (-32768 as i16) as i32);
+// REWRITES-X86_64-GNU-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-X86_64-GNU-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-X86_64-GNU-NEXT:     unsafe { printf(c"%u\n".as_ptr(), 0 as u32) };
+// REWRITES-X86_64-GNU-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u128 = 1;
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u128 = 0 - {{__v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u128 = {{__v[0-9]+}}.saturating_add(5 as u128);
+// REWRITES-X86_64-GNU-NEXT:     println!("{}", ({{__v[0-9]+}} == 0 - (1 as u128)) as i32);
+// REWRITES-X86_64-GNU-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: bitint::BInt<200, 4, 32> = bitint::BInt::<200, 4, 32>::from_decimal_str("-1");
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: bitint::BInt<200, 4, 32> = bitint::BInt::<200, 4, 32>::from_decimal_str("5");
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: bitint::BInt<200, 4, 32> = {{__v[0-9]+}}.saturating_add({{__v[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:     println!("{}", {{__v[0-9]+}}.to_i128() as i32);
+// REWRITES-X86_64-GNU-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: bitint::BUint<200, 4, 32> = bitint::BUint::<200, 4, 32>::from_decimal_str("3");
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: bitint::BUint<200, 4, 32> = bitint::BUint::<200, 4, 32>::from_decimal_str("10");
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: bitint::BUint<200, 4, 32> = {{__v[0-9]+}}.saturating_sub({{__v[0-9]+}});
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = c"%d\n".as_ptr() as *mut i8;
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: bitint::BUint<200, 4, 32> = bitint::BUint::<200, 4, 32>::from_decimal_str("0");
+// REWRITES-X86_64-GNU-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-X86_64-GNU-NEXT:     unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, ({{__v[0-9]+}} == {{__v[0-9]+}}) as i32) };
+// REWRITES-X86_64-GNU-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: [i32; 4] = [2147483647, 1, -2147483648, 0];
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: [i32; 4] = [10, 1, -10, 0];
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: [i32; 4] = [
+// REWRITES-X86_64-GNU-NEXT:         {{__v[0-9]+}}[0usize].saturating_add({{__v[0-9]+}}[0usize]),
+// REWRITES-X86_64-GNU-NEXT:         {{__v[0-9]+}}[1usize].saturating_add({{__v[0-9]+}}[1usize]),
+// REWRITES-X86_64-GNU-NEXT:         {{__v[0-9]+}}[2usize].saturating_add({{__v[0-9]+}}[2usize]),
+// REWRITES-X86_64-GNU-NEXT:         {{__v[0-9]+}}[3usize].saturating_add({{__v[0-9]+}}[3usize]),
+// REWRITES-X86_64-GNU-NEXT:     ];
+// REWRITES-X86_64-GNU-NEXT:     println!("{} {} {} {}", {{__v[0-9]+}}[0], {{__v[0-9]+}}[1], {{__v[0-9]+}}[2], {{__v[0-9]+}}[3]);
+// REWRITES-X86_64-GNU-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-X86_64-GNU-NEXT:     std::process::exit(0 as i32);
+// REWRITES-X86_64-GNU-NEXT: }
 // SLATE-FILECHECK-END rewrites

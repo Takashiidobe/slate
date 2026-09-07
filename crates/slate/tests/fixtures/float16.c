@@ -293,23 +293,24 @@ int main(void) {
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let {{__v[0-9]+}}: f16 = 3.0;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: f16 = 4.0;
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), add16({{__v[0-9]+}}, {{__v[0-9]+}}) as i32) };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), mul16({{__v[0-9]+}}, {{__v[0-9]+}}) as i32) };
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"%d\n".as_ptr(),
-// REWRITES-NEXT:             (unsafe {
-// REWRITES-NEXT:                 sum_variadic(
-// REWRITES-NEXT:                     3,
-// REWRITES-NEXT:                     __SlateVaArgs::new(vec![
-// REWRITES-NEXT:                         __SlateVaArg::new(1.0 as f16),
-// REWRITES-NEXT:                         __SlateVaArg::new(2.0 as f16),
-// REWRITES-NEXT:                         __SlateVaArg::new(3.0 as f16),
-// REWRITES-NEXT:                     ]),
-// REWRITES-NEXT:                 )
-// REWRITES-NEXT:             }) as i32,
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
+// REWRITES-NEXT:     println!("{}", add16({{__v[0-9]+}}, {{__v[0-9]+}}) as i32);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     println!("{}", mul16({{__v[0-9]+}}, {{__v[0-9]+}}) as i32);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     println!(
+// REWRITES-NEXT:         "{}",
+// REWRITES-NEXT:         (unsafe {
+// REWRITES-NEXT:             sum_variadic(
+// REWRITES-NEXT:                 3,
+// REWRITES-NEXT:                 __SlateVaArgs::new(vec![
+// REWRITES-NEXT:                     __SlateVaArg::new(1.0 as f16),
+// REWRITES-NEXT:                     __SlateVaArg::new(2.0 as f16),
+// REWRITES-NEXT:                     __SlateVaArg::new(3.0 as f16),
+// REWRITES-NEXT:                 ]),
+// REWRITES-NEXT:             )
+// REWRITES-NEXT:         }) as i32
+// REWRITES-NEXT:     );
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

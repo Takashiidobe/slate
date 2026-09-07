@@ -143,6 +143,10 @@ done:
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
 // REWRITES-NEXT: fn f_oo() -> i32 {
 // REWRITES-NEXT:     1
 // REWRITES-NEXT: }
@@ -153,10 +157,15 @@ done:
 // REWRITES-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
 // REWRITES-NEXT:     if {{__v[0-9]+}} {
 // REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         unsafe { printf(c"%d\n".as_ptr(), unsafe { counter }) };
-// REWRITES-NEXT:         unsafe { printf(c"%d\n".as_ptr(), f_oo()) };
+// REWRITES-NEXT:         println!("{}", unsafe { counter });
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:         println!("{}", f_oo());
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:         unsafe { printf(c"%s\n".as_ptr(), pretty()) };
-// REWRITES-NEXT:         unsafe { printf(c"%d\n".as_ptr(), 1 as i32) };
+// REWRITES-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
+// REWRITES-NEXT:         println!("{}", 1 as i32);
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     std::process::exit(__retval as i32);
 // REWRITES-NEXT: }

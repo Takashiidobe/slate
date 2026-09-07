@@ -23,11 +23,10 @@ int main(void) {
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: unsafe {
-// REWRITES-DAG:     printf(
-// REWRITES-DAG:         c"%d %d\n".as_ptr(),
-// REWRITES-DAG:         (unsafe { enabled }) as i32,
-// REWRITES-DAG:         (unsafe { disabled }) as i32,
-// REWRITES-DAG:     )
-// REWRITES-DAG: };
+// REWRITES-DAG: println!(
+// REWRITES-DAG:     "{} {}",
+// REWRITES-DAG:     (unsafe { enabled }) as i32,
+// REWRITES-DAG:     (unsafe { disabled }) as i32
+// REWRITES-DAG: );
+// REWRITES-DAG: let _ = std::io::Write::flush(&mut std::io::stdout());
 // SLATE-FILECHECK-END rewrites

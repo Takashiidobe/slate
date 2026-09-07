@@ -164,16 +164,8 @@ int main(void) {
 // REWRITES-X86_64-GNU-DAG:     *big = [1, 2, 3, 4, 5, 6];
 // REWRITES-AARCH64-GNU-DAG:     big = [1, 2, 3, 4, 5, 6];
 // REWRITES-DAG:     let {{__v[0-9]+}}: *mut i32 = big.as_mut_ptr() as *mut i32;
-// REWRITES-DAG:     unsafe {
-// REWRITES-DAG:         printf(
-// REWRITES-DAG:             c"%d %d %d %d %d\n".as_ptr(),
-// REWRITES-DAG:             {{__v[0-9]+}},
-// REWRITES-DAG:             a[0],
-// REWRITES-DAG:             a[2],
-// REWRITES-DAG:             {{__v[0-9]+}},
-// REWRITES-DAG:             mix({{__v[0-9]+}}),
-// REWRITES-DAG:         )
-// REWRITES-DAG:     };
+// REWRITES-DAG:     println!("{} {} {} {} {}", {{__v[0-9]+}}, a[0], a[2], {{__v[0-9]+}}, mix({{__v[0-9]+}}));
+// REWRITES-DAG:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-DAG:     std::process::exit(0 as i32);
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

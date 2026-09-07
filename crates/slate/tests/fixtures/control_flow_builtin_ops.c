@@ -178,15 +178,8 @@ int main(void) {
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(input)) };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = guarded_trap({{__v[0-9]+}});
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(input)) };
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"%d %d %d %d\n".as_ptr(),
-// REWRITES-NEXT:             {{__v[0-9]+}},
-// REWRITES-NEXT:             {{__v[0-9]+}},
-// REWRITES-NEXT:             {{__v[0-9]+}},
-// REWRITES-NEXT:             guarded_unreachable({{__v[0-9]+}}),
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
+// REWRITES-NEXT:     println!("{} {} {} {}", {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}, guarded_unreachable({{__v[0-9]+}}));
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

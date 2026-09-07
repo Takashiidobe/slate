@@ -176,16 +176,19 @@ int main(void) {
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{__v[0-9]+}}: bool = p == q;
 // REWRITES-NEXT:     if {{__v[0-9]+}} {
-// REWRITES-NEXT:         unsafe { printf(c"same\n".as_ptr()) };
+// REWRITES-NEXT:         println!("same");
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         unsafe { printf(c"diff\n".as_ptr()) };
+// REWRITES-NEXT:         println!("diff");
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{__v[0-9]+}}: bool = p != std::ptr::null_mut();
 // REWRITES-NEXT:     if {{__v[0-9]+}} {
 // REWRITES-NEXT:         unsafe {
 // REWRITES-NEXT:             *p = 1;
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         unsafe { printf(c"%d\n".as_ptr(), unsafe { *p }) };
+// REWRITES-NEXT:         println!("{}", unsafe { *p });
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:         unsafe { free(p as *mut core::ffi::c_void) };
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{__v[0-9]+}}: bool = q != std::ptr::null_mut();
@@ -193,7 +196,8 @@ int main(void) {
 // REWRITES-NEXT:         unsafe {
 // REWRITES-NEXT:             *q = 2;
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         unsafe { printf(c"%d\n".as_ptr(), unsafe { *q }) };
+// REWRITES-NEXT:         println!("{}", unsafe { *q });
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:         unsafe { free(q as *mut core::ffi::c_void) };
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     0

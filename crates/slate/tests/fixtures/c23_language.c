@@ -845,17 +845,16 @@ int main(void) {
 // REWRITES-NEXT:         c23_never_return();
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     c23_label_before_brace();
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"%d %d %d %d %d %d\n".as_ptr(),
-// REWRITES-NEXT:             {{__v[0-9]+}},
-// REWRITES-NEXT:             {{__v[0-9]+}},
-// REWRITES-NEXT:             {{__v[0-9]+}},
-// REWRITES-NEXT:             {{__v[0-9]+}},
-// REWRITES-NEXT:             {{__v[0-9]+}},
-// REWRITES-NEXT:             (202311 == (202311 as i64)) as i32,
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
+// REWRITES-NEXT:     println!(
+// REWRITES-NEXT:         "{} {} {} {} {} {}",
+// REWRITES-NEXT:         {{__v[0-9]+}},
+// REWRITES-NEXT:         {{__v[0-9]+}},
+// REWRITES-NEXT:         {{__v[0-9]+}},
+// REWRITES-NEXT:         {{__v[0-9]+}},
+// REWRITES-NEXT:         {{__v[0-9]+}},
+// REWRITES-NEXT:         (202311 == (202311 as i64)) as i32
+// REWRITES-NEXT:     );
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

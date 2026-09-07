@@ -294,35 +294,30 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { g.inner.tag };
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"%d %d %d %d\n".as_ptr(),
-// REWRITES-NEXT:             unsafe { unsafe { g.inner.scanners[0] }.unwrap()(10 as i32) },
-// REWRITES-NEXT:             unsafe { unsafe { g.inner.scanners[1] }.unwrap()(10 as i32) },
-// REWRITES-NEXT:             unsafe { unsafe { g.inner.scanners[2] }.unwrap()(10 as i32) },
-// REWRITES-NEXT:             {{__v[0-9]+}},
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
+// REWRITES-NEXT:     println!(
+// REWRITES-NEXT:         "{} {} {} {}",
+// REWRITES-NEXT:         unsafe { unsafe { g.inner.scanners[0] }.unwrap()(10 as i32) },
+// REWRITES-NEXT:         unsafe { unsafe { g.inner.scanners[1] }.unwrap()(10 as i32) },
+// REWRITES-NEXT:         unsafe { unsafe { g.inner.scanners[2] }.unwrap()(10 as i32) },
+// REWRITES-NEXT:         {{__v[0-9]+}}
+// REWRITES-NEXT:     );
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     let mut i: i32 = 0;
 // REWRITES-NEXT:     while i < 8 {
-// REWRITES-NEXT:         unsafe {
-// REWRITES-NEXT:             printf(
-// REWRITES-NEXT:                 c"%d ".as_ptr(),
-// REWRITES-NEXT:                 (unsafe { g.bytes[((i as i64) as usize)] }) as i32,
-// REWRITES-NEXT:             )
-// REWRITES-NEXT:         };
+// REWRITES-NEXT:         print!("{} ", (unsafe { g.bytes[((i as i64) as usize)] }) as i32);
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:         i += 1;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     unsafe { printf(c"\n".as_ptr()) };
+// REWRITES-NEXT:     println!("");
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { g.trailing3 };
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"%d %d %d\n".as_ptr(),
-// REWRITES-NEXT:             unsafe { unsafe { g.trailing1 }.unwrap()(10 as i32) },
-// REWRITES-NEXT:             unsafe { unsafe { g.trailing2 }.unwrap()(10 as i32) },
-// REWRITES-NEXT:             {{__v[0-9]+}},
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
+// REWRITES-NEXT:     println!(
+// REWRITES-NEXT:         "{} {} {}",
+// REWRITES-NEXT:         unsafe { unsafe { g.trailing1 }.unwrap()(10 as i32) },
+// REWRITES-NEXT:         unsafe { unsafe { g.trailing2 }.unwrap()(10 as i32) },
+// REWRITES-NEXT:         {{__v[0-9]+}}
+// REWRITES-NEXT:     );
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

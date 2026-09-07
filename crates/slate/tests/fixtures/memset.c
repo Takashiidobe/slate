@@ -249,25 +249,30 @@ int main(void) {
 // REWRITES-NEXT:     unsafe { std::ptr::write_bytes({{__v[0-9]+}} as *mut u8, (9 as i32) as u8, ({{__v[0-9]+}} as u64) as usize) };
 // REWRITES-NEXT:     let mut i: i32 = 0;
 // REWRITES-NEXT:     while i < 8 {
-// REWRITES-NEXT:         unsafe { printf(c"%d ".as_ptr(), zero_buf[((i as i64) as usize)] as i32) };
+// REWRITES-NEXT:         print!("{} ", zero_buf[((i as i64) as usize)] as i32);
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:         i += 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let mut i2: i32 = 0;
 // REWRITES-NEXT:     while i2 < 8 {
-// REWRITES-NEXT:         unsafe { printf(c"%d ".as_ptr(), value_buf[((i2 as i64) as usize)] as i32) };
+// REWRITES-NEXT:         print!("{} ", value_buf[((i2 as i64) as usize)] as i32);
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:         i2 += 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let mut i3: i32 = 0;
 // REWRITES-NEXT:     while i3 < 8 {
-// REWRITES-NEXT:         unsafe { printf(c"%d ".as_ptr(), partial_buf[((i3 as i64) as usize)] as i32) };
+// REWRITES-NEXT:         print!("{} ", partial_buf[((i3 as i64) as usize)] as i32);
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:         i3 += 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let mut i4: i32 = 0;
 // REWRITES-NEXT:     while i4 < 8 {
-// REWRITES-NEXT:         unsafe { printf(c"%d ".as_ptr(), dynamic_buf[((i4 as i64) as usize)] as i32) };
+// REWRITES-NEXT:         print!("{} ", dynamic_buf[((i4 as i64) as usize)] as i32);
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:         i4 += 1;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     unsafe { printf(c"\n".as_ptr()) };
+// REWRITES-NEXT:     println!("");
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

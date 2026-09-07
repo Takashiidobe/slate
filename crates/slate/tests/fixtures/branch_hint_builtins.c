@@ -202,11 +202,8 @@ int main(void) {
 // REWRITES-NEXT:     let mut a: i32 = use_expect(1);
 // REWRITES-NEXT:     let mut b: i32 = use_expect_with_probability(1);
 // REWRITES-NEXT:     let mut c: i32 = use_unpredictable(1);
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(c"%d %d %d %d\n".as_ptr(), a, b, c, unsafe {
-// REWRITES-NEXT:             side_effect_calls
-// REWRITES-NEXT:         })
-// REWRITES-NEXT:     };
+// REWRITES-NEXT:     println!("{} {} {} {}", a, b, c, unsafe { side_effect_calls });
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     __retval = 0;
 // REWRITES-NEXT:     std::process::exit(__retval as i32);
 // REWRITES-NEXT:     std::process::exit(__retval as i32);

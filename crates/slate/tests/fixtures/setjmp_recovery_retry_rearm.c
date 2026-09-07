@@ -158,7 +158,8 @@ int main(void) {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: *mut __slate_jmp_buf_tag =
 // REWRITES-NEXT:             std::ptr::addr_of_mut!(retry_buf).cast::<__slate_jmp_buf_tag>();
 // REWRITES-NEXT:         attempt = unsafe { setjmp({{__v[0-9]+}} as *mut __slate_jmp_buf_tag) };
-// REWRITES-NEXT:         unsafe { printf(c"attempt %d\n".as_ptr(), attempt) };
+// REWRITES-NEXT:         println!("attempt {}", attempt);
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:         if attempt >= 3 {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }

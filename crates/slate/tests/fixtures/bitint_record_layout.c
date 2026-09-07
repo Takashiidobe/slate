@@ -167,24 +167,29 @@ int main(void) {
 // REWRITES-NEXT: #[derive(Clone, Copy)]
 // REWRITES-NEXT: union BitIntOrArray {
 // REWRITES-NEXT:     bits: bitint::BInt<65, 2, 16>,
-// REWRITES-NEXT:     bytes: [i8; 20],
+// REWRITES-X86_64-GNU-NEXT:     bytes: [i8; 20],
+// REWRITES-AARCH64-GNU-NEXT:     bytes: [u8; 20],
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[repr(C)]
 // REWRITES-NEXT: #[derive(Clone, Copy)]
 // REWRITES-NEXT: struct NestedBitInt {
-// REWRITES-NEXT:     tag: i8,
-// REWRITES-NEXT:     __pad_1: [u8; 7],
+// REWRITES-X86_64-GNU-NEXT:     tag: i8,
+// REWRITES-X86_64-GNU-NEXT:     __pad_1: [u8; 7],
+// REWRITES-AARCH64-GNU-NEXT:     tag: u8,
+// REWRITES-AARCH64-GNU-NEXT:     __pad_1: [u8; 15],
 // REWRITES-NEXT:     inner: {{anon_[0-9]+}},
+// REWRITES-AARCH64-GNU-NEXT:     __pad_2: [u8; 8],
 // REWRITES-NEXT:     tail: i16,
-// REWRITES-NEXT:     __pad_2: [u8; 6],
+// REWRITES-X86_64-GNU-NEXT:     __pad_2: [u8; 6],
+// REWRITES-AARCH64-GNU-NEXT:     __pad_3: [u8; 14],
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[repr(C)]
 // REWRITES-NEXT: #[derive(Clone, Copy)]
 // REWRITES-NEXT: struct {{anon_[0-9]+}} {
 // REWRITES-NEXT:     prefix: i32,
-// REWRITES-NEXT:     __pad_1: [u8; 4],
+// REWRITES-X86_64-GNU-NEXT:     __pad_1: [u8; 4],
 // REWRITES-NEXT:     value: bitint::BInt<65, 2, 16>,
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
@@ -194,22 +199,28 @@ int main(void) {
 // REWRITES-NEXT:         inner: {{anon_[0-9]+}} {
 // REWRITES-NEXT:             prefix: 2,
 // REWRITES-NEXT:             value: bitint::BInt::<65, 2, 16>::from_decimal_str("333"),
-// REWRITES-NEXT:             __pad_1: [0; 4],
+// REWRITES-X86_64-GNU-NEXT:             __pad_1: [0; 4],
 // REWRITES-NEXT:         },
 // REWRITES-NEXT:         tail: 4,
-// REWRITES-NEXT:         __pad_1: [0; 7],
-// REWRITES-NEXT:         __pad_2: [0; 6],
+// REWRITES-X86_64-GNU-NEXT:         __pad_1: [0; 7],
+// REWRITES-X86_64-GNU-NEXT:         __pad_2: [0; 6],
+// REWRITES-AARCH64-GNU-NEXT:         __pad_1: [0; 15],
+// REWRITES-AARCH64-GNU-NEXT:         __pad_2: [0; 8],
+// REWRITES-AARCH64-GNU-NEXT:         __pad_3: [0; 14],
 // REWRITES-NEXT:     },
 // REWRITES-NEXT:     NestedBitInt {
 // REWRITES-NEXT:         tag: 5,
 // REWRITES-NEXT:         inner: {{anon_[0-9]+}} {
 // REWRITES-NEXT:             prefix: 6,
 // REWRITES-NEXT:             value: bitint::BInt::<65, 2, 16>::from_decimal_str("777"),
-// REWRITES-NEXT:             __pad_1: [0; 4],
+// REWRITES-X86_64-GNU-NEXT:             __pad_1: [0; 4],
 // REWRITES-NEXT:         },
 // REWRITES-NEXT:         tail: 8,
-// REWRITES-NEXT:         __pad_1: [0; 7],
-// REWRITES-NEXT:         __pad_2: [0; 6],
+// REWRITES-X86_64-GNU-NEXT:         __pad_1: [0; 7],
+// REWRITES-X86_64-GNU-NEXT:         __pad_2: [0; 6],
+// REWRITES-AARCH64-GNU-NEXT:         __pad_1: [0; 15],
+// REWRITES-AARCH64-GNU-NEXT:         __pad_2: [0; 8],
+// REWRITES-AARCH64-GNU-NEXT:         __pad_3: [0; 14],
 // REWRITES-NEXT:     },
 // REWRITES-NEXT: ]);
 // REWRITES-EMPTY:
@@ -217,20 +228,30 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     let mut item: BitIntOrArray = unsafe { std::mem::zeroed::<BitIntOrArray>() };
-// REWRITES-NEXT:     item = BitIntOrArray {
+// REWRITES-X86_64-GNU-NEXT:     let mut item: BitIntOrArray = unsafe { std::mem::zeroed::<BitIntOrArray>() };
+// REWRITES-X86_64-GNU-NEXT:     item = BitIntOrArray {
+// REWRITES-AARCH64-GNU-NEXT:     let mut item: aligned::Aligned<aligned::A16, BitIntOrArray> =
+// REWRITES-AARCH64-GNU-NEXT:         aligned::Aligned(unsafe { std::mem::zeroed::<BitIntOrArray>() });
+// REWRITES-AARCH64-GNU-NEXT:     *item = BitIntOrArray {
 // REWRITES-NEXT:         bytes: [
 // REWRITES-NEXT:             97, 98, 99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 // REWRITES-NEXT:         ],
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { (*values)[1].inner.prefix };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: bitint::BInt<65, 2, 16> = unsafe { (*values)[1].inner.value };
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             c"%zu %zu %d %d %lld %d %c%c%c\n".as_ptr(),
-// REWRITES-NEXT:             24 as u64,
-// REWRITES-NEXT:             40 as u64,
+// REWRITES-X86_64-GNU-NEXT:             24 as u64,
+// REWRITES-X86_64-GNU-NEXT:             40 as u64,
+// REWRITES-AARCH64-GNU-NEXT:             32 as u64,
+// REWRITES-AARCH64-GNU-NEXT:             64 as u64,
 // REWRITES-NEXT:             (unsafe { (*values)[1].tag }) as i32,
 // REWRITES-NEXT:             {{__v[0-9]+}},
 // REWRITES-NEXT:             {{__v[0-9]+}}.to_i128() as i64,
@@ -240,6 +261,7 @@ int main(void) {
 // REWRITES-NEXT:             (unsafe { item.bytes[2] }) as i32,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

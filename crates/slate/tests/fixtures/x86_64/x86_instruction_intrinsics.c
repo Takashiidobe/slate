@@ -184,6 +184,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:     unsafe {
 // REWRITES-X86_64-GNU-NEXT:         unsafe { __slate_intrinsic_x86_sse_sfence_f8b270d178b3d220() };
 // REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:     unsafe {
 // REWRITES-X86_64-GNU-NEXT:         printf(
 // REWRITES-X86_64-GNU-NEXT:             c"%d %d %llu\n".as_ptr(),
@@ -192,6 +193,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe { crc32_probe() },
 // REWRITES-X86_64-GNU-NEXT:         )
 // REWRITES-X86_64-GNU-NEXT:     };
+// REWRITES-X86_64-GNU-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:     std::process::exit(0 as i32);
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
@@ -245,5 +247,9 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:     fn __slate_intrinsic_x86_sse42_crc32_64_64_a6b1e708219fb1bb(_0: u64, _1: u64) -> u64;
 // REWRITES-X86_64-GNU-NEXT:     #[link_name = "llvm.x86.sse.sfence"]
 // REWRITES-X86_64-GNU-NEXT:     fn __slate_intrinsic_x86_sse_sfence_f8b270d178b3d220();
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: unsafe extern "C" {
+// REWRITES-X86_64-GNU-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // REWRITES-X86_64-GNU-NEXT: }
 // SLATE-FILECHECK-END rewrites

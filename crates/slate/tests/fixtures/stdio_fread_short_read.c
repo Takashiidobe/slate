@@ -175,6 +175,10 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut __retval: i32 = 0;
 // REWRITES-NEXT:     let mut f: *mut libc::FILE = std::ptr::null_mut();
@@ -185,16 +189,22 @@ int main(void) {
 // REWRITES-NEXT:     f = unsafe { fopen(c"slate_stdio_fread_short_read.tmp".as_ptr(), c"w".as_ptr()) };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: bool = !(f != std::ptr::null_mut());
 // REWRITES-NEXT:     if {{__v[0-9]+}} {
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:         unsafe { puts(c"open-fail".as_ptr()) };
+// REWRITES-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:         __retval = 0;
 // REWRITES-NEXT:         std::process::exit(__retval as i32);
 // REWRITES-NEXT:     }
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe { fputs(c"abcdefghi".as_ptr(), f as *mut libc::FILE) };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     unsafe { fclose(f as *mut libc::FILE) };
 // REWRITES-NEXT:     g = unsafe { fopen(c"slate_stdio_fread_short_read.tmp".as_ptr(), c"r".as_ptr()) };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: bool = !(g != std::ptr::null_mut());
 // REWRITES-NEXT:     if {{__v[0-9]+}} {
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:         unsafe { puts(c"reopen-fail".as_ptr()) };
+// REWRITES-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:         __retval = 0;
 // REWRITES-NEXT:         std::process::exit(__retval as i32);
 // REWRITES-NEXT:     }
@@ -202,6 +212,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = buf.as_mut_ptr() as *mut i8;
 // REWRITES-AARCH64-GNU-NEXT:     buf = [0; 16];
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = buf.as_mut_ptr() as *mut u8;
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             c"%zu %s\n".as_ptr(),
@@ -217,6 +228,7 @@ int main(void) {
 // REWRITES-AARCH64-GNU-NEXT:             buf.as_mut_ptr() as *mut u8,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     unsafe { fclose(g as *mut libc::FILE) };
 // REWRITES-NEXT:     unsafe { remove(c"slate_stdio_fread_short_read.tmp".as_ptr()) };
 // REWRITES-NEXT:     __retval = 0;

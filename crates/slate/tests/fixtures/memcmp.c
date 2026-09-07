@@ -196,15 +196,8 @@ int main(void) {
 // REWRITES-DAG:             ({{__v[0-9]+}} as u64) as usize,
 // REWRITES-DAG:         )
 // REWRITES-DAG:     };
-// REWRITES-DAG:     unsafe {
-// REWRITES-DAG:         printf(
-// REWRITES-DAG:             c"%d %d %d %d\n".as_ptr(),
-// REWRITES-DAG:             {{__v[0-9]+}},
-// REWRITES-DAG:             {{__v[0-9]+}},
-// REWRITES-DAG:             {{__v[0-9]+}},
-// REWRITES-DAG:             ({{__v[0-9]+}} == 0) as i32,
-// REWRITES-DAG:         )
-// REWRITES-DAG:     };
+// REWRITES-DAG:     println!("{} {} {} {}", {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}, ({{__v[0-9]+}} == 0) as i32);
+// REWRITES-DAG:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-DAG:     std::process::exit(0 as i32);
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

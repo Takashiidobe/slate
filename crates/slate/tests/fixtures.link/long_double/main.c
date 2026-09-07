@@ -9259,6 +9259,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:     test_control_flow_and_spills();
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: bool = (unsafe { failures }) != 0;
 // REWRITES-X86_64-GNU-NEXT:     if {{__v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:         unsafe {
 // REWRITES-X86_64-GNU-NEXT:             fprintf(
 // REWRITES-X86_64-GNU-NEXT:                 (unsafe { stderr }) as *mut libc::FILE,
@@ -9267,20 +9268,18 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                 unsafe { checks },
 // REWRITES-X86_64-GNU-NEXT:             )
 // REWRITES-X86_64-GNU-NEXT:         };
+// REWRITES-X86_64-GNU-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         __retval = 1;
 // REWRITES-X86_64-GNU-NEXT:         std::process::exit(__retval as i32);
 // REWRITES-X86_64-GNU-NEXT:     }
-// REWRITES-X86_64-GNU-NEXT:     unsafe {
-// REWRITES-X86_64-GNU-NEXT:         printf(
-// REWRITES-X86_64-GNU-NEXT:             c"long-double torture: PASS (%d checks)\n".as_ptr(),
-// REWRITES-X86_64-GNU-NEXT:             unsafe { checks },
-// REWRITES-X86_64-GNU-NEXT:         )
-// REWRITES-X86_64-GNU-NEXT:     };
+// REWRITES-X86_64-GNU-NEXT:     println!("long-double torture: PASS ({} checks)", unsafe { checks });
+// REWRITES-X86_64-GNU-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:     __retval = 0;
 // REWRITES-X86_64-GNU-NEXT:     std::process::exit(__retval as i32);
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: fn test_format_and_layout() {
+// REWRITES-X86_64-GNU-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:     unsafe {
 // REWRITES-X86_64-GNU-NEXT:         printf(
 // REWRITES-X86_64-GNU-NEXT:             c"long double: kind=%s sizeof=%zu align=%zu mant=%d max_exp=%d\n".as_ptr(),
@@ -9291,6 +9290,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             16384 as i32,
 // REWRITES-X86_64-GNU-NEXT:         )
 // REWRITES-X86_64-GNU-NEXT:     };
+// REWRITES-X86_64-GNU-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:     loop {
 // REWRITES-X86_64-GNU-NEXT:         unsafe {
 // REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
@@ -9339,9 +9339,11 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf((unsafe { stderr }) as *mut libc::FILE, c"FAIL line %d: %s\n".as_ptr(), 192 as i32, c"(LDBL_MANT_DIG == 53 && LDBL_MAX_EXP == 1024) || (LDBL_MANT_DIG == 64 && LDBL_MAX_EXP == 16384) || (LDBL_MANT_DIG == 113 && LDBL_MAX_EXP == 16384)".as_ptr() as *mut i8)
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -9359,6 +9361,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -9367,6 +9370,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"sizeof(long double) == ext_sizeof_ld()".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -9384,6 +9388,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -9392,6 +9397,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"(size_t)ALIGNOF(long double) == ext_alignof_ld()".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -9409,6 +9415,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -9417,6 +9424,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"sizeof(struct ld_box) == ext_sizeof_box()".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -9434,6 +9442,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -9442,6 +9451,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"(size_t)ALIGNOF(struct ld_box) == ext_alignof_box()".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -9459,6 +9469,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -9467,6 +9478,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"offsetof(struct ld_box, x) == ext_offset_box_x()".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -9484,6 +9496,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -9492,6 +9505,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"offsetof(struct ld_box, tail) == ext_offset_box_tail()".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -9509,6 +9523,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -9517,6 +9532,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"sizeof(struct ld_pair) == ext_sizeof_pair()".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -9534,6 +9550,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -9542,6 +9559,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"(size_t)ALIGNOF(struct ld_pair) == ext_alignof_pair()".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -9559,6 +9577,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -9567,6 +9586,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"sizeof(struct ld_nested) == ext_sizeof_nested()".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -9584,6 +9604,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -9593,6 +9614,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                         as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -9610,6 +9632,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -9619,6 +9642,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                         as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -9636,6 +9660,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -9644,6 +9669,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"offsetof(struct ld_nested, z) == ext_offset_nested_z()".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -9661,6 +9687,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -9669,6 +9696,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"sizeof(union ld_union) == ext_sizeof_union()".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -9686,6 +9714,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -9694,6 +9723,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"(size_t)ALIGNOF(union ld_union) == ext_alignof_union()".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -9722,6 +9752,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -9730,6 +9761,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"one + eps != one".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -9747,6 +9779,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -9758,6 +9791,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     check_expected_,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -9779,6 +9813,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -9790,6 +9825,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     check_expected_2,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -9808,6 +9844,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -9816,6 +9853,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"n1 != n2".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -9837,6 +9875,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -9845,6 +9884,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"end != NULL && *end == '\\0'".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -9860,6 +9900,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -9868,6 +9909,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"via_parse_64 != 1.0L".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -9885,6 +9927,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -9896,6 +9939,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     check_expected_3,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -9918,6 +9962,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -9926,6 +9971,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"end != NULL && *end == '\\0'".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -9941,6 +9987,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -9949,6 +9996,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"via_parse_113 == 1.0L".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -9966,6 +10014,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -9974,6 +10023,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"wide != through_double".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -9995,6 +10045,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -10003,6 +10054,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"isfinite(huge_but_finite)".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -10021,6 +10073,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -10029,6 +10082,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"huge_but_finite > (long double)DBL_MAX".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -10069,6 +10123,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -10080,6 +10135,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     check_expected_,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -10103,6 +10159,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -10114,6 +10171,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     check_expected_2,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -10137,6 +10195,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -10148,6 +10207,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     check_expected_3,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -10171,6 +10231,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -10182,6 +10243,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     check_expected_4,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -10203,6 +10265,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -10214,6 +10277,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     check_expected_5,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -10259,6 +10323,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -10270,6 +10335,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     check_expected_6,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -10302,6 +10368,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -10313,6 +10380,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     check_expected_7,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -10337,6 +10405,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -10348,6 +10417,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     check_expected_8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -10372,6 +10442,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -10383,6 +10454,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     check_expected_9,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -10402,6 +10474,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -10413,6 +10486,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     check_expected_10,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -10434,6 +10508,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -10445,6 +10520,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     check_expected_11,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -10492,6 +10568,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                 unsafe {
 // REWRITES-X86_64-GNU-NEXT:                     failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:                 }
+// REWRITES-X86_64-GNU-NEXT:                 let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:                 unsafe {
 // REWRITES-X86_64-GNU-NEXT:                     __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
 // REWRITES-X86_64-GNU-NEXT:                         (unsafe { stderr }) as *mut libc::FILE,
@@ -10503,6 +10580,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                         check_expected_,
 // REWRITES-X86_64-GNU-NEXT:                     )
 // REWRITES-X86_64-GNU-NEXT:                 };
+// REWRITES-X86_64-GNU-NEXT:                 unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:             }
 // REWRITES-X86_64-GNU-NEXT:             let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:             if !({{__v[0-9]+}} != 0) {
@@ -10529,6 +10607,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                 unsafe {
 // REWRITES-X86_64-GNU-NEXT:                     failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:                 }
+// REWRITES-X86_64-GNU-NEXT:                 let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:                 unsafe {
 // REWRITES-X86_64-GNU-NEXT:                     __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
 // REWRITES-X86_64-GNU-NEXT:                         (unsafe { stderr }) as *mut libc::FILE,
@@ -10540,6 +10619,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                         check_expected_2,
 // REWRITES-X86_64-GNU-NEXT:                     )
 // REWRITES-X86_64-GNU-NEXT:                 };
+// REWRITES-X86_64-GNU-NEXT:                 unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:             }
 // REWRITES-X86_64-GNU-NEXT:             let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:             if !({{__v[0-9]+}} != 0) {
@@ -10561,6 +10641,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -10569,6 +10650,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"(int64_t)1234567.875L == ext_to_i64(1234567.875L)".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -10588,6 +10670,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -10596,6 +10679,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"(int64_t)-1234567.875L == ext_to_i64(-1234567.875L)".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -10615,6 +10699,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -10623,6 +10708,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"(uint64_t)1234567.875L == ext_to_u64(1234567.875L)".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -10640,6 +10726,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -10648,6 +10735,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"(int64_t)-0.875L == 0".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -10677,6 +10765,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -10688,6 +10777,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     check_expected_3,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -10707,6 +10797,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -10718,6 +10809,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     check_expected_4,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -10735,6 +10827,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -10743,6 +10836,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"(double)ld1 == ext_to_double(ld1)".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -10760,6 +10854,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -10768,6 +10863,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"(float)ld2 == ext_to_float(ld2)".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -10805,6 +10901,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -10816,6 +10913,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     check_expected_5,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -10841,6 +10939,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -10852,6 +10951,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     check_expected_6,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -10877,6 +10977,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -10888,6 +10989,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     check_expected_7,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -10913,6 +11015,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -10924,6 +11027,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     check_expected_8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -10953,6 +11057,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -10961,6 +11066,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"pz == nz".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -10976,6 +11082,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -10984,6 +11091,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"!signbit(pz)".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -11000,6 +11108,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -11008,6 +11117,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"signbit(nz)".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -11036,6 +11146,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -11043,6 +11154,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     374 as i32,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -11071,6 +11183,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -11078,6 +11191,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     375 as i32,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -11106,6 +11220,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -11113,6 +11228,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     376 as i32,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -11141,6 +11257,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -11148,6 +11265,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     377 as i32,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -11164,6 +11282,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -11172,6 +11291,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"isinf(inf) && inf > 0.0L".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -11188,6 +11308,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -11196,6 +11317,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"isinf(ninf) && ninf < 0.0L".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -11212,6 +11334,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -11220,6 +11343,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"isnan(nan)".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -11235,6 +11359,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -11243,6 +11368,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"!(nan == nan)".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -11258,6 +11384,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -11266,6 +11393,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"!(nan < 0.0L)".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -11281,6 +11409,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -11289,6 +11418,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"!(nan > 0.0L)".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -11304,6 +11434,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -11312,6 +11443,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"!(nan <= 0.0L)".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -11327,6 +11459,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -11335,6 +11468,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"!(nan >= 0.0L)".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -11350,6 +11484,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -11358,6 +11493,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"nan != nan".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -11374,6 +11510,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -11382,6 +11519,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"ext_eq(pz, nz)".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -11400,6 +11538,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -11408,6 +11547,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"ext_lt(-1.0L, 1.0L)".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -11426,6 +11566,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -11434,6 +11575,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"ext_le(1.0L, 1.0L)".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -11450,6 +11592,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -11458,6 +11601,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"!ext_eq(nan, nan)".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -11475,6 +11619,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -11483,6 +11628,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"!ext_lt(nan, 0.0L)".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -11501,6 +11647,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -11509,6 +11656,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"signbit(copysignl(1.0L, nz))".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -11526,6 +11674,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -11534,6 +11683,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"!signbit(copysignl(1.0L, pz))".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -11574,6 +11724,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -11582,6 +11733,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"end != NULL".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -11598,6 +11750,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -11606,6 +11759,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"strcmp(end, \"tail\") == 0".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -11622,6 +11776,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -11630,6 +11785,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"errno == 0".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -11645,6 +11801,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -11653,6 +11810,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"x < 0.0L".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -11677,6 +11835,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -11685,6 +11844,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"n > 0 && (size_t)n < sizeof(buf)".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -11710,6 +11870,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -11721,6 +11882,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     check_expected_,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -11736,6 +11898,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -11744,6 +11907,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"end2 != NULL && *end2 == '\\0'".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -11765,6 +11929,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -11776,6 +11941,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     check_expected_2,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -11793,6 +11959,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -11804,6 +11971,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     check_expected_3,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -11823,6 +11991,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -11834,6 +12003,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     check_expected_4,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -11849,6 +12019,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -11857,6 +12028,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"e == 11".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -11874,6 +12046,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -11885,6 +12058,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     check_expected_5,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -11905,6 +12079,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -11916,6 +12091,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     check_expected_6,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -11937,6 +12113,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -11948,6 +12125,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     check_expected_7,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -11970,6 +12148,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -11981,6 +12160,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     check_expected_8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -12002,6 +12182,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -12013,6 +12194,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     check_expected_9,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -12034,6 +12216,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -12045,6 +12228,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     check_expected_10,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -12065,6 +12249,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -12076,6 +12261,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     check_expected_11,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -12096,6 +12282,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -12107,6 +12294,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     check_expected_12,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -12127,6 +12315,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -12138,6 +12327,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     check_expected_13,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -12157,6 +12347,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -12165,6 +12356,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"toward > 1.0L".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -12182,6 +12374,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -12193,6 +12386,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     check_expected_14,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -12212,6 +12406,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -12220,6 +12415,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"tiny > 0.0L".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -12235,6 +12431,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -12243,6 +12440,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"tiny < LDBL_MIN".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -12284,6 +12482,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -12292,6 +12491,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"fpclassify(tiny) == FP_SUBNORMAL".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -12327,6 +12527,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -12338,6 +12539,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     check_expected_,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -12359,6 +12561,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -12370,6 +12573,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     check_expected_2,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -12435,6 +12639,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -12446,6 +12651,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     check_expected_3,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -12479,6 +12685,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -12490,6 +12697,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     check_expected_4,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -12520,6 +12728,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -12531,6 +12740,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     check_expected_5,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -12589,6 +12799,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -12597,6 +12808,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"r.tag == (unsigned char)(b.tag ^ 0x5aU)".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -12614,6 +12826,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -12625,6 +12838,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     check_expected_,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -12640,6 +12854,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -12648,6 +12863,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"r.tail == (b.tail ^ UINT32_C(0xa5a55a5a))".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -12669,6 +12885,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -12680,6 +12897,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     check_expected_2,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -12698,6 +12916,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -12709,6 +12928,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     check_expected_3,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -12737,6 +12957,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -12745,6 +12966,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"nr.head == (uint16_t)(n.head ^ UINT16_C(0x55aa))".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -12762,6 +12984,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -12773,6 +12996,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     check_expected_4,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -12790,6 +13014,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -12801,6 +13026,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     check_expected_5,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -12816,6 +13042,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -12824,6 +13051,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"nr.bytes[0] == (unsigned char)(n.bytes[0] ^ 1U)".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -12839,6 +13067,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -12847,6 +13076,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"nr.bytes[1] == (unsigned char)(n.bytes[1] ^ 2U)".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -12862,6 +13092,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -12870,6 +13101,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"nr.bytes[2] == (unsigned char)(n.bytes[2] ^ 4U)".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -12887,6 +13119,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -12898,6 +13131,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     check_expected_6,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -12925,6 +13159,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -12936,6 +13171,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     check_expected_7,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -12957,6 +13193,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -12968,6 +13205,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     check_expected_8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -12986,6 +13224,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -12997,6 +13236,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     check_expected_9,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -13028,6 +13268,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -13039,6 +13280,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     check_expected_10,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -13066,6 +13308,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -13077,6 +13320,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     check_expected_11,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -13126,6 +13370,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -13137,6 +13382,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     check_expected_,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -13155,6 +13401,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -13166,6 +13413,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     check_expected_2,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -13190,6 +13438,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -13198,6 +13447,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"n > 0 && (size_t)n < sizeof(buf)".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -13223,6 +13473,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -13234,6 +13485,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     check_expected_3,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -13249,6 +13501,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 fprintf(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -13257,6 +13510,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     c"end != NULL && *end == '\\0'".as_ptr() as *mut i8,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -13284,6 +13538,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -13295,6 +13550,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     check_expected_,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -13313,6 +13569,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -13324,6 +13581,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     check_expected_2,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -13342,6 +13600,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -13353,6 +13612,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     check_expected_3,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -13453,6 +13713,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
 // REWRITES-X86_64-GNU-NEXT:                     (unsafe { stderr }) as *mut libc::FILE,
@@ -13464,6 +13725,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                     check_expected_,
 // REWRITES-X86_64-GNU-NEXT:                 )
 // REWRITES-X86_64-GNU-NEXT:             };
+// REWRITES-X86_64-GNU-NEXT:             unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -13693,5 +13955,9 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:         _0: *const core::ffi::c_char,
 // REWRITES-X86_64-GNU-NEXT:         _1: *mut *mut core::ffi::c_char,
 // REWRITES-X86_64-GNU-NEXT:     ) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: unsafe extern "C" {
+// REWRITES-X86_64-GNU-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // REWRITES-X86_64-GNU-NEXT: }
 // SLATE-FILECHECK-END rewrites

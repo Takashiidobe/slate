@@ -119,7 +119,8 @@ int main(void) {
 // REWRITES-NEXT:     let mut bytes: [u8; 3] = [0; 3];
 // REWRITES-NEXT:     bytes = [195, 169, 0];
 // REWRITES-NEXT:     let {{__v[0-9]+}}: *mut u8 = bytes.as_mut_ptr() as *mut u8;
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), first_byte({{__v[0-9]+}}, 1)) };
+// REWRITES-NEXT:     println!("{}", first_byte({{__v[0-9]+}}, 1));
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

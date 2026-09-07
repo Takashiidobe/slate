@@ -268,6 +268,10 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut s: aligned::Aligned<aligned::A16, Aligned> = aligned::Aligned(Aligned {
 // REWRITES-NEXT:         a: 0,
@@ -276,6 +280,7 @@ int main(void) {
 // REWRITES-NEXT:     });
 // REWRITES-NEXT:     s.a = 5;
 // REWRITES-NEXT:     s.b = 4660;
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             c"%zu %zu\n".as_ptr(),
@@ -283,6 +288,8 @@ int main(void) {
 // REWRITES-NEXT:             std::mem::align_of::<Aligned>() as u64,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             c"%zu %zu\n".as_ptr(),
@@ -290,17 +297,19 @@ int main(void) {
 // REWRITES-NEXT:             std::mem::offset_of!(Aligned, b) as u64,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = s.b;
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe { printf(c"%d %x\n".as_ptr(), s.a as i32, {{__v[0-9]+}}) };
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"%d %d %d %d\n".as_ptr(),
-// REWRITES-NEXT:             effectful_case(),
-// REWRITES-NEXT:             repeated_case(),
-// REWRITES-NEXT:             dependent_case(),
-// REWRITES-NEXT:             interrupted_case(),
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// REWRITES-NEXT:     println!(
+// REWRITES-NEXT:         "{} {} {} {}",
+// REWRITES-NEXT:         effectful_case(),
+// REWRITES-NEXT:         repeated_case(),
+// REWRITES-NEXT:         dependent_case(),
+// REWRITES-NEXT:         interrupted_case()
+// REWRITES-NEXT:     );
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

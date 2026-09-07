@@ -86,7 +86,8 @@ int main(void) {
 // REWRITES-NEXT:             unsafe { __slate_intrinsic_debugtrap_2b8d277b395439e1() };
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     unsafe { printf(c"ok\n".as_ptr()) };
+// REWRITES-NEXT:     println!("ok");
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

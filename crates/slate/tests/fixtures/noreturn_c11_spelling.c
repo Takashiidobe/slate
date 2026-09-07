@@ -80,7 +80,8 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn die({{arg[0-9]+}}: i32) -> ! {
-// REWRITES-NEXT:     unsafe { printf(c"dying with %d\n".as_ptr(), {{arg[0-9]+}}) };
+// REWRITES-NEXT:     println!("dying with {}", {{arg[0-9]+}});
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe { std::process::exit({{arg[0-9]+}} as i32) }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
@@ -90,7 +91,8 @@ int main(void) {
 // REWRITES-NEXT:     if {{__v[0-9]+}} {
 // REWRITES-NEXT:         die(1);
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     unsafe { printf(c"main\n".as_ptr()) };
+// REWRITES-NEXT:     println!("main");
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

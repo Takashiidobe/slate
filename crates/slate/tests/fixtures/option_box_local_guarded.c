@@ -133,10 +133,12 @@ int main(void) {
 // REWRITES-NEXT:         unsafe {
 // REWRITES-NEXT:             *p = 41;
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         unsafe { printf(c"%d\n".as_ptr(), unsafe { *p }) };
+// REWRITES-NEXT:         println!("{}", unsafe { *p });
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:         unsafe { free(p as *mut core::ffi::c_void) };
 // REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         unsafe { printf(c"no alloc\n".as_ptr()) };
+// REWRITES-NEXT:         println!("no alloc");
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     0
 // REWRITES-NEXT: }

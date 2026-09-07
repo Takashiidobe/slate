@@ -114,6 +114,10 @@ int main(void) {
 // REWRITES-NEXT:     fn free(_0: *mut core::ffi::c_void);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-X86_64-GNU-NEXT:     let mut local: aligned::Aligned<aligned::A16, [i32; 6]> = aligned::Aligned([0; 6]);
 // REWRITES-AARCH64-GNU-NEXT:     let mut local: [i32; 6] = [0; 6];
@@ -122,6 +126,7 @@ int main(void) {
 // REWRITES-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(v), 3 as i32) };
 // REWRITES-NEXT:     unsafe { std::ptr::read_volatile(std::ptr::addr_of!(v)) };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: u64 = u64::MAX;
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             c"%lu %lu %lu %lu %lu %lu\n".as_ptr(),
@@ -133,6 +138,7 @@ int main(void) {
 // REWRITES-NEXT:             runtime_alloc_size(37),
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

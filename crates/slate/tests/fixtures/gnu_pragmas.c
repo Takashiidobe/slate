@@ -177,10 +177,12 @@ int main(void) {
 // REWRITES-NEXT:     value: u32,
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: #[cfg(target_arch = "x86_64")]
+// REWRITES-X86_64-GNU-NEXT: #[cfg(target_arch = "x86_64")]
+// REWRITES-AARCH64-GNU-NEXT: #[cfg(target_arch = "aarch64")]
 // REWRITES-NEXT: core::arch::global_asm!(
 // REWRITES-NEXT:     ".weak gnu_pragma_weak_alias\n.set gnu_pragma_weak_alias, gnu_pragma_weak_target",
-// REWRITES-NEXT:     options(att_syntax, raw)
+// REWRITES-X86_64-GNU-NEXT:     options(att_syntax, raw)
+// REWRITES-AARCH64-GNU-NEXT:     options(raw)
 // REWRITES-NEXT: );
 // REWRITES-EMPTY:
 // REWRITES-NEXT: static mut gnu_pragma_inner_macro: i32 = 11;
@@ -190,6 +192,10 @@ int main(void) {
 // REWRITES-NEXT: unsafe extern "C" {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT:     fn gnu_pragma_weak_alias() -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn gnu_pragma_hidden({{arg[0-9]+}}: i32) -> i32 {
@@ -208,7 +214,8 @@ int main(void) {
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut packed: GNUPragmaPacked = GNUPragmaPacked { tag: 0, value: 0 };
 // REWRITES-NEXT:     packed = GNUPragmaPacked { tag: 29, value: 31 };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i8 = c"%d %d %d %d %d %d %d %d\n".as_ptr() as *mut i8;
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = c"%d %d %d %d %d %d %d %d\n".as_ptr() as *mut i8;
+// REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = c"%d %d %d %d %d %d %d %d\n".as_ptr() as *mut u8;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { gnu_pragma_inner_macro };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { gnu_pragma_outer_macro };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = std::mem::offset_of!(GNUPragmaPacked, value) as i32;
@@ -220,6 +227,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{__v[0-9]+}}: u8 = unsafe { std::ptr::read_unaligned(std::ptr::addr_of!(packed.tag)) };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + ({{__v[0-9]+}} as i32);
 // REWRITES-NEXT:     let {{__v[0-9]+}}: u32 = unsafe { std::ptr::read_unaligned(std::ptr::addr_of!(packed.value)) };
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
@@ -233,6 +241,7 @@ int main(void) {
 // REWRITES-NEXT:             {{__v[0-9]+}} + ({{__v[0-9]+}} as i32),
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

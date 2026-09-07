@@ -129,17 +129,16 @@ int main(void) {
 // REWRITES-NEXT:     let mut bytes: [u8; 4] = [0; 4];
 // REWRITES-NEXT:     bytes = [97, 98, 99, 0];
 // REWRITES-NEXT:     let {{__v[0-9]+}}: *mut u8 = bytes.as_mut_ptr() as *mut u8;
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"%d\n".as_ptr(),
-// REWRITES-NEXT:             forward_text(unsafe {
-// REWRITES-NEXT:                 std::str::from_utf8_unchecked(std::slice::from_raw_parts(
-// REWRITES-NEXT:                     {{__v[0-9]+}} as *const u8,
-// REWRITES-NEXT:                     (3 as i32) as usize,
-// REWRITES-NEXT:                 ))
-// REWRITES-NEXT:             }),
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
+// REWRITES-NEXT:     println!(
+// REWRITES-NEXT:         "{}",
+// REWRITES-NEXT:         forward_text(unsafe {
+// REWRITES-NEXT:             std::str::from_utf8_unchecked(std::slice::from_raw_parts(
+// REWRITES-NEXT:                 {{__v[0-9]+}} as *const u8,
+// REWRITES-NEXT:                 (3 as i32) as usize,
+// REWRITES-NEXT:             ))
+// REWRITES-NEXT:         })
+// REWRITES-NEXT:     );
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

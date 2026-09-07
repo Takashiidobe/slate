@@ -169,6 +169,10 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut point: {{anon_[0-9]+}} = {{anon_[0-9]+}} { x: 0, y: 0 };
 // REWRITES-X86_64-GNU-NEXT:     let mut storage: aligned::Aligned<aligned::A16, [i32; 4]> = aligned::Aligned([0; 4]);
@@ -203,21 +207,26 @@ int main(void) {
 // REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i32 = buf.pointer;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(1) };
 // REWRITES-NEXT:     buf.pointer = {{__v[0-9]+}};
-// REWRITES-NEXT:     unsafe { printf(c"%d %d\n".as_ptr(), storage[0], storage[1]) };
+// REWRITES-NEXT:     println!("{} {}", storage[0], storage[1]);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i32 = buf.pointer;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i32 = buf.start;
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(c"%ld\n".as_ptr(), unsafe {
 // REWRITES-NEXT:             {{__v[0-9]+}}.offset_from({{__v[0-9]+}}) as i64
 // REWRITES-NEXT:         })
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i32 = buf.end;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i32 = buf.start;
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(c"%ld\n".as_ptr(), unsafe {
 // REWRITES-NEXT:             {{__v[0-9]+}}.offset_from({{__v[0-9]+}}) as i64
 // REWRITES-NEXT:         })
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

@@ -71,7 +71,8 @@ int main(void) {
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { getchar() };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + 1;
-// REWRITES-NEXT:     unsafe { printf(c"%d %d %d\n".as_ptr(), 42 as i32, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// REWRITES-NEXT:     println!("{} {} {}", 42 as i32, {{__v[0-9]+}}, {{__v[0-9]+}});
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

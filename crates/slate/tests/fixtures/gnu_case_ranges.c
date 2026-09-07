@@ -216,23 +216,22 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"%d %d %d %d %d %d %d %d %d %d %d %d\n".as_ptr(),
-// REWRITES-NEXT:             classify(1),
-// REWRITES-NEXT:             classify(2),
-// REWRITES-NEXT:             classify(4),
-// REWRITES-NEXT:             classify(5),
-// REWRITES-NEXT:             classify(7),
-// REWRITES-NEXT:             classify(8),
-// REWRITES-NEXT:             classify(9),
-// REWRITES-NEXT:             classify(10),
-// REWRITES-NEXT:             classify(11),
-// REWRITES-NEXT:             classify(12),
-// REWRITES-NEXT:             classify_direct(-1),
-// REWRITES-NEXT:             classify_direct(3),
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
+// REWRITES-NEXT:     println!(
+// REWRITES-NEXT:         "{} {} {} {} {} {} {} {} {} {} {} {}",
+// REWRITES-NEXT:         classify(1),
+// REWRITES-NEXT:         classify(2),
+// REWRITES-NEXT:         classify(4),
+// REWRITES-NEXT:         classify(5),
+// REWRITES-NEXT:         classify(7),
+// REWRITES-NEXT:         classify(8),
+// REWRITES-NEXT:         classify(9),
+// REWRITES-NEXT:         classify(10),
+// REWRITES-NEXT:         classify(11),
+// REWRITES-NEXT:         classify(12),
+// REWRITES-NEXT:         classify_direct(-1),
+// REWRITES-NEXT:         classify_direct(3)
+// REWRITES-NEXT:     );
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

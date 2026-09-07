@@ -12,7 +12,8 @@ int main(void) {
 
 // REWRITES-LABEL: {{^}}fn main() {
 // REWRITES-DAG: unsafe { toupper(
-// REWRITES-DAG: unsafe { tolower(
+// REWRITES-DAG: unsafe {
+// REWRITES-DAG: tolower(
 // REWRITES: {{^}}}
 
 // SLATE-FILECHECK-BEGIN lowering
@@ -92,13 +93,10 @@ int main(void) {
 // REWRITES-AARCH64-GNU-NEXT:             std::ptr::addr_of_mut!(_str).cast::<u8>() as *const core::ffi::c_char,
 // REWRITES-AARCH64-GNU-NEXT:         )
 // REWRITES-AARCH64-GNU-NEXT:     }) as *mut u8;
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"%d %d\n".as_ptr(),
-// REWRITES-NEXT:             unsafe { toupper(113 as i32) },
-// REWRITES-NEXT:             unsafe { tolower(81 as i32) },
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
+// REWRITES-NEXT:     println!("{} {}", unsafe { toupper(113 as i32) }, unsafe {
+// REWRITES-NEXT:         tolower(81 as i32)
+// REWRITES-NEXT:     });
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

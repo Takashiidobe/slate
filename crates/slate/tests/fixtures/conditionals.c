@@ -190,17 +190,23 @@ int main(void) {
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut x: i32 = 7;
 // REWRITES-NEXT:     let mut label: i32 = 0;
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), classify(-5)) };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), classify(0)) };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), classify(42)) };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), clamp_low(3)) };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), clamp_low(20)) };
+// REWRITES-NEXT:     println!("{}", classify(-5));
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     println!("{}", classify(0));
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     println!("{}", classify(42));
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     println!("{}", clamp_low(3));
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     println!("{}", clamp_low(20));
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     if x % 2 == 0 {
 // REWRITES-NEXT:         label = 100;
 // REWRITES-NEXT:     } else {
 // REWRITES-NEXT:         label = 200;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), label) };
+// REWRITES-NEXT:     println!("{}", label);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

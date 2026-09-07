@@ -104,7 +104,8 @@ int main(int argc, char **argv) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn cleanup() {
-// REWRITES-NEXT:     unsafe { printf(c"destructor ran\n".as_ptr()) };
+// REWRITES-NEXT:     println!("destructor ran");
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
@@ -125,13 +126,15 @@ int main(int argc, char **argv) {
 // REWRITES-NEXT:     let mut __retval: i32 = 0;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: bool = argc == 1;
 // REWRITES-NEXT:     if {{__v[0-9]+}} {
-// REWRITES-NEXT:         unsafe { printf(c"early exit\n".as_ptr()) };
+// REWRITES-NEXT:         println!("early exit");
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:         __retval = 7;
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = __retval;
 // REWRITES-NEXT:         cleanup();
 // REWRITES-NEXT:         std::process::exit({{__v[0-9]+}} as i32);
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     unsafe { printf(c"main ran\n".as_ptr()) };
+// REWRITES-NEXT:     println!("main ran");
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     __retval = 0;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = __retval;
 // REWRITES-NEXT:     cleanup();

@@ -267,6 +267,10 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-X86_64-GNU-NEXT:     let mut range_values: aligned::Aligned<aligned::A16, [i32; 10]> = aligned::Aligned([0; 10]);
 // REWRITES-X86_64-GNU-NEXT:     let mut old_index: [i32; 3] = [0; 3];
@@ -285,16 +289,17 @@ int main(void) {
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{__v[0-9]+}}: u32 = Forward::FORWARD_B as u32;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { c.i };
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"%d %d %d %d\n".as_ptr(),
-// REWRITES-NEXT:             range_values[3],
-// REWRITES-NEXT:             old_index[1],
-// REWRITES-NEXT:             p.x + p.y,
-// REWRITES-NEXT:             {{__v[0-9]+}},
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), {{__v[0-9]+}} as i32) };
+// REWRITES-NEXT:     println!(
+// REWRITES-NEXT:         "{} {} {} {}",
+// REWRITES-NEXT:         range_values[3],
+// REWRITES-NEXT:         old_index[1],
+// REWRITES-NEXT:         p.x + p.y,
+// REWRITES-NEXT:         {{__v[0-9]+}}
+// REWRITES-NEXT:     );
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     println!("{}", {{__v[0-9]+}} as i32);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             c"%zu %zu\n".as_ptr(),
@@ -302,27 +307,29 @@ int main(void) {
 // REWRITES-NEXT:             std::mem::size_of::<OnlyFlex>() as u64,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"%d %d %d\n".as_ptr(),
-// REWRITES-NEXT:             unsafe {
-// REWRITES-NEXT:                 *std::ptr::addr_of_mut!(sized.data)
-// REWRITES-NEXT:                     .cast::<i32>()
-// REWRITES-NEXT:                     .add((0 as i64) as usize)
-// REWRITES-NEXT:             },
-// REWRITES-NEXT:             unsafe {
-// REWRITES-NEXT:                 *std::ptr::addr_of_mut!(sized.data)
-// REWRITES-NEXT:                     .cast::<i32>()
-// REWRITES-NEXT:                     .add((1 as i64) as usize)
-// REWRITES-NEXT:             },
-// REWRITES-NEXT:             unsafe {
-// REWRITES-NEXT:                 *std::ptr::addr_of_mut!(sized.data)
-// REWRITES-NEXT:                     .cast::<i32>()
-// REWRITES-NEXT:                     .add((2 as i64) as usize)
-// REWRITES-NEXT:             },
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// REWRITES-NEXT:     println!(
+// REWRITES-NEXT:         "{} {} {}",
+// REWRITES-NEXT:         unsafe {
+// REWRITES-NEXT:             *std::ptr::addr_of_mut!(sized.data)
+// REWRITES-NEXT:                 .cast::<i32>()
+// REWRITES-NEXT:                 .add((0 as i64) as usize)
+// REWRITES-NEXT:         },
+// REWRITES-NEXT:         unsafe {
+// REWRITES-NEXT:             *std::ptr::addr_of_mut!(sized.data)
+// REWRITES-NEXT:                 .cast::<i32>()
+// REWRITES-NEXT:                 .add((1 as i64) as usize)
+// REWRITES-NEXT:         },
+// REWRITES-NEXT:         unsafe {
+// REWRITES-NEXT:             *std::ptr::addr_of_mut!(sized.data)
+// REWRITES-NEXT:                 .cast::<i32>()
+// REWRITES-NEXT:                 .add((2 as i64) as usize)
+// REWRITES-NEXT:         }
+// REWRITES-NEXT:     );
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe { printf(c"%zu\n".as_ptr(), 4 as u64) };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

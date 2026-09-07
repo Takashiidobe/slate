@@ -93,12 +93,10 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), apply_binary(Some(add_pair), 4, 5)) };
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(c"%d\n".as_ptr(), unsafe {
-// REWRITES-NEXT:             Some(mul_pair).unwrap()(3 as i32, 6 as i32)
-// REWRITES-NEXT:         })
-// REWRITES-NEXT:     };
+// REWRITES-NEXT:     println!("{}", apply_binary(Some(add_pair), 4, 5));
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     println!("{}", unsafe { Some(mul_pair).unwrap()(3 as i32, 6 as i32) });
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

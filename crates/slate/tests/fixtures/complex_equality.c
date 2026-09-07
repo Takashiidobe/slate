@@ -417,20 +417,46 @@ int main(void) {
 // REWRITES-AARCH64-GNU-NEXT:         re: 5.000000e+00f128,
 // REWRITES-AARCH64-GNU-NEXT:         im: 6.000000e+00f128,
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"%d %d\n".as_ptr(),
-// REWRITES-NEXT:             ({{__v[0-9]+}} == num_complex::Complex { re: 1.0, im: 2.0 }) as i32,
-// REWRITES-NEXT:             ({{__v[0-9]+}} != num_complex::Complex { re: 1.0, im: 3.0 }) as i32,
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"%d %d\n".as_ptr(),
-// REWRITES-NEXT:             ({{__v[0-9]+}} == num_complex::Complex { re: 3.0, im: 4.0 }) as i32,
-// REWRITES-NEXT:             ({{__v[0-9]+}} != num_complex::Complex { re: 3.0, im: 5.0 }) as i32,
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
+// REWRITES-X86_64-GNU-NEXT:     println!(
+// REWRITES-X86_64-GNU-NEXT:         "{} {}",
+// REWRITES-X86_64-GNU-NEXT:         ({{__v[0-9]+}} == num_complex::Complex { re: 1.0, im: 2.0 }) as i32,
+// REWRITES-X86_64-GNU-NEXT:         ({{__v[0-9]+}} != num_complex::Complex { re: 1.0, im: 3.0 }) as i32
+// REWRITES-X86_64-GNU-NEXT:     );
+// REWRITES-X86_64-GNU-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-X86_64-GNU-NEXT:     println!(
+// REWRITES-X86_64-GNU-NEXT:         "{} {}",
+// REWRITES-X86_64-GNU-NEXT:         ({{__v[0-9]+}} == num_complex::Complex { re: 3.0, im: 4.0 }) as i32,
+// REWRITES-X86_64-GNU-NEXT:         ({{__v[0-9]+}} != num_complex::Complex { re: 3.0, im: 5.0 }) as i32
+// REWRITES-X86_64-GNU-NEXT:     );
+// REWRITES-X86_64-GNU-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-X86_64-GNU-NEXT:     println!(
+// REWRITES-X86_64-GNU-NEXT:         "{} {}",
+// REWRITES-X86_64-GNU-NEXT:         ({{__v[0-9]+}}
+// REWRITES-X86_64-GNU-NEXT:             == num_complex::Complex {
+// REWRITES-X86_64-GNU-NEXT:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 1, 64]),
+// REWRITES-X86_64-GNU-NEXT:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 1, 64])
+// REWRITES-X86_64-GNU-NEXT:             }) as i32,
+// REWRITES-X86_64-GNU-NEXT:         ({{__v[0-9]+}}
+// REWRITES-X86_64-GNU-NEXT:             != num_complex::Complex {
+// REWRITES-X86_64-GNU-NEXT:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 1, 64]),
+// REWRITES-X86_64-GNU-NEXT:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 224, 1, 64])
+// REWRITES-X86_64-GNU-NEXT:             }) as i32
+// REWRITES-X86_64-GNU-NEXT:     );
+// REWRITES-X86_64-GNU-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-AARCH64-GNU-NEXT:     unsafe {
+// REWRITES-AARCH64-GNU-NEXT:         printf(
+// REWRITES-AARCH64-GNU-NEXT:             c"%d %d\n".as_ptr(),
+// REWRITES-AARCH64-GNU-NEXT:             ({{__v[0-9]+}} == num_complex::Complex { re: 1.0, im: 2.0 }) as i32,
+// REWRITES-AARCH64-GNU-NEXT:             ({{__v[0-9]+}} != num_complex::Complex { re: 1.0, im: 3.0 }) as i32,
+// REWRITES-AARCH64-GNU-NEXT:         )
+// REWRITES-AARCH64-GNU-NEXT:     };
+// REWRITES-AARCH64-GNU-NEXT:     unsafe {
+// REWRITES-AARCH64-GNU-NEXT:         printf(
+// REWRITES-AARCH64-GNU-NEXT:             c"%d %d\n".as_ptr(),
+// REWRITES-AARCH64-GNU-NEXT:             ({{__v[0-9]+}} == num_complex::Complex { re: 3.0, im: 4.0 }) as i32,
+// REWRITES-AARCH64-GNU-NEXT:             ({{__v[0-9]+}} != num_complex::Complex { re: 3.0, im: 5.0 }) as i32,
+// REWRITES-AARCH64-GNU-NEXT:         )
+// REWRITES-AARCH64-GNU-NEXT:     };
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = c"%d %d\n".as_ptr() as *mut u8;
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: num_complex::Complex<f128> = num_complex::Complex {
 // REWRITES-AARCH64-GNU-NEXT:         re: 5.000000e+00f128,
@@ -441,24 +467,13 @@ int main(void) {
 // REWRITES-AARCH64-GNU-NEXT:         re: 5.000000e+00f128,
 // REWRITES-AARCH64-GNU-NEXT:         im: 7.000000e+00f128,
 // REWRITES-AARCH64-GNU-NEXT:     };
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-X86_64-GNU-NEXT:             c"%d %d\n".as_ptr(),
-// REWRITES-X86_64-GNU-NEXT:             ({{__v[0-9]+}}
-// REWRITES-X86_64-GNU-NEXT:                 == num_complex::Complex {
-// REWRITES-X86_64-GNU-NEXT:                     re: LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 1, 64]),
-// REWRITES-X86_64-GNU-NEXT:                     im: LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 1, 64]),
-// REWRITES-X86_64-GNU-NEXT:                 }) as i32,
-// REWRITES-X86_64-GNU-NEXT:             ({{__v[0-9]+}}
-// REWRITES-X86_64-GNU-NEXT:                 != num_complex::Complex {
-// REWRITES-X86_64-GNU-NEXT:                     re: LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 1, 64]),
-// REWRITES-X86_64-GNU-NEXT:                     im: LongDouble([0, 0, 0, 0, 0, 0, 0, 224, 1, 64]),
-// REWRITES-X86_64-GNU-NEXT:                 }) as i32,
+// REWRITES-AARCH64-GNU-NEXT:     unsafe {
+// REWRITES-AARCH64-GNU-NEXT:         printf(
 // REWRITES-AARCH64-GNU-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
 // REWRITES-AARCH64-GNU-NEXT:             {{__v[0-9]+}},
 // REWRITES-AARCH64-GNU-NEXT:             ({{__v[0-9]+}} != {{__v[0-9]+}}) as i32,
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
+// REWRITES-AARCH64-GNU-NEXT:         )
+// REWRITES-AARCH64-GNU-NEXT:     };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:

@@ -40,5 +40,6 @@ int main(void) {
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: unsafe { printf(c"%d %d %d\n".as_ptr(), first, second, value) };
+// REWRITES-DAG: println!("{} {} {}", first, second, value);
+// REWRITES-DAG: let _ = std::io::Write::flush(&mut std::io::stdout());
 // SLATE-FILECHECK-END rewrites

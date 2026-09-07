@@ -95,20 +95,29 @@ int main(void) {
 // REWRITES-NEXT: #[repr(C, packed)]
 // REWRITES-NEXT: #[derive(Clone, Copy)]
 // REWRITES-NEXT: struct Packed {
-// REWRITES-NEXT:     a: i8,
+// REWRITES-X86_64-GNU-NEXT:     a: i8,
+// REWRITES-AARCH64-GNU-NEXT:     a: u8,
 // REWRITES-NEXT:     b: i32,
-// REWRITES-NEXT:     c: i8,
+// REWRITES-X86_64-GNU-NEXT:     c: i8,
+// REWRITES-AARCH64-GNU-NEXT:     c: u8,
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe extern "C" {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut p: Packed = Packed { a: 0, b: 0, c: 0 };
-// REWRITES-NEXT:     unsafe { std::ptr::write_unaligned(std::ptr::addr_of_mut!(p.a), 1 as i8) };
+// REWRITES-X86_64-GNU-NEXT:     unsafe { std::ptr::write_unaligned(std::ptr::addr_of_mut!(p.a), 1 as i8) };
+// REWRITES-AARCH64-GNU-NEXT:     unsafe { std::ptr::write_unaligned(std::ptr::addr_of_mut!(p.a), 1 as u8) };
 // REWRITES-NEXT:     unsafe { std::ptr::write_unaligned(std::ptr::addr_of_mut!(p.b), 287454020 as i32) };
-// REWRITES-NEXT:     unsafe { std::ptr::write_unaligned(std::ptr::addr_of_mut!(p.c), 2 as i8) };
+// REWRITES-X86_64-GNU-NEXT:     unsafe { std::ptr::write_unaligned(std::ptr::addr_of_mut!(p.c), 2 as i8) };
+// REWRITES-AARCH64-GNU-NEXT:     unsafe { std::ptr::write_unaligned(std::ptr::addr_of_mut!(p.c), 2 as u8) };
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             c"%zu %zu\n".as_ptr(),
@@ -116,6 +125,8 @@ int main(void) {
 // REWRITES-NEXT:             std::mem::align_of::<Packed>() as u64,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             c"%zu %zu %zu\n".as_ptr(),
@@ -124,8 +135,12 @@ int main(void) {
 // REWRITES-NEXT:             std::mem::offset_of!(Packed, c) as u64,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i8 = c"%d %x %d\n".as_ptr() as *mut i8;
-// REWRITES-NEXT:     let {{__v[0-9]+}}: i8 = unsafe { std::ptr::read_unaligned(std::ptr::addr_of!(p.a)) };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = c"%d %x %d\n".as_ptr() as *mut i8;
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i8 = unsafe { std::ptr::read_unaligned(std::ptr::addr_of!(p.a)) };
+// REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = c"%d %x %d\n".as_ptr() as *mut u8;
+// REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: u8 = unsafe { std::ptr::read_unaligned(std::ptr::addr_of!(p.a)) };
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
@@ -134,6 +149,7 @@ int main(void) {
 // REWRITES-NEXT:             (unsafe { std::ptr::read_unaligned(std::ptr::addr_of!(p.c)) }) as i32,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

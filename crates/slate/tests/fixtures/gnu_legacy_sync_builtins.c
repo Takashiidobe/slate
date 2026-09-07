@@ -262,55 +262,59 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut v: i32 = 5;
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(c"%d\n".as_ptr(), unsafe {
-// REWRITES-NEXT:             std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(v))
-// REWRITES-NEXT:                 .fetch_add(3 as i32, std::sync::atomic::Ordering::SeqCst)
-// REWRITES-NEXT:         })
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), v) };
+// REWRITES-NEXT:     println!("{}", unsafe {
+// REWRITES-NEXT:         std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(v))
+// REWRITES-NEXT:             .fetch_add(3 as i32, std::sync::atomic::Ordering::SeqCst)
+// REWRITES-NEXT:     });
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     println!("{}", v);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     v = 5;
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(c"%d\n".as_ptr(), unsafe {
-// REWRITES-NEXT:             std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(v))
-// REWRITES-NEXT:                 .fetch_sub(3 as i32, std::sync::atomic::Ordering::SeqCst)
-// REWRITES-NEXT:         })
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), v) };
+// REWRITES-NEXT:     println!("{}", unsafe {
+// REWRITES-NEXT:         std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(v))
+// REWRITES-NEXT:             .fetch_sub(3 as i32, std::sync::atomic::Ordering::SeqCst)
+// REWRITES-NEXT:     });
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     println!("{}", v);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     v = 15;
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(c"%d\n".as_ptr(), unsafe {
-// REWRITES-NEXT:             std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(v))
-// REWRITES-NEXT:                 .fetch_or(240 as i32, std::sync::atomic::Ordering::SeqCst)
-// REWRITES-NEXT:         })
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), v) };
+// REWRITES-NEXT:     println!("{}", unsafe {
+// REWRITES-NEXT:         std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(v))
+// REWRITES-NEXT:             .fetch_or(240 as i32, std::sync::atomic::Ordering::SeqCst)
+// REWRITES-NEXT:     });
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     println!("{}", v);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     v = 255;
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(c"%d\n".as_ptr(), unsafe {
-// REWRITES-NEXT:             std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(v))
-// REWRITES-NEXT:                 .fetch_and(15 as i32, std::sync::atomic::Ordering::SeqCst)
-// REWRITES-NEXT:         })
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), v) };
+// REWRITES-NEXT:     println!("{}", unsafe {
+// REWRITES-NEXT:         std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(v))
+// REWRITES-NEXT:             .fetch_and(15 as i32, std::sync::atomic::Ordering::SeqCst)
+// REWRITES-NEXT:     });
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     println!("{}", v);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     v = 15;
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(c"%d\n".as_ptr(), unsafe {
-// REWRITES-NEXT:             std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(v))
-// REWRITES-NEXT:                 .fetch_xor(255 as i32, std::sync::atomic::Ordering::SeqCst)
-// REWRITES-NEXT:         })
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), v) };
+// REWRITES-NEXT:     println!("{}", unsafe {
+// REWRITES-NEXT:         std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(v))
+// REWRITES-NEXT:             .fetch_xor(255 as i32, std::sync::atomic::Ordering::SeqCst)
+// REWRITES-NEXT:     });
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     println!("{}", v);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     v = 5;
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(c"%d\n".as_ptr(), unsafe {
-// REWRITES-NEXT:             std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(v))
-// REWRITES-NEXT:                 .fetch_nand(3 as i32, std::sync::atomic::Ordering::SeqCst)
-// REWRITES-NEXT:         })
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), v) };
+// REWRITES-NEXT:     println!("{}", unsafe {
+// REWRITES-NEXT:         std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(v))
+// REWRITES-NEXT:             .fetch_nand(3 as i32, std::sync::atomic::Ordering::SeqCst)
+// REWRITES-NEXT:     });
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     println!("{}", v);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     v = 5;
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = c"%d\n".as_ptr() as *mut i8;
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = c"%d\n".as_ptr() as *mut u8;
@@ -319,8 +323,11 @@ int main(void) {
 // REWRITES-NEXT:         std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(v))
 // REWRITES-NEXT:             .fetch_sub({{__v[0-9]+}}, std::sync::atomic::Ordering::SeqCst)
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}} - {{__v[0-9]+}}) };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), v) };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// REWRITES-NEXT:     println!("{}", v);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     v = 15;
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = c"%d\n".as_ptr() as *mut i8;
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = c"%d\n".as_ptr() as *mut u8;
@@ -329,8 +336,11 @@ int main(void) {
 // REWRITES-NEXT:         std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(v))
 // REWRITES-NEXT:             .fetch_or({{__v[0-9]+}}, std::sync::atomic::Ordering::SeqCst)
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}} | {{__v[0-9]+}}) };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), v) };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// REWRITES-NEXT:     println!("{}", v);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     v = 255;
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = c"%d\n".as_ptr() as *mut i8;
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = c"%d\n".as_ptr() as *mut u8;
@@ -339,8 +349,11 @@ int main(void) {
 // REWRITES-NEXT:         std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(v))
 // REWRITES-NEXT:             .fetch_and({{__v[0-9]+}}, std::sync::atomic::Ordering::SeqCst)
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}} & {{__v[0-9]+}}) };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), v) };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// REWRITES-NEXT:     println!("{}", v);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     v = 15;
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = c"%d\n".as_ptr() as *mut i8;
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = c"%d\n".as_ptr() as *mut u8;
@@ -349,8 +362,11 @@ int main(void) {
 // REWRITES-NEXT:         std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(v))
 // REWRITES-NEXT:             .fetch_xor({{__v[0-9]+}}, std::sync::atomic::Ordering::SeqCst)
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}} ^ {{__v[0-9]+}}) };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), v) };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// REWRITES-NEXT:     println!("{}", v);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     v = 5;
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = c"%d\n".as_ptr() as *mut i8;
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = c"%d\n".as_ptr() as *mut u8;
@@ -360,10 +376,14 @@ int main(void) {
 // REWRITES-NEXT:             .fetch_nand({{__v[0-9]+}}, std::sync::atomic::Ordering::SeqCst)
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = !({{__v[0-9]+}} & {{__v[0-9]+}});
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), v) };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// REWRITES-NEXT:     println!("{}", v);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::sync::atomic::fence(std::sync::atomic::Ordering::SeqCst);
-// REWRITES-NEXT:     unsafe { printf(c"ok\n".as_ptr()) };
+// REWRITES-NEXT:     println!("ok");
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

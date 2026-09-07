@@ -151,7 +151,8 @@ inner:
 // REWRITES-DAG:             break;
 // REWRITES-DAG:         }
 // REWRITES-DAG:     }
-// REWRITES-DAG:     unsafe { printf(c"%d\n".as_ptr(), total) };
+// REWRITES-DAG:     println!("{}", total);
+// REWRITES-DAG:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-DAG:     __retval = 0;
 // REWRITES-DAG:     std::process::exit(__retval as i32);
 // REWRITES-DAG: }

@@ -147,19 +147,11 @@ int main(void) {
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}}.re;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: num_complex::Complex<i32> = unsafe { global_value };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}}.im;
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"%d %d %d %d %d %d %d %d\n".as_ptr(),
-// REWRITES-NEXT:             {{__v[0-9]+}},
-// REWRITES-NEXT:             {{__v[0-9]+}},
-// REWRITES-NEXT:             {{__v[0-9]+}},
-// REWRITES-NEXT:             {{__v[0-9]+}},
-// REWRITES-NEXT:             {{__v[0-9]+}},
-// REWRITES-NEXT:             {{__v[0-9]+}},
-// REWRITES-NEXT:             {{__v[0-9]+}},
-// REWRITES-NEXT:             {{__v[0-9]+}},
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
+// REWRITES-NEXT:     println!(
+// REWRITES-NEXT:         "{} {} {} {} {} {} {} {}",
+// REWRITES-NEXT:         {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}
+// REWRITES-NEXT:     );
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

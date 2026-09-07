@@ -42,14 +42,13 @@ int main(void) {
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: unsafe {
-// REWRITES-DAG:     printf(
-// REWRITES-DAG:         c"%d %d %d %d %d\n".as_ptr(),
-// REWRITES-DAG:         {{__v[0-9]+}},
-// REWRITES-DAG:         unsafe { std::ptr::read_volatile(std::ptr::addr_of!(preserved)) },
-// REWRITES-DAG:         ({{__v[0-9]+}} == std::ptr::null_mut()) as i32,
-// REWRITES-DAG:         {{__v[0-9]+}}.to_u128() as i32,
-// REWRITES-DAG:         (1 as i32) + (1 as i32),
-// REWRITES-DAG:     )
-// REWRITES-DAG: };
+// REWRITES-DAG: println!(
+// REWRITES-DAG:     "{} {} {} {} {}",
+// REWRITES-DAG:     {{__v[0-9]+}},
+// REWRITES-DAG:     unsafe { std::ptr::read_volatile(std::ptr::addr_of!(preserved)) },
+// REWRITES-DAG:     ({{__v[0-9]+}} == std::ptr::null_mut()) as i32,
+// REWRITES-DAG:     {{__v[0-9]+}}.to_u128() as i32,
+// REWRITES-DAG:     (1 as i32) + (1 as i32)
+// REWRITES-DAG: );
+// REWRITES-DAG: let _ = std::io::Write::flush(&mut std::io::stdout());
 // SLATE-FILECHECK-END rewrites

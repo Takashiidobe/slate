@@ -386,35 +386,25 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:     sse2_probe(sse2_out.as_mut_ptr() as *mut i32);
 // REWRITES-X86_64-GNU-NEXT:     unsafe { ssse3_probe(ssse3_out.as_mut_ptr() as *mut i8) };
 // REWRITES-X86_64-GNU-NEXT:     unsafe { avx2_probe(avx2_out.as_mut_ptr() as *mut i32) };
-// REWRITES-X86_64-GNU-NEXT:     unsafe {
-// REWRITES-X86_64-GNU-NEXT:         printf(
-// REWRITES-X86_64-GNU-NEXT:             c"%d %d %d %d\n".as_ptr(),
-// REWRITES-X86_64-GNU-NEXT:             sse2_out[0],
-// REWRITES-X86_64-GNU-NEXT:             sse2_out[1],
-// REWRITES-X86_64-GNU-NEXT:             sse2_out[2],
-// REWRITES-X86_64-GNU-NEXT:             sse2_out[3],
-// REWRITES-X86_64-GNU-NEXT:         )
-// REWRITES-X86_64-GNU-NEXT:     };
-// REWRITES-X86_64-GNU-NEXT:     unsafe {
-// REWRITES-X86_64-GNU-NEXT:         printf(
-// REWRITES-X86_64-GNU-NEXT:             c"%d %d\n".as_ptr(),
-// REWRITES-X86_64-GNU-NEXT:             ssse3_out[0] as i32,
-// REWRITES-X86_64-GNU-NEXT:             ssse3_out[15] as i32,
-// REWRITES-X86_64-GNU-NEXT:         )
-// REWRITES-X86_64-GNU-NEXT:     };
-// REWRITES-X86_64-GNU-NEXT:     unsafe {
-// REWRITES-X86_64-GNU-NEXT:         printf(
-// REWRITES-X86_64-GNU-NEXT:             c"%d %d %d %d %d %d %d %d\n".as_ptr(),
-// REWRITES-X86_64-GNU-NEXT:             avx2_out[0],
-// REWRITES-X86_64-GNU-NEXT:             avx2_out[1],
-// REWRITES-X86_64-GNU-NEXT:             avx2_out[2],
-// REWRITES-X86_64-GNU-NEXT:             avx2_out[3],
-// REWRITES-X86_64-GNU-NEXT:             avx2_out[4],
-// REWRITES-X86_64-GNU-NEXT:             avx2_out[5],
-// REWRITES-X86_64-GNU-NEXT:             avx2_out[6],
-// REWRITES-X86_64-GNU-NEXT:             avx2_out[7],
-// REWRITES-X86_64-GNU-NEXT:         )
-// REWRITES-X86_64-GNU-NEXT:     };
+// REWRITES-X86_64-GNU-NEXT:     println!(
+// REWRITES-X86_64-GNU-NEXT:         "{} {} {} {}",
+// REWRITES-X86_64-GNU-NEXT:         sse2_out[0], sse2_out[1], sse2_out[2], sse2_out[3]
+// REWRITES-X86_64-GNU-NEXT:     );
+// REWRITES-X86_64-GNU-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-X86_64-GNU-NEXT:     println!("{} {}", ssse3_out[0] as i32, ssse3_out[15] as i32);
+// REWRITES-X86_64-GNU-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-X86_64-GNU-NEXT:     println!(
+// REWRITES-X86_64-GNU-NEXT:         "{} {} {} {} {} {} {} {}",
+// REWRITES-X86_64-GNU-NEXT:         avx2_out[0],
+// REWRITES-X86_64-GNU-NEXT:         avx2_out[1],
+// REWRITES-X86_64-GNU-NEXT:         avx2_out[2],
+// REWRITES-X86_64-GNU-NEXT:         avx2_out[3],
+// REWRITES-X86_64-GNU-NEXT:         avx2_out[4],
+// REWRITES-X86_64-GNU-NEXT:         avx2_out[5],
+// REWRITES-X86_64-GNU-NEXT:         avx2_out[6],
+// REWRITES-X86_64-GNU-NEXT:         avx2_out[7]
+// REWRITES-X86_64-GNU-NEXT:     );
+// REWRITES-X86_64-GNU-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:     std::process::exit(0 as i32);
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:

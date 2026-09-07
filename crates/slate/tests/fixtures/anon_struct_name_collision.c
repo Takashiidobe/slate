@@ -105,7 +105,8 @@ int main(void) {
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut named: __slate_anonymous_struct_0 = __slate_anonymous_struct_0 { value: 7 };
 // REWRITES-NEXT:     let mut point: {{anon_[0-9]+}} = {{anon_[0-9]+}} { x: 3, y: 4 };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), named.value + point.x + point.y) };
+// REWRITES-NEXT:     println!("{}", named.value + point.x + point.y);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

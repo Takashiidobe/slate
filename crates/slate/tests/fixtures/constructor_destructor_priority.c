@@ -126,32 +126,38 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn init_late() {
-// REWRITES-NEXT:     unsafe { printf(c"ctor: late (200)\n".as_ptr()) };
+// REWRITES-NEXT:     println!("ctor: late (200)");
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn init_early() {
-// REWRITES-NEXT:     unsafe { printf(c"ctor: early (101)\n".as_ptr()) };
+// REWRITES-NEXT:     println!("ctor: early (101)");
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn init_default() {
-// REWRITES-NEXT:     unsafe { printf(c"ctor: default\n".as_ptr()) };
+// REWRITES-NEXT:     println!("ctor: default");
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn fini_late() {
-// REWRITES-NEXT:     unsafe { printf(c"dtor: late (200)\n".as_ptr()) };
+// REWRITES-NEXT:     println!("dtor: late (200)");
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn fini_early() {
-// REWRITES-NEXT:     unsafe { printf(c"dtor: early (101)\n".as_ptr()) };
+// REWRITES-NEXT:     println!("dtor: early (101)");
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn fini_default() {
-// REWRITES-NEXT:     unsafe { printf(c"dtor: default\n".as_ptr()) };
+// REWRITES-NEXT:     println!("dtor: default");
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
@@ -159,7 +165,8 @@ int main(void) {
 // REWRITES-NEXT:     init_early();
 // REWRITES-NEXT:     init_late();
 // REWRITES-NEXT:     init_default();
-// REWRITES-NEXT:     unsafe { printf(c"main\n".as_ptr()) };
+// REWRITES-NEXT:     println!("main");
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     fini_default();
 // REWRITES-NEXT:     fini_late();
 // REWRITES-NEXT:     fini_early();

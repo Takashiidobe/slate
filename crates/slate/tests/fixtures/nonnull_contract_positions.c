@@ -119,20 +119,19 @@ int main(void) {
 // REWRITES-NEXT:     let mut left: i32 = 11;
 // REWRITES-NEXT:     let mut right: i32 = 3;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i32 = std::ptr::null_mut();
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"%d %d\n".as_ptr(),
-// REWRITES-NEXT:             combine(
-// REWRITES-NEXT:                 unsafe { &(*std::ptr::addr_of_mut!(left)) },
-// REWRITES-NEXT:                 2,
-// REWRITES-NEXT:                 unsafe { &(*std::ptr::addr_of_mut!(right)) },
-// REWRITES-NEXT:                 {{__v[0-9]+}},
-// REWRITES-NEXT:             ),
-// REWRITES-NEXT:             difference(unsafe { &(*std::ptr::addr_of_mut!(left)) }, 2, unsafe {
-// REWRITES-NEXT:                 &(*std::ptr::addr_of_mut!(right))
-// REWRITES-NEXT:             }),
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
+// REWRITES-NEXT:     println!(
+// REWRITES-NEXT:         "{} {}",
+// REWRITES-NEXT:         combine(
+// REWRITES-NEXT:             unsafe { &(*std::ptr::addr_of_mut!(left)) },
+// REWRITES-NEXT:             2,
+// REWRITES-NEXT:             unsafe { &(*std::ptr::addr_of_mut!(right)) },
+// REWRITES-NEXT:             {{__v[0-9]+}}
+// REWRITES-NEXT:         ),
+// REWRITES-NEXT:         difference(unsafe { &(*std::ptr::addr_of_mut!(left)) }, 2, unsafe {
+// REWRITES-NEXT:             &(*std::ptr::addr_of_mut!(right))
+// REWRITES-NEXT:         })
+// REWRITES-NEXT:     );
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

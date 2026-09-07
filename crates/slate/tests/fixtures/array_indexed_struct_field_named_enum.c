@@ -178,9 +178,11 @@ int main(void) {
 // REWRITES-NEXT:     while i < 2 {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: bool = (*actual as u32) != (cases[((i as i64) as usize)].expected as u32);
 // REWRITES-NEXT:         if {{__v[0-9]+}} {
-// REWRITES-NEXT:             unsafe { printf(c"mismatch %d\n".as_ptr(), i) };
+// REWRITES-NEXT:             println!("mismatch {}", i);
+// REWRITES-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:         } else {
-// REWRITES-NEXT:             unsafe { printf(c"match %d\n".as_ptr(), i) };
+// REWRITES-NEXT:             println!("match {}", i);
+// REWRITES-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         i += 1;
 // REWRITES-NEXT:     }

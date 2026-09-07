@@ -178,7 +178,8 @@ int main(void) {
 // REWRITES-NEXT:     for i in 0..8 {
 // REWRITES-NEXT:         total += c.buf[((i as i64) as usize)] as i32;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), total) };
+// REWRITES-NEXT:     println!("{}", total);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

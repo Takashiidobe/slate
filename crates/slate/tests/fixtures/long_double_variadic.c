@@ -382,15 +382,23 @@ int main(void) {
 // REWRITES-NEXT:     fn sscanf(_0: *const core::ffi::c_char, _1: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
+// REWRITES-AARCH64-GNU-NEXT: unsafe extern "C" {
+// REWRITES-AARCH64-GNU-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// REWRITES-AARCH64-GNU-NEXT: }
+// REWRITES-AARCH64-GNU-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-X86_64-GNU-NEXT:     let mut y: LongDouble = LongDouble([0; 10]);
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
-// REWRITES-X86_64-GNU-NEXT:     unsafe { __slate_printf__ri32_pi8_f80(c"%La\n".as_ptr() as *mut i8, {{__v[0-9]+}}) };
-// REWRITES-X86_64-GNU-NEXT:     unsafe { __slate_printf__ri32_pi8_f80(c"%.21Lf\n".as_ptr() as *mut i8, {{__v[0-9]+}}) };
 // REWRITES-AARCH64-GNU-NEXT:     let mut y: f128 = 0.0f128;
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: f128 = 1.00000000000000000005421010862427522f128;
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-X86_64-GNU-NEXT:     unsafe { __slate_printf__ri32_pi8_f80(c"%La\n".as_ptr() as *mut i8, {{__v[0-9]+}}) };
 // REWRITES-AARCH64-GNU-NEXT:     unsafe { printf(c"%La\n".as_ptr(), {{__v[0-9]+}}) };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-X86_64-GNU-NEXT:     unsafe { __slate_printf__ri32_pi8_f80(c"%.21Lf\n".as_ptr() as *mut i8, {{__v[0-9]+}}) };
 // REWRITES-AARCH64-GNU-NEXT:     unsafe { printf(c"%.21Lf\n".as_ptr(), {{__v[0-9]+}}) };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe {
 // REWRITES-X86_64-GNU-NEXT:         __slate_sscanf__ri32_pi8_pi8_pf80(
 // REWRITES-X86_64-GNU-NEXT:             c"0x1.0000000000000001p+0".as_ptr() as *mut i8,
@@ -403,8 +411,10 @@ int main(void) {
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == 1;
 // REWRITES-NEXT:     if {{__v[0-9]+}} {
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:         unsafe { __slate_printf__ri32_pi8_f80(c"%La\n".as_ptr() as *mut i8, y) };
 // REWRITES-AARCH64-GNU-NEXT:         unsafe { printf(c"%La\n".as_ptr(), y) };
+// REWRITES-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
@@ -499,5 +509,9 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_trunc(__a: LongDouble) -> LongDouble;
 // REWRITES-X86_64-GNU-NEXT:     fn __slate_printf__ri32_pi8_f80(_0: *mut i8, _1: LongDouble) -> i32;
 // REWRITES-X86_64-GNU-NEXT:     fn __slate_sscanf__ri32_pi8_pi8_pf80(_0: *mut i8, _1: *mut i8, _2: *mut LongDouble) -> i32;
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: unsafe extern "C" {
+// REWRITES-X86_64-GNU-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // REWRITES-X86_64-GNU-NEXT: }
 // SLATE-FILECHECK-END rewrites

@@ -208,22 +208,21 @@ int main(void) {
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut packed: PackedOne = PackedOne { tag: 0, value: 0 };
 // REWRITES-NEXT:     packed = PackedOne { tag: 29, value: 31 };
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"%d %d %d %d %d %d %d %d %d %d %d\n".as_ptr(),
-// REWRITES-NEXT:             std::mem::size_of::<NaturalBefore>() as i32,
-// REWRITES-NEXT:             std::mem::offset_of!(NaturalBefore, value) as i32,
-// REWRITES-NEXT:             std::mem::size_of::<PackedTwo>() as i32,
-// REWRITES-NEXT:             std::mem::align_of::<PackedTwo>() as i32,
-// REWRITES-NEXT:             std::mem::offset_of!(PackedTwo, value) as i32,
-// REWRITES-NEXT:             5 as i32,
-// REWRITES-NEXT:             std::mem::align_of::<PackedOne>() as i32,
-// REWRITES-NEXT:             std::mem::offset_of!(PackedOne, value) as i32,
-// REWRITES-NEXT:             std::mem::size_of::<PackedTwoAgain>() as i32,
-// REWRITES-NEXT:             std::mem::offset_of!(PackedTwoAgain, value) as i32,
-// REWRITES-NEXT:             std::mem::offset_of!(NaturalAfter, value) as i32,
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
+// REWRITES-NEXT:     println!(
+// REWRITES-NEXT:         "{} {} {} {} {} {} {} {} {} {} {}",
+// REWRITES-NEXT:         std::mem::size_of::<NaturalBefore>() as i32,
+// REWRITES-NEXT:         std::mem::offset_of!(NaturalBefore, value) as i32,
+// REWRITES-NEXT:         std::mem::size_of::<PackedTwo>() as i32,
+// REWRITES-NEXT:         std::mem::align_of::<PackedTwo>() as i32,
+// REWRITES-NEXT:         std::mem::offset_of!(PackedTwo, value) as i32,
+// REWRITES-NEXT:         5 as i32,
+// REWRITES-NEXT:         std::mem::align_of::<PackedOne>() as i32,
+// REWRITES-NEXT:         std::mem::offset_of!(PackedOne, value) as i32,
+// REWRITES-NEXT:         std::mem::size_of::<PackedTwoAgain>() as i32,
+// REWRITES-NEXT:         std::mem::offset_of!(PackedTwoAgain, value) as i32,
+// REWRITES-NEXT:         std::mem::offset_of!(NaturalAfter, value) as i32
+// REWRITES-NEXT:     );
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     let {{__v[0-9]+}}: u8 = unsafe { std::ptr::read_unaligned(std::ptr::addr_of!(packed.tag)) };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: bool = ({{__v[0-9]+}} as i32) == 29;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {

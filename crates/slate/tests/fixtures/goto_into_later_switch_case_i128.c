@@ -289,13 +289,19 @@ int main() {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), classify(1)) };
+// REWRITES-NEXT:     println!("{}", classify(1));
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i128 = 99999999999999999999999999999i128;
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), classify({{__v[0-9]+}})) };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), classify(4)) };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), classify(5)) };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), classify(6)) };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), classify(9)) };
+// REWRITES-NEXT:     println!("{}", classify({{__v[0-9]+}}));
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     println!("{}", classify(4));
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     println!("{}", classify(5));
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     println!("{}", classify(6));
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     println!("{}", classify(9));
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

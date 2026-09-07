@@ -783,14 +783,13 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"%d %d %d\n".as_ptr(),
-// REWRITES-NEXT:             gnu_string_extensions(),
-// REWRITES-NEXT:             gnu_argz_extensions(),
-// REWRITES-NEXT:             gnu_envz_extensions(),
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
+// REWRITES-NEXT:     println!(
+// REWRITES-NEXT:         "{} {} {}",
+// REWRITES-NEXT:         gnu_string_extensions(),
+// REWRITES-NEXT:         gnu_argz_extensions(),
+// REWRITES-NEXT:         gnu_envz_extensions()
+// REWRITES-NEXT:     );
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

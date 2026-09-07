@@ -78,13 +78,9 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"%d\n".as_ptr(),
-// REWRITES-X86_64-GNU-NEXT:             first_plus_last(c"write error".as_ptr() as *mut i8),
-// REWRITES-AARCH64-GNU-NEXT:             first_plus_last(c"write error".as_ptr() as *mut u8),
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
+// REWRITES-X86_64-GNU-NEXT:     println!("{}", first_plus_last(c"write error".as_ptr() as *mut i8));
+// REWRITES-AARCH64-GNU-NEXT:     println!("{}", first_plus_last(c"write error".as_ptr() as *mut u8));
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

@@ -18,21 +18,14 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: fn main() {
-// REWRITES-DAG:     unsafe { printf(c"%d %d\n".as_ptr(), square(6), cube(4)) };
+// REWRITES-DAG:     println!("{} {}", square(6), cube(4));
+// REWRITES-DAG:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-DAG:     std::process::exit(0 as i32);
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites
 
 // SLATE-FILECHECK-BEGIN rewrites-x86_64-gnu
-// REWRITES-X86_64-GNU-DAG: fn main() {
-// REWRITES-X86_64-GNU-DAG:     unsafe { printf(c"%d %d\n".as_ptr(), square(6), cube(4)) };
-// REWRITES-X86_64-GNU-DAG:     std::process::exit(0 as i32);
-// REWRITES-X86_64-GNU-DAG: }
 // SLATE-FILECHECK-END rewrites-x86_64-gnu
 
 // SLATE-FILECHECK-BEGIN rewrites-aarch64-gnu
-// REWRITES-AARCH64-GNU-DAG: fn main() {
-// REWRITES-AARCH64-GNU-DAG:     unsafe { printf(c"%d %d\n".as_ptr(), square(6), cube(4)) };
-// REWRITES-AARCH64-GNU-DAG:     std::process::exit(0 as i32);
-// REWRITES-AARCH64-GNU-DAG: }
 // SLATE-FILECHECK-END rewrites-aarch64-gnu

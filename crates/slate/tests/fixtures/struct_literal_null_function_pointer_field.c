@@ -144,7 +144,8 @@ int main(void) {
 // REWRITES-NEXT:         onEvent: None,
 // REWRITES-NEXT:         counter: std::ptr::null_mut(),
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), report({{__v[0-9]+}})) };
+// REWRITES-NEXT:     println!("{}", report({{__v[0-9]+}}));
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

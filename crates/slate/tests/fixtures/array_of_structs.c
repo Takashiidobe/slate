@@ -128,9 +128,11 @@ int main(void) {
 // REWRITES-NEXT:     ps[({{__v[0-9]+}} as usize)].x = 3;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i64 = 1;
 // REWRITES-NEXT:     ps[({{__v[0-9]+}} as usize)].y = 4;
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), ps[0].x + ps[1].y) };
+// REWRITES-NEXT:     println!("{}", ps[0].x + ps[1].y);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     *init = [Point { x: 10, y: 20 }, Point { x: 30, y: 40 }];
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), init[0].y + init[1].x) };
+// REWRITES-NEXT:     println!("{}", init[0].y + init[1].x);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

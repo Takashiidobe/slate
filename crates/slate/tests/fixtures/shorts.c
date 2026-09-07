@@ -86,9 +86,12 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), sadd(30000, -30000) as i32) };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), (60000 as u16) as i32) };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), (-12345 as i16) as i32) };
+// REWRITES-NEXT:     println!("{}", sadd(30000, -30000) as i32);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     println!("{}", (60000 as u16) as i32);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     println!("{}", (-12345 as i16) as i32);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

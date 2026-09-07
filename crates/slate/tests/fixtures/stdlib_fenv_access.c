@@ -194,6 +194,7 @@ int main(void) {
 // REWRITES-NEXT:     unsafe { fesetround(0 as i32) };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(x)) };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(y)) };
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             c"%.20e %.20e %.20e\n".as_ptr(),
@@ -202,6 +203,7 @@ int main(void) {
 // REWRITES-NEXT:             {{__v[0-9]+}} + {{__v[0-9]+}},
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
@@ -282,5 +284,9 @@ int main(void) {
 // REWRITES-NEXT:     safe fn __slate_fenv_f64_to_bool(__a: f64) -> bool;
 // REWRITES-NEXT:     safe fn __slate_fenv_f32_to_f64(__a: f32) -> f64;
 // REWRITES-NEXT:     safe fn __slate_fenv_f64_to_f32(__a: f64) -> f32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

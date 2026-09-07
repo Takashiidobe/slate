@@ -214,9 +214,11 @@ int main(void) {
 // REWRITES-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == 0;
 // REWRITES-NEXT:     if {{__v[0-9]+}} {
 // REWRITES-NEXT:         inner(fail);
-// REWRITES-NEXT:         unsafe { printf(c"case %d: no exception\n".as_ptr(), id) };
+// REWRITES-NEXT:         println!("case {}: no exception", id);
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         unsafe { printf(c"case %d: caught\n".as_ptr(), id) };
+// REWRITES-NEXT:         println!("case {}: caught", id);
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     return;
 // REWRITES-NEXT: }

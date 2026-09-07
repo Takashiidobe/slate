@@ -387,7 +387,8 @@ int main(void) { printf("%d\n", convert(6.75L)); }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 216, 1, 64]);
-// REWRITES-X86_64-GNU-NEXT:     unsafe { printf(c"%d\n".as_ptr(), convert({{__v[0-9]+}})) };
+// REWRITES-X86_64-GNU-NEXT:     println!("{}", convert({{__v[0-9]+}}));
+// REWRITES-X86_64-GNU-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = c"%d\n".as_ptr() as *mut u8;
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: f128 = 6.750000e+00f128;
 // REWRITES-AARCH64-GNU-NEXT:     unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, convert({{__v[0-9]+}})) };

@@ -94,6 +94,10 @@ int main() {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe fn bump(mut p: *mut u64, {{arg[0-9]+}}: i32) -> u64 {
 // REWRITES-NEXT:     let {{__v[0-9]+}}: u64 = if {{arg[0-9]+}} != 0 {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: *mut u64 = p;
@@ -115,6 +119,7 @@ int main() {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut x: u64 = 10;
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             c"%lu %lu %lu\n".as_ptr(),
@@ -123,6 +128,7 @@ int main() {
 // REWRITES-NEXT:             x,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

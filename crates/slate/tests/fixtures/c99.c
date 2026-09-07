@@ -1116,101 +1116,101 @@ int main(void) {
 // REWRITES-NEXT:     fn __divsc3(__a: f32, __b: f32, __c: f32, __d: f32) -> num_complex::Complex<f32>;
 // REWRITES-NEXT:     fn __multc3(__a: f128, __b: f128, __c: f128, __d: f128) -> num_complex::Complex<f128>;
 // REWRITES-NEXT:     fn __divtc3(__a: f128, __b: f128, __c: f128, __d: f128) -> num_complex::Complex<f128>;
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: #[repr(C, align(16))]
-// REWRITES-NEXT: #[derive(Clone, Copy)]
-// REWRITES-NEXT: struct LongDouble([u8; 10]);
-// REWRITES-EMPTY:
-// REWRITES-NEXT: impl core::ops::Add for LongDouble {
-// REWRITES-NEXT:     type Output = LongDouble;
-// REWRITES-NEXT:     fn add(self, __o: LongDouble) -> LongDouble {
-// REWRITES-NEXT:         __slate_f80_add(self, __o)
-// REWRITES-NEXT:     }
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: impl core::ops::Sub for LongDouble {
-// REWRITES-NEXT:     type Output = LongDouble;
-// REWRITES-NEXT:     fn sub(self, __o: LongDouble) -> LongDouble {
-// REWRITES-NEXT:         __slate_f80_sub(self, __o)
-// REWRITES-NEXT:     }
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: impl core::ops::Mul for LongDouble {
-// REWRITES-NEXT:     type Output = LongDouble;
-// REWRITES-NEXT:     fn mul(self, __o: LongDouble) -> LongDouble {
-// REWRITES-NEXT:         __slate_f80_mul(self, __o)
-// REWRITES-NEXT:     }
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: impl core::ops::Div for LongDouble {
-// REWRITES-NEXT:     type Output = LongDouble;
-// REWRITES-NEXT:     fn div(self, __o: LongDouble) -> LongDouble {
-// REWRITES-NEXT:         __slate_f80_div(self, __o)
-// REWRITES-NEXT:     }
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: impl core::ops::AddAssign for LongDouble {
-// REWRITES-NEXT:     fn add_assign(&mut self, __o: LongDouble) {
-// REWRITES-NEXT:         {
-// REWRITES-NEXT:             *self = __slate_f80_add(*self, __o);
-// REWRITES-NEXT:         }
-// REWRITES-NEXT:     }
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: impl core::ops::SubAssign for LongDouble {
-// REWRITES-NEXT:     fn sub_assign(&mut self, __o: LongDouble) {
-// REWRITES-NEXT:         {
-// REWRITES-NEXT:             *self = __slate_f80_sub(*self, __o);
-// REWRITES-NEXT:         }
-// REWRITES-NEXT:     }
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: impl core::ops::MulAssign for LongDouble {
-// REWRITES-NEXT:     fn mul_assign(&mut self, __o: LongDouble) {
-// REWRITES-NEXT:         {
-// REWRITES-NEXT:             *self = __slate_f80_mul(*self, __o);
-// REWRITES-NEXT:         }
-// REWRITES-NEXT:     }
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: impl core::ops::DivAssign for LongDouble {
-// REWRITES-NEXT:     fn div_assign(&mut self, __o: LongDouble) {
-// REWRITES-NEXT:         {
-// REWRITES-NEXT:             *self = __slate_f80_div(*self, __o);
-// REWRITES-NEXT:         }
-// REWRITES-NEXT:     }
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: impl core::ops::Neg for LongDouble {
-// REWRITES-NEXT:     type Output = LongDouble;
-// REWRITES-NEXT:     fn neg(self) -> LongDouble {
-// REWRITES-NEXT:         __slate_f80_neg(self)
-// REWRITES-NEXT:     }
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: impl core::cmp::PartialEq for LongDouble {
-// REWRITES-NEXT:     fn eq(&self, __other: &LongDouble) -> bool {
-// REWRITES-NEXT:         __slate_f80_eq(*self, *__other)
-// REWRITES-NEXT:     }
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: impl core::cmp::PartialOrd for LongDouble {
-// REWRITES-NEXT:     fn partial_cmp(&self, __other: &LongDouble) -> Option<std::cmp::Ordering> {
-// REWRITES-NEXT:         if __slate_f80_lt(*self, *__other) {
-// REWRITES-NEXT:             Some(std::cmp::Ordering::Less)
-// REWRITES-NEXT:         } else {
-// REWRITES-NEXT:             if __slate_f80_gt(*self, *__other) {
-// REWRITES-NEXT:                 Some(std::cmp::Ordering::Greater)
-// REWRITES-NEXT:             } else {
-// REWRITES-NEXT:                 if __slate_f80_eq(*self, *__other) {
-// REWRITES-NEXT:                     Some(std::cmp::Ordering::Equal)
-// REWRITES-NEXT:                 } else {
-// REWRITES-NEXT:                     None
-// REWRITES-NEXT:                 }
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:         }
-// REWRITES-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: #[repr(C, align(16))]
+// REWRITES-X86_64-GNU-NEXT: #[derive(Clone, Copy)]
+// REWRITES-X86_64-GNU-NEXT: struct LongDouble([u8; 10]);
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: impl core::ops::Add for LongDouble {
+// REWRITES-X86_64-GNU-NEXT:     type Output = LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn add(self, __o: LongDouble) -> LongDouble {
+// REWRITES-X86_64-GNU-NEXT:         __slate_f80_add(self, __o)
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: impl core::ops::Sub for LongDouble {
+// REWRITES-X86_64-GNU-NEXT:     type Output = LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn sub(self, __o: LongDouble) -> LongDouble {
+// REWRITES-X86_64-GNU-NEXT:         __slate_f80_sub(self, __o)
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: impl core::ops::Mul for LongDouble {
+// REWRITES-X86_64-GNU-NEXT:     type Output = LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn mul(self, __o: LongDouble) -> LongDouble {
+// REWRITES-X86_64-GNU-NEXT:         __slate_f80_mul(self, __o)
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: impl core::ops::Div for LongDouble {
+// REWRITES-X86_64-GNU-NEXT:     type Output = LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn div(self, __o: LongDouble) -> LongDouble {
+// REWRITES-X86_64-GNU-NEXT:         __slate_f80_div(self, __o)
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: impl core::ops::AddAssign for LongDouble {
+// REWRITES-X86_64-GNU-NEXT:     fn add_assign(&mut self, __o: LongDouble) {
+// REWRITES-X86_64-GNU-NEXT:         {
+// REWRITES-X86_64-GNU-NEXT:             *self = __slate_f80_add(*self, __o);
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: impl core::ops::SubAssign for LongDouble {
+// REWRITES-X86_64-GNU-NEXT:     fn sub_assign(&mut self, __o: LongDouble) {
+// REWRITES-X86_64-GNU-NEXT:         {
+// REWRITES-X86_64-GNU-NEXT:             *self = __slate_f80_sub(*self, __o);
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: impl core::ops::MulAssign for LongDouble {
+// REWRITES-X86_64-GNU-NEXT:     fn mul_assign(&mut self, __o: LongDouble) {
+// REWRITES-X86_64-GNU-NEXT:         {
+// REWRITES-X86_64-GNU-NEXT:             *self = __slate_f80_mul(*self, __o);
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: impl core::ops::DivAssign for LongDouble {
+// REWRITES-X86_64-GNU-NEXT:     fn div_assign(&mut self, __o: LongDouble) {
+// REWRITES-X86_64-GNU-NEXT:         {
+// REWRITES-X86_64-GNU-NEXT:             *self = __slate_f80_div(*self, __o);
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: impl core::ops::Neg for LongDouble {
+// REWRITES-X86_64-GNU-NEXT:     type Output = LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn neg(self) -> LongDouble {
+// REWRITES-X86_64-GNU-NEXT:         __slate_f80_neg(self)
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: impl core::cmp::PartialEq for LongDouble {
+// REWRITES-X86_64-GNU-NEXT:     fn eq(&self, __other: &LongDouble) -> bool {
+// REWRITES-X86_64-GNU-NEXT:         __slate_f80_eq(*self, *__other)
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: impl core::cmp::PartialOrd for LongDouble {
+// REWRITES-X86_64-GNU-NEXT:     fn partial_cmp(&self, __other: &LongDouble) -> Option<std::cmp::Ordering> {
+// REWRITES-X86_64-GNU-NEXT:         if __slate_f80_lt(*self, *__other) {
+// REWRITES-X86_64-GNU-NEXT:             Some(std::cmp::Ordering::Less)
+// REWRITES-X86_64-GNU-NEXT:         } else {
+// REWRITES-X86_64-GNU-NEXT:             if __slate_f80_gt(*self, *__other) {
+// REWRITES-X86_64-GNU-NEXT:                 Some(std::cmp::Ordering::Greater)
+// REWRITES-X86_64-GNU-NEXT:             } else {
+// REWRITES-X86_64-GNU-NEXT:                 if __slate_f80_eq(*self, *__other) {
+// REWRITES-X86_64-GNU-NEXT:                     Some(std::cmp::Ordering::Equal)
+// REWRITES-X86_64-GNU-NEXT:                 } else {
+// REWRITES-X86_64-GNU-NEXT:                     None
+// REWRITES-X86_64-GNU-NEXT:                 }
+// REWRITES-X86_64-GNU-NEXT:             }
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:     }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[repr(C)]
@@ -1246,6 +1246,10 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
+// REWRITES-AARCH64-GNU-NEXT: unsafe extern "C" {
+// REWRITES-AARCH64-GNU-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// REWRITES-AARCH64-GNU-NEXT: }
+// REWRITES-AARCH64-GNU-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut __retval: i32 = 0;
 // REWRITES-NEXT:     let mut α: i32 = 7;
@@ -1263,7 +1267,8 @@ int main(void) {
 // REWRITES-NEXT:         first: 0,
 // REWRITES-NEXT:         second: 0,
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let mut designated_array: aligned::Aligned<aligned::A16, [i32; 4]> = aligned::Aligned([0; 4]);
+// REWRITES-X86_64-GNU-NEXT:     let mut designated_array: aligned::Aligned<aligned::A16, [i32; 4]> = aligned::Aligned([0; 4]);
+// REWRITES-AARCH64-GNU-NEXT:     let mut designated_array: [i32; 4] = [0; 4];
 // REWRITES-NEXT:     let mut const_value: i32 = 31;
 // REWRITES-NEXT:     let mut idempotent_const_value: i32 = 0;
 // REWRITES-NEXT:     let mut volatile_value: i32 = 0;
@@ -1312,21 +1317,27 @@ int main(void) {
 // REWRITES-NEXT:         re: 3.0 + {{__v[0-9]+}} * {{__v[0-9]+}}.re,
 // REWRITES-NEXT:         im: {{__v[0-9]+}} * {{__v[0-9]+}}.im,
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 1, 64]);
-// REWRITES-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 1, 64]);
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 1, 64]);
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 1, 64]);
+// REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: f128 = 5.000000e+00f128;
+// REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: f128 = 6.000000e+00f128;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: f32 = 0.0;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: f32 = 1.0;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex {
 // REWRITES-NEXT:         re: 0.0 + {{__v[0-9]+}},
 // REWRITES-NEXT:         im: {{__v[0-9]+}},
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_f32({{__v[0-9]+}}.re);
-// REWRITES-NEXT:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_f32({{__v[0-9]+}}.im);
-// REWRITES-NEXT:     let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
-// REWRITES-NEXT:         re: {{__v[0-9]+}},
-// REWRITES-NEXT:         im: {{__v[0-9]+}},
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_f32({{__v[0-9]+}}.re);
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_f32({{__v[0-9]+}}.im);
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// REWRITES-X86_64-GNU-NEXT:         re: {{__v[0-9]+}},
+// REWRITES-X86_64-GNU-NEXT:         im: {{__v[0-9]+}},
+// REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: num_complex::Complex<f128> = num_complex::Complex {
+// REWRITES-AARCH64-GNU-NEXT:         re: {{__v[0-9]+}}.re as f128,
+// REWRITES-AARCH64-GNU-NEXT:         im: {{__v[0-9]+}}.im as f128,
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: num_complex::Complex<f128> = num_complex::Complex {
 // REWRITES-NEXT:         re: {{__v[0-9]+}} + {{__v[0-9]+}} * {{__v[0-9]+}}.re,
 // REWRITES-NEXT:         im: {{__v[0-9]+}} * {{__v[0-9]+}}.im,
 // REWRITES-NEXT:     };
@@ -1355,19 +1366,24 @@ int main(void) {
 // REWRITES-NEXT:                 re: 3.0 + {{__v[0-9]+}} * {{__v[0-9]+}}.re,
 // REWRITES-NEXT:                 im: {{__v[0-9]+}} * {{__v[0-9]+}}.im,
 // REWRITES-NEXT:             }) as i32);
-// REWRITES-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 1, 64]);
-// REWRITES-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 1, 64]);
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 1, 64]);
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 1, 64]);
+// REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: f128 = 5.000000e+00f128;
+// REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: f128 = 6.000000e+00f128;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: f32 = 0.0;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: f32 = 1.0;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex {
 // REWRITES-NEXT:         re: 0.0 + {{__v[0-9]+}},
 // REWRITES-NEXT:         im: {{__v[0-9]+}},
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_f32({{__v[0-9]+}}.re);
-// REWRITES-NEXT:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_f32({{__v[0-9]+}}.im);
-// REWRITES-NEXT:     let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
-// REWRITES-NEXT:         re: {{__v[0-9]+}},
-// REWRITES-NEXT:         im: {{__v[0-9]+}},
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_f32({{__v[0-9]+}}.re);
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_f32({{__v[0-9]+}}.im);
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// REWRITES-X86_64-GNU-NEXT:         re: {{__v[0-9]+}},
+// REWRITES-X86_64-GNU-NEXT:         im: {{__v[0-9]+}},
+// REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: num_complex::Complex<f128> = num_complex::Complex {
+// REWRITES-AARCH64-GNU-NEXT:         re: {{__v[0-9]+}}.re as f128,
+// REWRITES-AARCH64-GNU-NEXT:         im: {{__v[0-9]+}}.im as f128,
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     enhanced_arithmetic = {{__v[0-9]+}}
 // REWRITES-NEXT:         + (({{__v[0-9]+}}
@@ -1436,7 +1452,8 @@ int main(void) {
 // REWRITES-NEXT:         first: 22,
 // REWRITES-NEXT:         second: 23,
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     *designated_array = [27, 0, 29, 0];
+// REWRITES-X86_64-GNU-NEXT:     *designated_array = [27, 0, 29, 0];
+// REWRITES-AARCH64-GNU-NEXT:     designated_array = [27, 0, 29, 0];
 // REWRITES-NEXT:     idempotent_const_value = const_value;
 // REWRITES-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(volatile_value), 37 as i32) };
 // REWRITES-NEXT:     unsafe {
@@ -1473,16 +1490,21 @@ int main(void) {
 // REWRITES-NEXT:         1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 // REWRITES-NEXT:         1, 1,
 // REWRITES-NEXT:     );
-// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 4;
-// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 32 | {{__v[0-9]+}} | 16 | 8 | 1;
-// REWRITES-NEXT:     fenv_clear = unsafe { feclearexcept({{__v[0-9]+}} as i32) };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 4;
-// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 32 | {{__v[0-9]+}} | 16 | 8 | 1;
-// REWRITES-NEXT:     fenv_flags = unsafe { fetestexcept({{__v[0-9]+}} as i32) };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i8 =
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = 4;
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = 32 | {{__v[0-9]+}} | 16 | 8 | 1;
+// REWRITES-X86_64-GNU-NEXT:     fenv_clear = unsafe { feclearexcept({{__v[0-9]+}} as i32) };
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = 4;
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = 32 | {{__v[0-9]+}} | 16 | 8 | 1;
+// REWRITES-X86_64-GNU-NEXT:     fenv_flags = unsafe { fetestexcept({{__v[0-9]+}} as i32) };
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 =
+// REWRITES-AARCH64-GNU-NEXT:     fenv_clear = unsafe { feclearexcept(31 as i32) };
+// REWRITES-AARCH64-GNU-NEXT:     fenv_flags = unsafe { fetestexcept(31 as i32) };
+// REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 =
 // REWRITES-NEXT:         c"%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n"
-// REWRITES-NEXT:             .as_ptr() as *mut i8;
-// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i8 = c"main".as_ptr() as *mut i8;
+// REWRITES-X86_64-GNU-NEXT:             .as_ptr() as *mut i8;
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = c"main".as_ptr() as *mut i8;
+// REWRITES-AARCH64-GNU-NEXT:             .as_ptr() as *mut u8;
+// REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = c"main".as_ptr() as *mut u8;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = α;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 =
 // REWRITES-NEXT:         unsafe { c99_external_identifier_with_more_than_thirty_one_significant_characters };
@@ -1510,6 +1532,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = macro_total;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = translation_limit_total;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = C99TrailingComma::C99_ENUM_VALUE as i32;
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
@@ -1547,6 +1570,7 @@ int main(void) {
 // REWRITES-NEXT:             ),
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     std::process::exit(__retval as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
@@ -1652,94 +1676,98 @@ int main(void) {
 // REWRITES-NEXT: fn c99_restrict_sum({{arg[0-9]+}}: &i32, {{arg[0-9]+}}: &i32) -> i32 {
 // REWRITES-NEXT:     (unsafe { *({{arg[0-9]+}} as *const i32) }) + unsafe { *({{arg[0-9]+}} as *const i32) }
 // REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: unsafe extern "C" {
-// REWRITES-NEXT:     safe fn __slate_cf80_div(
-// REWRITES-NEXT:         __a: num_complex::Complex<LongDouble>,
-// REWRITES-NEXT:         __b: num_complex::Complex<LongDouble>,
-// REWRITES-NEXT:     ) -> num_complex::Complex<LongDouble>;
-// REWRITES-NEXT:     safe fn __slate_cf80_mul(
-// REWRITES-NEXT:         __a: num_complex::Complex<LongDouble>,
-// REWRITES-NEXT:         __b: num_complex::Complex<LongDouble>,
-// REWRITES-NEXT:     ) -> num_complex::Complex<LongDouble>;
-// REWRITES-NEXT:     safe fn __slate_f128_nexttoward(__from: f128, __toward: f128) -> f128;
-// REWRITES-NEXT:     safe fn __slate_f80_abs(__a: LongDouble) -> LongDouble;
-// REWRITES-NEXT:     safe fn __slate_f80_acos(__a: LongDouble) -> LongDouble;
-// REWRITES-NEXT:     safe fn __slate_f80_acosh(__a: LongDouble) -> LongDouble;
-// REWRITES-NEXT:     safe fn __slate_f80_add(__a: LongDouble, __b: LongDouble) -> LongDouble;
-// REWRITES-NEXT:     safe fn __slate_f80_asin(__a: LongDouble) -> LongDouble;
-// REWRITES-NEXT:     safe fn __slate_f80_asinh(__a: LongDouble) -> LongDouble;
-// REWRITES-NEXT:     safe fn __slate_f80_atan(__a: LongDouble) -> LongDouble;
-// REWRITES-NEXT:     safe fn __slate_f80_atanh(__a: LongDouble) -> LongDouble;
-// REWRITES-NEXT:     safe fn __slate_f80_cbrt(__a: LongDouble) -> LongDouble;
-// REWRITES-NEXT:     safe fn __slate_f80_ceil(__a: LongDouble) -> LongDouble;
-// REWRITES-NEXT:     safe fn __slate_f80_copysign(__a: LongDouble, __b: LongDouble) -> LongDouble;
-// REWRITES-NEXT:     safe fn __slate_f80_cos(__a: LongDouble) -> LongDouble;
-// REWRITES-NEXT:     safe fn __slate_f80_cosh(__a: LongDouble) -> LongDouble;
-// REWRITES-NEXT:     safe fn __slate_f80_div(__a: LongDouble, __b: LongDouble) -> LongDouble;
-// REWRITES-NEXT:     safe fn __slate_f80_eq(__a: LongDouble, __b: LongDouble) -> bool;
-// REWRITES-NEXT:     safe fn __slate_f80_exp(__a: LongDouble) -> LongDouble;
-// REWRITES-NEXT:     safe fn __slate_f80_exp2(__a: LongDouble) -> LongDouble;
-// REWRITES-NEXT:     safe fn __slate_f80_expm1(__a: LongDouble) -> LongDouble;
-// REWRITES-NEXT:     safe fn __slate_f80_fdim(__a: LongDouble, __b: LongDouble) -> LongDouble;
-// REWRITES-NEXT:     safe fn __slate_f80_floor(__a: LongDouble) -> LongDouble;
-// REWRITES-NEXT:     safe fn __slate_f80_fma(__a: LongDouble, __b: LongDouble, __c: LongDouble) -> LongDouble;
-// REWRITES-NEXT:     safe fn __slate_f80_fmax(__a: LongDouble, __b: LongDouble) -> LongDouble;
-// REWRITES-NEXT:     safe fn __slate_f80_fmin(__a: LongDouble, __b: LongDouble) -> LongDouble;
-// REWRITES-NEXT:     safe fn __slate_f80_fmod(__a: LongDouble, __b: LongDouble) -> LongDouble;
-// REWRITES-NEXT:     safe fn __slate_f80_fract(__a: LongDouble) -> LongDouble;
-// REWRITES-NEXT:     safe fn __slate_f80_from_bool(__a: bool) -> LongDouble;
-// REWRITES-NEXT:     safe fn __slate_f80_from_f32(__a: f32) -> LongDouble;
-// REWRITES-NEXT:     safe fn __slate_f80_from_f64(__a: f64) -> LongDouble;
-// REWRITES-NEXT:     safe fn __slate_f80_from_i128(__a: i128) -> LongDouble;
-// REWRITES-NEXT:     safe fn __slate_f80_from_i16(__a: i16) -> LongDouble;
-// REWRITES-NEXT:     safe fn __slate_f80_from_i32(__a: i32) -> LongDouble;
-// REWRITES-NEXT:     safe fn __slate_f80_from_i64(__a: i64) -> LongDouble;
-// REWRITES-NEXT:     safe fn __slate_f80_from_i8(__a: i8) -> LongDouble;
-// REWRITES-NEXT:     safe fn __slate_f80_from_u128(__a: u128) -> LongDouble;
-// REWRITES-NEXT:     safe fn __slate_f80_from_u16(__a: u16) -> LongDouble;
-// REWRITES-NEXT:     safe fn __slate_f80_from_u32(__a: u32) -> LongDouble;
-// REWRITES-NEXT:     safe fn __slate_f80_from_u64(__a: u64) -> LongDouble;
-// REWRITES-NEXT:     safe fn __slate_f80_from_u8(__a: u8) -> LongDouble;
-// REWRITES-NEXT:     safe fn __slate_f80_ge(__a: LongDouble, __b: LongDouble) -> bool;
-// REWRITES-NEXT:     safe fn __slate_f80_gt(__a: LongDouble, __b: LongDouble) -> bool;
-// REWRITES-NEXT:     safe fn __slate_f80_hypot(__a: LongDouble, __b: LongDouble) -> LongDouble;
-// REWRITES-NEXT:     safe fn __slate_f80_is_fp_class(__a: LongDouble, __flags: i32) -> bool;
-// REWRITES-NEXT:     safe fn __slate_f80_le(__a: LongDouble, __b: LongDouble) -> bool;
-// REWRITES-NEXT:     safe fn __slate_f80_log(__a: LongDouble) -> LongDouble;
-// REWRITES-NEXT:     safe fn __slate_f80_log10(__a: LongDouble) -> LongDouble;
-// REWRITES-NEXT:     safe fn __slate_f80_log1p(__a: LongDouble) -> LongDouble;
-// REWRITES-NEXT:     safe fn __slate_f80_log2(__a: LongDouble) -> LongDouble;
-// REWRITES-NEXT:     safe fn __slate_f80_lt(__a: LongDouble, __b: LongDouble) -> bool;
-// REWRITES-NEXT:     safe fn __slate_f80_mul(__a: LongDouble, __b: LongDouble) -> LongDouble;
-// REWRITES-NEXT:     safe fn __slate_f80_ne(__a: LongDouble, __b: LongDouble) -> bool;
-// REWRITES-NEXT:     safe fn __slate_f80_nearbyint(__a: LongDouble) -> LongDouble;
-// REWRITES-NEXT:     safe fn __slate_f80_neg(__a: LongDouble) -> LongDouble;
-// REWRITES-NEXT:     safe fn __slate_f80_pow(__a: LongDouble, __b: LongDouble) -> LongDouble;
-// REWRITES-NEXT:     safe fn __slate_f80_powi(__a: LongDouble, __n: i32) -> LongDouble;
-// REWRITES-NEXT:     safe fn __slate_f80_remainder(__a: LongDouble, __b: LongDouble) -> LongDouble;
-// REWRITES-NEXT:     safe fn __slate_f80_rint(__a: LongDouble) -> LongDouble;
-// REWRITES-NEXT:     safe fn __slate_f80_round(__a: LongDouble) -> LongDouble;
-// REWRITES-NEXT:     safe fn __slate_f80_signbit(__a: LongDouble) -> bool;
-// REWRITES-NEXT:     safe fn __slate_f80_sin(__a: LongDouble) -> LongDouble;
-// REWRITES-NEXT:     safe fn __slate_f80_sinh(__a: LongDouble) -> LongDouble;
-// REWRITES-NEXT:     safe fn __slate_f80_sqrt(__a: LongDouble) -> LongDouble;
-// REWRITES-NEXT:     safe fn __slate_f80_sub(__a: LongDouble, __b: LongDouble) -> LongDouble;
-// REWRITES-NEXT:     safe fn __slate_f80_tan(__a: LongDouble) -> LongDouble;
-// REWRITES-NEXT:     safe fn __slate_f80_tanh(__a: LongDouble) -> LongDouble;
-// REWRITES-NEXT:     safe fn __slate_f80_to_bool(__a: LongDouble) -> bool;
-// REWRITES-NEXT:     safe fn __slate_f80_to_f32(__a: LongDouble) -> f32;
-// REWRITES-NEXT:     safe fn __slate_f80_to_f64(__a: LongDouble) -> f64;
-// REWRITES-NEXT:     safe fn __slate_f80_to_i128(__a: LongDouble) -> i128;
-// REWRITES-NEXT:     safe fn __slate_f80_to_i16(__a: LongDouble) -> i16;
-// REWRITES-NEXT:     safe fn __slate_f80_to_i32(__a: LongDouble) -> i32;
-// REWRITES-NEXT:     safe fn __slate_f80_to_i64(__a: LongDouble) -> i64;
-// REWRITES-NEXT:     safe fn __slate_f80_to_i8(__a: LongDouble) -> i8;
-// REWRITES-NEXT:     safe fn __slate_f80_to_u128(__a: LongDouble) -> u128;
-// REWRITES-NEXT:     safe fn __slate_f80_to_u16(__a: LongDouble) -> u16;
-// REWRITES-NEXT:     safe fn __slate_f80_to_u32(__a: LongDouble) -> u32;
-// REWRITES-NEXT:     safe fn __slate_f80_to_u64(__a: LongDouble) -> u64;
-// REWRITES-NEXT:     safe fn __slate_f80_to_u8(__a: LongDouble) -> u8;
-// REWRITES-NEXT:     safe fn __slate_f80_trunc(__a: LongDouble) -> LongDouble;
-// REWRITES-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: unsafe extern "C" {
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_cf80_div(
+// REWRITES-X86_64-GNU-NEXT:         __a: num_complex::Complex<LongDouble>,
+// REWRITES-X86_64-GNU-NEXT:         __b: num_complex::Complex<LongDouble>,
+// REWRITES-X86_64-GNU-NEXT:     ) -> num_complex::Complex<LongDouble>;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_cf80_mul(
+// REWRITES-X86_64-GNU-NEXT:         __a: num_complex::Complex<LongDouble>,
+// REWRITES-X86_64-GNU-NEXT:         __b: num_complex::Complex<LongDouble>,
+// REWRITES-X86_64-GNU-NEXT:     ) -> num_complex::Complex<LongDouble>;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f128_nexttoward(__from: f128, __toward: f128) -> f128;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_abs(__a: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_acos(__a: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_acosh(__a: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_add(__a: LongDouble, __b: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_asin(__a: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_asinh(__a: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_atan(__a: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_atanh(__a: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_cbrt(__a: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_ceil(__a: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_copysign(__a: LongDouble, __b: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_cos(__a: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_cosh(__a: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_div(__a: LongDouble, __b: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_eq(__a: LongDouble, __b: LongDouble) -> bool;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_exp(__a: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_exp2(__a: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_expm1(__a: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_fdim(__a: LongDouble, __b: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_floor(__a: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_fma(__a: LongDouble, __b: LongDouble, __c: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_fmax(__a: LongDouble, __b: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_fmin(__a: LongDouble, __b: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_fmod(__a: LongDouble, __b: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_fract(__a: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_from_bool(__a: bool) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_from_f32(__a: f32) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_from_f64(__a: f64) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_from_i128(__a: i128) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_from_i16(__a: i16) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_from_i32(__a: i32) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_from_i64(__a: i64) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_from_i8(__a: i8) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_from_u128(__a: u128) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_from_u16(__a: u16) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_from_u32(__a: u32) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_from_u64(__a: u64) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_from_u8(__a: u8) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_ge(__a: LongDouble, __b: LongDouble) -> bool;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_gt(__a: LongDouble, __b: LongDouble) -> bool;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_hypot(__a: LongDouble, __b: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_is_fp_class(__a: LongDouble, __flags: i32) -> bool;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_le(__a: LongDouble, __b: LongDouble) -> bool;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_log(__a: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_log10(__a: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_log1p(__a: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_log2(__a: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_lt(__a: LongDouble, __b: LongDouble) -> bool;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_mul(__a: LongDouble, __b: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_ne(__a: LongDouble, __b: LongDouble) -> bool;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_nearbyint(__a: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_neg(__a: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_pow(__a: LongDouble, __b: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_powi(__a: LongDouble, __n: i32) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_remainder(__a: LongDouble, __b: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_rint(__a: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_round(__a: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_signbit(__a: LongDouble) -> bool;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_sin(__a: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_sinh(__a: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_sqrt(__a: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_sub(__a: LongDouble, __b: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_tan(__a: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_tanh(__a: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_to_bool(__a: LongDouble) -> bool;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_to_f32(__a: LongDouble) -> f32;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_to_f64(__a: LongDouble) -> f64;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_to_i128(__a: LongDouble) -> i128;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_to_i16(__a: LongDouble) -> i16;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_to_i32(__a: LongDouble) -> i32;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_to_i64(__a: LongDouble) -> i64;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_to_i8(__a: LongDouble) -> i8;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_to_u128(__a: LongDouble) -> u128;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_to_u16(__a: LongDouble) -> u16;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_to_u32(__a: LongDouble) -> u32;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_to_u64(__a: LongDouble) -> u64;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_to_u8(__a: LongDouble) -> u8;
+// REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_trunc(__a: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: unsafe extern "C" {
+// REWRITES-X86_64-GNU-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// REWRITES-X86_64-GNU-NEXT: }
 // SLATE-FILECHECK-END rewrites

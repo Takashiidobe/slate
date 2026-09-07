@@ -174,6 +174,10 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut real: f64 = 0.0;
 // REWRITES-NEXT:     let mut imaginary: f64 = 0.0;
@@ -206,6 +210,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{__v[0-9]+}}: f64 = {{__v[0-9]+}}.re;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: num_complex::Complex<f64> = quotient;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: f64 = {{__v[0-9]+}}.im;
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             c"%.4f %.4f %.4f %.4f\n".as_ptr(),
@@ -215,6 +220,7 @@ int main(void) {
 // REWRITES-NEXT:             {{__v[0-9]+}},
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: num_complex::Complex<f64> = product;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}}.re == 0.3125 {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: num_complex::Complex<f64> = product;

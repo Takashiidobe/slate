@@ -251,25 +251,30 @@ int main(void) {
 // REWRITES-DAG:     };
 // REWRITES-DAG:     let mut i: i32 = 0;
 // REWRITES-DAG:     while i < 8 {
-// REWRITES-DAG:         unsafe { printf(c"%d ".as_ptr(), full_dst[((i as i64) as usize)] as i32) };
+// REWRITES-DAG:         print!("{} ", full_dst[((i as i64) as usize)] as i32);
+// REWRITES-DAG:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-DAG:         i += 1;
 // REWRITES-DAG:     }
 // REWRITES-DAG:     let mut i2: i32 = 0;
 // REWRITES-DAG:     while i2 < 8 {
-// REWRITES-DAG:         unsafe { printf(c"%d ".as_ptr(), partial_dst[((i2 as i64) as usize)] as i32) };
+// REWRITES-DAG:         print!("{} ", partial_dst[((i2 as i64) as usize)] as i32);
+// REWRITES-DAG:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-DAG:         i2 += 1;
 // REWRITES-DAG:     }
 // REWRITES-DAG:     let mut i3: i32 = 0;
 // REWRITES-DAG:     while i3 < 8 {
-// REWRITES-DAG:         unsafe { printf(c"%d ".as_ptr(), alias_buf[((i3 as i64) as usize)] as i32) };
+// REWRITES-DAG:         print!("{} ", alias_buf[((i3 as i64) as usize)] as i32);
+// REWRITES-DAG:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-DAG:         i3 += 1;
 // REWRITES-DAG:     }
 // REWRITES-DAG:     let mut i4: i32 = 0;
 // REWRITES-DAG:     while i4 < 8 {
-// REWRITES-DAG:         unsafe { printf(c"%d ".as_ptr(), dyn_dst[((i4 as i64) as usize)] as i32) };
+// REWRITES-DAG:         print!("{} ", dyn_dst[((i4 as i64) as usize)] as i32);
+// REWRITES-DAG:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-DAG:         i4 += 1;
 // REWRITES-DAG:     }
-// REWRITES-DAG:     unsafe { printf(c"\n".as_ptr()) };
+// REWRITES-DAG:     println!("");
+// REWRITES-DAG:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-DAG:     std::process::exit(0 as i32);
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

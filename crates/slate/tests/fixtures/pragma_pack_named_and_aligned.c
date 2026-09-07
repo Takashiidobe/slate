@@ -229,18 +229,17 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"%d %d %d %d %d %d %d\n".as_ptr(),
-// REWRITES-NEXT:             std::mem::size_of::<IgnoredBadAlign>() as i32,
-// REWRITES-NEXT:             std::mem::size_of::<NamedPushed>() as i32,
-// REWRITES-NEXT:             std::mem::size_of::<AfterNamedPop>() as i32,
-// REWRITES-NEXT:             std::mem::size_of::<AfterExtraPop>() as i32,
-// REWRITES-NEXT:             std::mem::size_of::<PackedButAligned>() as i32,
-// REWRITES-NEXT:             std::mem::align_of::<PackedButAligned>() as i32,
-// REWRITES-NEXT:             1 as i32,
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
+// REWRITES-NEXT:     println!(
+// REWRITES-NEXT:         "{} {} {} {} {} {} {}",
+// REWRITES-NEXT:         std::mem::size_of::<IgnoredBadAlign>() as i32,
+// REWRITES-NEXT:         std::mem::size_of::<NamedPushed>() as i32,
+// REWRITES-NEXT:         std::mem::size_of::<AfterNamedPop>() as i32,
+// REWRITES-NEXT:         std::mem::size_of::<AfterExtraPop>() as i32,
+// REWRITES-NEXT:         std::mem::size_of::<PackedButAligned>() as i32,
+// REWRITES-NEXT:         std::mem::align_of::<PackedButAligned>() as i32,
+// REWRITES-NEXT:         1 as i32
+// REWRITES-NEXT:     );
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

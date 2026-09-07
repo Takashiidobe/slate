@@ -143,7 +143,8 @@ int main(void) {
 // REWRITES-NEXT:         *{{__v[0-9]+}} = 100;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = use_and_free({{__v[0-9]+}});
-// REWRITES-NEXT:     unsafe { printf(c"%d %d %d\n".as_ptr(), a, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// REWRITES-NEXT:     println!("{} {} {}", a, {{__v[0-9]+}}, {{__v[0-9]+}});
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit((a + {{__v[0-9]+}} + {{__v[0-9]+}}) as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

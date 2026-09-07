@@ -76,11 +76,10 @@ int use_it(int *a, int *b) { return *a / *b; }
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut x: i32 = 6;
 // REWRITES-NEXT:     let mut y: i32 = 2;
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(c"%d\n".as_ptr(), unsafe {
-// REWRITES-NEXT:             use_it(std::ptr::addr_of_mut!(x), std::ptr::addr_of_mut!(y))
-// REWRITES-NEXT:         })
-// REWRITES-NEXT:     };
+// REWRITES-NEXT:     println!("{}", unsafe {
+// REWRITES-NEXT:         use_it(std::ptr::addr_of_mut!(x), std::ptr::addr_of_mut!(y))
+// REWRITES-NEXT:     });
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

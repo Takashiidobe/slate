@@ -160,12 +160,14 @@ int main(void) {
 // REWRITES-NEXT:                 }
 // REWRITES-NEXT:                 _ => {}
 // REWRITES-NEXT:             }
-// REWRITES-NEXT:             unsafe { printf(c"unreachable %d\n".as_ptr(), i) };
+// REWRITES-NEXT:             println!("unreachable {}", i);
+// REWRITES-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:             i += 1;
 // REWRITES-NEXT:             steps += 1;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     unsafe { printf(c"steps=%d\n".as_ptr(), steps) };
+// REWRITES-NEXT:     println!("steps={}", steps);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

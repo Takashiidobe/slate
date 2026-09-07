@@ -72,12 +72,14 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn bail({{arg[0-9]+}}: i32) -> ! {
-// REWRITES-NEXT:     unsafe { printf(c"bailing with %d\n".as_ptr(), {{arg[0-9]+}}) };
+// REWRITES-NEXT:     println!("bailing with {}", {{arg[0-9]+}});
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe { std::process::exit({{arg[0-9]+}} as i32) }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     unsafe { printf(c"main\n".as_ptr()) };
+// REWRITES-NEXT:     println!("main");
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     bail(7);
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }

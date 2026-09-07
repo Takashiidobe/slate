@@ -180,23 +180,31 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         hits = 0;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     unsafe { printf(c"%d %d\n".as_ptr(), logical_and(0, 1), unsafe { hits }) };
+// REWRITES-NEXT:     println!("{} {}", logical_and(0, 1), unsafe { hits });
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         hits = 0;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     unsafe { printf(c"%d %d\n".as_ptr(), logical_and(2, 3), unsafe { hits }) };
+// REWRITES-NEXT:     println!("{} {}", logical_and(2, 3), unsafe { hits });
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         hits = 0;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     unsafe { printf(c"%d %d\n".as_ptr(), logical_or(5, 0), unsafe { hits }) };
+// REWRITES-NEXT:     println!("{} {}", logical_or(5, 0), unsafe { hits });
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         hits = 0;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     unsafe { printf(c"%d %d\n".as_ptr(), logical_or(0, 7), unsafe { hits }) };
+// REWRITES-NEXT:     println!("{} {}", logical_or(0, 7), unsafe { hits });
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = c"%d %d %d\n".as_ptr() as *mut i8;
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = c"%d %d %d\n".as_ptr() as *mut u8;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 0;
@@ -204,6 +212,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 4;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: bool = !({{__v[0-9]+}} != 0);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
@@ -212,6 +221,7 @@ int main(void) {
 // REWRITES-NEXT:             (9 != 0) as i32,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

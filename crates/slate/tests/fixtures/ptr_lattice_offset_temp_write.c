@@ -132,7 +132,8 @@ int main(void) {
 // REWRITES-NEXT:         unsafe { std::slice::from_raw_parts_mut({{__v[0-9]+}} as *mut i32, (4 as i32) as usize) },
 // REWRITES-NEXT:         7,
 // REWRITES-NEXT:     );
-// REWRITES-NEXT:     unsafe { printf(c"%d %d %d %d\n".as_ptr(), buf[0], buf[1], buf[2], buf[3]) };
+// REWRITES-NEXT:     println!("{} {} {} {}", buf[0], buf[1], buf[2], buf[3]);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit((buf[0] + buf[1] + buf[2] + buf[3]) as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
