@@ -55,8 +55,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-DAG: unsafe {
 // REWRITES-X86_64-GNU-DAG:     core::arch::asm!("movl $7, {0:e}", lateout(reg) x, options(att_syntax));
 // REWRITES-X86_64-GNU-DAG: }
-// REWRITES-X86_64-GNU-DAG: let {{__v[0-9]+}}: i32 = x;
 // REWRITES-X86_64-GNU-DAG: unsafe {
-// REWRITES-X86_64-GNU-DAG:     core::arch::asm!("addl {1:e}, {0:e}", inlateout(reg) {{__v[0-9]+}} => x, in(reg) {{arg[0-9]+}}, options(att_syntax));
+// REWRITES-X86_64-GNU-DAG:     core::arch::asm!("addl {1:e}, {0:e}", inlateout(reg) x => x, in(reg) {{arg[0-9]+}}, options(att_syntax));
 // REWRITES-X86_64-GNU-DAG: }
 // SLATE-FILECHECK-END rewrites

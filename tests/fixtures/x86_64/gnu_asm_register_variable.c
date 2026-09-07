@@ -47,10 +47,9 @@ int main(void) {
 // REWRITES-X86_64-GNU-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: /// { dg-options "-std=gnu23" }
 // REWRITES-X86_64-GNU-NEXT: fn main() {
-// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = 5;
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32;
 // REWRITES-X86_64-GNU-NEXT:     unsafe {
-// REWRITES-X86_64-GNU-NEXT:         core::arch::asm!("incl %eax", lateout("eax") {{__v[0-9]+}}, in("eax") {{__v[0-9]+}}, options(att_syntax));
+// REWRITES-X86_64-GNU-NEXT:         core::arch::asm!("incl %eax", lateout("eax") {{__v[0-9]+}}, in("eax") 5, options(att_syntax));
 // REWRITES-X86_64-GNU-NEXT:     }
 // REWRITES-X86_64-GNU-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // REWRITES-X86_64-GNU-NEXT: }

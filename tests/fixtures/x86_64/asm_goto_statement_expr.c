@@ -85,9 +85,8 @@ int main(void) {
 // REWRITES-X86_64-GNU-DAG:             }
 // REWRITES-X86_64-GNU-DAG:             1 => {
 // REWRITES-X86_64-GNU-DAG:                 result2 = 11;
-// REWRITES-X86_64-GNU-DAG:                 let {{__v[0-9]+}}: i32 = value;
 // REWRITES-X86_64-GNU-DAG:                 unsafe {
-// REWRITES-X86_64-GNU-DAG:                     core::arch::asm!("testl {0:e}, {0:e}\n\tjz {1}", in(reg) {{__v[0-9]+}}, label {
+// REWRITES-X86_64-GNU-DAG:                     core::arch::asm!("testl {0:e}, {0:e}\n\tjz {1}", in(reg) value, label {
 // REWRITES-X86_64-GNU-DAG: {{__state[0-9]+}} = 4;
 // REWRITES-X86_64-GNU-DAG: continue '{{__dispatch[0-9]+}};
 // REWRITES-X86_64-GNU-DAG: }, options(att_syntax));
