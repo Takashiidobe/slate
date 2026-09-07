@@ -93,12 +93,39 @@ against that tree's headers and must be rebuilt in lockstep.
 
 ## Build & Test
 
+## Agent startup checklist
+
+Before running a command that parses C:
+
+1. Run `bd prime` and inspect `git status`; preserve unrelated worktree changes.
+2. Confirm `SLATE_CLANG` is a CIR-enabled Clang and `SLATE_CIR_OPT` is from
+   the same LLVM build.
+3. Confirm `SLATE_MACRO_DUMP_PLUGIN` was built against that exact Clang tree;
+   rebuild it after rebuilding Clang.
+4. Select the nextest profile matching the subsystem and target matrix below.
+
+| Target | Profiles | Runtime/toolchain requirements |
+| --- | --- | --- |
+| Host Linux | `lowering`, `rewrites` | CIR Clang and host libc |
+| ARM32 GNU | `arm-lowering`, `arm-rewrites` | `armv7-unknown-linux-gnueabihf`, ARM GNU sysroot/linker, `qemu-arm-static` |
+| AArch64 GNU | `aarch64-lowering`, `aarch64-rewrites` | AArch64 Rust target, sysroot/linker, `qemu-aarch64-static` |
+| libc/API | `libc` | libc-shim headers and selected libc oracle |
+
+Android, macOS, and MSVC fixtures are collected by the normal host profiles
+when their target prerequisites and FileCheck prefixes are available; their
+oracle/bootstrap instructions live in the corresponding `wiki/concepts/*oracle.md`
+documents.
+
 > **Always use a release nextest profile to test** (not `cargo test`).
 
 ```bash
 cargo nextest r --release --profile lowering # frontend/lowering runtime differential, no fixups
 cargo nextest r --release --profile rewrites # backend/fixups and every non-libc test
 cargo nextest r --release --profile libc     # libc shim, headers, API, and functional tests
+cargo nextest r --release --profile arm-lowering   # ARM32 raw lowering differential
+cargo nextest r --release --profile arm-rewrites   # ARM32 lowering plus fixups
+cargo nextest r --release --profile aarch64-lowering # AArch64 raw lowering differential
+cargo nextest r --release --profile aarch64-rewrites # AArch64 lowering plus fixups
 cargo fmt                                    # required before finishing
 
 cargo run -- translate tests/fixtures/add.c  # C -> Rust on stdout
@@ -110,6 +137,28 @@ fixup changes, and `libc` for `libc-shim/` or libc-test changes. Run multiple
 profiles only when a change crosses those boundaries. The `lowering` profile
 sets raw-lowering behavior through `NEXTEST_PROFILE=lowering`, so it compiles
 and differentially runs baseline Rust without backend fixups.
+
+Cross-target profiles need the matching Rust target, a cross linker/sysroot,
+and QEMU user-mode execution. ARM32 uses `armv7-unknown-linux-gnueabihf`,
+`SLATE_ARM_SYSROOT`, `SLATE_ARM_LINKER`, and `qemu-arm-static`; AArch64 uses
+the analogous `SLATE_AARCH64_SYSROOT`, `SLATE_AARCH64_LINKER`, and
+`qemu-aarch64-static` variables. The ARM GNU toolchain's linker is commonly
+named `arm-none-linux-gnueabihf-gcc`, so do not rely on the runner's default
+`arm-linux-gnueabihf-gcc` lookup when using that distribution:
+
+```bash
+rustup target add armv7-unknown-linux-gnueabihf
+export SLATE_ARM_SYSROOT="$HOME/toolchains/<arm-toolchain>/arm-none-linux-gnueabihf/libc"
+export SLATE_ARM_LINKER="$HOME/toolchains/<arm-toolchain>/bin/arm-none-linux-gnueabihf-gcc"
+cargo nextest r --release --profile arm-lowering
+cargo nextest r --release --profile arm-rewrites
+```
+
+The repository's local `.env` is fish syntax and is not tracked; it is not
+automatically loaded or exported for bash/nextest. In fish, set exported
+variables explicitly (for example, `set -gx SLATE_ARM_SYSROOT ...`) or export
+the variables in the shell that launches Cargo. The current ARM differential
+runner shares `SLATE_DIFF_FIXTURE=<name>` for single-fixture selection.
 
 During feature development, isolate the new differential fixture:
 

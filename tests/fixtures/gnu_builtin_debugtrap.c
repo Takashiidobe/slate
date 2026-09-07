@@ -11,8 +11,7 @@ int main(void) {
 }
 
 // SLATE-FILECHECK-BEGIN lowering
-// LOWERING: #![feature(abi_unadjusted)]
-// LOWERING-NEXT: #![feature(link_llvm_intrinsics)]
+// LOWERING: #![feature(link_llvm_intrinsics)]
 // LOWERING-NEXT: #![feature(c_variadic)]
 // LOWERING-NEXT: #![allow(
 // LOWERING-NEXT:     dead_code,
@@ -51,15 +50,14 @@ int main(void) {
 // LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: unsafe extern "unadjusted" {
+// LOWERING-NEXT: unsafe extern "llvm-intrinsic" {
 // LOWERING-NEXT:     #[link_name = "llvm.debugtrap"]
 // LOWERING-NEXT:     fn __slate_intrinsic_debugtrap_2b8d277b395439e1();
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES: #![feature(abi_unadjusted)]
-// REWRITES-NEXT: #![feature(link_llvm_intrinsics)]
+// REWRITES: #![feature(link_llvm_intrinsics)]
 // REWRITES-NEXT: #![feature(c_variadic)]
 // REWRITES-NEXT: #![allow(
 // REWRITES-NEXT:     dead_code,
@@ -92,7 +90,7 @@ int main(void) {
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: unsafe extern "unadjusted" {
+// REWRITES-NEXT: unsafe extern "llvm-intrinsic" {
 // REWRITES-NEXT:     #[link_name = "llvm.debugtrap"]
 // REWRITES-NEXT:     fn __slate_intrinsic_debugtrap_2b8d277b395439e1();
 // REWRITES-NEXT: }

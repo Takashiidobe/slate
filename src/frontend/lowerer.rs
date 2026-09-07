@@ -1778,7 +1778,7 @@ impl __SlateVaArgs {
                 self.uses_portable_simd.set(true);
             }
             items.push(Item::ExternBlock {
-                abi: "unadjusted".into(),
+                abi: "llvm-intrinsic".into(),
                 decls: self
                     .llvm_intrinsic_shims
                     .values()
@@ -1868,7 +1868,6 @@ impl __SlateVaArgs {
         }
         if self.uses_llvm_intrinsics.get() {
             insert_crate_feature(&mut items, Feature::LinkLlvmIntrinsics);
-            insert_crate_feature(&mut items, Feature::AbiUnadjusted);
         }
         if self.uses_portable_simd.get() {
             insert_crate_feature(&mut items, Feature::PortableSimd);

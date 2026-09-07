@@ -631,7 +631,6 @@ pub fn required_features(module: &Module) -> BTreeSet<Feature> {
             });
             if has_llvm_intrinsic {
                 features.insert(Feature::LinkLlvmIntrinsics);
-                features.insert(Feature::AbiUnadjusted);
                 features.insert(Feature::PortableSimd);
                 features.insert(Feature::SimdFfi);
             }
