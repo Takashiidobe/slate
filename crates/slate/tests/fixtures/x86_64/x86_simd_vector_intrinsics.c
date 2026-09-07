@@ -43,7 +43,6 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-X86_64-GNU: #![feature(simd_ffi)]
 // LOWERING-X86_64-GNU-NEXT: #![feature(portable_simd)]
-// LOWERING-X86_64-GNU-NEXT: #![feature(abi_unadjusted)]
 // LOWERING-X86_64-GNU-NEXT: #![feature(link_llvm_intrinsics)]
 // LOWERING-X86_64-GNU-NEXT: #![feature(c_variadic)]
 // LOWERING-X86_64-GNU-NEXT: #![allow(
@@ -337,7 +336,7 @@ int main(void) {
 // LOWERING-X86_64-GNU-NEXT:     return {{__v[0-9]+}};
 // LOWERING-X86_64-GNU-NEXT: }
 // LOWERING-X86_64-GNU-EMPTY:
-// LOWERING-X86_64-GNU-NEXT: unsafe extern "unadjusted" {
+// LOWERING-X86_64-GNU-NEXT: unsafe extern "llvm-intrinsic" {
 // LOWERING-X86_64-GNU-NEXT:     #[link_name = "llvm.x86.ssse3.pshuf.b.128"]
 // LOWERING-X86_64-GNU-NEXT:     fn __slate_intrinsic_x86_ssse3_pshuf_b_128_929309e755183de6(
 // LOWERING-X86_64-GNU-NEXT:         _0: std::simd::Simd<i8, 16>,
@@ -349,7 +348,6 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-X86_64-GNU: #![feature(simd_ffi)]
 // REWRITES-X86_64-GNU-NEXT: #![feature(portable_simd)]
-// REWRITES-X86_64-GNU-NEXT: #![feature(abi_unadjusted)]
 // REWRITES-X86_64-GNU-NEXT: #![feature(link_llvm_intrinsics)]
 // REWRITES-X86_64-GNU-NEXT: #![feature(c_variadic)]
 // REWRITES-X86_64-GNU-NEXT: #![allow(
@@ -613,7 +611,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:     {{__v[0-9]+}}
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
-// REWRITES-X86_64-GNU-NEXT: unsafe extern "unadjusted" {
+// REWRITES-X86_64-GNU-NEXT: unsafe extern "llvm-intrinsic" {
 // REWRITES-X86_64-GNU-NEXT:     #[link_name = "llvm.x86.ssse3.pshuf.b.128"]
 // REWRITES-X86_64-GNU-NEXT:     fn __slate_intrinsic_x86_ssse3_pshuf_b_128_929309e755183de6(
 // REWRITES-X86_64-GNU-NEXT:         _0: std::simd::Simd<i8, 16>,

@@ -21,8 +21,7 @@ int main(void) {
 }
 
 // SLATE-FILECHECK-BEGIN lowering
-// LOWERING-X86_64-GNU: #![feature(abi_unadjusted)]
-// LOWERING-X86_64-GNU-NEXT: #![feature(link_llvm_intrinsics)]
+// LOWERING-X86_64-GNU: #![feature(link_llvm_intrinsics)]
 // LOWERING-X86_64-GNU-NEXT: #![feature(c_variadic)]
 // LOWERING-X86_64-GNU-NEXT: #![allow(
 // LOWERING-X86_64-GNU-NEXT:     dead_code,
@@ -118,7 +117,7 @@ int main(void) {
 // LOWERING-X86_64-GNU-NEXT:     return {{__v[0-9]+}};
 // LOWERING-X86_64-GNU-NEXT: }
 // LOWERING-X86_64-GNU-EMPTY:
-// LOWERING-X86_64-GNU-NEXT: unsafe extern "unadjusted" {
+// LOWERING-X86_64-GNU-NEXT: unsafe extern "llvm-intrinsic" {
 // LOWERING-X86_64-GNU-NEXT:     #[link_name = "llvm.x86.rdtsc"]
 // LOWERING-X86_64-GNU-NEXT:     fn __slate_intrinsic_x86_rdtsc_319a3f94c908d021() -> u64;
 // LOWERING-X86_64-GNU-NEXT:     #[link_name = "llvm.x86.rdtscp"]
@@ -143,8 +142,7 @@ int main(void) {
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-X86_64-GNU: #![feature(abi_unadjusted)]
-// REWRITES-X86_64-GNU-NEXT: #![feature(link_llvm_intrinsics)]
+// REWRITES-X86_64-GNU: #![feature(link_llvm_intrinsics)]
 // REWRITES-X86_64-GNU-NEXT: #![feature(c_variadic)]
 // REWRITES-X86_64-GNU-NEXT: #![allow(
 // REWRITES-X86_64-GNU-NEXT:     dead_code,
@@ -226,7 +224,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:     unsafe { __slate_intrinsic_x86_sse42_crc32_64_64_a6b1e708219fb1bb({{arg[0-9]+}}, {{arg[0-9]+}}) }
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
-// REWRITES-X86_64-GNU-NEXT: unsafe extern "unadjusted" {
+// REWRITES-X86_64-GNU-NEXT: unsafe extern "llvm-intrinsic" {
 // REWRITES-X86_64-GNU-NEXT:     #[link_name = "llvm.x86.rdtsc"]
 // REWRITES-X86_64-GNU-NEXT:     fn __slate_intrinsic_x86_rdtsc_319a3f94c908d021() -> u64;
 // REWRITES-X86_64-GNU-NEXT:     #[link_name = "llvm.x86.rdtscp"]

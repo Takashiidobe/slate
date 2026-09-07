@@ -173,7 +173,6 @@ impl Lint {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Feature {
     ArmTargetFeature,
-    AbiUnadjusted,
     AsmGotoWithOutputs,
     Breakpoint,
     CVariadic,
@@ -192,7 +191,6 @@ impl Feature {
     pub fn spelling(self) -> &'static str {
         match self {
             Feature::ArmTargetFeature => "arm_target_feature",
-            Feature::AbiUnadjusted => "abi_unadjusted",
             Feature::AsmGotoWithOutputs => "asm_goto_with_outputs",
             Feature::Breakpoint => "breakpoint",
             Feature::CVariadic => "c_variadic",

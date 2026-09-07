@@ -144,6 +144,24 @@ collectors. Corpus suites use their own selectors, such as
 `SLATE_LIBC_TEST_FIXTURE`; use their suite-specific ignored triage report when
 the case is in an unsupported bucket.
 
+Cross-target differential runners have separate nextest profiles. ARM32 uses
+`arm-lowering` and `arm-rewrites` for `armv7-unknown-linux-gnueabihf`; AArch64
+uses `aarch64-lowering` and `aarch64-rewrites`. ARM32 also needs an installed
+Rust target, an ARM GNU sysroot and linker, and `qemu-arm-static`:
+
+```bash
+rustup target add armv7-unknown-linux-gnueabihf
+export SLATE_ARM_SYSROOT="$HOME/toolchains/<arm-toolchain>/arm-none-linux-gnueabihf/libc"
+export SLATE_ARM_LINKER="$HOME/toolchains/<arm-toolchain>/bin/arm-none-linux-gnueabihf-gcc"
+cargo nextest r --release --profile arm-lowering
+cargo nextest r --release --profile arm-rewrites
+```
+
+The ARM runner also accepts `SLATE_ARM_CC`, `SLATE_ARM_QEMU`, and
+`SLATE_DIFF_FIXTURE=<name>`. The local `.env` uses fish `set` syntax and is not
+tracked, so bash users must export these variables themselves; fish users must
+make them exported variables with `set -gx`.
+
 ## Region-scoped generation with `@begin`/`@end` directives
 
 **Every new fixture must carry both a `@lowering` and a `@rewrite` region** so
