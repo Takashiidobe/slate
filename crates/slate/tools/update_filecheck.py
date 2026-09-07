@@ -547,6 +547,10 @@ def default_targets_for_path(path):
         return [
             ("AARCH64-GNU", target_environment("aarch64-unknown-linux-gnu")),
         ]
+    if "x86_64" in parts or path.parent.name == "x86_64":
+        return [
+            ("X86_64-GNU", target_environment("x86_64-unknown-linux-gnu")),
+        ]
     if ("fixtures.link" in parts and "long_double" in parts) or (
         path.parent.name == "long_double" and "fixtures.link" in str(path)
     ):
