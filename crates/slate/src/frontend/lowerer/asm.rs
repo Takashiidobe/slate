@@ -203,6 +203,7 @@ pub(super) enum Constraint {
     Reg {
         kind: AsmRegConstraint,
         early_clobber: bool,
+        indirect: bool,
     },
     Memory,
     Unsupported,
@@ -227,10 +228,15 @@ impl Constraint {
             if strip_memory_marker(rest).is_some() {
                 return Self::Memory;
             }
+            let (indirect, rest) = match rest.strip_prefix('*') {
+                Some(rest) => (true, rest),
+                None => (false, rest),
+            };
             return match parse_reg_constraint(rest) {
                 Some(kind) => Self::Reg {
                     kind,
                     early_clobber,
+                    indirect,
                 },
                 None => Self::Unsupported,
             };
@@ -245,6 +251,7 @@ impl Constraint {
             Some(kind) => Self::Reg {
                 kind,
                 early_clobber: false,
+                indirect: false,
             },
             None => Self::Unsupported,
         }

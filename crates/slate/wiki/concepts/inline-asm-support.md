@@ -50,6 +50,35 @@ to a concrete address, deferring only the reg-vs-mem choice (which Slate
 never makes; it always takes the register/address-in-register form since
 memory has no direct Rust operand kind).
 
+### Output wiring for addressed (`maybe_memory`) operands
+
+CIR groups `cir.asm` operands as `out = [...], in = [...], in_out = [...]`.
+Only operands passed by address ever appear in `out`; a register output never
+does — it only ever comes through `op.res`/`op.res_ty` (packed into a struct
+when there is more than one). This means the `out` group's length is exactly
+the count of addressed outputs, and `register_output_count = total_output_count
+- out.len()` where `total_output_count` is the number of raw constraints
+starting with `=` (flag outputs included).
+
+A raw output constraint's leading `*` (after stripping `=`/`&`) is CIR's own
+signal that this operand is addressed — independent of whether the letter set
+also contains `r`. `Constraint::Reg` carries this as `indirect: bool`.
+Addressed + register-eligible outputs (`=g`, `=imr`, `+g`, ...) bind directly
+to the target place via `place_or_deref_expr`, so `out(reg) x` or
+`inlateout(reg) tied_input => x` writes straight into the real variable — no
+temp, no separate write-back statement, and (for the tied case) the read-side
+value already arrives pre-loaded through `in_out` as a plain SSA value, not
+as another address to dereference. Addressed outputs with no `r` alternative
+(pure `m`/`o`/`V`) fall back to the existing address-passthrough form (a plain
+`in(reg)` of the address with the template deref-wrapped) since there's no
+Rust-visible result to bind at all.
+
+Before this wiring existed, `out`-group entries were flattened together with
+`in`/`in_out` into one `input_operands` list with no group boundary tracked;
+an addressed output with a register alternative (`=g`/`=imr`) silently landed
+in the *input* constraint slot instead, reading the address as data with no
+deref — no error, just a wrong runtime result. Fixed in `slate-3f8g.4.15.4`.
+
 ## `ebx`/`rbx` handling (from zstd to work around gcc's limitation)
 
 Applies after storage-class resolves to an explicit register in the `b`
@@ -75,4 +104,5 @@ restriction, not one either C compiler imposes.
 
 No CIR shape investigated yet: `o`/`V` distinguished from plain `m`. No
 lowering attempted regardless of soundness: `x`/`y`/`q`/`Q`/`A` register
-classes. Tracked as `slate-3f8g.4.15.{1,2,3,4,5,6,7}`.
+classes. Also unverified: an `asm_operand_bits` bug hardcoding pointer operands
+to 64 bits regardless of target. Tracked as `slate-3f8g.4.15.{5,6,8}`.
