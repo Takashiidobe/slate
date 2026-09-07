@@ -539,6 +539,14 @@ def default_targets_for_path(path):
         return [
             ("MSVC", target_environment("x86_64-pc-windows-msvc")),
         ]
+    if "arm" in parts or path.parent.name == "arm":
+        return [
+            ("ARMV7-GNU", target_environment("armv7-unknown-linux-gnueabihf")),
+        ]
+    if "aarch64" in parts or path.parent.name == "aarch64":
+        return [
+            ("AARCH64-GNU", target_environment("aarch64-unknown-linux-gnu")),
+        ]
     if ("fixtures.link" in parts and "long_double" in parts) or (
         path.parent.name == "long_double" and "fixtures.link" in str(path)
     ):

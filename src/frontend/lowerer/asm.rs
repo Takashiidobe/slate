@@ -81,9 +81,13 @@ enum ConstraintAtom {
     Other,
 }
 
-fn parse_constraint_atoms(constraint: &str) -> impl Iterator<Item = ConstraintAtom> + '_ {
-    constraint.chars().map(|ch| match ch {
+fn parse_constraint_atoms(
+    constraint: &str,
+    target_arch: TargetArch,
+) -> impl Iterator<Item = ConstraintAtom> + '_ {
+    constraint.chars().map(move |ch| match ch {
         'r' => ConstraintAtom::Reg,
+        'l' if target_arch == TargetArch::Arm => ConstraintAtom::Reg,
         'g' => ConstraintAtom::General,
         'a' => ConstraintAtom::FixedReg(X86Reg::Eax),
         'b' => ConstraintAtom::FixedReg(X86Reg::Ebx),
@@ -105,8 +109,8 @@ fn parse_constraint_atoms(constraint: &str) -> impl Iterator<Item = ConstraintAt
     })
 }
 
-fn constraint_allows_generic_reg(constraint: &str) -> bool {
-    parse_constraint_atoms(constraint).any(|atom| {
+fn constraint_allows_generic_reg(constraint: &str, target_arch: TargetArch) -> bool {
+    parse_constraint_atoms(constraint, target_arch).any(|atom| {
         matches!(
             atom,
             ConstraintAtom::Reg | ConstraintAtom::General | ConstraintAtom::Address
@@ -114,9 +118,10 @@ fn constraint_allows_generic_reg(constraint: &str) -> bool {
     })
 }
 
-fn constraint_is_constant_only(constraint: &str) -> bool {
+fn constraint_is_constant_only(constraint: &str, target_arch: TargetArch) -> bool {
     !constraint.is_empty()
-        && parse_constraint_atoms(constraint).all(|atom| atom == ConstraintAtom::ConstantEligible)
+        && parse_constraint_atoms(constraint, target_arch)
+            .all(|atom| atom == ConstraintAtom::ConstantEligible)
 }
 
 fn is_memory_like(atom: ConstraintAtom) -> bool {
@@ -126,11 +131,12 @@ fn is_memory_like(atom: ConstraintAtom) -> bool {
     )
 }
 
-fn strip_memory_marker(constraint: &str) -> Option<&str> {
+fn strip_memory_marker(constraint: &str, target_arch: TargetArch) -> Option<&str> {
     let rest = constraint.strip_prefix('=').unwrap_or(constraint);
     let rest = rest.strip_prefix('&').unwrap_or(rest);
     let rest = rest.strip_prefix('*').unwrap_or(rest);
-    (!rest.is_empty() && parse_constraint_atoms(rest).all(is_memory_like)).then_some(rest)
+    (!rest.is_empty() && parse_constraint_atoms(rest, target_arch).all(is_memory_like))
+        .then_some(rest)
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -181,17 +187,17 @@ pub(super) enum AsmRegConstraint {
     ByteAddressableGpr,
 }
 
-fn parse_reg_constraint(constraint: &str) -> Option<AsmRegConstraint> {
+fn parse_reg_constraint(constraint: &str, target_arch: TargetArch) -> Option<AsmRegConstraint> {
     if let Some(name) = constraint
         .strip_prefix('{')
         .and_then(|rest| rest.strip_suffix('}'))
     {
         return (!name.is_empty()).then(|| AsmRegConstraint::ExplicitName(name.to_string()));
     }
-    if constraint_allows_generic_reg(constraint) {
+    if constraint_allows_generic_reg(constraint, target_arch) {
         return Some(AsmRegConstraint::Generic);
     }
-    match parse_constraint_atoms(constraint)
+    match parse_constraint_atoms(constraint, target_arch)
         .collect::<Vec<_>>()
         .as_slice()
     {
@@ -224,7 +230,7 @@ pub(super) enum Constraint {
 }
 
 impl Constraint {
-    pub(super) fn parse(raw: &str, is_output: bool) -> Self {
+    pub(super) fn parse(raw: &str, is_output: bool, target_arch: TargetArch) -> Self {
         if !is_output && let Ok(index) = raw.parse::<usize>() {
             return Self::Tied(index);
         }
@@ -239,14 +245,14 @@ impl Constraint {
                 Some(rest) => (true, rest),
                 None => (false, rest),
             };
-            if strip_memory_marker(rest).is_some() {
+            if strip_memory_marker(rest, target_arch).is_some() {
                 return Self::Memory;
             }
             let (indirect, rest) = match rest.strip_prefix('*') {
                 Some(rest) => (true, rest),
                 None => (false, rest),
             };
-            return match parse_reg_constraint(rest) {
+            return match parse_reg_constraint(rest, target_arch) {
                 Some(kind) => Self::Reg {
                     kind,
                     early_clobber,
@@ -255,13 +261,13 @@ impl Constraint {
                 None => Self::Unsupported,
             };
         }
-        if strip_memory_marker(raw).is_some() {
+        if strip_memory_marker(raw, target_arch).is_some() {
             return Self::Memory;
         }
-        if constraint_is_constant_only(raw) {
+        if constraint_is_constant_only(raw, target_arch) {
             return Self::Constant;
         }
-        match parse_reg_constraint(raw) {
+        match parse_reg_constraint(raw, target_arch) {
             Some(kind) => Self::Reg {
                 kind,
                 early_clobber: false,

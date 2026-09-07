@@ -34,13 +34,10 @@ fn fixtures() -> Vec<(String, PathBuf)> {
     let dir = fixtures_dir();
     let selected = std::env::var("SLATE_DIFF_FIXTURE").ok();
     let mut fixtures = Vec::new();
-    for entry in std::fs::read_dir(&dir).unwrap_or_else(|e| panic!("read {}: {e}", dir.display())) {
-        let path = entry
-            .unwrap_or_else(|e| panic!("read {} entry: {e}", dir.display()))
-            .path();
-        if path.extension().and_then(|e| e.to_str()) != Some("c") {
-            continue;
-        }
+    let paths = support::list_c_fixtures(&dir)
+        .into_iter()
+        .chain(support::list_c_fixtures(&dir.join("aarch64")));
+    for path in paths {
         let name = path
             .file_stem()
             .and_then(|s| s.to_str())

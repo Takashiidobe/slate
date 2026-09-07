@@ -136,7 +136,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let constraints: Vec<Constraint> = raw_constraints
             .iter()
             .enumerate()
-            .map(|(index, raw)| Constraint::parse(raw, index < total_output_count))
+            .map(|(index, raw)| {
+                Constraint::parse(raw, index < total_output_count, self.parent.target_arch)
+            })
             .collect();
         let is_addressed: Vec<bool> = constraints[..total_output_count]
             .iter()
