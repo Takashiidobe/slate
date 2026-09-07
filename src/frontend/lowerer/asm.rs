@@ -117,6 +117,14 @@ fn constraint_is_constant_only(constraint: &str) -> bool {
         && parse_constraint_atoms(constraint).all(|atom| atom == ConstraintAtom::ConstantEligible)
 }
 
+fn strip_memory_marker(constraint: &str) -> Option<&str> {
+    let rest = constraint.strip_prefix('=').unwrap_or(constraint);
+    let rest = rest.strip_prefix('&').unwrap_or(rest);
+    let rest = rest.strip_prefix('*').unwrap_or(rest);
+    (!rest.is_empty() && parse_constraint_atoms(rest).all(|atom| atom == ConstraintAtom::Memory))
+        .then_some(rest)
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(super) enum RegWidth {
     Byte,
@@ -196,6 +204,7 @@ pub(super) enum Constraint {
         kind: AsmRegConstraint,
         early_clobber: bool,
     },
+    Memory,
     Unsupported,
 }
 
@@ -215,6 +224,9 @@ impl Constraint {
                 Some(rest) => (true, rest),
                 None => (false, rest),
             };
+            if strip_memory_marker(rest).is_some() {
+                return Self::Memory;
+            }
             return match parse_reg_constraint(rest) {
                 Some(kind) => Self::Reg {
                     kind,
@@ -222,6 +234,9 @@ impl Constraint {
                 },
                 None => Self::Unsupported,
             };
+        }
+        if strip_memory_marker(raw).is_some() {
+            return Self::Memory;
         }
         if constraint_is_constant_only(raw) {
             return Self::Constant;
@@ -692,6 +707,22 @@ fn dialect_address_brackets(dialect: Option<AsmDialect>) -> (char, char) {
     }
 }
 
+fn intel_ptr_size_keyword(bits: u32) -> &'static str {
+    match RegWidth::from_bits(bits) {
+        Some(RegWidth::Byte) => "byte ptr",
+        Some(RegWidth::Word) => "word ptr",
+        Some(RegWidth::Qword) => "qword ptr",
+        Some(RegWidth::Dword) | None => "dword ptr",
+    }
+}
+
+fn memory_operand_pointee_bits(ty: &Type) -> u32 {
+    match ty {
+        Type::Ptr { inner, .. } => int_bits(&inner.render()).unwrap_or(32),
+        _ => asm_operand_bits(ty),
+    }
+}
+
 fn register_modifier_suffix(
     constraint: &Constraint,
     constraints: &[Constraint],
@@ -733,6 +764,22 @@ fn render_operand_reference(
         out.push(close);
         return Some(());
     }
+    if matches!(constraint, Constraint::Memory) {
+        if modifier.is_some() {
+            return None;
+        }
+        let (open, close) = dialect_address_brackets(dialect);
+        if matches!(dialect, Some(AsmDialect::Intel)) {
+            out.push_str(intel_ptr_size_keyword(memory_operand_pointee_bits(ty)));
+            out.push(' ');
+        }
+        out.push(open);
+        out.push('{');
+        out.push_str(&rust_slot.to_string());
+        out.push('}');
+        out.push(close);
+        return Some(());
+    }
     out.push('{');
     out.push_str(&rust_slot.to_string());
     if modifier.is_none()
@@ -753,6 +800,20 @@ pub(super) fn translate_asm_template(
     dialect: Option<AsmDialect>,
 ) -> Option<String> {
     let pieces = parse_asm_template(template)?;
+    let mut memory_slot_reference_counts: BTreeMap<usize, usize> = BTreeMap::new();
+    for piece in &pieces {
+        if let TemplatePiece::Operand { slot, .. } = piece
+            && matches!(constraints.get(*slot), Some(Constraint::Memory))
+        {
+            *memory_slot_reference_counts.entry(*slot).or_insert(0) += 1;
+        }
+    }
+    if memory_slot_reference_counts
+        .values()
+        .any(|count| *count > 1)
+    {
+        return None;
+    }
     let mut translated = String::new();
     let mut referenced_operands = BTreeSet::new();
     for piece in &pieces {
