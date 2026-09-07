@@ -393,6 +393,7 @@ pub struct TargetConfig {
     pub arch: &'static str,
     pub endian: &'static str,
     pub env: &'static str,
+    pub long_double_bits: u32,
     pub os: &'static str,
     pub pointer_width: String,
     pub vendor: &'static str,
@@ -419,12 +420,24 @@ pub fn target_config(target: &str) -> Result<TargetConfig, TargetError> {
         Some(env) if env.canonicalize().starts_with("musl") => "musl",
         _ => "",
     };
+    let pointer_width = triple.bitness().to_string();
+    let long_double_bits = if (arch == "arm" && pointer_width == "32")
+        || (arch == "aarch64" && os == "macos" && vendor == "apple")
+        || (arch == "x86_64" && os == "windows" && env == "msvc")
+    {
+        64
+    } else if arch == "aarch64" || arch.starts_with("riscv") {
+        128
+    } else {
+        80
+    };
     Ok(TargetConfig {
         arch,
         endian: "little",
         env,
+        long_double_bits,
         os,
-        pointer_width: triple.bitness().to_string(),
+        pointer_width,
         vendor,
     })
 }
@@ -508,26 +521,16 @@ fn glibc_minor_version(target: &str) -> Result<Option<u32>, TargetError> {
         })
 }
 
-pub fn uses_f64_long_double_abi() -> bool {
-    uses_f64_long_double_abi_for(&active_target())
-}
-
-fn uses_f64_long_double_abi_for(target: &str) -> bool {
-    matches!(target, "aarch64-apple-darwin" | "x86_64-pc-windows-msvc")
-}
-
 pub fn long_double_bits(target: &str) -> u32 {
-    if uses_f64_long_double_abi_for(target) {
-        return 64;
-    }
-    let Ok(config) = target_config(target) else {
-        return 80;
-    };
-    if matches!(config.arch, "aarch64" | "arm") || config.arch.starts_with("riscv") {
-        128
-    } else {
-        80
-    }
+    target_config(target)
+        .map(|config| config.long_double_bits)
+        .unwrap_or_else(|error| {
+            panic!("long double target mapping required for `{target}`: {error}")
+        })
+}
+
+pub fn active_long_double_bits() -> u32 {
+    long_double_bits(&active_target())
 }
 
 pub fn target_has_native_fma(bits: u32) -> bool {
