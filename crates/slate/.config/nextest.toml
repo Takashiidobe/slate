@@ -15,6 +15,7 @@ default-filter = '''
     + binary_id(=slate::header_compilation)
     + binary_id(=slate::differential_aarch64)
     + binary_id(=slate::differential_arm)
+    + binary_id(=slate::differential_i686)
   )
 '''
 
@@ -29,6 +30,12 @@ default-filter = 'binary_id(=slate::differential_arm)'
 
 [profile.arm-rewrites]
 default-filter = 'binary_id(=slate::differential_arm)'
+
+[profile.i686-lowering]
+default-filter = 'binary_id(=slate::differential_i686)'
+
+[profile.i686-rewrites]
+default-filter = 'binary_id(=slate::differential_i686)'
 
 [profile.lowering]
 default-filter = '''
@@ -45,7 +52,7 @@ default-filter = '''
     + test(gcc_dg_unsupported_tests_still_fail)
     + test(libc_test_functional_supported_tests_match_c)
     + test(stdlib_coverage)
-  ) - binary_id(=slate::differential_aarch64) - binary_id(=slate::differential_arm)
+  ) - binary_id(=slate::differential_aarch64) - binary_id(=slate::differential_arm) - binary_id(=slate::differential_i686)
 '''
 
 [[profile.default.overrides]]

@@ -25,6 +25,7 @@ pub struct CrossTarget {
     pub cc_extra_args: Vec<String>,
     pub cargo_linker_env: String,
     pub linker: String,
+    pub cargo_env: Vec<(String, String)>,
     pub qemu: String,
     pub qemu_args: Vec<String>,
 }
@@ -923,6 +924,9 @@ fn build_batch(
                 format!("CC_{}", cross.rust_triple.replace('-', "_")),
                 &cross.linker,
             );
+        for (key, value) in &cross.cargo_env {
+            command.env(key, value);
+        }
     }
     let o = command
         .output()

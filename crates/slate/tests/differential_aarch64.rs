@@ -91,6 +91,7 @@ fn aarch64_target() -> support::CrossTarget {
         ],
         cargo_linker_env: "CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER".to_string(),
         linker,
+        cargo_env: Vec::new(),
         qemu: env_or("SLATE_AARCH64_QEMU", "qemu-aarch64-static"),
         qemu_args: vec!["-L".to_string(), sysroot],
     }

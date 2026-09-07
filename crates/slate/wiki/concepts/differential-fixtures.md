@@ -173,8 +173,13 @@ when adding or changing a fixture:
 
 Cross-target differential runners have separate nextest profiles. ARM32 uses
 `arm-lowering` and `arm-rewrites` for `armv7-unknown-linux-gnueabihf`; AArch64
-uses `aarch64-lowering` and `aarch64-rewrites`. ARM32 also needs an installed
-Rust target, an ARM GNU sysroot and linker, and `qemu-arm-static`:
+uses `aarch64-lowering` and `aarch64-rewrites`; i686 uses `i686-lowering` and
+`i686-rewrites`. ARM32 also needs an installed Rust target, an ARM GNU sysroot
+and linker, and `qemu-arm-static`:
+
+The complete ARM32, AArch64, and planned i686 toolchain setup, including
+sysroot, QEMU, libc-shim, and ABI guidance, is in
+[cross-target toolchains](cross-target-toolchains.md).
 
 ```bash
 rustup target add armv7-unknown-linux-gnueabihf
