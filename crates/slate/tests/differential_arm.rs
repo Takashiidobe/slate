@@ -35,14 +35,6 @@ fn skip_reason(name: &str) -> Option<&'static str> {
             "environment limitation, not a slate bug: the armv7 sysroot's <sys/syscall.h> \
              doesn't define SYS_gettid",
         ),
-        "complex" | "stdlib_complex_cx_limited_range" => Some(
-            "environment limitation, not a slate bug (slate-3f8g.4.16.13): rustc's extern \"C\" \
-             ABI lowering for a #[repr(C)] struct of two f64 fields does not match armv7 \
-             hard-float AAPCS-VFP's calling convention for a real C '_Complex double' return \
-             value -- confirmed by hand-writing a minimal Rust program (no slate involved) that \
-             calls __muldc3 the same way and segfaults identically, while the equivalent C call \
-             to the same libgcc symbol under the same qemu-arm-static/toolchain works correctly",
-        ),
         "int128_arith" | "int128_struct" | "f128_intrinsics" | "c99" | "local_vla"
         | "builtin_alloca" => Some(
             "known bug (slate-3f8g.4.16.14): ClangIR frontend limitation for \
