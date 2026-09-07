@@ -40,10 +40,9 @@ re-deriving the same analysis independently.
 
 ## Rewrite
 
-`src/backend/query/rules` holds the fixup passes themselves. Each is a
-`QueryRule` that selects candidates, checks preconditions against
-`src/backend/facts`, and returns an edit set; `src/backend/mod.rs` runs a
-fixed, hand-written sequence of these passes over the `Program`. They
+`src/backend/engine/rules` holds the current worklist fixup passes. Each rule
+selects candidates and applies conservative edits over the lowered `Program`;
+the engine schedules the registered rules to a fixed point. They
 recover idiom safe references, `Vec`/`Box`, `for x in ..`, compound
 assignment without changing behavior, and each pass is independently
 verified the same way baseline lowering is (differential testing), so

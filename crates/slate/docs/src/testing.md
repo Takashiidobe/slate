@@ -1,11 +1,28 @@
 # Testing
 
-Testing is done a few different ways:
+Testing is organized around release `cargo nextest` profiles. Use `lowering`
+for CIR/frontend changes, `rewrites` for backend fixups, and `libc` for
+libc-shim or libc-test changes. Cross-target profiles are available for ARM32
+and AArch64; the setup and environment requirements are documented in
+[Setup](setup.md).
+
+```bash
+cargo nextest r --release --profile lowering
+cargo nextest r --release --profile rewrites
+cargo nextest r --release --profile libc
+cargo nextest r --release --profile arm-lowering
+cargo nextest r --release --profile arm-rewrites
+cargo nextest r --release --profile aarch64-lowering
+cargo nextest r --release --profile aarch64-rewrites
+```
 
 ## Our own fixtures
 
-While implementing features, Slate grew regression tests to handle some
-behavior.
+The primary regression tests are C fixtures under `tests/fixtures/`. Each
+fixture is compiled and run as C and generated Rust, with stdout and exit code
+compared. Embedded FileCheck directives additionally assert generated-Rust
+shape. See `wiki/concepts/differential-fixtures.md` for marker syntax and
+regeneration commands.
 
 ## Chibicc's tests
 
@@ -18,36 +35,31 @@ Tests are located at `tests/fixtures.chibicc`.
 
 ## Libc Test
 
-The [libc test](https://wiki.musl-libc.org/libc-test) test suite is used
-to test musl for regression tests in compliance. Slate passes all the
-api tests, but fails some of the functional ones currently. This is a
-WIP.
+The [libc test](https://wiki.musl-libc.org/libc-test) suite provides API
+declaration checks and functional runtime checks. The API and functional
+sub-suites have separate supported/unsupported buckets; use the commands in
+`tests/fixtures.libc-test/README.md` when triaging one case.
 
 Tests are located at `tests/fixtures.libc-test`.
 
 ## GCC Torture Tests
 
-Slate uses a comprehensive suite provided by gcc called the [torture
-tests](https://gcc.gnu.org/onlinedocs/gccint/Torture-Tests.html). This
-is a list of ~2000 c files that exercise obscure C compliance. We first
-compared `gcc` vs `clang` here and found `clang` passes ~1500 of
-them. Since we're using Clang IR as the basis for our lowering pass, we
-only took the torture tests that clang could pass and used that as our
-corpus. As of writing, there are 35 unsupported cases.
+Slate uses GCC's [torture tests](https://gcc.gnu.org/onlinedocs/gccint/Torture-Tests.html)
+after a Clang/CIR admission filter. Supported cases are in
+`tests/fixtures.gcc-torture/`; tracked gaps are in
+`tests/fixtures.gcc-torture.unsupported/`; deliberately untracked cases are in
+`tests/fixtures.gcc-torture.ignored/`. Current counts and triage commands are
+maintained in each corpus README and `wiki/concepts/gcc-torture-triage.md`.
 
-Some are ignored in the dir (`tests/fixtures.gcc-torture.ignored`).
+To inspect one unsupported case:
 
-There are three such cases now:
+```bash
+SLATE_GCC_TORTURE_FIXTURE=<name> cargo nextest r --release --test gcc_torture_suite \
+  -E 'test(gcc_torture_unsupported_triage_report)' --run-ignored ignored-only --nocapture
+```
 
-- `ieee__cdivchkd.c` (complex operations depend on which complex library
-  you link to; libgcc and compiler-rt give different results for this
-  test).
-- `ieee__cdivchkf.c` (same reason as above).
-- `strlen-5.c` (this tries to reach into another array, which is UB and
-  will panic in rust, but works in C).
-
-Supported tests are located at `tests/fixtures.gcc-torture.supported`
-Unsupported tests are located at `tests/fixtures.gcc-torture.unsupported`
+The same pattern applies to `SLATE_GCC_DG_FIXTURE` and
+`SLATE_LIBC_TEST_FIXTURE` with their respective suite test names.
 
 ## Fuzzing
 

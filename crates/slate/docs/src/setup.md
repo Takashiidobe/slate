@@ -69,7 +69,7 @@ cargo nextest r --release --profile libc     # libc shim, headers, API, and func
   compilation, functional behavior, and header-only compilation across
   targets. Run for changes in `libc-shim/`.
 - `rewrites` for fixup/idiomatization passes
-  (`src/backend/query/rules/`) Run for changes in `src/backend/`.
+  (`src/backend/engine/rules/`) Run for changes in `src/backend/`.
 
 Only the profile matching what you changed needs to pass; run more than one
 only when a change genuinely crosses those boundaries (e.g. a shared type
@@ -78,13 +78,37 @@ used by both the lowerer and a fixup pass).
 To run just one fixture, run `SLATE_DIFF_FIXTURE`:
 
 ```bash
-SLATE_DIFF_FIXTURE=<name> cargo nextest r --release --profile lowering
+SLATE_DIFF_FIXTURE=<name> cargo nextest r --release --profile lowering \
+  --test differential -E 'test(generated_differential)' --nocapture
+SLATE_DIFF_FIXTURE=<name> cargo nextest r --release --profile rewrites \
+  --test differential -E 'test(generated_differential)' --nocapture
 ```
 
 Fixtures can carry `COMMON`, `LOWERING`, and `REWRITES` FileCheck directives.
 The active nextest profile selects only its own directives plus `COMMON`.
 See `wiki/concepts/differential-fixtures.md` for function-scoped unordered
 checks and the complete syntax.
+
+Cross-target differential profiles are available when the matching runtime
+toolchain is installed:
+
+| Target | Profiles | Required runtime pieces |
+| --- | --- | --- |
+| ARM32 GNU (`armv7-unknown-linux-gnueabihf`) | `arm-lowering`, `arm-rewrites` | ARM GNU sysroot/linker and `qemu-arm-static` |
+| AArch64 GNU (`aarch64-unknown-linux-gnu`) | `aarch64-lowering`, `aarch64-rewrites` | AArch64 sysroot/linker and `qemu-aarch64-static` |
+
+ARM32 overrides are `SLATE_ARM_SYSROOT`, `SLATE_ARM_LINKER`,
+`SLATE_ARM_CC`, and `SLATE_ARM_QEMU`. The runner commonly needs
+`arm-none-linux-gnueabihf-gcc` explicitly as `SLATE_ARM_LINKER`.
+
+For unsupported corpus cases, use the suite-specific selectors documented in
+`wiki/concepts/gcc-torture-triage.md`, rather than forcing
+`SLATE_DIFF_FIXTURE`.
+
+When a batch test reports stale dependency metadata, remove only the specific
+`target/test-cache/target-*` directory named by the failing suite and rerun.
+Generated Rust and runnable debug binaries remain under the suite's `target/`
+directories for direct inspection.
 
 ## Cleanup
 

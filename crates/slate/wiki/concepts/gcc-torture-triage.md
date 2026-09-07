@@ -100,7 +100,7 @@ upstream of Slate.
    member names, signedness on a typedef): `$SLATE_CLANG -Xclang -ast-dump=json -fsyntax-only <file.c>`.
 5. **`cargo run -- fixup-debug <file.c>`** — only if step 2 showed the bug is
    fixup-introduced. `--only-pass <name>` / `--up-to-pass <name>` isolate a
-   single pass; see `docs/passes.md` for the pass list and order.
+   single pass; see `wiki/concepts/passes.md` for the pass catalog and order.
 
 ### Where the actually-compiled batch binary lives
 
