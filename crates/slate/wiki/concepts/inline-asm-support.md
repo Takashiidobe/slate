@@ -41,7 +41,11 @@ needing a register-pressure heuristic.
 | `p` (address operand)                                                                                              | address materialized in a register                                                                                                                                                                         |
 | `m`/`o`/`V`/`+m`, or any set with no `r` alternative, template references the slot exactly once, no `%aN` modifier | address bound `in(reg)` (or read-before/write-after for `+m`/`=m`), template placeholder wrapped in deref syntax: AT&T `({0})`, Intel `[{0}]` with a synthesized `dword ptr`/`byte ptr`/`qword ptr` prefix |
 | same, but the slot is referenced more than once or uses a `%aN` address modifier                                   | **error** — no per-template analysis attempted                                                                                                                                                             |
-| `x`/`y` (SSE/AVX), `q`/`Q` (byte-addressable subset), `A` (edx:eax pair)                                           | **error** — needs a distinct Rust register class (`xmm_reg`, `ymm_reg`, …), not generic `reg`                                                                                                              |
+| `x` (SSE register)                                                                                                 | `xmm_reg` (`AsmReg::Class("xmm_reg")` — the backend's `AsmReg::Class` already takes an arbitrary class name, so no codegen changes were needed, only a new `AsmRegConstraint::Sse` resolution case)         |
+| `Q` (always abcd), `q` in 32-bit mode, on a non-byte operand                                                        | `reg_abcd` (`AsmRegConstraint::ByteAddressableAbcd`/`ByteAddressableGpr`)                                                                                                                                    |
+| `q` in 64-bit mode, on a non-byte operand                                                                          | `reg` (equivalent to unrestricted `Generic`, since GCC's `q` means "any GPR" there)                                                                                                                          |
+| `q` in 64-bit mode, on a byte operand                                                                              | `reg_byte`                                                                                                                                                                                                  |
+| `y` (MMX register), `Q` on a byte operand, `q` in 32-bit mode on a byte operand, `A` (edx:eax pair)                 | **error** — see below                                                                                                                                                                                       |
 
 CIR evidence for the memory row: an `m`/`g`/`imr` operand arrives as an
 address (`!cir.ptr<T>`, `maybe_memory` marker) rather than a plain SSA value,
@@ -102,9 +106,42 @@ restriction, not one either C compiler imposes.
 
 ## Todo
 
-No lowering attempted regardless of soundness: `x`/`y`/`q`/`Q`/`A` register
-classes. Also unverified: an `asm_operand_bits` bug hardcoding pointer operands
-to 64 bits regardless of target. Tracked as `slate-3f8g.4.15.{6,8}`.
+`x` (SSE) implemented (`slate-3f8g.4.15.6`). `q`/`Q` on non-byte operands
+implemented (`slate-3f8g.4.15.8`), which also threads target pointer-bitness
+(`TargetArch::pointer_bits`, computed from `module.triple` once in
+`Lowerer::target_pointer_bits`) down through `asm_operand_bits`,
+`asm_reg_for_constraint`, and the template-modifier-suffix machinery —
+fixing the pre-existing `asm_operand_bits` bug where pointer/fn-pointer
+operands were hardcoded to 64 bits regardless of target. `y`, byte-sized
+`Q`/`q`, and `A` remain unconditional errors — audited via GitHub code
+search (exact-case, x86 context) before deciding scope:
+
+- **`y`** (MMX register): real but rare/legacy usage (msieve/yafu lanczos,
+  kvm-unit-tests, pm123 3DNow). Blocked regardless of demand — Rust's
+  `mmx_reg` register class can only be used as a clobber, never bound as an
+  input or output (`rustc` error: "register class `mmx_reg` can only be used
+  as a clobber"). No lowering is possible against stable `asm!`.
+- **byte-sized `Q`, and byte-sized `q` under a 32-bit target**: confirmed via
+  real Clang codegen that GCC/Clang fully support this, including the `%h`
+  high-byte modifier (`ah`/`bh`/`ch`/`dh`) — not a rare corner case. The gap
+  is entirely Rust's: `reg_abcd` has no `i8` arm at all (only
+  `i16/i32/i64/f16/f32/f64`), and naming `ah`/`bh`/`ch`/`dh` as an explicit
+  register operand is flatly rejected (`rustc`: "high byte registers cannot
+  be used as an operand on x86_64"). `q` under a 64-bit target sidesteps
+  this entirely — it resolves to `reg_byte`, which does support `i8`
+  directly. A sound workaround exists (verified empirically, same shape as
+  the `ebx`/`rbx` fixup below): bind a wider temp via `reg_abcd` and use
+  Rust's `{N:l}`/`{N:h}` template modifiers, which *are* permitted on a
+  class-bound operand even though naming the register directly isn't —
+  `asm!("incb {0:h}", inlateout(reg_abcd) v)` on `0x1234` correctly produced
+  `0x1334`, disassembling to a bare `inc %ah` with no REX prefix. Filed as
+  `slate-3f8g.4.15.10` (needs a new `TemplateModifier::HighByte` for CIR's
+  `${N:h}`, confirmed distinct from bare `$N`, plus widen/narrow glue
+  analogous to the `EbxFixup` machinery).
+- **`A`** (edx:eax pair): very rare (~4 hits, all the legacy `rdtsc` idiom;
+  modern code mostly writes `"=a","=d"` directly instead). Not a
+  register-class mapping like the others — one constraint spanning two tied
+  registers is a new lattice shape, lowest priority given the frequency.
 
 `o`/`V` confirmed CIR-identical to `m` (`slate-3f8g.4.15.5`): both arrive as
 `*o`/`*V` in the raw constraint string with the same `maybe_memory` address

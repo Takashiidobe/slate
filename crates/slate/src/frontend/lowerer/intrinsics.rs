@@ -240,6 +240,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             &template_constraints,
             &template_types,
             dialect,
+            self.parent.target_pointer_bits,
         ) else {
             unsupported!(
                 "lower: could not translate inline asm template `{}`",
@@ -255,6 +256,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 condition,
                 &template_types[output_index],
                 dialect,
+                self.parent.target_pointer_bits,
             ) else {
                 unsupported!(
                     "lower: unsupported inline asm flag-output constraint `{}`",
@@ -317,8 +319,18 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 else {
                     unreachable!("addressed outputs are validated as memory or reg above")
                 };
-                let mut resolved = asm_reg_for_constraint(kind.clone());
-                let bits = asm_operand_bits(&template_types[output_index]);
+                let bits = asm_operand_bits(
+                    &template_types[output_index],
+                    self.parent.target_pointer_bits,
+                );
+                let Some(mut resolved) =
+                    asm_reg_for_constraint(kind.clone(), self.parent.target_pointer_bits, bits)
+                else {
+                    unsupported!(
+                        "lower: unsupported inline asm output register in `{}`",
+                        op.constraints
+                    );
+                };
                 if let ResolvedAsmReg::Family(family) = resolved
                     && family.is_ebx_like()
                 {
@@ -395,8 +407,18 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 });
                 (Expr::Var(name.clone().into()), Some(name))
             };
-            let mut resolved = asm_reg_for_constraint(spec);
-            let bits = asm_operand_bits(&template_types[output_index]);
+            let bits = asm_operand_bits(
+                &template_types[output_index],
+                self.parent.target_pointer_bits,
+            );
+            let Some(mut resolved) =
+                asm_reg_for_constraint(spec, self.parent.target_pointer_bits, bits)
+            else {
+                unsupported!(
+                    "lower: unsupported inline asm output register in `{}`",
+                    op.constraints
+                );
+            };
             if let ResolvedAsmReg::Family(family) = resolved
                 && family.is_ebx_like()
             {
@@ -467,9 +489,18 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     AsmOperand::Const(int_value_expr(value))
                 }
                 Constraint::Reg { kind, .. } => {
-                    let mut resolved = asm_reg_for_constraint(kind.clone());
-                    let bits =
-                        asm_operand_bits(&template_types[total_output_count + operand_index]);
+                    let bits = asm_operand_bits(
+                        &template_types[total_output_count + operand_index],
+                        self.parent.target_pointer_bits,
+                    );
+                    let Some(mut resolved) =
+                        asm_reg_for_constraint(kind.clone(), self.parent.target_pointer_bits, bits)
+                    else {
+                        unsupported!(
+                            "lower: unsupported inline asm input register in `{}`",
+                            op.constraints
+                        );
+                    };
                     if let ResolvedAsmReg::Family(family) = resolved
                         && family.is_ebx_like()
                     {
