@@ -115,6 +115,35 @@ During feature development, isolate the new differential fixture:
 
 ```bash
 SLATE_DIFF_FIXTURE=<name> cargo nextest r --release --profile lowering --test differential -E 'test(generated_differential)' --nocapture
+SLATE_DIFF_FIXTURE=<name> cargo nextest r --release --profile rewrites --test differential -E 'test(generated_differential)' --nocapture
+```
+
+Regenerate embedded FileCheck blocks after changing a fixture or generated
+Rust shape:
+
+```bash
+just regen-filecheck tests/fixtures/<name>.c
+just regen-lowering tests/fixtures/<name>.c
+just regen-rewrites tests/fixtures/<name>.c
+```
+
+Use `regen-lowering` or `regen-rewrites` when the other profile's block must
+remain unchanged. `just regen-filecheck-match '<glob>'` regenerates matching
+fixtures. For a full profile run, `tools/regen-filecheck.sh` reruns nextest,
+finds the failing FileCheck artifacts, regenerates only those fixtures, and
+returns the original nextest status:
+
+```bash
+tools/regen-filecheck.sh lowering
+tools/regen-filecheck.sh rewrites
+```
+
+The direct updater is useful when `just` is unavailable or for explicit target
+ABIs:
+
+```bash
+python3 tools/update_filecheck.py --profile both --in-place tests/fixtures/<name>.c
+python3 tools/update_filecheck.py --project --profile both --in-place tests/fixtures.multi/<name>
 ```
 
 ## Architecture Overview

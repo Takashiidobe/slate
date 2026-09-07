@@ -14,8 +14,8 @@ cargo nextest r --release --profile lowering --test gcc_dg_suite \
 The C23 cases use the same supported and unsupported buckets and runner.
 
 To regenerate only fixtures whose FileCheck assertions fail in a profile, run
-`tools/regen-failed-filecheck.sh lowering` or
-`tools/regen-failed-filecheck.sh rewrites` from the repository root. The tool
+`tools/regen-filecheck.sh lowering` or
+`tools/regen-filecheck.sh rewrites` from the repository root. The tool
 returns the original nextest status, so a failing run remains visible after
 its assertions are refreshed.
 

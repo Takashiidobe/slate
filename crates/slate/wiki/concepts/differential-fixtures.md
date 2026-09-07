@@ -99,6 +99,51 @@ python3 tools/update_filecheck.py --profile both --in-place \
 command's stdout. Those checks are separate from lowering and rewrite profile
 selection because conditional-compilation reconstruction is its own producer.
 
+## Regenerate and isolate fixture failures
+
+For a normal fixture, use the `justfile` recipes so the default target checks
+are selected consistently:
+
+```bash
+just regen-filecheck tests/fixtures/<name>.c
+just regen-lowering tests/fixtures/<name>.c
+just regen-rewrites tests/fixtures/<name>.c
+```
+
+The profile-specific recipes leave the other generated block frozen. Pattern
+variants are available as `just regen-filecheck-match '<glob>'`,
+`just regen-lowering-match '<glob>'`, and `just regen-rewrites-match '<glob>'`.
+For a project or library fixture, pass its directory to
+`just regen-filecheck`; the recipe uses the project-aware updater mode.
+
+To refresh only assertions that failed during a whole profile run, use:
+
+```bash
+tools/regen-filecheck.sh lowering
+tools/regen-filecheck.sh rewrites
+```
+
+This reruns nextest, regenerates the failed fixture paths from the emitted
+FileCheck artifacts, and preserves the original nextest exit status. It is
+intentionally not a substitute for investigating a runtime, translation, or
+Rust compilation failure.
+
+To run one ordinary fixture end to end, select it by stem and select the
+profile whose behavior you are changing:
+
+```bash
+SLATE_DIFF_FIXTURE=<name> cargo nextest r --release --profile lowering \
+  --test differential -E 'test(generated_differential)' --nocapture
+SLATE_DIFF_FIXTURE=<name> cargo nextest r --release --profile rewrites \
+  --test differential -E 'test(generated_differential)' --nocapture
+```
+
+The selection applies to the shared, platform, and target-check fixture
+collectors. Corpus suites use their own selectors, such as
+`SLATE_GCC_TORTURE_FIXTURE`, `SLATE_GCC_DG_FIXTURE`, and
+`SLATE_LIBC_TEST_FIXTURE`; use their suite-specific ignored triage report when
+the case is in an unsupported bucket.
+
 ## Region-scoped generation with `@begin`/`@end` directives
 
 **Every new fixture must carry both a `@lowering` and a `@rewrite` region** so

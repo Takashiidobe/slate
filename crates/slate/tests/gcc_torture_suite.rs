@@ -57,7 +57,7 @@ fn run_cases(group: &str, dir: &Path) -> Vec<(String, Result<(), String>)> {
 
     let translated = support::parallel_map_with_jobs(&cases, jobs, |(name, path)| {
         let generated = work.join(format!("{name}.generated.rs"));
-        let extra_args = support::dg_option_flags(path);
+        let extra_args = support::gnu_dg_option_flags(path);
         support::translate_with_args(path, &generated, &extra_args).map(|()| support::Case {
             name: name.clone(),
             c_src: path.clone(),

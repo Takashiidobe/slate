@@ -60,7 +60,7 @@ fn run_cases(group: &str, dir: &Path) -> Vec<(String, Result<(), String>)> {
 
     let translated = support::parallel_map_with_jobs(&cases, jobs, |(name, path)| {
         let generated = work.join(format!("{name}.generated.rs"));
-        let options = support::dg_option_flags(path);
+        let options = support::gnu_dg_option_flags(path);
         support::translate_with_args(path, &generated, &options).and_then(|()| {
             let fixture = std::fs::read_to_string(path)
                 .map_err(|e| format!("read {}: {e}", path.display()))?;
@@ -104,6 +104,16 @@ fn run_cases(group: &str, dir: &Path) -> Vec<(String, Result<(), String>)> {
 #[test]
 fn gcc_dg_unsupported_tests_still_fail() {
     let results = run_cases("unsupported", &root("unsupported"));
+    if let Ok(report) = std::env::var("SLATE_GCC_DG_FAILURES") {
+        let text: String = results
+            .iter()
+            .map(|(name, result)| match result {
+                Ok(()) => format!("{name}: PASS\n"),
+                Err(e) => format!("{name}: {e}\n"),
+            })
+            .collect();
+        std::fs::write(report, text).expect("write gcc.dg failure report");
+    }
     let unexpected_passes: Vec<String> = results
         .into_iter()
         .filter_map(|(name, result)| result.ok().map(|()| name))
