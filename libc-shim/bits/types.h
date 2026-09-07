@@ -277,17 +277,28 @@ typedef unsigned long __uintmax_t;
 #else
 typedef unsigned int       __size_t;
 typedef int                __ssize_t;
+#if defined(__SLATE_LIBC_GLIBC)
+typedef long          __off_t;
+typedef long long     __off64_t;
+typedef unsigned long __ino_t;
+typedef unsigned long long __ino64_t;
+typedef long          __blkcnt_t;
+typedef long long     __blkcnt64_t;
+typedef unsigned long __fsblkcnt_t;
+typedef unsigned long __fsfilcnt_t;
+#else
 typedef long long          __off_t;
 typedef long long          __off64_t;
-typedef long               __time_t;
-typedef long               __suseconds_t;
 typedef unsigned long long __ino_t;
 typedef unsigned long long __ino64_t;
-typedef long               __blksize_t;
 typedef long long          __blkcnt_t;
 typedef long long          __blkcnt64_t;
 typedef unsigned long long __fsblkcnt_t;
 typedef unsigned long long __fsfilcnt_t;
+#endif
+typedef long               __time_t;
+typedef long               __suseconds_t;
+typedef long               __blksize_t;
 typedef long long          __int64_t;
 typedef unsigned long long __uint64_t;
 typedef long long          __int_least64_t;

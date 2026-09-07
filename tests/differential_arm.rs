@@ -17,10 +17,6 @@ fn skip_reason(name: &str) -> Option<&'static str> {
             "SLATE_CLANG's CIR frontend does not support _BitInt > 128 bits or __float128 \
              for armv7-unknown-linux-gnueabihf (slate-sdks.1)",
         ),
-        "stat_struct" => Some(
-            "known bug: struct stat field layout is wrong under raw lowering \
-             (likely the same root cause as slate-jxmx's nlink_t widening bug)",
-        ),
         "gnu_builtin_atomic_flag" => Some(
             "ClangIR limitation: 'cir.atomic.test_and_set' requires an 8-bit signed-integer \
              pointer operand unconditionally, but arm char is unsigned, so CIR itself \
@@ -41,10 +37,6 @@ fn skip_reason(name: &str) -> Option<&'static str> {
              armv7-unknown-linux-gnueabihf -- rejects __int128/__float128 outright, and \
              requires 'cir.alloca' size operands to be 64-bit even though this is a 32-bit \
              target, failing CIR verification before slate's lowerer ever runs",
-        ),
-        "stat_mtime_member" => Some(
-            "likely the same struct-stat field-layout bug tracked for stat_struct above \
-             (st_mtime reads as 0 instead of the real mtime)",
         ),
         "c23_library" => Some(
             "environment limitation, not a slate bug (slate-iow4): the armv7 ARM GNU \
