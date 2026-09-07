@@ -75,10 +75,18 @@ enum ConstraintAtom {
     NonOffsettable,
     SseReg,
     AvxReg,
+    ArmFloat(ArmFloatConstraint),
     ByteAddressableAbcd,
     ByteAddressableGpr,
     EdxEaxPair,
     Other,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum ArmFloatConstraint {
+    W,
+    T,
+    X,
 }
 
 fn parse_constraint_atoms(
@@ -111,6 +119,15 @@ fn parse_constraint_atoms(
                 'm' => ConstraintAtom::Memory,
                 'o' => ConstraintAtom::Offsettable,
                 'V' => ConstraintAtom::NonOffsettable,
+                'x' if target_arch == TargetArch::Arm => {
+                    ConstraintAtom::ArmFloat(ArmFloatConstraint::X)
+                }
+                't' if target_arch == TargetArch::Arm => {
+                    ConstraintAtom::ArmFloat(ArmFloatConstraint::T)
+                }
+                'w' if target_arch == TargetArch::Arm => {
+                    ConstraintAtom::ArmFloat(ArmFloatConstraint::W)
+                }
                 'x' => ConstraintAtom::SseReg,
                 'y' => ConstraintAtom::AvxReg,
                 'Q' => ConstraintAtom::ByteAddressableAbcd,
@@ -199,6 +216,7 @@ pub(super) enum AsmRegConstraint {
     FixedLetter(X86Reg),
     ExplicitName(String),
     Sse,
+    ArmFloat(ArmFloatConstraint),
     ByteAddressableAbcd,
     ByteAddressableGpr,
 }
@@ -219,6 +237,7 @@ fn parse_reg_constraint(constraint: &str, target_arch: TargetArch) -> Option<Asm
     {
         [ConstraintAtom::FixedReg(reg)] => Some(AsmRegConstraint::FixedLetter(*reg)),
         [ConstraintAtom::SseReg] => Some(AsmRegConstraint::Sse),
+        [ConstraintAtom::ArmFloat(kind)] => Some(AsmRegConstraint::ArmFloat(*kind)),
         [ConstraintAtom::ByteAddressableAbcd] => Some(AsmRegConstraint::ByteAddressableAbcd),
         [ConstraintAtom::ByteAddressableGpr] => Some(AsmRegConstraint::ByteAddressableGpr),
         _ => None,
@@ -367,6 +386,21 @@ pub(super) fn asm_reg_for_constraint(
             None => ResolvedAsmReg::Literal(name),
         },
         AsmRegConstraint::Sse => ResolvedAsmReg::Sse,
+        AsmRegConstraint::ArmFloat(kind) => {
+            let class = match (kind, operand_bits) {
+                (ArmFloatConstraint::W, 32) => "sreg",
+                (ArmFloatConstraint::W, 64) => "dreg",
+                (ArmFloatConstraint::W, 128) => "qreg",
+                (ArmFloatConstraint::T, 32) => "sreg",
+                (ArmFloatConstraint::T, 64) => "dreg_low16",
+                (ArmFloatConstraint::T, 128) => "qreg_low8",
+                (ArmFloatConstraint::X, 32) => "sreg_low16",
+                (ArmFloatConstraint::X, 64) => "dreg_low8",
+                (ArmFloatConstraint::X, 128) => "qreg_low4",
+                _ => return None,
+            };
+            ResolvedAsmReg::Class(class)
+        }
         AsmRegConstraint::ByteAddressableAbcd => ResolvedAsmReg::Class("reg_abcd"),
         AsmRegConstraint::ByteAddressableGpr => match (pointer_bits, operand_bits) {
             (64, 8) => ResolvedAsmReg::Class("reg_byte"),
@@ -392,6 +426,7 @@ pub(super) fn reg_constraint_family(kind: &AsmRegConstraint) -> Option<X86Reg> {
     match kind {
         AsmRegConstraint::Generic
         | AsmRegConstraint::Sse
+        | AsmRegConstraint::ArmFloat(_)
         | AsmRegConstraint::ByteAddressableAbcd
         | AsmRegConstraint::ByteAddressableGpr => None,
         AsmRegConstraint::FixedLetter(reg) => Some(*reg),
@@ -1008,6 +1043,11 @@ pub(super) fn rust_asm_register_modifier(ty: &Type, target_arch: TargetArch) -> 
 pub(super) fn asm_operand_bits(ty: &Type, pointer_bits: u32) -> u32 {
     match ty {
         Type::Ptr { .. } | Type::FnPtr { .. } => pointer_bits,
+        Type::Prim(Prim::F16) => 16,
+        Type::Prim(Prim::F32) => 32,
+        Type::Prim(Prim::F64) => 64,
+        Type::Prim(Prim::F128) => 128,
+        Type::LongDouble => crate::frontend::toolchain::active_long_double_bits(),
         _ => int_bits(&ty.render()).unwrap_or(32),
     }
 }

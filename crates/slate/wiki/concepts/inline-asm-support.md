@@ -42,6 +42,7 @@ needing a register-pressure heuristic.
 | `m`/`o`/`V`/`+m`, or any set with no `r` alternative, template references the slot exactly once, no `%aN` modifier | address bound `in(reg)` (or read-before/write-after for `+m`/`=m`), template placeholder wrapped in deref syntax: AT&T `({0})`, Intel `[{0}]` with a synthesized `dword ptr`/`byte ptr`/`qword ptr` prefix |
 | same, but the slot is referenced more than once or uses a `%aN` address modifier                                   | **error** — no per-template analysis attempted                                                                                                                                                             |
 | `x` (SSE register)                                                                                                 | `xmm_reg` (`AsmReg::Class("xmm_reg")` — the backend's `AsmReg::Class` already takes an arbitrary class name, so no codegen changes were needed, only a new `AsmRegConstraint::Sse` resolution case)         |
+| ARM `w`/`t`/`x` floating-point register                                                                             | type-sensitive `sreg`/`dreg`/`qreg` classes, with `t` and `x` selecting the corresponding low-register subsets                                                                                              |
 | `Q` (always abcd), `q` in 32-bit mode, on a non-byte operand                                                        | `reg_abcd` (`AsmRegConstraint::ByteAddressableAbcd`/`ByteAddressableGpr`)                                                                                                                                    |
 | `q` in 64-bit mode, on a non-byte operand                                                                          | `reg` (equivalent to unrestricted `Generic`, since GCC's `q` means "any GPR" there)                                                                                                                          |
 | `q` in 64-bit mode, on a byte operand                                                                              | `reg_byte`                                                                                                                                                                                                  |
@@ -183,6 +184,17 @@ is rejected by the current CIR-enabled Clang before CIR generation, so it has
 no Slate-side workaround.
 
 Fixture: `tests/fixtures/arm/asm_arm_vfp_memory_constraint.c`.
+
+VFP/NEON register constraints: `w` selects the full Rust ARM `sreg`/`dreg`/
+`qreg` class for 32-/64-/128-bit operands. `t` selects `sreg`, `dreg_low16`,
+or `qreg_low8`; `x` selects `sreg_low16`, `dreg_low8`, or `qreg_low4`.
+
+Fixture: `tests/fixtures/arm/asm_arm_vfp_register_constraint.c`.
+
+The ARM `y` and `z` constraints name legacy iWMMXt registers. They remain
+explicitly unsupported: the current Rust ARM `asm!` register classes expose no
+iWMMXt class, and the repository audit found no ARM fixture or corpus case that
+justifies inventing a lowering without a Rust backend operand class.
 
 Immediate constraints: scalar `I` and `M` resolve to Rust `const` operands when
 CIR proves the input constant. `J`, `K`, `L`, and `N` use the same path; `O` is
