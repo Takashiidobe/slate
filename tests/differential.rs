@@ -191,6 +191,14 @@ fn fixtures() -> Vec<Fixture> {
     let selected = std::env::var("SLATE_DIFF_FIXTURE").ok();
     let mut fixtures = Vec::new();
     collect_fixtures(&dir, FixtureFlavor::Default, &selected, &mut fixtures);
+    if cfg!(target_arch = "x86_64") {
+        collect_fixtures(
+            &dir.join("x86_64"),
+            FixtureFlavor::Default,
+            &selected,
+            &mut fixtures,
+        );
+    }
     collect_fixtures(
         &dir.join("bionic"),
         FixtureFlavor::Bionic,

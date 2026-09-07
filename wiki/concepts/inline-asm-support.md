@@ -152,129 +152,29 @@ distinct offsettable-vs-not handling exists or is needed, since Slate always
 materializes the address in a register rather than picking a displacement
 form.
 
-## AArch64 (epic `slate-3f8g.4.16`)
+## AArch64
 
-`'r'` needed no new resolution logic: `constraint_allows_generic_reg` already
-treats bare `r` as `AsmRegConstraint::Generic` regardless of arch, and
-`ResolvedAsmReg::Generic` already lowers to the arch-agnostic
-`AsmReg::Class("reg")` — Rust's `reg` class exists identically on AArch64
-(X0-X30). The actual gap was register-*width* selection
-(`slate-3f8g.4.16.5`):
+Supported: `r` -> `reg` (arch-agnostic, no AArch64-specific code needed).
+Register width: implicit width attaches `{N:w}`/`{N:x}`
+(`rust_asm_register_modifier`); explicit `%w`/`%x` template modifiers ->
+`TemplateModifier::RegisterWidth`. `options(att_syntax)` is never emitted for
+non-x86 targets (`cir_asm_dialect` gated on `TargetArch::is_x86()`).
 
-- **Implicit width** (no GCC template modifier on the placeholder): Slate
-  always attaches a Rust `{N:modifier}` register-view suffix for a generic
-  reg operand (`Constraint::wants_register_modifier`). The modifier alphabet
-  is arch-specific and was previously hardcoded to x86's AT&T letters
-  (`l`/`x`/`e`/`r` for 8/16/32/64-bit, `RegWidth::att_size_modifier`).
-  `rust_asm_register_modifier` is now dispatched on `TargetArch`: AArch64 has
-  only two register views (`w` for Wn, ≤32-bit; `x` for Xn, 64-bit, also the
-  default) — there is no per-byte/halfword modifier the way x86 has, since
-  AArch64 GPRs have no sub-32-bit addressable view. ARM (32-bit) and RISC-V
-  return no modifier at all: both have a single register width and no
-  alternate view syntax.
-- **Explicit `%w`/`%x`** (GCC template modifiers that force a width,
-  independent of the operand's declared type): CIR preserves these as
-  `${N:w}`/`${N:x}` in its `$`-prefixed template syntax, identical in shape
-  to the `%c`/`%l`/`%a` modifiers Slate already parsed. Added
-  `TemplateModifier::RegisterWidth(char)`, parsed only when `target_arch ==
-  Arm64` — x86 also has a `%w` letter (word/16-bit, part of the still-open
-  `%b`/`%h`/`%w`/`%k`/`%q` family in `slate-3f8g.4.15.9`) with a completely
-  different meaning, so the two must not share a code path or the x86 ticket
-  would inherit the wrong resolution.
+Fixture: `tests/fixtures/aarch64/asm_aarch64_reg_width_modifiers.c`.
 
-Fixed a latent blocker uncovered while landing the first real (non-x86)
-target: CIR's `AsmFlavor` enum only has `X86Att`/`X86Intel` variants and is
-apparently always populated even for non-x86 `cir.asm` ops, so
-`cir_asm_dialect` was unconditionally returning `Some(Att)` regardless of
-target, which made every generated `asm!` carry `options(att_syntax)` — an
-x86-only option that rustc rejects outright on other targets. Dialect
-resolution is now gated on `TargetArch::is_x86()` at the one call site
-(`intrinsics.rs::lower_extended_asm`); non-x86 targets get `dialect = None`
-and rely on the raw template text alone, matching how AArch64 asm has no
-AT&T/Intel distinction to begin with.
+## ARM (32-bit)
 
-`Lowerer` now carries a `target_arch: TargetArch` field alongside
-`target_pointer_bits`, threaded through `translate_asm_template` ->
-`render_operand_reference` -> `register_modifier_suffix` ->
-`rust_asm_register_modifier`, and into `parse_asm_template` ->
-`TemplateModifier::parse`. Verified against real `aarch64-unknown-linux-gnu`
-codegen via `SLATE_TARGET=aarch64-unknown-linux-gnu cargo run -- translate`,
-and runtime-differential-tested under `qemu-aarch64-static`
-(`tests/differential_aarch64.rs`,
-`tests/fixtures/aarch64/asm_aarch64_reg_width_modifiers.c`) —
-that fixture's `add %w0, %w0, #1 / add %x0, %x0, #0` sequence specifically
-exercises the 32-bit view's zero-extension into the upper 32 bits, not just
-that the modifier letters round-trip textually.
+Supported: `r` and `l` (Thumb1 low regs r0-r7, alias for `r` elsewhere) both
+-> `reg`. Sound without tracking ARM/Thumb state: Rust's ARM `reg` class
+already narrows to r0-r7 under Thumb1 and expands under Thumb2/ARM. No
+register-width modifier on ARM32.
 
-## ARM (32-bit) general/low/high registers (`slate-3f8g.4.16.1`)
+Limitation: `h` (Thumb r8-r15) is unsupported (clear error, not silently
+wrong) — Rust has no register class for that set, and unlike `l` it isn't a
+subset of `reg`, so mapping it there would be unsound.
 
-GCC/Clang's ARM family defines `r` (any general register, r0-r15 minus
-sp/pc/lr conventionally), `l` (Thumb1 low registers r0-r7; in ARM state and
-Thumb-2 state, an alias for `r`), and `h` (Thumb-only, core registers r8-r15).
+Fixture: `tests/fixtures/arm/asm_arm_general_low_reg.c`.
 
-`'r'` already resolved correctly with no ARM-specific code (same
-`constraint_allows_generic_reg` path as x86/AArch64). `'l'` needed one new
-match arm in `parse_constraint_atoms`, gated on `target_arch ==
-TargetArch::Arm`: it maps to the same `ConstraintAtom::Reg` as bare `r`, so it
-resolves to `AsmRegConstraint::Generic` -> Rust's `reg` class exactly like
-`r` does. This is sound without Slate tracking ARM-vs-Thumb1-vs-Thumb2 state
-at all: per the Rust reference, ARM's `reg` class already narrows itself to
-r0-r7 whenever the function is compiled Thumb1-only, and expands to
-r0-r12+r14 whenever Thumb2 (or ARM) instructions are available — the same
-"whichever registers are actually encodable get picked" guarantee that makes
-bare `r` sound. Confirmed against real `clang -target armv7-linux-gnueabihf`
-codegen: `'l'` compiles identically under `-mthumb` and `-marm`. `rustc
---print target-spec-json` also confirms `armv7-unknown-linux-gnueabihf`
-always carries `+thumb2`, so on every target Slate supports, `'l'` is never
-actually narrower than what `reg` already provides.
+## Fixture layout
 
-`'h'` is a real, separate register set (r8-r15) that Rust has no register
-class for at all (confirmed: ARM's inline-asm register classes in the Rust
-reference cover `reg`, `sreg*`, `dreg*`, `qreg*` — none restricted to the
-Thumb high registers). Unlike `'l'`, `'h'` is not a subset of what `reg`
-resolves to, so mapping it to `Generic` would be unsound, not just
-imprecise. It's also ARM-state-conditional in a way `'l'` isn't: real clang
-accepts `'h'` under `-mthumb` (both Thumb1 and Thumb2 — 32-bit Thumb2
-encodings can address r8-r15 directly, so `'h'` isn't merely a scratch-only
-constraint there) but rejects it outright (`invalid output constraint`)
-under `-marm`. No code change was needed to reject it: `'h'` was already an
-unrecognized atom before this ticket, so `parse_reg_constraint` already
-returns `None` and `Constraint::parse` already produces `Unsupported`,
-surfacing a clear `unsupported inline asm output/input constraint` diagnostic
-naming the raw constraint string — the same fallback the epic's other
-no-Rust-equivalent letters (x86 `y`, `A`) rely on. Left unconditional rather
-than gated to `-marm`/state, matching that precedent, since Slate has no
-notion of per-function ARM/Thumb state to gate on and no real-world evidence
-of `'h'` usage was found to justify building one.
-
-Fixture: `tests/fixtures/arm/asm_arm_general_low_reg.c` (`+r` and `+l`, both
-lowering to `inlateout(reg)` with no register-view modifier, since ARM32 has
-none — see the `rust_asm_register_modifier` table above). It lives under
-`tests/fixtures/arm/` rather than the shared fixture root — see "Arch-only
-fixture directories" below — so `tests/differential.rs` (x86/native-aarch64
-host) and `tests/differential_aarch64.rs` never attempt it; only
-`tests/differential_arm.rs` (`arm-lowering`/`arm-rewrites` profiles, real
-`qemu-arm-static` runtime differential) picks it up. Its `SLATE-FILECHECK`
-blocks carry the `ARMV7-GNU` prefix that `update_filecheck.py` assigns
-automatically to anything under `tests/fixtures/arm/`.
-
-## Arch-only fixture directories: `tests/fixtures/arm/`, `tests/fixtures/aarch64/`
-
-A fixture whose extended-asm template only makes sense for one non-host
-target (an ARM32-only constraint letter, an AArch64-only mnemonic) belongs in
-`tests/fixtures/arm/` or `tests/fixtures/aarch64/`, not the shared fixture
-root — mirroring the existing `tests/fixtures/{bionic,macos,msvc}/`
-convention for flavor-only fixtures. `tests/differential_arm.rs` and
-`tests/differential_aarch64.rs` each collect the shared root *plus* their own
-arch directory (`support::list_c_fixtures`); every other runner
-(`tests/differential.rs`, the other arch's runner) only ever reads the root,
-so a fixture placed in one of these directories is structurally unreachable
-from any target it wasn't written for — no by-name skip-list entry needed to
-keep it from being attempted on the wrong target, and no FileCheck-prefix
-trick needed to keep the x86-host suite from picking it up.
-
-`tools/update_filecheck.py --profile both --in-place` on a fixture under one
-of these directories needs no `--target` override: `default_targets_for_path`
-recognizes the `arm`/`aarch64` path component and generates single-target
-`ARMV7-GNU`/`AARCH64-GNU`-prefixed checks directly, the same way it already
-special-cases `bionic`/`macos`/`msvc`.
+Arch-exclusive fixtures live in `tests/fixtures/{arm,aarch64,x86_64}/` (mirrors `bionic`/`macos`/`msvc`) instead of by-name skip-lists or FileCheck-prefix tricks; each differential runner reads only its own directory plus the shared root, and `update_filecheck.py` auto-generates single-target checks for paths under them.

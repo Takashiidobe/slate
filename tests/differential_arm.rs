@@ -51,25 +51,6 @@ fn skip_reason(name: &str) -> Option<&'static str> {
                  layout mismatches; armhf long double is actually ABI-identical to double \
                  (8 bytes, confirmed on-device)",
         ),
-        "gnu_asm_alternative_constraints"
-        | "gnu_asm_constant_letters"
-        | "asm_address_operand_p"
-        | "asm_byte_abcd_widen_hack"
-        | "asm_byte_addressable_reg_constraint"
-        | "asm_g_imr_output"
-        | "asm_memory_operand"
-        | "asm_memory_variant_operand"
-        | "asm_sse_register_operand"
-        | "asm_x86_high_byte_view_wide_operand"
-        | "asm_x86_reg_width_override_modifiers"
-        | "inline_asm_demo" => Some(
-            "ARM inline-asm register/immediate/memory constraint lowering isn't implemented \
-             yet -- these fixtures' extended-asm templates use x86-only \
-             constraints/mnemonics/register classes with no target restriction; blocked on \
-             the parent epic's ARM constraint children (slate-3f8g.4.16.2 through .16.4), not \
-             this harness ticket. gnu_asm_alternative_constraints and gnu_asm_constant_letters \
-             also fail on aarch64 today for the same reason",
-        ),
         "compound_literal_address"
         | "numeric_parse_fixup"
         | "local_record_same_tag"
