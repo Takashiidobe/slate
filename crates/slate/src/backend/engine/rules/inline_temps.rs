@@ -1591,6 +1591,161 @@ impl NodeRule for EffectfulTempForward {
     }
 }
 
+struct AsmOutputFold {
+    parent: NodeId,
+    list_index: usize,
+    asm_id: NodeId,
+    let_id: NodeId,
+    let_pos: usize,
+    assign_pos: usize,
+    tmp: Ident,
+    named: Ident,
+}
+
+fn asm_operand_bound_temp(op: &AsmOperand) -> Option<Ident> {
+    match op {
+        AsmOperand::Out {
+            value: Expr::Var(name),
+            ..
+        }
+        | AsmOperand::InOut {
+            output: Expr::Var(name),
+            ..
+        } => is_temp_name(name.as_str()).then_some(*name),
+        _ => None,
+    }
+}
+
+fn locate_asm_output_fold(arena: &Arena, assign_id: NodeId) -> Option<AsmOutputFold> {
+    let Some(NodeKind::Assign {
+        target: Expr::Var(named),
+        value: Expr::Var(tmp),
+    }) = arena.get(assign_id)
+    else {
+        return None;
+    };
+    if !is_temp_name(tmp.as_str()) || is_temp_name(named.as_str()) {
+        return None;
+    }
+    let named = *named;
+    let tmp = *tmp;
+
+    let parent = arena.parent(assign_id)?;
+    let lists = arena.get(parent)?.child_lists();
+    let (list_index, list) = lists
+        .iter()
+        .enumerate()
+        .find_map(|(index, list)| list.contains(&assign_id).then_some((index, *list)))?;
+    let assign_pos = list.iter().position(|&child| child == assign_id)?;
+    if assign_pos == 0 {
+        return None;
+    }
+    let asm_id = unwrap_single_stmt(arena, list[assign_pos - 1]);
+    let Some(NodeKind::InlineAsm(asm)) = arena.get(asm_id) else {
+        return None;
+    };
+    if !asm
+        .operands
+        .iter()
+        .any(|op| asm_operand_bound_temp(op) == Some(tmp))
+    {
+        return None;
+    }
+    let named_read_by_asm = asm
+        .operands
+        .iter()
+        .filter_map(asm_operand_read_expr)
+        .any(|expr| expr_ident(expr) == Some(named));
+    if named_read_by_asm {
+        return None;
+    }
+
+    let let_id = arena.definition(tmp)?;
+    if !matches!(arena.get(let_id), Some(NodeKind::Let { init: None, .. })) {
+        return None;
+    }
+    let let_pos = list.iter().position(|&child| child == let_id)?;
+
+    let root = walk::function_root(arena, assign_id);
+    if node_ident_count(arena, root, tmp) != 2 {
+        return None;
+    }
+
+    Some(AsmOutputFold {
+        parent,
+        list_index,
+        asm_id,
+        let_id,
+        let_pos,
+        assign_pos,
+        tmp,
+        named,
+    })
+}
+
+pub(in crate::backend::engine) struct AsmOutputTempFold;
+
+impl NodeRule for AsmOutputTempFold {
+    fn name(&self) -> &'static str {
+        "inline_temps::asm_output_fold"
+    }
+
+    fn priority(&self) -> u32 {
+        44
+    }
+
+    fn requeues_moved_nodes(&self) -> bool {
+        true
+    }
+
+    fn kinds(&self) -> &'static [NodeKindTag] {
+        &[NodeKindTag::Assign]
+    }
+
+    fn matches(&self, arena: &FunctionOptimizer, id: NodeId) -> bool {
+        locate_asm_output_fold(arena, id).is_some()
+    }
+
+    fn apply(&self, arena: &mut FunctionOptimizer, id: NodeId) -> bool {
+        let Some(found) = locate_asm_output_fold(arena, id) else {
+            return false;
+        };
+
+        let Some(NodeKind::InlineAsm(asm)) = arena.get_mut(found.asm_id) else {
+            unreachable!("asm_output_fold: asm_id invalidated since locate")
+        };
+        let bound = asm
+            .operands
+            .iter_mut()
+            .find_map(|operand| {
+                let value = match operand {
+                    AsmOperand::Out { value, .. } => value,
+                    AsmOperand::InOut { output, .. } => output,
+                    _ => return None,
+                };
+                matches!(value, Expr::Var(name) if *name == found.tmp).then_some(value)
+            })
+            .unwrap_or_else(|| unreachable!("asm_output_fold: operand invalidated since locate"));
+        *bound = Expr::Var(found.named);
+
+        let _ = arena.take(id);
+        let _ = arena.take(found.let_id);
+        let Some(parent_kind) = arena.get_mut(found.parent) else {
+            unreachable!("asm_output_fold: parent invalidated since locate")
+        };
+        let Some(list) = parent_kind
+            .child_lists_mut()
+            .into_iter()
+            .nth(found.list_index)
+        else {
+            unreachable!("asm_output_fold: list_index invalidated since locate")
+        };
+        list.remove(found.assign_pos);
+        list.remove(found.let_pos);
+        true
+    }
+}
+
 fn is_numeric_const_expr(expr: &Expr) -> bool {
     match expr {
         Expr::Value(
