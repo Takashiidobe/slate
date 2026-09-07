@@ -117,12 +117,18 @@ fn constraint_is_constant_only(constraint: &str) -> bool {
         && parse_constraint_atoms(constraint).all(|atom| atom == ConstraintAtom::ConstantEligible)
 }
 
+fn is_memory_like(atom: ConstraintAtom) -> bool {
+    matches!(
+        atom,
+        ConstraintAtom::Memory | ConstraintAtom::Offsettable | ConstraintAtom::NonOffsettable
+    )
+}
+
 fn strip_memory_marker(constraint: &str) -> Option<&str> {
     let rest = constraint.strip_prefix('=').unwrap_or(constraint);
     let rest = rest.strip_prefix('&').unwrap_or(rest);
     let rest = rest.strip_prefix('*').unwrap_or(rest);
-    (!rest.is_empty() && parse_constraint_atoms(rest).all(|atom| atom == ConstraintAtom::Memory))
-        .then_some(rest)
+    (!rest.is_empty() && parse_constraint_atoms(rest).all(is_memory_like)).then_some(rest)
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
