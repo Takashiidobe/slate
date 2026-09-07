@@ -6,6 +6,19 @@ fn fixtures_dir() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures")
 }
 
+fn skip_reason(name: &str) -> Option<&'static str> {
+    match name {
+        "builtin_alloca" | "c99" | "local_vla" => Some(
+            "ClangIR limitation: i686 cir.alloca size operands are emitted as 32-bit unsigned
+             integers, but CIR verification currently requires 64-bit unsigned integers",
+        ),
+        "int128_arith" | "int128_struct" | "long_double" | "saturating_arith" => {
+            Some("Clang frontend limitation: __int128 is not supported for the i686 target")
+        }
+        _ => None,
+    }
+}
+
 fn fixtures() -> Vec<(String, PathBuf)> {
     let dir = fixtures_dir();
     let selected = std::env::var("SLATE_DIFF_FIXTURE").ok();
@@ -14,6 +27,10 @@ fn fixtures() -> Vec<(String, PathBuf)> {
         .chain(support::list_c_fixtures(&dir.join("i686")))
         .filter_map(|path| {
             let name = path.file_stem()?.to_str()?.to_string();
+            if let Some(reason) = skip_reason(&name) {
+                eprintln!("skip  {name}: {reason}");
+                return None;
+            }
             if selected.as_ref().is_some_and(|selected| selected != &name) {
                 return None;
             }
