@@ -1842,14 +1842,8 @@ int main(void) {
 // REWRITES-NEXT:         + (multibyte16[0] as i32)
 // REWRITES-NEXT:         + (multibyte32[0] as i32);
 // REWRITES-NEXT:     aligned_memory = unsafe { aligned_alloc((64 as u64) as usize, (64 as u64) as usize) };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if aligned_memory != std::ptr::null_mut() {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = (aligned_memory as u64) % 64 == 0;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + ({{__v[0-9]+}} as i32);
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}}
+// REWRITES-NEXT:         + ((aligned_memory != std::ptr::null_mut() && (aligned_memory as u64) % 64 == 0) as i32);
 // REWRITES-NEXT:     unsafe { free(aligned_memory as *mut core::ffi::c_void) };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { at_quick_exit(Some(c11_quick_handler)) };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = ({{__v[0-9]+}} == 0) as i32;
@@ -1858,14 +1852,8 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:     exclusive_second = c11_open_exclusive(c"slate-c11-exclusive.tmp".as_ptr() as *mut i8);
 // REWRITES-AARCH64-GNU-NEXT:     exclusive_first = c11_open_exclusive(c"slate-c11-exclusive.tmp".as_ptr() as *mut u8);
 // REWRITES-AARCH64-GNU-NEXT:     exclusive_second = c11_open_exclusive(c"slate-c11-exclusive.tmp".as_ptr() as *mut u8);
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if exclusive_first != std::ptr::null_mut() {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = exclusive_second == std::ptr::null_mut();
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = (exclusive_first != std::ptr::null_mut()
+// REWRITES-NEXT:         && exclusive_second == std::ptr::null_mut()) as i32;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: bool = exclusive_first != std::ptr::null_mut();
 // REWRITES-NEXT:     if {{__v[0-9]+}} {
 // REWRITES-NEXT:         unsafe { fclose(exclusive_first as *mut libc::FILE) };
@@ -1881,21 +1869,8 @@ int main(void) {
 // REWRITES-NEXT:             1 as i32,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} == 1 {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = current_time.tv_nsec >= 0;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = current_time.tv_nsec < 1000000000;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 =
+// REWRITES-NEXT:         ({{__v[0-9]+}} == 1 && current_time.tv_nsec >= 0 && current_time.tv_nsec < 1000000000) as i32;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex { re: 2.0, im: 3.0 };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = (({{__v[0-9]+}}.re == 2.0) as i32) + (({{__v[0-9]+}}.im == 3.0) as i32);
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = (((9 as i32) >= 6) as i32) + (((17 as i32) >= 10) as i32) + (((21 as i32) >= 10) as i32) + ((0.0000000000000000000000000000000000000000000014013 > (0.0 as f32)) as i32) + ((0.000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000005 > (0.0 as f64)) as i32) + ((LongDouble([1, 0, 0, 0, 0, 0, 0, 0, 0, 0]) > LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0])) as i32) + ((1 >= -1) as i32) + ((1 >= -1) as i32) + ((1 >= -1) as i32) + 0;

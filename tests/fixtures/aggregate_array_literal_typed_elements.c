@@ -226,14 +226,9 @@ int main(void) {
 // REWRITES-NEXT:         value: std::ptr::null_mut(),
 // REWRITES-NEXT:     }; 1];
 // REWRITES-NEXT:     for i in 0..1 {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = if pairs[((i as i64) as usize)].name == std::ptr::null_mut() {
-// REWRITES-NEXT:             let {{__v[0-9]+}}: bool = pairs[((i as i64) as usize)].value == std::ptr::null_mut();
-// REWRITES-NEXT:             {{__v[0-9]+}}
-// REWRITES-NEXT:         } else {
-// REWRITES-NEXT:             let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:             {{__v[0-9]+}}
-// REWRITES-NEXT:         };
-// REWRITES-NEXT:         if {{__v[0-9]+}} {
+// REWRITES-NEXT:         if pairs[((i as i64) as usize)].name == std::ptr::null_mut()
+// REWRITES-NEXT:             && pairs[((i as i64) as usize)].value == std::ptr::null_mut()
+// REWRITES-NEXT:         {
 // REWRITES-NEXT:             total += 1;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:     }

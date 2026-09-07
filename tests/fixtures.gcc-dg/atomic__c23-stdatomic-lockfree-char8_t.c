@@ -205,80 +205,31 @@ int main() {
 // REWRITES-DAG:         let mut r1: i32 = 2;
 // REWRITES-DAG:         let mut r2: i32 = true as i32;
 // REWRITES-DAG:         let mut r3: i32 = true as i32;
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = if r1 != 0 {
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = r1 != 1;
-// REWRITES-DAG:             {{__v[0-9]+}}
-// REWRITES-DAG:         } else {
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = false;
-// REWRITES-DAG:             {{__v[0-9]+}}
-// REWRITES-DAG:         };
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = r1 != 2;
-// REWRITES-DAG:             {{__v[0-9]+}}
-// REWRITES-DAG:         } else {
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = false;
-// REWRITES-DAG:             {{__v[0-9]+}}
-// REWRITES-DAG:         };
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = r1 != 0 && r1 != 1 && r1 != 2;
 // REWRITES-DAG:         if {{__v[0-9]+}} {
 // REWRITES-DAG:             unsafe { abort() };
 // REWRITES-DAG:         }
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = if r2 != 0 {
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = r2 != 1;
-// REWRITES-DAG:             {{__v[0-9]+}}
-// REWRITES-DAG:         } else {
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = false;
-// REWRITES-DAG:             {{__v[0-9]+}}
-// REWRITES-DAG:         };
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = r2 != 0 && r2 != 1;
 // REWRITES-DAG:         if {{__v[0-9]+}} {
 // REWRITES-DAG:             unsafe { abort() };
 // REWRITES-DAG:         }
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = if r3 != 0 {
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = r3 != 1;
-// REWRITES-DAG:             {{__v[0-9]+}}
-// REWRITES-DAG:         } else {
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = false;
-// REWRITES-DAG:             {{__v[0-9]+}}
-// REWRITES-DAG:         };
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = r3 != 0 && r3 != 1;
 // REWRITES-DAG:         if {{__v[0-9]+}} {
 // REWRITES-DAG:             unsafe { abort() };
 // REWRITES-DAG:         }
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = if r1 == 2 {
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = r2 != 1;
-// REWRITES-DAG:             {{__v[0-9]+}}
-// REWRITES-DAG:         } else {
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = false;
-// REWRITES-DAG:             {{__v[0-9]+}}
-// REWRITES-DAG:         };
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = r1 == 2 && r2 != 1;
 // REWRITES-DAG:         if {{__v[0-9]+}} {
 // REWRITES-DAG:             unsafe { abort() };
 // REWRITES-DAG:         }
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = if r1 == 2 {
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = r3 != 1;
-// REWRITES-DAG:             {{__v[0-9]+}}
-// REWRITES-DAG:         } else {
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = false;
-// REWRITES-DAG:             {{__v[0-9]+}}
-// REWRITES-DAG:         };
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = r1 == 2 && r3 != 1;
 // REWRITES-DAG:         if {{__v[0-9]+}} {
 // REWRITES-DAG:             unsafe { abort() };
 // REWRITES-DAG:         }
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = if r1 == 0 {
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = r2 != 0;
-// REWRITES-DAG:             {{__v[0-9]+}}
-// REWRITES-DAG:         } else {
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = false;
-// REWRITES-DAG:             {{__v[0-9]+}}
-// REWRITES-DAG:         };
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = r1 == 0 && r2 != 0;
 // REWRITES-DAG:         if {{__v[0-9]+}} {
 // REWRITES-DAG:             unsafe { abort() };
 // REWRITES-DAG:         }
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = if r1 == 0 {
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = r3 != 0;
-// REWRITES-DAG:             {{__v[0-9]+}}
-// REWRITES-DAG:         } else {
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = false;
-// REWRITES-DAG:             {{__v[0-9]+}}
-// REWRITES-DAG:         };
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = r1 == 0 && r3 != 0;
 // REWRITES-DAG:         if {{__v[0-9]+}} {
 // REWRITES-DAG:             unsafe { abort() };
 // REWRITES-DAG:         }

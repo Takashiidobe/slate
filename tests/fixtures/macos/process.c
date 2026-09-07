@@ -56,7 +56,7 @@ int slate_lookup_user_shell(uid_t uid, char *buffer, size_t size) {
 // @rewrite-fn-end
 // @lowering-fn-end
 
-// SLATE-FILECHECK-BEGIN lowering-macos
+// SLATE-FILECHECK-BEGIN lowering
 // LOWERING-MACOS-DAG: unsafe fn slate_spawn_and_wait(
 // LOWERING-MACOS-DAG:     {{arg[0-9]+}}: *mut i32,
 // LOWERING-MACOS-DAG:     {{arg[0-9]+}}: *mut i8,
@@ -212,9 +212,9 @@ int slate_lookup_user_shell(uid_t uid, char *buffer, size_t size) {
 // LOWERING-MACOS-DAG:     let {{__v[0-9]+}}: i32 = __retval;
 // LOWERING-MACOS-DAG:     return {{__v[0-9]+}};
 // LOWERING-MACOS-DAG: }
-// SLATE-FILECHECK-END lowering-macos
+// SLATE-FILECHECK-END lowering
 
-// SLATE-FILECHECK-BEGIN rewrites-macos
+// SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-MACOS-DAG: unsafe fn slate_spawn_and_wait(
 // REWRITES-MACOS-DAG:     {{arg[0-9]+}}: *mut i32,
 // REWRITES-MACOS-DAG:     {{arg[0-9]+}}: *mut i8,
@@ -270,14 +270,7 @@ int slate_lookup_user_shell(uid_t uid, char *buffer, size_t size) {
 // REWRITES-MACOS-DAG:     loop {
 // REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: *mut i8 = unsafe { (*entry).pw_shell };
 // REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: *mut i8 = unsafe { {{__v[0-9]+}}.add(length as usize) };
-// REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: bool = if ((unsafe { *{{__v[0-9]+}} }) as i32) != 0 {
-// REWRITES-MACOS-DAG:             let {{__v[0-9]+}}: bool = length + 1 < size;
-// REWRITES-MACOS-DAG:             {{__v[0-9]+}}
-// REWRITES-MACOS-DAG:         } else {
-// REWRITES-MACOS-DAG:             let {{__v[0-9]+}}: bool = false;
-// REWRITES-MACOS-DAG:             {{__v[0-9]+}}
-// REWRITES-MACOS-DAG:         };
-// REWRITES-MACOS-DAG:         if !{{__v[0-9]+}} {
+// REWRITES-MACOS-DAG:         if !(((unsafe { *{{__v[0-9]+}} }) as i32) != 0 && length + 1 < size) {
 // REWRITES-MACOS-DAG:             break;
 // REWRITES-MACOS-DAG:         }
 // REWRITES-MACOS-DAG:         length += 1;
@@ -296,4 +289,4 @@ int slate_lookup_user_shell(uid_t uid, char *buffer, size_t size) {
 // REWRITES-MACOS-DAG:     }
 // REWRITES-MACOS-DAG:     0
 // REWRITES-MACOS-DAG: }
-// SLATE-FILECHECK-END rewrites-macos
+// SLATE-FILECHECK-END rewrites

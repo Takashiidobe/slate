@@ -161,20 +161,6 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:     }
 // REWRITES-X86_64-GNU-NEXT:     eax = {{__v[0-9]+}};
 // REWRITES-X86_64-GNU-NEXT:     ecx = {{__v[0-9]+}};
-// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} != 0 {
-// REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bool = true;
-// REWRITES-X86_64-GNU-NEXT:         {{__v[0-9]+}}
-// REWRITES-X86_64-GNU-NEXT:     } else {
-// REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bool = eax != 0;
-// REWRITES-X86_64-GNU-NEXT:         {{__v[0-9]+}}
-// REWRITES-X86_64-GNU-NEXT:     };
-// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bool = true;
-// REWRITES-X86_64-GNU-NEXT:         {{__v[0-9]+}}
-// REWRITES-X86_64-GNU-NEXT:     } else {
-// REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bool = ecx != 0;
-// REWRITES-X86_64-GNU-NEXT:         {{__v[0-9]+}}
-// REWRITES-X86_64-GNU-NEXT:     };
-// REWRITES-X86_64-GNU-NEXT:     ({{__v[0-9]+}} as i32) as u32
+// REWRITES-X86_64-GNU-NEXT:     (({{__v[0-9]+}} != 0 || eax != 0 || ecx != 0) as i32) as u32
 // REWRITES-X86_64-GNU-NEXT: }
 // SLATE-FILECHECK-END rewrites

@@ -593,8 +593,10 @@ def assemble_blocks(checks_by_profile, profile_order, target_mode):
     return blocks
 
 
-def remove_target_mode_blocks(source):
+def remove_target_mode_blocks(source, requested_bases):
     for prefix in TARGET_MODE_STALE_PREFIXES:
+        if prefix.rpartition("-")[2] not in requested_bases:
+            continue
         source = remove_generated_block(source, prefix)
     return source
 
@@ -605,7 +607,8 @@ def update_path(path, profiles, in_place, target_mode):
     source = path.read_text()
     instrumented, annotations, fn_targets = instrument_annotations(source)
     if target_mode:
-        source = remove_target_mode_blocks(source)
+        requested_bases = {profile.partition("-")[0] for profile, _, _ in profiles}
+        source = remove_target_mode_blocks(source, requested_bases)
     updated = source
     checks_by_profile = {}
     profile_order = []
@@ -802,7 +805,7 @@ def update_project(project, profiles, in_place, slate, library, target_mode):
         for path, source, _, annotations, fn_targets in source_entries:
             marker_id = next(iter(annotations))
             if target_mode:
-                source = remove_target_mode_blocks(source)
+                source = remove_target_mode_blocks(source, requested)
             updated = source
             checks_by_profile = {}
             profile_order = []

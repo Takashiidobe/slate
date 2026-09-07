@@ -195,17 +195,7 @@ int main(void) {
 // REWRITES-NEXT: fn memalignment({{arg[0-9]+}}: *mut core::ffi::c_void) -> u64 {
 // REWRITES-NEXT:     let mut v: u64 = {{arg[0-9]+}} as u64;
 // REWRITES-NEXT:     let mut align: u64 = 0;
-// REWRITES-NEXT:     loop {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = if v != 0 {
-// REWRITES-NEXT:             let {{__v[0-9]+}}: bool = v & 1 == 0;
-// REWRITES-NEXT:             {{__v[0-9]+}}
-// REWRITES-NEXT:         } else {
-// REWRITES-NEXT:             let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:             {{__v[0-9]+}}
-// REWRITES-NEXT:         };
-// REWRITES-NEXT:         if !{{__v[0-9]+}} {
-// REWRITES-NEXT:             break;
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     while v != 0 && v & 1 == 0 {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 1;
 // REWRITES-NEXT:         v >>= {{__v[0-9]+}};
 // REWRITES-NEXT:         align += 1;

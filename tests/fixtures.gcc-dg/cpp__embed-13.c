@@ -64,7 +64,8 @@ int main() {
 // LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = unsafe { ap.next_arg::<i32>() };
 // LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = i;
 // LOWERING-DAG:                 let {{__v[0-9]+}}: i64 = {{__v[0-9]+}} as i64;
-// LOWERING-DAG:                 let {{__v[0-9]+}}: u8 = unsafe { (*a)[({{__v[0-9]+}} as usize)] };
+// LOWERING-X86_64-GNU-DAG:                 let {{__v[0-9]+}}: u8 = unsafe { (*a)[({{__v[0-9]+}} as usize)] };
+// LOWERING-AARCH64-GNU-DAG:                 let {{__v[0-9]+}}: u8 = unsafe { a[({{__v[0-9]+}} as usize)] };
 // LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
 // LOWERING-DAG:                 let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
 // LOWERING-DAG:                 if {{__v[0-9]+}} {
@@ -204,8 +205,6 @@ int main() {
 // LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 32;
 // LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 123;
 // LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 10;
-// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 32;
-// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 32;
 // LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 35;
 // LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 101;
 // LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 109;
@@ -215,6 +214,8 @@ int main() {
 // LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 32;
 // LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 95;
 // LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 95;
+// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 70;
+// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 73;
 // LOWERING-DAG:         let {{__v[0-9]+}}: i32 = unsafe {
 // LOWERING-DAG:             foo(__SlateVaArgs::new(vec![
 // LOWERING-DAG:                 __SlateVaArg::new({{__v[0-9]+}}),
@@ -358,7 +359,7 @@ int main() {
 // LOWERING-DAG:     unsafe {
 // LOWERING-DAG:         c = {{__v[0-9]+}};
 // LOWERING-DAG:     }
-// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 95;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 73;
 // LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 6;
 // LOWERING-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
 // LOWERING-DAG:     unsafe {
@@ -367,7 +368,8 @@ int main() {
 // LOWERING-DAG:     {
 // LOWERING-DAG:         let {{__v[0-9]+}}: i32 = unsafe { b };
 // LOWERING-DAG:         let {{__v[0-9]+}}: i64 = 127;
-// LOWERING-DAG:         let {{__v[0-9]+}}: u8 = unsafe { (*a)[({{__v[0-9]+}} as usize)] };
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: u8 = unsafe { (*a)[({{__v[0-9]+}} as usize)] };
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: u8 = unsafe { a[({{__v[0-9]+}} as usize)] };
 // LOWERING-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
 // LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 6;
 // LOWERING-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
@@ -379,7 +381,8 @@ int main() {
 // LOWERING-DAG:             let {{__v[0-9]+}}: i32 = unsafe { c };
 // LOWERING-DAG:             let {{__v[0-9]+}}: i32 = 2;
 // LOWERING-DAG:             let {{__v[0-9]+}}: i64 = 0;
-// LOWERING-DAG:             let {{__v[0-9]+}}: u8 = unsafe { (*a)[({{__v[0-9]+}} as usize)] };
+// LOWERING-X86_64-GNU-DAG:             let {{__v[0-9]+}}: u8 = unsafe { (*a)[({{__v[0-9]+}} as usize)] };
+// LOWERING-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: u8 = unsafe { a[({{__v[0-9]+}} as usize)] };
 // LOWERING-DAG:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
 // LOWERING-DAG:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} * {{__v[0-9]+}};
 // LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
@@ -401,7 +404,8 @@ int main() {
 // REWRITES-DAG:     }
 // REWRITES-DAG:     for i in 0..128 {
 // REWRITES-DAG:         let {{__v[0-9]+}}: i32 = unsafe { ap.next_arg::<i32>() };
-// REWRITES-DAG:         if {{__v[0-9]+}} != ((unsafe { (*a)[((i as i64) as usize)] }) as i32) {
+// REWRITES-X86_64-GNU-DAG:         if {{__v[0-9]+}} != ((unsafe { (*a)[((i as i64) as usize)] }) as i32) {
+// REWRITES-AARCH64-GNU-DAG:         if {{__v[0-9]+}} != ((unsafe { a[((i as i64) as usize)] }) as i32) {
 // REWRITES-DAG:             return 1;
 // REWRITES-DAG:         }
 // REWRITES-DAG:     }
@@ -552,13 +556,10 @@ int main() {
 // REWRITES-DAG:     unsafe {
 // REWRITES-DAG:         b = 73 + {{__v[0-9]+}};
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if (unsafe { b }) != ((unsafe { (*a)[127] }) as i32) + 6 {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = (unsafe { c }) != 2 * ((unsafe { (*a)[0] }) as i32);
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     };
+// REWRITES-X86_64-GNU-DAG:     let {{__v[0-9]+}}: bool = (unsafe { b }) != ((unsafe { (*a)[127] }) as i32) + 6
+// REWRITES-X86_64-GNU-DAG:         || (unsafe { c }) != 2 * ((unsafe { (*a)[0] }) as i32);
+// REWRITES-AARCH64-GNU-DAG:     let {{__v[0-9]+}}: bool = (unsafe { b }) != ((unsafe { a[127] }) as i32) + 6
+// REWRITES-AARCH64-GNU-DAG:         || (unsafe { c }) != 2 * ((unsafe { a[0] }) as i32);
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { std::process::abort() };
 // REWRITES-DAG:     }
