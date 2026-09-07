@@ -137,6 +137,7 @@ fn arm_target() -> support::CrossTarget {
         cc_extra_args,
         cargo_linker_env: "CARGO_TARGET_ARMV7_UNKNOWN_LINUX_GNUEABIHF_LINKER".to_string(),
         linker,
+        cargo_env: Vec::new(),
         qemu: env_or("SLATE_ARM_QEMU", "qemu-arm-static"),
         qemu_args: vec!["-L".to_string(), sysroot],
     }
