@@ -53,7 +53,6 @@ fn skip_reason(name: &str) -> Option<&'static str> {
         ),
         "gnu_asm_alternative_constraints"
         | "gnu_asm_constant_letters"
-        | "asm_aarch64_reg_width_modifiers"
         | "asm_address_operand_p"
         | "asm_byte_abcd_widen_hack"
         | "asm_byte_addressable_reg_constraint"
@@ -65,9 +64,9 @@ fn skip_reason(name: &str) -> Option<&'static str> {
         | "asm_x86_reg_width_override_modifiers"
         | "inline_asm_demo" => Some(
             "ARM inline-asm register/immediate/memory constraint lowering isn't implemented \
-             yet -- these fixtures' extended-asm templates use x86 (or aarch64-only) \
+             yet -- these fixtures' extended-asm templates use x86-only \
              constraints/mnemonics/register classes with no target restriction; blocked on \
-             the parent epic's ARM constraint children (slate-3f8g.4.16.1 through .16.4), not \
+             the parent epic's ARM constraint children (slate-3f8g.4.16.2 through .16.4), not \
              this harness ticket. gnu_asm_alternative_constraints and gnu_asm_constant_letters \
              also fail on aarch64 today for the same reason",
         ),
@@ -114,13 +113,10 @@ fn fixtures() -> Vec<(String, PathBuf)> {
     let dir = fixtures_dir();
     let selected = std::env::var("SLATE_DIFF_FIXTURE").ok();
     let mut fixtures = Vec::new();
-    for entry in std::fs::read_dir(&dir).unwrap_or_else(|e| panic!("read {}: {e}", dir.display())) {
-        let path = entry
-            .unwrap_or_else(|e| panic!("read {} entry: {e}", dir.display()))
-            .path();
-        if path.extension().and_then(|e| e.to_str()) != Some("c") {
-            continue;
-        }
+    let paths = support::list_c_fixtures(&dir)
+        .into_iter()
+        .chain(support::list_c_fixtures(&dir.join("arm")));
+    for path in paths {
         let name = path
             .file_stem()
             .and_then(|s| s.to_str())
@@ -174,12 +170,9 @@ fn gcc_libdir(linker: &str) -> Option<String> {
 
 fn cross_ld(linker: &str) -> Option<String> {
     let prefix = linker.strip_suffix("-gcc")?;
-    for candidate in [format!("{prefix}-ld.bfd"), format!("{prefix}-ld")] {
-        if Path::new(&candidate).exists() {
-            return Some(candidate);
-        }
-    }
-    None
+    [format!("{prefix}-ld.bfd"), format!("{prefix}-ld")]
+        .into_iter()
+        .find(|candidate| Path::new(&candidate).exists())
 }
 
 fn arm_target() -> support::CrossTarget {

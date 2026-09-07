@@ -1295,6 +1295,18 @@ fn target_clause_matches(text: &str, triple: &str) -> bool {
     if negated { !any_match } else { any_match }
 }
 
+pub fn list_c_fixtures(dir: &Path) -> Vec<PathBuf> {
+    let mut paths: Vec<PathBuf> = std::fs::read_dir(dir)
+        .into_iter()
+        .flatten()
+        .filter_map(|entry| entry.ok())
+        .map(|entry| entry.path())
+        .filter(|path| path.extension().and_then(|e| e.to_str()) == Some("c"))
+        .collect();
+    paths.sort();
+    paths
+}
+
 pub fn fixture_target_restriction(path: &Path, triple: &str) -> Option<String> {
     let text = std::fs::read_to_string(path).ok()?;
     text.lines()
