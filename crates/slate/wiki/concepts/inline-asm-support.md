@@ -175,6 +175,15 @@ subset of `reg`, so mapping it there would be unsound.
 
 Fixture: `tests/fixtures/arm/asm_arm_general_low_reg.c`.
 
+Memory constraints: `Uv`, `Uy`, and `Uq` are canonicalized by CIR as
+`*^Uv`/`*^Uy`/`*^Uq` and reuse the `Constraint::Memory` address-passthrough
+path used by `m`/`o`/`V`. ARM templates render the materialized address with
+`[reg]` rather than x86's `(reg)` syntax. The ARM stack-pointer constraint `k`
+is rejected by the current CIR-enabled Clang before CIR generation, so it has
+no Slate-side workaround.
+
+Fixture: `tests/fixtures/arm/asm_arm_vfp_memory_constraint.c`.
+
 Immediate constraints: scalar `I` and `M` resolve to Rust `const` operands when
 CIR proves the input constant. `J`, `K`, `L`, and `N` use the same path; `O` is
 not fixture-covered because the CIR-enabled Clang rejects it for the ARM target

@@ -85,28 +85,43 @@ fn parse_constraint_atoms(
     constraint: &str,
     target_arch: TargetArch,
 ) -> impl Iterator<Item = ConstraintAtom> + '_ {
-    constraint.chars().map(move |ch| match ch {
-        'r' => ConstraintAtom::Reg,
-        'l' if target_arch == TargetArch::Arm => ConstraintAtom::Reg,
-        'g' => ConstraintAtom::General,
-        'a' => ConstraintAtom::FixedReg(X86Reg::Eax),
-        'b' => ConstraintAtom::FixedReg(X86Reg::Ebx),
-        'c' => ConstraintAtom::FixedReg(X86Reg::Ecx),
-        'd' => ConstraintAtom::FixedReg(X86Reg::Edx),
-        'S' => ConstraintAtom::FixedReg(X86Reg::Esi),
-        'D' => ConstraintAtom::FixedReg(X86Reg::Edi),
-        'i' | 'n' | 'I' | 'J' | 'K' | 'L' | 'M' | 'N' | 'O' => ConstraintAtom::ConstantEligible,
-        'p' => ConstraintAtom::Address,
-        'm' => ConstraintAtom::Memory,
-        'o' => ConstraintAtom::Offsettable,
-        'V' => ConstraintAtom::NonOffsettable,
-        'x' => ConstraintAtom::SseReg,
-        'y' => ConstraintAtom::AvxReg,
-        'Q' => ConstraintAtom::ByteAddressableAbcd,
-        'q' => ConstraintAtom::ByteAddressableGpr,
-        'A' => ConstraintAtom::EdxEaxPair,
-        _ => ConstraintAtom::Other,
-    })
+    let mut atoms = Vec::new();
+    let mut chars = constraint.chars();
+    while let Some(ch) = chars.next() {
+        let atom = if ch == 'U' {
+            match chars.next() {
+                Some('v' | 'y' | 'q') => ConstraintAtom::Memory,
+                Some(_) | None => ConstraintAtom::Other,
+            }
+        } else {
+            match ch {
+                'r' => ConstraintAtom::Reg,
+                'l' if target_arch == TargetArch::Arm => ConstraintAtom::Reg,
+                'g' => ConstraintAtom::General,
+                'a' => ConstraintAtom::FixedReg(X86Reg::Eax),
+                'b' => ConstraintAtom::FixedReg(X86Reg::Ebx),
+                'c' => ConstraintAtom::FixedReg(X86Reg::Ecx),
+                'd' => ConstraintAtom::FixedReg(X86Reg::Edx),
+                'S' => ConstraintAtom::FixedReg(X86Reg::Esi),
+                'D' => ConstraintAtom::FixedReg(X86Reg::Edi),
+                'i' | 'n' | 'I' | 'J' | 'K' | 'L' | 'M' | 'N' | 'O' => {
+                    ConstraintAtom::ConstantEligible
+                }
+                'p' => ConstraintAtom::Address,
+                'm' => ConstraintAtom::Memory,
+                'o' => ConstraintAtom::Offsettable,
+                'V' => ConstraintAtom::NonOffsettable,
+                'x' => ConstraintAtom::SseReg,
+                'y' => ConstraintAtom::AvxReg,
+                'Q' => ConstraintAtom::ByteAddressableAbcd,
+                'q' => ConstraintAtom::ByteAddressableGpr,
+                'A' => ConstraintAtom::EdxEaxPair,
+                _ => ConstraintAtom::Other,
+            }
+        };
+        atoms.push(atom);
+    }
+    atoms.into_iter()
 }
 
 fn constraint_allows_generic_reg(constraint: &str, target_arch: TargetArch) -> bool {
@@ -135,6 +150,7 @@ fn strip_memory_marker(constraint: &str, target_arch: TargetArch) -> Option<&str
     let rest = constraint.strip_prefix('=').unwrap_or(constraint);
     let rest = rest.strip_prefix('&').unwrap_or(rest);
     let rest = rest.strip_prefix('*').unwrap_or(rest);
+    let rest = rest.strip_prefix('^').unwrap_or(rest);
     (!rest.is_empty() && parse_constraint_atoms(rest, target_arch).all(is_memory_like))
         .then_some(rest)
 }
@@ -794,8 +810,8 @@ fn parse_asm_template(template: &str, target_arch: TargetArch) -> Option<Vec<Tem
     Some(pieces)
 }
 
-fn dialect_address_brackets(dialect: Option<AsmDialect>) -> (char, char) {
-    if matches!(dialect, Some(AsmDialect::Intel)) {
+fn dialect_address_brackets(dialect: Option<AsmDialect>, target_arch: TargetArch) -> (char, char) {
+    if matches!(dialect, Some(AsmDialect::Intel)) || !target_arch.is_x86() {
         ('[', ']')
     } else {
         ('(', ')')
@@ -859,7 +875,7 @@ fn render_operand_reference(
         return Some(());
     }
     if matches!(modifier, Some(TemplateModifier::Address)) {
-        let (open, close) = dialect_address_brackets(dialect);
+        let (open, close) = dialect_address_brackets(dialect, target_arch);
         out.push(open);
         out.push('{');
         out.push_str(&rust_slot.to_string());
@@ -871,7 +887,7 @@ fn render_operand_reference(
         if modifier.is_some() {
             return None;
         }
-        let (open, close) = dialect_address_brackets(dialect);
+        let (open, close) = dialect_address_brackets(dialect, target_arch);
         if matches!(dialect, Some(AsmDialect::Intel)) {
             out.push_str(intel_ptr_size_keyword(memory_operand_pointee_bits(
                 ty,
