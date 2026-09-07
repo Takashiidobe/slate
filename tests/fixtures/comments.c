@@ -80,7 +80,7 @@ int main(void) {
 // LOWERING-NEXT: /// counts completed operations
 // LOWERING-NEXT: static mut completed_count: i32 = 1;
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT: fn main() -> std::process::ExitCode {
 // LOWERING-NEXT:     let mut holder: Holder = Holder {
 // LOWERING-NEXT:         mode: Mode::MODE_OFF,
 // LOWERING-NEXT:     };
@@ -114,7 +114,7 @@ int main(void) {
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 1;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = if {{__v[0-9]+}} { {{__v[0-9]+}} } else { {{__v[0-9]+}} };
-// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:     return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: /// increments a value and records the operation
@@ -171,7 +171,7 @@ int main(void) {
 // REWRITES-NEXT: /// counts completed operations
 // REWRITES-NEXT: static mut completed_count: i32 = 1;
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT: fn main() -> std::process::ExitCode {
 // REWRITES-NEXT:     let mut holder: Holder = Holder {
 // REWRITES-NEXT:         mode: Mode::MODE_OFF,
 // REWRITES-NEXT:     };
@@ -195,7 +195,7 @@ int main(void) {
 // REWRITES-NEXT:     } else {
 // REWRITES-NEXT:         {{__v[0-9]+}}
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// REWRITES-NEXT:     return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: /// increments a value and records the operation

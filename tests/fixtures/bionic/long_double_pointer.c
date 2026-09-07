@@ -40,10 +40,10 @@ int main(void) { return 0; }
 // LOWERING-NEXT:     return {{__v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT: fn main() -> std::process::ExitCode {
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:     return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -75,7 +75,7 @@ int main(void) { return 0; }
 // REWRITES-BIONIC-AARCH64-NEXT:     unsafe { *{{__v[0-9]+}} }
 // REWRITES-BIONIC-AARCH64-NEXT: }
 // REWRITES-BIONIC-AARCH64-EMPTY:
-// REWRITES-BIONIC-AARCH64-NEXT: fn main() {
-// REWRITES-BIONIC-AARCH64-NEXT:     std::process::exit(0 as i32);
+// REWRITES-BIONIC-AARCH64-NEXT: fn main() -> std::process::ExitCode {
+// REWRITES-BIONIC-AARCH64-NEXT:     return std::process::ExitCode::SUCCESS;
 // REWRITES-BIONIC-AARCH64-NEXT: }
 // SLATE-FILECHECK-END rewrites

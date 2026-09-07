@@ -49,14 +49,17 @@ int main(void) {
 // LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[derive(Clone, Copy)]
 // LOWERING-NEXT: struct {{anon_[0-9]+}} {
-// LOWERING-NEXT:     value: *mut i8,
+// LOWERING-X86_64-GNU-NEXT:     value: *mut i8,
+// LOWERING-AARCH64-GNU-NEXT:     value: *mut u8,
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[derive(Clone, Copy)]
 // LOWERING-NEXT: struct {{anon_[0-9]+}} {
-// LOWERING-NEXT:     handle: *mut i8,
-// LOWERING-NEXT:     suffix: *mut i8,
+// LOWERING-X86_64-GNU-NEXT:     handle: *mut i8,
+// LOWERING-X86_64-GNU-NEXT:     suffix: *mut i8,
+// LOWERING-AARCH64-GNU-NEXT:     handle: *mut u8,
+// LOWERING-AARCH64-GNU-NEXT:     suffix: *mut u8,
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[repr(C)]
@@ -70,35 +73,44 @@ int main(void) {
 // LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT: fn main() -> std::process::ExitCode {
 // LOWERING-NEXT:     let mut e: event = event {
 // LOWERING-NEXT:         r#type: 0,
 // LOWERING-NEXT:         data: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() },
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     let mut h: [i8; 2] = [0; 2];
-// LOWERING-NEXT:     let mut s: [i8; 2] = [0; 2];
+// LOWERING-X86_64-GNU-NEXT:     let mut h: [i8; 2] = [0; 2];
+// LOWERING-X86_64-GNU-NEXT:     let mut s: [i8; 2] = [0; 2];
+// LOWERING-AARCH64-GNU-NEXT:     let mut h: [u8; 2] = [0; 2];
+// LOWERING-AARCH64-GNU-NEXT:     let mut s: [u8; 2] = [0; 2];
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 1;
 // LOWERING-NEXT:     e.r#type = {{__v[0-9]+}};
-// LOWERING-NEXT:     let {{__v[0-9]+}}: [i8; 2] = [72, 0];
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: [i8; 2] = [72, 0];
+// LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: [u8; 2] = [72, 0];
 // LOWERING-NEXT:     h = {{__v[0-9]+}};
-// LOWERING-NEXT:     let {{__v[0-9]+}}: [i8; 2] = [83, 0];
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: [i8; 2] = [83, 0];
+// LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: [u8; 2] = [83, 0];
 // LOWERING-NEXT:     s = {{__v[0-9]+}};
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = h.as_mut_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = h.as_mut_ptr() as *mut i8;
+// LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = h.as_mut_ptr() as *mut u8;
 // LOWERING-NEXT:     unsafe {
 // LOWERING-NEXT:         e.data.tag.handle = {{__v[0-9]+}};
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = s.as_mut_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = s.as_mut_ptr() as *mut i8;
+// LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = s.as_mut_ptr() as *mut u8;
 // LOWERING-NEXT:     unsafe {
 // LOWERING-NEXT:         e.data.tag.suffix = {{__v[0-9]+}};
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d %s%s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d %s%s\n\0".as_ptr() as *mut i8;
+// LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = b"%d %s%s\n\0".as_ptr() as *mut u8;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = e.r#type;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = unsafe { e.data.tag.handle };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = unsafe { e.data.tag.suffix };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = unsafe { e.data.tag.handle };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = unsafe { e.data.tag.suffix };
+// LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = unsafe { e.data.tag.handle };
+// LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = unsafe { e.data.tag.suffix };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:     return std::process::ExitCode::SUCCESS;
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -155,7 +167,7 @@ int main(void) {
 // REWRITES-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT: fn main() -> std::process::ExitCode {
 // REWRITES-NEXT:     let mut e: event = event {
 // REWRITES-NEXT:         r#type: 0,
 // REWRITES-NEXT:         data: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() },
@@ -185,6 +197,6 @@ int main(void) {
 // REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe { printf(c"%d %s%s\n".as_ptr(), {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
 // REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT:     return std::process::ExitCode::SUCCESS;
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

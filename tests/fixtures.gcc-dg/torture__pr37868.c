@@ -40,7 +40,7 @@ int main(void) {
 // @lowering-fn-end
 
 // SLATE-FILECHECK-BEGIN lowering
-// LOWERING-DAG: fn main() {
+// LOWERING-DAG: fn main() -> std::process::ExitCode {
 // LOWERING-DAG:     let mut x: X = X {
 // LOWERING-DAG:         __bitfield_0: unsafe {
 // LOWERING-DAG:             std::mem::transmute::<[u8; 9], __slate_bitfields::__SlateBitfield_X_0>([0; 9])
@@ -76,12 +76,12 @@ int main(void) {
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
 // LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-DAG:     return std::process::ExitCode::SUCCESS;
 // LOWERING-DAG: }
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: fn main() {
+// REWRITES-DAG: fn main() -> std::process::ExitCode {
 // REWRITES-DAG:     let mut x: X = X {
 // REWRITES-DAG:         __bitfield_0: unsafe {
 // REWRITES-DAG:             std::mem::transmute::<[u8; 9], __slate_bitfields::__SlateBitfield_X_0>([0; 9])
@@ -104,6 +104,6 @@ int main(void) {
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
-// REWRITES-DAG:     std::process::exit(0 as i32);
+// REWRITES-DAG:     return std::process::ExitCode::SUCCESS;
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

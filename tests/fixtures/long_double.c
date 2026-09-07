@@ -402,7 +402,7 @@ int main(void) {
 // LOWERING-NEXT:     fn canonicalizel(_0: *mut LongDouble, _1: *const LongDouble) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT: fn main() -> std::process::ExitCode {
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 63]);
 // LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 144, 1, 64]);
@@ -429,7 +429,7 @@ int main(void) {
 // LOWERING-NEXT:     check_math_functions();
 // LOWERING-NEXT:     check_remaining_math_functions();
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:     return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn truncate_long_double({{arg[0-9]+}}: LongDouble) -> i32 {
@@ -1549,7 +1549,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:     fn canonicalizel(_0: *mut LongDouble, _1: *const LongDouble) -> i32;
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
-// REWRITES-X86_64-GNU-NEXT: fn main() {
+// REWRITES-X86_64-GNU-NEXT: fn main() -> std::process::ExitCode {
 // REWRITES-X86_64-GNU-NEXT:     println!(
 // REWRITES-X86_64-GNU-NEXT:         "{}",
 // REWRITES-X86_64-GNU-NEXT:         truncate_long_double(
@@ -1585,7 +1585,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:     check_bitint_casts();
 // REWRITES-X86_64-GNU-NEXT:     check_math_functions();
 // REWRITES-X86_64-GNU-NEXT:     check_remaining_math_functions();
-// REWRITES-X86_64-GNU-NEXT:     std::process::exit(0 as i32);
+// REWRITES-X86_64-GNU-NEXT:     return std::process::ExitCode::SUCCESS;
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: fn truncate_long_double({{arg[0-9]+}}: LongDouble) -> i32 {

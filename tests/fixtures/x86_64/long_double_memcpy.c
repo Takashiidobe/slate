@@ -26,20 +26,20 @@ int main(void) {
 }
 
 // SLATE-FILECHECK-BEGIN lowering
-// LOWERING: #![feature(f128)]
-// LOWERING-NEXT: #![allow(
-// LOWERING-NEXT:     dead_code,
-// LOWERING-NEXT:     unused,
-// LOWERING-NEXT:     non_camel_case_types,
-// LOWERING-NEXT:     non_snake_case,
-// LOWERING-NEXT:     non_upper_case_globals,
-// LOWERING-NEXT:     arithmetic_overflow,
-// LOWERING-NEXT:     unconditional_panic,
-// LOWERING-NEXT:     suspicious_runtime_symbol_definitions,
-// LOWERING-NEXT:     unpredictable_function_pointer_comparisons,
-// LOWERING-NEXT:     unused_comparisons
-// LOWERING-NEXT: )]
-// LOWERING-EMPTY:
+// LOWERING-X86_64-GNU: #![feature(f128)]
+// LOWERING-X86_64-GNU-NEXT: #![allow(
+// LOWERING-X86_64-GNU-NEXT:     dead_code,
+// LOWERING-X86_64-GNU-NEXT:     unused,
+// LOWERING-X86_64-GNU-NEXT:     non_camel_case_types,
+// LOWERING-X86_64-GNU-NEXT:     non_snake_case,
+// LOWERING-X86_64-GNU-NEXT:     non_upper_case_globals,
+// LOWERING-X86_64-GNU-NEXT:     arithmetic_overflow,
+// LOWERING-X86_64-GNU-NEXT:     unconditional_panic,
+// LOWERING-X86_64-GNU-NEXT:     suspicious_runtime_symbol_definitions,
+// LOWERING-X86_64-GNU-NEXT:     unpredictable_function_pointer_comparisons,
+// LOWERING-X86_64-GNU-NEXT:     unused_comparisons
+// LOWERING-X86_64-GNU-NEXT: )]
+// LOWERING-X86_64-GNU-EMPTY:
 // LOWERING-X86_64-GNU-NEXT: #[repr(C, align(16))]
 // LOWERING-X86_64-GNU-NEXT: #[derive(Clone, Copy)]
 // LOWERING-X86_64-GNU-NEXT: struct LongDouble([u8; 10]);
@@ -135,114 +135,112 @@ int main(void) {
 // LOWERING-X86_64-GNU-NEXT:     }
 // LOWERING-X86_64-GNU-NEXT: }
 // LOWERING-X86_64-GNU-EMPTY:
-// LOWERING-NEXT: #[repr(C)]
-// LOWERING-NEXT: #[derive(Clone, Copy)]
-// LOWERING-NEXT: union ld_union {
+// LOWERING-X86_64-GNU-NEXT: #[repr(C)]
+// LOWERING-X86_64-GNU-NEXT: #[derive(Clone, Copy)]
+// LOWERING-X86_64-GNU-NEXT: union ld_union {
 // LOWERING-X86_64-GNU-NEXT:     ld: LongDouble,
-// LOWERING-AARCH64-GNU-NEXT:     ld: f128,
-// LOWERING-NEXT:     bytes: [u8; 16],
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: unsafe extern "C" {
-// LOWERING-NEXT:     fn memset(_0: *mut core::ffi::c_void, _1: i32, _2: usize) -> *mut core::ffi::c_void;
-// LOWERING-NEXT:     fn memcpy(
-// LOWERING-NEXT:         _0: *mut core::ffi::c_void,
-// LOWERING-NEXT:         _1: *const core::ffi::c_void,
-// LOWERING-NEXT:         _2: usize,
-// LOWERING-NEXT:     ) -> *mut core::ffi::c_void;
-// LOWERING-NEXT:     fn puts(_0: *const core::ffi::c_char) -> i32;
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
-// LOWERING-NEXT:     let mut src: ld_union = unsafe { std::mem::zeroed::<ld_union>() };
-// LOWERING-NEXT:     let mut dst: ld_union = unsafe { std::mem::zeroed::<ld_union>() };
-// LOWERING-NEXT:     let mut i: i32 = 0;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{__v[0-9]+}};
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(src) as *mut core::ffi::c_void;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = 16;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void =
-// LOWERING-NEXT:         unsafe { memset({{__v[0-9]+}} as *mut core::ffi::c_void, {{__v[0-9]+}} as i32, {{__v[0-9]+}} as usize) };
-// LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:         i = {{__v[0-9]+}};
-// LOWERING-NEXT:         loop {
-// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = i;
-// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = 10;
-// LOWERING-NEXT:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
-// LOWERING-NEXT:             if !{{__v[0-9]+}} {
-// LOWERING-NEXT:                 break;
-// LOWERING-NEXT:             }
-// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = i;
-// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = 17;
-// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} * {{__v[0-9]+}};
-// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = 3;
-// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
-// LOWERING-NEXT:             let {{__v[0-9]+}}: u8 = {{__v[0-9]+}} as u8;
-// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = i;
-// LOWERING-NEXT:             let {{__v[0-9]+}}: i64 = {{__v[0-9]+}} as i64;
-// LOWERING-NEXT:             unsafe {
-// LOWERING-NEXT:                 src.bytes[({{__v[0-9]+}} as usize)] = {{__v[0-9]+}};
-// LOWERING-NEXT:             }
-// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = i;
-// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + 1;
-// LOWERING-NEXT:             i = {{__v[0-9]+}};
-// LOWERING-NEXT:         }
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(dst) as *mut core::ffi::c_void;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(src) as *mut core::ffi::c_void;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = 16;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = unsafe {
-// LOWERING-NEXT:         memcpy(
-// LOWERING-NEXT:             {{__v[0-9]+}} as *mut core::ffi::c_void,
-// LOWERING-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_void,
-// LOWERING-NEXT:             {{__v[0-9]+}} as usize,
-// LOWERING-NEXT:         )
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:         i = {{__v[0-9]+}};
-// LOWERING-NEXT:         loop {
-// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = i;
-// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = 10;
-// LOWERING-NEXT:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
-// LOWERING-NEXT:             if !{{__v[0-9]+}} {
-// LOWERING-NEXT:                 break;
-// LOWERING-NEXT:             }
-// LOWERING-NEXT:             {
-// LOWERING-NEXT:                 {
-// LOWERING-NEXT:                     let {{__v[0-9]+}}: i32 = i;
-// LOWERING-NEXT:                     let {{__v[0-9]+}}: i64 = {{__v[0-9]+}} as i64;
-// LOWERING-NEXT:                     let {{__v[0-9]+}}: u8 = unsafe { dst.bytes[({{__v[0-9]+}} as usize)] };
-// LOWERING-NEXT:                     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// LOWERING-NEXT:                     let {{__v[0-9]+}}: i32 = i;
-// LOWERING-NEXT:                     let {{__v[0-9]+}}: i64 = {{__v[0-9]+}} as i64;
-// LOWERING-NEXT:                     let {{__v[0-9]+}}: u8 = unsafe { src.bytes[({{__v[0-9]+}} as usize)] };
-// LOWERING-NEXT:                     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// LOWERING-NEXT:                     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// LOWERING-NEXT:                     if {{__v[0-9]+}} {
-// LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:                         __retval = {{__v[0-9]+}};
-// LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:                         std::process::exit({{__v[0-9]+}} as i32);
-// LOWERING-NEXT:                     }
-// LOWERING-NEXT:                 }
-// LOWERING-NEXT:             }
-// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = i;
-// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + 1;
-// LOWERING-NEXT:             i = {{__v[0-9]+}};
-// LOWERING-NEXT:         }
-// LOWERING-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     bytes: [u8; 16],
+// LOWERING-X86_64-GNU-NEXT: }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: unsafe extern "C" {
+// LOWERING-X86_64-GNU-NEXT:     fn memset(_0: *mut core::ffi::c_void, _1: i32, _2: usize) -> *mut core::ffi::c_void;
+// LOWERING-X86_64-GNU-NEXT:     fn memcpy(
+// LOWERING-X86_64-GNU-NEXT:         _0: *mut core::ffi::c_void,
+// LOWERING-X86_64-GNU-NEXT:         _1: *const core::ffi::c_void,
+// LOWERING-X86_64-GNU-NEXT:         _2: usize,
+// LOWERING-X86_64-GNU-NEXT:     ) -> *mut core::ffi::c_void;
+// LOWERING-X86_64-GNU-NEXT:     fn puts(_0: *const core::ffi::c_char) -> i32;
+// LOWERING-X86_64-GNU-NEXT: }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: fn main() -> std::process::ExitCode {
+// LOWERING-X86_64-GNU-NEXT:     let mut __retval: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:     let mut src: ld_union = unsafe { std::mem::zeroed::<ld_union>() };
+// LOWERING-X86_64-GNU-NEXT:     let mut dst: ld_union = unsafe { std::mem::zeroed::<ld_union>() };
+// LOWERING-X86_64-GNU-NEXT:     let mut i: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:     __retval = {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(src) as *mut core::ffi::c_void;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u64 = 16;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void =
+// LOWERING-X86_64-GNU-NEXT:         unsafe { memset({{__v[0-9]+}} as *mut core::ffi::c_void, {{__v[0-9]+}} as i32, {{__v[0-9]+}} as usize) };
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:         i = {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             let {{__v[0-9]+}}: i32 = i;
+// LOWERING-X86_64-GNU-NEXT:             let {{__v[0-9]+}}: i32 = 10;
+// LOWERING-X86_64-GNU-NEXT:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:             if !{{__v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{__v[0-9]+}}: i32 = i;
+// LOWERING-X86_64-GNU-NEXT:             let {{__v[0-9]+}}: i32 = 17;
+// LOWERING-X86_64-GNU-NEXT:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} * {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:             let {{__v[0-9]+}}: i32 = 3;
+// LOWERING-X86_64-GNU-NEXT:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:             let {{__v[0-9]+}}: u8 = {{__v[0-9]+}} as u8;
+// LOWERING-X86_64-GNU-NEXT:             let {{__v[0-9]+}}: i32 = i;
+// LOWERING-X86_64-GNU-NEXT:             let {{__v[0-9]+}}: i64 = {{__v[0-9]+}} as i64;
+// LOWERING-X86_64-GNU-NEXT:             unsafe {
+// LOWERING-X86_64-GNU-NEXT:                 src.bytes[({{__v[0-9]+}} as usize)] = {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{__v[0-9]+}}: i32 = i;
+// LOWERING-X86_64-GNU-NEXT:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:             i = {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(dst) as *mut core::ffi::c_void;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(src) as *mut core::ffi::c_void;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u64 = 16;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = unsafe {
+// LOWERING-X86_64-GNU-NEXT:         memcpy(
+// LOWERING-X86_64-GNU-NEXT:             {{__v[0-9]+}} as *mut core::ffi::c_void,
+// LOWERING-X86_64-GNU-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_void,
+// LOWERING-X86_64-GNU-NEXT:             {{__v[0-9]+}} as usize,
+// LOWERING-X86_64-GNU-NEXT:         )
+// LOWERING-X86_64-GNU-NEXT:     };
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:         i = {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             let {{__v[0-9]+}}: i32 = i;
+// LOWERING-X86_64-GNU-NEXT:             let {{__v[0-9]+}}: i32 = 10;
+// LOWERING-X86_64-GNU-NEXT:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:             if !{{__v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{__v[0-9]+}}: i32 = i;
+// LOWERING-X86_64-GNU-NEXT:                     let {{__v[0-9]+}}: i64 = {{__v[0-9]+}} as i64;
+// LOWERING-X86_64-GNU-NEXT:                     let {{__v[0-9]+}}: u8 = unsafe { dst.bytes[({{__v[0-9]+}} as usize)] };
+// LOWERING-X86_64-GNU-NEXT:                     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-X86_64-GNU-NEXT:                     let {{__v[0-9]+}}: i32 = i;
+// LOWERING-X86_64-GNU-NEXT:                     let {{__v[0-9]+}}: i64 = {{__v[0-9]+}} as i64;
+// LOWERING-X86_64-GNU-NEXT:                     let {{__v[0-9]+}}: u8 = unsafe { src.bytes[({{__v[0-9]+}} as usize)] };
+// LOWERING-X86_64-GNU-NEXT:                     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-X86_64-GNU-NEXT:                     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{__v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-X86_64-GNU-NEXT:                         __retval = {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         let {{__v[0-9]+}}: i32 = __retval;
+// LOWERING-X86_64-GNU-NEXT:                         return std::process::ExitCode::from({{__v[0-9]+}} as u8);
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{__v[0-9]+}}: i32 = i;
+// LOWERING-X86_64-GNU-NEXT:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:             i = {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
 // LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"ok\0".as_ptr() as *mut i8;
-// LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = b"ok\0".as_ptr() as *mut u8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { puts({{__v[0-9]+}} as *const core::ffi::c_char) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{__v[0-9]+}};
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
-// LOWERING-NEXT: }
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { puts({{__v[0-9]+}} as *const core::ffi::c_char) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:     __retval = {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = __retval;
+// LOWERING-X86_64-GNU-NEXT:     return std::process::ExitCode::from({{__v[0-9]+}} as u8);
+// LOWERING-X86_64-GNU-NEXT: }
 // LOWERING-X86_64-GNU-EMPTY:
 // LOWERING-X86_64-GNU-NEXT: unsafe extern "C" {
 // LOWERING-X86_64-GNU-NEXT:     safe fn __slate_cf80_div(
@@ -462,7 +460,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:     fn puts(_0: *const core::ffi::c_char) -> i32;
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
-// REWRITES-X86_64-GNU-NEXT: fn main() {
+// REWRITES-X86_64-GNU-NEXT: fn main() -> std::process::ExitCode {
 // REWRITES-X86_64-GNU-NEXT:     let mut __retval: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:     let mut src: ld_union = unsafe { std::mem::zeroed::<ld_union>() };
 // REWRITES-X86_64-GNU-NEXT:     let mut dst: ld_union = unsafe { std::mem::zeroed::<ld_union>() };
@@ -486,7 +484,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             != ((unsafe { src.bytes[((i as i64) as usize)] }) as i32);
 // REWRITES-X86_64-GNU-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-X86_64-GNU-NEXT:             __retval = 1;
-// REWRITES-X86_64-GNU-NEXT:             std::process::exit(__retval as i32);
+// REWRITES-X86_64-GNU-NEXT:             return std::process::ExitCode::from(__retval as u8);
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         i += 1;
 // REWRITES-X86_64-GNU-NEXT:     }
@@ -494,7 +492,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:     unsafe { puts(c"ok".as_ptr()) };
 // REWRITES-X86_64-GNU-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:     __retval = 0;
-// REWRITES-X86_64-GNU-NEXT:     std::process::exit(__retval as i32);
+// REWRITES-X86_64-GNU-NEXT:     return std::process::ExitCode::from(__retval as u8);
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: unsafe extern "C" {

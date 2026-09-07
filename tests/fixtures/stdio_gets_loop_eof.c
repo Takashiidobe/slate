@@ -68,7 +68,7 @@ int main(void) {
 // LOWERING-NEXT:     fn fgets(_0: *mut core::ffi::c_char, _1: i32, _2: *mut libc::FILE) -> *mut core::ffi::c_char;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT: fn main() -> std::process::ExitCode {
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut f: *mut libc::FILE = std::ptr::null_mut();
 // LOWERING-NEXT:     let mut g: *mut libc::FILE = std::ptr::null_mut();
@@ -105,7 +105,7 @@ int main(void) {
 // LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:             __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:             std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:             return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
 // LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"only\n\0".as_ptr() as *mut i8;
@@ -136,7 +136,7 @@ int main(void) {
 // LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:             __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:             std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:             return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     {
@@ -196,7 +196,7 @@ int main(void) {
 // LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:             __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:             std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:             return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     let {{__v[0-9]+}}: *mut libc::FILE = h;
@@ -223,7 +223,7 @@ int main(void) {
 // LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:             __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:             std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:             return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     {
@@ -267,7 +267,7 @@ int main(void) {
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:     return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -299,7 +299,7 @@ int main(void) {
 // REWRITES-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT: fn main() -> std::process::ExitCode {
 // REWRITES-NEXT:     let mut __retval: i32 = 0;
 // REWRITES-NEXT:     let mut f: *mut libc::FILE = std::ptr::null_mut();
 // REWRITES-NEXT:     let mut g: *mut libc::FILE = std::ptr::null_mut();
@@ -317,7 +317,7 @@ int main(void) {
 // REWRITES-NEXT:         unsafe { puts(c"open-fail".as_ptr()) };
 // REWRITES-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:         __retval = 0;
-// REWRITES-NEXT:         std::process::exit(__retval as i32);
+// REWRITES-NEXT:         return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe { fputs(c"only\n".as_ptr(), f as *mut libc::FILE) };
@@ -330,7 +330,7 @@ int main(void) {
 // REWRITES-NEXT:         unsafe { puts(c"reopen-fail".as_ptr()) };
 // REWRITES-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:         __retval = 0;
-// REWRITES-NEXT:         std::process::exit(__retval as i32);
+// REWRITES-NEXT:         return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     loop {
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: *mut i8 = line.as_mut_ptr() as *mut i8;
@@ -367,7 +367,7 @@ int main(void) {
 // REWRITES-NEXT:         unsafe { puts(c"open-fail".as_ptr()) };
 // REWRITES-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:         __retval = 0;
-// REWRITES-NEXT:         std::process::exit(__retval as i32);
+// REWRITES-NEXT:         return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     unsafe { fclose(h as *mut libc::FILE) };
 // REWRITES-NEXT:     e = unsafe { fopen(c"slate_stdio_gets_loop_eof.tmp".as_ptr(), c"r".as_ptr()) };
@@ -377,7 +377,7 @@ int main(void) {
 // REWRITES-NEXT:         unsafe { puts(c"reopen-fail".as_ptr()) };
 // REWRITES-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:         __retval = 0;
-// REWRITES-NEXT:         std::process::exit(__retval as i32);
+// REWRITES-NEXT:         return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     loop {
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: *mut i8 = empty_line.as_mut_ptr() as *mut i8;
@@ -409,6 +409,6 @@ int main(void) {
 // REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     unsafe { remove(c"slate_stdio_gets_loop_eof.tmp".as_ptr()) };
 // REWRITES-NEXT:     __retval = 0;
-// REWRITES-NEXT:     std::process::exit(__retval as i32);
+// REWRITES-NEXT:     return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

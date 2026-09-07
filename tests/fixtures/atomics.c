@@ -72,7 +72,7 @@ int main(void) {
 // LOWERING-NEXT: /// 29 ^ 15 = 18
 // LOWERING-NEXT: /// returns 18, a = 7
 // LOWERING-NEXT: /// success, a = 42
-// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT: fn main() -> std::process::ExitCode {
 // LOWERING-NEXT:     let mut a: i32 = 0;
 // LOWERING-NEXT:     let mut expected: i32 = 0;
 // LOWERING-NEXT:     let mut expected2: i32 = 0;
@@ -189,7 +189,7 @@ int main(void) {
 // LOWERING-NEXT:         )
 // LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:     return std::process::ExitCode::SUCCESS;
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -237,7 +237,7 @@ int main(void) {
 // REWRITES-NEXT: /// 29 ^ 15 = 18
 // REWRITES-NEXT: /// returns 18, a = 7
 // REWRITES-NEXT: /// success, a = 42
-// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT: fn main() -> std::process::ExitCode {
 // REWRITES-NEXT:     let mut a: i32 = 0;
 // REWRITES-NEXT:     let mut expected: i32 = 0;
 // REWRITES-NEXT:     let mut expected2: i32 = 0;
@@ -349,6 +349,6 @@ int main(void) {
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT:     return std::process::ExitCode::SUCCESS;
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

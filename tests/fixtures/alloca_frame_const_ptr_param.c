@@ -37,7 +37,7 @@ int main(void) {
 // LOWERING-NEXT:     windowLog: i32,
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT: fn main() -> std::process::ExitCode {
 // LOWERING-NEXT:     let mut p: Params = Params { windowLog: 0 };
 // LOWERING-X86_64-GNU-NEXT:     let mut buf: [i8; 8] = [0; 8];
 // LOWERING-AARCH64-GNU-NEXT:     let mut buf: [u8; 8] = [0; 8];
@@ -62,7 +62,7 @@ int main(void) {
 // LOWERING-NEXT:     );
 // LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = out;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:     return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-X86_64-GNU-NEXT: fn use_params({{arg[0-9]+}}: *mut Params, {{arg[0-9]+}}: *mut u32, {{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: *mut i8) {
@@ -99,7 +99,7 @@ int main(void) {
 // REWRITES-NEXT:     windowLog: i32,
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT: fn main() -> std::process::ExitCode {
 // REWRITES-NEXT:     let mut p: Params = Params { windowLog: 0 };
 // REWRITES-X86_64-GNU-NEXT:     let mut buf: [i8; 8] = [0; 8];
 // REWRITES-AARCH64-GNU-NEXT:     let mut buf: [u8; 8] = [0; 8];
@@ -115,7 +115,7 @@ int main(void) {
 // REWRITES-NEXT:         {{__v[0-9]+}},
 // REWRITES-NEXT:         unsafe { {{__v[0-9]+}}.add(4) },
 // REWRITES-NEXT:     );
-// REWRITES-NEXT:     std::process::exit(out as i32);
+// REWRITES-NEXT:     return std::process::ExitCode::from((out as i32) as u8);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: fn use_params({{arg[0-9]+}}: &Params, {{arg[0-9]+}}: &mut u32, {{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: *mut i8) {

@@ -38,42 +38,51 @@ int main(void) {
 // LOWERING-NEXT: #[repr(C, packed)]
 // LOWERING-NEXT: #[derive(Clone, Copy)]
 // LOWERING-NEXT: struct Packed {
-// LOWERING-NEXT:     a: i8,
+// LOWERING-X86_64-GNU-NEXT:     a: i8,
+// LOWERING-AARCH64-GNU-NEXT:     a: u8,
 // LOWERING-NEXT:     b: i32,
-// LOWERING-NEXT:     c: i8,
+// LOWERING-X86_64-GNU-NEXT:     c: i8,
+// LOWERING-AARCH64-GNU-NEXT:     c: u8,
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: unsafe extern "C" {
 // LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT: fn main() -> std::process::ExitCode {
 // LOWERING-NEXT:     let mut p: Packed = Packed { a: 0, b: 0, c: 0 };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i8 = 1;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i8 = 1;
+// LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: u8 = 1;
 // LOWERING-NEXT:     unsafe { std::ptr::write_unaligned(std::ptr::addr_of_mut!(p.a), {{__v[0-9]+}}) };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 287454020;
 // LOWERING-NEXT:     unsafe { std::ptr::write_unaligned(std::ptr::addr_of_mut!(p.b), {{__v[0-9]+}}) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i8 = 2;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i8 = 2;
+// LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: u8 = 2;
 // LOWERING-NEXT:     unsafe { std::ptr::write_unaligned(std::ptr::addr_of_mut!(p.c), {{__v[0-9]+}}) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%zu %zu\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%zu %zu\n\0".as_ptr() as *mut i8;
+// LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = b"%zu %zu\n\0".as_ptr() as *mut u8;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = std::mem::size_of::<Packed>() as u64;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = std::mem::align_of::<Packed>() as u64;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%zu %zu %zu\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%zu %zu %zu\n\0".as_ptr() as *mut i8;
+// LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = b"%zu %zu %zu\n\0".as_ptr() as *mut u8;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = std::mem::offset_of!(Packed, a) as u64;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = std::mem::offset_of!(Packed, b) as u64;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = std::mem::offset_of!(Packed, c) as u64;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d %x %d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i8 = unsafe { std::ptr::read_unaligned(std::ptr::addr_of!(p.a)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d %x %d\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i8 = unsafe { std::ptr::read_unaligned(std::ptr::addr_of!(p.a)) };
+// LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = b"%d %x %d\n\0".as_ptr() as *mut u8;
+// LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: u8 = unsafe { std::ptr::read_unaligned(std::ptr::addr_of!(p.a)) };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { std::ptr::read_unaligned(std::ptr::addr_of!(p.b)) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i8 = unsafe { std::ptr::read_unaligned(std::ptr::addr_of!(p.c)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i8 = unsafe { std::ptr::read_unaligned(std::ptr::addr_of!(p.c)) };
+// LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: u8 = unsafe { std::ptr::read_unaligned(std::ptr::addr_of!(p.c)) };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:     return std::process::ExitCode::SUCCESS;
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -110,7 +119,7 @@ int main(void) {
 // REWRITES-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT: fn main() -> std::process::ExitCode {
 // REWRITES-NEXT:     let mut p: Packed = Packed { a: 0, b: 0, c: 0 };
 // REWRITES-X86_64-GNU-NEXT:     unsafe { std::ptr::write_unaligned(std::ptr::addr_of_mut!(p.a), 1 as i8) };
 // REWRITES-AARCH64-GNU-NEXT:     unsafe { std::ptr::write_unaligned(std::ptr::addr_of_mut!(p.a), 1 as u8) };
@@ -150,6 +159,6 @@ int main(void) {
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT:     return std::process::ExitCode::SUCCESS;
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

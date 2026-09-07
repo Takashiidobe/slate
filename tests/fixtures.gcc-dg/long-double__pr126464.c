@@ -56,7 +56,7 @@ int main() {
 // @lowering-fn-end
 
 // SLATE-FILECHECK-BEGIN lowering
-// LOWERING-DAG: fn main() {
+// LOWERING-DAG: fn main() -> std::process::ExitCode {
 // LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-DAG:     {
 // LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 0;
@@ -107,17 +107,23 @@ int main() {
 // LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
 // LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// LOWERING-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([97, 140, 85, 254, 35, 131, 186, 209, 230, 115]);
-// LOWERING-DAG:             let {{__v[0-9]+}}: LongDouble = bar({{__v[0-9]+}});
-// LOWERING-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([97, 140, 85, 254, 35, 131, 186, 209, 229, 115]);
+// LOWERING-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([97, 140, 85, 254, 35, 131, 186, 209, 230, 115]);
+// LOWERING-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = bar({{__v[0-9]+}});
+// LOWERING-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([97, 140, 85, 254, 35, 131, 186, 209, 229, 115]);
+// LOWERING-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = 1.000000e+4000f128;
+// LOWERING-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = bar({{__v[0-9]+}});
+// LOWERING-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = 5.000000e+3999f128;
 // LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
 // LOWERING-DAG:             let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
 // LOWERING-DAG:                 let {{__v[0-9]+}}: bool = true;
 // LOWERING-DAG:                 {{__v[0-9]+}}
 // LOWERING-DAG:             } else {
-// LOWERING-DAG:                 let {{__v[0-9]+}}: LongDouble = LongDouble([97, 140, 85, 254, 35, 131, 186, 209, 230, 243]);
-// LOWERING-DAG:                 let {{__v[0-9]+}}: LongDouble = qux({{__v[0-9]+}});
-// LOWERING-DAG:                 let {{__v[0-9]+}}: LongDouble = LongDouble([97, 140, 85, 254, 35, 131, 186, 209, 229, 243]);
+// LOWERING-X86_64-GNU-DAG:                 let {{__v[0-9]+}}: LongDouble = LongDouble([97, 140, 85, 254, 35, 131, 186, 209, 230, 243]);
+// LOWERING-X86_64-GNU-DAG:                 let {{__v[0-9]+}}: LongDouble = qux({{__v[0-9]+}});
+// LOWERING-X86_64-GNU-DAG:                 let {{__v[0-9]+}}: LongDouble = LongDouble([97, 140, 85, 254, 35, 131, 186, 209, 229, 243]);
+// LOWERING-AARCH64-GNU-DAG:                 let {{__v[0-9]+}}: f128 = -1.000000e+4000f128;
+// LOWERING-AARCH64-GNU-DAG:                 let {{__v[0-9]+}}: f128 = qux({{__v[0-9]+}});
+// LOWERING-AARCH64-GNU-DAG:                 let {{__v[0-9]+}}: f128 = -5.000000e+3999f128;
 // LOWERING-DAG:                 let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
 // LOWERING-DAG:                 {{__v[0-9]+}}
 // LOWERING-DAG:             };
@@ -130,12 +136,12 @@ int main() {
 // LOWERING-DAG:             unsafe { abort() };
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
-// LOWERING-DAG:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-DAG:     return std::process::ExitCode::SUCCESS;
 // LOWERING-DAG: }
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: fn main() {
+// REWRITES-DAG: fn main() -> std::process::ExitCode {
 // REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = !({{__v[0-9]+}} != 0);
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
@@ -176,16 +182,24 @@ int main() {
 // REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-DAG:         let {{__v[0-9]+}}: LongDouble = LongDouble([97, 140, 85, 254, 35, 131, 186, 209, 230, 115]);
-// REWRITES-DAG:         let {{__v[0-9]+}}: LongDouble = bar({{__v[0-9]+}});
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != LongDouble([97, 140, 85, 254, 35, 131, 186, 209, 229, 115]);
+// REWRITES-X86_64-GNU-DAG:         let {{__v[0-9]+}}: LongDouble = LongDouble([97, 140, 85, 254, 35, 131, 186, 209, 230, 115]);
+// REWRITES-X86_64-GNU-DAG:         let {{__v[0-9]+}}: LongDouble = bar({{__v[0-9]+}});
+// REWRITES-X86_64-GNU-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != LongDouble([97, 140, 85, 254, 35, 131, 186, 209, 229, 115]);
+// REWRITES-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: f128 = 1.000000e+4000f128;
+// REWRITES-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: f128 = bar({{__v[0-9]+}});
+// REWRITES-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: f128 = 5.000000e+3999f128;
+// REWRITES-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
 // REWRITES-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
 // REWRITES-DAG:             let {{__v[0-9]+}}: bool = true;
 // REWRITES-DAG:             {{__v[0-9]+}}
 // REWRITES-DAG:         } else {
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([97, 140, 85, 254, 35, 131, 186, 209, 230, 243]);
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = qux({{__v[0-9]+}});
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != LongDouble([97, 140, 85, 254, 35, 131, 186, 209, 229, 243]);
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([97, 140, 85, 254, 35, 131, 186, 209, 230, 243]);
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = qux({{__v[0-9]+}});
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != LongDouble([97, 140, 85, 254, 35, 131, 186, 209, 229, 243]);
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = -1.000000e+4000f128;
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = qux({{__v[0-9]+}});
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = -5.000000e+3999f128;
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
 // REWRITES-DAG:             {{__v[0-9]+}}
 // REWRITES-DAG:         };
 // REWRITES-DAG:         {{__v[0-9]+}}
@@ -196,6 +210,6 @@ int main() {
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { std::process::abort() };
 // REWRITES-DAG:     }
-// REWRITES-DAG:     std::process::exit(0 as i32);
+// REWRITES-DAG:     return std::process::ExitCode::SUCCESS;
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

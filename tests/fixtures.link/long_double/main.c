@@ -987,7 +987,7 @@ int main(void) {
 // LOWERING-X86_64-GNU-NEXT:     }
 // LOWERING-X86_64-GNU-NEXT: }
 // LOWERING-X86_64-GNU-EMPTY:
-// LOWERING-X86_64-GNU-NEXT: fn main() {
+// LOWERING-X86_64-GNU-NEXT: fn main() -> std::process::ExitCode {
 // LOWERING-X86_64-GNU-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-X86_64-GNU-NEXT:     __retval = {{__v[0-9]+}};
@@ -1022,7 +1022,7 @@ int main(void) {
 // LOWERING-X86_64-GNU-NEXT:             let {{__v[0-9]+}}: i32 = 1;
 // LOWERING-X86_64-GNU-NEXT:             __retval = {{__v[0-9]+}};
 // LOWERING-X86_64-GNU-NEXT:             let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-X86_64-GNU-NEXT:             std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-X86_64-GNU-NEXT:             return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-X86_64-GNU-NEXT:         }
 // LOWERING-X86_64-GNU-NEXT:     }
 // LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"long-double torture: PASS (%d checks)\n\0".as_ptr() as *mut i8;
@@ -1031,7 +1031,7 @@ int main(void) {
 // LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-X86_64-GNU-NEXT:     __retval = {{__v[0-9]+}};
 // LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-X86_64-GNU-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-X86_64-GNU-NEXT:     return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-X86_64-GNU-NEXT: }
 // LOWERING-X86_64-GNU-EMPTY:
 // LOWERING-X86_64-GNU-NEXT: fn test_format_and_layout() {
@@ -9244,7 +9244,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:     }
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
-// REWRITES-X86_64-GNU-NEXT: fn main() {
+// REWRITES-X86_64-GNU-NEXT: fn main() -> std::process::ExitCode {
 // REWRITES-X86_64-GNU-NEXT:     let mut __retval: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:     test_format_and_layout();
 // REWRITES-X86_64-GNU-NEXT:     test_literals_and_precision_boundaries();
@@ -9270,12 +9270,12 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:         };
 // REWRITES-X86_64-GNU-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         __retval = 1;
-// REWRITES-X86_64-GNU-NEXT:         std::process::exit(__retval as i32);
+// REWRITES-X86_64-GNU-NEXT:         return std::process::ExitCode::from(__retval as u8);
 // REWRITES-X86_64-GNU-NEXT:     }
 // REWRITES-X86_64-GNU-NEXT:     println!("long-double torture: PASS ({} checks)", unsafe { checks });
 // REWRITES-X86_64-GNU-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:     __retval = 0;
-// REWRITES-X86_64-GNU-NEXT:     std::process::exit(__retval as i32);
+// REWRITES-X86_64-GNU-NEXT:     return std::process::ExitCode::from(__retval as u8);
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: fn test_format_and_layout() {

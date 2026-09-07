@@ -54,7 +54,7 @@ int main() {
 /* @lowering-fn-end */
 
 // SLATE-FILECHECK-BEGIN lowering
-// LOWERING-DAG: fn main() {
+// LOWERING-DAG: fn main() -> std::process::ExitCode {
 // LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-DAG:     {
 // LOWERING-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> = unsafe { a };
@@ -151,48 +151,30 @@ int main() {
 // LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
 // LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { i };
-// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { i };
-// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
-// LOWERING-DAG:                 __slate_cf80_mul(
-// LOWERING-DAG:                     num_complex::Complex {
-// LOWERING-DAG:                         re: {{__v[0-9]+}}.re,
-// LOWERING-DAG:                         im: {{__v[0-9]+}}.im,
-// LOWERING-DAG:                     },
-// LOWERING-DAG:                     num_complex::Complex {
-// LOWERING-DAG:                         re: {{__v[0-9]+}}.re,
-// LOWERING-DAG:                         im: {{__v[0-9]+}}.im,
-// LOWERING-DAG:                     },
-// LOWERING-DAG:                 )
-// LOWERING-DAG:             };
-// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 191]),
-// LOWERING-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
-// LOWERING-DAG:             };
-// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// LOWERING-DAG:             {{__v[0-9]+}}
-// LOWERING-DAG:         };
-// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{__v[0-9]+}}
-// LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { j };
-// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { j };
-// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
-// LOWERING-DAG:                 __slate_cf80_mul(
-// LOWERING-DAG:                     num_complex::Complex {
-// LOWERING-DAG:                         re: {{__v[0-9]+}}.re,
-// LOWERING-DAG:                         im: {{__v[0-9]+}}.im,
-// LOWERING-DAG:                     },
-// LOWERING-DAG:                     num_complex::Complex {
-// LOWERING-DAG:                         re: {{__v[0-9]+}}.re,
-// LOWERING-DAG:                         im: {{__v[0-9]+}}.im,
-// LOWERING-DAG:                     },
-// LOWERING-DAG:                 )
-// LOWERING-DAG:             };
-// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 192]),
-// LOWERING-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// LOWERING-X86_64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { i };
+// LOWERING-X86_64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { i };
+// LOWERING-X86_64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
+// LOWERING-X86_64-GNU-DAG:                 __slate_cf80_mul(
+// LOWERING-X86_64-GNU-DAG:                     num_complex::Complex {
+// LOWERING-X86_64-GNU-DAG:                         re: {{__v[0-9]+}}.re,
+// LOWERING-X86_64-GNU-DAG:                         im: {{__v[0-9]+}}.im,
+// LOWERING-X86_64-GNU-DAG:                     },
+// LOWERING-X86_64-GNU-DAG:                     num_complex::Complex {
+// LOWERING-X86_64-GNU-DAG:                         re: {{__v[0-9]+}}.re,
+// LOWERING-X86_64-GNU-DAG:                         im: {{__v[0-9]+}}.im,
+// LOWERING-X86_64-GNU-DAG:                     },
+// LOWERING-X86_64-GNU-DAG:                 )
+// LOWERING-X86_64-GNU-DAG:             };
+// LOWERING-X86_64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// LOWERING-X86_64-GNU-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 191]),
+// LOWERING-X86_64-GNU-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// LOWERING-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> = unsafe { i };
+// LOWERING-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> = unsafe { i };
+// LOWERING-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> =
+// LOWERING-AARCH64-GNU-DAG:                 unsafe { __multc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
+// LOWERING-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> = num_complex::Complex {
+// LOWERING-AARCH64-GNU-DAG:                 re: -1.000000e+00f128,
+// LOWERING-AARCH64-GNU-DAG:                 im: 0.000000e+00f128,
 // LOWERING-DAG:             };
 // LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
 // LOWERING-DAG:             {{__v[0-9]+}}
@@ -201,23 +183,30 @@ int main() {
 // LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
 // LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { k };
-// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { k };
-// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
-// LOWERING-DAG:                 __slate_cf80_mul(
-// LOWERING-DAG:                     num_complex::Complex {
-// LOWERING-DAG:                         re: {{__v[0-9]+}}.re,
-// LOWERING-DAG:                         im: {{__v[0-9]+}}.im,
-// LOWERING-DAG:                     },
-// LOWERING-DAG:                     num_complex::Complex {
-// LOWERING-DAG:                         re: {{__v[0-9]+}}.re,
-// LOWERING-DAG:                         im: {{__v[0-9]+}}.im,
-// LOWERING-DAG:                     },
-// LOWERING-DAG:                 )
-// LOWERING-DAG:             };
-// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 144, 2, 192]),
-// LOWERING-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// LOWERING-X86_64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { j };
+// LOWERING-X86_64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { j };
+// LOWERING-X86_64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
+// LOWERING-X86_64-GNU-DAG:                 __slate_cf80_mul(
+// LOWERING-X86_64-GNU-DAG:                     num_complex::Complex {
+// LOWERING-X86_64-GNU-DAG:                         re: {{__v[0-9]+}}.re,
+// LOWERING-X86_64-GNU-DAG:                         im: {{__v[0-9]+}}.im,
+// LOWERING-X86_64-GNU-DAG:                     },
+// LOWERING-X86_64-GNU-DAG:                     num_complex::Complex {
+// LOWERING-X86_64-GNU-DAG:                         re: {{__v[0-9]+}}.re,
+// LOWERING-X86_64-GNU-DAG:                         im: {{__v[0-9]+}}.im,
+// LOWERING-X86_64-GNU-DAG:                     },
+// LOWERING-X86_64-GNU-DAG:                 )
+// LOWERING-X86_64-GNU-DAG:             };
+// LOWERING-X86_64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// LOWERING-X86_64-GNU-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 192]),
+// LOWERING-X86_64-GNU-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// LOWERING-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> = unsafe { j };
+// LOWERING-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> = unsafe { j };
+// LOWERING-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> =
+// LOWERING-AARCH64-GNU-DAG:                 unsafe { __multc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
+// LOWERING-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> = num_complex::Complex {
+// LOWERING-AARCH64-GNU-DAG:                 re: -4.000000e+00f128,
+// LOWERING-AARCH64-GNU-DAG:                 im: 0.000000e+00f128,
 // LOWERING-DAG:             };
 // LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
 // LOWERING-DAG:             {{__v[0-9]+}}
@@ -226,23 +215,62 @@ int main() {
 // LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
 // LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { l };
-// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { l };
-// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
-// LOWERING-DAG:                 __slate_cf80_mul(
-// LOWERING-DAG:                     num_complex::Complex {
-// LOWERING-DAG:                         re: {{__v[0-9]+}}.re,
-// LOWERING-DAG:                         im: {{__v[0-9]+}}.im,
-// LOWERING-DAG:                     },
-// LOWERING-DAG:                     num_complex::Complex {
-// LOWERING-DAG:                         re: {{__v[0-9]+}}.re,
-// LOWERING-DAG:                         im: {{__v[0-9]+}}.im,
-// LOWERING-DAG:                     },
-// LOWERING-DAG:                 )
+// LOWERING-X86_64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { k };
+// LOWERING-X86_64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { k };
+// LOWERING-X86_64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
+// LOWERING-X86_64-GNU-DAG:                 __slate_cf80_mul(
+// LOWERING-X86_64-GNU-DAG:                     num_complex::Complex {
+// LOWERING-X86_64-GNU-DAG:                         re: {{__v[0-9]+}}.re,
+// LOWERING-X86_64-GNU-DAG:                         im: {{__v[0-9]+}}.im,
+// LOWERING-X86_64-GNU-DAG:                     },
+// LOWERING-X86_64-GNU-DAG:                     num_complex::Complex {
+// LOWERING-X86_64-GNU-DAG:                         re: {{__v[0-9]+}}.re,
+// LOWERING-X86_64-GNU-DAG:                         im: {{__v[0-9]+}}.im,
+// LOWERING-X86_64-GNU-DAG:                     },
+// LOWERING-X86_64-GNU-DAG:                 )
+// LOWERING-X86_64-GNU-DAG:             };
+// LOWERING-X86_64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// LOWERING-X86_64-GNU-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 144, 2, 192]),
+// LOWERING-X86_64-GNU-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// LOWERING-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> = unsafe { k };
+// LOWERING-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> = unsafe { k };
+// LOWERING-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> =
+// LOWERING-AARCH64-GNU-DAG:                 unsafe { __multc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
+// LOWERING-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> = num_complex::Complex {
+// LOWERING-AARCH64-GNU-DAG:                 re: -9.000000e+00f128,
+// LOWERING-AARCH64-GNU-DAG:                 im: 0.000000e+00f128,
 // LOWERING-DAG:             };
-// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 3, 192]),
-// LOWERING-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
+// LOWERING-DAG:         };
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
+// LOWERING-DAG:         } else {
+// LOWERING-X86_64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { l };
+// LOWERING-X86_64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { l };
+// LOWERING-X86_64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
+// LOWERING-X86_64-GNU-DAG:                 __slate_cf80_mul(
+// LOWERING-X86_64-GNU-DAG:                     num_complex::Complex {
+// LOWERING-X86_64-GNU-DAG:                         re: {{__v[0-9]+}}.re,
+// LOWERING-X86_64-GNU-DAG:                         im: {{__v[0-9]+}}.im,
+// LOWERING-X86_64-GNU-DAG:                     },
+// LOWERING-X86_64-GNU-DAG:                     num_complex::Complex {
+// LOWERING-X86_64-GNU-DAG:                         re: {{__v[0-9]+}}.re,
+// LOWERING-X86_64-GNU-DAG:                         im: {{__v[0-9]+}}.im,
+// LOWERING-X86_64-GNU-DAG:                     },
+// LOWERING-X86_64-GNU-DAG:                 )
+// LOWERING-X86_64-GNU-DAG:             };
+// LOWERING-X86_64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// LOWERING-X86_64-GNU-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 3, 192]),
+// LOWERING-X86_64-GNU-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// LOWERING-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> = unsafe { l };
+// LOWERING-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> = unsafe { l };
+// LOWERING-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> =
+// LOWERING-AARCH64-GNU-DAG:                 unsafe { __multc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
+// LOWERING-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> = num_complex::Complex {
+// LOWERING-AARCH64-GNU-DAG:                 re: -1.600000e+01f128,
+// LOWERING-AARCH64-GNU-DAG:                 im: 0.000000e+00f128,
 // LOWERING-DAG:             };
 // LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
 // LOWERING-DAG:             {{__v[0-9]+}}
@@ -347,48 +375,30 @@ int main() {
 // LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
 // LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { u };
-// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { u };
-// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
-// LOWERING-DAG:                 __slate_cf80_mul(
-// LOWERING-DAG:                     num_complex::Complex {
-// LOWERING-DAG:                         re: {{__v[0-9]+}}.re,
-// LOWERING-DAG:                         im: {{__v[0-9]+}}.im,
-// LOWERING-DAG:                     },
-// LOWERING-DAG:                     num_complex::Complex {
-// LOWERING-DAG:                         re: {{__v[0-9]+}}.re,
-// LOWERING-DAG:                         im: {{__v[0-9]+}}.im,
-// LOWERING-DAG:                     },
-// LOWERING-DAG:                 )
-// LOWERING-DAG:             };
-// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 191]),
-// LOWERING-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
-// LOWERING-DAG:             };
-// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// LOWERING-DAG:             {{__v[0-9]+}}
-// LOWERING-DAG:         };
-// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{__v[0-9]+}}
-// LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { v };
-// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { v };
-// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
-// LOWERING-DAG:                 __slate_cf80_mul(
-// LOWERING-DAG:                     num_complex::Complex {
-// LOWERING-DAG:                         re: {{__v[0-9]+}}.re,
-// LOWERING-DAG:                         im: {{__v[0-9]+}}.im,
-// LOWERING-DAG:                     },
-// LOWERING-DAG:                     num_complex::Complex {
-// LOWERING-DAG:                         re: {{__v[0-9]+}}.re,
-// LOWERING-DAG:                         im: {{__v[0-9]+}}.im,
-// LOWERING-DAG:                     },
-// LOWERING-DAG:                 )
-// LOWERING-DAG:             };
-// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 192]),
-// LOWERING-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// LOWERING-X86_64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { u };
+// LOWERING-X86_64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { u };
+// LOWERING-X86_64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
+// LOWERING-X86_64-GNU-DAG:                 __slate_cf80_mul(
+// LOWERING-X86_64-GNU-DAG:                     num_complex::Complex {
+// LOWERING-X86_64-GNU-DAG:                         re: {{__v[0-9]+}}.re,
+// LOWERING-X86_64-GNU-DAG:                         im: {{__v[0-9]+}}.im,
+// LOWERING-X86_64-GNU-DAG:                     },
+// LOWERING-X86_64-GNU-DAG:                     num_complex::Complex {
+// LOWERING-X86_64-GNU-DAG:                         re: {{__v[0-9]+}}.re,
+// LOWERING-X86_64-GNU-DAG:                         im: {{__v[0-9]+}}.im,
+// LOWERING-X86_64-GNU-DAG:                     },
+// LOWERING-X86_64-GNU-DAG:                 )
+// LOWERING-X86_64-GNU-DAG:             };
+// LOWERING-X86_64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// LOWERING-X86_64-GNU-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 191]),
+// LOWERING-X86_64-GNU-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// LOWERING-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> = unsafe { u };
+// LOWERING-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> = unsafe { u };
+// LOWERING-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> =
+// LOWERING-AARCH64-GNU-DAG:                 unsafe { __multc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
+// LOWERING-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> = num_complex::Complex {
+// LOWERING-AARCH64-GNU-DAG:                 re: -1.000000e+00f128,
+// LOWERING-AARCH64-GNU-DAG:                 im: 0.000000e+00f128,
 // LOWERING-DAG:             };
 // LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
 // LOWERING-DAG:             {{__v[0-9]+}}
@@ -397,23 +407,30 @@ int main() {
 // LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
 // LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { w };
-// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { w };
-// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
-// LOWERING-DAG:                 __slate_cf80_mul(
-// LOWERING-DAG:                     num_complex::Complex {
-// LOWERING-DAG:                         re: {{__v[0-9]+}}.re,
-// LOWERING-DAG:                         im: {{__v[0-9]+}}.im,
-// LOWERING-DAG:                     },
-// LOWERING-DAG:                     num_complex::Complex {
-// LOWERING-DAG:                         re: {{__v[0-9]+}}.re,
-// LOWERING-DAG:                         im: {{__v[0-9]+}}.im,
-// LOWERING-DAG:                     },
-// LOWERING-DAG:                 )
-// LOWERING-DAG:             };
-// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 144, 2, 192]),
-// LOWERING-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// LOWERING-X86_64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { v };
+// LOWERING-X86_64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { v };
+// LOWERING-X86_64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
+// LOWERING-X86_64-GNU-DAG:                 __slate_cf80_mul(
+// LOWERING-X86_64-GNU-DAG:                     num_complex::Complex {
+// LOWERING-X86_64-GNU-DAG:                         re: {{__v[0-9]+}}.re,
+// LOWERING-X86_64-GNU-DAG:                         im: {{__v[0-9]+}}.im,
+// LOWERING-X86_64-GNU-DAG:                     },
+// LOWERING-X86_64-GNU-DAG:                     num_complex::Complex {
+// LOWERING-X86_64-GNU-DAG:                         re: {{__v[0-9]+}}.re,
+// LOWERING-X86_64-GNU-DAG:                         im: {{__v[0-9]+}}.im,
+// LOWERING-X86_64-GNU-DAG:                     },
+// LOWERING-X86_64-GNU-DAG:                 )
+// LOWERING-X86_64-GNU-DAG:             };
+// LOWERING-X86_64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// LOWERING-X86_64-GNU-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 192]),
+// LOWERING-X86_64-GNU-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// LOWERING-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> = unsafe { v };
+// LOWERING-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> = unsafe { v };
+// LOWERING-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> =
+// LOWERING-AARCH64-GNU-DAG:                 unsafe { __multc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
+// LOWERING-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> = num_complex::Complex {
+// LOWERING-AARCH64-GNU-DAG:                 re: -4.000000e+00f128,
+// LOWERING-AARCH64-GNU-DAG:                 im: 0.000000e+00f128,
 // LOWERING-DAG:             };
 // LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
 // LOWERING-DAG:             {{__v[0-9]+}}
@@ -422,23 +439,62 @@ int main() {
 // LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
 // LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { x };
-// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { x };
-// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
-// LOWERING-DAG:                 __slate_cf80_mul(
-// LOWERING-DAG:                     num_complex::Complex {
-// LOWERING-DAG:                         re: {{__v[0-9]+}}.re,
-// LOWERING-DAG:                         im: {{__v[0-9]+}}.im,
-// LOWERING-DAG:                     },
-// LOWERING-DAG:                     num_complex::Complex {
-// LOWERING-DAG:                         re: {{__v[0-9]+}}.re,
-// LOWERING-DAG:                         im: {{__v[0-9]+}}.im,
-// LOWERING-DAG:                     },
-// LOWERING-DAG:                 )
+// LOWERING-X86_64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { w };
+// LOWERING-X86_64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { w };
+// LOWERING-X86_64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
+// LOWERING-X86_64-GNU-DAG:                 __slate_cf80_mul(
+// LOWERING-X86_64-GNU-DAG:                     num_complex::Complex {
+// LOWERING-X86_64-GNU-DAG:                         re: {{__v[0-9]+}}.re,
+// LOWERING-X86_64-GNU-DAG:                         im: {{__v[0-9]+}}.im,
+// LOWERING-X86_64-GNU-DAG:                     },
+// LOWERING-X86_64-GNU-DAG:                     num_complex::Complex {
+// LOWERING-X86_64-GNU-DAG:                         re: {{__v[0-9]+}}.re,
+// LOWERING-X86_64-GNU-DAG:                         im: {{__v[0-9]+}}.im,
+// LOWERING-X86_64-GNU-DAG:                     },
+// LOWERING-X86_64-GNU-DAG:                 )
+// LOWERING-X86_64-GNU-DAG:             };
+// LOWERING-X86_64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// LOWERING-X86_64-GNU-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 144, 2, 192]),
+// LOWERING-X86_64-GNU-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// LOWERING-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> = unsafe { w };
+// LOWERING-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> = unsafe { w };
+// LOWERING-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> =
+// LOWERING-AARCH64-GNU-DAG:                 unsafe { __multc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
+// LOWERING-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> = num_complex::Complex {
+// LOWERING-AARCH64-GNU-DAG:                 re: -9.000000e+00f128,
+// LOWERING-AARCH64-GNU-DAG:                 im: 0.000000e+00f128,
 // LOWERING-DAG:             };
-// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
-// LOWERING-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 3, 192]),
-// LOWERING-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-DAG:             {{__v[0-9]+}}
+// LOWERING-DAG:         };
+// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
+// LOWERING-DAG:             {{__v[0-9]+}}
+// LOWERING-DAG:         } else {
+// LOWERING-X86_64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { x };
+// LOWERING-X86_64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { x };
+// LOWERING-X86_64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
+// LOWERING-X86_64-GNU-DAG:                 __slate_cf80_mul(
+// LOWERING-X86_64-GNU-DAG:                     num_complex::Complex {
+// LOWERING-X86_64-GNU-DAG:                         re: {{__v[0-9]+}}.re,
+// LOWERING-X86_64-GNU-DAG:                         im: {{__v[0-9]+}}.im,
+// LOWERING-X86_64-GNU-DAG:                     },
+// LOWERING-X86_64-GNU-DAG:                     num_complex::Complex {
+// LOWERING-X86_64-GNU-DAG:                         re: {{__v[0-9]+}}.re,
+// LOWERING-X86_64-GNU-DAG:                         im: {{__v[0-9]+}}.im,
+// LOWERING-X86_64-GNU-DAG:                     },
+// LOWERING-X86_64-GNU-DAG:                 )
+// LOWERING-X86_64-GNU-DAG:             };
+// LOWERING-X86_64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// LOWERING-X86_64-GNU-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 3, 192]),
+// LOWERING-X86_64-GNU-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// LOWERING-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> = unsafe { x };
+// LOWERING-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> = unsafe { x };
+// LOWERING-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> =
+// LOWERING-AARCH64-GNU-DAG:                 unsafe { __multc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
+// LOWERING-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> = num_complex::Complex {
+// LOWERING-AARCH64-GNU-DAG:                 re: -1.600000e+01f128,
+// LOWERING-AARCH64-GNU-DAG:                 im: 0.000000e+00f128,
 // LOWERING-DAG:             };
 // LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
 // LOWERING-DAG:             {{__v[0-9]+}}
@@ -447,12 +503,12 @@ int main() {
 // LOWERING-DAG:             unsafe { abort() };
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
-// LOWERING-DAG:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-DAG:     return std::process::ExitCode::SUCCESS;
 // LOWERING-DAG: }
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: fn main() {
+// REWRITES-DAG: fn main() -> std::process::ExitCode {
 // REWRITES-DAG:     let {{__v[0-9]+}}: num_complex::Complex<f32> = unsafe { a };
 // REWRITES-DAG:     let {{__v[0-9]+}}: num_complex::Complex<f32> = unsafe { a };
 // REWRITES-DAG:     let {{__v[0-9]+}}: num_complex::Complex<f32> = unsafe { __mulsc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
@@ -538,100 +594,132 @@ int main() {
 // REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
 // REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { i };
-// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { i };
-// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
-// REWRITES-DAG:             __slate_cf80_mul(
-// REWRITES-DAG:                 num_complex::Complex {
-// REWRITES-DAG:                     re: {{__v[0-9]+}}.re,
-// REWRITES-DAG:                     im: {{__v[0-9]+}}.im,
-// REWRITES-DAG:                 },
-// REWRITES-DAG:                 num_complex::Complex {
-// REWRITES-DAG:                     re: {{__v[0-9]+}}.re,
-// REWRITES-DAG:                     im: {{__v[0-9]+}}.im,
-// REWRITES-DAG:                 },
-// REWRITES-DAG:             )
+// REWRITES-X86_64-GNU-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { i };
+// REWRITES-X86_64-GNU-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { i };
+// REWRITES-X86_64-GNU-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
+// REWRITES-X86_64-GNU-DAG:             __slate_cf80_mul(
+// REWRITES-X86_64-GNU-DAG:                 num_complex::Complex {
+// REWRITES-X86_64-GNU-DAG:                     re: {{__v[0-9]+}}.re,
+// REWRITES-X86_64-GNU-DAG:                     im: {{__v[0-9]+}}.im,
+// REWRITES-X86_64-GNU-DAG:                 },
+// REWRITES-X86_64-GNU-DAG:                 num_complex::Complex {
+// REWRITES-X86_64-GNU-DAG:                     re: {{__v[0-9]+}}.re,
+// REWRITES-X86_64-GNU-DAG:                     im: {{__v[0-9]+}}.im,
+// REWRITES-X86_64-GNU-DAG:                 },
+// REWRITES-X86_64-GNU-DAG:             )
+// REWRITES-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f128> = unsafe { i };
+// REWRITES-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f128> = unsafe { i };
+// REWRITES-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f128> =
+// REWRITES-AARCH64-GNU-DAG:             unsafe { __multc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
+// REWRITES-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f128> = num_complex::Complex {
+// REWRITES-AARCH64-GNU-DAG:             re: -1.000000e+00f128,
+// REWRITES-AARCH64-GNU-DAG:             im: 0.000000e+00f128,
 // REWRITES-DAG:         };
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}}
-// REWRITES-DAG:             != num_complex::Complex {
-// REWRITES-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 191]),
-// REWRITES-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
-// REWRITES-DAG:             };
+// REWRITES-X86_64-GNU-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}}
+// REWRITES-X86_64-GNU-DAG:             != num_complex::Complex {
+// REWRITES-X86_64-GNU-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 191]),
+// REWRITES-X86_64-GNU-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// REWRITES-X86_64-GNU-DAG:             };
+// REWRITES-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
 // REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
 // REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
 // REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { j };
-// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { j };
-// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
-// REWRITES-DAG:             __slate_cf80_mul(
-// REWRITES-DAG:                 num_complex::Complex {
-// REWRITES-DAG:                     re: {{__v[0-9]+}}.re,
-// REWRITES-DAG:                     im: {{__v[0-9]+}}.im,
-// REWRITES-DAG:                 },
-// REWRITES-DAG:                 num_complex::Complex {
-// REWRITES-DAG:                     re: {{__v[0-9]+}}.re,
-// REWRITES-DAG:                     im: {{__v[0-9]+}}.im,
-// REWRITES-DAG:                 },
-// REWRITES-DAG:             )
+// REWRITES-X86_64-GNU-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { j };
+// REWRITES-X86_64-GNU-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { j };
+// REWRITES-X86_64-GNU-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
+// REWRITES-X86_64-GNU-DAG:             __slate_cf80_mul(
+// REWRITES-X86_64-GNU-DAG:                 num_complex::Complex {
+// REWRITES-X86_64-GNU-DAG:                     re: {{__v[0-9]+}}.re,
+// REWRITES-X86_64-GNU-DAG:                     im: {{__v[0-9]+}}.im,
+// REWRITES-X86_64-GNU-DAG:                 },
+// REWRITES-X86_64-GNU-DAG:                 num_complex::Complex {
+// REWRITES-X86_64-GNU-DAG:                     re: {{__v[0-9]+}}.re,
+// REWRITES-X86_64-GNU-DAG:                     im: {{__v[0-9]+}}.im,
+// REWRITES-X86_64-GNU-DAG:                 },
+// REWRITES-X86_64-GNU-DAG:             )
+// REWRITES-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f128> = unsafe { j };
+// REWRITES-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f128> = unsafe { j };
+// REWRITES-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f128> =
+// REWRITES-AARCH64-GNU-DAG:             unsafe { __multc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
+// REWRITES-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f128> = num_complex::Complex {
+// REWRITES-AARCH64-GNU-DAG:             re: -4.000000e+00f128,
+// REWRITES-AARCH64-GNU-DAG:             im: 0.000000e+00f128,
 // REWRITES-DAG:         };
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}}
-// REWRITES-DAG:             != num_complex::Complex {
-// REWRITES-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 192]),
-// REWRITES-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
-// REWRITES-DAG:             };
+// REWRITES-X86_64-GNU-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}}
+// REWRITES-X86_64-GNU-DAG:             != num_complex::Complex {
+// REWRITES-X86_64-GNU-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 192]),
+// REWRITES-X86_64-GNU-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// REWRITES-X86_64-GNU-DAG:             };
+// REWRITES-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
 // REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
 // REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
 // REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { k };
-// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { k };
-// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
-// REWRITES-DAG:             __slate_cf80_mul(
-// REWRITES-DAG:                 num_complex::Complex {
-// REWRITES-DAG:                     re: {{__v[0-9]+}}.re,
-// REWRITES-DAG:                     im: {{__v[0-9]+}}.im,
-// REWRITES-DAG:                 },
-// REWRITES-DAG:                 num_complex::Complex {
-// REWRITES-DAG:                     re: {{__v[0-9]+}}.re,
-// REWRITES-DAG:                     im: {{__v[0-9]+}}.im,
-// REWRITES-DAG:                 },
-// REWRITES-DAG:             )
+// REWRITES-X86_64-GNU-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { k };
+// REWRITES-X86_64-GNU-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { k };
+// REWRITES-X86_64-GNU-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
+// REWRITES-X86_64-GNU-DAG:             __slate_cf80_mul(
+// REWRITES-X86_64-GNU-DAG:                 num_complex::Complex {
+// REWRITES-X86_64-GNU-DAG:                     re: {{__v[0-9]+}}.re,
+// REWRITES-X86_64-GNU-DAG:                     im: {{__v[0-9]+}}.im,
+// REWRITES-X86_64-GNU-DAG:                 },
+// REWRITES-X86_64-GNU-DAG:                 num_complex::Complex {
+// REWRITES-X86_64-GNU-DAG:                     re: {{__v[0-9]+}}.re,
+// REWRITES-X86_64-GNU-DAG:                     im: {{__v[0-9]+}}.im,
+// REWRITES-X86_64-GNU-DAG:                 },
+// REWRITES-X86_64-GNU-DAG:             )
+// REWRITES-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f128> = unsafe { k };
+// REWRITES-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f128> = unsafe { k };
+// REWRITES-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f128> =
+// REWRITES-AARCH64-GNU-DAG:             unsafe { __multc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
+// REWRITES-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f128> = num_complex::Complex {
+// REWRITES-AARCH64-GNU-DAG:             re: -9.000000e+00f128,
+// REWRITES-AARCH64-GNU-DAG:             im: 0.000000e+00f128,
 // REWRITES-DAG:         };
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}}
-// REWRITES-DAG:             != num_complex::Complex {
-// REWRITES-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 144, 2, 192]),
-// REWRITES-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
-// REWRITES-DAG:             };
+// REWRITES-X86_64-GNU-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}}
+// REWRITES-X86_64-GNU-DAG:             != num_complex::Complex {
+// REWRITES-X86_64-GNU-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 144, 2, 192]),
+// REWRITES-X86_64-GNU-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// REWRITES-X86_64-GNU-DAG:             };
+// REWRITES-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
 // REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
 // REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
 // REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { l };
-// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { l };
-// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
-// REWRITES-DAG:             __slate_cf80_mul(
-// REWRITES-DAG:                 num_complex::Complex {
-// REWRITES-DAG:                     re: {{__v[0-9]+}}.re,
-// REWRITES-DAG:                     im: {{__v[0-9]+}}.im,
-// REWRITES-DAG:                 },
-// REWRITES-DAG:                 num_complex::Complex {
-// REWRITES-DAG:                     re: {{__v[0-9]+}}.re,
-// REWRITES-DAG:                     im: {{__v[0-9]+}}.im,
-// REWRITES-DAG:                 },
-// REWRITES-DAG:             )
+// REWRITES-X86_64-GNU-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { l };
+// REWRITES-X86_64-GNU-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { l };
+// REWRITES-X86_64-GNU-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
+// REWRITES-X86_64-GNU-DAG:             __slate_cf80_mul(
+// REWRITES-X86_64-GNU-DAG:                 num_complex::Complex {
+// REWRITES-X86_64-GNU-DAG:                     re: {{__v[0-9]+}}.re,
+// REWRITES-X86_64-GNU-DAG:                     im: {{__v[0-9]+}}.im,
+// REWRITES-X86_64-GNU-DAG:                 },
+// REWRITES-X86_64-GNU-DAG:                 num_complex::Complex {
+// REWRITES-X86_64-GNU-DAG:                     re: {{__v[0-9]+}}.re,
+// REWRITES-X86_64-GNU-DAG:                     im: {{__v[0-9]+}}.im,
+// REWRITES-X86_64-GNU-DAG:                 },
+// REWRITES-X86_64-GNU-DAG:             )
+// REWRITES-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f128> = unsafe { l };
+// REWRITES-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f128> = unsafe { l };
+// REWRITES-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f128> =
+// REWRITES-AARCH64-GNU-DAG:             unsafe { __multc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
+// REWRITES-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f128> = num_complex::Complex {
+// REWRITES-AARCH64-GNU-DAG:             re: -1.600000e+01f128,
+// REWRITES-AARCH64-GNU-DAG:             im: 0.000000e+00f128,
 // REWRITES-DAG:         };
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}}
-// REWRITES-DAG:             != num_complex::Complex {
-// REWRITES-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 3, 192]),
-// REWRITES-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
-// REWRITES-DAG:             };
+// REWRITES-X86_64-GNU-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}}
+// REWRITES-X86_64-GNU-DAG:             != num_complex::Complex {
+// REWRITES-X86_64-GNU-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 3, 192]),
+// REWRITES-X86_64-GNU-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// REWRITES-X86_64-GNU-DAG:             };
+// REWRITES-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
 // REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
@@ -726,105 +814,137 @@ int main() {
 // REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
 // REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { u };
-// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { u };
-// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
-// REWRITES-DAG:             __slate_cf80_mul(
-// REWRITES-DAG:                 num_complex::Complex {
-// REWRITES-DAG:                     re: {{__v[0-9]+}}.re,
-// REWRITES-DAG:                     im: {{__v[0-9]+}}.im,
-// REWRITES-DAG:                 },
-// REWRITES-DAG:                 num_complex::Complex {
-// REWRITES-DAG:                     re: {{__v[0-9]+}}.re,
-// REWRITES-DAG:                     im: {{__v[0-9]+}}.im,
-// REWRITES-DAG:                 },
-// REWRITES-DAG:             )
+// REWRITES-X86_64-GNU-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { u };
+// REWRITES-X86_64-GNU-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { u };
+// REWRITES-X86_64-GNU-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
+// REWRITES-X86_64-GNU-DAG:             __slate_cf80_mul(
+// REWRITES-X86_64-GNU-DAG:                 num_complex::Complex {
+// REWRITES-X86_64-GNU-DAG:                     re: {{__v[0-9]+}}.re,
+// REWRITES-X86_64-GNU-DAG:                     im: {{__v[0-9]+}}.im,
+// REWRITES-X86_64-GNU-DAG:                 },
+// REWRITES-X86_64-GNU-DAG:                 num_complex::Complex {
+// REWRITES-X86_64-GNU-DAG:                     re: {{__v[0-9]+}}.re,
+// REWRITES-X86_64-GNU-DAG:                     im: {{__v[0-9]+}}.im,
+// REWRITES-X86_64-GNU-DAG:                 },
+// REWRITES-X86_64-GNU-DAG:             )
+// REWRITES-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f128> = unsafe { u };
+// REWRITES-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f128> = unsafe { u };
+// REWRITES-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f128> =
+// REWRITES-AARCH64-GNU-DAG:             unsafe { __multc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
+// REWRITES-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f128> = num_complex::Complex {
+// REWRITES-AARCH64-GNU-DAG:             re: -1.000000e+00f128,
+// REWRITES-AARCH64-GNU-DAG:             im: 0.000000e+00f128,
 // REWRITES-DAG:         };
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}}
-// REWRITES-DAG:             != num_complex::Complex {
-// REWRITES-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 191]),
-// REWRITES-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
-// REWRITES-DAG:             };
+// REWRITES-X86_64-GNU-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}}
+// REWRITES-X86_64-GNU-DAG:             != num_complex::Complex {
+// REWRITES-X86_64-GNU-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 191]),
+// REWRITES-X86_64-GNU-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// REWRITES-X86_64-GNU-DAG:             };
+// REWRITES-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
 // REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
 // REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
 // REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { v };
-// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { v };
-// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
-// REWRITES-DAG:             __slate_cf80_mul(
-// REWRITES-DAG:                 num_complex::Complex {
-// REWRITES-DAG:                     re: {{__v[0-9]+}}.re,
-// REWRITES-DAG:                     im: {{__v[0-9]+}}.im,
-// REWRITES-DAG:                 },
-// REWRITES-DAG:                 num_complex::Complex {
-// REWRITES-DAG:                     re: {{__v[0-9]+}}.re,
-// REWRITES-DAG:                     im: {{__v[0-9]+}}.im,
-// REWRITES-DAG:                 },
-// REWRITES-DAG:             )
+// REWRITES-X86_64-GNU-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { v };
+// REWRITES-X86_64-GNU-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { v };
+// REWRITES-X86_64-GNU-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
+// REWRITES-X86_64-GNU-DAG:             __slate_cf80_mul(
+// REWRITES-X86_64-GNU-DAG:                 num_complex::Complex {
+// REWRITES-X86_64-GNU-DAG:                     re: {{__v[0-9]+}}.re,
+// REWRITES-X86_64-GNU-DAG:                     im: {{__v[0-9]+}}.im,
+// REWRITES-X86_64-GNU-DAG:                 },
+// REWRITES-X86_64-GNU-DAG:                 num_complex::Complex {
+// REWRITES-X86_64-GNU-DAG:                     re: {{__v[0-9]+}}.re,
+// REWRITES-X86_64-GNU-DAG:                     im: {{__v[0-9]+}}.im,
+// REWRITES-X86_64-GNU-DAG:                 },
+// REWRITES-X86_64-GNU-DAG:             )
+// REWRITES-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f128> = unsafe { v };
+// REWRITES-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f128> = unsafe { v };
+// REWRITES-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f128> =
+// REWRITES-AARCH64-GNU-DAG:             unsafe { __multc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
+// REWRITES-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f128> = num_complex::Complex {
+// REWRITES-AARCH64-GNU-DAG:             re: -4.000000e+00f128,
+// REWRITES-AARCH64-GNU-DAG:             im: 0.000000e+00f128,
 // REWRITES-DAG:         };
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}}
-// REWRITES-DAG:             != num_complex::Complex {
-// REWRITES-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 192]),
-// REWRITES-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
-// REWRITES-DAG:             };
+// REWRITES-X86_64-GNU-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}}
+// REWRITES-X86_64-GNU-DAG:             != num_complex::Complex {
+// REWRITES-X86_64-GNU-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 192]),
+// REWRITES-X86_64-GNU-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// REWRITES-X86_64-GNU-DAG:             };
+// REWRITES-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
 // REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
 // REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
 // REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { w };
-// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { w };
-// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
-// REWRITES-DAG:             __slate_cf80_mul(
-// REWRITES-DAG:                 num_complex::Complex {
-// REWRITES-DAG:                     re: {{__v[0-9]+}}.re,
-// REWRITES-DAG:                     im: {{__v[0-9]+}}.im,
-// REWRITES-DAG:                 },
-// REWRITES-DAG:                 num_complex::Complex {
-// REWRITES-DAG:                     re: {{__v[0-9]+}}.re,
-// REWRITES-DAG:                     im: {{__v[0-9]+}}.im,
-// REWRITES-DAG:                 },
-// REWRITES-DAG:             )
+// REWRITES-X86_64-GNU-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { w };
+// REWRITES-X86_64-GNU-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { w };
+// REWRITES-X86_64-GNU-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
+// REWRITES-X86_64-GNU-DAG:             __slate_cf80_mul(
+// REWRITES-X86_64-GNU-DAG:                 num_complex::Complex {
+// REWRITES-X86_64-GNU-DAG:                     re: {{__v[0-9]+}}.re,
+// REWRITES-X86_64-GNU-DAG:                     im: {{__v[0-9]+}}.im,
+// REWRITES-X86_64-GNU-DAG:                 },
+// REWRITES-X86_64-GNU-DAG:                 num_complex::Complex {
+// REWRITES-X86_64-GNU-DAG:                     re: {{__v[0-9]+}}.re,
+// REWRITES-X86_64-GNU-DAG:                     im: {{__v[0-9]+}}.im,
+// REWRITES-X86_64-GNU-DAG:                 },
+// REWRITES-X86_64-GNU-DAG:             )
+// REWRITES-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f128> = unsafe { w };
+// REWRITES-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f128> = unsafe { w };
+// REWRITES-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f128> =
+// REWRITES-AARCH64-GNU-DAG:             unsafe { __multc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
+// REWRITES-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f128> = num_complex::Complex {
+// REWRITES-AARCH64-GNU-DAG:             re: -9.000000e+00f128,
+// REWRITES-AARCH64-GNU-DAG:             im: 0.000000e+00f128,
 // REWRITES-DAG:         };
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}}
-// REWRITES-DAG:             != num_complex::Complex {
-// REWRITES-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 144, 2, 192]),
-// REWRITES-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
-// REWRITES-DAG:             };
+// REWRITES-X86_64-GNU-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}}
+// REWRITES-X86_64-GNU-DAG:             != num_complex::Complex {
+// REWRITES-X86_64-GNU-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 144, 2, 192]),
+// REWRITES-X86_64-GNU-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// REWRITES-X86_64-GNU-DAG:             };
+// REWRITES-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
 // REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
 // REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
 // REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { x };
-// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { x };
-// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
-// REWRITES-DAG:             __slate_cf80_mul(
-// REWRITES-DAG:                 num_complex::Complex {
-// REWRITES-DAG:                     re: {{__v[0-9]+}}.re,
-// REWRITES-DAG:                     im: {{__v[0-9]+}}.im,
-// REWRITES-DAG:                 },
-// REWRITES-DAG:                 num_complex::Complex {
-// REWRITES-DAG:                     re: {{__v[0-9]+}}.re,
-// REWRITES-DAG:                     im: {{__v[0-9]+}}.im,
-// REWRITES-DAG:                 },
-// REWRITES-DAG:             )
+// REWRITES-X86_64-GNU-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { x };
+// REWRITES-X86_64-GNU-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { x };
+// REWRITES-X86_64-GNU-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
+// REWRITES-X86_64-GNU-DAG:             __slate_cf80_mul(
+// REWRITES-X86_64-GNU-DAG:                 num_complex::Complex {
+// REWRITES-X86_64-GNU-DAG:                     re: {{__v[0-9]+}}.re,
+// REWRITES-X86_64-GNU-DAG:                     im: {{__v[0-9]+}}.im,
+// REWRITES-X86_64-GNU-DAG:                 },
+// REWRITES-X86_64-GNU-DAG:                 num_complex::Complex {
+// REWRITES-X86_64-GNU-DAG:                     re: {{__v[0-9]+}}.re,
+// REWRITES-X86_64-GNU-DAG:                     im: {{__v[0-9]+}}.im,
+// REWRITES-X86_64-GNU-DAG:                 },
+// REWRITES-X86_64-GNU-DAG:             )
+// REWRITES-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f128> = unsafe { x };
+// REWRITES-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f128> = unsafe { x };
+// REWRITES-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f128> =
+// REWRITES-AARCH64-GNU-DAG:             unsafe { __multc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
+// REWRITES-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f128> = num_complex::Complex {
+// REWRITES-AARCH64-GNU-DAG:             re: -1.600000e+01f128,
+// REWRITES-AARCH64-GNU-DAG:             im: 0.000000e+00f128,
 // REWRITES-DAG:         };
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}}
-// REWRITES-DAG:             != num_complex::Complex {
-// REWRITES-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 3, 192]),
-// REWRITES-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
-// REWRITES-DAG:             };
+// REWRITES-X86_64-GNU-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}}
+// REWRITES-X86_64-GNU-DAG:             != num_complex::Complex {
+// REWRITES-X86_64-GNU-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 3, 192]),
+// REWRITES-X86_64-GNU-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// REWRITES-X86_64-GNU-DAG:             };
+// REWRITES-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
 // REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { std::process::abort() };
 // REWRITES-DAG:     }
-// REWRITES-DAG:     std::process::exit(0 as i32);
+// REWRITES-DAG:     return std::process::ExitCode::SUCCESS;
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

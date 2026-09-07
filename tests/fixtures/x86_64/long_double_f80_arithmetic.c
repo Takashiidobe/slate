@@ -158,7 +158,7 @@ int main(void) {
 // LOWERING-X86_64-GNU-NEXT:     ) -> *mut core::ffi::c_void;
 // LOWERING-X86_64-GNU-NEXT: }
 // LOWERING-X86_64-GNU-EMPTY:
-// LOWERING-X86_64-GNU-NEXT: fn main() {
+// LOWERING-X86_64-GNU-NEXT: fn main() -> std::process::ExitCode {
 // LOWERING-X86_64-GNU-NEXT:     let mut one_bits: [u8; 10] = [0; 10];
 // LOWERING-X86_64-GNU-NEXT:     let mut two_bits: [u8; 10] = [0; 10];
 // LOWERING-X86_64-GNU-NEXT:     let mut near_bits: [u8; 10] = [0; 10];
@@ -222,7 +222,7 @@ int main(void) {
 // LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = __slate_f80_to_i32({{__v[0-9]+}});
 // LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
 // LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-X86_64-GNU-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-X86_64-GNU-NEXT:     return std::process::ExitCode::SUCCESS;
 // LOWERING-X86_64-GNU-NEXT: }
 // LOWERING-X86_64-GNU-EMPTY:
 // LOWERING-X86_64-GNU-NEXT: fn load80({{arg[0-9]+}}: *mut u8) -> LongDouble {
@@ -496,7 +496,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:     ) -> *mut core::ffi::c_void;
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
-// REWRITES-X86_64-GNU-NEXT: fn main() {
+// REWRITES-X86_64-GNU-NEXT: fn main() -> std::process::ExitCode {
 // REWRITES-X86_64-GNU-NEXT:     let mut one_bits: [u8; 10] = [0; 10];
 // REWRITES-X86_64-GNU-NEXT:     let mut two_bits: [u8; 10] = [0; 10];
 // REWRITES-X86_64-GNU-NEXT:     let mut near_bits: [u8; 10] = [0; 10];
@@ -531,7 +531,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:     unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, __slate_f80_to_i32({{__v[0-9]+}})) };
 // REWRITES-X86_64-GNU-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// REWRITES-X86_64-GNU-NEXT:     std::process::exit(0 as i32);
+// REWRITES-X86_64-GNU-NEXT:     return std::process::ExitCode::SUCCESS;
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: fn load80({{arg[0-9]+}}: *mut u8) -> LongDouble {

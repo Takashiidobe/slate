@@ -23,13 +23,13 @@ int main(void) { return f() == 0.0L; }
 // LOWERING-MSVC-NEXT:     return {{__v[0-9]+}};
 // LOWERING-MSVC-NEXT: }
 // LOWERING-MSVC-EMPTY:
-// LOWERING-MSVC-NEXT: fn main() {
+// LOWERING-MSVC-NEXT: fn main() -> std::process::ExitCode {
 // LOWERING-MSVC-NEXT:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-MSVC-NEXT:     let {{__v[0-9]+}}: f64 = f();
 // LOWERING-MSVC-NEXT:     let {{__v[0-9]+}}: f64 = 0.0;
 // LOWERING-MSVC-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
 // LOWERING-MSVC-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// LOWERING-MSVC-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-MSVC-NEXT:     return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-MSVC-NEXT: }
 // SLATE-FILECHECK-END lowering-msvc
 
@@ -51,8 +51,8 @@ int main(void) { return f() == 0.0L; }
 // REWRITES-MSVC-NEXT:     0.000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000005
 // REWRITES-MSVC-NEXT: }
 // REWRITES-MSVC-EMPTY:
-// REWRITES-MSVC-NEXT: fn main() {
+// REWRITES-MSVC-NEXT: fn main() -> std::process::ExitCode {
 // REWRITES-MSVC-NEXT:     let {{__v[0-9]+}}: f64 = f();
-// REWRITES-MSVC-NEXT:     std::process::exit(({{__v[0-9]+}} == 0.0) as i32);
+// REWRITES-MSVC-NEXT:     return std::process::ExitCode::from(({{__v[0-9]+}} == 0.0) as u8);
 // REWRITES-MSVC-NEXT: }
 // SLATE-FILECHECK-END rewrites-msvc

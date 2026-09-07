@@ -231,7 +231,7 @@ int main(void) {
 // LOWERING-EMPTY:
 // LOWERING-NEXT: static mut project_state: i32 = 0;
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT: fn main() -> std::process::ExitCode {
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-X86_64-GNU-NEXT:     let mut a: [i8; 8] = [0; 8];
 // LOWERING-X86_64-GNU-NEXT:     let mut b: [i8; 8] = [0; 8];
@@ -287,7 +287,7 @@ int main(void) {
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 2;
 // LOWERING-NEXT:                         __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:                         std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:                         return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                 }
 // LOWERING-NEXT:             }
@@ -312,7 +312,7 @@ int main(void) {
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 3;
 // LOWERING-NEXT:                         __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:                         std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:                         return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                 }
 // LOWERING-NEXT:             }
@@ -338,7 +338,7 @@ int main(void) {
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 4;
 // LOWERING-NEXT:                         __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:                         std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:                         return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                 }
 // LOWERING-NEXT:             }
@@ -362,7 +362,7 @@ int main(void) {
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 5;
 // LOWERING-NEXT:                         __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:                         std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:                         return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                 }
 // LOWERING-NEXT:             }
@@ -397,7 +397,7 @@ int main(void) {
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 6;
 // LOWERING-NEXT:                         __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:                         std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:                         return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                 }
 // LOWERING-NEXT:             }
@@ -432,7 +432,7 @@ int main(void) {
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 7;
 // LOWERING-NEXT:                         __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:                         std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:                         return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                 }
 // LOWERING-NEXT:             }
@@ -462,7 +462,7 @@ int main(void) {
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 8;
 // LOWERING-NEXT:                         __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:                         std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:                         return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                 }
 // LOWERING-NEXT:             }
@@ -491,7 +491,7 @@ int main(void) {
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 9;
 // LOWERING-NEXT:                         __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:                         std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:                         return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                 }
 // LOWERING-NEXT:             }
@@ -515,7 +515,7 @@ int main(void) {
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 10;
 // LOWERING-NEXT:                         __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:                         std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:                         return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                 }
 // LOWERING-NEXT:             }
@@ -541,7 +541,7 @@ int main(void) {
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 10;
 // LOWERING-NEXT:                         __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:                         std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:                         return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                 }
 // LOWERING-NEXT:             }
@@ -569,7 +569,7 @@ int main(void) {
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 11;
 // LOWERING-NEXT:                         __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:                         std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:                         return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                 }
 // LOWERING-NEXT:             }
@@ -597,7 +597,7 @@ int main(void) {
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 12;
 // LOWERING-NEXT:                         __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:                         std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:                         return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                 }
 // LOWERING-NEXT:             }
@@ -626,7 +626,7 @@ int main(void) {
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 13;
 // LOWERING-NEXT:                         __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:                         std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:                         return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                 }
 // LOWERING-NEXT:             }
@@ -655,7 +655,7 @@ int main(void) {
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 14;
 // LOWERING-NEXT:                         __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:                         std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:                         return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                 }
 // LOWERING-NEXT:             }
@@ -681,7 +681,7 @@ int main(void) {
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 15;
 // LOWERING-NEXT:                         __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:                         std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:                         return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                 }
 // LOWERING-NEXT:             }
@@ -708,7 +708,7 @@ int main(void) {
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 16;
 // LOWERING-NEXT:                         __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:                         std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:                         return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                 }
 // LOWERING-NEXT:             }
@@ -741,7 +741,7 @@ int main(void) {
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 17;
 // LOWERING-NEXT:                         __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:                         std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:                         return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                 }
 // LOWERING-NEXT:             }
@@ -770,7 +770,7 @@ int main(void) {
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 18;
 // LOWERING-NEXT:                         __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:                         std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:                         return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                 }
 // LOWERING-NEXT:             }
@@ -799,7 +799,7 @@ int main(void) {
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 19;
 // LOWERING-NEXT:                         __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:                         std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:                         return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                 }
 // LOWERING-NEXT:             }
@@ -828,7 +828,7 @@ int main(void) {
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 20;
 // LOWERING-NEXT:                         __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:                         std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:                         return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                 }
 // LOWERING-NEXT:             }
@@ -857,7 +857,7 @@ int main(void) {
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 21;
 // LOWERING-NEXT:                         __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:                         std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:                         return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                 }
 // LOWERING-NEXT:             }
@@ -883,7 +883,7 @@ int main(void) {
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 22;
 // LOWERING-NEXT:                         __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:                         std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:                         return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                 }
 // LOWERING-NEXT:             }
@@ -909,7 +909,7 @@ int main(void) {
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 23;
 // LOWERING-NEXT:                         __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:                         std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:                         return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                 }
 // LOWERING-NEXT:             }
@@ -933,7 +933,7 @@ int main(void) {
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 24;
 // LOWERING-NEXT:                         __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:                         std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:                         return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                 }
 // LOWERING-NEXT:             }
@@ -957,7 +957,7 @@ int main(void) {
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 25;
 // LOWERING-NEXT:                         __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:                         std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:                         return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                 }
 // LOWERING-NEXT:             }
@@ -983,7 +983,7 @@ int main(void) {
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 26;
 // LOWERING-NEXT:                         __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:                         std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:                         return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                 }
 // LOWERING-NEXT:             }
@@ -1009,7 +1009,7 @@ int main(void) {
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 27;
 // LOWERING-NEXT:                         __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:                         std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:                         return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                 }
 // LOWERING-NEXT:             }
@@ -1033,7 +1033,7 @@ int main(void) {
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 28;
 // LOWERING-NEXT:                         __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:                         std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:                         return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                 }
 // LOWERING-NEXT:             }
@@ -1057,7 +1057,7 @@ int main(void) {
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 29;
 // LOWERING-NEXT:                         __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:                         std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:                         return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                 }
 // LOWERING-NEXT:             }
@@ -1081,7 +1081,7 @@ int main(void) {
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 30;
 // LOWERING-NEXT:                         __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:                         std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:                         return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                 }
 // LOWERING-NEXT:             }
@@ -1110,7 +1110,7 @@ int main(void) {
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 31;
 // LOWERING-NEXT:                         __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:                         std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:                         return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                 }
 // LOWERING-NEXT:             }
@@ -1135,7 +1135,7 @@ int main(void) {
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 32;
 // LOWERING-NEXT:                         __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:                         std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:                         return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                 }
 // LOWERING-NEXT:             }
@@ -1165,7 +1165,7 @@ int main(void) {
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 33;
 // LOWERING-NEXT:                         __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:                         std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:                         return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                 }
 // LOWERING-NEXT:             }
@@ -1198,7 +1198,7 @@ int main(void) {
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 34;
 // LOWERING-NEXT:                         __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:                         std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:                         return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                 }
 // LOWERING-NEXT:             }
@@ -1231,7 +1231,7 @@ int main(void) {
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 35;
 // LOWERING-NEXT:                         __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:                         std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:                         return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                 }
 // LOWERING-NEXT:             }
@@ -1254,7 +1254,7 @@ int main(void) {
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 36;
 // LOWERING-NEXT:                         __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:                         std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:                         return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                 }
 // LOWERING-NEXT:             }
@@ -1277,7 +1277,7 @@ int main(void) {
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 37;
 // LOWERING-NEXT:                         __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:                         std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:                         return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                 }
 // LOWERING-NEXT:             }
@@ -1301,7 +1301,7 @@ int main(void) {
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 38;
 // LOWERING-NEXT:                         __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:                         std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:                         return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                 }
 // LOWERING-NEXT:             }
@@ -1325,7 +1325,7 @@ int main(void) {
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 39;
 // LOWERING-NEXT:                         __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:                         std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:                         return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                 }
 // LOWERING-NEXT:             }
@@ -1349,7 +1349,7 @@ int main(void) {
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 40;
 // LOWERING-NEXT:                         __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:                         std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:                         return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                 }
 // LOWERING-NEXT:             }
@@ -1372,7 +1372,7 @@ int main(void) {
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 41;
 // LOWERING-NEXT:                         __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:                         std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:                         return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                 }
 // LOWERING-NEXT:             }
@@ -1395,7 +1395,7 @@ int main(void) {
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 42;
 // LOWERING-NEXT:                         __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:                         std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:                         return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                 }
 // LOWERING-NEXT:             }
@@ -1418,7 +1418,7 @@ int main(void) {
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 43;
 // LOWERING-NEXT:                         __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:                         std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:                         return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                 }
 // LOWERING-NEXT:             }
@@ -1441,7 +1441,7 @@ int main(void) {
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 44;
 // LOWERING-NEXT:                         __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:                         std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:                         return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                 }
 // LOWERING-NEXT:             }
@@ -1464,7 +1464,7 @@ int main(void) {
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 45;
 // LOWERING-NEXT:                         __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:                         std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:                         return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                 }
 // LOWERING-NEXT:             }
@@ -1487,7 +1487,7 @@ int main(void) {
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 46;
 // LOWERING-NEXT:                         __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:                         std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:                         return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                 }
 // LOWERING-NEXT:             }
@@ -1511,7 +1511,7 @@ int main(void) {
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 47;
 // LOWERING-NEXT:                         __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:                         std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:                         return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                 }
 // LOWERING-NEXT:             }
@@ -1534,7 +1534,7 @@ int main(void) {
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 48;
 // LOWERING-NEXT:                         __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:                         std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:                         return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                 }
 // LOWERING-NEXT:             }
@@ -1557,7 +1557,7 @@ int main(void) {
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 49;
 // LOWERING-NEXT:                         __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:                         std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:                         return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                 }
 // LOWERING-NEXT:             }
@@ -1580,7 +1580,7 @@ int main(void) {
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 50;
 // LOWERING-NEXT:                         __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:                         std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:                         return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                 }
 // LOWERING-NEXT:             }
@@ -1604,7 +1604,7 @@ int main(void) {
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 51;
 // LOWERING-NEXT:                         __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:                         std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:                         return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                 }
 // LOWERING-NEXT:             }
@@ -1627,7 +1627,7 @@ int main(void) {
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 52;
 // LOWERING-NEXT:                         __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:                         std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:                         return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                 }
 // LOWERING-NEXT:             }
@@ -1650,7 +1650,7 @@ int main(void) {
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 53;
 // LOWERING-NEXT:                         __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:                         std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:                         return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                 }
 // LOWERING-NEXT:             }
@@ -1679,7 +1679,7 @@ int main(void) {
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 54;
 // LOWERING-NEXT:                         __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:                         std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:                         return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                 }
 // LOWERING-NEXT:             }
@@ -1702,7 +1702,7 @@ int main(void) {
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 55;
 // LOWERING-NEXT:                         __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:                         std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:                         return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                 }
 // LOWERING-NEXT:             }
@@ -1735,7 +1735,7 @@ int main(void) {
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 56;
 // LOWERING-NEXT:                         __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:                         std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:                         return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                 }
 // LOWERING-NEXT:             }
@@ -1772,7 +1772,7 @@ int main(void) {
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = 57;
 // LOWERING-NEXT:                         __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:                         let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:                         std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:                         return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                 }
 // LOWERING-NEXT:             }
@@ -1793,7 +1793,7 @@ int main(void) {
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = if {{__v[0-9]+}} { {{__v[0-9]+}} } else { {{__v[0-9]+}} };
 // LOWERING-NEXT:     __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:     return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-X86_64-GNU-NEXT: extern "C-unwind" fn strlen({{arg[0-9]+}}: *mut i8) -> u64 {
@@ -2957,7 +2957,7 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: static mut project_state: i32 = 0;
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT: fn main() -> std::process::ExitCode {
 // REWRITES-NEXT:     let mut __retval: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:     let mut a: [i8; 8] = [97, 0, 0, 0, 0, 0, 0, 0];
 // REWRITES-X86_64-GNU-NEXT:     let mut b: [i8; 8] = [98, 0, 0, 0, 0, 0, 0, 0];
@@ -2988,7 +2988,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: bool = ptr != ((16 as u64) as *mut core::ffi::c_void);
 // REWRITES-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-NEXT:             __retval = 2;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
+// REWRITES-NEXT:             return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -3002,7 +3002,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != ((16 as u64) as *mut core::ffi::c_void);
 // REWRITES-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-NEXT:             __retval = 3;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
+// REWRITES-NEXT:             return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -3016,7 +3016,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != ((16 as u64) as *mut core::ffi::c_void);
 // REWRITES-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-NEXT:             __retval = 4;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
+// REWRITES-NEXT:             return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -3028,7 +3028,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: bool = (unsafe { project_state }) != 77;
 // REWRITES-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-NEXT:             __retval = 5;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
+// REWRITES-NEXT:             return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -3053,7 +3053,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != ({{__v[0-9]+}} as *mut core::ffi::c_void);
 // REWRITES-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-NEXT:             __retval = 6;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
+// REWRITES-NEXT:             return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -3078,7 +3078,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != ({{__v[0-9]+}} as *mut core::ffi::c_void);
 // REWRITES-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-NEXT:             __retval = 7;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
+// REWRITES-NEXT:             return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -3097,7 +3097,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != ({{__v[0-9]+}} as *mut core::ffi::c_void);
 // REWRITES-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-NEXT:             __retval = 8;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
+// REWRITES-NEXT:             return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -3114,7 +3114,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != ((24 as u64) as *mut core::ffi::c_void);
 // REWRITES-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-NEXT:             __retval = 9;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
+// REWRITES-NEXT:             return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -3128,7 +3128,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 5;
 // REWRITES-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-NEXT:             __retval = 10;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
+// REWRITES-NEXT:             return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -3144,7 +3144,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 5;
 // REWRITES-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-NEXT:             __retval = 10;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
+// REWRITES-NEXT:             return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -3163,7 +3163,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
 // REWRITES-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-NEXT:             __retval = 11;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
+// REWRITES-NEXT:             return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -3182,7 +3182,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
 // REWRITES-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-NEXT:             __retval = 12;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
+// REWRITES-NEXT:             return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -3202,7 +3202,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
 // REWRITES-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-NEXT:             __retval = 13;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
+// REWRITES-NEXT:             return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -3222,7 +3222,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
 // REWRITES-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-NEXT:             __retval = 14;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
+// REWRITES-NEXT:             return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -3238,7 +3238,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 11;
 // REWRITES-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-NEXT:             __retval = 15;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
+// REWRITES-NEXT:             return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -3255,7 +3255,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 12;
 // REWRITES-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-NEXT:             __retval = 16;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
+// REWRITES-NEXT:             return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -3278,7 +3278,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 13;
 // REWRITES-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-NEXT:             __retval = 17;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
+// REWRITES-NEXT:             return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -3295,7 +3295,7 @@ int main(void) {
 // REWRITES-AARCH64-GNU-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != ((32 as u64) as *mut u8);
 // REWRITES-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-NEXT:             __retval = 18;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
+// REWRITES-NEXT:             return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -3312,7 +3312,7 @@ int main(void) {
 // REWRITES-AARCH64-GNU-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != ((32 as u64) as *mut u8);
 // REWRITES-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-NEXT:             __retval = 19;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
+// REWRITES-NEXT:             return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -3330,7 +3330,7 @@ int main(void) {
 // REWRITES-AARCH64-GNU-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != ((32 as u64) as *mut u8);
 // REWRITES-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-NEXT:             __retval = 20;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
+// REWRITES-NEXT:             return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -3348,7 +3348,7 @@ int main(void) {
 // REWRITES-AARCH64-GNU-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != ((32 as u64) as *mut u8);
 // REWRITES-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-NEXT:             __retval = 21;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
+// REWRITES-NEXT:             return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -3364,7 +3364,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 31;
 // REWRITES-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-NEXT:             __retval = 22;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
+// REWRITES-NEXT:             return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -3380,7 +3380,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 32;
 // REWRITES-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-NEXT:             __retval = 23;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
+// REWRITES-NEXT:             return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -3394,7 +3394,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 41;
 // REWRITES-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-NEXT:             __retval = 24;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
+// REWRITES-NEXT:             return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -3408,7 +3408,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 42;
 // REWRITES-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-NEXT:             __retval = 25;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
+// REWRITES-NEXT:             return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -3423,7 +3423,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 43;
 // REWRITES-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-NEXT:             __retval = 26;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
+// REWRITES-NEXT:             return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -3438,7 +3438,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 44;
 // REWRITES-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-NEXT:             __retval = 27;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
+// REWRITES-NEXT:             return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -3452,7 +3452,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 45.0;
 // REWRITES-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-NEXT:             __retval = 28;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
+// REWRITES-NEXT:             return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -3466,7 +3466,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 51;
 // REWRITES-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-NEXT:             __retval = 29;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
+// REWRITES-NEXT:             return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -3480,7 +3480,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 52;
 // REWRITES-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-NEXT:             __retval = 30;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
+// REWRITES-NEXT:             return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -3496,7 +3496,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: bool = stream != ((48 as u64) as *mut core::ffi::c_void);
 // REWRITES-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-NEXT:             __retval = 31;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
+// REWRITES-NEXT:             return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -3510,7 +3510,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 54;
 // REWRITES-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-NEXT:             __retval = 32;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
+// REWRITES-NEXT:             return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -3527,7 +3527,7 @@ int main(void) {
 // REWRITES-AARCH64-GNU-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != ((40 as u64) as *mut u8);
 // REWRITES-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-NEXT:             __retval = 33;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
+// REWRITES-NEXT:             return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -3549,7 +3549,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 56;
 // REWRITES-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-NEXT:             __retval = 34;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
+// REWRITES-NEXT:             return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -3571,7 +3571,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 57;
 // REWRITES-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-NEXT:             __retval = 35;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
+// REWRITES-NEXT:             return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -3583,7 +3583,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 58;
 // REWRITES-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-NEXT:             __retval = 36;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
+// REWRITES-NEXT:             return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -3595,7 +3595,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 59;
 // REWRITES-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-NEXT:             __retval = 37;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
+// REWRITES-NEXT:             return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -3609,7 +3609,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 60;
 // REWRITES-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-NEXT:             __retval = 38;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
+// REWRITES-NEXT:             return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -3622,7 +3622,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 61;
 // REWRITES-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-NEXT:             __retval = 39;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
+// REWRITES-NEXT:             return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -3635,7 +3635,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 62;
 // REWRITES-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-NEXT:             __retval = 40;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
+// REWRITES-NEXT:             return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -3648,7 +3648,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 63.0;
 // REWRITES-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-NEXT:             __retval = 41;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
+// REWRITES-NEXT:             return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -3661,7 +3661,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 64.0;
 // REWRITES-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-NEXT:             __retval = 42;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
+// REWRITES-NEXT:             return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -3674,7 +3674,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 65.0;
 // REWRITES-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-NEXT:             __retval = 43;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
+// REWRITES-NEXT:             return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -3687,7 +3687,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 66.0;
 // REWRITES-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-NEXT:             __retval = 44;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
+// REWRITES-NEXT:             return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -3700,7 +3700,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 67.0;
 // REWRITES-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-NEXT:             __retval = 45;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
+// REWRITES-NEXT:             return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -3713,7 +3713,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 68.0;
 // REWRITES-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-NEXT:             __retval = 46;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
+// REWRITES-NEXT:             return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -3727,7 +3727,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 69.0;
 // REWRITES-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-NEXT:             __retval = 47;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
+// REWRITES-NEXT:             return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -3740,7 +3740,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 70.0;
 // REWRITES-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-NEXT:             __retval = 48;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
+// REWRITES-NEXT:             return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -3753,7 +3753,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 71.0;
 // REWRITES-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-NEXT:             __retval = 49;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
+// REWRITES-NEXT:             return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -3766,7 +3766,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 72.0;
 // REWRITES-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-NEXT:             __retval = 50;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
+// REWRITES-NEXT:             return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -3780,7 +3780,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 73.0;
 // REWRITES-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-NEXT:             __retval = 51;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
+// REWRITES-NEXT:             return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -3793,7 +3793,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 74;
 // REWRITES-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-NEXT:             __retval = 52;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
+// REWRITES-NEXT:             return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -3806,7 +3806,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 75;
 // REWRITES-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-NEXT:             __retval = 53;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
+// REWRITES-NEXT:             return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -3824,7 +3824,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 78;
 // REWRITES-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-NEXT:             __retval = 54;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
+// REWRITES-NEXT:             return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -3836,7 +3836,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 79;
 // REWRITES-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-NEXT:             __retval = 55;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
+// REWRITES-NEXT:             return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -3853,7 +3853,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: bool = (unsafe { project_state }) != 76;
 // REWRITES-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-NEXT:             __retval = 56;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
+// REWRITES-NEXT:             return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -3879,7 +3879,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != ((56 as u64) as *mut core::ffi::c_void);
 // REWRITES-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-NEXT:             __retval = 57;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
+// REWRITES-NEXT:             return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         if !({{__v[0-9]+}} != 0) {
@@ -3894,7 +3894,7 @@ int main(void) {
 // REWRITES-NEXT:     } else {
 // REWRITES-NEXT:         {{__v[0-9]+}}
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     std::process::exit(__retval as i32);
+// REWRITES-NEXT:     return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: extern "C-unwind" fn strlen({{arg[0-9]+}}: *mut i8) -> u64 {

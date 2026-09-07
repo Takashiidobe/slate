@@ -52,7 +52,7 @@ int main(void) {
 // LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 2;
 // LOWERING-DAG:         __retval = {{__v[0-9]+}};
 // LOWERING-DAG:         let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-DAG:         std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-DAG:         return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-DAG:     }
 // LOWERING-DAG: }
 // LOWERING-DAG: let {{__v[0-9]+}}: u64 = 3;

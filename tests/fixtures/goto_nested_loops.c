@@ -23,7 +23,7 @@ inner:
 // @lowering-fn-end
 
 // SLATE-FILECHECK-BEGIN lowering
-// LOWERING-DAG: fn main() {
+// LOWERING-DAG: fn main() -> std::process::ExitCode {
 // LOWERING-DAG:     let mut __retval: i32 = 0;
 // LOWERING-DAG:     let mut i: i32 = 0;
 // LOWERING-DAG:     let mut j: i32 = 0;
@@ -117,10 +117,10 @@ inner:
 // LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-DAG:                 __retval = {{__v[0-9]+}};
 // LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-DAG:                 std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-DAG:                 return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-DAG:             }
 // LOWERING-DAG:             _ => {
-// LOWERING-DAG:                 break '{{__dispatch[0-9]+}};
+// LOWERING-DAG:                 unreachable!();
 // LOWERING-DAG:             }
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
@@ -128,7 +128,7 @@ inner:
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: fn main() {
+// REWRITES-DAG: fn main() -> std::process::ExitCode {
 // REWRITES-DAG:     let mut __retval: i32 = 0;
 // REWRITES-DAG:     let mut i: i32 = 0;
 // REWRITES-DAG:     let mut j: i32 = 0;
@@ -154,6 +154,6 @@ inner:
 // REWRITES-DAG:     println!("{}", total);
 // REWRITES-DAG:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-DAG:     __retval = 0;
-// REWRITES-DAG:     std::process::exit(__retval as i32);
+// REWRITES-DAG:     return std::process::ExitCode::from(__retval as u8);
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

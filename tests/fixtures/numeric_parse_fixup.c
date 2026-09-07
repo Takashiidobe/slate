@@ -25,7 +25,7 @@ int main(void) {
 // @rewrite-fn-end
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: fn main() {
+// REWRITES-DAG: fn main() -> std::process::ExitCode {
 // REWRITES-X86_64-GNU-DAG:     let mut whole: [i8; 3] = [0; 3];
 // REWRITES-X86_64-GNU-DAG:     let mut whole_long: [i8; 7] = [0; 7];
 // REWRITES-X86_64-GNU-DAG:     let mut whole_unsigned: [i8; 3] = [0; 3];
@@ -114,6 +114,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-DAG:     let {{__v[0-9]+}}: *mut *mut i8 = std::ptr::null_mut();
 // REWRITES-AARCH64-GNU-DAG:     let {{__v[0-9]+}}: *mut u8 = flt.as_mut_ptr() as *mut u8;
 // REWRITES-AARCH64-GNU-DAG:     let {{__v[0-9]+}}: *mut *mut u8 = std::ptr::null_mut();
+// REWRITES-DAG:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-DAG:     unsafe {
 // REWRITES-DAG:         printf(
 // REWRITES-DAG:             {{__v[0-9]+}} as *const core::ffi::c_char,
@@ -131,8 +132,10 @@ int main(void) {
 // REWRITES-DAG:             },
 // REWRITES-DAG:         )
 // REWRITES-DAG:     };
+// REWRITES-DAG:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-DAG:     let {{__v[0-9]+}}: *mut i8 = end_source.as_mut_ptr() as *mut i8;
 // REWRITES-AARCH64-GNU-DAG:     let {{__v[0-9]+}}: *mut u8 = end_source.as_mut_ptr() as *mut u8;
+// REWRITES-DAG:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-DAG:     unsafe {
 // REWRITES-DAG:         printf(
 // REWRITES-DAG:             c"%ld %c\n".as_ptr(),
@@ -146,6 +149,7 @@ int main(void) {
 // REWRITES-DAG:             (unsafe { *end }) as i32,
 // REWRITES-DAG:         )
 // REWRITES-DAG:     };
-// REWRITES-DAG:     std::process::exit(0 as i32);
+// REWRITES-DAG:     unsafe { fflush(std::ptr::null_mut()) };
+// REWRITES-DAG:     return std::process::ExitCode::SUCCESS;
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

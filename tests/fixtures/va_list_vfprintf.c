@@ -43,7 +43,7 @@ int main(void) {
 // LOWERING-NEXT:     ) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT: fn main() -> std::process::ExitCode {
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d %s\n\0".as_ptr() as *mut i8;
 // LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = b"%d %s\n\0".as_ptr() as *mut u8;
@@ -52,7 +52,7 @@ int main(void) {
 // LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = b"forwarded\0".as_ptr() as *mut u8;
 // LOWERING-NEXT:     unsafe { print_values({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:     return std::process::ExitCode::SUCCESS;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-X86_64-GNU-NEXT: unsafe extern "C-unwind" fn print_values({{arg[0-9]+}}: *mut i8, mut __slate_va_args: ...) {
@@ -107,7 +107,7 @@ int main(void) {
 // REWRITES-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT: fn main() -> std::process::ExitCode {
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         print_values(
 // REWRITES-X86_64-GNU-NEXT:             c"%d %s\n".as_ptr() as *mut i8,
@@ -117,7 +117,7 @@ int main(void) {
 // REWRITES-AARCH64-GNU-NEXT:             c"forwarded".as_ptr() as *mut u8,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT:     return std::process::ExitCode::SUCCESS;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: unsafe extern "C-unwind" fn print_values({{arg[0-9]+}}: *mut i8, mut __slate_va_args: ...) {

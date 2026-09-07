@@ -11,16 +11,16 @@ int main(void) {
 // @rewrite-fn-end
 // @lowering-fn-end
 
-// SLATE-FILECHECK-BEGIN common-lowering
-// COMMON-LOWERING-DAG: fn main() {
-// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: i32 = unsafe { real_global };
-// COMMON-LOWERING-DAG:     std::process::exit({{__v[0-9]+}} as i32);
-// COMMON-LOWERING-DAG: }
-// SLATE-FILECHECK-END common-lowering
+// SLATE-FILECHECK-BEGIN lowering
+// LOWERING-DAG: fn main() -> std::process::ExitCode {
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = unsafe { real_global };
+// LOWERING-DAG:     return std::process::ExitCode::from({{__v[0-9]+}} as u8);
+// LOWERING-DAG: }
+// SLATE-FILECHECK-END lowering
 
-// SLATE-FILECHECK-BEGIN common-rewrites
-// COMMON-REWRITES-DAG: fn main() {
-// COMMON-REWRITES-DAG:     std::process::exit((unsafe { real_global }) as i32);
-// COMMON-REWRITES-DAG: }
-// SLATE-FILECHECK-END common-rewrites
+// SLATE-FILECHECK-BEGIN rewrites
+// REWRITES-DAG: fn main() -> std::process::ExitCode {
+// REWRITES-DAG:     return std::process::ExitCode::from((unsafe { real_global }) as u8);
+// REWRITES-DAG: }
+// SLATE-FILECHECK-END rewrites

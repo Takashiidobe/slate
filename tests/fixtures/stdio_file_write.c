@@ -26,7 +26,7 @@ int main(void) {
 // @rewrite-fn-end
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: fn main() {
+// REWRITES-DAG: fn main() -> std::process::ExitCode {
 // REWRITES-DAG:     let mut __retval: i32 = 0;
 // REWRITES-DAG:     let mut f: *mut libc::FILE = std::ptr::null_mut();
 // REWRITES-DAG:     let mut g: *mut libc::FILE = std::ptr::null_mut();
@@ -36,18 +36,24 @@ int main(void) {
 // REWRITES-DAG:     f = unsafe { fopen(c"slate_stdio_file_write.tmp".as_ptr(), c"w".as_ptr()) };
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = !(f != std::ptr::null_mut());
 // REWRITES-DAG:     if {{__v[0-9]+}} {
+// REWRITES-DAG:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-DAG:         unsafe { puts(c"open-fail".as_ptr()) };
+// REWRITES-DAG:         unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-DAG:         __retval = 0;
-// REWRITES-DAG:         std::process::exit(__retval as i32);
+// REWRITES-DAG:         return std::process::ExitCode::from(__retval as u8);
 // REWRITES-DAG:     }
+// REWRITES-DAG:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-DAG:     unsafe { fputs(c"owned\n".as_ptr(), f as *mut libc::FILE) };
+// REWRITES-DAG:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-DAG:     unsafe { fclose(f as *mut libc::FILE) };
 // REWRITES-DAG:     g = unsafe { fopen(c"slate_stdio_file_write.tmp".as_ptr(), c"r".as_ptr()) };
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = !(g != std::ptr::null_mut());
 // REWRITES-DAG:     if {{__v[0-9]+}} {
+// REWRITES-DAG:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-DAG:         unsafe { puts(c"reopen-fail".as_ptr()) };
+// REWRITES-DAG:         unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-DAG:         __retval = 0;
-// REWRITES-DAG:         std::process::exit(__retval as i32);
+// REWRITES-DAG:         return std::process::ExitCode::from(__retval as u8);
 // REWRITES-DAG:     }
 // REWRITES-X86_64-GNU-DAG:     *buf = [0; 16];
 // REWRITES-AARCH64-GNU-DAG:     buf = [0; 16];
@@ -60,14 +66,16 @@ int main(void) {
 // REWRITES-X86_64-GNU-DAG:     }) as *mut i8;
 // REWRITES-AARCH64-GNU-DAG:     }) as *mut u8;
 // REWRITES-DAG:     unsafe { fclose(g as *mut libc::FILE) };
+// REWRITES-DAG:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-DAG:     unsafe {
 // REWRITES-DAG:         fputs(
 // REWRITES-DAG:             buf.as_mut_ptr() as *const core::ffi::c_char,
 // REWRITES-DAG:             (unsafe { stdout }) as *mut libc::FILE,
 // REWRITES-DAG:         )
 // REWRITES-DAG:     };
+// REWRITES-DAG:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-DAG:     unsafe { remove(c"slate_stdio_file_write.tmp".as_ptr()) };
 // REWRITES-DAG:     __retval = 0;
-// REWRITES-DAG:     std::process::exit(__retval as i32);
+// REWRITES-DAG:     return std::process::ExitCode::from(__retval as u8);
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

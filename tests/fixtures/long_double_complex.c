@@ -282,13 +282,13 @@ int main(void) {
 // LOWERING-AARCH64-GNU-NEXT:     fn catanhl(_0: num_complex::Complex<f128>) -> num_complex::Complex<f128>;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT: fn main() -> std::process::ExitCode {
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     check_arithmetic();
 // LOWERING-NEXT:     check_casts();
 // LOWERING-NEXT:     check_stdlib_functions();
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:     return std::process::ExitCode::SUCCESS;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn check_arithmetic() {
@@ -1308,11 +1308,11 @@ int main(void) {
 // REWRITES-AARCH64-GNU-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT: fn main() -> std::process::ExitCode {
 // REWRITES-NEXT:     check_arithmetic();
 // REWRITES-NEXT:     check_casts();
 // REWRITES-NEXT:     check_stdlib_functions();
-// REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT:     return std::process::ExitCode::SUCCESS;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn check_arithmetic() {

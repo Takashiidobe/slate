@@ -13,7 +13,7 @@ int main(void) {
 // @rewrite-fn-end
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: fn main() {
+// REWRITES-DAG: fn main() -> std::process::ExitCode {
 // REWRITES-DAG:     let mut value: libc::timespec = libc::timespec {
 // REWRITES-DAG:         tv_sec: 0,
 // REWRITES-DAG:         tv_nsec: 0,
@@ -30,6 +30,6 @@ int main(void) {
 // REWRITES-DAG:         (value.tv_nsec >= 0 && value.tv_nsec < 1000000000) as i32
 // REWRITES-DAG:     );
 // REWRITES-DAG:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// REWRITES-DAG:     std::process::exit(0 as i32);
+// REWRITES-DAG:     return std::process::ExitCode::SUCCESS;
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

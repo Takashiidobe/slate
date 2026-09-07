@@ -20,7 +20,7 @@ int main(void) {
 // @rewrite-fn-end
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: fn main() {
+// REWRITES-DAG: fn main() -> std::process::ExitCode {
 // REWRITES-X86_64-GNU-DAG:     let mut values: aligned::Aligned<aligned::A16, [i32; 4]> = aligned::Aligned([0; 4]);
 // REWRITES-AARCH64-GNU-DAG:     let mut values: [i32; 4] = [0; 4];
 // REWRITES-DAG:     let mut c: cursor = cursor {
@@ -42,6 +42,7 @@ int main(void) {
 // REWRITES-DAG:     d.ptr = {{__v[0-9]+}};
 // REWRITES-DAG:     let {{__v[0-9]+}}: *mut i32 = d.ptr;
 // REWRITES-DAG:     let {{__v[0-9]+}}: *mut i32 = c.ptr;
+// REWRITES-DAG:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-DAG:     unsafe {
 // REWRITES-DAG:         printf(
 // REWRITES-DAG:             c"%d %ld\n".as_ptr(),
@@ -49,6 +50,7 @@ int main(void) {
 // REWRITES-DAG:             unsafe { {{__v[0-9]+}}.offset_from({{__v[0-9]+}}) as i64 },
 // REWRITES-DAG:         )
 // REWRITES-DAG:     };
-// REWRITES-DAG:     std::process::exit(0 as i32);
+// REWRITES-DAG:     unsafe { fflush(std::ptr::null_mut()) };
+// REWRITES-DAG:     return std::process::ExitCode::SUCCESS;
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

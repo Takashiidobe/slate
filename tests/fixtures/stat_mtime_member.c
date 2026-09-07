@@ -28,16 +28,17 @@ int main(void) {
 // LOWERING-NEXT: struct stat {
 // LOWERING-NEXT:     st_dev: u64,
 // LOWERING-NEXT:     st_ino: u64,
-// LOWERING-AARCH64-GNU-NEXT:     st_mode: u32,
-// LOWERING-NEXT:     st_nlink: u64,
-// LOWERING-X86_64-GNU-NEXT:     st_mode: u32,
+// LOWERING-X86_64-GNU-NEXT:     st_nlink: u64,
+// LOWERING-NEXT:     st_mode: u32,
+// LOWERING-AARCH64-GNU-NEXT:     st_nlink: u32,
 // LOWERING-NEXT:     st_uid: u32,
 // LOWERING-NEXT:     st_gid: u32,
 // LOWERING-X86_64-GNU-NEXT:     __pad0: u32,
 // LOWERING-NEXT:     st_rdev: u64,
 // LOWERING-AARCH64-GNU-NEXT:     __pad: u64,
 // LOWERING-NEXT:     st_size: i64,
-// LOWERING-NEXT:     st_blksize: i64,
+// LOWERING-X86_64-GNU-NEXT:     st_blksize: i64,
+// LOWERING-AARCH64-GNU-NEXT:     st_blksize: i32,
 // LOWERING-AARCH64-GNU-NEXT:     __pad2: i32,
 // LOWERING-NEXT:     st_blocks: i64,
 // LOWERING-NEXT:     st_atim: libc::timespec,
@@ -52,7 +53,7 @@ int main(void) {
 // LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT: fn main() -> std::process::ExitCode {
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut info: stat = stat {
 // LOWERING-NEXT:         st_dev: 0,
@@ -132,7 +133,7 @@ int main(void) {
 // LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = 1;
 // LOWERING-NEXT:             __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:             std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:             return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
 // LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%lld\n\0".as_ptr() as *mut i8;
@@ -140,7 +141,7 @@ int main(void) {
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = info.st_mtim.tv_sec;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:     return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -193,7 +194,7 @@ int main(void) {
 // REWRITES-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT: fn main() -> std::process::ExitCode {
 // REWRITES-NEXT:     let mut __retval: i32 = 0;
 // REWRITES-NEXT:     let mut info: stat = stat {
 // REWRITES-NEXT:         st_dev: 0,
@@ -234,12 +235,12 @@ int main(void) {
 // REWRITES-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
 // REWRITES-NEXT:     if {{__v[0-9]+}} {
 // REWRITES-NEXT:         __retval = 1;
-// REWRITES-NEXT:         std::process::exit(__retval as i32);
+// REWRITES-NEXT:         return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i64 = info.st_mtim.tv_sec;
 // REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe { printf(c"%lld\n".as_ptr(), {{__v[0-9]+}}) };
 // REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// REWRITES-NEXT:     std::process::exit(__retval as i32);
+// REWRITES-NEXT:     return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

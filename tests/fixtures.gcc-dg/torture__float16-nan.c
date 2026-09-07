@@ -52,7 +52,7 @@ main(void) {
 // @lowering-fn-end
 
 // SLATE-FILECHECK-BEGIN lowering
-// LOWERING-DAG: fn main() {
+// LOWERING-DAG: fn main() -> std::process::ExitCode {
 // LOWERING-DAG:     let mut r: f16 = 0.0f16;
 // LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-DAG:     let {{__v[0-9]+}}: f16 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(nan_cst)) };
@@ -90,12 +90,12 @@ main(void) {
 // LOWERING-DAG:     }
 // LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-DAG:     unsafe { exit({{__v[0-9]+}} as i32) };
-// LOWERING-DAG:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-DAG:     return std::process::ExitCode::SUCCESS;
 // LOWERING-DAG: }
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: fn main() {
+// REWRITES-DAG: fn main() -> std::process::ExitCode {
 // REWRITES-DAG:     let mut r: f16 = 0.0f16;
 // REWRITES-DAG:     let {{__v[0-9]+}}: f16 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(nan_cst)) };
 // REWRITES-X86_64-GNU-DAG:     let {{__v[0-9]+}}: f32 = {{__v[0-9]+}} as f32;
@@ -118,6 +118,6 @@ main(void) {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
 // REWRITES-DAG:     unsafe { exit(0 as i32) };
-// REWRITES-DAG:     std::process::exit(0 as i32);
+// REWRITES-DAG:     return std::process::ExitCode::SUCCESS;
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

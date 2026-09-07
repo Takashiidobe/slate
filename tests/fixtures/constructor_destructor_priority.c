@@ -90,7 +90,7 @@ int main(void) {
 // LOWERING-NEXT:     return;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT: fn main() -> std::process::ExitCode {
 // LOWERING-NEXT:     init_early();
 // LOWERING-NEXT:     init_late();
 // LOWERING-NEXT:     init_default();
@@ -102,7 +102,7 @@ int main(void) {
 // LOWERING-NEXT:     fini_default();
 // LOWERING-NEXT:     fini_late();
 // LOWERING-NEXT:     fini_early();
-// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:     return std::process::ExitCode::SUCCESS;
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -161,7 +161,7 @@ int main(void) {
 // REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT: fn main() -> std::process::ExitCode {
 // REWRITES-NEXT:     init_early();
 // REWRITES-NEXT:     init_late();
 // REWRITES-NEXT:     init_default();
@@ -170,6 +170,6 @@ int main(void) {
 // REWRITES-NEXT:     fini_default();
 // REWRITES-NEXT:     fini_late();
 // REWRITES-NEXT:     fini_early();
-// REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT:     return std::process::ExitCode::SUCCESS;
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

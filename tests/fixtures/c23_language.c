@@ -334,7 +334,7 @@ int main(void) {
 // LOWERING-NEXT:     }
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT: fn main() -> std::process::ExitCode {
 // LOWERING-NEXT:     let mut empty_struct: C23Empty = C23Empty {
 // LOWERING-NEXT:         first: 0,
 // LOWERING-NEXT:         second: 0,
@@ -522,7 +522,7 @@ int main(void) {
 // LOWERING-NEXT:         )
 // LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:     return std::process::ExitCode::SUCCESS;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[must_use]
@@ -768,7 +768,7 @@ int main(void) {
 // REWRITES-NEXT:     }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT: fn main() -> std::process::ExitCode {
 // REWRITES-NEXT:     let mut empty_struct: C23Empty = C23Empty {
 // REWRITES-NEXT:         first: 0,
 // REWRITES-NEXT:         second: 0,
@@ -855,7 +855,7 @@ int main(void) {
 // REWRITES-NEXT:         (202311 == (202311 as i64)) as i32
 // REWRITES-NEXT:     );
 // REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT:     return std::process::ExitCode::SUCCESS;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[must_use]

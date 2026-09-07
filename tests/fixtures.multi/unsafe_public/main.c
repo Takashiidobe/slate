@@ -8,6 +8,6 @@ int main(void) {
   return 0;
 }
 // LOWERING-DAG: use crate::pointers::read_ptr;
-// LOWERING-LABEL: {{^}}fn main() {
+// LOWERING-LABEL: {{^}}fn main() -> std::process::ExitCode {
 // LOWERING-DAG: unsafe { read_ptr(
 // LOWERING: {{^}}}

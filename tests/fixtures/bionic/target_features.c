@@ -50,10 +50,10 @@ int main(void) { return 0; }
 // COMMON-LOWERING-NEXT:     unused_comparisons
 // COMMON-LOWERING-NEXT: )]
 // COMMON-LOWERING-EMPTY:
-// COMMON-LOWERING-NEXT: fn main() {
+// COMMON-LOWERING-NEXT: fn main() -> std::process::ExitCode {
 // COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
 // COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// COMMON-LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// COMMON-LOWERING-NEXT:     return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // COMMON-LOWERING-NEXT: }
 // SLATE-FILECHECK-END common-lowering
 
@@ -71,7 +71,7 @@ int main(void) { return 0; }
 // COMMON-REWRITES-NEXT:     unused_comparisons
 // COMMON-REWRITES-NEXT: )]
 // COMMON-REWRITES-EMPTY:
-// COMMON-REWRITES-NEXT: fn main() {
-// COMMON-REWRITES-NEXT:     std::process::exit(0 as i32);
+// COMMON-REWRITES-NEXT: fn main() -> std::process::ExitCode {
+// COMMON-REWRITES-NEXT:     return std::process::ExitCode::SUCCESS;
 // COMMON-REWRITES-NEXT: }
 // SLATE-FILECHECK-END common-rewrites

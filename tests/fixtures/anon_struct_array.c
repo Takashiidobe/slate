@@ -18,7 +18,7 @@ int main(void) {
 // @rewrite-fn-end
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: fn main() {
+// REWRITES-DAG: fn main() -> std::process::ExitCode {
 // REWRITES-X86_64-GNU-DAG:     let mut error_log: aligned::Aligned<aligned::A16, [{{anon_[0-9]+}}; 3]> = aligned::Aligned(
 // REWRITES-AARCH64-GNU-DAG:     let mut error_log: aligned::Aligned<aligned::A8, [{{anon_[0-9]+}}; 3]> = aligned::Aligned(
 // REWRITES-DAG:         [{{anon_[0-9]+}} {
@@ -50,6 +50,6 @@ int main(void) {
 // REWRITES-DAG:     let {{__v[0-9]+}}: i32 = error_log[0].code;
 // REWRITES-DAG:     println!("{}", {{__v[0-9]+}});
 // REWRITES-DAG:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// REWRITES-DAG:     std::process::exit(0 as i32);
+// REWRITES-DAG:     return std::process::ExitCode::SUCCESS;
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites
