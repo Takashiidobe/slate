@@ -643,42 +643,12 @@ int main(void) {
 // REWRITES-NEXT:     let {{__v[0-9]+}}: [f64; 2] = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(*vector_input)) };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: [f64; 2] = [{{__v[0-9]+}}[0usize].tanh(), {{__v[0-9]+}}[1usize].tanh()];
 // REWRITES-NEXT:     *vt = {{__v[0-9]+}};
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if (*vc)[0] == 1.0 {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = (*vc)[1] == 1.0;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = (*vs)[0] == 0.0;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = (*vs)[1] == 0.0;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = (*vt)[0] == 0.0;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = (*vt)[1] == 0.0;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     1000 * ({{__v[0-9]+}} as i32)
+// REWRITES-NEXT:     1000 * (((*vc)[0] == 1.0
+// REWRITES-NEXT:         && (*vc)[1] == 1.0
+// REWRITES-NEXT:         && (*vs)[0] == 0.0
+// REWRITES-NEXT:         && (*vs)[1] == 0.0
+// REWRITES-NEXT:         && (*vt)[0] == 0.0
+// REWRITES-NEXT:         && (*vt)[1] == 0.0) as i32)
 // REWRITES-NEXT:         + 100 * (({{__v[0-9]+}} == 1.0) as i32)
 // REWRITES-NEXT:         + 10 * (({{__v[0-9]+}} == 0.0) as i32)
 // REWRITES-NEXT:         + (({{__v[0-9]+}} == 0.0) as i32)

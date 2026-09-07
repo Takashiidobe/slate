@@ -389,19 +389,20 @@ int main(void) {
 // REWRITES-NEXT:     };
 // REWRITES-X86_64-GNU-NEXT:     unsafe {
 // REWRITES-X86_64-GNU-NEXT:         __slate_printf__ri32_pi8_i32_f80(c"%d %La\n".as_ptr() as *mut i8, {{__v[0-9]+}} as i32, parsed)
-// REWRITES-X86_64-GNU-NEXT:     };
 // REWRITES-AARCH64-GNU-NEXT:     unsafe { printf(c"%d %La\n".as_ptr(), {{__v[0-9]+}}, parsed) };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} != 1 {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = true;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bool = parsed != LongDouble([1, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} != 1 {
+// REWRITES-AARCH64-GNU-NEXT:         let {{__v[0-9]+}}: bool = true;
+// REWRITES-AARCH64-GNU-NEXT:         {{__v[0-9]+}}
+// REWRITES-AARCH64-GNU-NEXT:     } else {
 // REWRITES-AARCH64-GNU-NEXT:         let {{__v[0-9]+}}: f128 = parsed;
 // REWRITES-AARCH64-GNU-NEXT:         let {{__v[0-9]+}}: f128 = 1.00000000000000000010842021724855044f128;
 // REWRITES-AARCH64-GNU-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// REWRITES-NEXT:         {{__v[0-9]+}}
+// REWRITES-AARCH64-GNU-NEXT:         {{__v[0-9]+}}
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// REWRITES-X86_64-GNU-NEXT:     std::process::exit(
+// REWRITES-X86_64-GNU-NEXT:         ({{__v[0-9]+}} != 1 || parsed != LongDouble([1, 0, 0, 0, 0, 0, 0, 128, 255, 63])) as i32,
+// REWRITES-X86_64-GNU-NEXT:     );
+// REWRITES-AARCH64-GNU-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
 // REWRITES-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: unsafe extern "C" {

@@ -1611,35 +1611,7 @@ int main(void) {
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         return 0;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if key == 16777217 {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = true;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = key == 16777219;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = true;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = key == 16777218;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = true;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = key == 16777220;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = true;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = key == 16777223;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     if {{__v[0-9]+}} {
+// REWRITES-NEXT:     if key == 16777217 || key == 16777219 || key == 16777218 || key == 16777220 || key == 16777223 {
 // REWRITES-NEXT:         return 0;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     7

@@ -892,21 +892,7 @@ int main(void) {
 // REWRITES-NEXT:             {{__v[0-9]+}} as *mut i32,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     }) as u64;
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} == 2 {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = types[0] & -65281 == 3;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = types[1] & -65281 == 0;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     {{__v[0-9]+}} as i32
+// REWRITES-NEXT:     ({{__v[0-9]+}} == 2 && types[0] & -65281 == 3 && types[1] & -65281 == 0) as i32
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: extern "C-unwind" fn gnu_cookie_write(

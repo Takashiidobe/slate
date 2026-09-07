@@ -1,4 +1,5 @@
 mod array_iter;
+mod bool_ternary;
 mod compound_assign;
 mod constant_index_casts;
 mod cstr_literal;
@@ -38,6 +39,7 @@ pub(super) fn registry() -> Vec<Box<dyn NodeRule>> {
         Box::new(array_iter::ForArrayIterRecover),
         Box::new(loop_to_while::LoopToWhile),
         Box::new(return_cleanup::ReturnSlotFold),
+        Box::new(bool_ternary::BoolTernaryFold),
         Box::new(inline_temps::LateInlineTemps),
         Box::new(inline_temps::EffectfulTempForward),
         Box::new(inline_temps::InlineConstArgTemps),

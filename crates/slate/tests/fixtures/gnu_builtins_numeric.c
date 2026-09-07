@@ -467,14 +467,7 @@ int main(void) {
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.1 || ({{__v[0-9]+}}.0 < -2147483648 || {{__v[0-9]+}}.0 > 2147483647);
 // REWRITES-DAG:     signed_result = {{__v[0-9]+}}.0 as i32;
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = !{{__v[0-9]+}};
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = signed_result == 42;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     };
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + ({{__v[0-9]+}} as i32);
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + (({{__v[0-9]+}} && signed_result == 42) as i32);
 // REWRITES-DAG:     let {{__v[0-9]+}}: i32 = i32::MAX as i32;
 // REWRITES-DAG:     let {{__v[0-9]+}} = {{__v[0-9]+}}.overflowing_add(1 as i32);
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.1 || ({{__v[0-9]+}}.0 < -2147483648 || {{__v[0-9]+}}.0 > 2147483647);
@@ -485,14 +478,7 @@ int main(void) {
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.1 || {{__v[0-9]+}}.0 > 4294967295;
 // REWRITES-DAG:     unsigned_result = {{__v[0-9]+}}.0 as u32;
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = !{{__v[0-9]+}};
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = unsigned_result == 42;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     };
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + ({{__v[0-9]+}} as i32);
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + (({{__v[0-9]+}} && unsigned_result == 42) as i32);
 // REWRITES-DAG:     let {{__v[0-9]+}}: u32 = 0;
 // REWRITES-DAG:     let {{__v[0-9]+}} = {{__v[0-9]+}}.overflowing_sub(1 as u32);
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.1 || {{__v[0-9]+}}.0 > 4294967295;
@@ -503,14 +489,7 @@ int main(void) {
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.1 || ({{__v[0-9]+}}.0 < -9223372036854775808 || {{__v[0-9]+}}.0 > 9223372036854775807);
 // REWRITES-DAG:     long_result = {{__v[0-9]+}}.0 as i64;
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = !{{__v[0-9]+}};
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = long_result == 42;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     };
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + ({{__v[0-9]+}} as i32);
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + (({{__v[0-9]+}} && long_result == 42) as i32);
 // REWRITES-DAG:     let {{__v[0-9]+}}: i64 = i64::MAX as i64;
 // REWRITES-DAG:     let {{__v[0-9]+}} = {{__v[0-9]+}}.overflowing_mul(2 as i64);
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.1 || ({{__v[0-9]+}}.0 < -9223372036854775808 || {{__v[0-9]+}}.0 > 9223372036854775807);
@@ -521,27 +500,13 @@ int main(void) {
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.1 || ({{__v[0-9]+}}.0 < -2147483648 || {{__v[0-9]+}}.0 > 2147483647);
 // REWRITES-DAG:     signed_result = {{__v[0-9]+}}.0 as i32;
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = !{{__v[0-9]+}};
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = signed_result == 42;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     };
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + ({{__v[0-9]+}} as i32);
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + (({{__v[0-9]+}} && signed_result == 42) as i32);
 // REWRITES-DAG:     let {{__v[0-9]+}}: u32 = 19;
 // REWRITES-DAG:     let {{__v[0-9]+}} = {{__v[0-9]+}}.overflowing_add(23 as u32);
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.1 || {{__v[0-9]+}}.0 > 4294967295;
 // REWRITES-DAG:     unsigned_result = {{__v[0-9]+}}.0 as u32;
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = !{{__v[0-9]+}};
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = unsigned_result == 42;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     };
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + ({{__v[0-9]+}} as i32);
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + (({{__v[0-9]+}} && unsigned_result == 42) as i32);
 // REWRITES-DAG:     let {{__v[0-9]+}}: i64 = i64::MAX as i64;
 // REWRITES-DAG:     let {{__v[0-9]+}} = {{__v[0-9]+}}.overflowing_add(1 as i64);
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.1 || ({{__v[0-9]+}}.0 < -9223372036854775808 || {{__v[0-9]+}}.0 > 9223372036854775807);

@@ -125,7 +125,7 @@ unsigned int slate_first_interface_flags(void) {
 // @rewrite-fn-end
 // @lowering-fn-end
 
-// SLATE-FILECHECK-BEGIN lowering-macos
+// SLATE-FILECHECK-BEGIN lowering
 // LOWERING-MACOS-DAG: unsafe fn slate_listen_ipv4({{arg[0-9]+}}: *mut sockaddr_in) -> i32 {
 // LOWERING-MACOS-DAG:     let mut __retval: i32 = 0;
 // LOWERING-MACOS-DAG:     let mut socket_fd: i32 = 0;
@@ -334,9 +334,9 @@ unsigned int slate_first_interface_flags(void) {
 // LOWERING-MACOS-DAG:     let {{__v[0-9]+}}: u32 = __retval;
 // LOWERING-MACOS-DAG:     return {{__v[0-9]+}};
 // LOWERING-MACOS-DAG: }
-// SLATE-FILECHECK-END lowering-macos
+// SLATE-FILECHECK-END lowering
 
-// SLATE-FILECHECK-BEGIN rewrites-macos
+// SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-MACOS-DAG: unsafe fn slate_listen_ipv4({{arg[0-9]+}}: *mut sockaddr_in) -> i32 {
 // REWRITES-MACOS-DAG:     let mut socket_fd: i32 = unsafe { socket(2 as i32, 1 as i32, 6 as i32) };
 // REWRITES-MACOS-DAG:     if socket_fd < 0 {
@@ -443,18 +443,11 @@ unsigned int slate_first_interface_flags(void) {
 // REWRITES-MACOS-DAG: fn slate_first_interface_flags() -> u32 {
 // REWRITES-MACOS-DAG:     let mut addresses: *mut ifaddrs = std::ptr::null_mut();
 // REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: i32 = unsafe { getifaddrs(std::ptr::addr_of_mut!(addresses) as *mut *mut ifaddrs) };
-// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} != 0 {
-// REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: bool = true;
-// REWRITES-MACOS-DAG:         {{__v[0-9]+}}
-// REWRITES-MACOS-DAG:     } else {
-// REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: bool = addresses == std::ptr::null_mut();
-// REWRITES-MACOS-DAG:         {{__v[0-9]+}}
-// REWRITES-MACOS-DAG:     };
-// REWRITES-MACOS-DAG:     if {{__v[0-9]+}} {
+// REWRITES-MACOS-DAG:     if {{__v[0-9]+}} != 0 || addresses == std::ptr::null_mut() {
 // REWRITES-MACOS-DAG:         return 0;
 // REWRITES-MACOS-DAG:     }
 // REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: u32 = unsafe { (*addresses).ifa_flags };
 // REWRITES-MACOS-DAG:     unsafe { freeifaddrs(addresses as *mut ifaddrs) };
 // REWRITES-MACOS-DAG:     {{__v[0-9]+}}
 // REWRITES-MACOS-DAG: }
-// SLATE-FILECHECK-END rewrites-macos
+// SLATE-FILECHECK-END rewrites

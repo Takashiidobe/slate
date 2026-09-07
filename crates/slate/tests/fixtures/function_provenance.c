@@ -3915,29 +3915,19 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn calloc({{arg[0-9]+}}: u64, mut size: u64) -> *mut core::ffi::c_void {
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{arg[0-9]+}} != 0 {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = size != 0;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = (16 as u64) as *mut core::ffi::c_void;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
-// REWRITES-NEXT:     if {{__v[0-9]+}} { {{__v[0-9]+}} } else { {{__v[0-9]+}} }
+// REWRITES-NEXT:     if {{arg[0-9]+}} != 0 && size != 0 { {{__v[0-9]+}} } else { {{__v[0-9]+}} }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn realloc({{arg[0-9]+}}: *mut core::ffi::c_void, mut size: u64) -> *mut core::ffi::c_void {
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{arg[0-9]+}} != std::ptr::null_mut() {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = size != 0;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = (16 as u64) as *mut core::ffi::c_void;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
-// REWRITES-NEXT:     if {{__v[0-9]+}} { {{__v[0-9]+}} } else { {{__v[0-9]+}} }
+// REWRITES-NEXT:     if {{arg[0-9]+}} != std::ptr::null_mut() && size != 0 {
+// REWRITES-NEXT:         {{__v[0-9]+}}
+// REWRITES-NEXT:     } else {
+// REWRITES-NEXT:         {{__v[0-9]+}}
+// REWRITES-NEXT:     }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn free({{arg[0-9]+}}: *mut core::ffi::c_void) {
@@ -3958,14 +3948,7 @@ int main(void) {
 // REWRITES-NEXT:     mut src: *mut core::ffi::c_void,
 // REWRITES-NEXT:     {{arg[0-9]+}}: u64,
 // REWRITES-NEXT: ) -> *mut core::ffi::c_void {
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{arg[0-9]+}} != 0 {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = src != std::ptr::null_mut();
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = if {{__v[0-9]+}} {
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = if {{arg[0-9]+}} != 0 && src != std::ptr::null_mut() {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: *mut core::ffi::c_void = dst;
 // REWRITES-NEXT:         {{__v[0-9]+}}
 // REWRITES-NEXT:     } else {
@@ -3980,14 +3963,7 @@ int main(void) {
 // REWRITES-NEXT:     mut src: *mut core::ffi::c_void,
 // REWRITES-NEXT:     {{arg[0-9]+}}: u64,
 // REWRITES-NEXT: ) -> *mut core::ffi::c_void {
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{arg[0-9]+}} != 0 {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = src != std::ptr::null_mut();
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = if {{__v[0-9]+}} {
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = if {{arg[0-9]+}} != 0 && src != std::ptr::null_mut() {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: *mut core::ffi::c_void = dst;
 // REWRITES-NEXT:         {{__v[0-9]+}}
 // REWRITES-NEXT:     } else {
@@ -3998,14 +3974,7 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn memset(mut dst: *mut core::ffi::c_void, {{arg[0-9]+}}: i32, mut count: u64) -> *mut core::ffi::c_void {
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{arg[0-9]+}} != 0 {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = count != 0;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = if {{__v[0-9]+}} {
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = if {{arg[0-9]+}} != 0 && count != 0 {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: *mut core::ffi::c_void = dst;
 // REWRITES-NEXT:         {{__v[0-9]+}}
 // REWRITES-NEXT:     } else {
@@ -4016,23 +3985,13 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn memchr({{arg[0-9]+}}: *mut core::ffi::c_void, mut value: i32, mut count: u64) -> *mut core::ffi::c_void {
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{arg[0-9]+}} != std::ptr::null_mut() {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = value != 0;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = count != 0;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = (24 as u64) as *mut core::ffi::c_void;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
-// REWRITES-NEXT:     if {{__v[0-9]+}} { {{__v[0-9]+}} } else { {{__v[0-9]+}} }
+// REWRITES-NEXT:     if {{arg[0-9]+}} != std::ptr::null_mut() && value != 0 && count != 0 {
+// REWRITES-NEXT:         {{__v[0-9]+}}
+// REWRITES-NEXT:     } else {
+// REWRITES-NEXT:         {{__v[0-9]+}}
+// REWRITES-NEXT:     }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: fn strcpy(mut dst: *mut i8, {{arg[0-9]+}}: *mut i8) -> *mut i8 {
@@ -4066,17 +4025,10 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: fn strncpy(mut dst: *mut i8, {{arg[0-9]+}}: *mut i8, mut count: u64) -> *mut i8 {
-// REWRITES-AARCH64-GNU-NEXT: fn strncpy(mut dst: *mut u8, {{arg[0-9]+}}: *mut u8, mut count: u64) -> *mut u8 {
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{arg[0-9]+}} != std::ptr::null_mut() {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = count != 0;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
-// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = if {{__v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = if {{arg[0-9]+}} != std::ptr::null_mut() && count != 0 {
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: *mut i8 = dst;
-// REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = if {{__v[0-9]+}} {
+// REWRITES-AARCH64-GNU-NEXT: fn strncpy(mut dst: *mut u8, {{arg[0-9]+}}: *mut u8, mut count: u64) -> *mut u8 {
+// REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = if {{arg[0-9]+}} != std::ptr::null_mut() && count != 0 {
 // REWRITES-AARCH64-GNU-NEXT:         let {{__v[0-9]+}}: *mut u8 = dst;
 // REWRITES-NEXT:         {{__v[0-9]+}}
 // REWRITES-NEXT:     } else {
@@ -4088,17 +4040,10 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: fn strncat(mut dst: *mut i8, {{arg[0-9]+}}: *mut i8, mut count: u64) -> *mut i8 {
-// REWRITES-AARCH64-GNU-NEXT: fn strncat(mut dst: *mut u8, {{arg[0-9]+}}: *mut u8, mut count: u64) -> *mut u8 {
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{arg[0-9]+}} != std::ptr::null_mut() {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = count != 0;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
-// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = if {{__v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = if {{arg[0-9]+}} != std::ptr::null_mut() && count != 0 {
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: *mut i8 = dst;
-// REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = if {{__v[0-9]+}} {
+// REWRITES-AARCH64-GNU-NEXT: fn strncat(mut dst: *mut u8, {{arg[0-9]+}}: *mut u8, mut count: u64) -> *mut u8 {
+// REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = if {{arg[0-9]+}} != std::ptr::null_mut() && count != 0 {
 // REWRITES-AARCH64-GNU-NEXT:         let {{__v[0-9]+}}: *mut u8 = dst;
 // REWRITES-NEXT:         {{__v[0-9]+}}
 // REWRITES-NEXT:     } else {
@@ -4111,149 +4056,108 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: fn strcmp({{arg[0-9]+}}: *mut i8, mut rhs: *mut i8) -> i32 {
 // REWRITES-AARCH64-GNU-NEXT: fn strcmp({{arg[0-9]+}}: *mut u8, mut rhs: *mut u8) -> i32 {
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{arg[0-9]+}} != std::ptr::null_mut() {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = rhs != std::ptr::null_mut();
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 11;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:     if {{__v[0-9]+}} { {{__v[0-9]+}} } else { {{__v[0-9]+}} }
+// REWRITES-NEXT:     if {{arg[0-9]+}} != std::ptr::null_mut() && rhs != std::ptr::null_mut() {
+// REWRITES-NEXT:         {{__v[0-9]+}}
+// REWRITES-NEXT:     } else {
+// REWRITES-NEXT:         {{__v[0-9]+}}
+// REWRITES-NEXT:     }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: fn strncmp({{arg[0-9]+}}: *mut i8, mut rhs: *mut i8, mut count: u64) -> i32 {
 // REWRITES-AARCH64-GNU-NEXT: fn strncmp({{arg[0-9]+}}: *mut u8, mut rhs: *mut u8, mut count: u64) -> i32 {
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{arg[0-9]+}} != std::ptr::null_mut() {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = rhs != std::ptr::null_mut();
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = count != 0;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 12;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:     if {{__v[0-9]+}} { {{__v[0-9]+}} } else { {{__v[0-9]+}} }
+// REWRITES-NEXT:     if {{arg[0-9]+}} != std::ptr::null_mut() && rhs != std::ptr::null_mut() && count != 0 {
+// REWRITES-NEXT:         {{__v[0-9]+}}
+// REWRITES-NEXT:     } else {
+// REWRITES-NEXT:         {{__v[0-9]+}}
+// REWRITES-NEXT:     }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn memcmp({{arg[0-9]+}}: *mut core::ffi::c_void, mut rhs: *mut core::ffi::c_void, mut count: u64) -> i32 {
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{arg[0-9]+}} != std::ptr::null_mut() {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = rhs != std::ptr::null_mut();
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = count != 0;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 13;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:     if {{__v[0-9]+}} { {{__v[0-9]+}} } else { {{__v[0-9]+}} }
+// REWRITES-NEXT:     if {{arg[0-9]+}} != std::ptr::null_mut() && rhs != std::ptr::null_mut() && count != 0 {
+// REWRITES-NEXT:         {{__v[0-9]+}}
+// REWRITES-NEXT:     } else {
+// REWRITES-NEXT:         {{__v[0-9]+}}
+// REWRITES-NEXT:     }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: fn strchr({{arg[0-9]+}}: *mut i8, mut value: i32) -> *mut i8 {
-// REWRITES-AARCH64-GNU-NEXT: fn strchr({{arg[0-9]+}}: *mut u8, mut value: i32) -> *mut u8 {
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{arg[0-9]+}} != std::ptr::null_mut() {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = value != 0;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = (32 as u64) as *mut i8;
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = std::ptr::null_mut();
+// REWRITES-AARCH64-GNU-NEXT: fn strchr({{arg[0-9]+}}: *mut u8, mut value: i32) -> *mut u8 {
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = (32 as u64) as *mut u8;
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = std::ptr::null_mut();
-// REWRITES-NEXT:     if {{__v[0-9]+}} { {{__v[0-9]+}} } else { {{__v[0-9]+}} }
+// REWRITES-NEXT:     if {{arg[0-9]+}} != std::ptr::null_mut() && value != 0 {
+// REWRITES-NEXT:         {{__v[0-9]+}}
+// REWRITES-NEXT:     } else {
+// REWRITES-NEXT:         {{__v[0-9]+}}
+// REWRITES-NEXT:     }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: fn strrchr({{arg[0-9]+}}: *mut i8, mut value: i32) -> *mut i8 {
-// REWRITES-AARCH64-GNU-NEXT: fn strrchr({{arg[0-9]+}}: *mut u8, mut value: i32) -> *mut u8 {
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{arg[0-9]+}} != std::ptr::null_mut() {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = value != 0;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = (32 as u64) as *mut i8;
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = std::ptr::null_mut();
+// REWRITES-AARCH64-GNU-NEXT: fn strrchr({{arg[0-9]+}}: *mut u8, mut value: i32) -> *mut u8 {
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = (32 as u64) as *mut u8;
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = std::ptr::null_mut();
-// REWRITES-NEXT:     if {{__v[0-9]+}} { {{__v[0-9]+}} } else { {{__v[0-9]+}} }
+// REWRITES-NEXT:     if {{arg[0-9]+}} != std::ptr::null_mut() && value != 0 {
+// REWRITES-NEXT:         {{__v[0-9]+}}
+// REWRITES-NEXT:     } else {
+// REWRITES-NEXT:         {{__v[0-9]+}}
+// REWRITES-NEXT:     }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: fn strstr({{arg[0-9]+}}: *mut i8, mut needle: *mut i8) -> *mut i8 {
-// REWRITES-AARCH64-GNU-NEXT: fn strstr({{arg[0-9]+}}: *mut u8, mut needle: *mut u8) -> *mut u8 {
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{arg[0-9]+}} != std::ptr::null_mut() {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = needle != std::ptr::null_mut();
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = (32 as u64) as *mut i8;
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = std::ptr::null_mut();
+// REWRITES-AARCH64-GNU-NEXT: fn strstr({{arg[0-9]+}}: *mut u8, mut needle: *mut u8) -> *mut u8 {
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = (32 as u64) as *mut u8;
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = std::ptr::null_mut();
-// REWRITES-NEXT:     if {{__v[0-9]+}} { {{__v[0-9]+}} } else { {{__v[0-9]+}} }
+// REWRITES-NEXT:     if {{arg[0-9]+}} != std::ptr::null_mut() && needle != std::ptr::null_mut() {
+// REWRITES-NEXT:         {{__v[0-9]+}}
+// REWRITES-NEXT:     } else {
+// REWRITES-NEXT:         {{__v[0-9]+}}
+// REWRITES-NEXT:     }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: fn strpbrk({{arg[0-9]+}}: *mut i8, mut accept: *mut i8) -> *mut i8 {
-// REWRITES-AARCH64-GNU-NEXT: fn strpbrk({{arg[0-9]+}}: *mut u8, mut accept: *mut u8) -> *mut u8 {
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{arg[0-9]+}} != std::ptr::null_mut() {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = accept != std::ptr::null_mut();
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = (32 as u64) as *mut i8;
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = std::ptr::null_mut();
+// REWRITES-AARCH64-GNU-NEXT: fn strpbrk({{arg[0-9]+}}: *mut u8, mut accept: *mut u8) -> *mut u8 {
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = (32 as u64) as *mut u8;
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = std::ptr::null_mut();
-// REWRITES-NEXT:     if {{__v[0-9]+}} { {{__v[0-9]+}} } else { {{__v[0-9]+}} }
+// REWRITES-NEXT:     if {{arg[0-9]+}} != std::ptr::null_mut() && accept != std::ptr::null_mut() {
+// REWRITES-NEXT:         {{__v[0-9]+}}
+// REWRITES-NEXT:     } else {
+// REWRITES-NEXT:         {{__v[0-9]+}}
+// REWRITES-NEXT:     }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: fn strspn({{arg[0-9]+}}: *mut i8, mut accept: *mut i8) -> u64 {
 // REWRITES-AARCH64-GNU-NEXT: fn strspn({{arg[0-9]+}}: *mut u8, mut accept: *mut u8) -> u64 {
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{arg[0-9]+}} != std::ptr::null_mut() {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = accept != std::ptr::null_mut();
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 31;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:     (if {{__v[0-9]+}} { {{__v[0-9]+}} } else { {{__v[0-9]+}} }) as u64
+// REWRITES-NEXT:     (if {{arg[0-9]+}} != std::ptr::null_mut() && accept != std::ptr::null_mut() {
+// REWRITES-NEXT:         {{__v[0-9]+}}
+// REWRITES-NEXT:     } else {
+// REWRITES-NEXT:         {{__v[0-9]+}}
+// REWRITES-NEXT:     }) as u64
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: fn strcspn({{arg[0-9]+}}: *mut i8, mut reject: *mut i8) -> u64 {
 // REWRITES-AARCH64-GNU-NEXT: fn strcspn({{arg[0-9]+}}: *mut u8, mut reject: *mut u8) -> u64 {
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{arg[0-9]+}} != std::ptr::null_mut() {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = reject != std::ptr::null_mut();
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 32;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:     (if {{__v[0-9]+}} { {{__v[0-9]+}} } else { {{__v[0-9]+}} }) as u64
+// REWRITES-NEXT:     (if {{arg[0-9]+}} != std::ptr::null_mut() && reject != std::ptr::null_mut() {
+// REWRITES-NEXT:         {{__v[0-9]+}}
+// REWRITES-NEXT:     } else {
+// REWRITES-NEXT:         {{__v[0-9]+}}
+// REWRITES-NEXT:     }) as u64
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: fn atoi({{arg[0-9]+}}: *mut i8) -> i32 {
@@ -4280,58 +4184,35 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: fn strtol({{arg[0-9]+}}: *mut i8, mut end: *mut *mut i8, mut base: i32) -> i64 {
 // REWRITES-AARCH64-GNU-NEXT: fn strtol({{arg[0-9]+}}: *mut u8, mut end: *mut *mut u8, mut base: i32) -> i64 {
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{arg[0-9]+}} != std::ptr::null_mut() {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = end != std::ptr::null_mut();
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = base != 0;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 43;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:     (if {{__v[0-9]+}} { {{__v[0-9]+}} } else { {{__v[0-9]+}} }) as i64
+// REWRITES-NEXT:     (if {{arg[0-9]+}} != std::ptr::null_mut() && end != std::ptr::null_mut() && base != 0 {
+// REWRITES-NEXT:         {{__v[0-9]+}}
+// REWRITES-NEXT:     } else {
+// REWRITES-NEXT:         {{__v[0-9]+}}
+// REWRITES-NEXT:     }) as i64
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: fn strtoul({{arg[0-9]+}}: *mut i8, mut end: *mut *mut i8, mut base: i32) -> u64 {
 // REWRITES-AARCH64-GNU-NEXT: fn strtoul({{arg[0-9]+}}: *mut u8, mut end: *mut *mut u8, mut base: i32) -> u64 {
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{arg[0-9]+}} != std::ptr::null_mut() {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = end != std::ptr::null_mut();
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = base != 0;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 44;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:     (if {{__v[0-9]+}} { {{__v[0-9]+}} } else { {{__v[0-9]+}} }) as u64
+// REWRITES-NEXT:     (if {{arg[0-9]+}} != std::ptr::null_mut() && end != std::ptr::null_mut() && base != 0 {
+// REWRITES-NEXT:         {{__v[0-9]+}}
+// REWRITES-NEXT:     } else {
+// REWRITES-NEXT:         {{__v[0-9]+}}
+// REWRITES-NEXT:     }) as u64
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: fn strtod({{arg[0-9]+}}: *mut i8, mut end: *mut *mut i8) -> f64 {
 // REWRITES-AARCH64-GNU-NEXT: fn strtod({{arg[0-9]+}}: *mut u8, mut end: *mut *mut u8) -> f64 {
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{arg[0-9]+}} != std::ptr::null_mut() {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = end != std::ptr::null_mut();
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: f64 = 45.0;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: f64 = 0.0;
-// REWRITES-NEXT:     if {{__v[0-9]+}} { {{__v[0-9]+}} } else { {{__v[0-9]+}} }
+// REWRITES-NEXT:     if {{arg[0-9]+}} != std::ptr::null_mut() && end != std::ptr::null_mut() {
+// REWRITES-NEXT:         {{__v[0-9]+}}
+// REWRITES-NEXT:     } else {
+// REWRITES-NEXT:         {{__v[0-9]+}}
+// REWRITES-NEXT:     }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: fn printf({{arg[0-9]+}}: *mut i8) -> i32 {
@@ -4358,53 +4239,37 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: fn fopen({{arg[0-9]+}}: *mut i8, mut mode: *mut i8) -> *mut core::ffi::c_void {
 // REWRITES-AARCH64-GNU-NEXT: fn fopen({{arg[0-9]+}}: *mut u8, mut mode: *mut u8) -> *mut core::ffi::c_void {
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{arg[0-9]+}} != std::ptr::null_mut() {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = mode != std::ptr::null_mut();
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = (48 as u64) as *mut core::ffi::c_void;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
-// REWRITES-NEXT:     if {{__v[0-9]+}} { {{__v[0-9]+}} } else { {{__v[0-9]+}} }
+// REWRITES-NEXT:     if {{arg[0-9]+}} != std::ptr::null_mut() && mode != std::ptr::null_mut() {
+// REWRITES-NEXT:         {{__v[0-9]+}}
+// REWRITES-NEXT:     } else {
+// REWRITES-NEXT:         {{__v[0-9]+}}
+// REWRITES-NEXT:     }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: fn fputs({{arg[0-9]+}}: *mut i8, mut stream: *mut core::ffi::c_void) -> i32 {
 // REWRITES-AARCH64-GNU-NEXT: fn fputs({{arg[0-9]+}}: *mut u8, mut stream: *mut core::ffi::c_void) -> i32 {
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{arg[0-9]+}} != std::ptr::null_mut() {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = stream != std::ptr::null_mut();
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 54;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:     if {{__v[0-9]+}} { {{__v[0-9]+}} } else { {{__v[0-9]+}} }
+// REWRITES-NEXT:     if {{arg[0-9]+}} != std::ptr::null_mut() && stream != std::ptr::null_mut() {
+// REWRITES-NEXT:         {{__v[0-9]+}}
+// REWRITES-NEXT:     } else {
+// REWRITES-NEXT:         {{__v[0-9]+}}
+// REWRITES-NEXT:     }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: fn fgets({{arg[0-9]+}}: *mut i8, mut count: i32, mut stream: *mut core::ffi::c_void) -> *mut i8 {
-// REWRITES-AARCH64-GNU-NEXT: fn fgets({{arg[0-9]+}}: *mut u8, mut count: i32, mut stream: *mut core::ffi::c_void) -> *mut u8 {
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{arg[0-9]+}} != std::ptr::null_mut() {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = count != 0;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = stream != std::ptr::null_mut();
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = (40 as u64) as *mut i8;
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = std::ptr::null_mut();
+// REWRITES-AARCH64-GNU-NEXT: fn fgets({{arg[0-9]+}}: *mut u8, mut count: i32, mut stream: *mut core::ffi::c_void) -> *mut u8 {
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = (40 as u64) as *mut u8;
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = std::ptr::null_mut();
-// REWRITES-NEXT:     if {{__v[0-9]+}} { {{__v[0-9]+}} } else { {{__v[0-9]+}} }
+// REWRITES-NEXT:     if {{arg[0-9]+}} != std::ptr::null_mut() && count != 0 && stream != std::ptr::null_mut() {
+// REWRITES-NEXT:         {{__v[0-9]+}}
+// REWRITES-NEXT:     } else {
+// REWRITES-NEXT:         {{__v[0-9]+}}
+// REWRITES-NEXT:     }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn fread(
@@ -4413,30 +4278,13 @@ int main(void) {
 // REWRITES-NEXT:     mut count: u64,
 // REWRITES-NEXT:     mut stream: *mut core::ffi::c_void,
 // REWRITES-NEXT: ) -> u64 {
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{arg[0-9]+}} != std::ptr::null_mut() {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = size != 0;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = count != 0;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = stream != std::ptr::null_mut();
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 56;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:     (if {{__v[0-9]+}} { {{__v[0-9]+}} } else { {{__v[0-9]+}} }) as u64
+// REWRITES-NEXT:     (if {{arg[0-9]+}} != std::ptr::null_mut() && size != 0 && count != 0 && stream != std::ptr::null_mut() {
+// REWRITES-NEXT:         {{__v[0-9]+}}
+// REWRITES-NEXT:     } else {
+// REWRITES-NEXT:         {{__v[0-9]+}}
+// REWRITES-NEXT:     }) as u64
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn fwrite(
@@ -4445,30 +4293,13 @@ int main(void) {
 // REWRITES-NEXT:     mut count: u64,
 // REWRITES-NEXT:     mut stream: *mut core::ffi::c_void,
 // REWRITES-NEXT: ) -> u64 {
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{arg[0-9]+}} != std::ptr::null_mut() {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = size != 0;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = count != 0;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = stream != std::ptr::null_mut();
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 57;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:     (if {{__v[0-9]+}} { {{__v[0-9]+}} } else { {{__v[0-9]+}} }) as u64
+// REWRITES-NEXT:     (if {{arg[0-9]+}} != std::ptr::null_mut() && size != 0 && count != 0 && stream != std::ptr::null_mut() {
+// REWRITES-NEXT:         {{__v[0-9]+}}
+// REWRITES-NEXT:     } else {
+// REWRITES-NEXT:         {{__v[0-9]+}}
+// REWRITES-NEXT:     }) as u64
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn fclose({{arg[0-9]+}}: *mut core::ffi::c_void) -> i32 {
@@ -4553,16 +4384,13 @@ int main(void) {
 // REWRITES-NEXT: fn pow({{arg[0-9]+}}: f64, {{arg[0-9]+}}: f64) -> f64 {
 // REWRITES-NEXT:     let mut rhs: f64 = 0.0;
 // REWRITES-NEXT:     rhs = {{arg[0-9]+}};
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{arg[0-9]+}} != 0.0 {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = rhs != 0.0;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: f64 = 69.0;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: f64 = 0.0;
-// REWRITES-NEXT:     if {{__v[0-9]+}} { {{__v[0-9]+}} } else { {{__v[0-9]+}} }
+// REWRITES-NEXT:     if {{arg[0-9]+}} != 0.0 && rhs != 0.0 {
+// REWRITES-NEXT:         {{__v[0-9]+}}
+// REWRITES-NEXT:     } else {
+// REWRITES-NEXT:         {{__v[0-9]+}}
+// REWRITES-NEXT:     }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn sqrt({{arg[0-9]+}}: f64) -> f64 {
@@ -4586,16 +4414,13 @@ int main(void) {
 // REWRITES-NEXT: fn fmod({{arg[0-9]+}}: f64, {{arg[0-9]+}}: f64) -> f64 {
 // REWRITES-NEXT:     let mut rhs: f64 = 0.0;
 // REWRITES-NEXT:     rhs = {{arg[0-9]+}};
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{arg[0-9]+}} != 0.0 {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = rhs != 0.0;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: f64 = 73.0;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: f64 = 0.0;
-// REWRITES-NEXT:     if {{__v[0-9]+}} { {{__v[0-9]+}} } else { {{__v[0-9]+}} }
+// REWRITES-NEXT:     if {{arg[0-9]+}} != 0.0 && rhs != 0.0 {
+// REWRITES-NEXT:         {{__v[0-9]+}}
+// REWRITES-NEXT:     } else {
+// REWRITES-NEXT:         {{__v[0-9]+}}
+// REWRITES-NEXT:     }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn lround({{arg[0-9]+}}: f64) -> i64 {
@@ -4618,30 +4443,15 @@ int main(void) {
 // REWRITES-NEXT:     >,
 // REWRITES-NEXT:     mut arg: *mut core::ffi::c_void,
 // REWRITES-NEXT: ) -> i32 {
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{arg[0-9]+}} != std::ptr::null_mut() {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = !(attr != std::ptr::null_mut());
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = start.is_some();
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = arg != std::ptr::null_mut();
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut() && !(attr != std::ptr::null_mut());
+// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} && start.is_some();
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 78;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:     if {{__v[0-9]+}} { {{__v[0-9]+}} } else { {{__v[0-9]+}} }
+// REWRITES-NEXT:     if {{__v[0-9]+}} && arg != std::ptr::null_mut() {
+// REWRITES-NEXT:         {{__v[0-9]+}}
+// REWRITES-NEXT:     } else {
+// REWRITES-NEXT:         {{__v[0-9]+}}
+// REWRITES-NEXT:     }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: extern "C-unwind" fn start({{arg[0-9]+}}: *mut core::ffi::c_void) -> *mut core::ffi::c_void {
@@ -4649,16 +4459,13 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn pthread_join({{arg[0-9]+}}: u64, mut result: *mut *mut core::ffi::c_void) -> i32 {
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{arg[0-9]+}} != 0 {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = result != std::ptr::null_mut();
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 79;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:     if {{__v[0-9]+}} { {{__v[0-9]+}} } else { {{__v[0-9]+}} }
+// REWRITES-NEXT:     if {{arg[0-9]+}} != 0 && result != std::ptr::null_mut() {
+// REWRITES-NEXT:         {{__v[0-9]+}}
+// REWRITES-NEXT:     } else {
+// REWRITES-NEXT:         {{__v[0-9]+}}
+// REWRITES-NEXT:     }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn qsort(
@@ -4669,27 +4476,8 @@ int main(void) {
 // REWRITES-NEXT:         unsafe extern "C-unwind" fn(*mut core::ffi::c_void, *mut core::ffi::c_void) -> i32,
 // REWRITES-NEXT:     >,
 // REWRITES-NEXT: ) {
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{arg[0-9]+}} != std::ptr::null_mut() {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = count != 0;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = size != 0;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = callback.is_some();
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut() && count != 0 && size != 0;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} && callback.is_some();
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 76;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:     unsafe {
@@ -4713,34 +4501,9 @@ int main(void) {
 // REWRITES-NEXT:         unsafe extern "C-unwind" fn(*mut core::ffi::c_void, *mut core::ffi::c_void) -> i32,
 // REWRITES-NEXT:     >,
 // REWRITES-NEXT: ) -> *mut core::ffi::c_void {
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{arg[0-9]+}} != std::ptr::null_mut() {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = base != std::ptr::null_mut();
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = count != 0;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = size != 0;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = callback.is_some();
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: bool =
+// REWRITES-NEXT:         {{arg[0-9]+}} != std::ptr::null_mut() && base != std::ptr::null_mut() && count != 0 && size != 0;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} && callback.is_some();
 // REWRITES-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = (56 as u64) as *mut core::ffi::c_void;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
 // REWRITES-NEXT:     if {{__v[0-9]+}} { {{__v[0-9]+}} } else { {{__v[0-9]+}} }

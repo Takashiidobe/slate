@@ -108,7 +108,8 @@ int main(void) {
 // LOWERING-DAG:         let {{__v[0-9]+}}: i64 = 0;
 // LOWERING-DAG:         let {{__v[0-9]+}}: i64 = 0;
 // LOWERING-DAG:         let {{__v[0-9]+}}: i64 = 2;
-// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = unsafe { (*a)[({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)] };
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: i32 = unsafe { (*a)[({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)] };
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: i32 = unsafe { a[({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)] };
 // LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 2;
 // LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
 // LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
@@ -118,7 +119,8 @@ int main(void) {
 // LOWERING-DAG:             let {{__v[0-9]+}}: i64 = 2;
 // LOWERING-DAG:             let {{__v[0-9]+}}: i64 = 0;
 // LOWERING-DAG:             let {{__v[0-9]+}}: i64 = 2;
-// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = unsafe { (*a)[({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)] };
+// LOWERING-X86_64-GNU-DAG:             let {{__v[0-9]+}}: i32 = unsafe { (*a)[({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)] };
+// LOWERING-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: i32 = unsafe { a[({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)] };
 // LOWERING-DAG:             let {{__v[0-9]+}}: i32 = 3;
 // LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
 // LOWERING-DAG:             {{__v[0-9]+}}
@@ -132,14 +134,16 @@ int main(void) {
 // LOWERING-DAG:     let {{__v[0-9]+}}: i64 = 0;
 // LOWERING-DAG:     let {{__v[0-9]+}}: i64 = 2;
 // LOWERING-DAG:     unsafe {
-// LOWERING-DAG:         (*a)[({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)] = {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-DAG:         (*a)[({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)] = {{__v[0-9]+}};
+// LOWERING-AARCH64-GNU-DAG:         a[({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)] = {{__v[0-9]+}};
 // LOWERING-DAG:     }
 // LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 1;
 // LOWERING-DAG:     let {{__v[0-9]+}}: i64 = 2;
 // LOWERING-DAG:     let {{__v[0-9]+}}: i64 = 0;
 // LOWERING-DAG:     let {{__v[0-9]+}}: i64 = 2;
 // LOWERING-DAG:     unsafe {
-// LOWERING-DAG:         (*a)[({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)] = {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-DAG:         (*a)[({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)] = {{__v[0-9]+}};
+// LOWERING-AARCH64-GNU-DAG:         a[({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)] = {{__v[0-9]+}};
 // LOWERING-DAG:     }
 // LOWERING-DAG:     {
 // LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 0;
@@ -179,7 +183,8 @@ int main(void) {
 // LOWERING-DAG:                                 let {{__v[0-9]+}}: i32 = x;
 // LOWERING-DAG:                                 let {{__v[0-9]+}}: i64 = {{__v[0-9]+}} as i64;
 // LOWERING-DAG:                                 let {{__v[0-9]+}}: i32 = unsafe {
-// LOWERING-DAG:                                     (*a)[({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)]
+// LOWERING-X86_64-GNU-DAG:                                     (*a)[({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)]
+// LOWERING-AARCH64-GNU-DAG:                                     a[({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)]
 // LOWERING-DAG:                                 };
 // LOWERING-DAG:                                 let {{__v[0-9]+}}: i32 = x;
 // LOWERING-DAG:                                 let {{__v[0-9]+}}: i32 = 2;
@@ -557,7 +562,8 @@ int main(void) {
 // LOWERING-DAG:     {
 // LOWERING-DAG:         let {{__v[0-9]+}}: i64 = 0;
 // LOWERING-DAG:         let {{__v[0-9]+}}: i64 = 0;
-// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = unsafe { (*q)[({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)] };
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: i32 = unsafe { (*q)[({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)] };
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: i32 = unsafe { q[({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)] };
 // LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
 // LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
 // LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
@@ -565,7 +571,8 @@ int main(void) {
 // LOWERING-DAG:         } else {
 // LOWERING-DAG:             let {{__v[0-9]+}}: i64 = 1;
 // LOWERING-DAG:             let {{__v[0-9]+}}: i64 = 0;
-// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = unsafe { (*q)[({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)] };
+// LOWERING-X86_64-GNU-DAG:             let {{__v[0-9]+}}: i32 = unsafe { (*q)[({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)] };
+// LOWERING-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: i32 = unsafe { q[({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)] };
 // LOWERING-DAG:             let {{__v[0-9]+}}: i32 = 23;
 // LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
 // LOWERING-DAG:             {{__v[0-9]+}}
@@ -576,7 +583,8 @@ int main(void) {
 // LOWERING-DAG:         } else {
 // LOWERING-DAG:             let {{__v[0-9]+}}: i64 = 2;
 // LOWERING-DAG:             let {{__v[0-9]+}}: i64 = 0;
-// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = unsafe { (*q)[({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)] };
+// LOWERING-X86_64-GNU-DAG:             let {{__v[0-9]+}}: i32 = unsafe { (*q)[({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)] };
+// LOWERING-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: i32 = unsafe { q[({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)] };
 // LOWERING-DAG:             let {{__v[0-9]+}}: i32 = 23;
 // LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
 // LOWERING-DAG:             {{__v[0-9]+}}
@@ -588,7 +596,8 @@ int main(void) {
 // LOWERING-DAG:     {
 // LOWERING-DAG:         let {{__v[0-9]+}}: i64 = 0;
 // LOWERING-DAG:         let {{__v[0-9]+}}: i64 = 1;
-// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = unsafe { (*q)[({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)] };
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: i32 = unsafe { (*q)[({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)] };
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: i32 = unsafe { q[({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)] };
 // LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
 // LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
 // LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
@@ -596,7 +605,8 @@ int main(void) {
 // LOWERING-DAG:         } else {
 // LOWERING-DAG:             let {{__v[0-9]+}}: i64 = 1;
 // LOWERING-DAG:             let {{__v[0-9]+}}: i64 = 1;
-// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = unsafe { (*q)[({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)] };
+// LOWERING-X86_64-GNU-DAG:             let {{__v[0-9]+}}: i32 = unsafe { (*q)[({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)] };
+// LOWERING-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: i32 = unsafe { q[({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)] };
 // LOWERING-DAG:             let {{__v[0-9]+}}: i32 = 23;
 // LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
 // LOWERING-DAG:             {{__v[0-9]+}}
@@ -607,7 +617,8 @@ int main(void) {
 // LOWERING-DAG:         } else {
 // LOWERING-DAG:             let {{__v[0-9]+}}: i64 = 2;
 // LOWERING-DAG:             let {{__v[0-9]+}}: i64 = 1;
-// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = unsafe { (*q)[({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)] };
+// LOWERING-X86_64-GNU-DAG:             let {{__v[0-9]+}}: i32 = unsafe { (*q)[({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)] };
+// LOWERING-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: i32 = unsafe { q[({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)] };
 // LOWERING-DAG:             let {{__v[0-9]+}}: i32 = 24;
 // LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
 // LOWERING-DAG:             {{__v[0-9]+}}
@@ -619,7 +630,8 @@ int main(void) {
 // LOWERING-DAG:     {
 // LOWERING-DAG:         let {{__v[0-9]+}}: i64 = 0;
 // LOWERING-DAG:         let {{__v[0-9]+}}: i64 = 2;
-// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = unsafe { (*q)[({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)] };
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: i32 = unsafe { (*q)[({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)] };
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: i32 = unsafe { q[({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)] };
 // LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
 // LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
 // LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
@@ -627,7 +639,8 @@ int main(void) {
 // LOWERING-DAG:         } else {
 // LOWERING-DAG:             let {{__v[0-9]+}}: i64 = 1;
 // LOWERING-DAG:             let {{__v[0-9]+}}: i64 = 2;
-// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = unsafe { (*q)[({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)] };
+// LOWERING-X86_64-GNU-DAG:             let {{__v[0-9]+}}: i32 = unsafe { (*q)[({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)] };
+// LOWERING-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: i32 = unsafe { q[({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)] };
 // LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
 // LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
@@ -637,7 +650,8 @@ int main(void) {
 // LOWERING-DAG:         } else {
 // LOWERING-DAG:             let {{__v[0-9]+}}: i64 = 2;
 // LOWERING-DAG:             let {{__v[0-9]+}}: i64 = 2;
-// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = unsafe { (*q)[({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)] };
+// LOWERING-X86_64-GNU-DAG:             let {{__v[0-9]+}}: i32 = unsafe { (*q)[({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)] };
+// LOWERING-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: i32 = unsafe { q[({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)] };
 // LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
 // LOWERING-DAG:             {{__v[0-9]+}}
 // LOWERING-DAG:         };
@@ -665,13 +679,8 @@ int main(void) {
 // REWRITES-DAG:     let mut x: i32 = 0;
 // REWRITES-DAG:     let mut y: i32 = 0;
 // REWRITES-DAG:     let mut z: i32 = 0;
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if (unsafe { (*a)[2][0][0] }) != 2 {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = (unsafe { (*a)[2][0][2] }) != 3;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     };
+// REWRITES-X86_64-GNU-DAG:     let {{__v[0-9]+}}: bool = (unsafe { (*a)[2][0][0] }) != 2 || (unsafe { (*a)[2][0][2] }) != 3;
+// REWRITES-AARCH64-GNU-DAG:     let {{__v[0-9]+}}: bool = (unsafe { a[2][0][0] }) != 2 || (unsafe { a[2][0][2] }) != 3;
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
@@ -679,30 +688,25 @@ int main(void) {
 // REWRITES-DAG:     let {{__v[0-9]+}}: i64 = 0;
 // REWRITES-DAG:     let {{__v[0-9]+}}: i64 = 2;
 // REWRITES-DAG:     unsafe {
-// REWRITES-DAG:         (*a)[({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)] = 0;
+// REWRITES-X86_64-GNU-DAG:         (*a)[({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)] = 0;
+// REWRITES-AARCH64-GNU-DAG:         a[({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)] = 0;
 // REWRITES-DAG:     }
 // REWRITES-DAG:     let {{__v[0-9]+}}: i64 = 2;
 // REWRITES-DAG:     let {{__v[0-9]+}}: i64 = 0;
 // REWRITES-DAG:     let {{__v[0-9]+}}: i64 = 2;
 // REWRITES-DAG:     unsafe {
-// REWRITES-DAG:         (*a)[({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)] = 1;
+// REWRITES-X86_64-GNU-DAG:         (*a)[({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)] = 1;
+// REWRITES-AARCH64-GNU-DAG:         a[({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)][({{__v[0-9]+}} as usize)] = 1;
 // REWRITES-DAG:     }
 // REWRITES-DAG:     while x <= 4 {
 // REWRITES-DAG:         y = 0;
 // REWRITES-DAG:         while y <= 1 {
 // REWRITES-DAG:             z = 0;
 // REWRITES-DAG:             while z <= 3 {
-// REWRITES-DAG:                 let {{__v[0-9]+}}: i32 = unsafe {
-// REWRITES-DAG:                     (*a)[((x as i64) as usize)][((y as i64) as usize)][((z as i64) as usize)]
-// REWRITES-DAG:                 };
-// REWRITES-DAG:                 let {{__v[0-9]+}}: bool = if x >= 2 {
-// REWRITES-DAG:                     let {{__v[0-9]+}}: bool = z >= 2;
-// REWRITES-DAG:                     {{__v[0-9]+}}
-// REWRITES-DAG:                 } else {
-// REWRITES-DAG:                     let {{__v[0-9]+}}: bool = false;
-// REWRITES-DAG:                     {{__v[0-9]+}}
-// REWRITES-DAG:                 };
-// REWRITES-DAG:                 let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != ({{__v[0-9]+}} as i32);
+// REWRITES-DAG:                 let {{__v[0-9]+}}: bool = (unsafe {
+// REWRITES-X86_64-GNU-DAG:                     (*a)[((x as i64) as usize)][((y as i64) as usize)][((z as i64) as usize)]
+// REWRITES-AARCH64-GNU-DAG:                     a[((x as i64) as usize)][((y as i64) as usize)][((z as i64) as usize)]
+// REWRITES-DAG:                 }) != ((x >= 2 && z >= 2) as i32);
 // REWRITES-DAG:                 if {{__v[0-9]+}} {
 // REWRITES-DAG:                     unsafe { abort() };
 // REWRITES-DAG:                 }
@@ -712,60 +716,20 @@ int main(void) {
 // REWRITES-DAG:         }
 // REWRITES-DAG:         x += 1;
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if (unsafe { k.I }) != 0 {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = (unsafe { l.I }) != 0;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     };
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = (unsafe { m.I }) != 0;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     };
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = (unsafe { k.K }) != 1;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     };
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = (unsafe { l.K }) != 2;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     };
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = (unsafe { m.K }) != 3;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     };
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = (unsafe { k.I }) != 0
+// REWRITES-DAG:         || (unsafe { l.I }) != 0
+// REWRITES-DAG:         || (unsafe { m.I }) != 0
+// REWRITES-DAG:         || (unsafe { k.K }) != 1
+// REWRITES-DAG:         || (unsafe { l.K }) != 2
+// REWRITES-DAG:         || (unsafe { m.K }) != 3;
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
 // REWRITES-DAG:     x = 0;
 // REWRITES-DAG:     while x <= 5 {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = if (unsafe { (*n)[((x as i64) as usize)].N }) != 0 {
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = true;
-// REWRITES-DAG:             {{__v[0-9]+}}
-// REWRITES-DAG:         } else {
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = (unsafe { (*n)[((x as i64) as usize)].O[0].J }) != 0;
-// REWRITES-DAG:             {{__v[0-9]+}}
-// REWRITES-DAG:         };
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = true;
-// REWRITES-DAG:             {{__v[0-9]+}}
-// REWRITES-DAG:         } else {
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = (unsafe { (*n)[((x as i64) as usize)].O[0].L }) != 0;
-// REWRITES-DAG:             {{__v[0-9]+}}
-// REWRITES-DAG:         };
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = (unsafe { (*n)[((x as i64) as usize)].N }) != 0
+// REWRITES-DAG:             || (unsafe { (*n)[((x as i64) as usize)].O[0].J }) != 0
+// REWRITES-DAG:             || (unsafe { (*n)[((x as i64) as usize)].O[0].L }) != 0;
 // REWRITES-DAG:         if {{__v[0-9]+}} {
 // REWRITES-DAG:             unsafe { abort() };
 // REWRITES-DAG:         }
@@ -795,61 +759,23 @@ int main(void) {
 // REWRITES-DAG:             if {{__v[0-9]+}} {
 // REWRITES-DAG:                 unsafe { abort() };
 // REWRITES-DAG:             }
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = if x < 5 {
-// REWRITES-DAG:                 let {{__v[0-9]+}}: bool = true;
-// REWRITES-DAG:                 {{__v[0-9]+}}
-// REWRITES-DAG:             } else {
-// REWRITES-DAG:                 let {{__v[0-9]+}}: bool = y < 2;
-// REWRITES-DAG:                 {{__v[0-9]+}}
-// REWRITES-DAG:             };
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-DAG:                 let {{__v[0-9]+}}: bool = if (unsafe {
-// REWRITES-DAG:                     (*n)[((x as i64) as usize)].O[((y as i64) as usize)].K[2]
-// REWRITES-DAG:                 }) != 0
-// REWRITES-DAG:                 {
-// REWRITES-DAG:                     let {{__v[0-9]+}}: bool = true;
-// REWRITES-DAG:                     {{__v[0-9]+}}
-// REWRITES-DAG:                 } else {
-// REWRITES-DAG:                     let {{__v[0-9]+}}: bool =
-// REWRITES-DAG:                         (unsafe { (*n)[((x as i64) as usize)].O[((y as i64) as usize)].L }) != 0;
-// REWRITES-DAG:                     {{__v[0-9]+}}
-// REWRITES-DAG:                 };
-// REWRITES-DAG:                 {{__v[0-9]+}}
-// REWRITES-DAG:             } else {
-// REWRITES-DAG:                 let {{__v[0-9]+}}: bool = false;
-// REWRITES-DAG:                 {{__v[0-9]+}}
-// REWRITES-DAG:             };
+// REWRITES-DAG:             let {{__v[0-9]+}}: bool = (x < 5 || y < 2)
+// REWRITES-DAG:                 && ((unsafe { (*n)[((x as i64) as usize)].O[((y as i64) as usize)].K[2] }) != 0
+// REWRITES-DAG:                     || (unsafe { (*n)[((x as i64) as usize)].O[((y as i64) as usize)].L }) != 0);
 // REWRITES-DAG:             if {{__v[0-9]+}} {
 // REWRITES-DAG:                 unsafe { abort() };
 // REWRITES-DAG:             }
 // REWRITES-DAG:             y += 1;
 // REWRITES-DAG:         }
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = if x < 5 {
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = (unsafe { (*n)[((x as i64) as usize)].P }) != 0;
-// REWRITES-DAG:             {{__v[0-9]+}}
-// REWRITES-DAG:         } else {
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = false;
-// REWRITES-DAG:             {{__v[0-9]+}}
-// REWRITES-DAG:         };
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = x < 5 && (unsafe { (*n)[((x as i64) as usize)].P }) != 0;
 // REWRITES-DAG:         if {{__v[0-9]+}} {
 // REWRITES-DAG:             unsafe { abort() };
 // REWRITES-DAG:         }
 // REWRITES-DAG:         x += 1;
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if (unsafe { (*n)[5].O[2].K[2] }) != 5 {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = (unsafe { (*n)[5].O[2].L }) != 6;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     };
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = (unsafe { (*n)[5].P }) != 7;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     };
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = (unsafe { (*n)[5].O[2].K[2] }) != 5
+// REWRITES-DAG:         || (unsafe { (*n)[5].O[2].L }) != 6
+// REWRITES-DAG:         || (unsafe { (*n)[5].P }) != 7;
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
@@ -895,54 +821,27 @@ int main(void) {
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if (unsafe { (*q)[0][0] }) != 0 {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = (unsafe { (*q)[0][1] }) != 23;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     };
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = (unsafe { (*q)[0][2] }) != 23;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     };
+// REWRITES-X86_64-GNU-DAG:     let {{__v[0-9]+}}: bool = (unsafe { (*q)[0][0] }) != 0
+// REWRITES-X86_64-GNU-DAG:         || (unsafe { (*q)[0][1] }) != 23
+// REWRITES-X86_64-GNU-DAG:         || (unsafe { (*q)[0][2] }) != 23;
+// REWRITES-AARCH64-GNU-DAG:     let {{__v[0-9]+}}: bool =
+// REWRITES-AARCH64-GNU-DAG:         (unsafe { q[0][0] }) != 0 || (unsafe { q[0][1] }) != 23 || (unsafe { q[0][2] }) != 23;
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if (unsafe { (*q)[1][0] }) != 0 {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = (unsafe { (*q)[1][1] }) != 23;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     };
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = (unsafe { (*q)[1][2] }) != 24;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     };
+// REWRITES-X86_64-GNU-DAG:     let {{__v[0-9]+}}: bool = (unsafe { (*q)[1][0] }) != 0
+// REWRITES-X86_64-GNU-DAG:         || (unsafe { (*q)[1][1] }) != 23
+// REWRITES-X86_64-GNU-DAG:         || (unsafe { (*q)[1][2] }) != 24;
+// REWRITES-AARCH64-GNU-DAG:     let {{__v[0-9]+}}: bool =
+// REWRITES-AARCH64-GNU-DAG:         (unsafe { q[1][0] }) != 0 || (unsafe { q[1][1] }) != 23 || (unsafe { q[1][2] }) != 24;
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if (unsafe { (*q)[2][0] }) != 0 {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = (unsafe { (*q)[2][1] }) != 0;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     };
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = (unsafe { (*q)[2][2] }) != 0;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     };
+// REWRITES-X86_64-GNU-DAG:     let {{__v[0-9]+}}: bool = (unsafe { (*q)[2][0] }) != 0
+// REWRITES-X86_64-GNU-DAG:         || (unsafe { (*q)[2][1] }) != 0
+// REWRITES-X86_64-GNU-DAG:         || (unsafe { (*q)[2][2] }) != 0;
+// REWRITES-AARCH64-GNU-DAG:     let {{__v[0-9]+}}: bool =
+// REWRITES-AARCH64-GNU-DAG:         (unsafe { q[2][0] }) != 0 || (unsafe { q[2][1] }) != 0 || (unsafe { q[2][2] }) != 0;
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }

@@ -9832,14 +9832,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:         unsafe {
 // REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
 // REWRITES-X86_64-GNU-NEXT:         }
-// REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bool = if end != std::ptr::null_mut() {
-// REWRITES-X86_64-GNU-NEXT:             let {{__v[0-9]+}}: bool = ((unsafe { *end }) as i32) == 0;
-// REWRITES-X86_64-GNU-NEXT:             {{__v[0-9]+}}
-// REWRITES-X86_64-GNU-NEXT:         } else {
-// REWRITES-X86_64-GNU-NEXT:             let {{__v[0-9]+}}: bool = false;
-// REWRITES-X86_64-GNU-NEXT:             {{__v[0-9]+}}
-// REWRITES-X86_64-GNU-NEXT:         };
-// REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bool = !{{__v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bool = !(end != std::ptr::null_mut() && ((unsafe { *end }) as i32) == 0);
 // REWRITES-X86_64-GNU-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
@@ -9920,14 +9913,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:         unsafe {
 // REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
 // REWRITES-X86_64-GNU-NEXT:         }
-// REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bool = if end != std::ptr::null_mut() {
-// REWRITES-X86_64-GNU-NEXT:             let {{__v[0-9]+}}: bool = ((unsafe { *end }) as i32) == 0;
-// REWRITES-X86_64-GNU-NEXT:             {{__v[0-9]+}}
-// REWRITES-X86_64-GNU-NEXT:         } else {
-// REWRITES-X86_64-GNU-NEXT:             let {{__v[0-9]+}}: bool = false;
-// REWRITES-X86_64-GNU-NEXT:             {{__v[0-9]+}}
-// REWRITES-X86_64-GNU-NEXT:         };
-// REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bool = !{{__v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bool = !(end != std::ptr::null_mut() && ((unsafe { *end }) as i32) == 0);
 // REWRITES-X86_64-GNU-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
@@ -11173,14 +11159,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bool = __slate_f80_is_fp_class(inf, 516);
-// REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-X86_64-GNU-NEXT:             let {{__v[0-9]+}}: bool = inf > LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// REWRITES-X86_64-GNU-NEXT:             {{__v[0-9]+}}
-// REWRITES-X86_64-GNU-NEXT:         } else {
-// REWRITES-X86_64-GNU-NEXT:             let {{__v[0-9]+}}: bool = false;
-// REWRITES-X86_64-GNU-NEXT:             {{__v[0-9]+}}
-// REWRITES-X86_64-GNU-NEXT:         };
-// REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bool = !{{__v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bool = !({{__v[0-9]+}} && inf > LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]));
 // REWRITES-X86_64-GNU-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
@@ -11204,14 +11183,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bool = __slate_f80_is_fp_class(ninf, 516);
-// REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-X86_64-GNU-NEXT:             let {{__v[0-9]+}}: bool = ninf < LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// REWRITES-X86_64-GNU-NEXT:             {{__v[0-9]+}}
-// REWRITES-X86_64-GNU-NEXT:         } else {
-// REWRITES-X86_64-GNU-NEXT:             let {{__v[0-9]+}}: bool = false;
-// REWRITES-X86_64-GNU-NEXT:             {{__v[0-9]+}}
-// REWRITES-X86_64-GNU-NEXT:         };
-// REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bool = !{{__v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bool = !({{__v[0-9]+}} && ninf < LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]));
 // REWRITES-X86_64-GNU-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
@@ -11700,14 +11672,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:         unsafe {
 // REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
 // REWRITES-X86_64-GNU-NEXT:         }
-// REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bool = if n > 0 {
-// REWRITES-X86_64-GNU-NEXT:             let {{__v[0-9]+}}: bool = (n as u64) < 256;
-// REWRITES-X86_64-GNU-NEXT:             {{__v[0-9]+}}
-// REWRITES-X86_64-GNU-NEXT:         } else {
-// REWRITES-X86_64-GNU-NEXT:             let {{__v[0-9]+}}: bool = false;
-// REWRITES-X86_64-GNU-NEXT:             {{__v[0-9]+}}
-// REWRITES-X86_64-GNU-NEXT:         };
-// REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bool = !{{__v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bool = !(n > 0 && (n as u64) < 256);
 // REWRITES-X86_64-GNU-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
@@ -11766,14 +11731,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:         unsafe {
 // REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
 // REWRITES-X86_64-GNU-NEXT:         }
-// REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bool = if end2 != std::ptr::null_mut() {
-// REWRITES-X86_64-GNU-NEXT:             let {{__v[0-9]+}}: bool = ((unsafe { *end2 }) as i32) == 0;
-// REWRITES-X86_64-GNU-NEXT:             {{__v[0-9]+}}
-// REWRITES-X86_64-GNU-NEXT:         } else {
-// REWRITES-X86_64-GNU-NEXT:             let {{__v[0-9]+}}: bool = false;
-// REWRITES-X86_64-GNU-NEXT:             {{__v[0-9]+}}
-// REWRITES-X86_64-GNU-NEXT:         };
-// REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bool = !{{__v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bool = !(end2 != std::ptr::null_mut() && ((unsafe { *end2 }) as i32) == 0);
 // REWRITES-X86_64-GNU-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
@@ -13227,14 +13185,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:         unsafe {
 // REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
 // REWRITES-X86_64-GNU-NEXT:         }
-// REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bool = if n > 0 {
-// REWRITES-X86_64-GNU-NEXT:             let {{__v[0-9]+}}: bool = (n as u64) < 128;
-// REWRITES-X86_64-GNU-NEXT:             {{__v[0-9]+}}
-// REWRITES-X86_64-GNU-NEXT:         } else {
-// REWRITES-X86_64-GNU-NEXT:             let {{__v[0-9]+}}: bool = false;
-// REWRITES-X86_64-GNU-NEXT:             {{__v[0-9]+}}
-// REWRITES-X86_64-GNU-NEXT:         };
-// REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bool = !{{__v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bool = !(n > 0 && (n as u64) < 128);
 // REWRITES-X86_64-GNU-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;
@@ -13293,14 +13244,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:         unsafe {
 // REWRITES-X86_64-GNU-NEXT:             checks = (unsafe { checks }) + 1;
 // REWRITES-X86_64-GNU-NEXT:         }
-// REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bool = if end != std::ptr::null_mut() {
-// REWRITES-X86_64-GNU-NEXT:             let {{__v[0-9]+}}: bool = ((unsafe { *end }) as i32) == 0;
-// REWRITES-X86_64-GNU-NEXT:             {{__v[0-9]+}}
-// REWRITES-X86_64-GNU-NEXT:         } else {
-// REWRITES-X86_64-GNU-NEXT:             let {{__v[0-9]+}}: bool = false;
-// REWRITES-X86_64-GNU-NEXT:             {{__v[0-9]+}}
-// REWRITES-X86_64-GNU-NEXT:         };
-// REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bool = !{{__v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bool = !(end != std::ptr::null_mut() && ((unsafe { *end }) as i32) == 0);
 // REWRITES-X86_64-GNU-NEXT:         if {{__v[0-9]+}} {
 // REWRITES-X86_64-GNU-NEXT:             unsafe {
 // REWRITES-X86_64-GNU-NEXT:                 failures = (unsafe { failures }) + 1;

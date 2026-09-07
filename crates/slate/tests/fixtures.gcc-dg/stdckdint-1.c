@@ -484,13 +484,7 @@ int main() {
 // REWRITES-DAG:     let {{__v[0-9]+}} = {{__v[0-9]+}}.to_i128().overflowing_add({{__v[0-9]+}}.to_i128());
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.1 || ({{__v[0-9]+}}.0 < 0 || ({{__v[0-9]+}}.0 as u128) > 4294967295);
 // REWRITES-DAG:     a = {{__v[0-9]+}}.0 as u32;
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = a != 3;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     };
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} || a != 3;
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
@@ -499,13 +493,7 @@ int main() {
 // REWRITES-DAG:     let {{__v[0-9]+}} = {{__v[0-9]+}}.to_i128().overflowing_add({{__v[0-9]+}}.to_i128());
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.1 || ({{__v[0-9]+}}.0 < 0 || ({{__v[0-9]+}}.0 as u128) > 4294967295);
 // REWRITES-DAG:     a = {{__v[0-9]+}}.0 as u32;
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = a != 4294967295u32;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     };
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} || a != 4294967295u32;
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
@@ -515,13 +503,7 @@ int main() {
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.1 || ({{__v[0-9]+}}.0 < 0 || ({{__v[0-9]+}}.0 as u128) > 4294967295);
 // REWRITES-DAG:     a = {{__v[0-9]+}}.0 as u32;
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = !{{__v[0-9]+}};
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = a != 1;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     };
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} || a != 1;
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
@@ -530,13 +512,7 @@ int main() {
 // REWRITES-DAG:     let {{__v[0-9]+}} = {{__v[0-9]+}}.to_i128().overflowing_sub({{__v[0-9]+}}.to_i128());
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.1 || ({{__v[0-9]+}}.0 < 0 || ({{__v[0-9]+}}.0 as u128) > 4294967295);
 // REWRITES-DAG:     a = {{__v[0-9]+}}.0 as u32;
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = a != 40;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     };
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} || a != 40;
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
@@ -547,13 +523,7 @@ int main() {
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.1 || ({{__v[0-9]+}}.0 < 0 || ({{__v[0-9]+}}.0 as u128) > 4294967295);
 // REWRITES-DAG:     a = {{__v[0-9]+}}.0 as u32;
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = !{{__v[0-9]+}};
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = a != 12;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     };
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} || a != 12;
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
@@ -562,13 +532,7 @@ int main() {
 // REWRITES-DAG:     let {{__v[0-9]+}} = {{__v[0-9]+}}.to_i128().overflowing_mul({{__v[0-9]+}}.to_i128());
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.1 || ({{__v[0-9]+}}.0 < 0 || ({{__v[0-9]+}}.0 as u128) > 4294967295);
 // REWRITES-DAG:     a = {{__v[0-9]+}}.0 as u32;
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = a != 672;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     };
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} || a != 672;
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
@@ -578,13 +542,7 @@ int main() {
 // REWRITES-DAG:     let {{__v[0-9]+}} = {{__v[0-9]+}}.to_i128().overflowing_mul({{__v[0-9]+}}.to_i128());
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.1 || ({{__v[0-9]+}}.0 < 0 || ({{__v[0-9]+}}.0 as u128) > 4294967295);
 // REWRITES-DAG:     a = {{__v[0-9]+}}.0 as u32;
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = a != 0;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     };
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} || a != 0;
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
@@ -593,13 +551,7 @@ int main() {
 // REWRITES-DAG:     let {{__v[0-9]+}} = {{__v[0-9]+}}.to_i128().overflowing_mul({{__v[0-9]+}}.to_i128());
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.1 || ({{__v[0-9]+}}.0 < 0 || ({{__v[0-9]+}}.0 as u128) > 4294967295);
 // REWRITES-DAG:     a = {{__v[0-9]+}}.0 as u32;
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = a != 4294967295u32;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     };
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} || a != 4294967295u32;
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
@@ -609,13 +561,8 @@ int main() {
 // REWRITES-DAG:     let {{__v[0-9]+}} = {{__v[0-9]+}}.to_i128().overflowing_mul({{__v[0-9]+}}.to_i128());
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.1 || ({{__v[0-9]+}}.0 < 0 || ({{__v[0-9]+}}.0 as u128) > 4294967295);
 // REWRITES-DAG:     a = {{__v[0-9]+}}.0 as u32;
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if ({{__v[0-9]+}} as i32) != ((18446744073709551615u64 > 4294967295u64) as i32) {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = a != 4294967295u32;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     };
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool =
+// REWRITES-DAG:         ({{__v[0-9]+}} as i32) != ((18446744073709551615u64 > 4294967295u64) as i32) || a != 4294967295u32;
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
@@ -623,13 +570,7 @@ int main() {
 // REWRITES-DAG:     let {{__v[0-9]+}} = {{__v[0-9]+}}.overflowing_add(12 as i32);
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.1 || ({{__v[0-9]+}}.0 < -128 || {{__v[0-9]+}}.0 > 127);
 // REWRITES-DAG:     b = {{__v[0-9]+}}.0 as i8;
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = (b as i32) != 20;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     };
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} || (b as i32) != 20;
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
@@ -638,13 +579,7 @@ int main() {
 // REWRITES-DAG:     let {{__v[0-9]+}} = {{__v[0-9]+}}.to_i128().overflowing_sub({{__v[0-9]+}}.to_i128());
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.1 || ({{__v[0-9]+}}.0 < -128 || {{__v[0-9]+}}.0 > 127);
 // REWRITES-DAG:     b = {{__v[0-9]+}}.0 as i8;
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = (b as i32) != -4;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     };
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} || (b as i32) != -4;
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
@@ -652,13 +587,7 @@ int main() {
 // REWRITES-DAG:     let {{__v[0-9]+}} = {{__v[0-9]+}}.overflowing_mul(3 as i32);
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.1 || ({{__v[0-9]+}}.0 < -128 || {{__v[0-9]+}}.0 > 127);
 // REWRITES-DAG:     b = {{__v[0-9]+}}.0 as i8;
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = (b as i32) != 6;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     };
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} || (b as i32) != 6;
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
@@ -666,13 +595,7 @@ int main() {
 // REWRITES-DAG:     let {{__v[0-9]+}} = {{__v[0-9]+}}.overflowing_add(12 as i32);
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.1 || ({{__v[0-9]+}}.0 < 0 || ({{__v[0-9]+}}.0 as u128) > 255);
 // REWRITES-DAG:     c = {{__v[0-9]+}}.0 as u8;
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = (c as i32) != 20;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     };
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} || (c as i32) != 20;
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
@@ -680,13 +603,8 @@ int main() {
 // REWRITES-DAG:     let {{__v[0-9]+}} = {{__v[0-9]+}}.overflowing_sub(12 as u64);
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.1 || {{__v[0-9]+}}.0 > 255;
 // REWRITES-DAG:     c = {{__v[0-9]+}}.0 as u8;
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if ({{__v[0-9]+}} as i32) != ((18446744073709551612u64 > 252) as i32) {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = (c as i32) != 252;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     };
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool =
+// REWRITES-DAG:         ({{__v[0-9]+}} as i32) != ((18446744073709551612u64 > 252) as i32) || (c as i32) != 252;
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
@@ -694,13 +612,7 @@ int main() {
 // REWRITES-DAG:     let {{__v[0-9]+}} = {{__v[0-9]+}}.overflowing_mul(3 as i32);
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.1 || ({{__v[0-9]+}}.0 < 0 || ({{__v[0-9]+}}.0 as u128) > 255);
 // REWRITES-DAG:     c = {{__v[0-9]+}}.0 as u8;
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = (c as i32) != 6;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     };
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} || (c as i32) != 6;
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
@@ -710,13 +622,8 @@ int main() {
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool =
 // REWRITES-DAG:         {{__v[0-9]+}}.1 || ({{__v[0-9]+}}.0 < -9223372036854775808 || {{__v[0-9]+}}.0 > 9223372036854775807);
 // REWRITES-DAG:     d = {{__v[0-9]+}}.0 as i64;
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if ({{__v[0-9]+}} as i32) != ((4294967295u64 + 1 < 4294967295u64) as i32) {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = d != ((2 * 4294967295u64) as i64);
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     };
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = ({{__v[0-9]+}} as i32) != ((4294967295u64 + 1 < 4294967295u64) as i32)
+// REWRITES-DAG:         || d != ((2 * 4294967295u64) as i64);
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
@@ -725,13 +632,7 @@ int main() {
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool =
 // REWRITES-DAG:         {{__v[0-9]+}}.1 || ({{__v[0-9]+}}.0 < -9223372036854775808 || {{__v[0-9]+}}.0 > 9223372036854775807);
 // REWRITES-DAG:     d = {{__v[0-9]+}}.0 as i64;
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = d != 0;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     };
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} || d != 0;
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
@@ -740,13 +641,7 @@ int main() {
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool =
 // REWRITES-DAG:         {{__v[0-9]+}}.1 || ({{__v[0-9]+}}.0 < -9223372036854775808 || {{__v[0-9]+}}.0 > 9223372036854775807);
 // REWRITES-DAG:     d = {{__v[0-9]+}}.0 as i64;
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = d != 16;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     };
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} || d != 16;
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }

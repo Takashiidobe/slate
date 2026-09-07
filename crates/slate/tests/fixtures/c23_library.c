@@ -1861,40 +1861,19 @@ int main(void) {
 // REWRITES-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.1 || ({{__v[0-9]+}}.0 < -2147483648 || {{__v[0-9]+}}.0 > 2147483647);
 // REWRITES-NEXT:     result = {{__v[0-9]+}}.0 as i32;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: bool = !{{__v[0-9]+}};
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = result == 42;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + ({{__v[0-9]+}} as i32);
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + (({{__v[0-9]+}} && result == 42) as i32);
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 50;
 // REWRITES-NEXT:     let {{__v[0-9]+}} = {{__v[0-9]+}}.overflowing_sub(8 as i32);
 // REWRITES-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.1 || ({{__v[0-9]+}}.0 < -2147483648 || {{__v[0-9]+}}.0 > 2147483647);
 // REWRITES-NEXT:     result = {{__v[0-9]+}}.0 as i32;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: bool = !{{__v[0-9]+}};
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = result == 42;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + ({{__v[0-9]+}} as i32);
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + (({{__v[0-9]+}} && result == 42) as i32);
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 6;
 // REWRITES-NEXT:     let {{__v[0-9]+}} = {{__v[0-9]+}}.overflowing_mul(7 as i32);
 // REWRITES-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.1 || ({{__v[0-9]+}}.0 < -2147483648 || {{__v[0-9]+}}.0 > 2147483647);
 // REWRITES-NEXT:     result = {{__v[0-9]+}}.0 as i32;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: bool = !{{__v[0-9]+}};
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = result == 42;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + ({{__v[0-9]+}} as i32);
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + (({{__v[0-9]+}} && result == 42) as i32);
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 2147483647;
 // REWRITES-NEXT:     let {{__v[0-9]+}} = {{__v[0-9]+}}.overflowing_add(1 as i32);
 // REWRITES-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.1 || ({{__v[0-9]+}}.0 < -2147483648 || {{__v[0-9]+}}.0 > 2147483647);
@@ -1995,14 +1974,8 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = unsafe { {{__v[0-9]+}}.add(3) };
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = destination.as_mut_ptr() as *mut u8;
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = unsafe { {{__v[0-9]+}}.add(3) };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} == ({{__v[0-9]+}} as *mut core::ffi::c_void) {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = (destination[2] as i32) == 99;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 =
+// REWRITES-NEXT:         ({{__v[0-9]+}} == ({{__v[0-9]+}} as *mut core::ffi::c_void) && (destination[2] as i32) == 99) as i32;
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         memset_explicit(
 // REWRITES-NEXT:             secret.as_mut_ptr() as *mut core::ffi::c_void,
@@ -2010,14 +1983,7 @@ int main(void) {
 // REWRITES-NEXT:             (7 as u64) as usize,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if (secret[0] as i32) == 0 {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = (secret[5] as i32) == 0;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + ({{__v[0-9]+}} as i32);
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + (((secret[0] as i32) == 0 && (secret[5] as i32) == 0) as i32);
 // REWRITES-X86_64-GNU-NEXT:     first_copy = (unsafe { strdup(c"c23".as_ptr()) }) as *mut i8;
 // REWRITES-X86_64-GNU-NEXT:     second_copy = (unsafe { strndup(c"library".as_ptr(), (3 as u64) as usize) }) as *mut i8;
 // REWRITES-AARCH64-GNU-NEXT:     first_copy = (unsafe { strdup(c"c23".as_ptr()) }) as *mut u8;
@@ -2053,14 +2019,8 @@ int main(void) {
 // REWRITES-AARCH64-GNU-NEXT:         (unsafe { strchr({{__v[0-9]+}} as *const core::ffi::c_char, 119 as i32) }) as *mut u8;
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = mutable_phrase.as_mut_ptr() as *mut u8;
 // REWRITES-AARCH64-GNU-NEXT:     mut_hit = (unsafe { strchr({{__v[0-9]+}} as *const core::ffi::c_char, 119 as i32) }) as *mut u8;
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} != std::ptr::null_mut() {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = mut_hit != std::ptr::null_mut();
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + ({{__v[0-9]+}} as i32);
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 =
+// REWRITES-NEXT:         {{__v[0-9]+}} + (({{__v[0-9]+}} != std::ptr::null_mut() && mut_hit != std::ptr::null_mut()) as i32);
 // REWRITES-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = unsafe {
 // REWRITES-NEXT:         memchr(
 // REWRITES-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_void,
@@ -2187,14 +2147,7 @@ int main(void) {
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + (({{__v[0-9]+}} == 1) as i32);
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if resolution.tv_sec > 0 {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = true;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = resolution.tv_nsec > 0;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + ({{__v[0-9]+}} as i32);
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + ((resolution.tv_sec > 0 || resolution.tv_nsec > 0) as i32);
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i64 = unsafe { timegm(std::ptr::addr_of_mut!(utc) as *mut tm) };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + (({{__v[0-9]+}} == 0) as i32);
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = month.as_mut_ptr() as *mut i8;

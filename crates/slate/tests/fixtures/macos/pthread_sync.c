@@ -133,7 +133,7 @@ int slate_yield(void) { return sched_yield(); }
 // @rewrite-fn-end
 // @lowering-fn-end
 
-// SLATE-FILECHECK-BEGIN lowering-macos
+// SLATE-FILECHECK-BEGIN lowering
 // LOWERING-MACOS-DAG: unsafe fn slate_create_and_join(
 // LOWERING-MACOS-DAG:     {{arg[0-9]+}}: *mut *mut _opaque_pthread_t,
 // LOWERING-MACOS-DAG:     {{arg[0-9]+}}: *mut core::ffi::c_void,
@@ -302,9 +302,9 @@ int slate_yield(void) { return sched_yield(); }
 // LOWERING-MACOS-DAG:     let {{__v[0-9]+}}: i32 = unsafe { sched_yield() };
 // LOWERING-MACOS-DAG:     return {{__v[0-9]+}};
 // LOWERING-MACOS-DAG: }
-// SLATE-FILECHECK-END lowering-macos
+// SLATE-FILECHECK-END lowering
 
-// SLATE-FILECHECK-BEGIN rewrites-macos
+// SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-MACOS-DAG: unsafe fn slate_create_and_join(
 // REWRITES-MACOS-DAG:     mut thread: *mut *mut _opaque_pthread_t,
 // REWRITES-MACOS-DAG:     {{arg[0-9]+}}: *mut core::ffi::c_void,
@@ -353,14 +353,7 @@ int slate_yield(void) { return sched_yield(); }
 // REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: i32 = unsafe {
 // REWRITES-MACOS-DAG:         pthread_mutex_unlock(std::ptr::addr_of_mut!(slate_mutex) as *mut _opaque_pthread_mutex_t)
 // REWRITES-MACOS-DAG:     };
-// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} != 0 {
-// REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: bool = true;
-// REWRITES-MACOS-DAG:         {{__v[0-9]+}}
-// REWRITES-MACOS-DAG:     } else {
-// REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: bool = result != 0;
-// REWRITES-MACOS-DAG:         {{__v[0-9]+}}
-// REWRITES-MACOS-DAG:     };
-// REWRITES-MACOS-DAG:     {{__v[0-9]+}} as i32
+// REWRITES-MACOS-DAG:     ({{__v[0-9]+}} != 0 || result != 0) as i32
 // REWRITES-MACOS-DAG: }
 // REWRITES-MACOS-DAG: fn slate_read_lock() -> i32 {
 // REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: i32 = unsafe {
@@ -435,4 +428,4 @@ int slate_yield(void) { return sched_yield(); }
 // REWRITES-MACOS-DAG: fn slate_yield() -> i32 {
 // REWRITES-MACOS-DAG:     unsafe { sched_yield() }
 // REWRITES-MACOS-DAG: }
-// SLATE-FILECHECK-END rewrites-macos
+// SLATE-FILECHECK-END rewrites

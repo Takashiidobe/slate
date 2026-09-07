@@ -867,30 +867,12 @@ int main(void) {
 // REWRITES-NEXT:     let {{__v[0-9]+}}: u64 = (unsafe { malloc_usable_size(values as *mut core::ffi::c_void) }) as u64;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: u64 = 4;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + (({{__v[0-9]+}} >= 4 * {{__v[0-9]+}}) as i32);
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if aligned != std::ptr::null_mut() {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = (aligned as u64) % 64 == 0;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + ({{__v[0-9]+}} as i32);
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if page != std::ptr::null_mut() {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = (page as u64) % (page_size as u64) == 0;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + ({{__v[0-9]+}} as i32);
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if rounded != std::ptr::null_mut() {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = (rounded as u64) % (page_size as u64) == 0;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + ({{__v[0-9]+}} as i32);
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 =
+// REWRITES-NEXT:         {{__v[0-9]+}} + ((aligned != std::ptr::null_mut() && (aligned as u64) % 64 == 0) as i32);
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 =
+// REWRITES-NEXT:         {{__v[0-9]+}} + ((page != std::ptr::null_mut() && (page as u64) % (page_size as u64) == 0) as i32);
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}}
+// REWRITES-NEXT:         + ((rounded != std::ptr::null_mut() && (rounded as u64) % (page_size as u64) == 0) as i32);
 // REWRITES-NEXT:     let {{__v[0-9]+}}: u64 = (unsafe { malloc_usable_size(rounded as *mut core::ffi::c_void) }) as u64;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + (({{__v[0-9]+}} >= (page_size as u64)) as i32);
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { mallopt(-5 as i32, 1 as i32) };

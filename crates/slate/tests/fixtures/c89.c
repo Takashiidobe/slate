@@ -1324,14 +1324,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 1;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 5;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = (({{__v[0-9]+}} << {{__v[0-9]+}} | 3) ^ 2) & 31;
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} < 0 {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = unsigned_value > 0;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = false;
-// REWRITES-NEXT:         {{__v[0-9]+}}
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} < 0 && unsigned_value > 0 {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: bool = true;
 // REWRITES-NEXT:         {{__v[0-9]+}}
 // REWRITES-NEXT:     } else {
