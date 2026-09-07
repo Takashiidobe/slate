@@ -31,6 +31,35 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.lower_extended_asm(op);
     }
 
+    fn byte_widen_is_low_view(&self, raw_template: &str, slot: usize) -> bool {
+        asm_template_byte_view_modifier(raw_template, slot, self.parent.target_arch) == Some('l')
+    }
+
+    fn byte_widen_in_expr(&self, source: Expr) -> Expr {
+        Expr::Cast {
+            expr: Box::new(Expr::Cast {
+                expr: Box::new(source),
+                ty: Type::Prim(Prim::U8),
+            }),
+            ty: Type::Prim(Prim::I32),
+        }
+    }
+
+    fn byte_widen_out_expr(&self, widened_name: &str, orig_ty: &Type) -> Expr {
+        let byte = Expr::Cast {
+            expr: Box::new(Expr::Var(widened_name.to_string().into())),
+            ty: Type::Prim(Prim::U8),
+        };
+        if *orig_ty == Type::Prim(Prim::U8) {
+            byte
+        } else {
+            Expr::Cast {
+                expr: Box::new(byte),
+                ty: orig_ty.clone(),
+            }
+        }
+    }
+
     fn lower_extended_asm(&mut self, op: &inst::Asm) {
         macro_rules! unsupported {
             ($($arg:tt)*) => {{
@@ -239,6 +268,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .then(|| cir_asm_dialect(op.asm_flavor))
             .flatten();
         let (template, dialect) = normalize_asm_dialect_wrapper(template, dialect);
+        let raw_template = template.clone();
         let Some(mut template) = translate_asm_template(
             &template,
             &slot_to_rust,
@@ -337,6 +367,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         op.constraints
                     );
                 };
+                if bits == 8 && matches!(resolved, ResolvedAsmReg::Class("reg_abcd")) {
+                    unsupported!(
+                        "lower: byte-sized indirect inline asm output register is not supported in `{}`",
+                        op.constraints
+                    );
+                }
                 if let ResolvedAsmReg::Family(family) = resolved
                     && family.is_ebx_like()
                 {
@@ -396,23 +432,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 } => (kind.clone(), *early_clobber),
                 _ => unreachable!("register outputs are validated as flag or reg above"),
             };
-            let direct_output = (register_index == 0)
-                .then_some(op.res.as_ref())
-                .flatten()
-                .and_then(|result| self.asm_output_places.get(result))
-                .cloned();
-            let (output, output_name) = if let Some(output) = direct_output {
-                (output, None)
-            } else {
-                let name = self.next_temp();
-                self.push_stmt(Stmt::Let {
-                    name: name.clone(),
-                    mutable: false,
-                    ty: Some(self.parent.rust_type(&output_cir_types[output_index])),
-                    init: None,
-                });
-                (Expr::Var(name.clone().into()), Some(name))
-            };
             let bits = asm_operand_bits(
                 &template_types[output_index],
                 self.parent.target_pointer_bits,
@@ -451,6 +470,17 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 });
                 resolved = ResolvedAsmReg::Family(scratch);
             }
+            let byte_widen = if bits == 8 && matches!(resolved, ResolvedAsmReg::Class("reg_abcd")) {
+                if !self.byte_widen_is_low_view(&raw_template, output_index) {
+                    unsupported!(
+                        "lower: byte-sized inline asm output register needs an explicit %b modifier in `{}`",
+                        op.constraints
+                    );
+                }
+                true
+            } else {
+                false
+            };
             let Some(reg) = resolved_asm_reg_to_backend(&resolved, bits) else {
                 unsupported!(
                     "lower: unsupported inline asm output register in `{}`",
@@ -458,11 +488,49 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 );
             };
             let late = !early_clobber;
+            let (output, output_name, result_expr) = if byte_widen {
+                let widened_name = self.next_temp();
+                self.push_stmt(Stmt::Let {
+                    name: widened_name.clone(),
+                    mutable: false,
+                    ty: Some(Type::Prim(Prim::I32)),
+                    init: None,
+                });
+                let orig_ty = self.parent.rust_type(&output_cir_types[output_index]);
+                let narrowed = self.byte_widen_out_expr(&widened_name, &orig_ty);
+                (Expr::Var(widened_name.into()), None, narrowed)
+            } else {
+                let direct_output = (register_index == 0)
+                    .then_some(op.res.as_ref())
+                    .flatten()
+                    .and_then(|result| self.asm_output_places.get(result))
+                    .cloned();
+                let (output, output_name) = if let Some(output) = direct_output {
+                    (output, None)
+                } else {
+                    let name = self.next_temp();
+                    self.push_stmt(Stmt::Let {
+                        name: name.clone(),
+                        mutable: false,
+                        ty: Some(self.parent.rust_type(&output_cir_types[output_index])),
+                        init: None,
+                    });
+                    (Expr::Var(name.clone().into()), Some(name))
+                };
+                let result_expr = output.clone();
+                (output, output_name, result_expr)
+            };
             if let Some(operand_index) = tied_outputs[output_index] {
+                let input = self.operand_expr(input_operands[operand_index]);
+                let input = if byte_widen {
+                    self.byte_widen_in_expr(input)
+                } else {
+                    input
+                };
                 operands.push(AsmOperand::InOut {
                     reg,
                     late,
-                    input: self.operand_expr(input_operands[operand_index]),
+                    input,
                     output,
                 });
             } else {
@@ -472,16 +540,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     value: output,
                 });
             }
-            register_output_exprs.push(
-                operands
-                    .last()
-                    .and_then(|operand| match operand {
-                        AsmOperand::Out { value, .. } => Some(value.clone()),
-                        AsmOperand::InOut { output, .. } => Some(output.clone()),
-                        _ => None,
-                    })
-                    .unwrap(),
-            );
+            register_output_exprs.push(result_expr);
             register_output_names.push(output_name);
             register_index += 1;
         }
@@ -539,13 +598,27 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                             op.constraints
                         );
                     };
-                    AsmOperand::In {
-                        reg,
-                        value: self.typed_operand_expr(
-                            input_operands[operand_index],
-                            &operand_types[operand_index],
-                        ),
-                    }
+                    let raw_value = self.typed_operand_expr(
+                        input_operands[operand_index],
+                        &operand_types[operand_index],
+                    );
+                    let value = if bits == 8
+                        && matches!(resolved, ResolvedAsmReg::Class("reg_abcd"))
+                    {
+                        if !self.byte_widen_is_low_view(
+                            &raw_template,
+                            total_output_count + operand_index,
+                        ) {
+                            unsupported!(
+                                "lower: byte-sized inline asm input register needs an explicit %b modifier in `{}`",
+                                op.constraints
+                            );
+                        }
+                        self.byte_widen_in_expr(raw_value)
+                    } else {
+                        raw_value
+                    };
+                    AsmOperand::In { reg, value }
                 }
                 Constraint::Memory => AsmOperand::In {
                     reg: AsmReg::Class("reg".into()),
