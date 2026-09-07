@@ -365,7 +365,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     };
                     AsmOperand::In {
                         reg,
-                        value: self.operand_expr(input_operands[operand_index]),
+                        value: self.typed_operand_expr(
+                            input_operands[operand_index],
+                            &operand_types[operand_index],
+                        ),
                     }
                 }
                 Constraint::FlagOutput(_) | Constraint::Unsupported => {

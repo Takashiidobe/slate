@@ -104,8 +104,12 @@ fn parse_constraint_atoms(constraint: &str) -> impl Iterator<Item = ConstraintAt
 }
 
 fn constraint_allows_generic_reg(constraint: &str) -> bool {
-    parse_constraint_atoms(constraint)
-        .any(|atom| matches!(atom, ConstraintAtom::Reg | ConstraintAtom::General))
+    parse_constraint_atoms(constraint).any(|atom| {
+        matches!(
+            atom,
+            ConstraintAtom::Reg | ConstraintAtom::General | ConstraintAtom::Address
+        )
+    })
 }
 
 fn constraint_is_constant_only(constraint: &str) -> bool {
@@ -596,6 +600,7 @@ pub(super) fn asm_template_label_count(template: &str) -> usize {
 enum TemplateModifier {
     Const,
     Label,
+    Address,
 }
 
 impl TemplateModifier {
@@ -603,36 +608,40 @@ impl TemplateModifier {
         match modifier {
             "c" => Some(Self::Const),
             "l" => Some(Self::Label),
+            "a" => Some(Self::Address),
             _ => None,
         }
     }
 }
 
-pub(super) fn translate_asm_template(
-    template: &str,
-    slot_to_rust: &[usize],
-    constraints: &[Constraint],
-    types: &[Type],
-    dialect: Option<AsmDialect>,
-) -> Option<String> {
-    let mut translated = String::new();
-    let mut referenced_operands = BTreeSet::new();
-    let mut chars = template.char_indices().peekable();
-    while let Some((_, ch)) = chars.next() {
+#[derive(Debug, Clone, PartialEq, Eq)]
+enum TemplatePiece {
+    Literal(String),
+    Operand {
+        slot: usize,
+        modifier: Option<TemplateModifier>,
+    },
+}
+
+fn parse_asm_template(template: &str) -> Option<Vec<TemplatePiece>> {
+    let mut pieces = Vec::new();
+    let mut literal = String::new();
+    let mut chars = template.chars().peekable();
+    while let Some(ch) = chars.next() {
         if ch != '$' {
-            translated.push(ch);
+            literal.push(ch);
             continue;
         }
-        if chars.peek().is_some_and(|(_, next)| *next == '$') {
+        if chars.peek() == Some(&'$') {
             chars.next();
-            translated.push('$');
+            literal.push('$');
             continue;
         }
-        let (slot, suppress_modifier) = if chars.peek().is_some_and(|(_, next)| *next == '{') {
+        let (slot, modifier) = if chars.peek() == Some(&'{') {
             chars.next();
             let mut body = String::new();
             let mut closed = false;
-            for (_, next) in chars.by_ref() {
+            for next in chars.by_ref() {
                 if next == '}' {
                     closed = true;
                     break;
@@ -648,11 +657,11 @@ pub(super) fn translate_asm_template(
                 .unwrap_or((body.as_str(), None));
             (
                 slot.parse::<usize>().ok()?,
-                modifier.and_then(TemplateModifier::parse).is_some(),
+                modifier.and_then(TemplateModifier::parse),
             )
         } else {
             let mut digits = String::new();
-            while let Some((_, next)) = chars.peek() {
+            while let Some(next) = chars.peek() {
                 if !next.is_ascii_digit() {
                     break;
                 }
@@ -662,33 +671,109 @@ pub(super) fn translate_asm_template(
             if digits.is_empty() {
                 return None;
             }
-            (digits.parse::<usize>().ok()?, false)
+            (digits.parse::<usize>().ok()?, None)
         };
-        let rust_slot = *slot_to_rust.get(slot)?;
-        let constraint = constraints.get(slot)?;
-        referenced_operands.insert(rust_slot);
-        if constraint.is_explicit_register() {
-            let resolved = asm_reg_for_constraint(constraint.reg_kind()?.clone());
-            let bits = asm_operand_bits(types.get(slot)?);
-            let AsmReg::Explicit(name) = resolved_asm_reg_to_backend(&resolved, bits)? else {
-                return None;
-            };
-            if matches!(dialect, Some(AsmDialect::Att)) {
-                translated.push('%');
+        if !literal.is_empty() {
+            pieces.push(TemplatePiece::Literal(std::mem::take(&mut literal)));
+        }
+        pieces.push(TemplatePiece::Operand { slot, modifier });
+    }
+    if !literal.is_empty() {
+        pieces.push(TemplatePiece::Literal(literal));
+    }
+    Some(pieces)
+}
+
+fn dialect_address_brackets(dialect: Option<AsmDialect>) -> (char, char) {
+    if matches!(dialect, Some(AsmDialect::Intel)) {
+        ('[', ']')
+    } else {
+        ('(', ')')
+    }
+}
+
+fn register_modifier_suffix(
+    constraint: &Constraint,
+    constraints: &[Constraint],
+    ty: &Type,
+) -> Option<char> {
+    constraint
+        .wants_register_modifier(constraints)
+        .then(|| rust_asm_register_modifier(ty))
+        .flatten()
+}
+
+fn render_operand_reference(
+    out: &mut String,
+    rust_slot: usize,
+    modifier: Option<TemplateModifier>,
+    constraint: &Constraint,
+    constraints: &[Constraint],
+    ty: &Type,
+    dialect: Option<AsmDialect>,
+) -> Option<()> {
+    if constraint.is_explicit_register() {
+        let resolved = asm_reg_for_constraint(constraint.reg_kind()?.clone());
+        let bits = asm_operand_bits(ty);
+        let AsmReg::Explicit(name) = resolved_asm_reg_to_backend(&resolved, bits)? else {
+            return None;
+        };
+        if matches!(dialect, Some(AsmDialect::Att)) {
+            out.push('%');
+        }
+        out.push_str(&name);
+        return Some(());
+    }
+    if matches!(modifier, Some(TemplateModifier::Address)) {
+        let (open, close) = dialect_address_brackets(dialect);
+        out.push(open);
+        out.push('{');
+        out.push_str(&rust_slot.to_string());
+        out.push('}');
+        out.push(close);
+        return Some(());
+    }
+    out.push('{');
+    out.push_str(&rust_slot.to_string());
+    if modifier.is_none()
+        && let Some(suffix) = register_modifier_suffix(constraint, constraints, ty)
+    {
+        out.push(':');
+        out.push(suffix);
+    }
+    out.push('}');
+    Some(())
+}
+
+pub(super) fn translate_asm_template(
+    template: &str,
+    slot_to_rust: &[usize],
+    constraints: &[Constraint],
+    types: &[Type],
+    dialect: Option<AsmDialect>,
+) -> Option<String> {
+    let pieces = parse_asm_template(template)?;
+    let mut translated = String::new();
+    let mut referenced_operands = BTreeSet::new();
+    for piece in &pieces {
+        match piece {
+            TemplatePiece::Literal(text) => translated.push_str(text),
+            TemplatePiece::Operand { slot, modifier } => {
+                let rust_slot = *slot_to_rust.get(*slot)?;
+                let constraint = constraints.get(*slot)?;
+                let ty = types.get(*slot)?;
+                referenced_operands.insert(rust_slot);
+                render_operand_reference(
+                    &mut translated,
+                    rust_slot,
+                    *modifier,
+                    constraint,
+                    constraints,
+                    ty,
+                    dialect,
+                )?;
             }
-            translated.push_str(&name);
-            continue;
         }
-        translated.push('{');
-        translated.push_str(&rust_slot.to_string());
-        if !suppress_modifier
-            && constraint.wants_register_modifier(constraints)
-            && let Some(modifier) = rust_asm_register_modifier(types.get(slot)?)
-        {
-            translated.push(':');
-            translated.push(modifier);
-        }
-        translated.push('}');
     }
     for rust_slot in 0..slot_to_rust.iter().copied().max()?.saturating_add(1) {
         if referenced_operands.contains(&rust_slot) {
@@ -703,11 +788,11 @@ pub(super) fn translate_asm_template(
         }
         translated.push_str("\n/* {");
         translated.push_str(&rust_slot.to_string());
-        if constraint.wants_register_modifier(constraints)
-            && let Some(modifier) = rust_asm_register_modifier(types.get(source_slot)?)
+        if let Some(suffix) =
+            register_modifier_suffix(constraint, constraints, types.get(source_slot)?)
         {
             translated.push(':');
-            translated.push(modifier);
+            translated.push(suffix);
         }
         translated.push_str("} */");
     }
