@@ -186,6 +186,29 @@ SLATE_DIFF_FIXTURE=<name> cargo nextest r --release --profile lowering --test di
 SLATE_DIFF_FIXTURE=<name> cargo nextest r --release --profile rewrites --test differential -E 'test(generated_differential)' --nocapture
 ```
 
+Use this order for every fixture-backed change:
+
+1. Isolate the fixture with the selector and profile that exercise the changed
+   behavior. Establish C/Rust differential parity before adding or changing
+   shape assertions.
+2. Wrap only the interesting C statements or whole function definitions with
+   the matching `@lowering-*` and `@rewrite-*` markers.
+3. Run the FileCheck updater for the affected profile(s).
+4. Review the generated fixture diff manually. Every new or changed check
+   must describe desirable code generation, not merely the output the tool
+   happened to produce. Reject or narrow checks that would bless a regression.
+5. Rerun the isolated differential test so the regenerated checks are actually
+   enforced.
+6. Run the complete relevant nextest profile. A change is not ready to close
+   while that profile is failing, including unrelated-looking failures exposed
+   by the change.
+7. Run `cargo fmt` and `cargo clippy` as final quality gates. They do not replace
+   differential testing or make a failed profile green; rerun tests after them
+   only if they changed source or generated fixture inputs.
+
+Do not close the bead or report the change complete until the relevant full
+profile is green and the FileCheck diff has been reviewed.
+
 Regenerate embedded FileCheck blocks after changing a fixture or generated
 Rust shape:
 
