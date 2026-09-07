@@ -171,9 +171,26 @@ Fixture: `tests/fixtures/aarch64/asm_aarch64_reg_width_modifiers.c`.
 AArch64 FP/SIMD constraints: `w` maps to Rust's full `vreg`, and `x` maps to
 `vreg_low16`. Fixed-width C vectors are temporarily transmuted to matching
 `core::arch::aarch64` SIMD types at the asm boundary and transmuted back to
-Slate's array representation afterward. Clang's `y` constraint is for
-scalable SVE vectors, not a V0-V7 NEON subset, and remains unsupported until
-Slate has a scalable-vector representation.
+Slate's array representation afterward.
+
+`y` (GCC's `FP_LO8_REGS`, V0-V7 — a plain NEON register subset used by some
+narrow-encoded AdvSIMD instructions, *not* SVE; confirmed against
+`gcc/config/aarch64/constraints.md` and against real CIR codegen, which
+accepts `"y"` on an ordinary 128-bit vector operand with no SVE type
+involved) is unsupported, but not because of anything SVE-related — an
+earlier version of this doc conflated it with ARM32's iWMMXt-era `y`/`z`
+letters. The real blocker: Rust's AArch64 `asm!` only exposes `vreg`
+(V0-V31) and `vreg_low16` (V0-V15) — there is no `vreg_low8` equivalent to
+GCC's V0-V7 restriction. Unlike the x86 `g`/`imr` widening (sound because
+"any register works whenever a register alternative was offered"), `y`
+narrows in the *other* direction: the instruction's encoding hard-requires
+a 3-bit register field, so binding the wider `vreg_low16` class could let
+Rust's allocator pick V8-V15, which the real instruction can't encode —
+unsound, not just imprecise. `'y'` constraints correctly hit
+`Constraint::Unsupported` today (verified: `"=y,y,y"` on a NEON `float32x4_t`
+add produces a clear "unsupported inline asm output constraint" lowering
+error, not silently-wrong codegen). Revisit only if Rust ever stabilizes a
+narrower vreg class.
 
 Fixture: `tests/fixtures/aarch64/asm_aarch64_fp_register_constraint.c`.
 
