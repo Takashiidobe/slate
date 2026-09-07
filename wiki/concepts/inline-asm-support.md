@@ -163,6 +163,15 @@ non-x86 targets (`cir_asm_dialect` gated on `TargetArch::is_x86()`).
 
 Fixture: `tests/fixtures/aarch64/asm_aarch64_reg_width_modifiers.c`.
 
+AArch64 FP/SIMD constraints: `w` maps to Rust's full `vreg`, and `x` maps to
+`vreg_low16`. Fixed-width C vectors are temporarily transmuted to matching
+`core::arch::aarch64` SIMD types at the asm boundary and transmuted back to
+Slate's array representation afterward. Clang's `y` constraint is for
+scalable SVE vectors, not a V0-V7 NEON subset, and remains unsupported until
+Slate has a scalable-vector representation.
+
+Fixture: `tests/fixtures/aarch64/asm_aarch64_fp_register_constraint.c`.
+
 ## ARM (32-bit)
 
 Supported: `r` and `l` (Thumb1 low regs r0-r7, alias for `r` elsewhere) both

@@ -76,6 +76,7 @@ enum ConstraintAtom {
     SseReg,
     AvxReg,
     ArmFloat(ArmFloatConstraint),
+    Aarch64Float(Aarch64FloatConstraint),
     ByteAddressableAbcd,
     ByteAddressableGpr,
     EdxEaxPair,
@@ -86,6 +87,12 @@ enum ConstraintAtom {
 pub(super) enum ArmFloatConstraint {
     W,
     T,
+    X,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum Aarch64FloatConstraint {
+    W,
     X,
 }
 
@@ -127,6 +134,12 @@ fn parse_constraint_atoms(
                 }
                 'w' if target_arch == TargetArch::Arm => {
                     ConstraintAtom::ArmFloat(ArmFloatConstraint::W)
+                }
+                'x' if target_arch == TargetArch::Arm64 => {
+                    ConstraintAtom::Aarch64Float(Aarch64FloatConstraint::X)
+                }
+                'w' if target_arch == TargetArch::Arm64 => {
+                    ConstraintAtom::Aarch64Float(Aarch64FloatConstraint::W)
                 }
                 'x' => ConstraintAtom::SseReg,
                 'y' => ConstraintAtom::AvxReg,
@@ -217,6 +230,7 @@ pub(super) enum AsmRegConstraint {
     ExplicitName(String),
     Sse,
     ArmFloat(ArmFloatConstraint),
+    Aarch64Float(Aarch64FloatConstraint),
     ByteAddressableAbcd,
     ByteAddressableGpr,
 }
@@ -238,6 +252,7 @@ fn parse_reg_constraint(constraint: &str, target_arch: TargetArch) -> Option<Asm
         [ConstraintAtom::FixedReg(reg)] => Some(AsmRegConstraint::FixedLetter(*reg)),
         [ConstraintAtom::SseReg] => Some(AsmRegConstraint::Sse),
         [ConstraintAtom::ArmFloat(kind)] => Some(AsmRegConstraint::ArmFloat(*kind)),
+        [ConstraintAtom::Aarch64Float(kind)] => Some(AsmRegConstraint::Aarch64Float(*kind)),
         [ConstraintAtom::ByteAddressableAbcd] => Some(AsmRegConstraint::ByteAddressableAbcd),
         [ConstraintAtom::ByteAddressableGpr] => Some(AsmRegConstraint::ByteAddressableGpr),
         _ => None,
@@ -401,6 +416,10 @@ pub(super) fn asm_reg_for_constraint(
             };
             ResolvedAsmReg::Class(class)
         }
+        AsmRegConstraint::Aarch64Float(kind) => ResolvedAsmReg::Class(match kind {
+            Aarch64FloatConstraint::W => "vreg",
+            Aarch64FloatConstraint::X => "vreg_low16",
+        }),
         AsmRegConstraint::ByteAddressableAbcd => ResolvedAsmReg::Class("reg_abcd"),
         AsmRegConstraint::ByteAddressableGpr => match (pointer_bits, operand_bits) {
             (64, 8) => ResolvedAsmReg::Class("reg_byte"),
@@ -427,6 +446,7 @@ pub(super) fn reg_constraint_family(kind: &AsmRegConstraint) -> Option<X86Reg> {
         AsmRegConstraint::Generic
         | AsmRegConstraint::Sse
         | AsmRegConstraint::ArmFloat(_)
+        | AsmRegConstraint::Aarch64Float(_)
         | AsmRegConstraint::ByteAddressableAbcd
         | AsmRegConstraint::ByteAddressableGpr => None,
         AsmRegConstraint::FixedLetter(reg) => Some(*reg),
@@ -738,7 +758,7 @@ impl TemplateModifier {
             "c" => Some(Self::Const),
             "l" => Some(Self::Label),
             "a" => Some(Self::Address),
-            "w" | "x" if target_arch == TargetArch::Arm64 => {
+            "b" | "h" | "s" | "d" | "q" | "v" | "w" | "x" if target_arch == TargetArch::Arm64 => {
                 Some(Self::RegisterWidth(modifier.chars().next()?))
             }
             "b" | "w" | "k" | "q" | "h" if target_arch.is_x86() => {
