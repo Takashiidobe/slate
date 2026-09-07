@@ -137,7 +137,7 @@ int main(void) { printf("%d\n", convert(6.75L)); }
 // LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT: fn main() -> std::process::ExitCode {
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
 // LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 216, 1, 64]);
@@ -145,7 +145,7 @@ int main(void) { printf("%d\n", convert(6.75L)); }
 // LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: f128 = 6.750000e+00f128;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = convert({{__v[0-9]+}});
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
-// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:     return std::process::ExitCode::SUCCESS;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-X86_64-GNU-NEXT: fn convert({{arg[0-9]+}}: LongDouble) -> i32 {
@@ -385,14 +385,19 @@ int main(void) { printf("%d\n", convert(6.75L)); }
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
+// REWRITES-AARCH64-GNU-NEXT: unsafe extern "C" {
+// REWRITES-AARCH64-GNU-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// REWRITES-AARCH64-GNU-NEXT: }
+// REWRITES-AARCH64-GNU-EMPTY:
+// REWRITES-NEXT: fn main() -> std::process::ExitCode {
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 216, 1, 64]);
 // REWRITES-X86_64-GNU-NEXT:     println!("{}", convert({{__v[0-9]+}}));
-// REWRITES-X86_64-GNU-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = c"%d\n".as_ptr() as *mut u8;
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: f128 = 6.750000e+00f128;
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-AARCH64-GNU-NEXT:     unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, convert({{__v[0-9]+}})) };
-// REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-AARCH64-GNU-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// REWRITES-NEXT:     return std::process::ExitCode::SUCCESS;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: fn convert({{arg[0-9]+}}: LongDouble) -> i32 {

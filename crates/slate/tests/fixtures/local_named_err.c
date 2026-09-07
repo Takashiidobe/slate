@@ -35,7 +35,7 @@ int main(void) {
 // LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT: fn main() -> std::process::ExitCode {
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%s\n\0".as_ptr() as *mut i8;
 // LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = b"%s\n\0".as_ptr() as *mut u8;
@@ -50,7 +50,7 @@ int main(void) {
 // LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = describe({{__v[0-9]+}});
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:     return std::process::ExitCode::SUCCESS;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-X86_64-GNU-NEXT: fn describe({{arg[0-9]+}}: i32) -> *mut i8 {
@@ -102,14 +102,14 @@ int main(void) {
 // REWRITES-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT: fn main() -> std::process::ExitCode {
 // REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe { printf(c"%s\n".as_ptr(), describe(0)) };
 // REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe { printf(c"%s\n".as_ptr(), describe(1)) };
 // REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT:     return std::process::ExitCode::SUCCESS;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: fn describe(mut {{__v[0-9]+}}: i32) -> *mut i8 {

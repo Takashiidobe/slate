@@ -29,31 +29,31 @@ int main() {
 // @lowering-fn-end
 
 // SLATE-FILECHECK-BEGIN lowering
-// LOWERING-DAG: fn main() {
+// LOWERING-DAG: fn main() -> std::process::ExitCode {
 // LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:     {
-// LOWERING-DAG:         let {{__v[0-9]+}}: bitint::BInt<156, 3, 24> = bar();
-// LOWERING-DAG:         let {{__v[0-9]+}}: bitint::BInt<156, 3, 24> = bitint::BInt::<156, 3, 24>::from_decimal_str(
-// LOWERING-DAG:             "-13055525270329736316393717310914023773847",
-// LOWERING-DAG:         );
-// LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// LOWERING-DAG:         if {{__v[0-9]+}} {
-// LOWERING-DAG:             unsafe { abort() };
-// LOWERING-DAG:         }
-// LOWERING-DAG:     }
-// LOWERING-DAG:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-X86_64-GNU-DAG:     {
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: bitint::BInt<156, 3, 24> = bar();
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: bitint::BInt<156, 3, 24> = bitint::BInt::<156, 3, 24>::from_decimal_str(
+// LOWERING-X86_64-GNU-DAG:             "-13055525270329736316393717310914023773847",
+// LOWERING-X86_64-GNU-DAG:         );
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-DAG:         if {{__v[0-9]+}} {
+// LOWERING-X86_64-GNU-DAG:             unsafe { abort() };
+// LOWERING-X86_64-GNU-DAG:         }
+// LOWERING-X86_64-GNU-DAG:     }
+// LOWERING-DAG:     return std::process::ExitCode::SUCCESS;
 // LOWERING-DAG: }
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: fn main() {
-// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BInt<156, 3, 24> = bar();
-// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BInt<156, 3, 24> =
-// REWRITES-DAG:         bitint::BInt::<156, 3, 24>::from_decimal_str("-13055525270329736316393717310914023773847");
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// REWRITES-DAG:     if {{__v[0-9]+}} {
-// REWRITES-DAG:         unsafe { std::process::abort() };
-// REWRITES-DAG:     }
-// REWRITES-DAG:     std::process::exit(0 as i32);
+// REWRITES-DAG: fn main() -> std::process::ExitCode {
+// REWRITES-X86_64-GNU-DAG:     let {{__v[0-9]+}}: bitint::BInt<156, 3, 24> = bar();
+// REWRITES-X86_64-GNU-DAG:     let {{__v[0-9]+}}: bitint::BInt<156, 3, 24> =
+// REWRITES-X86_64-GNU-DAG:         bitint::BInt::<156, 3, 24>::from_decimal_str("-13055525270329736316393717310914023773847");
+// REWRITES-X86_64-GNU-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-X86_64-GNU-DAG:     if {{__v[0-9]+}} {
+// REWRITES-X86_64-GNU-DAG:         unsafe { std::process::abort() };
+// REWRITES-X86_64-GNU-DAG:     }
+// REWRITES-DAG:     return std::process::ExitCode::SUCCESS;
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

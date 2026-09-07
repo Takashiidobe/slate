@@ -60,7 +60,7 @@ int main(void) {
 // LOWERING-NEXT:     fn free(_0: *mut core::ffi::c_void);
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT: fn main() -> std::process::ExitCode {
 // LOWERING-NEXT:     let mut suite: suite_t = suite_t {
 // LOWERING-NEXT:         tests: std::ptr::null_mut(),
 // LOWERING-NEXT:         ntests: 0,
@@ -120,7 +120,7 @@ int main(void) {
 // LOWERING-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = {{__v[0-9]+}} as *mut core::ffi::c_void;
 // LOWERING-NEXT:     unsafe { free({{__v[0-9]+}} as *mut core::ffi::c_void) };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:     return std::process::ExitCode::SUCCESS;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: extern "C-unwind" fn test_a() {
@@ -170,7 +170,7 @@ int main(void) {
 // REWRITES-NEXT:     fn free(_0: *mut core::ffi::c_void);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT: fn main() -> std::process::ExitCode {
 // REWRITES-NEXT:     let mut suite: suite_t = suite_t {
 // REWRITES-NEXT:         tests: std::ptr::null_mut(),
 // REWRITES-NEXT:         ntests: 0,
@@ -199,7 +199,7 @@ int main(void) {
 // REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     unsafe { free(suite.tests as *mut core::ffi::c_void) };
-// REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT:     return std::process::ExitCode::SUCCESS;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: extern "C-unwind" fn test_a() {

@@ -32,7 +32,7 @@ int main(void) {
 // LOWERING-NEXT:     fn free(_0: *mut core::ffi::c_void);
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT: fn main() -> std::process::ExitCode {
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = 4;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc({{__v[0-9]+}} as usize) };
@@ -51,7 +51,7 @@ int main(void) {
 // LOWERING-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = {{__v[0-9]+}} as *mut core::ffi::c_void;
 // LOWERING-NEXT:     unsafe { free({{__v[0-9]+}} as *mut core::ffi::c_void) };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:     return std::process::ExitCode::SUCCESS;
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -76,7 +76,7 @@ int main(void) {
 // REWRITES-NEXT:     fn free(_0: *mut core::ffi::c_void);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT: fn main() -> std::process::ExitCode {
 // REWRITES-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc((4 as u64) as usize) };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i32 = {{__v[0-9]+}} as *mut i32;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 1;
@@ -87,6 +87,6 @@ int main(void) {
 // REWRITES-NEXT:     println!("{} {}", unsafe { *{{__v[0-9]+}} }, {{__v[0-9]+}});
 // REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe { free({{__v[0-9]+}} as *mut core::ffi::c_void) };
-// REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT:     return std::process::ExitCode::SUCCESS;
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

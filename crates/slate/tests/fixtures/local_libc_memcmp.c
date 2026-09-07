@@ -42,7 +42,7 @@ int main(void) {
 // LOWERING-NEXT:     fn memcmp(_0: *const core::ffi::c_void, _1: *const core::ffi::c_void, _2: usize) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT: fn main() -> std::process::ExitCode {
 // LOWERING-NEXT:     let mut x: [u8; 3] = [0; 3];
 // LOWERING-NEXT:     let mut y: [u8; 3] = [0; 3];
 // LOWERING-NEXT:     let mut z: [u8; 3] = [0; 3];
@@ -72,7 +72,7 @@ int main(void) {
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = cmp_bytes({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:     return std::process::ExitCode::SUCCESS;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn cmp_bytes({{arg[0-9]+}}: *mut u8, {{arg[0-9]+}}: i32, {{arg[0-9]+}}: *mut u8, {{arg[0-9]+}}: i32) -> i32 {
@@ -193,7 +193,7 @@ int main(void) {
 // REWRITES-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT: fn main() -> std::process::ExitCode {
 // REWRITES-NEXT:     let mut x: [u8; 3] = [0; 3];
 // REWRITES-NEXT:     let mut y: [u8; 3] = [0; 3];
 // REWRITES-NEXT:     let mut z: [u8; 3] = [0; 3];
@@ -229,7 +229,7 @@ int main(void) {
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT:     return std::process::ExitCode::SUCCESS;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn cmp_bytes({{arg[0-9]+}}: &[u8], {{arg[0-9]+}}: &[u8]) -> i32 {

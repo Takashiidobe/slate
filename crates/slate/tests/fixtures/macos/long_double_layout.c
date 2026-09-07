@@ -23,7 +23,7 @@ int main(void) {
 // @rewrite-fn-end
 
 // SLATE-FILECHECK-BEGIN rewrites-macos
-// REWRITES-MACOS-DAG: fn main() {
+// REWRITES-MACOS-DAG: fn main() -> std::process::ExitCode {
 // REWRITES-MACOS-DAG:     unsafe { printf(c"%zu %zu\n".as_ptr(), 8 as u64, 8 as u64) };
 // REWRITES-MACOS-DAG:     unsafe {
 // REWRITES-MACOS-DAG:         printf(
@@ -41,6 +41,6 @@ int main(void) {
 // REWRITES-MACOS-DAG:             std::mem::align_of::<ld_union>() as u64,
 // REWRITES-MACOS-DAG:         )
 // REWRITES-MACOS-DAG:     };
-// REWRITES-MACOS-DAG:     std::process::exit(0 as i32);
+// REWRITES-MACOS-DAG:     return std::process::ExitCode::SUCCESS;
 // REWRITES-MACOS-DAG: }
 // SLATE-FILECHECK-END rewrites-macos

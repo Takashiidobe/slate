@@ -63,7 +63,7 @@ int main(void) {
 // LOWERING-NEXT:     fn strcspn(_0: *const core::ffi::c_char, _1: *const core::ffi::c_char) -> usize;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT: fn main() -> std::process::ExitCode {
 // LOWERING-X86_64-GNU-NEXT:     let mut alpha: [i8; 4] = [0; 4];
 // LOWERING-X86_64-GNU-NEXT:     let mut beta: [i8; 4] = [0; 4];
 // LOWERING-AARCH64-GNU-NEXT:     let mut alpha: [u8; 4] = [0; 4];
@@ -335,7 +335,7 @@ int main(void) {
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:     return std::process::ExitCode::SUCCESS;
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -376,7 +376,7 @@ int main(void) {
 // REWRITES-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT: fn main() -> std::process::ExitCode {
 // REWRITES-X86_64-GNU-NEXT:     let mut alpha: [i8; 4] = [0; 4];
 // REWRITES-X86_64-GNU-NEXT:     let mut beta: [i8; 4] = [0; 4];
 // REWRITES-AARCH64-GNU-NEXT:     let mut alpha: [u8; 4] = [0; 4];
@@ -602,6 +602,6 @@ int main(void) {
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT:     return std::process::ExitCode::SUCCESS;
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

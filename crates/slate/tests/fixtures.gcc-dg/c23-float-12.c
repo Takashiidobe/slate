@@ -131,7 +131,7 @@ int main(void) {
 // LOWERING-NEXT:     fn exit(_0: i32) -> !;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT: fn main() -> std::process::ExitCode {
 // LOWERING-X86_64-GNU-NEXT:     let mut x: LongDouble = LongDouble([0; 10]);
 // LOWERING-AARCH64-GNU-NEXT:     let mut x: f128 = 0.0f128;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
@@ -177,7 +177,7 @@ int main(void) {
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     unsafe { exit({{__v[0-9]+}} as i32) };
-// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:     return std::process::ExitCode::SUCCESS;
 // LOWERING-NEXT: }
 // LOWERING-X86_64-GNU-EMPTY:
 // LOWERING-X86_64-GNU-NEXT: unsafe extern "C" {
@@ -386,7 +386,7 @@ int main(void) {
 // REWRITES-NEXT:     fn exit(_0: i32) -> !;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT: fn main() -> std::process::ExitCode {
 // REWRITES-X86_64-GNU-NEXT:     let mut x: LongDouble = LongDouble([0; 10]);
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
 // REWRITES-AARCH64-GNU-NEXT:     let mut x: f128 = 0.0f128;
@@ -409,7 +409,7 @@ int main(void) {
 // REWRITES-NEXT:         unsafe { abort() };
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     unsafe { exit(0 as i32) };
-// REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT:     return std::process::ExitCode::SUCCESS;
 // REWRITES-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: unsafe extern "C" {

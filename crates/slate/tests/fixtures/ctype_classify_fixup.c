@@ -79,7 +79,7 @@ int main(void) {
   return 0;
 }
 
-// REWRITES-LABEL: {{^}}fn main() {
+// REWRITES-LABEL: {{^}}fn main() -> std::process::ExitCode {
 // REWRITES-DAG: unsafe { isalpha(
 // REWRITES: {{^}}}
 
@@ -113,7 +113,7 @@ int main(void) {
 // LOWERING-NEXT:     fn isspace(_0: i32) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT: fn main() -> std::process::ExitCode {
 // LOWERING-X86_64-GNU-NEXT:     let mut alpha: i8 = 0;
 // LOWERING-X86_64-GNU-NEXT:     let mut digit: i8 = 0;
 // LOWERING-X86_64-GNU-NEXT:     let mut space: i8 = 0;
@@ -357,7 +357,7 @@ int main(void) {
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { isalpha({{__v[0-9]+}} as i32) };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:     return std::process::ExitCode::SUCCESS;
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -391,7 +391,7 @@ int main(void) {
 // REWRITES-NEXT:     fn isspace(_0: i32) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT: fn main() -> std::process::ExitCode {
 // REWRITES-X86_64-GNU-NEXT:     let mut alpha: i8 = 65;
 // REWRITES-X86_64-GNU-NEXT:     let mut digit: i8 = 53;
 // REWRITES-X86_64-GNU-NEXT:     let mut space: i8 = 32;
@@ -521,6 +521,6 @@ int main(void) {
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     println!("{}", unsafe { isalpha(alpha as i32) });
 // REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT:     return std::process::ExitCode::SUCCESS;
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

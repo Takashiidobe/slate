@@ -55,7 +55,7 @@ int main(void) {
 // LOWERING-NEXT:     return {{__v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT: fn main() -> std::process::ExitCode {
 // LOWERING-X86_64-GNU-NEXT:     let mut digits: [i8; 3] = [0; 3];
 // LOWERING-X86_64-GNU-NEXT:     let mut word: [i8; 6] = [0; 6];
 // LOWERING-AARCH64-GNU-NEXT:     let mut digits: [u8; 3] = [0; 3];
@@ -77,7 +77,7 @@ int main(void) {
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = text_len({{__v[0-9]+}});
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}) };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:     return std::process::ExitCode::SUCCESS;
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -146,7 +146,7 @@ int main(void) {
 // REWRITES-NEXT:     {{__v[0-9]+}} as i32
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT: fn main() -> std::process::ExitCode {
 // REWRITES-X86_64-GNU-NEXT:     let mut digits: [i8; 3] = [52, 50, 0];
 // REWRITES-X86_64-GNU-NEXT:     let mut word: [i8; 6] = [104, 101, 108, 108, 111, 0];
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = c"%d %d\n".as_ptr() as *mut i8;
@@ -161,6 +161,6 @@ int main(void) {
 // REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, text_len("hello")) };
 // REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT:     return std::process::ExitCode::SUCCESS;
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

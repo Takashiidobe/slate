@@ -24,12 +24,12 @@ int main(void) { return f() == 0.0L; }
 // LOWERING-MACOS-NEXT:     return {{__v[0-9]+}};
 // LOWERING-MACOS-NEXT: }
 // LOWERING-MACOS-EMPTY:
-// LOWERING-MACOS-NEXT: fn main() {
+// LOWERING-MACOS-NEXT: fn main() -> std::process::ExitCode {
 // LOWERING-MACOS-NEXT:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-MACOS-NEXT:     let {{__v[0-9]+}}: f64 = f();
 // LOWERING-MACOS-NEXT:     let {{__v[0-9]+}}: f64 = 0.0;
 // LOWERING-MACOS-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
 // LOWERING-MACOS-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// LOWERING-MACOS-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-MACOS-NEXT:     return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-MACOS-NEXT: }
 // SLATE-FILECHECK-END lowering-macos

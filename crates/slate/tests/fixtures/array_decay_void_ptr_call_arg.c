@@ -30,7 +30,7 @@ int main(void) {
 // LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT: fn main() -> std::process::ExitCode {
 // LOWERING-X86_64-GNU-NEXT:     let mut text: [i8; 6] = [0; 6];
 // LOWERING-AARCH64-GNU-NEXT:     let mut text: [u8; 6] = [0; 6];
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
@@ -40,7 +40,7 @@ int main(void) {
 // LOWERING-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = text.as_mut_ptr() as *mut core::ffi::c_void;
 // LOWERING-NEXT:     set_data({{__v[0-9]+}} as *mut core::ffi::c_void);
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:     return std::process::ExitCode::SUCCESS;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn set_data({{arg[0-9]+}}: *mut core::ffi::c_void) {
@@ -76,11 +76,11 @@ int main(void) {
 // REWRITES-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT: fn main() -> std::process::ExitCode {
 // REWRITES-X86_64-GNU-NEXT:     let mut text: [i8; 6] = [104, 101, 108, 108, 111, 0];
 // REWRITES-AARCH64-GNU-NEXT:     let mut text: [u8; 6] = [104, 101, 108, 108, 111, 0];
 // REWRITES-NEXT:     set_data(text.as_mut_ptr() as *mut core::ffi::c_void);
-// REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT:     return std::process::ExitCode::SUCCESS;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn set_data({{arg[0-9]+}}: *mut core::ffi::c_void) {

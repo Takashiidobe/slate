@@ -10,7 +10,7 @@ int main(void) {
   printf("%d %d\n", direct, via_cb);
   return 0;
 }
-// LOWERING-LABEL: {{^}}fn main() {
+// LOWERING-LABEL: {{^}}fn main() -> std::process::ExitCode {
 // LOWERING-DAG: deref_and_add as *const ()
 // LOWERING-DAG: Option<unsafe extern "C-unwind" fn(*mut i32) -> i32>
 // LOWERING: {{^}}}

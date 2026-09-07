@@ -105,7 +105,7 @@ int main() {
 // LOWERING-NEXT:     return {{__v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT: fn main() -> std::process::ExitCode {
 // LOWERING-NEXT:     let mut y: foo = foo {
 // LOWERING-NEXT:         __bitfield_0: unsafe {
 // LOWERING-NEXT:             std::mem::transmute::<u8, __slate_bitfields::__SlateBitfield_foo_0>(0)
@@ -123,7 +123,7 @@ int main() {
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:     return std::process::ExitCode::SUCCESS;
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -196,7 +196,7 @@ int main() {
 // REWRITES-NEXT:     ((unsafe { (*({{arg[0-9]+}} as *mut foo)).__bitfield_0.x() }) as i32) << 29 >> 29
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT: fn main() -> std::process::ExitCode {
 // REWRITES-NEXT:     let mut y: foo = foo {
 // REWRITES-NEXT:         __bitfield_0: unsafe {
 // REWRITES-NEXT:             std::mem::transmute::<u8, __slate_bitfields::__SlateBitfield_foo_0>(0)
@@ -213,6 +213,6 @@ int main() {
 // REWRITES-NEXT:     if {{__v[0-9]+}} {
 // REWRITES-NEXT:         unsafe { std::process::abort() };
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT:     return std::process::ExitCode::SUCCESS;
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

@@ -25,7 +25,7 @@ int main(void) {
 // LOWERING-NEXT:     unused_comparisons
 // LOWERING-NEXT: )]
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT: fn main() -> std::process::ExitCode {
 // LOWERING-X86_64-GNU-NEXT:     let mut a: aligned::Aligned<aligned::A16, [i32; 5]> = aligned::Aligned([0; 5]);
 // LOWERING-AARCH64-GNU-NEXT:     let mut a: [i32; 5] = [0; 5];
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
@@ -35,7 +35,7 @@ int main(void) {
 // LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i32 = a.as_mut_ptr() as *mut i32;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 5;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = sum_n({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:     return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn sum_n({{arg[0-9]+}}: *mut i32, {{arg[0-9]+}}: i32) -> i32 {
@@ -91,15 +91,15 @@ int main(void) {
 // REWRITES-NEXT:     unused_comparisons
 // REWRITES-NEXT: )]
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT: fn main() -> std::process::ExitCode {
 // REWRITES-X86_64-GNU-NEXT:     let mut a: aligned::Aligned<aligned::A16, [i32; 5]> = aligned::Aligned([0; 5]);
 // REWRITES-X86_64-GNU-NEXT:     *a = [1, 2, 3, 4, 5];
 // REWRITES-AARCH64-GNU-NEXT:     let mut a: [i32; 5] = [0; 5];
 // REWRITES-AARCH64-GNU-NEXT:     a = [1, 2, 3, 4, 5];
 // REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i32 = a.as_mut_ptr() as *mut i32;
-// REWRITES-NEXT:     std::process::exit(sum_n(unsafe {
-// REWRITES-NEXT:         std::slice::from_raw_parts({{__v[0-9]+}} as *const i32, (5 as i32) as usize)
-// REWRITES-NEXT:     }) as i32);
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 =
+// REWRITES-NEXT:         sum_n(unsafe { std::slice::from_raw_parts({{__v[0-9]+}} as *const i32, (5 as i32) as usize) });
+// REWRITES-NEXT:     return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn sum_n({{arg[0-9]+}}: &[i32]) -> i32 {

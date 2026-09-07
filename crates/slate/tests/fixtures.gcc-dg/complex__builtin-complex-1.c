@@ -114,17 +114,25 @@ int main(void) {
 // LOWERING-DAG:                 {
 // LOWERING-DAG:                     loop {
 // LOWERING-DAG:                         {
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> =
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> =
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = 0.000000e+00f128;
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = 0.000000e+00f128;
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<f128> =
 // LOWERING-DAG:                                 num_complex::Complex { re: {{__v[0-9]+}}, im: {{__v[0-9]+}} };
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = 0.000000e+00f128;
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = 0.000000e+00f128;
 // LOWERING-DAG:                             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> =
-// LOWERING-DAG:                                 unsafe { check_long_double_cs };
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> =
+// LOWERING-X86_64-GNU-DAG:                                 unsafe { check_long_double_cs };
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<f128> = unsafe { check_long_double_cs };
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = 0.000000e+00f128;
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = 0.000000e+00f128;
 // LOWERING-DAG:                             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
 // LOWERING-DAG:                         }
 // LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = 0;
@@ -137,19 +145,27 @@ int main(void) {
 // LOWERING-DAG:                 {
 // LOWERING-DAG:                     loop {
 // LOWERING-DAG:                         {
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = 0.000000e+00f128;
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = -0.000000e+00f128;
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<f128> = num_complex::Complex {
 // LOWERING-DAG:                                 re: {{__v[0-9]+}},
 // LOWERING-DAG:                                 im: {{__v[0-9]+}},
 // LOWERING-DAG:                             };
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = 0.000000e+00f128;
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = -0.000000e+00f128;
 // LOWERING-DAG:                             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> =
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> =
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<f128> =
 // LOWERING-DAG:                                 unsafe { check_long_double_cs_1 };
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = 0.000000e+00f128;
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = -0.000000e+00f128;
 // LOWERING-DAG:                             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
 // LOWERING-DAG:                         }
 // LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = 0;
@@ -162,22 +178,30 @@ int main(void) {
 // LOWERING-DAG:                 {
 // LOWERING-DAG:                     loop {
 // LOWERING-DAG:                         {
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble =
-// LOWERING-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = 0.000000e+00f128;
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff8000000000000000000000000000);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<f128> = num_complex::Complex {
 // LOWERING-DAG:                                 re: {{__v[0-9]+}},
 // LOWERING-DAG:                                 im: {{__v[0-9]+}},
 // LOWERING-DAG:                             };
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble =
-// LOWERING-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = 0.000000e+00f128;
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff8000000000000000000000000000);
 // LOWERING-DAG:                             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> =
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> =
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<f128> =
 // LOWERING-DAG:                                 unsafe { check_long_double_cs_2 };
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble =
-// LOWERING-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = 0.000000e+00f128;
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff8000000000000000000000000000);
 // LOWERING-DAG:                             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
 // LOWERING-DAG:                         }
 // LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = 0;
@@ -190,22 +214,30 @@ int main(void) {
 // LOWERING-DAG:                 {
 // LOWERING-DAG:                     loop {
 // LOWERING-DAG:                         {
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble =
-// LOWERING-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = 0.000000e+00f128;
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff0000000000000000000000000000);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<f128> = num_complex::Complex {
 // LOWERING-DAG:                                 re: {{__v[0-9]+}},
 // LOWERING-DAG:                                 im: {{__v[0-9]+}},
 // LOWERING-DAG:                             };
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble =
-// LOWERING-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = 0.000000e+00f128;
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff0000000000000000000000000000);
 // LOWERING-DAG:                             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> =
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> =
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<f128> =
 // LOWERING-DAG:                                 unsafe { check_long_double_cs_3 };
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble =
-// LOWERING-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = 0.000000e+00f128;
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff0000000000000000000000000000);
 // LOWERING-DAG:                             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
 // LOWERING-DAG:                         }
 // LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = 0;
@@ -218,19 +250,27 @@ int main(void) {
 // LOWERING-DAG:                 {
 // LOWERING-DAG:                     loop {
 // LOWERING-DAG:                         {
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = -0.000000e+00f128;
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = 0.000000e+00f128;
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<f128> = num_complex::Complex {
 // LOWERING-DAG:                                 re: {{__v[0-9]+}},
 // LOWERING-DAG:                                 im: {{__v[0-9]+}},
 // LOWERING-DAG:                             };
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = -0.000000e+00f128;
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = 0.000000e+00f128;
 // LOWERING-DAG:                             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> =
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> =
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<f128> =
 // LOWERING-DAG:                                 unsafe { check_long_double_cs_4 };
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = -0.000000e+00f128;
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = 0.000000e+00f128;
 // LOWERING-DAG:                             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
 // LOWERING-DAG:                         }
 // LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = 0;
@@ -243,19 +283,27 @@ int main(void) {
 // LOWERING-DAG:                 {
 // LOWERING-DAG:                     loop {
 // LOWERING-DAG:                         {
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = -0.000000e+00f128;
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = -0.000000e+00f128;
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<f128> = num_complex::Complex {
 // LOWERING-DAG:                                 re: {{__v[0-9]+}},
 // LOWERING-DAG:                                 im: {{__v[0-9]+}},
 // LOWERING-DAG:                             };
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = -0.000000e+00f128;
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = -0.000000e+00f128;
 // LOWERING-DAG:                             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> =
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> =
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<f128> =
 // LOWERING-DAG:                                 unsafe { check_long_double_cs_5 };
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = -0.000000e+00f128;
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = -0.000000e+00f128;
 // LOWERING-DAG:                             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
 // LOWERING-DAG:                         }
 // LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = 0;
@@ -268,22 +316,30 @@ int main(void) {
 // LOWERING-DAG:                 {
 // LOWERING-DAG:                     loop {
 // LOWERING-DAG:                         {
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble =
-// LOWERING-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = -0.000000e+00f128;
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff8000000000000000000000000000);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<f128> = num_complex::Complex {
 // LOWERING-DAG:                                 re: {{__v[0-9]+}},
 // LOWERING-DAG:                                 im: {{__v[0-9]+}},
 // LOWERING-DAG:                             };
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble =
-// LOWERING-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = -0.000000e+00f128;
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff8000000000000000000000000000);
 // LOWERING-DAG:                             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> =
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> =
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<f128> =
 // LOWERING-DAG:                                 unsafe { check_long_double_cs_6 };
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble =
-// LOWERING-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = -0.000000e+00f128;
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff8000000000000000000000000000);
 // LOWERING-DAG:                             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
 // LOWERING-DAG:                         }
 // LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = 0;
@@ -296,22 +352,30 @@ int main(void) {
 // LOWERING-DAG:                 {
 // LOWERING-DAG:                     loop {
 // LOWERING-DAG:                         {
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble =
-// LOWERING-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = -0.000000e+00f128;
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff0000000000000000000000000000);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<f128> = num_complex::Complex {
 // LOWERING-DAG:                                 re: {{__v[0-9]+}},
 // LOWERING-DAG:                                 im: {{__v[0-9]+}},
 // LOWERING-DAG:                             };
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble =
-// LOWERING-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = -0.000000e+00f128;
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff0000000000000000000000000000);
 // LOWERING-DAG:                             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> =
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> =
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<f128> =
 // LOWERING-DAG:                                 unsafe { check_long_double_cs_7 };
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble =
-// LOWERING-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = -0.000000e+00f128;
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff0000000000000000000000000000);
 // LOWERING-DAG:                             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
 // LOWERING-DAG:                         }
 // LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = 0;
@@ -324,22 +388,30 @@ int main(void) {
 // LOWERING-DAG:                 {
 // LOWERING-DAG:                     loop {
 // LOWERING-DAG:                         {
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble =
-// LOWERING-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff8000000000000000000000000000);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = 0.000000e+00f128;
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<f128> = num_complex::Complex {
 // LOWERING-DAG:                                 re: {{__v[0-9]+}},
 // LOWERING-DAG:                                 im: {{__v[0-9]+}},
 // LOWERING-DAG:                             };
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble =
-// LOWERING-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff8000000000000000000000000000);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = 0.000000e+00f128;
 // LOWERING-DAG:                             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> =
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> =
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<f128> =
 // LOWERING-DAG:                                 unsafe { check_long_double_cs_8 };
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble =
-// LOWERING-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff8000000000000000000000000000);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = 0.000000e+00f128;
 // LOWERING-DAG:                             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
 // LOWERING-DAG:                         }
 // LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = 0;
@@ -352,22 +424,30 @@ int main(void) {
 // LOWERING-DAG:                 {
 // LOWERING-DAG:                     loop {
 // LOWERING-DAG:                         {
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble =
-// LOWERING-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff8000000000000000000000000000);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = -0.000000e+00f128;
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<f128> = num_complex::Complex {
 // LOWERING-DAG:                                 re: {{__v[0-9]+}},
 // LOWERING-DAG:                                 im: {{__v[0-9]+}},
 // LOWERING-DAG:                             };
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble =
-// LOWERING-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff8000000000000000000000000000);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = -0.000000e+00f128;
 // LOWERING-DAG:                             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> =
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> =
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<f128> =
 // LOWERING-DAG:                                 unsafe { check_long_double_cs_9 };
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble =
-// LOWERING-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff8000000000000000000000000000);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = -0.000000e+00f128;
 // LOWERING-DAG:                             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
 // LOWERING-DAG:                         }
 // LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = 0;
@@ -380,25 +460,33 @@ int main(void) {
 // LOWERING-DAG:                 {
 // LOWERING-DAG:                     loop {
 // LOWERING-DAG:                         {
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble =
-// LOWERING-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble =
-// LOWERING-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff8000000000000000000000000000);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff8000000000000000000000000000);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<f128> = num_complex::Complex {
 // LOWERING-DAG:                                 re: {{__v[0-9]+}},
 // LOWERING-DAG:                                 im: {{__v[0-9]+}},
 // LOWERING-DAG:                             };
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble =
-// LOWERING-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble =
-// LOWERING-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff8000000000000000000000000000);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff8000000000000000000000000000);
 // LOWERING-DAG:                             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> =
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> =
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<f128> =
 // LOWERING-DAG:                                 unsafe { check_long_double_cs_10 };
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble =
-// LOWERING-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble =
-// LOWERING-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff8000000000000000000000000000);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff8000000000000000000000000000);
 // LOWERING-DAG:                             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
 // LOWERING-DAG:                         }
 // LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = 0;
@@ -411,25 +499,33 @@ int main(void) {
 // LOWERING-DAG:                 {
 // LOWERING-DAG:                     loop {
 // LOWERING-DAG:                         {
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble =
-// LOWERING-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble =
-// LOWERING-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff8000000000000000000000000000);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff0000000000000000000000000000);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<f128> = num_complex::Complex {
 // LOWERING-DAG:                                 re: {{__v[0-9]+}},
 // LOWERING-DAG:                                 im: {{__v[0-9]+}},
 // LOWERING-DAG:                             };
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble =
-// LOWERING-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble =
-// LOWERING-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff8000000000000000000000000000);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff0000000000000000000000000000);
 // LOWERING-DAG:                             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> =
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> =
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<f128> =
 // LOWERING-DAG:                                 unsafe { check_long_double_cs_11 };
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble =
-// LOWERING-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble =
-// LOWERING-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff8000000000000000000000000000);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff0000000000000000000000000000);
 // LOWERING-DAG:                             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
 // LOWERING-DAG:                         }
 // LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = 0;
@@ -442,22 +538,30 @@ int main(void) {
 // LOWERING-DAG:                 {
 // LOWERING-DAG:                     loop {
 // LOWERING-DAG:                         {
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble =
-// LOWERING-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff0000000000000000000000000000);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = 0.000000e+00f128;
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<f128> = num_complex::Complex {
 // LOWERING-DAG:                                 re: {{__v[0-9]+}},
 // LOWERING-DAG:                                 im: {{__v[0-9]+}},
 // LOWERING-DAG:                             };
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble =
-// LOWERING-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff0000000000000000000000000000);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = 0.000000e+00f128;
 // LOWERING-DAG:                             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> =
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> =
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<f128> =
 // LOWERING-DAG:                                 unsafe { check_long_double_cs_12 };
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble =
-// LOWERING-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff0000000000000000000000000000);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = 0.000000e+00f128;
 // LOWERING-DAG:                             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
 // LOWERING-DAG:                         }
 // LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = 0;
@@ -470,22 +574,30 @@ int main(void) {
 // LOWERING-DAG:                 {
 // LOWERING-DAG:                     loop {
 // LOWERING-DAG:                         {
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble =
-// LOWERING-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff0000000000000000000000000000);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = -0.000000e+00f128;
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<f128> = num_complex::Complex {
 // LOWERING-DAG:                                 re: {{__v[0-9]+}},
 // LOWERING-DAG:                                 im: {{__v[0-9]+}},
 // LOWERING-DAG:                             };
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble =
-// LOWERING-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff0000000000000000000000000000);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = -0.000000e+00f128;
 // LOWERING-DAG:                             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> =
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> =
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<f128> =
 // LOWERING-DAG:                                 unsafe { check_long_double_cs_13 };
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble =
-// LOWERING-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff0000000000000000000000000000);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = -0.000000e+00f128;
 // LOWERING-DAG:                             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
 // LOWERING-DAG:                         }
 // LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = 0;
@@ -498,25 +610,33 @@ int main(void) {
 // LOWERING-DAG:                 {
 // LOWERING-DAG:                     loop {
 // LOWERING-DAG:                         {
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble =
-// LOWERING-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble =
-// LOWERING-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff0000000000000000000000000000);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff8000000000000000000000000000);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<f128> = num_complex::Complex {
 // LOWERING-DAG:                                 re: {{__v[0-9]+}},
 // LOWERING-DAG:                                 im: {{__v[0-9]+}},
 // LOWERING-DAG:                             };
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble =
-// LOWERING-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble =
-// LOWERING-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff0000000000000000000000000000);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff8000000000000000000000000000);
 // LOWERING-DAG:                             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> =
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> =
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<f128> =
 // LOWERING-DAG:                                 unsafe { check_long_double_cs_14 };
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble =
-// LOWERING-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble =
-// LOWERING-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff0000000000000000000000000000);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff8000000000000000000000000000);
 // LOWERING-DAG:                             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
 // LOWERING-DAG:                         }
 // LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = 0;
@@ -529,25 +649,33 @@ int main(void) {
 // LOWERING-DAG:                 {
 // LOWERING-DAG:                     loop {
 // LOWERING-DAG:                         {
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble =
-// LOWERING-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble =
-// LOWERING-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff0000000000000000000000000000);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff0000000000000000000000000000);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<f128> = num_complex::Complex {
 // LOWERING-DAG:                                 re: {{__v[0-9]+}},
 // LOWERING-DAG:                                 im: {{__v[0-9]+}},
 // LOWERING-DAG:                             };
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble =
-// LOWERING-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble =
-// LOWERING-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff0000000000000000000000000000);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff0000000000000000000000000000);
 // LOWERING-DAG:                             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> =
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> =
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: num_complex::Complex<f128> =
 // LOWERING-DAG:                                 unsafe { check_long_double_cs_15 };
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble =
-// LOWERING-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
-// LOWERING-DAG:                             let {{__v[0-9]+}}: LongDouble =
-// LOWERING-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
+// LOWERING-X86_64-GNU-DAG:                             let {{__v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-DAG:                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff0000000000000000000000000000);
+// LOWERING-AARCH64-GNU-DAG:                             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff0000000000000000000000000000);
 // LOWERING-DAG:                             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
 // LOWERING-DAG:                         }
 // LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = 0;
@@ -567,14 +695,14 @@ int main(void) {
 // LOWERING-DAG:     }
 // LOWERING-DAG:     return;
 // LOWERING-DAG: }
-// LOWERING-DAG: fn main() {
+// LOWERING-DAG: fn main() -> std::process::ExitCode {
 // LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-DAG:     check_float();
 // LOWERING-DAG:     check_double();
 // LOWERING-DAG:     check_long_double();
 // LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-DAG:     unsafe { exit({{__v[0-9]+}} as i32) };
-// LOWERING-DAG:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-DAG:     return std::process::ExitCode::SUCCESS;
 // LOWERING-DAG: }
 // SLATE-FILECHECK-END lowering
 
@@ -582,256 +710,430 @@ int main(void) {
 // REWRITES-DAG: fn check_long_double() {
 // REWRITES-DAG:     loop {
 // REWRITES-DAG:         loop {
-// REWRITES-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
-// REWRITES-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
-// REWRITES-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
-// REWRITES-DAG:             };
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// REWRITES-X86_64-GNU-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// REWRITES-X86_64-GNU-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// REWRITES-X86_64-GNU-DAG:             };
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = 0.000000e+00f128;
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = 0.000000e+00f128;
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> = num_complex::Complex { re: {{__v[0-9]+}}, im: {{__v[0-9]+}} };
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = 0.000000e+00f128;
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = 0.000000e+00f128;
 // REWRITES-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// REWRITES-DAG:             comparecl(unsafe { check_long_double_cs }, {{__v[0-9]+}}, {{__v[0-9]+}});
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// REWRITES-X86_64-GNU-DAG:             comparecl(unsafe { check_long_double_cs }, {{__v[0-9]+}}, {{__v[0-9]+}});
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> = unsafe { check_long_double_cs };
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = 0.000000e+00f128;
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = 0.000000e+00f128;
+// REWRITES-AARCH64-GNU-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
 // REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-DAG:             if !({{__v[0-9]+}} != 0) {
 // REWRITES-DAG:                 break;
 // REWRITES-DAG:             }
 // REWRITES-DAG:         }
 // REWRITES-DAG:         loop {
-// REWRITES-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
-// REWRITES-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
-// REWRITES-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]),
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// REWRITES-X86_64-GNU-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// REWRITES-X86_64-GNU-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]),
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = 0.000000e+00f128;
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = -0.000000e+00f128;
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> = num_complex::Complex {
+// REWRITES-AARCH64-GNU-DAG:                 re: {{__v[0-9]+}},
+// REWRITES-AARCH64-GNU-DAG:                 im: {{__v[0-9]+}},
 // REWRITES-DAG:             };
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = 0.000000e+00f128;
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = -0.000000e+00f128;
 // REWRITES-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
-// REWRITES-DAG:             comparecl(unsafe { check_long_double_cs_1 }, {{__v[0-9]+}}, {{__v[0-9]+}});
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
+// REWRITES-X86_64-GNU-DAG:             comparecl(unsafe { check_long_double_cs_1 }, {{__v[0-9]+}}, {{__v[0-9]+}});
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> = unsafe { check_long_double_cs_1 };
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = 0.000000e+00f128;
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = -0.000000e+00f128;
+// REWRITES-AARCH64-GNU-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
 // REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-DAG:             if !({{__v[0-9]+}} != 0) {
 // REWRITES-DAG:                 break;
 // REWRITES-DAG:             }
 // REWRITES-DAG:         }
 // REWRITES-DAG:         loop {
-// REWRITES-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
-// REWRITES-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
-// REWRITES-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]),
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// REWRITES-X86_64-GNU-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// REWRITES-X86_64-GNU-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]),
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = 0.000000e+00f128;
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff8000000000000000000000000000);
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> = num_complex::Complex {
+// REWRITES-AARCH64-GNU-DAG:                 re: {{__v[0-9]+}},
+// REWRITES-AARCH64-GNU-DAG:                 im: {{__v[0-9]+}},
 // REWRITES-DAG:             };
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = 0.000000e+00f128;
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff8000000000000000000000000000);
 // REWRITES-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
-// REWRITES-DAG:             comparecl(unsafe { check_long_double_cs_2 }, {{__v[0-9]+}}, {{__v[0-9]+}});
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
+// REWRITES-X86_64-GNU-DAG:             comparecl(unsafe { check_long_double_cs_2 }, {{__v[0-9]+}}, {{__v[0-9]+}});
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> = unsafe { check_long_double_cs_2 };
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = 0.000000e+00f128;
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff8000000000000000000000000000);
+// REWRITES-AARCH64-GNU-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
 // REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-DAG:             if !({{__v[0-9]+}} != 0) {
 // REWRITES-DAG:                 break;
 // REWRITES-DAG:             }
 // REWRITES-DAG:         }
 // REWRITES-DAG:         loop {
-// REWRITES-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
-// REWRITES-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
-// REWRITES-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]),
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// REWRITES-X86_64-GNU-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// REWRITES-X86_64-GNU-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]),
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = 0.000000e+00f128;
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff0000000000000000000000000000);
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> = num_complex::Complex {
+// REWRITES-AARCH64-GNU-DAG:                 re: {{__v[0-9]+}},
+// REWRITES-AARCH64-GNU-DAG:                 im: {{__v[0-9]+}},
 // REWRITES-DAG:             };
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = 0.000000e+00f128;
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff0000000000000000000000000000);
 // REWRITES-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
-// REWRITES-DAG:             comparecl(unsafe { check_long_double_cs_3 }, {{__v[0-9]+}}, {{__v[0-9]+}});
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
+// REWRITES-X86_64-GNU-DAG:             comparecl(unsafe { check_long_double_cs_3 }, {{__v[0-9]+}}, {{__v[0-9]+}});
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> = unsafe { check_long_double_cs_3 };
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = 0.000000e+00f128;
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff0000000000000000000000000000);
+// REWRITES-AARCH64-GNU-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
 // REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-DAG:             if !({{__v[0-9]+}} != 0) {
 // REWRITES-DAG:                 break;
 // REWRITES-DAG:             }
 // REWRITES-DAG:         }
 // REWRITES-DAG:         loop {
-// REWRITES-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
-// REWRITES-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]),
-// REWRITES-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// REWRITES-X86_64-GNU-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]),
+// REWRITES-X86_64-GNU-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = -0.000000e+00f128;
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = 0.000000e+00f128;
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> = num_complex::Complex {
+// REWRITES-AARCH64-GNU-DAG:                 re: {{__v[0-9]+}},
+// REWRITES-AARCH64-GNU-DAG:                 im: {{__v[0-9]+}},
 // REWRITES-DAG:             };
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = -0.000000e+00f128;
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = 0.000000e+00f128;
 // REWRITES-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// REWRITES-DAG:             comparecl(unsafe { check_long_double_cs_4 }, {{__v[0-9]+}}, {{__v[0-9]+}});
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// REWRITES-X86_64-GNU-DAG:             comparecl(unsafe { check_long_double_cs_4 }, {{__v[0-9]+}}, {{__v[0-9]+}});
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> = unsafe { check_long_double_cs_4 };
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = -0.000000e+00f128;
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = 0.000000e+00f128;
+// REWRITES-AARCH64-GNU-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
 // REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-DAG:             if !({{__v[0-9]+}} != 0) {
 // REWRITES-DAG:                 break;
 // REWRITES-DAG:             }
 // REWRITES-DAG:         }
 // REWRITES-DAG:         loop {
-// REWRITES-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
-// REWRITES-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]),
-// REWRITES-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]),
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// REWRITES-X86_64-GNU-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]),
+// REWRITES-X86_64-GNU-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]),
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = -0.000000e+00f128;
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = -0.000000e+00f128;
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> = num_complex::Complex {
+// REWRITES-AARCH64-GNU-DAG:                 re: {{__v[0-9]+}},
+// REWRITES-AARCH64-GNU-DAG:                 im: {{__v[0-9]+}},
 // REWRITES-DAG:             };
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = -0.000000e+00f128;
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = -0.000000e+00f128;
 // REWRITES-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
-// REWRITES-DAG:             comparecl(unsafe { check_long_double_cs_5 }, {{__v[0-9]+}}, {{__v[0-9]+}});
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
+// REWRITES-X86_64-GNU-DAG:             comparecl(unsafe { check_long_double_cs_5 }, {{__v[0-9]+}}, {{__v[0-9]+}});
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> = unsafe { check_long_double_cs_5 };
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = -0.000000e+00f128;
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = -0.000000e+00f128;
+// REWRITES-AARCH64-GNU-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
 // REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-DAG:             if !({{__v[0-9]+}} != 0) {
 // REWRITES-DAG:                 break;
 // REWRITES-DAG:             }
 // REWRITES-DAG:         }
 // REWRITES-DAG:         loop {
-// REWRITES-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
-// REWRITES-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]),
-// REWRITES-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]),
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// REWRITES-X86_64-GNU-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]),
+// REWRITES-X86_64-GNU-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]),
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = -0.000000e+00f128;
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff8000000000000000000000000000);
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> = num_complex::Complex {
+// REWRITES-AARCH64-GNU-DAG:                 re: {{__v[0-9]+}},
+// REWRITES-AARCH64-GNU-DAG:                 im: {{__v[0-9]+}},
 // REWRITES-DAG:             };
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = -0.000000e+00f128;
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff8000000000000000000000000000);
 // REWRITES-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
-// REWRITES-DAG:             comparecl(unsafe { check_long_double_cs_6 }, {{__v[0-9]+}}, {{__v[0-9]+}});
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
+// REWRITES-X86_64-GNU-DAG:             comparecl(unsafe { check_long_double_cs_6 }, {{__v[0-9]+}}, {{__v[0-9]+}});
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> = unsafe { check_long_double_cs_6 };
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = -0.000000e+00f128;
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff8000000000000000000000000000);
+// REWRITES-AARCH64-GNU-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
 // REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-DAG:             if !({{__v[0-9]+}} != 0) {
 // REWRITES-DAG:                 break;
 // REWRITES-DAG:             }
 // REWRITES-DAG:         }
 // REWRITES-DAG:         loop {
-// REWRITES-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
-// REWRITES-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]),
-// REWRITES-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]),
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// REWRITES-X86_64-GNU-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]),
+// REWRITES-X86_64-GNU-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]),
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = -0.000000e+00f128;
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff0000000000000000000000000000);
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> = num_complex::Complex {
+// REWRITES-AARCH64-GNU-DAG:                 re: {{__v[0-9]+}},
+// REWRITES-AARCH64-GNU-DAG:                 im: {{__v[0-9]+}},
 // REWRITES-DAG:             };
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = -0.000000e+00f128;
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff0000000000000000000000000000);
 // REWRITES-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
-// REWRITES-DAG:             comparecl(unsafe { check_long_double_cs_7 }, {{__v[0-9]+}}, {{__v[0-9]+}});
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
+// REWRITES-X86_64-GNU-DAG:             comparecl(unsafe { check_long_double_cs_7 }, {{__v[0-9]+}}, {{__v[0-9]+}});
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> = unsafe { check_long_double_cs_7 };
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = -0.000000e+00f128;
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff0000000000000000000000000000);
+// REWRITES-AARCH64-GNU-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
 // REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-DAG:             if !({{__v[0-9]+}} != 0) {
 // REWRITES-DAG:                 break;
 // REWRITES-DAG:             }
 // REWRITES-DAG:         }
 // REWRITES-DAG:         loop {
-// REWRITES-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
-// REWRITES-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]),
-// REWRITES-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// REWRITES-X86_64-GNU-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]),
+// REWRITES-X86_64-GNU-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff8000000000000000000000000000);
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = 0.000000e+00f128;
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> = num_complex::Complex {
+// REWRITES-AARCH64-GNU-DAG:                 re: {{__v[0-9]+}},
+// REWRITES-AARCH64-GNU-DAG:                 im: {{__v[0-9]+}},
 // REWRITES-DAG:             };
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff8000000000000000000000000000);
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = 0.000000e+00f128;
 // REWRITES-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// REWRITES-DAG:             comparecl(unsafe { check_long_double_cs_8 }, {{__v[0-9]+}}, {{__v[0-9]+}});
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// REWRITES-X86_64-GNU-DAG:             comparecl(unsafe { check_long_double_cs_8 }, {{__v[0-9]+}}, {{__v[0-9]+}});
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> = unsafe { check_long_double_cs_8 };
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff8000000000000000000000000000);
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = 0.000000e+00f128;
+// REWRITES-AARCH64-GNU-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
 // REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-DAG:             if !({{__v[0-9]+}} != 0) {
 // REWRITES-DAG:                 break;
 // REWRITES-DAG:             }
 // REWRITES-DAG:         }
 // REWRITES-DAG:         loop {
-// REWRITES-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
-// REWRITES-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]),
-// REWRITES-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]),
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// REWRITES-X86_64-GNU-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]),
+// REWRITES-X86_64-GNU-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]),
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff8000000000000000000000000000);
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = -0.000000e+00f128;
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> = num_complex::Complex {
+// REWRITES-AARCH64-GNU-DAG:                 re: {{__v[0-9]+}},
+// REWRITES-AARCH64-GNU-DAG:                 im: {{__v[0-9]+}},
 // REWRITES-DAG:             };
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff8000000000000000000000000000);
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = -0.000000e+00f128;
 // REWRITES-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
-// REWRITES-DAG:             comparecl(unsafe { check_long_double_cs_9 }, {{__v[0-9]+}}, {{__v[0-9]+}});
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
+// REWRITES-X86_64-GNU-DAG:             comparecl(unsafe { check_long_double_cs_9 }, {{__v[0-9]+}}, {{__v[0-9]+}});
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> = unsafe { check_long_double_cs_9 };
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff8000000000000000000000000000);
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = -0.000000e+00f128;
+// REWRITES-AARCH64-GNU-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
 // REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-DAG:             if !({{__v[0-9]+}} != 0) {
 // REWRITES-DAG:                 break;
 // REWRITES-DAG:             }
 // REWRITES-DAG:         }
 // REWRITES-DAG:         loop {
-// REWRITES-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
-// REWRITES-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]),
-// REWRITES-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]),
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// REWRITES-X86_64-GNU-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]),
+// REWRITES-X86_64-GNU-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]),
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff8000000000000000000000000000);
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff8000000000000000000000000000);
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> = num_complex::Complex {
+// REWRITES-AARCH64-GNU-DAG:                 re: {{__v[0-9]+}},
+// REWRITES-AARCH64-GNU-DAG:                 im: {{__v[0-9]+}},
 // REWRITES-DAG:             };
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff8000000000000000000000000000);
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff8000000000000000000000000000);
 // REWRITES-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
-// REWRITES-DAG:             comparecl(unsafe { check_long_double_cs_10 }, {{__v[0-9]+}}, {{__v[0-9]+}});
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
+// REWRITES-X86_64-GNU-DAG:             comparecl(unsafe { check_long_double_cs_10 }, {{__v[0-9]+}}, {{__v[0-9]+}});
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> = unsafe { check_long_double_cs_10 };
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff8000000000000000000000000000);
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff8000000000000000000000000000);
+// REWRITES-AARCH64-GNU-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
 // REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-DAG:             if !({{__v[0-9]+}} != 0) {
 // REWRITES-DAG:                 break;
 // REWRITES-DAG:             }
 // REWRITES-DAG:         }
 // REWRITES-DAG:         loop {
-// REWRITES-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
-// REWRITES-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]),
-// REWRITES-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]),
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// REWRITES-X86_64-GNU-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]),
+// REWRITES-X86_64-GNU-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]),
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff8000000000000000000000000000);
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff0000000000000000000000000000);
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> = num_complex::Complex {
+// REWRITES-AARCH64-GNU-DAG:                 re: {{__v[0-9]+}},
+// REWRITES-AARCH64-GNU-DAG:                 im: {{__v[0-9]+}},
 // REWRITES-DAG:             };
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff8000000000000000000000000000);
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff0000000000000000000000000000);
 // REWRITES-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
-// REWRITES-DAG:             comparecl(unsafe { check_long_double_cs_11 }, {{__v[0-9]+}}, {{__v[0-9]+}});
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
+// REWRITES-X86_64-GNU-DAG:             comparecl(unsafe { check_long_double_cs_11 }, {{__v[0-9]+}}, {{__v[0-9]+}});
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> = unsafe { check_long_double_cs_11 };
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff8000000000000000000000000000);
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff0000000000000000000000000000);
+// REWRITES-AARCH64-GNU-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
 // REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-DAG:             if !({{__v[0-9]+}} != 0) {
 // REWRITES-DAG:                 break;
 // REWRITES-DAG:             }
 // REWRITES-DAG:         }
 // REWRITES-DAG:         loop {
-// REWRITES-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
-// REWRITES-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]),
-// REWRITES-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// REWRITES-X86_64-GNU-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]),
+// REWRITES-X86_64-GNU-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff0000000000000000000000000000);
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = 0.000000e+00f128;
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> = num_complex::Complex {
+// REWRITES-AARCH64-GNU-DAG:                 re: {{__v[0-9]+}},
+// REWRITES-AARCH64-GNU-DAG:                 im: {{__v[0-9]+}},
 // REWRITES-DAG:             };
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff0000000000000000000000000000);
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = 0.000000e+00f128;
 // REWRITES-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// REWRITES-DAG:             comparecl(unsafe { check_long_double_cs_12 }, {{__v[0-9]+}}, {{__v[0-9]+}});
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// REWRITES-X86_64-GNU-DAG:             comparecl(unsafe { check_long_double_cs_12 }, {{__v[0-9]+}}, {{__v[0-9]+}});
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> = unsafe { check_long_double_cs_12 };
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff0000000000000000000000000000);
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = 0.000000e+00f128;
+// REWRITES-AARCH64-GNU-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
 // REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-DAG:             if !({{__v[0-9]+}} != 0) {
 // REWRITES-DAG:                 break;
 // REWRITES-DAG:             }
 // REWRITES-DAG:         }
 // REWRITES-DAG:         loop {
-// REWRITES-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
-// REWRITES-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]),
-// REWRITES-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]),
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// REWRITES-X86_64-GNU-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]),
+// REWRITES-X86_64-GNU-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]),
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff0000000000000000000000000000);
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = -0.000000e+00f128;
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> = num_complex::Complex {
+// REWRITES-AARCH64-GNU-DAG:                 re: {{__v[0-9]+}},
+// REWRITES-AARCH64-GNU-DAG:                 im: {{__v[0-9]+}},
 // REWRITES-DAG:             };
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff0000000000000000000000000000);
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = -0.000000e+00f128;
 // REWRITES-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
-// REWRITES-DAG:             comparecl(unsafe { check_long_double_cs_13 }, {{__v[0-9]+}}, {{__v[0-9]+}});
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
+// REWRITES-X86_64-GNU-DAG:             comparecl(unsafe { check_long_double_cs_13 }, {{__v[0-9]+}}, {{__v[0-9]+}});
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> = unsafe { check_long_double_cs_13 };
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff0000000000000000000000000000);
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = -0.000000e+00f128;
+// REWRITES-AARCH64-GNU-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
 // REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-DAG:             if !({{__v[0-9]+}} != 0) {
 // REWRITES-DAG:                 break;
 // REWRITES-DAG:             }
 // REWRITES-DAG:         }
 // REWRITES-DAG:         loop {
-// REWRITES-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
-// REWRITES-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]),
-// REWRITES-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]),
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// REWRITES-X86_64-GNU-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]),
+// REWRITES-X86_64-GNU-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]),
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff0000000000000000000000000000);
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff8000000000000000000000000000);
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> = num_complex::Complex {
+// REWRITES-AARCH64-GNU-DAG:                 re: {{__v[0-9]+}},
+// REWRITES-AARCH64-GNU-DAG:                 im: {{__v[0-9]+}},
 // REWRITES-DAG:             };
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff0000000000000000000000000000);
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff8000000000000000000000000000);
 // REWRITES-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
-// REWRITES-DAG:             comparecl(unsafe { check_long_double_cs_14 }, {{__v[0-9]+}}, {{__v[0-9]+}});
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
+// REWRITES-X86_64-GNU-DAG:             comparecl(unsafe { check_long_double_cs_14 }, {{__v[0-9]+}}, {{__v[0-9]+}});
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> = unsafe { check_long_double_cs_14 };
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff0000000000000000000000000000);
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff8000000000000000000000000000);
+// REWRITES-AARCH64-GNU-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
 // REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-DAG:             if !({{__v[0-9]+}} != 0) {
 // REWRITES-DAG:                 break;
 // REWRITES-DAG:             }
 // REWRITES-DAG:         }
 // REWRITES-DAG:         loop {
-// REWRITES-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
-// REWRITES-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]),
-// REWRITES-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]),
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// REWRITES-X86_64-GNU-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]),
+// REWRITES-X86_64-GNU-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]),
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff0000000000000000000000000000);
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff0000000000000000000000000000);
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> = num_complex::Complex {
+// REWRITES-AARCH64-GNU-DAG:                 re: {{__v[0-9]+}},
+// REWRITES-AARCH64-GNU-DAG:                 im: {{__v[0-9]+}},
 // REWRITES-DAG:             };
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff0000000000000000000000000000);
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff0000000000000000000000000000);
 // REWRITES-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
-// REWRITES-DAG:             comparecl(unsafe { check_long_double_cs_15 }, {{__v[0-9]+}}, {{__v[0-9]+}});
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
+// REWRITES-X86_64-GNU-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
+// REWRITES-X86_64-GNU-DAG:             comparecl(unsafe { check_long_double_cs_15 }, {{__v[0-9]+}}, {{__v[0-9]+}});
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f128> = unsafe { check_long_double_cs_15 };
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff0000000000000000000000000000);
+// REWRITES-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: f128 = f128::from_bits(0x7fff0000000000000000000000000000);
+// REWRITES-AARCH64-GNU-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
 // REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-DAG:             if !({{__v[0-9]+}} != 0) {
 // REWRITES-DAG:                 break;
@@ -844,11 +1146,11 @@ int main(void) {
 // REWRITES-DAG:     }
 // REWRITES-DAG:     return;
 // REWRITES-DAG: }
-// REWRITES-DAG: fn main() {
+// REWRITES-DAG: fn main() -> std::process::ExitCode {
 // REWRITES-DAG:     check_float();
 // REWRITES-DAG:     check_double();
 // REWRITES-DAG:     check_long_double();
 // REWRITES-DAG:     unsafe { exit(0 as i32) };
-// REWRITES-DAG:     std::process::exit(0 as i32);
+// REWRITES-DAG:     return std::process::ExitCode::SUCCESS;
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

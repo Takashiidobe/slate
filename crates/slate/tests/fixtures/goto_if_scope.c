@@ -38,7 +38,7 @@ print:
 // LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT: fn main() -> std::process::ExitCode {
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut n: i32 = 0;
 // LOWERING-NEXT:     let mut cls: i32 = 0;
@@ -100,10 +100,10 @@ print:
 // LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:                 __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:                 std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:                 return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:             }
 // LOWERING-NEXT:             _ => {
-// LOWERING-NEXT:                 break '{{__dispatch[0-9]+}};
+// LOWERING-NEXT:                 unreachable!();
 // LOWERING-NEXT:             }
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
@@ -129,7 +129,7 @@ print:
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT: fn main() -> std::process::ExitCode {
 // REWRITES-NEXT:     let mut __retval: i32 = 0;
 // REWRITES-NEXT:     let mut n: i32 = 0;
 // REWRITES-NEXT:     let mut cls: i32 = 0;
@@ -141,6 +141,6 @@ print:
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     println!("{}", cls);
 // REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// REWRITES-NEXT:     std::process::exit(__retval as i32);
+// REWRITES-NEXT:     return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

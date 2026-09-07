@@ -58,7 +58,7 @@ int main(void) {
 // LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT: fn main() -> std::process::ExitCode {
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = i32::MAX as i32;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
@@ -126,7 +126,7 @@ int main(void) {
 // LOWERING-NEXT:         )
 // LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:     return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -153,7 +153,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
-// REWRITES-X86_64-GNU-NEXT: fn main() {
+// REWRITES-X86_64-GNU-NEXT: fn main() -> std::process::ExitCode {
 // REWRITES-X86_64-GNU-NEXT:     println!("{}", i32::MAX as i32);
 // REWRITES-X86_64-GNU-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:     println!("{}", 5 as i32);
@@ -191,6 +191,6 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:     ];
 // REWRITES-X86_64-GNU-NEXT:     println!("{} {} {} {}", {{__v[0-9]+}}[0], {{__v[0-9]+}}[1], {{__v[0-9]+}}[2], {{__v[0-9]+}}[3]);
 // REWRITES-X86_64-GNU-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// REWRITES-X86_64-GNU-NEXT:     std::process::exit(0 as i32);
+// REWRITES-X86_64-GNU-NEXT:     return std::process::ExitCode::SUCCESS;
 // REWRITES-X86_64-GNU-NEXT: }
 // SLATE-FILECHECK-END rewrites

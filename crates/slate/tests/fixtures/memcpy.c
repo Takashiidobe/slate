@@ -37,7 +37,7 @@ int main(void) {
 // @lowering-fn-end
 
 // SLATE-FILECHECK-BEGIN lowering
-// LOWERING-DAG: fn main() {
+// LOWERING-DAG: fn main() -> std::process::ExitCode {
 // LOWERING-DAG:     let mut full_src: [u8; 8] = [0; 8];
 // LOWERING-DAG:     let mut full_dst: [u8; 8] = [0; 8];
 // LOWERING-DAG:     let mut partial_src: [u8; 8] = [0; 8];
@@ -207,12 +207,12 @@ int main(void) {
 // LOWERING-AARCH64-GNU-DAG:     let {{__v[0-9]+}}: *mut u8 = b"\n\0".as_ptr() as *mut u8;
 // LOWERING-DAG:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char) };
 // LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-DAG:     return std::process::ExitCode::SUCCESS;
 // LOWERING-DAG: }
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: fn main() {
+// REWRITES-DAG: fn main() -> std::process::ExitCode {
 // REWRITES-DAG:     let mut full_src: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
 // REWRITES-DAG:     let mut full_dst: [u8; 8] = [0; 8];
 // REWRITES-DAG:     let mut partial_src: [u8; 8] = [0; 8];
@@ -275,6 +275,6 @@ int main(void) {
 // REWRITES-DAG:     }
 // REWRITES-DAG:     println!("");
 // REWRITES-DAG:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// REWRITES-DAG:     std::process::exit(0 as i32);
+// REWRITES-DAG:     return std::process::ExitCode::SUCCESS;
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

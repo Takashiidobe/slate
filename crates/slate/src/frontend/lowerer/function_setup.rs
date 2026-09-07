@@ -281,7 +281,12 @@ impl<'a> Lowerer<'a> {
                     .iter()
                     .map(|name| hook_call_stmt(name, &self.unsafe_functions)),
             );
-            (Visibility::Private, None, None, prelude)
+            (
+                Visibility::Private,
+                None,
+                Some(Type::Custom("std::process::ExitCode".into())),
+                prelude,
+            )
         } else {
             let external_def = self.project.emit_pub
                 && (typed_function_is_exported(function)

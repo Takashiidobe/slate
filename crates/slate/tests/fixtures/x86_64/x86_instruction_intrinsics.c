@@ -47,7 +47,7 @@ int main(void) {
 // LOWERING-X86_64-GNU-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // LOWERING-X86_64-GNU-NEXT: }
 // LOWERING-X86_64-GNU-EMPTY:
-// LOWERING-X86_64-GNU-NEXT: fn main() {
+// LOWERING-X86_64-GNU-NEXT: fn main() -> std::process::ExitCode {
 // LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u32 = 0;
 // LOWERING-X86_64-GNU-NEXT:     unsafe {
@@ -75,7 +75,7 @@ int main(void) {
 // LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u64 = unsafe { crc32_probe() };
 // LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
 // LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-X86_64-GNU-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-X86_64-GNU-NEXT:     return std::process::ExitCode::SUCCESS;
 // LOWERING-X86_64-GNU-NEXT: }
 // LOWERING-X86_64-GNU-EMPTY:
 // LOWERING-X86_64-GNU-NEXT: #[target_feature(enable = "popcnt,sse3,sse4.1,sse4.2,ssse3")]
@@ -168,7 +168,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
-// REWRITES-X86_64-GNU-NEXT: fn main() {
+// REWRITES-X86_64-GNU-NEXT: fn main() -> std::process::ExitCode {
 // REWRITES-X86_64-GNU-NEXT:     unsafe {
 // REWRITES-X86_64-GNU-NEXT:         unsafe { __slate_intrinsic_x86_sse2_pause_8e00570d6f1f8c6c() };
 // REWRITES-X86_64-GNU-NEXT:     }
@@ -194,7 +194,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:         )
 // REWRITES-X86_64-GNU-NEXT:     };
 // REWRITES-X86_64-GNU-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// REWRITES-X86_64-GNU-NEXT:     std::process::exit(0 as i32);
+// REWRITES-X86_64-GNU-NEXT:     return std::process::ExitCode::SUCCESS;
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: #[target_feature(enable = "popcnt,sse3,sse4.1,sse4.2,ssse3")]

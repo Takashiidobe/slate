@@ -76,10 +76,12 @@ int main(void) {
 // LOWERING-NEXT:     value: u32,
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: #[cfg(target_arch = "x86_64")]
+// LOWERING-X86_64-GNU-NEXT: #[cfg(target_arch = "x86_64")]
+// LOWERING-AARCH64-GNU-NEXT: #[cfg(target_arch = "aarch64")]
 // LOWERING-NEXT: core::arch::global_asm!(
 // LOWERING-NEXT:     ".weak gnu_pragma_weak_alias\n.set gnu_pragma_weak_alias, gnu_pragma_weak_target",
-// LOWERING-NEXT:     options(att_syntax, raw)
+// LOWERING-X86_64-GNU-NEXT:     options(att_syntax, raw)
+// LOWERING-AARCH64-GNU-NEXT:     options(raw)
 // LOWERING-NEXT: );
 // LOWERING-EMPTY:
 // LOWERING-NEXT: static mut gnu_pragma_inner_macro: i32 = 11;
@@ -108,12 +110,13 @@ int main(void) {
 // LOWERING-NEXT:     return {{__v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT: fn main() -> std::process::ExitCode {
 // LOWERING-NEXT:     let mut packed: GNUPragmaPacked = GNUPragmaPacked { tag: 0, value: 0 };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: GNUPragmaPacked = GNUPragmaPacked { tag: 29, value: 31 };
 // LOWERING-NEXT:     packed = {{__v[0-9]+}};
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d %d %d %d %d %d %d %d\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d %d %d %d %d %d %d %d\n\0".as_ptr() as *mut i8;
+// LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = b"%d %d %d %d %d %d %d %d\n\0".as_ptr() as *mut u8;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 5;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { gnu_pragma_inner_macro };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { gnu_pragma_outer_macro };
@@ -145,7 +148,7 @@ int main(void) {
 // LOWERING-NEXT:         )
 // LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:     return std::process::ExitCode::SUCCESS;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn gnu_pragma_diagnostic() -> i32 {
@@ -211,7 +214,7 @@ int main(void) {
 // REWRITES-NEXT:     19
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT: fn main() -> std::process::ExitCode {
 // REWRITES-NEXT:     let mut packed: GNUPragmaPacked = GNUPragmaPacked { tag: 0, value: 0 };
 // REWRITES-NEXT:     packed = GNUPragmaPacked { tag: 29, value: 31 };
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = c"%d %d %d %d %d %d %d %d\n".as_ptr() as *mut i8;
@@ -242,7 +245,7 @@ int main(void) {
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT:     return std::process::ExitCode::SUCCESS;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn gnu_pragma_diagnostic() -> i32 {

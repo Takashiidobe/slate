@@ -124,7 +124,7 @@ int main(void) {
 // LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT: fn main() -> std::process::ExitCode {
 // LOWERING-X86_64-GNU-NEXT:     let mut parsed: LongDouble = LongDouble([0; 10]);
 // LOWERING-AARCH64-GNU-NEXT:     let mut parsed: f128 = 0.0f128;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
@@ -162,7 +162,7 @@ int main(void) {
 // LOWERING-NEXT:         {{__v[0-9]+}}
 // LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:     return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT: }
 // LOWERING-X86_64-GNU-EMPTY:
 // LOWERING-X86_64-GNU-NEXT: unsafe extern "C" {
@@ -378,7 +378,7 @@ int main(void) {
 // REWRITES-AARCH64-GNU-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // REWRITES-AARCH64-GNU-NEXT: }
 // REWRITES-AARCH64-GNU-EMPTY:
-// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT: fn main() -> std::process::ExitCode {
 // REWRITES-X86_64-GNU-NEXT:     let mut parsed: LongDouble = LongDouble([0; 10]);
 // REWRITES-AARCH64-GNU-NEXT:     let mut parsed: f128 = 0.0f128;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe {
@@ -406,10 +406,10 @@ int main(void) {
 // REWRITES-AARCH64-GNU-NEXT:         {{__v[0-9]+}}
 // REWRITES-NEXT:     };
 // REWRITES-X86_64-GNU-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// REWRITES-X86_64-GNU-NEXT:     std::process::exit(
-// REWRITES-X86_64-GNU-NEXT:         ({{__v[0-9]+}} != 1 || parsed != LongDouble([1, 0, 0, 0, 0, 0, 0, 128, 255, 63])) as i32,
+// REWRITES-X86_64-GNU-NEXT:     return std::process::ExitCode::from(
+// REWRITES-X86_64-GNU-NEXT:         (({{__v[0-9]+}} != 1 || parsed != LongDouble([1, 0, 0, 0, 0, 0, 0, 128, 255, 63])) as i32) as u8,
 // REWRITES-X86_64-GNU-NEXT:     );
-// REWRITES-AARCH64-GNU-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// REWRITES-AARCH64-GNU-NEXT:     return std::process::ExitCode::from(({{__v[0-9]+}} as i32) as u8);
 // REWRITES-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: unsafe extern "C" {

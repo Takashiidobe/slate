@@ -46,7 +46,7 @@ int main() {
 // LOWERING-NEXT:     fn exit(_0: i32) -> !;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT: fn main() -> std::process::ExitCode {
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     {
 // LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(x)) };
@@ -59,7 +59,7 @@ int main() {
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     unsafe { exit({{__v[0-9]+}} as i32) };
-// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:     return std::process::ExitCode::SUCCESS;
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -84,7 +84,7 @@ int main() {
 // REWRITES-NEXT:     fn exit(_0: i32) -> !;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT: fn main() -> std::process::ExitCode {
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(x)) };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == 2;
 // REWRITES-NEXT:     if {{__v[0-9]+}} {
@@ -92,6 +92,6 @@ int main() {
 // REWRITES-NEXT:         unsafe { not_defined() };
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     unsafe { exit(0 as i32) };
-// REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT:     return std::process::ExitCode::SUCCESS;
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

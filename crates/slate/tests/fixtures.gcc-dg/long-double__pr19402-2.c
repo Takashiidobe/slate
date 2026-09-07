@@ -55,7 +55,7 @@ int main() {
 // @lowering-fn-end
 
 // SLATE-FILECHECK-BEGIN lowering
-// LOWERING-DAG: fn main() {
+// LOWERING-DAG: fn main() -> std::process::ExitCode {
 // LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-DAG:     {
 // LOWERING-DAG:         let {{__v[0-9]+}}: f64 = 1.0;
@@ -81,11 +81,14 @@ int main() {
 // LOWERING-DAG:     }
 // LOWERING-DAG:     {
 // LOWERING-DAG:         let {{__v[0-9]+}}: f64 = 1.0;
-// LOWERING-DAG:         let {{__v[0-9]+}}: LongDouble = __slate_f80_from_f64({{__v[0-9]+}});
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: LongDouble = __slate_f80_from_f64({{__v[0-9]+}});
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: f128 = {{__v[0-9]+}} as f128;
 // LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 5;
-// LOWERING-DAG:         let {{__v[0-9]+}}: LongDouble = unsafe { __slate_f80_powi({{__v[0-9]+}}, {{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: LongDouble = unsafe { __slate_f80_powi({{__v[0-9]+}}, {{__v[0-9]+}}) };
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: f128 = unsafe { __slate_intrinsic_powi_91673e5e838b1169({{__v[0-9]+}}, {{__v[0-9]+}}) };
 // LOWERING-DAG:         let {{__v[0-9]+}}: f64 = 1.0;
-// LOWERING-DAG:         let {{__v[0-9]+}}: LongDouble = __slate_f80_from_f64({{__v[0-9]+}});
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: LongDouble = __slate_f80_from_f64({{__v[0-9]+}});
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: f128 = {{__v[0-9]+}} as f128;
 // LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
 // LOWERING-DAG:         if {{__v[0-9]+}} {
 // LOWERING-DAG:             unsafe { abort() };
@@ -113,10 +116,13 @@ int main() {
 // LOWERING-DAG:     }
 // LOWERING-DAG:     {
 // LOWERING-DAG:         let {{__v[0-9]+}}: f64 = 1.0;
-// LOWERING-DAG:         let {{__v[0-9]+}}: LongDouble = __slate_f80_from_f64({{__v[0-9]+}});
-// LOWERING-DAG:         let {{__v[0-9]+}}: LongDouble = powcil({{__v[0-9]+}});
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: LongDouble = __slate_f80_from_f64({{__v[0-9]+}});
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: LongDouble = powcil({{__v[0-9]+}});
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: f128 = {{__v[0-9]+}} as f128;
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: f128 = powcil({{__v[0-9]+}});
 // LOWERING-DAG:         let {{__v[0-9]+}}: f64 = 1.0;
-// LOWERING-DAG:         let {{__v[0-9]+}}: LongDouble = __slate_f80_from_f64({{__v[0-9]+}});
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: LongDouble = __slate_f80_from_f64({{__v[0-9]+}});
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: f128 = {{__v[0-9]+}} as f128;
 // LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
 // LOWERING-DAG:         if {{__v[0-9]+}} {
 // LOWERING-DAG:             unsafe { abort() };
@@ -146,11 +152,14 @@ int main() {
 // LOWERING-DAG:     }
 // LOWERING-DAG:     {
 // LOWERING-DAG:         let {{__v[0-9]+}}: f64 = 1.0;
-// LOWERING-DAG:         let {{__v[0-9]+}}: LongDouble = __slate_f80_from_f64({{__v[0-9]+}});
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: LongDouble = __slate_f80_from_f64({{__v[0-9]+}});
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: f128 = {{__v[0-9]+}} as f128;
 // LOWERING-DAG:         let {{__v[0-9]+}}: i32 = -5;
-// LOWERING-DAG:         let {{__v[0-9]+}}: LongDouble = powil({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: LongDouble = powil({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: f128 = powil({{__v[0-9]+}}, {{__v[0-9]+}});
 // LOWERING-DAG:         let {{__v[0-9]+}}: f64 = 1.0;
-// LOWERING-DAG:         let {{__v[0-9]+}}: LongDouble = __slate_f80_from_f64({{__v[0-9]+}});
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: LongDouble = __slate_f80_from_f64({{__v[0-9]+}});
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: f128 = {{__v[0-9]+}} as f128;
 // LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
 // LOWERING-DAG:         if {{__v[0-9]+}} {
 // LOWERING-DAG:             unsafe { abort() };
@@ -177,21 +186,23 @@ int main() {
 // LOWERING-DAG:     }
 // LOWERING-DAG:     {
 // LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 1;
-// LOWERING-DAG:         let {{__v[0-9]+}}: LongDouble = powicl({{__v[0-9]+}});
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: LongDouble = powicl({{__v[0-9]+}});
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: f128 = powicl({{__v[0-9]+}});
 // LOWERING-DAG:         let {{__v[0-9]+}}: f64 = 2.0;
-// LOWERING-DAG:         let {{__v[0-9]+}}: LongDouble = __slate_f80_from_f64({{__v[0-9]+}});
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: LongDouble = __slate_f80_from_f64({{__v[0-9]+}});
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: f128 = {{__v[0-9]+}} as f128;
 // LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
 // LOWERING-DAG:         if {{__v[0-9]+}} {
 // LOWERING-DAG:             unsafe { abort() };
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
 // LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-DAG:     return std::process::ExitCode::SUCCESS;
 // LOWERING-DAG: }
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: fn main() {
+// REWRITES-DAG: fn main() -> std::process::ExitCode {
 // REWRITES-DAG:     let {{__v[0-9]+}}: f64 = unsafe { __slate_intrinsic_powi_25635816560c9105(1.0 as f64, 5 as i32) };
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 1.0;
 // REWRITES-DAG:     if {{__v[0-9]+}} {
@@ -203,10 +214,13 @@ int main() {
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_f64(1.0 as f64);
-// REWRITES-DAG:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_f80_powi({{__v[0-9]+}}, 5 as i32) };
-// REWRITES-DAG:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_f64(1.0 as f64);
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-X86_64-GNU-DAG:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_f64(1.0 as f64);
+// REWRITES-X86_64-GNU-DAG:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_f80_powi({{__v[0-9]+}}, 5 as i32) };
+// REWRITES-X86_64-GNU-DAG:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_f64(1.0 as f64);
+// REWRITES-X86_64-GNU-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-AARCH64-GNU-DAG:     let {{__v[0-9]+}}: f128 =
+// REWRITES-AARCH64-GNU-DAG:         unsafe { __slate_intrinsic_powi_91673e5e838b1169((1.0 as f64) as f128, 5 as i32) };
+// REWRITES-AARCH64-GNU-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != ((1.0 as f64) as f128);
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
@@ -220,10 +234,12 @@ int main() {
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_f64(1.0 as f64);
-// REWRITES-DAG:     let {{__v[0-9]+}}: LongDouble = powcil({{__v[0-9]+}});
-// REWRITES-DAG:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_f64(1.0 as f64);
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-X86_64-GNU-DAG:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_f64(1.0 as f64);
+// REWRITES-X86_64-GNU-DAG:     let {{__v[0-9]+}}: LongDouble = powcil({{__v[0-9]+}});
+// REWRITES-X86_64-GNU-DAG:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_f64(1.0 as f64);
+// REWRITES-X86_64-GNU-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-AARCH64-GNU-DAG:     let {{__v[0-9]+}}: f128 = powcil((1.0 as f64) as f128);
+// REWRITES-AARCH64-GNU-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != ((1.0 as f64) as f128);
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
@@ -237,10 +253,12 @@ int main() {
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_f64(1.0 as f64);
-// REWRITES-DAG:     let {{__v[0-9]+}}: LongDouble = powil({{__v[0-9]+}}, -5);
-// REWRITES-DAG:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_f64(1.0 as f64);
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-X86_64-GNU-DAG:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_f64(1.0 as f64);
+// REWRITES-X86_64-GNU-DAG:     let {{__v[0-9]+}}: LongDouble = powil({{__v[0-9]+}}, -5);
+// REWRITES-X86_64-GNU-DAG:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_f64(1.0 as f64);
+// REWRITES-X86_64-GNU-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-AARCH64-GNU-DAG:     let {{__v[0-9]+}}: f128 = powil((1.0 as f64) as f128, -5);
+// REWRITES-AARCH64-GNU-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != ((1.0 as f64) as f128);
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
@@ -254,12 +272,14 @@ int main() {
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{__v[0-9]+}}: LongDouble = powicl(1);
-// REWRITES-DAG:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_f64(2.0 as f64);
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-X86_64-GNU-DAG:     let {{__v[0-9]+}}: LongDouble = powicl(1);
+// REWRITES-X86_64-GNU-DAG:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_f64(2.0 as f64);
+// REWRITES-X86_64-GNU-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-AARCH64-GNU-DAG:     let {{__v[0-9]+}}: f128 = powicl(1);
+// REWRITES-AARCH64-GNU-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != ((2.0 as f64) as f128);
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
-// REWRITES-DAG:     std::process::exit(0 as i32);
+// REWRITES-DAG:     return std::process::ExitCode::SUCCESS;
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

@@ -39,7 +39,7 @@ int main(int argc, char **argv) {
 // LOWERING-NEXT:     return;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT: fn main() -> std::process::ExitCode {
 // LOWERING-NEXT:     let mut __slate_argv_storage: Vec<std::ffi::CString> = std::env::args()
 // LOWERING-NEXT:         .map(|arg| std::ffi::CString::new(arg).unwrap())
 // LOWERING-NEXT:         .collect();
@@ -70,7 +70,7 @@ int main(int argc, char **argv) {
 // LOWERING-NEXT:             __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:             cleanup();
-// LOWERING-NEXT:             std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:             return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
 // LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"main ran\n\0".as_ptr() as *mut i8;
@@ -80,7 +80,7 @@ int main(int argc, char **argv) {
 // LOWERING-NEXT:     __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     cleanup();
-// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:     return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -109,7 +109,7 @@ int main(int argc, char **argv) {
 // REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT: fn main() -> std::process::ExitCode {
 // REWRITES-NEXT:     let mut __slate_argv_storage: Vec<std::ffi::CString> = std::env::args()
 // REWRITES-NEXT:         .map(|arg| std::ffi::CString::new(arg).unwrap())
 // REWRITES-NEXT:         .collect();
@@ -131,13 +131,13 @@ int main(int argc, char **argv) {
 // REWRITES-NEXT:         __retval = 7;
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = __retval;
 // REWRITES-NEXT:         cleanup();
-// REWRITES-NEXT:         std::process::exit({{__v[0-9]+}} as i32);
+// REWRITES-NEXT:         return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     println!("main ran");
 // REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     __retval = 0;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = __retval;
 // REWRITES-NEXT:     cleanup();
-// REWRITES-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// REWRITES-NEXT:     return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

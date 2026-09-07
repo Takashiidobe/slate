@@ -30,7 +30,7 @@ int use_it(int *a, int *b) { return *a / *b; }
 // LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT: fn main() -> std::process::ExitCode {
 // LOWERING-NEXT:     let mut x: i32 = 0;
 // LOWERING-NEXT:     let mut y: i32 = 0;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
@@ -43,7 +43,7 @@ int use_it(int *a, int *b) { return *a / *b; }
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { use_it(std::ptr::addr_of_mut!(x), std::ptr::addr_of_mut!(y)) };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:     return std::process::ExitCode::SUCCESS;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: unsafe fn use_it({{arg[0-9]+}}: *mut i32, {{arg[0-9]+}}: *mut i32) -> i32 {
@@ -73,14 +73,14 @@ int use_it(int *a, int *b) { return *a / *b; }
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT: fn main() -> std::process::ExitCode {
 // REWRITES-NEXT:     let mut x: i32 = 6;
 // REWRITES-NEXT:     let mut y: i32 = 2;
 // REWRITES-NEXT:     println!("{}", unsafe {
 // REWRITES-NEXT:         use_it(std::ptr::addr_of_mut!(x), std::ptr::addr_of_mut!(y))
 // REWRITES-NEXT:     });
 // REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT:     return std::process::ExitCode::SUCCESS;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe fn use_it({{arg[0-9]+}}: *mut i32, {{arg[0-9]+}}: *mut i32) -> i32 {

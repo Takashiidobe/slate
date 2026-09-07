@@ -138,7 +138,7 @@ int main(void) {
 // LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT: fn main() -> std::process::ExitCode {
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex { re: 1.0, im: 2.0 };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex { re: 3.0, im: 4.0 };
@@ -189,7 +189,7 @@ int main(void) {
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}) };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:     return std::process::ExitCode::SUCCESS;
 // LOWERING-NEXT: }
 // LOWERING-X86_64-GNU-EMPTY:
 // LOWERING-X86_64-GNU-NEXT: unsafe extern "C" {
@@ -401,13 +401,16 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             }
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:     }
-// REWRITES-X86_64-GNU-NEXT: }
-// REWRITES-X86_64-GNU-EMPTY:
-// REWRITES-NEXT: unsafe extern "C" {
-// REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
+// REWRITES-AARCH64-GNU-NEXT: unsafe extern "C" {
+// REWRITES-AARCH64-GNU-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-X86_64-GNU-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
+// REWRITES-AARCH64-GNU-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn main() -> std::process::ExitCode {
 // REWRITES-NEXT:     let {{__v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex { re: 1.0, im: 2.0 };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex { re: 3.0, im: 4.0 };
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
@@ -417,18 +420,18 @@ int main(void) {
 // REWRITES-AARCH64-GNU-NEXT:         re: 5.000000e+00f128,
 // REWRITES-AARCH64-GNU-NEXT:         im: 6.000000e+00f128,
 // REWRITES-NEXT:     };
-// REWRITES-X86_64-GNU-NEXT:     println!(
-// REWRITES-X86_64-GNU-NEXT:         "{} {}",
-// REWRITES-X86_64-GNU-NEXT:         ({{__v[0-9]+}} == num_complex::Complex { re: 1.0, im: 2.0 }) as i32,
-// REWRITES-X86_64-GNU-NEXT:         ({{__v[0-9]+}} != num_complex::Complex { re: 1.0, im: 3.0 }) as i32
-// REWRITES-X86_64-GNU-NEXT:     );
-// REWRITES-X86_64-GNU-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// REWRITES-X86_64-GNU-NEXT:     println!(
-// REWRITES-X86_64-GNU-NEXT:         "{} {}",
-// REWRITES-X86_64-GNU-NEXT:         ({{__v[0-9]+}} == num_complex::Complex { re: 3.0, im: 4.0 }) as i32,
-// REWRITES-X86_64-GNU-NEXT:         ({{__v[0-9]+}} != num_complex::Complex { re: 3.0, im: 5.0 }) as i32
-// REWRITES-X86_64-GNU-NEXT:     );
-// REWRITES-X86_64-GNU-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     println!(
+// REWRITES-NEXT:         "{} {}",
+// REWRITES-NEXT:         ({{__v[0-9]+}} == num_complex::Complex { re: 1.0, im: 2.0 }) as i32,
+// REWRITES-NEXT:         ({{__v[0-9]+}} != num_complex::Complex { re: 1.0, im: 3.0 }) as i32
+// REWRITES-NEXT:     );
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     println!(
+// REWRITES-NEXT:         "{} {}",
+// REWRITES-NEXT:         ({{__v[0-9]+}} == num_complex::Complex { re: 3.0, im: 4.0 }) as i32,
+// REWRITES-NEXT:         ({{__v[0-9]+}} != num_complex::Complex { re: 3.0, im: 5.0 }) as i32
+// REWRITES-NEXT:     );
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:     println!(
 // REWRITES-X86_64-GNU-NEXT:         "{} {}",
 // REWRITES-X86_64-GNU-NEXT:         ({{__v[0-9]+}}
@@ -442,21 +445,6 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 224, 1, 64])
 // REWRITES-X86_64-GNU-NEXT:             }) as i32
 // REWRITES-X86_64-GNU-NEXT:     );
-// REWRITES-X86_64-GNU-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// REWRITES-AARCH64-GNU-NEXT:     unsafe {
-// REWRITES-AARCH64-GNU-NEXT:         printf(
-// REWRITES-AARCH64-GNU-NEXT:             c"%d %d\n".as_ptr(),
-// REWRITES-AARCH64-GNU-NEXT:             ({{__v[0-9]+}} == num_complex::Complex { re: 1.0, im: 2.0 }) as i32,
-// REWRITES-AARCH64-GNU-NEXT:             ({{__v[0-9]+}} != num_complex::Complex { re: 1.0, im: 3.0 }) as i32,
-// REWRITES-AARCH64-GNU-NEXT:         )
-// REWRITES-AARCH64-GNU-NEXT:     };
-// REWRITES-AARCH64-GNU-NEXT:     unsafe {
-// REWRITES-AARCH64-GNU-NEXT:         printf(
-// REWRITES-AARCH64-GNU-NEXT:             c"%d %d\n".as_ptr(),
-// REWRITES-AARCH64-GNU-NEXT:             ({{__v[0-9]+}} == num_complex::Complex { re: 3.0, im: 4.0 }) as i32,
-// REWRITES-AARCH64-GNU-NEXT:             ({{__v[0-9]+}} != num_complex::Complex { re: 3.0, im: 5.0 }) as i32,
-// REWRITES-AARCH64-GNU-NEXT:         )
-// REWRITES-AARCH64-GNU-NEXT:     };
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = c"%d %d\n".as_ptr() as *mut u8;
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: num_complex::Complex<f128> = num_complex::Complex {
 // REWRITES-AARCH64-GNU-NEXT:         re: 5.000000e+00f128,
@@ -467,6 +455,7 @@ int main(void) {
 // REWRITES-AARCH64-GNU-NEXT:         re: 5.000000e+00f128,
 // REWRITES-AARCH64-GNU-NEXT:         im: 7.000000e+00f128,
 // REWRITES-AARCH64-GNU-NEXT:     };
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-AARCH64-GNU-NEXT:     unsafe {
 // REWRITES-AARCH64-GNU-NEXT:         printf(
 // REWRITES-AARCH64-GNU-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
@@ -474,7 +463,8 @@ int main(void) {
 // REWRITES-AARCH64-GNU-NEXT:             ({{__v[0-9]+}} != {{__v[0-9]+}}) as i32,
 // REWRITES-AARCH64-GNU-NEXT:         )
 // REWRITES-AARCH64-GNU-NEXT:     };
-// REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-AARCH64-GNU-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// REWRITES-NEXT:     return std::process::ExitCode::SUCCESS;
 // REWRITES-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: unsafe extern "C" {

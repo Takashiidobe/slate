@@ -44,7 +44,7 @@ int main(void) {
 // LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT: fn main() -> std::process::ExitCode {
 // LOWERING-NEXT:     let mut conditional: Conditional = Conditional { ctx: {{_unnamed_at_[0-9A-Za-z_]+}}::IN_THEN };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: Conditional = Conditional { ctx: {{_unnamed_at_[0-9A-Za-z_]+}}::IN_THEN };
@@ -57,7 +57,7 @@ int main(void) {
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 4;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}) };
-// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:     return std::process::ExitCode::SUCCESS;
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -95,13 +95,13 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT: fn main() -> std::process::ExitCode {
 // REWRITES-NEXT:     let mut conditional: Conditional = Conditional { ctx: {{_unnamed_at_[0-9A-Za-z_]+}}::IN_THEN };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: Conditional = Conditional { ctx: {{_unnamed_at_[0-9A-Za-z_]+}}::IN_THEN };
 // REWRITES-NEXT:     conditional = {{__v[0-9]+}};
 // REWRITES-NEXT:     conditional.ctx = {{_unnamed_at_[0-9A-Za-z_]+}}::IN_ELSE;
 // REWRITES-NEXT:     println!("{} {}", (conditional.ctx as u32) as i32, 4 as i32);
 // REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT:     return std::process::ExitCode::SUCCESS;
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

@@ -47,7 +47,7 @@ int main(void) {
 // LOWERING-NEXT:     return {{__v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT: fn main() -> std::process::ExitCode {
 // LOWERING-NEXT:     let mut entry: pw_entry = pw_entry {
 // LOWERING-NEXT:         pw_name: std::ptr::null_mut(),
 // LOWERING-NEXT:     };
@@ -70,7 +70,7 @@ int main(void) {
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 1;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = if {{__v[0-9]+}} { {{__v[0-9]+}} } else { {{__v[0-9]+}} };
-// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:     return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -104,7 +104,7 @@ int main(void) {
 // REWRITES-NEXT:     unsafe { (*{{arg[0-9]+}}).pw_name }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT: fn main() -> std::process::ExitCode {
 // REWRITES-NEXT:     let mut entry: pw_entry = pw_entry {
 // REWRITES-NEXT:         pw_name: std::ptr::null_mut(),
 // REWRITES-NEXT:     };
@@ -116,6 +116,6 @@ int main(void) {
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 1;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = if {{__v[0-9]+}} == 0 { {{__v[0-9]+}} } else { {{__v[0-9]+}} };
-// REWRITES-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// REWRITES-NEXT:     return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

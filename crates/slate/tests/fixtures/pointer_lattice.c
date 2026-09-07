@@ -51,7 +51,7 @@ int main(void) {
 // LOWERING-NEXT:     fn free(_0: *mut core::ffi::c_void);
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT: fn main() -> std::process::ExitCode {
 // LOWERING-NEXT:     let mut a: i32 = 0;
 // LOWERING-NEXT:     let mut b: i32 = 0;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
@@ -76,7 +76,7 @@ int main(void) {
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = a;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
-// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:     return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn bump({{arg[0-9]+}}: *mut i32) {
@@ -131,7 +131,7 @@ int main(void) {
 // REWRITES-NEXT:     fn free(_0: *mut core::ffi::c_void);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT: fn main() -> std::process::ExitCode {
 // REWRITES-NEXT:     let mut a: i32 = 1;
 // REWRITES-NEXT:     let mut b: i32 = 0;
 // REWRITES-NEXT:     bump(unsafe { &mut (*std::ptr::addr_of_mut!(a)) });
@@ -145,7 +145,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = use_and_free({{__v[0-9]+}});
 // REWRITES-NEXT:     println!("{} {} {}", a, {{__v[0-9]+}}, {{__v[0-9]+}});
 // REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// REWRITES-NEXT:     std::process::exit((a + {{__v[0-9]+}} + {{__v[0-9]+}}) as i32);
+// REWRITES-NEXT:     return std::process::ExitCode::from((a + {{__v[0-9]+}} + {{__v[0-9]+}}) as u8);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn bump({{arg[0-9]+}}: &mut i32) {

@@ -39,7 +39,7 @@ int main(void) {
 // LOWERING-NEXT:     fn strlen(_0: *const core::ffi::c_char) -> usize;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT: fn main() -> std::process::ExitCode {
 // LOWERING-NEXT:     let mut bytes: [u8; 3] = [0; 3];
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: [u8; 3] = [195, 169, 0];
@@ -51,7 +51,7 @@ int main(void) {
 // LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = b"%d\n\0".as_ptr() as *mut u8;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:     return std::process::ExitCode::SUCCESS;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn first_byte({{arg[0-9]+}}: *mut u8, {{arg[0-9]+}}: i32) -> i32 {
@@ -115,13 +115,13 @@ int main(void) {
 // REWRITES-NEXT:     fn strlen(_0: *const core::ffi::c_char) -> usize;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT: fn main() -> std::process::ExitCode {
 // REWRITES-NEXT:     let mut bytes: [u8; 3] = [0; 3];
 // REWRITES-NEXT:     bytes = [195, 169, 0];
 // REWRITES-NEXT:     let {{__v[0-9]+}}: *mut u8 = bytes.as_mut_ptr() as *mut u8;
 // REWRITES-NEXT:     println!("{}", first_byte({{__v[0-9]+}}, 1));
 // REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT:     return std::process::ExitCode::SUCCESS;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn first_byte({{arg[0-9]+}}: *mut u8, {{arg[0-9]+}}: i32) -> i32 {

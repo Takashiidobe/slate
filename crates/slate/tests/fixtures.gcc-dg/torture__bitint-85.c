@@ -51,7 +51,7 @@ int main() {
 // LOWERING-DAG:     }
 // LOWERING-DAG:     return;
 // LOWERING-DAG: }
-// LOWERING-DAG: fn main() {
+// LOWERING-DAG: fn main() -> std::process::ExitCode {
 // LOWERING-DAG:     let mut x: aligned::Aligned<aligned::A8, bitint::BInt<1024, 16, 128>> =
 // LOWERING-DAG:         aligned::Aligned(bitint::BInt::<1024, 16, 128>::ZERO);
 // LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
@@ -59,7 +59,7 @@ int main() {
 // LOWERING-DAG:     foo({{__v[0-9]+}}, std::ptr::addr_of_mut!(*x));
 // LOWERING-DAG:     let {{__v[0-9]+}}: bitint::BInt<1024, 16, 128> = *x;
 // LOWERING-DAG:     bar({{__v[0-9]+}});
-// LOWERING-DAG:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-DAG:     return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-DAG: }
 // SLATE-FILECHECK-END lowering
 
@@ -74,11 +74,11 @@ int main() {
 // REWRITES-DAG:     }
 // REWRITES-DAG:     return;
 // REWRITES-DAG: }
-// REWRITES-DAG: fn main() {
+// REWRITES-DAG: fn main() -> std::process::ExitCode {
 // REWRITES-DAG:     let mut x: aligned::Aligned<aligned::A8, bitint::BInt<1024, 16, 128>> =
 // REWRITES-DAG:         aligned::Aligned(bitint::BInt::<1024, 16, 128>::ZERO);
 // REWRITES-DAG:     foo(unsafe { *d }, unsafe { &mut (*std::ptr::addr_of_mut!(*x)) });
 // REWRITES-DAG:     bar(*x);
-// REWRITES-DAG:     std::process::exit(0 as i32);
+// REWRITES-DAG:     return std::process::ExitCode::SUCCESS;
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

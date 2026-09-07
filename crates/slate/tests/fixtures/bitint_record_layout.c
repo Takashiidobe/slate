@@ -47,24 +47,29 @@ int main(void) {
 // LOWERING-NEXT: #[derive(Clone, Copy)]
 // LOWERING-NEXT: union BitIntOrArray {
 // LOWERING-NEXT:     bits: bitint::BInt<65, 2, 16>,
-// LOWERING-NEXT:     bytes: [i8; 20],
+// LOWERING-X86_64-GNU-NEXT:     bytes: [i8; 20],
+// LOWERING-AARCH64-GNU-NEXT:     bytes: [u8; 20],
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[derive(Clone, Copy)]
 // LOWERING-NEXT: struct NestedBitInt {
-// LOWERING-NEXT:     tag: i8,
-// LOWERING-NEXT:     __pad_1: [u8; 7],
+// LOWERING-X86_64-GNU-NEXT:     tag: i8,
+// LOWERING-X86_64-GNU-NEXT:     __pad_1: [u8; 7],
+// LOWERING-AARCH64-GNU-NEXT:     tag: u8,
+// LOWERING-AARCH64-GNU-NEXT:     __pad_1: [u8; 15],
 // LOWERING-NEXT:     inner: {{anon_[0-9]+}},
+// LOWERING-AARCH64-GNU-NEXT:     __pad_2: [u8; 8],
 // LOWERING-NEXT:     tail: i16,
-// LOWERING-NEXT:     __pad_2: [u8; 6],
+// LOWERING-X86_64-GNU-NEXT:     __pad_2: [u8; 6],
+// LOWERING-AARCH64-GNU-NEXT:     __pad_3: [u8; 14],
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[derive(Clone, Copy)]
 // LOWERING-NEXT: struct {{anon_[0-9]+}} {
 // LOWERING-NEXT:     prefix: i32,
-// LOWERING-NEXT:     __pad_1: [u8; 4],
+// LOWERING-X86_64-GNU-NEXT:     __pad_1: [u8; 4],
 // LOWERING-NEXT:     value: bitint::BInt<65, 2, 16>,
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
@@ -74,22 +79,28 @@ int main(void) {
 // LOWERING-NEXT:         inner: {{anon_[0-9]+}} {
 // LOWERING-NEXT:             prefix: 2,
 // LOWERING-NEXT:             value: bitint::BInt::<65, 2, 16>::from_decimal_str("333"),
-// LOWERING-NEXT:             __pad_1: [0; 4],
+// LOWERING-X86_64-GNU-NEXT:             __pad_1: [0; 4],
 // LOWERING-NEXT:         },
 // LOWERING-NEXT:         tail: 4,
-// LOWERING-NEXT:         __pad_1: [0; 7],
-// LOWERING-NEXT:         __pad_2: [0; 6],
+// LOWERING-X86_64-GNU-NEXT:         __pad_1: [0; 7],
+// LOWERING-X86_64-GNU-NEXT:         __pad_2: [0; 6],
+// LOWERING-AARCH64-GNU-NEXT:         __pad_1: [0; 15],
+// LOWERING-AARCH64-GNU-NEXT:         __pad_2: [0; 8],
+// LOWERING-AARCH64-GNU-NEXT:         __pad_3: [0; 14],
 // LOWERING-NEXT:     },
 // LOWERING-NEXT:     NestedBitInt {
 // LOWERING-NEXT:         tag: 5,
 // LOWERING-NEXT:         inner: {{anon_[0-9]+}} {
 // LOWERING-NEXT:             prefix: 6,
 // LOWERING-NEXT:             value: bitint::BInt::<65, 2, 16>::from_decimal_str("777"),
-// LOWERING-NEXT:             __pad_1: [0; 4],
+// LOWERING-X86_64-GNU-NEXT:             __pad_1: [0; 4],
 // LOWERING-NEXT:         },
 // LOWERING-NEXT:         tail: 8,
-// LOWERING-NEXT:         __pad_1: [0; 7],
-// LOWERING-NEXT:         __pad_2: [0; 6],
+// LOWERING-X86_64-GNU-NEXT:         __pad_1: [0; 7],
+// LOWERING-X86_64-GNU-NEXT:         __pad_2: [0; 6],
+// LOWERING-AARCH64-GNU-NEXT:         __pad_1: [0; 15],
+// LOWERING-AARCH64-GNU-NEXT:         __pad_2: [0; 8],
+// LOWERING-AARCH64-GNU-NEXT:         __pad_3: [0; 14],
 // LOWERING-NEXT:     },
 // LOWERING-NEXT: ]);
 // LOWERING-EMPTY:
@@ -97,20 +108,27 @@ int main(void) {
 // LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut item: BitIntOrArray = unsafe { std::mem::zeroed::<BitIntOrArray>() };
+// LOWERING-NEXT: fn main() -> std::process::ExitCode {
+// LOWERING-X86_64-GNU-NEXT:     let mut item: BitIntOrArray = unsafe { std::mem::zeroed::<BitIntOrArray>() };
+// LOWERING-AARCH64-GNU-NEXT:     let mut item: aligned::Aligned<aligned::A16, BitIntOrArray> =
+// LOWERING-AARCH64-GNU-NEXT:         aligned::Aligned(unsafe { std::mem::zeroed::<BitIntOrArray>() });
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: BitIntOrArray = BitIntOrArray {
 // LOWERING-NEXT:         bytes: [
 // LOWERING-NEXT:             97, 98, 99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 // LOWERING-NEXT:         ],
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     item = {{__v[0-9]+}};
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%zu %zu %d %d %lld %d %c%c%c\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = 24;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = 40;
+// LOWERING-X86_64-GNU-NEXT:     item = {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%zu %zu %d %d %lld %d %c%c%c\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u64 = 24;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u64 = 40;
+// LOWERING-AARCH64-GNU-NEXT:     *item = {{__v[0-9]+}};
+// LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = b"%zu %zu %d %d %lld %d %c%c%c\n\0".as_ptr() as *mut u8;
+// LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: u64 = 32;
+// LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: u64 = 64;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = 1;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i8 = unsafe { (*values)[({{__v[0-9]+}} as usize)].tag };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i8 = unsafe { (*values)[({{__v[0-9]+}} as usize)].tag };
+// LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: u8 = unsafe { (*values)[({{__v[0-9]+}} as usize)].tag };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = 1;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { (*values)[({{__v[0-9]+}} as usize)].inner.prefix };
@@ -121,13 +139,16 @@ int main(void) {
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i16 = unsafe { (*values)[({{__v[0-9]+}} as usize)].tail };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = 0;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i8 = unsafe { item.bytes[({{__v[0-9]+}} as usize)] };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i8 = unsafe { item.bytes[({{__v[0-9]+}} as usize)] };
+// LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: u8 = unsafe { item.bytes[({{__v[0-9]+}} as usize)] };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = 1;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i8 = unsafe { item.bytes[({{__v[0-9]+}} as usize)] };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i8 = unsafe { item.bytes[({{__v[0-9]+}} as usize)] };
+// LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: u8 = unsafe { item.bytes[({{__v[0-9]+}} as usize)] };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = 2;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i8 = unsafe { item.bytes[({{__v[0-9]+}} as usize)] };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i8 = unsafe { item.bytes[({{__v[0-9]+}} as usize)] };
+// LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: u8 = unsafe { item.bytes[({{__v[0-9]+}} as usize)] };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe {
 // LOWERING-NEXT:         printf(
@@ -144,7 +165,7 @@ int main(void) {
 // LOWERING-NEXT:         )
 // LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:     return std::process::ExitCode::SUCCESS;
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -232,7 +253,7 @@ int main(void) {
 // REWRITES-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT: fn main() -> std::process::ExitCode {
 // REWRITES-X86_64-GNU-NEXT:     let mut item: BitIntOrArray = unsafe { std::mem::zeroed::<BitIntOrArray>() };
 // REWRITES-X86_64-GNU-NEXT:     item = BitIntOrArray {
 // REWRITES-AARCH64-GNU-NEXT:     let mut item: aligned::Aligned<aligned::A16, BitIntOrArray> =
@@ -262,6 +283,6 @@ int main(void) {
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT:     return std::process::ExitCode::SUCCESS;
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

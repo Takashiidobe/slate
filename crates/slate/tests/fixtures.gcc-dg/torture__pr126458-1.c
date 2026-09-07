@@ -87,7 +87,7 @@ int main(void) {
 // LOWERING-DAG:     };
 // LOWERING-DAG:     return {{__v[0-9]+}};
 // LOWERING-DAG: }
-// LOWERING-DAG: fn main() {
+// LOWERING-DAG: fn main() -> std::process::ExitCode {
 // LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-DAG:     {
 // LOWERING-DAG:         let mut i: u32 = 0;
@@ -123,7 +123,7 @@ int main(void) {
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
 // LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-DAG:     return std::process::ExitCode::SUCCESS;
 // LOWERING-DAG: }
 // SLATE-FILECHECK-END lowering
 
@@ -164,7 +164,7 @@ int main(void) {
 // REWRITES-DAG:     };
 // REWRITES-DAG:     return {{__v[0-9]+}};
 // REWRITES-DAG: }
-// REWRITES-DAG: fn main() {
+// REWRITES-DAG: fn main() -> std::process::ExitCode {
 // REWRITES-DAG:     let mut i: u32 = 0;
 // REWRITES-DAG:     i = 0;
 // REWRITES-DAG:     loop {
@@ -180,6 +180,6 @@ int main(void) {
 // REWRITES-DAG:         }
 // REWRITES-DAG:         i += 1;
 // REWRITES-DAG:     }
-// REWRITES-DAG:     std::process::exit(0 as i32);
+// REWRITES-DAG:     return std::process::ExitCode::SUCCESS;
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

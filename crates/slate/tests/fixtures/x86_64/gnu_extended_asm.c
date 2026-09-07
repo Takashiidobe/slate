@@ -67,7 +67,7 @@ int main(void) {
 // LOWERING-X86_64-GNU-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // LOWERING-X86_64-GNU-NEXT: }
 // LOWERING-X86_64-GNU-EMPTY:
-// LOWERING-X86_64-GNU-NEXT: fn main() {
+// LOWERING-X86_64-GNU-NEXT: fn main() -> std::process::ExitCode {
 // LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
 // LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = 7;
@@ -78,7 +78,7 @@ int main(void) {
 // LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = gnu_multiple_outputs();
 // LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
 // LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-X86_64-GNU-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-X86_64-GNU-NEXT:     return std::process::ExitCode::SUCCESS;
 // LOWERING-X86_64-GNU-NEXT: }
 // LOWERING-X86_64-GNU-EMPTY:
 // LOWERING-X86_64-GNU-NEXT: fn gnu_extended_asm({{arg[0-9]+}}: i32) -> i32 {
@@ -159,7 +159,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
-// REWRITES-X86_64-GNU-NEXT: fn main() {
+// REWRITES-X86_64-GNU-NEXT: fn main() -> std::process::ExitCode {
 // REWRITES-X86_64-GNU-NEXT:     println!(
 // REWRITES-X86_64-GNU-NEXT:         "{} {} {}",
 // REWRITES-X86_64-GNU-NEXT:         gnu_extended_asm(7),
@@ -167,7 +167,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:         gnu_multiple_outputs()
 // REWRITES-X86_64-GNU-NEXT:     );
 // REWRITES-X86_64-GNU-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// REWRITES-X86_64-GNU-NEXT:     std::process::exit(0 as i32);
+// REWRITES-X86_64-GNU-NEXT:     return std::process::ExitCode::SUCCESS;
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: fn gnu_extended_asm({{arg[0-9]+}}: i32) -> i32 {

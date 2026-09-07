@@ -98,20 +98,25 @@ int main() {
 // @lowering-fn-end
 
 // SLATE-FILECHECK-BEGIN lowering
-// LOWERING-DAG: fn main() {
+// LOWERING-DAG: fn main() -> std::process::ExitCode {
 // LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-DAG:     {
-// LOWERING-DAG:         let {{__v[0-9]+}}: i8 = unsafe { max };
-// LOWERING-DAG:         let {{__v[0-9]+}}: i8 = unsafe { expected };
-// LOWERING-DAG:         let {{__v[0-9]+}}: Result<i8, i8> = unsafe {
-// LOWERING-DAG:             std::sync::atomic::AtomicI8::from_ptr(std::ptr::addr_of_mut!(v)).compare_exchange(
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: i8 = unsafe { max };
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: i8 = unsafe { expected };
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: Result<i8, i8> = unsafe {
+// LOWERING-X86_64-GNU-DAG:             std::sync::atomic::AtomicI8::from_ptr(std::ptr::addr_of_mut!(v)).compare_exchange(
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: u8 = unsafe { max };
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: u8 = unsafe { expected };
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: Result<u8, u8> = unsafe {
+// LOWERING-AARCH64-GNU-DAG:             std::sync::atomic::AtomicU8::from_ptr(std::ptr::addr_of_mut!(v)).compare_exchange(
 // LOWERING-DAG:                 {{__v[0-9]+}},
 // LOWERING-DAG:                 {{__v[0-9]+}},
 // LOWERING-DAG:                 std::sync::atomic::Ordering::Relaxed,
 // LOWERING-DAG:                 std::sync::atomic::Ordering::Relaxed,
 // LOWERING-DAG:             )
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{__v[0-9]+}}: i8 = match {{__v[0-9]+}} {
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: i8 = match {{__v[0-9]+}} {
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: u8 = match {{__v[0-9]+}} {
 // LOWERING-DAG:             Ok({{__v[0-9]+}}) => {{__v[0-9]+}},
 // LOWERING-DAG:             Err({{__v[0-9]+}}) => {{__v[0-9]+}},
 // LOWERING-DAG:         };
@@ -128,7 +133,8 @@ int main() {
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
 // LOWERING-DAG:     {
-// LOWERING-DAG:         let {{__v[0-9]+}}: i8 = unsafe { expected };
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: i8 = unsafe { expected };
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: u8 = unsafe { expected };
 // LOWERING-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
 // LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
@@ -137,17 +143,22 @@ int main() {
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
 // LOWERING-DAG:     {
-// LOWERING-DAG:         let {{__v[0-9]+}}: i8 = 0;
-// LOWERING-DAG:         let {{__v[0-9]+}}: i8 = unsafe { expected };
-// LOWERING-DAG:         let {{__v[0-9]+}}: Result<i8, i8> = unsafe {
-// LOWERING-DAG:             std::sync::atomic::AtomicI8::from_ptr(std::ptr::addr_of_mut!(v)).compare_exchange(
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: i8 = 0;
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: i8 = unsafe { expected };
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: Result<i8, i8> = unsafe {
+// LOWERING-X86_64-GNU-DAG:             std::sync::atomic::AtomicI8::from_ptr(std::ptr::addr_of_mut!(v)).compare_exchange(
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: u8 = 0;
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: u8 = unsafe { expected };
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: Result<u8, u8> = unsafe {
+// LOWERING-AARCH64-GNU-DAG:             std::sync::atomic::AtomicU8::from_ptr(std::ptr::addr_of_mut!(v)).compare_exchange(
 // LOWERING-DAG:                 {{__v[0-9]+}},
 // LOWERING-DAG:                 {{__v[0-9]+}},
 // LOWERING-DAG:                 std::sync::atomic::Ordering::Acquire,
 // LOWERING-DAG:                 std::sync::atomic::Ordering::Relaxed,
 // LOWERING-DAG:             )
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{__v[0-9]+}}: i8 = match {{__v[0-9]+}} {
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: i8 = match {{__v[0-9]+}} {
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: u8 = match {{__v[0-9]+}} {
 // LOWERING-DAG:             Ok({{__v[0-9]+}}) => {{__v[0-9]+}},
 // LOWERING-DAG:             Err({{__v[0-9]+}}) => {{__v[0-9]+}},
 // LOWERING-DAG:         };
@@ -163,9 +174,11 @@ int main() {
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
 // LOWERING-DAG:     {
-// LOWERING-DAG:         let {{__v[0-9]+}}: i8 = unsafe { expected };
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: i8 = unsafe { expected };
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: u8 = unsafe { expected };
 // LOWERING-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// LOWERING-DAG:         let {{__v[0-9]+}}: i8 = unsafe { max };
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: i8 = unsafe { max };
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: u8 = unsafe { max };
 // LOWERING-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
 // LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
 // LOWERING-DAG:         if {{__v[0-9]+}} {
@@ -173,17 +186,22 @@ int main() {
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
 // LOWERING-DAG:     {
-// LOWERING-DAG:         let {{__v[0-9]+}}: i8 = 0;
-// LOWERING-DAG:         let {{__v[0-9]+}}: i8 = unsafe { expected };
-// LOWERING-DAG:         let {{__v[0-9]+}}: Result<i8, i8> = unsafe {
-// LOWERING-DAG:             std::sync::atomic::AtomicI8::from_ptr(std::ptr::addr_of_mut!(v)).compare_exchange(
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: i8 = 0;
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: i8 = unsafe { expected };
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: Result<i8, i8> = unsafe {
+// LOWERING-X86_64-GNU-DAG:             std::sync::atomic::AtomicI8::from_ptr(std::ptr::addr_of_mut!(v)).compare_exchange(
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: u8 = 0;
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: u8 = unsafe { expected };
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: Result<u8, u8> = unsafe {
+// LOWERING-AARCH64-GNU-DAG:             std::sync::atomic::AtomicU8::from_ptr(std::ptr::addr_of_mut!(v)).compare_exchange(
 // LOWERING-DAG:                 {{__v[0-9]+}},
 // LOWERING-DAG:                 {{__v[0-9]+}},
 // LOWERING-DAG:                 std::sync::atomic::Ordering::Release,
 // LOWERING-DAG:                 std::sync::atomic::Ordering::Acquire,
 // LOWERING-DAG:             )
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{__v[0-9]+}}: i8 = match {{__v[0-9]+}} {
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: i8 = match {{__v[0-9]+}} {
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: u8 = match {{__v[0-9]+}} {
 // LOWERING-DAG:             Ok({{__v[0-9]+}}) => {{__v[0-9]+}},
 // LOWERING-DAG:             Err({{__v[0-9]+}}) => {{__v[0-9]+}},
 // LOWERING-DAG:         };
@@ -200,9 +218,11 @@ int main() {
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
 // LOWERING-DAG:     {
-// LOWERING-DAG:         let {{__v[0-9]+}}: i8 = unsafe { expected };
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: i8 = unsafe { expected };
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: u8 = unsafe { expected };
 // LOWERING-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// LOWERING-DAG:         let {{__v[0-9]+}}: i8 = unsafe { max };
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: i8 = unsafe { max };
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: u8 = unsafe { max };
 // LOWERING-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
 // LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
 // LOWERING-DAG:         if {{__v[0-9]+}} {
@@ -210,7 +230,8 @@ int main() {
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
 // LOWERING-DAG:     {
-// LOWERING-DAG:         let {{__v[0-9]+}}: i8 = unsafe { v };
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: i8 = unsafe { v };
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: u8 = unsafe { v };
 // LOWERING-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
 // LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
@@ -219,17 +240,22 @@ int main() {
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
 // LOWERING-DAG:     {
-// LOWERING-DAG:         let {{__v[0-9]+}}: i8 = unsafe { desired };
-// LOWERING-DAG:         let {{__v[0-9]+}}: i8 = unsafe { expected };
-// LOWERING-DAG:         let {{__v[0-9]+}}: Result<i8, i8> = unsafe {
-// LOWERING-DAG:             std::sync::atomic::AtomicI8::from_ptr(std::ptr::addr_of_mut!(v)).compare_exchange(
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: i8 = unsafe { desired };
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: i8 = unsafe { expected };
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: Result<i8, i8> = unsafe {
+// LOWERING-X86_64-GNU-DAG:             std::sync::atomic::AtomicI8::from_ptr(std::ptr::addr_of_mut!(v)).compare_exchange(
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: u8 = unsafe { desired };
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: u8 = unsafe { expected };
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: Result<u8, u8> = unsafe {
+// LOWERING-AARCH64-GNU-DAG:             std::sync::atomic::AtomicU8::from_ptr(std::ptr::addr_of_mut!(v)).compare_exchange(
 // LOWERING-DAG:                 {{__v[0-9]+}},
 // LOWERING-DAG:                 {{__v[0-9]+}},
 // LOWERING-DAG:                 std::sync::atomic::Ordering::AcqRel,
 // LOWERING-DAG:                 std::sync::atomic::Ordering::Acquire,
 // LOWERING-DAG:             )
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{__v[0-9]+}}: i8 = match {{__v[0-9]+}} {
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: i8 = match {{__v[0-9]+}} {
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: u8 = match {{__v[0-9]+}} {
 // LOWERING-DAG:             Ok({{__v[0-9]+}}) => {{__v[0-9]+}},
 // LOWERING-DAG:             Err({{__v[0-9]+}}) => {{__v[0-9]+}},
 // LOWERING-DAG:         };
@@ -245,7 +271,8 @@ int main() {
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
 // LOWERING-DAG:     {
-// LOWERING-DAG:         let {{__v[0-9]+}}: i8 = unsafe { expected };
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: i8 = unsafe { expected };
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: u8 = unsafe { expected };
 // LOWERING-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
 // LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
@@ -254,17 +281,22 @@ int main() {
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
 // LOWERING-DAG:     {
-// LOWERING-DAG:         let {{__v[0-9]+}}: i8 = unsafe { desired };
-// LOWERING-DAG:         let {{__v[0-9]+}}: i8 = unsafe { expected };
-// LOWERING-DAG:         let {{__v[0-9]+}}: Result<i8, i8> = unsafe {
-// LOWERING-DAG:             std::sync::atomic::AtomicI8::from_ptr(std::ptr::addr_of_mut!(v)).compare_exchange(
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: i8 = unsafe { desired };
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: i8 = unsafe { expected };
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: Result<i8, i8> = unsafe {
+// LOWERING-X86_64-GNU-DAG:             std::sync::atomic::AtomicI8::from_ptr(std::ptr::addr_of_mut!(v)).compare_exchange(
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: u8 = unsafe { desired };
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: u8 = unsafe { expected };
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: Result<u8, u8> = unsafe {
+// LOWERING-AARCH64-GNU-DAG:             std::sync::atomic::AtomicU8::from_ptr(std::ptr::addr_of_mut!(v)).compare_exchange(
 // LOWERING-DAG:                 {{__v[0-9]+}},
 // LOWERING-DAG:                 {{__v[0-9]+}},
 // LOWERING-DAG:                 std::sync::atomic::Ordering::SeqCst,
 // LOWERING-DAG:                 std::sync::atomic::Ordering::SeqCst,
 // LOWERING-DAG:             )
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{__v[0-9]+}}: i8 = match {{__v[0-9]+}} {
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: i8 = match {{__v[0-9]+}} {
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: u8 = match {{__v[0-9]+}} {
 // LOWERING-DAG:             Ok({{__v[0-9]+}}) => {{__v[0-9]+}},
 // LOWERING-DAG:             Err({{__v[0-9]+}}) => {{__v[0-9]+}},
 // LOWERING-DAG:         };
@@ -281,7 +313,8 @@ int main() {
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
 // LOWERING-DAG:     {
-// LOWERING-DAG:         let {{__v[0-9]+}}: i8 = unsafe { expected };
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: i8 = unsafe { expected };
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: u8 = unsafe { expected };
 // LOWERING-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
 // LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
@@ -290,31 +323,39 @@ int main() {
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
 // LOWERING-DAG:     {
-// LOWERING-DAG:         let {{__v[0-9]+}}: i8 = unsafe { v };
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: i8 = unsafe { v };
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: u8 = unsafe { v };
 // LOWERING-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// LOWERING-DAG:         let {{__v[0-9]+}}: i8 = unsafe { max };
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: i8 = unsafe { max };
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: u8 = unsafe { max };
 // LOWERING-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
 // LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
 // LOWERING-DAG:         if {{__v[0-9]+}} {
 // LOWERING-DAG:             unsafe { abort() };
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
-// LOWERING-DAG:     let {{__v[0-9]+}}: i8 = 0;
+// LOWERING-X86_64-GNU-DAG:     let {{__v[0-9]+}}: i8 = 0;
+// LOWERING-AARCH64-GNU-DAG:     let {{__v[0-9]+}}: u8 = 0;
 // LOWERING-DAG:     unsafe {
 // LOWERING-DAG:         v = {{__v[0-9]+}};
 // LOWERING-DAG:     }
 // LOWERING-DAG:     {
-// LOWERING-DAG:         let {{__v[0-9]+}}: i8 = unsafe { expected };
-// LOWERING-DAG:         let {{__v[0-9]+}}: i8 = unsafe { max };
-// LOWERING-DAG:         let {{__v[0-9]+}}: Result<i8, i8> = unsafe {
-// LOWERING-DAG:             std::sync::atomic::AtomicI8::from_ptr(std::ptr::addr_of_mut!(v)).compare_exchange(
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: i8 = unsafe { expected };
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: i8 = unsafe { max };
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: Result<i8, i8> = unsafe {
+// LOWERING-X86_64-GNU-DAG:             std::sync::atomic::AtomicI8::from_ptr(std::ptr::addr_of_mut!(v)).compare_exchange(
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: u8 = unsafe { expected };
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: u8 = unsafe { max };
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: Result<u8, u8> = unsafe {
+// LOWERING-AARCH64-GNU-DAG:             std::sync::atomic::AtomicU8::from_ptr(std::ptr::addr_of_mut!(v)).compare_exchange(
 // LOWERING-DAG:                 {{__v[0-9]+}},
 // LOWERING-DAG:                 {{__v[0-9]+}},
 // LOWERING-DAG:                 std::sync::atomic::Ordering::Relaxed,
 // LOWERING-DAG:                 std::sync::atomic::Ordering::Relaxed,
 // LOWERING-DAG:             )
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{__v[0-9]+}}: i8 = match {{__v[0-9]+}} {
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: i8 = match {{__v[0-9]+}} {
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: u8 = match {{__v[0-9]+}} {
 // LOWERING-DAG:             Ok({{__v[0-9]+}}) => {{__v[0-9]+}},
 // LOWERING-DAG:             Err({{__v[0-9]+}}) => {{__v[0-9]+}},
 // LOWERING-DAG:         };
@@ -331,7 +372,8 @@ int main() {
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
 // LOWERING-DAG:     {
-// LOWERING-DAG:         let {{__v[0-9]+}}: i8 = unsafe { expected };
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: i8 = unsafe { expected };
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: u8 = unsafe { expected };
 // LOWERING-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
 // LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
@@ -340,17 +382,22 @@ int main() {
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
 // LOWERING-DAG:     {
-// LOWERING-DAG:         let {{__v[0-9]+}}: i8 = unsafe { expected };
-// LOWERING-DAG:         let {{__v[0-9]+}}: i8 = unsafe { zero };
-// LOWERING-DAG:         let {{__v[0-9]+}}: Result<i8, i8> = unsafe {
-// LOWERING-DAG:             std::sync::atomic::AtomicI8::from_ptr(std::ptr::addr_of_mut!(v)).compare_exchange(
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: i8 = unsafe { expected };
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: i8 = unsafe { zero };
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: Result<i8, i8> = unsafe {
+// LOWERING-X86_64-GNU-DAG:             std::sync::atomic::AtomicI8::from_ptr(std::ptr::addr_of_mut!(v)).compare_exchange(
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: u8 = unsafe { expected };
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: u8 = unsafe { zero };
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: Result<u8, u8> = unsafe {
+// LOWERING-AARCH64-GNU-DAG:             std::sync::atomic::AtomicU8::from_ptr(std::ptr::addr_of_mut!(v)).compare_exchange(
 // LOWERING-DAG:                 {{__v[0-9]+}},
 // LOWERING-DAG:                 {{__v[0-9]+}},
 // LOWERING-DAG:                 std::sync::atomic::Ordering::Acquire,
 // LOWERING-DAG:                 std::sync::atomic::Ordering::Relaxed,
 // LOWERING-DAG:             )
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{__v[0-9]+}}: i8 = match {{__v[0-9]+}} {
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: i8 = match {{__v[0-9]+}} {
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: u8 = match {{__v[0-9]+}} {
 // LOWERING-DAG:             Ok({{__v[0-9]+}}) => {{__v[0-9]+}},
 // LOWERING-DAG:             Err({{__v[0-9]+}}) => {{__v[0-9]+}},
 // LOWERING-DAG:         };
@@ -366,9 +413,11 @@ int main() {
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
 // LOWERING-DAG:     {
-// LOWERING-DAG:         let {{__v[0-9]+}}: i8 = unsafe { expected };
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: i8 = unsafe { expected };
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: u8 = unsafe { expected };
 // LOWERING-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// LOWERING-DAG:         let {{__v[0-9]+}}: i8 = unsafe { max };
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: i8 = unsafe { max };
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: u8 = unsafe { max };
 // LOWERING-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
 // LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
 // LOWERING-DAG:         if {{__v[0-9]+}} {
@@ -376,17 +425,22 @@ int main() {
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
 // LOWERING-DAG:     {
-// LOWERING-DAG:         let {{__v[0-9]+}}: i8 = unsafe { expected };
-// LOWERING-DAG:         let {{__v[0-9]+}}: i8 = unsafe { zero };
-// LOWERING-DAG:         let {{__v[0-9]+}}: Result<i8, i8> = unsafe {
-// LOWERING-DAG:             std::sync::atomic::AtomicI8::from_ptr(std::ptr::addr_of_mut!(v)).compare_exchange(
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: i8 = unsafe { expected };
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: i8 = unsafe { zero };
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: Result<i8, i8> = unsafe {
+// LOWERING-X86_64-GNU-DAG:             std::sync::atomic::AtomicI8::from_ptr(std::ptr::addr_of_mut!(v)).compare_exchange(
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: u8 = unsafe { expected };
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: u8 = unsafe { zero };
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: Result<u8, u8> = unsafe {
+// LOWERING-AARCH64-GNU-DAG:             std::sync::atomic::AtomicU8::from_ptr(std::ptr::addr_of_mut!(v)).compare_exchange(
 // LOWERING-DAG:                 {{__v[0-9]+}},
 // LOWERING-DAG:                 {{__v[0-9]+}},
 // LOWERING-DAG:                 std::sync::atomic::Ordering::Release,
 // LOWERING-DAG:                 std::sync::atomic::Ordering::Acquire,
 // LOWERING-DAG:             )
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{__v[0-9]+}}: i8 = match {{__v[0-9]+}} {
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: i8 = match {{__v[0-9]+}} {
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: u8 = match {{__v[0-9]+}} {
 // LOWERING-DAG:             Ok({{__v[0-9]+}}) => {{__v[0-9]+}},
 // LOWERING-DAG:             Err({{__v[0-9]+}}) => {{__v[0-9]+}},
 // LOWERING-DAG:         };
@@ -403,9 +457,11 @@ int main() {
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
 // LOWERING-DAG:     {
-// LOWERING-DAG:         let {{__v[0-9]+}}: i8 = unsafe { expected };
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: i8 = unsafe { expected };
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: u8 = unsafe { expected };
 // LOWERING-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// LOWERING-DAG:         let {{__v[0-9]+}}: i8 = unsafe { max };
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: i8 = unsafe { max };
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: u8 = unsafe { max };
 // LOWERING-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
 // LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
 // LOWERING-DAG:         if {{__v[0-9]+}} {
@@ -413,7 +469,8 @@ int main() {
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
 // LOWERING-DAG:     {
-// LOWERING-DAG:         let {{__v[0-9]+}}: i8 = unsafe { v };
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: i8 = unsafe { v };
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: u8 = unsafe { v };
 // LOWERING-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
 // LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
@@ -422,17 +479,22 @@ int main() {
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
 // LOWERING-DAG:     {
-// LOWERING-DAG:         let {{__v[0-9]+}}: i8 = unsafe { expected };
-// LOWERING-DAG:         let {{__v[0-9]+}}: i8 = unsafe { desired };
-// LOWERING-DAG:         let {{__v[0-9]+}}: Result<i8, i8> = unsafe {
-// LOWERING-DAG:             std::sync::atomic::AtomicI8::from_ptr(std::ptr::addr_of_mut!(v)).compare_exchange(
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: i8 = unsafe { expected };
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: i8 = unsafe { desired };
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: Result<i8, i8> = unsafe {
+// LOWERING-X86_64-GNU-DAG:             std::sync::atomic::AtomicI8::from_ptr(std::ptr::addr_of_mut!(v)).compare_exchange(
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: u8 = unsafe { expected };
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: u8 = unsafe { desired };
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: Result<u8, u8> = unsafe {
+// LOWERING-AARCH64-GNU-DAG:             std::sync::atomic::AtomicU8::from_ptr(std::ptr::addr_of_mut!(v)).compare_exchange(
 // LOWERING-DAG:                 {{__v[0-9]+}},
 // LOWERING-DAG:                 {{__v[0-9]+}},
 // LOWERING-DAG:                 std::sync::atomic::Ordering::AcqRel,
 // LOWERING-DAG:                 std::sync::atomic::Ordering::Acquire,
 // LOWERING-DAG:             )
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{__v[0-9]+}}: i8 = match {{__v[0-9]+}} {
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: i8 = match {{__v[0-9]+}} {
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: u8 = match {{__v[0-9]+}} {
 // LOWERING-DAG:             Ok({{__v[0-9]+}}) => {{__v[0-9]+}},
 // LOWERING-DAG:             Err({{__v[0-9]+}}) => {{__v[0-9]+}},
 // LOWERING-DAG:         };
@@ -448,7 +510,8 @@ int main() {
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
 // LOWERING-DAG:     {
-// LOWERING-DAG:         let {{__v[0-9]+}}: i8 = unsafe { expected };
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: i8 = unsafe { expected };
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: u8 = unsafe { expected };
 // LOWERING-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
 // LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
@@ -457,17 +520,22 @@ int main() {
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
 // LOWERING-DAG:     {
-// LOWERING-DAG:         let {{__v[0-9]+}}: i8 = unsafe { expected };
-// LOWERING-DAG:         let {{__v[0-9]+}}: i8 = unsafe { desired };
-// LOWERING-DAG:         let {{__v[0-9]+}}: Result<i8, i8> = unsafe {
-// LOWERING-DAG:             std::sync::atomic::AtomicI8::from_ptr(std::ptr::addr_of_mut!(v)).compare_exchange(
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: i8 = unsafe { expected };
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: i8 = unsafe { desired };
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: Result<i8, i8> = unsafe {
+// LOWERING-X86_64-GNU-DAG:             std::sync::atomic::AtomicI8::from_ptr(std::ptr::addr_of_mut!(v)).compare_exchange(
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: u8 = unsafe { expected };
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: u8 = unsafe { desired };
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: Result<u8, u8> = unsafe {
+// LOWERING-AARCH64-GNU-DAG:             std::sync::atomic::AtomicU8::from_ptr(std::ptr::addr_of_mut!(v)).compare_exchange(
 // LOWERING-DAG:                 {{__v[0-9]+}},
 // LOWERING-DAG:                 {{__v[0-9]+}},
 // LOWERING-DAG:                 std::sync::atomic::Ordering::SeqCst,
 // LOWERING-DAG:                 std::sync::atomic::Ordering::SeqCst,
 // LOWERING-DAG:             )
 // LOWERING-DAG:         };
-// LOWERING-DAG:         let {{__v[0-9]+}}: i8 = match {{__v[0-9]+}} {
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: i8 = match {{__v[0-9]+}} {
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: u8 = match {{__v[0-9]+}} {
 // LOWERING-DAG:             Ok({{__v[0-9]+}}) => {{__v[0-9]+}},
 // LOWERING-DAG:             Err({{__v[0-9]+}}) => {{__v[0-9]+}},
 // LOWERING-DAG:         };
@@ -484,7 +552,8 @@ int main() {
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
 // LOWERING-DAG:     {
-// LOWERING-DAG:         let {{__v[0-9]+}}: i8 = unsafe { expected };
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: i8 = unsafe { expected };
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: u8 = unsafe { expected };
 // LOWERING-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
 // LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
@@ -493,9 +562,11 @@ int main() {
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
 // LOWERING-DAG:     {
-// LOWERING-DAG:         let {{__v[0-9]+}}: i8 = unsafe { v };
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: i8 = unsafe { v };
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: u8 = unsafe { v };
 // LOWERING-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// LOWERING-DAG:         let {{__v[0-9]+}}: i8 = unsafe { max };
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: i8 = unsafe { max };
+// LOWERING-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: u8 = unsafe { max };
 // LOWERING-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
 // LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
 // LOWERING-DAG:         if {{__v[0-9]+}} {
@@ -503,21 +574,24 @@ int main() {
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
 // LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-DAG:     return std::process::ExitCode::SUCCESS;
 // LOWERING-DAG: }
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: fn main() {
-// REWRITES-DAG:     let {{__v[0-9]+}}: Result<i8, i8> = unsafe {
-// REWRITES-DAG:         std::sync::atomic::AtomicI8::from_ptr(std::ptr::addr_of_mut!(v)).compare_exchange(
+// REWRITES-DAG: fn main() -> std::process::ExitCode {
+// REWRITES-X86_64-GNU-DAG:     let {{__v[0-9]+}}: Result<i8, i8> = unsafe {
+// REWRITES-X86_64-GNU-DAG:         std::sync::atomic::AtomicI8::from_ptr(std::ptr::addr_of_mut!(v)).compare_exchange(
+// REWRITES-AARCH64-GNU-DAG:     let {{__v[0-9]+}}: Result<u8, u8> = unsafe {
+// REWRITES-AARCH64-GNU-DAG:         std::sync::atomic::AtomicU8::from_ptr(std::ptr::addr_of_mut!(v)).compare_exchange(
 // REWRITES-DAG:             unsafe { expected },
 // REWRITES-DAG:             unsafe { max },
 // REWRITES-DAG:             std::sync::atomic::Ordering::Relaxed,
 // REWRITES-DAG:             std::sync::atomic::Ordering::Relaxed,
 // REWRITES-DAG:         )
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{__v[0-9]+}}: i8 = match {{__v[0-9]+}} {
+// REWRITES-X86_64-GNU-DAG:     let {{__v[0-9]+}}: i8 = match {{__v[0-9]+}} {
+// REWRITES-AARCH64-GNU-DAG:     let {{__v[0-9]+}}: u8 = match {{__v[0-9]+}} {
 // REWRITES-DAG:         Ok({{__v[0-9]+}}) => {{__v[0-9]+}},
 // REWRITES-DAG:         Err({{__v[0-9]+}}) => {{__v[0-9]+}},
 // REWRITES-DAG:     };
@@ -536,16 +610,20 @@ int main() {
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{__v[0-9]+}}: i8 = 0;
-// REWRITES-DAG:     let {{__v[0-9]+}}: Result<i8, i8> = unsafe {
-// REWRITES-DAG:         std::sync::atomic::AtomicI8::from_ptr(std::ptr::addr_of_mut!(v)).compare_exchange(
+// REWRITES-X86_64-GNU-DAG:     let {{__v[0-9]+}}: i8 = 0;
+// REWRITES-X86_64-GNU-DAG:     let {{__v[0-9]+}}: Result<i8, i8> = unsafe {
+// REWRITES-X86_64-GNU-DAG:         std::sync::atomic::AtomicI8::from_ptr(std::ptr::addr_of_mut!(v)).compare_exchange(
+// REWRITES-AARCH64-GNU-DAG:     let {{__v[0-9]+}}: u8 = 0;
+// REWRITES-AARCH64-GNU-DAG:     let {{__v[0-9]+}}: Result<u8, u8> = unsafe {
+// REWRITES-AARCH64-GNU-DAG:         std::sync::atomic::AtomicU8::from_ptr(std::ptr::addr_of_mut!(v)).compare_exchange(
 // REWRITES-DAG:             unsafe { expected },
 // REWRITES-DAG:             {{__v[0-9]+}},
 // REWRITES-DAG:             std::sync::atomic::Ordering::Acquire,
 // REWRITES-DAG:             std::sync::atomic::Ordering::Relaxed,
 // REWRITES-DAG:         )
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{__v[0-9]+}}: i8 = match {{__v[0-9]+}} {
+// REWRITES-X86_64-GNU-DAG:     let {{__v[0-9]+}}: i8 = match {{__v[0-9]+}} {
+// REWRITES-AARCH64-GNU-DAG:     let {{__v[0-9]+}}: u8 = match {{__v[0-9]+}} {
 // REWRITES-DAG:         Ok({{__v[0-9]+}}) => {{__v[0-9]+}},
 // REWRITES-DAG:         Err({{__v[0-9]+}}) => {{__v[0-9]+}},
 // REWRITES-DAG:     };
@@ -563,16 +641,20 @@ int main() {
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{__v[0-9]+}}: i8 = 0;
-// REWRITES-DAG:     let {{__v[0-9]+}}: Result<i8, i8> = unsafe {
-// REWRITES-DAG:         std::sync::atomic::AtomicI8::from_ptr(std::ptr::addr_of_mut!(v)).compare_exchange(
+// REWRITES-X86_64-GNU-DAG:     let {{__v[0-9]+}}: i8 = 0;
+// REWRITES-X86_64-GNU-DAG:     let {{__v[0-9]+}}: Result<i8, i8> = unsafe {
+// REWRITES-X86_64-GNU-DAG:         std::sync::atomic::AtomicI8::from_ptr(std::ptr::addr_of_mut!(v)).compare_exchange(
+// REWRITES-AARCH64-GNU-DAG:     let {{__v[0-9]+}}: u8 = 0;
+// REWRITES-AARCH64-GNU-DAG:     let {{__v[0-9]+}}: Result<u8, u8> = unsafe {
+// REWRITES-AARCH64-GNU-DAG:         std::sync::atomic::AtomicU8::from_ptr(std::ptr::addr_of_mut!(v)).compare_exchange(
 // REWRITES-DAG:             unsafe { expected },
 // REWRITES-DAG:             {{__v[0-9]+}},
 // REWRITES-DAG:             std::sync::atomic::Ordering::Release,
 // REWRITES-DAG:             std::sync::atomic::Ordering::Acquire,
 // REWRITES-DAG:         )
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{__v[0-9]+}}: i8 = match {{__v[0-9]+}} {
+// REWRITES-X86_64-GNU-DAG:     let {{__v[0-9]+}}: i8 = match {{__v[0-9]+}} {
+// REWRITES-AARCH64-GNU-DAG:     let {{__v[0-9]+}}: u8 = match {{__v[0-9]+}} {
 // REWRITES-DAG:         Ok({{__v[0-9]+}}) => {{__v[0-9]+}},
 // REWRITES-DAG:         Err({{__v[0-9]+}}) => {{__v[0-9]+}},
 // REWRITES-DAG:     };
@@ -595,15 +677,18 @@ int main() {
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{__v[0-9]+}}: Result<i8, i8> = unsafe {
-// REWRITES-DAG:         std::sync::atomic::AtomicI8::from_ptr(std::ptr::addr_of_mut!(v)).compare_exchange(
+// REWRITES-X86_64-GNU-DAG:     let {{__v[0-9]+}}: Result<i8, i8> = unsafe {
+// REWRITES-X86_64-GNU-DAG:         std::sync::atomic::AtomicI8::from_ptr(std::ptr::addr_of_mut!(v)).compare_exchange(
+// REWRITES-AARCH64-GNU-DAG:     let {{__v[0-9]+}}: Result<u8, u8> = unsafe {
+// REWRITES-AARCH64-GNU-DAG:         std::sync::atomic::AtomicU8::from_ptr(std::ptr::addr_of_mut!(v)).compare_exchange(
 // REWRITES-DAG:             unsafe { expected },
 // REWRITES-DAG:             unsafe { desired },
 // REWRITES-DAG:             std::sync::atomic::Ordering::AcqRel,
 // REWRITES-DAG:             std::sync::atomic::Ordering::Acquire,
 // REWRITES-DAG:         )
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{__v[0-9]+}}: i8 = match {{__v[0-9]+}} {
+// REWRITES-X86_64-GNU-DAG:     let {{__v[0-9]+}}: i8 = match {{__v[0-9]+}} {
+// REWRITES-AARCH64-GNU-DAG:     let {{__v[0-9]+}}: u8 = match {{__v[0-9]+}} {
 // REWRITES-DAG:         Ok({{__v[0-9]+}}) => {{__v[0-9]+}},
 // REWRITES-DAG:         Err({{__v[0-9]+}}) => {{__v[0-9]+}},
 // REWRITES-DAG:     };
@@ -621,15 +706,18 @@ int main() {
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{__v[0-9]+}}: Result<i8, i8> = unsafe {
-// REWRITES-DAG:         std::sync::atomic::AtomicI8::from_ptr(std::ptr::addr_of_mut!(v)).compare_exchange(
+// REWRITES-X86_64-GNU-DAG:     let {{__v[0-9]+}}: Result<i8, i8> = unsafe {
+// REWRITES-X86_64-GNU-DAG:         std::sync::atomic::AtomicI8::from_ptr(std::ptr::addr_of_mut!(v)).compare_exchange(
+// REWRITES-AARCH64-GNU-DAG:     let {{__v[0-9]+}}: Result<u8, u8> = unsafe {
+// REWRITES-AARCH64-GNU-DAG:         std::sync::atomic::AtomicU8::from_ptr(std::ptr::addr_of_mut!(v)).compare_exchange(
 // REWRITES-DAG:             unsafe { expected },
 // REWRITES-DAG:             unsafe { desired },
 // REWRITES-DAG:             std::sync::atomic::Ordering::SeqCst,
 // REWRITES-DAG:             std::sync::atomic::Ordering::SeqCst,
 // REWRITES-DAG:         )
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{__v[0-9]+}}: i8 = match {{__v[0-9]+}} {
+// REWRITES-X86_64-GNU-DAG:     let {{__v[0-9]+}}: i8 = match {{__v[0-9]+}} {
+// REWRITES-AARCH64-GNU-DAG:     let {{__v[0-9]+}}: u8 = match {{__v[0-9]+}} {
 // REWRITES-DAG:         Ok({{__v[0-9]+}}) => {{__v[0-9]+}},
 // REWRITES-DAG:         Err({{__v[0-9]+}}) => {{__v[0-9]+}},
 // REWRITES-DAG:     };
@@ -655,15 +743,18 @@ int main() {
 // REWRITES-DAG:     unsafe {
 // REWRITES-DAG:         v = 0;
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{__v[0-9]+}}: Result<i8, i8> = unsafe {
-// REWRITES-DAG:         std::sync::atomic::AtomicI8::from_ptr(std::ptr::addr_of_mut!(v)).compare_exchange(
+// REWRITES-X86_64-GNU-DAG:     let {{__v[0-9]+}}: Result<i8, i8> = unsafe {
+// REWRITES-X86_64-GNU-DAG:         std::sync::atomic::AtomicI8::from_ptr(std::ptr::addr_of_mut!(v)).compare_exchange(
+// REWRITES-AARCH64-GNU-DAG:     let {{__v[0-9]+}}: Result<u8, u8> = unsafe {
+// REWRITES-AARCH64-GNU-DAG:         std::sync::atomic::AtomicU8::from_ptr(std::ptr::addr_of_mut!(v)).compare_exchange(
 // REWRITES-DAG:             unsafe { expected },
 // REWRITES-DAG:             unsafe { max },
 // REWRITES-DAG:             std::sync::atomic::Ordering::Relaxed,
 // REWRITES-DAG:             std::sync::atomic::Ordering::Relaxed,
 // REWRITES-DAG:         )
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{__v[0-9]+}}: i8 = match {{__v[0-9]+}} {
+// REWRITES-X86_64-GNU-DAG:     let {{__v[0-9]+}}: i8 = match {{__v[0-9]+}} {
+// REWRITES-AARCH64-GNU-DAG:     let {{__v[0-9]+}}: u8 = match {{__v[0-9]+}} {
 // REWRITES-DAG:         Ok({{__v[0-9]+}}) => {{__v[0-9]+}},
 // REWRITES-DAG:         Err({{__v[0-9]+}}) => {{__v[0-9]+}},
 // REWRITES-DAG:     };
@@ -682,15 +773,18 @@ int main() {
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{__v[0-9]+}}: Result<i8, i8> = unsafe {
-// REWRITES-DAG:         std::sync::atomic::AtomicI8::from_ptr(std::ptr::addr_of_mut!(v)).compare_exchange(
+// REWRITES-X86_64-GNU-DAG:     let {{__v[0-9]+}}: Result<i8, i8> = unsafe {
+// REWRITES-X86_64-GNU-DAG:         std::sync::atomic::AtomicI8::from_ptr(std::ptr::addr_of_mut!(v)).compare_exchange(
+// REWRITES-AARCH64-GNU-DAG:     let {{__v[0-9]+}}: Result<u8, u8> = unsafe {
+// REWRITES-AARCH64-GNU-DAG:         std::sync::atomic::AtomicU8::from_ptr(std::ptr::addr_of_mut!(v)).compare_exchange(
 // REWRITES-DAG:             unsafe { expected },
 // REWRITES-DAG:             unsafe { zero },
 // REWRITES-DAG:             std::sync::atomic::Ordering::Acquire,
 // REWRITES-DAG:             std::sync::atomic::Ordering::Relaxed,
 // REWRITES-DAG:         )
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{__v[0-9]+}}: i8 = match {{__v[0-9]+}} {
+// REWRITES-X86_64-GNU-DAG:     let {{__v[0-9]+}}: i8 = match {{__v[0-9]+}} {
+// REWRITES-AARCH64-GNU-DAG:     let {{__v[0-9]+}}: u8 = match {{__v[0-9]+}} {
 // REWRITES-DAG:         Ok({{__v[0-9]+}}) => {{__v[0-9]+}},
 // REWRITES-DAG:         Err({{__v[0-9]+}}) => {{__v[0-9]+}},
 // REWRITES-DAG:     };
@@ -708,15 +802,18 @@ int main() {
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{__v[0-9]+}}: Result<i8, i8> = unsafe {
-// REWRITES-DAG:         std::sync::atomic::AtomicI8::from_ptr(std::ptr::addr_of_mut!(v)).compare_exchange(
+// REWRITES-X86_64-GNU-DAG:     let {{__v[0-9]+}}: Result<i8, i8> = unsafe {
+// REWRITES-X86_64-GNU-DAG:         std::sync::atomic::AtomicI8::from_ptr(std::ptr::addr_of_mut!(v)).compare_exchange(
+// REWRITES-AARCH64-GNU-DAG:     let {{__v[0-9]+}}: Result<u8, u8> = unsafe {
+// REWRITES-AARCH64-GNU-DAG:         std::sync::atomic::AtomicU8::from_ptr(std::ptr::addr_of_mut!(v)).compare_exchange(
 // REWRITES-DAG:             unsafe { expected },
 // REWRITES-DAG:             unsafe { zero },
 // REWRITES-DAG:             std::sync::atomic::Ordering::Release,
 // REWRITES-DAG:             std::sync::atomic::Ordering::Acquire,
 // REWRITES-DAG:         )
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{__v[0-9]+}}: i8 = match {{__v[0-9]+}} {
+// REWRITES-X86_64-GNU-DAG:     let {{__v[0-9]+}}: i8 = match {{__v[0-9]+}} {
+// REWRITES-AARCH64-GNU-DAG:     let {{__v[0-9]+}}: u8 = match {{__v[0-9]+}} {
 // REWRITES-DAG:         Ok({{__v[0-9]+}}) => {{__v[0-9]+}},
 // REWRITES-DAG:         Err({{__v[0-9]+}}) => {{__v[0-9]+}},
 // REWRITES-DAG:     };
@@ -739,15 +836,18 @@ int main() {
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{__v[0-9]+}}: Result<i8, i8> = unsafe {
-// REWRITES-DAG:         std::sync::atomic::AtomicI8::from_ptr(std::ptr::addr_of_mut!(v)).compare_exchange(
+// REWRITES-X86_64-GNU-DAG:     let {{__v[0-9]+}}: Result<i8, i8> = unsafe {
+// REWRITES-X86_64-GNU-DAG:         std::sync::atomic::AtomicI8::from_ptr(std::ptr::addr_of_mut!(v)).compare_exchange(
+// REWRITES-AARCH64-GNU-DAG:     let {{__v[0-9]+}}: Result<u8, u8> = unsafe {
+// REWRITES-AARCH64-GNU-DAG:         std::sync::atomic::AtomicU8::from_ptr(std::ptr::addr_of_mut!(v)).compare_exchange(
 // REWRITES-DAG:             unsafe { expected },
 // REWRITES-DAG:             unsafe { desired },
 // REWRITES-DAG:             std::sync::atomic::Ordering::AcqRel,
 // REWRITES-DAG:             std::sync::atomic::Ordering::Acquire,
 // REWRITES-DAG:         )
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{__v[0-9]+}}: i8 = match {{__v[0-9]+}} {
+// REWRITES-X86_64-GNU-DAG:     let {{__v[0-9]+}}: i8 = match {{__v[0-9]+}} {
+// REWRITES-AARCH64-GNU-DAG:     let {{__v[0-9]+}}: u8 = match {{__v[0-9]+}} {
 // REWRITES-DAG:         Ok({{__v[0-9]+}}) => {{__v[0-9]+}},
 // REWRITES-DAG:         Err({{__v[0-9]+}}) => {{__v[0-9]+}},
 // REWRITES-DAG:     };
@@ -765,15 +865,18 @@ int main() {
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{__v[0-9]+}}: Result<i8, i8> = unsafe {
-// REWRITES-DAG:         std::sync::atomic::AtomicI8::from_ptr(std::ptr::addr_of_mut!(v)).compare_exchange(
+// REWRITES-X86_64-GNU-DAG:     let {{__v[0-9]+}}: Result<i8, i8> = unsafe {
+// REWRITES-X86_64-GNU-DAG:         std::sync::atomic::AtomicI8::from_ptr(std::ptr::addr_of_mut!(v)).compare_exchange(
+// REWRITES-AARCH64-GNU-DAG:     let {{__v[0-9]+}}: Result<u8, u8> = unsafe {
+// REWRITES-AARCH64-GNU-DAG:         std::sync::atomic::AtomicU8::from_ptr(std::ptr::addr_of_mut!(v)).compare_exchange(
 // REWRITES-DAG:             unsafe { expected },
 // REWRITES-DAG:             unsafe { desired },
 // REWRITES-DAG:             std::sync::atomic::Ordering::SeqCst,
 // REWRITES-DAG:             std::sync::atomic::Ordering::SeqCst,
 // REWRITES-DAG:         )
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let {{__v[0-9]+}}: i8 = match {{__v[0-9]+}} {
+// REWRITES-X86_64-GNU-DAG:     let {{__v[0-9]+}}: i8 = match {{__v[0-9]+}} {
+// REWRITES-AARCH64-GNU-DAG:     let {{__v[0-9]+}}: u8 = match {{__v[0-9]+}} {
 // REWRITES-DAG:         Ok({{__v[0-9]+}}) => {{__v[0-9]+}},
 // REWRITES-DAG:         Err({{__v[0-9]+}}) => {{__v[0-9]+}},
 // REWRITES-DAG:     };
@@ -796,6 +899,6 @@ int main() {
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
-// REWRITES-DAG:     std::process::exit(0 as i32);
+// REWRITES-DAG:     return std::process::ExitCode::SUCCESS;
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

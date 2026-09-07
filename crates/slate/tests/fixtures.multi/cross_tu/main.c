@@ -17,10 +17,10 @@ int main(void) {
 // LOWERING-NOT: fn cube
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: fn main() {
+// REWRITES-DAG: fn main() -> std::process::ExitCode {
 // REWRITES-DAG:     println!("{} {}", square(6), cube(4));
 // REWRITES-DAG:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// REWRITES-DAG:     std::process::exit(0 as i32);
+// REWRITES-DAG:     return std::process::ExitCode::SUCCESS;
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites
 

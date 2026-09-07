@@ -72,7 +72,8 @@ int main() {
 // LOWERING-NEXT: #[derive(Clone, Copy)]
 // LOWERING-NEXT: struct fo {
 // LOWERING-NEXT:     __bitfield_0: __slate_bitfields::__SlateBitfield_fo_0,
-// LOWERING-NEXT:     __bitfield_1: [u8; 3],
+// LOWERING-X86_64-GNU-NEXT:     __bitfield_1: [u8; 3],
+// LOWERING-AARCH64-GNU-NEXT:     __bitfield_1: [u8; 7],
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[repr(C)]
@@ -81,10 +82,13 @@ int main() {
 // LOWERING-NEXT:     __slate_empty: [u8; 0],
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: static mut x: fo = fo {
+// LOWERING-X86_64-GNU-NEXT: static mut x: fo = fo {
+// LOWERING-AARCH64-GNU-NEXT: static mut x: aligned::Aligned<aligned::A8, fo> = aligned::Aligned(fo {
 // LOWERING-NEXT:     __bitfield_0: unsafe { std::mem::transmute::<u8, __slate_bitfields::__SlateBitfield_fo_0>(0) },
-// LOWERING-NEXT:     __bitfield_1: [0; 3],
-// LOWERING-NEXT: };
+// LOWERING-X86_64-GNU-NEXT:     __bitfield_1: [0; 3],
+// LOWERING-X86_64-GNU-NEXT: };
+// LOWERING-AARCH64-GNU-NEXT:     __bitfield_1: [0; 7],
+// LOWERING-AARCH64-GNU-NEXT: });
 // LOWERING-EMPTY:
 // LOWERING-NEXT: unsafe extern "C" {
 // LOWERING-NEXT:     fn malloc(_0: u64) -> *mut core::ffi::c_void;
@@ -93,17 +97,19 @@ int main() {
 // LOWERING-NEXT:     fn abort() -> !;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT: fn main() -> std::process::ExitCode {
 // LOWERING-NEXT:     let mut p: *mut fo = std::ptr::null_mut();
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = 4;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u64 = 4;
+// LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: u64 = 8;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc({{__v[0-9]+}} as u64) };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: *mut fo = {{__v[0-9]+}} as *mut fo;
 // LOWERING-NEXT:     p = {{__v[0-9]+}};
 // LOWERING-NEXT:     let {{__v[0-9]+}}: *mut fo = p;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = {{__v[0-9]+}} as *mut core::ffi::c_void;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 65535;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = 4;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u64 = 4;
+// LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: u64 = 8;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void =
 // LOWERING-NEXT:         unsafe { memset({{__v[0-9]+}} as *mut core::ffi::c_void, {{__v[0-9]+}} as i32, {{__v[0-9]+}} as u64) };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: *mut fo = p;
@@ -125,8 +131,11 @@ int main() {
 // LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:         let {{__v[0-9]+}}: *mut fo = p;
 // LOWERING-NEXT:         let {{__v[0-9]+}}: *mut core::ffi::c_void = {{__v[0-9]+}} as *mut core::ffi::c_void;
-// LOWERING-NEXT:         let {{__v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(x) as *mut core::ffi::c_void;
-// LOWERING-NEXT:         let {{__v[0-9]+}}: u64 = 4;
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(x) as *mut core::ffi::c_void;
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: u64 = 4;
+// LOWERING-AARCH64-GNU-NEXT:         let {{__v[0-9]+}}: *mut core::ffi::c_void =
+// LOWERING-AARCH64-GNU-NEXT:             (unsafe { std::ptr::addr_of_mut!(*x) }) as *mut core::ffi::c_void;
+// LOWERING-AARCH64-GNU-NEXT:         let {{__v[0-9]+}}: u64 = 8;
 // LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = unsafe {
 // LOWERING-NEXT:             memcmp(
 // LOWERING-NEXT:                 {{__v[0-9]+}} as *mut core::ffi::c_void,
@@ -140,11 +149,12 @@ int main() {
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:     return std::process::ExitCode::SUCCESS;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn foo({{arg[0-9]+}}: *mut core::ffi::c_void) {
-// LOWERING-NEXT:     let mut y: aligned::Aligned<aligned::A4, fo_0> = aligned::Aligned(fo_0 { __slate_empty: [] });
+// LOWERING-X86_64-GNU-NEXT:     let mut y: aligned::Aligned<aligned::A4, fo_0> = aligned::Aligned(fo_0 { __slate_empty: [] });
+// LOWERING-AARCH64-GNU-NEXT:     let mut y: aligned::Aligned<aligned::A8, fo_0> = aligned::Aligned(fo_0 { __slate_empty: [] });
 // LOWERING-NEXT:     let {{__v[0-9]+}}: *mut fo = {{arg[0-9]+}} as *mut fo;
 // LOWERING-NEXT:     unsafe {
 // LOWERING-NEXT:         *({{__v[0-9]+}} as *mut u8).add(0usize) = *({{__v[0-9]+}} as *mut u8).add(0usize) & 241u8;
@@ -161,6 +171,18 @@ int main() {
 // LOWERING-NEXT:     unsafe {
 // LOWERING-NEXT:         *({{__v[0-9]+}} as *mut u8).add(3usize) = *({{__v[0-9]+}} as *mut u8).add(3usize) & 0u8;
 // LOWERING-NEXT:     }
+// LOWERING-AARCH64-GNU-NEXT:     unsafe {
+// LOWERING-AARCH64-GNU-NEXT:         *({{__v[0-9]+}} as *mut u8).add(4usize) = *({{__v[0-9]+}} as *mut u8).add(4usize) & 0u8;
+// LOWERING-AARCH64-GNU-NEXT:     }
+// LOWERING-AARCH64-GNU-NEXT:     unsafe {
+// LOWERING-AARCH64-GNU-NEXT:         *({{__v[0-9]+}} as *mut u8).add(5usize) = *({{__v[0-9]+}} as *mut u8).add(5usize) & 0u8;
+// LOWERING-AARCH64-GNU-NEXT:     }
+// LOWERING-AARCH64-GNU-NEXT:     unsafe {
+// LOWERING-AARCH64-GNU-NEXT:         *({{__v[0-9]+}} as *mut u8).add(6usize) = *({{__v[0-9]+}} as *mut u8).add(6usize) & 0u8;
+// LOWERING-AARCH64-GNU-NEXT:     }
+// LOWERING-AARCH64-GNU-NEXT:     unsafe {
+// LOWERING-AARCH64-GNU-NEXT:         *({{__v[0-9]+}} as *mut u8).add(7usize) = *({{__v[0-9]+}} as *mut u8).add(7usize) & 0u8;
+// LOWERING-AARCH64-GNU-NEXT:     }
 // LOWERING-NEXT:     return;
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
@@ -206,7 +228,8 @@ int main() {
 // REWRITES-NEXT: #[derive(Clone, Copy)]
 // REWRITES-NEXT: struct fo {
 // REWRITES-NEXT:     __bitfield_0: __slate_bitfields::__SlateBitfield_fo_0,
-// REWRITES-NEXT:     __bitfield_1: [u8; 3],
+// REWRITES-X86_64-GNU-NEXT:     __bitfield_1: [u8; 3],
+// REWRITES-AARCH64-GNU-NEXT:     __bitfield_1: [u8; 7],
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[repr(C)]
@@ -215,10 +238,13 @@ int main() {
 // REWRITES-NEXT:     __slate_empty: [u8; 0],
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: static mut x: fo = fo {
+// REWRITES-X86_64-GNU-NEXT: static mut x: fo = fo {
+// REWRITES-AARCH64-GNU-NEXT: static mut x: aligned::Aligned<aligned::A8, fo> = aligned::Aligned(fo {
 // REWRITES-NEXT:     __bitfield_0: unsafe { std::mem::transmute::<u8, __slate_bitfields::__SlateBitfield_fo_0>(0) },
-// REWRITES-NEXT:     __bitfield_1: [0; 3],
-// REWRITES-NEXT: };
+// REWRITES-X86_64-GNU-NEXT:     __bitfield_1: [0; 3],
+// REWRITES-X86_64-GNU-NEXT: };
+// REWRITES-AARCH64-GNU-NEXT:     __bitfield_1: [0; 7],
+// REWRITES-AARCH64-GNU-NEXT: });
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe extern "C" {
 // REWRITES-NEXT:     fn malloc(_0: u64) -> *mut core::ffi::c_void;
@@ -227,11 +253,13 @@ int main() {
 // REWRITES-NEXT:     fn abort() -> !;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT: fn main() -> std::process::ExitCode {
 // REWRITES-NEXT:     let mut p: *mut fo = std::ptr::null_mut();
-// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc(4 as u64) };
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc(4 as u64) };
+// REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc(8 as u64) };
 // REWRITES-NEXT:     p = {{__v[0-9]+}} as *mut fo;
-// REWRITES-NEXT:     unsafe { std::ptr::write_bytes(p as *mut u8, (65535 as i32) as u8, (4 as u64) as usize) };
+// REWRITES-X86_64-GNU-NEXT:     unsafe { std::ptr::write_bytes(p as *mut u8, (65535 as i32) as u8, (4 as u64) as usize) };
+// REWRITES-AARCH64-GNU-NEXT:     unsafe { std::ptr::write_bytes(p as *mut u8, (65535 as i32) as u8, (8 as u64) as usize) };
 // REWRITES-NEXT:     foo(p as *mut core::ffi::c_void);
 // REWRITES-NEXT:     let {{__v[0-9]+}}: *mut fo = p;
 // REWRITES-NEXT:     unsafe {
@@ -243,19 +271,22 @@ int main() {
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = p as *mut core::ffi::c_void;
-// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(x) as *mut core::ffi::c_void;
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(x) as *mut core::ffi::c_void;
+// REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void =
+// REWRITES-AARCH64-GNU-NEXT:         (unsafe { std::ptr::addr_of_mut!(*x) }) as *mut core::ffi::c_void;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe {
 // REWRITES-NEXT:         memcmp(
 // REWRITES-NEXT:             {{__v[0-9]+}} as *mut core::ffi::c_void,
 // REWRITES-NEXT:             {{__v[0-9]+}} as *mut core::ffi::c_void,
-// REWRITES-NEXT:             4 as u64,
+// REWRITES-X86_64-GNU-NEXT:             4 as u64,
+// REWRITES-AARCH64-GNU-NEXT:             8 as u64,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
 // REWRITES-NEXT:     if {{__v[0-9]+}} {
 // REWRITES-NEXT:         unsafe { std::process::abort() };
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT:     return std::process::ExitCode::SUCCESS;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn foo({{arg[0-9]+}}: *mut core::ffi::c_void) {
@@ -275,6 +306,18 @@ int main() {
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         *({{__v[0-9]+}} as *mut u8).add(3usize) = *({{__v[0-9]+}} as *mut u8).add(3usize) & 0u8;
 // REWRITES-NEXT:     }
+// REWRITES-AARCH64-GNU-NEXT:     unsafe {
+// REWRITES-AARCH64-GNU-NEXT:         *({{__v[0-9]+}} as *mut u8).add(4usize) = *({{__v[0-9]+}} as *mut u8).add(4usize) & 0u8;
+// REWRITES-AARCH64-GNU-NEXT:     }
+// REWRITES-AARCH64-GNU-NEXT:     unsafe {
+// REWRITES-AARCH64-GNU-NEXT:         *({{__v[0-9]+}} as *mut u8).add(5usize) = *({{__v[0-9]+}} as *mut u8).add(5usize) & 0u8;
+// REWRITES-AARCH64-GNU-NEXT:     }
+// REWRITES-AARCH64-GNU-NEXT:     unsafe {
+// REWRITES-AARCH64-GNU-NEXT:         *({{__v[0-9]+}} as *mut u8).add(6usize) = *({{__v[0-9]+}} as *mut u8).add(6usize) & 0u8;
+// REWRITES-AARCH64-GNU-NEXT:     }
+// REWRITES-AARCH64-GNU-NEXT:     unsafe {
+// REWRITES-AARCH64-GNU-NEXT:         *({{__v[0-9]+}} as *mut u8).add(7usize) = *({{__v[0-9]+}} as *mut u8).add(7usize) & 0u8;
+// REWRITES-AARCH64-GNU-NEXT:     }
 // REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

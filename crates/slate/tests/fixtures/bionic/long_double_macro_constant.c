@@ -26,13 +26,13 @@ int main(void) { return f() == 0.0L; }
 // LOWERING-NEXT:     return {{__v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT: fn main() -> std::process::ExitCode {
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: f128 = f();
 // LOWERING-NEXT:     let {{__v[0-9]+}}: f128 = 0.000000e+00f128;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:     return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -56,9 +56,9 @@ int main(void) { return f() == 0.0L; }
 // REWRITES-BIONIC-AARCH64-NEXT:     {{__v[0-9]+}}
 // REWRITES-BIONIC-AARCH64-NEXT: }
 // REWRITES-BIONIC-AARCH64-EMPTY:
-// REWRITES-BIONIC-AARCH64-NEXT: fn main() {
+// REWRITES-BIONIC-AARCH64-NEXT: fn main() -> std::process::ExitCode {
 // REWRITES-BIONIC-AARCH64-NEXT:     let {{__v[0-9]+}}: f128 = f();
 // REWRITES-BIONIC-AARCH64-NEXT:     let {{__v[0-9]+}}: f128 = 0.000000e+00f128;
-// REWRITES-BIONIC-AARCH64-NEXT:     std::process::exit(({{__v[0-9]+}} == {{__v[0-9]+}}) as i32);
+// REWRITES-BIONIC-AARCH64-NEXT:     return std::process::ExitCode::from(({{__v[0-9]+}} == {{__v[0-9]+}}) as u8);
 // REWRITES-BIONIC-AARCH64-NEXT: }
 // SLATE-FILECHECK-END rewrites

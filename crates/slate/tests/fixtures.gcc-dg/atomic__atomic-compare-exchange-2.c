@@ -98,7 +98,7 @@ int main() {
 // @lowering-fn-end
 
 // SLATE-FILECHECK-BEGIN lowering
-// LOWERING-DAG: fn main() {
+// LOWERING-DAG: fn main() -> std::process::ExitCode {
 // LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-DAG:     {
 // LOWERING-DAG:         let {{__v[0-9]+}}: i16 = unsafe { max };
@@ -503,12 +503,12 @@ int main() {
 // LOWERING-DAG:         }
 // LOWERING-DAG:     }
 // LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-DAG:     return std::process::ExitCode::SUCCESS;
 // LOWERING-DAG: }
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: fn main() {
+// REWRITES-DAG: fn main() -> std::process::ExitCode {
 // REWRITES-DAG:     let {{__v[0-9]+}}: Result<i16, i16> = unsafe {
 // REWRITES-DAG:         std::sync::atomic::AtomicI16::from_ptr(std::ptr::addr_of_mut!(v)).compare_exchange(
 // REWRITES-DAG:             unsafe { expected },
@@ -796,6 +796,6 @@ int main() {
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
-// REWRITES-DAG:     std::process::exit(0 as i32);
+// REWRITES-DAG:     return std::process::ExitCode::SUCCESS;
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

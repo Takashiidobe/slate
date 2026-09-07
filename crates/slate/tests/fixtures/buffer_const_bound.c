@@ -58,7 +58,7 @@ int main(void) {
 // @lowering-fn-end
 
 // SLATE-FILECHECK-BEGIN lowering
-// LOWERING-DAG: fn main() {
+// LOWERING-DAG: fn main() -> std::process::ExitCode {
 // LOWERING-X86_64-GNU-DAG:     let mut arr: aligned::Aligned<aligned::A16, [i32; 4]> = aligned::Aligned([0; 4]);
 // LOWERING-AARCH64-GNU-DAG:     let mut arr: [i32; 4] = [0; 4];
 // LOWERING-DAG:     let mut a: [i32; 3] = [0; 3];
@@ -122,12 +122,12 @@ int main(void) {
 // LOWERING-DAG:         )
 // LOWERING-DAG:     };
 // LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-DAG:     return std::process::ExitCode::SUCCESS;
 // LOWERING-DAG: }
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: fn main() {
+// REWRITES-DAG: fn main() -> std::process::ExitCode {
 // REWRITES-X86_64-GNU-DAG:     let mut arr: aligned::Aligned<aligned::A16, [i32; 4]> = aligned::Aligned([0; 4]);
 // REWRITES-AARCH64-GNU-DAG:     let mut arr: [i32; 4] = [0; 4];
 // REWRITES-DAG:     let mut a: [i32; 3] = [0; 3];
@@ -166,6 +166,6 @@ int main(void) {
 // REWRITES-DAG:     let {{__v[0-9]+}}: *mut i32 = big.as_mut_ptr() as *mut i32;
 // REWRITES-DAG:     println!("{} {} {} {} {}", {{__v[0-9]+}}, a[0], a[2], {{__v[0-9]+}}, mix({{__v[0-9]+}}));
 // REWRITES-DAG:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// REWRITES-DAG:     std::process::exit(0 as i32);
+// REWRITES-DAG:     return std::process::ExitCode::SUCCESS;
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

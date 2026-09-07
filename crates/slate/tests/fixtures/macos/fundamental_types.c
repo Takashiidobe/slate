@@ -262,7 +262,7 @@ int main(void) { return printf("%d\n", errno == 0); }
 // LOWERING-MACOS-NEXT:     return {{__v[0-9]+}};
 // LOWERING-MACOS-NEXT: }
 // LOWERING-MACOS-EMPTY:
-// LOWERING-MACOS-NEXT: fn main() {
+// LOWERING-MACOS-NEXT: fn main() -> std::process::ExitCode {
 // LOWERING-MACOS-NEXT:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-MACOS-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
 // LOWERING-MACOS-NEXT:     let {{__v[0-9]+}}: *mut i32 = unsafe { __error() };
@@ -271,6 +271,6 @@ int main(void) { return printf("%d\n", errno == 0); }
 // LOWERING-MACOS-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
 // LOWERING-MACOS-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
 // LOWERING-MACOS-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
-// LOWERING-MACOS-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-MACOS-NEXT:     return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-MACOS-NEXT: }
 // SLATE-FILECHECK-END lowering-macos

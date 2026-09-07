@@ -42,7 +42,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: freeDict(unsafe { std::ptr::addr_of_mut!((*{{arg[0-9]+}}).dict) });
 // LOWERING-DAG: syncDestroy(unsafe { std::ptr::addr_of_mut!((*{{arg[0-9]+}}).io) });
-// LOWERING-DAG: fn main() {
+// LOWERING-DAG: fn main() -> std::process::ExitCode {
 // LOWERING-DAG:     let mut __retval: i32 = 0;
 // LOWERING-DAG:     let mut r: cRess_t = cRess_t {
 // LOWERING-DAG:         dict: FIO_Dict_t { x: 0 },
@@ -68,17 +68,17 @@ int main(void) {
 // LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-DAG:         __retval = {{__v[0-9]+}};
 // LOWERING-DAG:         let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-DAG:         std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-DAG:         return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-DAG:     }
 // LOWERING-DAG:     let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-DAG:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-DAG:     return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-DAG: }
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: freeDict(unsafe { std::ptr::addr_of_mut!((*({{arg[0-9]+}} as *mut cRess_t)).dict) });
 // REWRITES-DAG: syncDestroy(unsafe { std::ptr::addr_of_mut!((*({{arg[0-9]+}} as *mut cRess_t)).io) });
-// REWRITES-DAG: fn main() {
+// REWRITES-DAG: fn main() -> std::process::ExitCode {
 // REWRITES-DAG:     let mut __retval: i32 = 0;
 // REWRITES-DAG:     let mut r: cRess_t = cRess_t {
 // REWRITES-DAG:         dict: FIO_Dict_t { x: 0 },
@@ -97,7 +97,7 @@ int main(void) {
 // REWRITES-DAG:     println!("{} {} {}", {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
 // REWRITES-DAG:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-DAG:     __retval = 0;
-// REWRITES-DAG:     std::process::exit(__retval as i32);
-// REWRITES-DAG:     std::process::exit(__retval as i32);
+// REWRITES-DAG:     return std::process::ExitCode::from(__retval as u8);
+// REWRITES-DAG:     return std::process::ExitCode::from(__retval as u8);
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

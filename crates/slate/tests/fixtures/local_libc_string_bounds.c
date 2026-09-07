@@ -55,7 +55,7 @@ int main(void) {
 // LOWERING-NEXT:     fn strcspn(_0: *const core::ffi::c_char, _1: *const core::ffi::c_char) -> usize;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT: fn main() -> std::process::ExitCode {
 // LOWERING-X86_64-GNU-NEXT:     let mut abc: [i8; 4] = [0; 4];
 // LOWERING-X86_64-GNU-NEXT:     let mut abd: [i8; 4] = [0; 4];
 // LOWERING-X86_64-GNU-NEXT:     let mut text: [i8; 7] = [0; 7];
@@ -163,7 +163,7 @@ int main(void) {
 // LOWERING-NEXT:         )
 // LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:     return std::process::ExitCode::SUCCESS;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-X86_64-GNU-NEXT: fn bounded_cmp({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: u64) -> i32 {
@@ -232,7 +232,7 @@ int main(void) {
 // REWRITES-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT: fn main() -> std::process::ExitCode {
 // REWRITES-X86_64-GNU-NEXT:     let mut abc: [i8; 4] = [97, 98, 99, 0];
 // REWRITES-X86_64-GNU-NEXT:     let mut abd: [i8; 4] = [97, 98, 100, 0];
 // REWRITES-X86_64-GNU-NEXT:     let mut text: [i8; 7] = [97, 98, 99, 100, 101, 102, 0];
@@ -306,7 +306,7 @@ int main(void) {
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
-// REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT:     return std::process::ExitCode::SUCCESS;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn bounded_cmp({{arg[0-9]+}}: &str, {{arg[0-9]+}}: &str, {{arg[0-9]+}}: u64) -> i32 {

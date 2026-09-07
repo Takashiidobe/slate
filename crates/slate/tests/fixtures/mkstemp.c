@@ -35,7 +35,7 @@ int main(void) {
 // LOWERING-NEXT:     fn unlink(_0: *const core::ffi::c_char) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT: fn main() -> std::process::ExitCode {
 // LOWERING-X86_64-GNU-NEXT:     let mut path: [i8; 13] = [0; 13];
 // LOWERING-AARCH64-GNU-NEXT:     let mut path: [u8; 13] = [0; 13];
 // LOWERING-NEXT:     let mut fd: i32 = 0;
@@ -66,7 +66,7 @@ int main(void) {
 // LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = unsafe { unlink({{__v[0-9]+}} as *const core::ffi::c_char) };
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:     return std::process::ExitCode::SUCCESS;
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -92,7 +92,7 @@ int main(void) {
 // REWRITES-NEXT:     fn unlink(_0: *const core::ffi::c_char) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT: fn main() -> std::process::ExitCode {
 // REWRITES-X86_64-GNU-NEXT:     let mut path: [i8; 13] = [115, 108, 97, 116, 101, 45, 88, 88, 88, 88, 88, 88, 0];
 // REWRITES-AARCH64-GNU-NEXT:     let mut path: [u8; 13] = [115, 108, 97, 116, 101, 45, 88, 88, 88, 88, 88, 88, 0];
 // REWRITES-NEXT:     let mut fd: i32 = 0;
@@ -106,6 +106,6 @@ int main(void) {
 // REWRITES-NEXT:         unsafe { close(fd as i32) };
 // REWRITES-NEXT:         unsafe { unlink(path.as_mut_ptr() as *const core::ffi::c_char) };
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT:     return std::process::ExitCode::SUCCESS;
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

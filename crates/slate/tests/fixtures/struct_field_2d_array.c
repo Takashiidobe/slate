@@ -89,7 +89,7 @@ int main(void) {
 // LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT: fn main() -> std::process::ExitCode {
 // LOWERING-NEXT:     let mut t: table = table { rows: {{\[\[}}0; 3]; 4] };
 // LOWERING-NEXT:     let mut c: cube = cube {
 // LOWERING-NEXT:         v: {{\[\[}}[0; 4]; 3]; 2],
@@ -137,7 +137,7 @@ int main(void) {
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = sum_cube_via_ptr(std::ptr::addr_of_mut!(c));
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:     return std::process::ExitCode::SUCCESS;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn fill({{arg[0-9]+}}: *mut table) {
@@ -391,7 +391,7 @@ int main(void) {
 // REWRITES-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT: fn main() -> std::process::ExitCode {
 // REWRITES-NEXT:     let mut t: table = table { rows: {{\[\[}}0; 3]; 4] };
 // REWRITES-NEXT:     let mut c: cube = cube {
 // REWRITES-NEXT:         v: {{\[\[}}[0; 4]; 3]; 2],
@@ -415,7 +415,7 @@ int main(void) {
 // REWRITES-NEXT:         sum_cube_via_ptr(unsafe { &mut (*std::ptr::addr_of_mut!(c)) })
 // REWRITES-NEXT:     );
 // REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT:     return std::process::ExitCode::SUCCESS;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn fill({{arg[0-9]+}}: &mut table) {

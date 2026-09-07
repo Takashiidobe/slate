@@ -35,7 +35,7 @@ int main(void) {
 // LOWERING-NEXT:     value: {{anon_[0-9]+}},
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT: fn main() -> std::process::ExitCode {
 // LOWERING-NEXT:     let mut state: anonymous_header_state = anonymous_header_state {
 // LOWERING-NEXT:         count: 0,
 // LOWERING-NEXT:         value: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() },
@@ -56,7 +56,7 @@ int main(void) {
 // LOWERING-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
-// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:     return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -89,7 +89,7 @@ int main(void) {
 // REWRITES-NEXT:     value: {{anon_[0-9]+}},
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT: fn main() -> std::process::ExitCode {
 // REWRITES-NEXT:     let mut state: anonymous_header_state = anonymous_header_state {
 // REWRITES-NEXT:         count: 0,
 // REWRITES-NEXT:         value: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() },
@@ -102,6 +102,6 @@ int main(void) {
 // REWRITES-NEXT:         state.value.wide = 7;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = state.count + (((unsafe { state.value.wide }) != 7) as i32);
-// REWRITES-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// REWRITES-NEXT:     return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

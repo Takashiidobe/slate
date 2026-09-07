@@ -26,7 +26,7 @@ int main(void) {
 // @lowering-fn-end
 
 // SLATE-FILECHECK-BEGIN lowering
-// LOWERING-DAG: fn main() {
+// LOWERING-DAG: fn main() -> std::process::ExitCode {
 // LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 3;
 // LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 4;
@@ -52,12 +52,13 @@ int main(void) {
 // LOWERING-DAG:         )
 // LOWERING-DAG:     };
 // LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-DAG:     return std::process::ExitCode::SUCCESS;
 // LOWERING-DAG: }
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: fn main() {
+// REWRITES-DAG: fn main() -> std::process::ExitCode {
+// REWRITES-DAG:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-DAG:     unsafe {
 // REWRITES-DAG:         printf(
 // REWRITES-DAG:             c"%d %d %d %d %s %s\n".as_ptr(),
@@ -71,6 +72,7 @@ int main(void) {
 // REWRITES-AARCH64-GNU-DAG:             c"double".as_ptr() as *mut u8,
 // REWRITES-DAG:         )
 // REWRITES-DAG:     };
-// REWRITES-DAG:     std::process::exit(0 as i32);
+// REWRITES-DAG:     unsafe { fflush(std::ptr::null_mut()) };
+// REWRITES-DAG:     return std::process::ExitCode::SUCCESS;
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

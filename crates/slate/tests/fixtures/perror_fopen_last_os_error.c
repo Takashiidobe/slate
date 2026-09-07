@@ -30,7 +30,7 @@ int main(void) {
 // LOWERING-NEXT:     fn fclose(_0: *mut libc::FILE) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT: fn main() -> std::process::ExitCode {
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut fp: *mut libc::FILE = std::ptr::null_mut();
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
@@ -57,7 +57,7 @@ int main(void) {
 // LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = 1;
 // LOWERING-NEXT:             __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:             std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:             return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     let {{__v[0-9]+}}: *mut libc::FILE = fp;
@@ -65,7 +65,7 @@ int main(void) {
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     __retval = {{__v[0-9]+}};
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-NEXT:     return std::process::ExitCode::from({{__v[0-9]+}} as u8);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -89,7 +89,7 @@ int main(void) {
 // REWRITES-NEXT:     fn fclose(_0: *mut libc::FILE) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT: fn main() -> std::process::ExitCode {
 // REWRITES-NEXT:     let mut __retval: i32 = 0;
 // REWRITES-NEXT:     let mut fp: *mut libc::FILE =
 // REWRITES-NEXT:         unsafe { fopen(c"slate_perror_fopen_missing.tmp".as_ptr(), c"r".as_ptr()) };
@@ -97,10 +97,10 @@ int main(void) {
 // REWRITES-NEXT:     if {{__v[0-9]+}} {
 // REWRITES-NEXT:         unsafe { perror(c"open failed".as_ptr()) };
 // REWRITES-NEXT:         __retval = 1;
-// REWRITES-NEXT:         std::process::exit(__retval as i32);
+// REWRITES-NEXT:         return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     unsafe { fclose(fp as *mut libc::FILE) };
 // REWRITES-NEXT:     __retval = 0;
-// REWRITES-NEXT:     std::process::exit(__retval as i32);
+// REWRITES-NEXT:     return std::process::ExitCode::from(__retval as u8);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

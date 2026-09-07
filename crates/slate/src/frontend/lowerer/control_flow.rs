@@ -13,7 +13,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             )
         });
         if self.is_main {
-            let code = value.unwrap_or(Expr::Value(RustValue::I64(0)));
             let dtor_stmts: Vec<Stmt> = self
                 .parent
                 .dtor_calls
@@ -23,16 +22,26 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             for stmt in dtor_stmts {
                 self.push_stmt(stmt);
             }
-            self.push_stmt(Stmt::Expr(Expr::Call {
-                binding: crate::function_identity::CallBinding::Generated,
-                func: Box::new(Expr::Path(Path::new(
-                    ["std", "process", "exit"].map(Ident::from),
-                ))),
-                args: vec![Expr::Cast {
-                    expr: Box::new(code),
-                    ty: Type::Prim(Prim::I32),
-                }],
-            }));
+            let result = if operand
+                .and_then(|operand| self.const_int_values.get(operand))
+                .is_some_and(|value| *value == 0)
+            {
+                Expr::Path(Path::new(
+                    ["std", "process", "ExitCode", "SUCCESS"].map(Ident::from),
+                ))
+            } else {
+                Expr::Call {
+                    binding: crate::function_identity::CallBinding::Generated,
+                    func: Box::new(Expr::Path(Path::new(
+                        ["std", "process", "ExitCode", "from"].map(Ident::from),
+                    ))),
+                    args: vec![Expr::Cast {
+                        expr: Box::new(value.unwrap_or(Expr::Value(RustValue::I64(0)))),
+                        ty: Type::Prim(Prim::U8),
+                    }],
+                }
+            };
+            self.push_stmt(Stmt::Return(Some(result)));
         } else if let Some(value) = value {
             self.push_stmt(Stmt::Return(Some(value)));
         } else {

@@ -28,7 +28,7 @@ int main(void) {
 // @lowering-fn-end
 
 // SLATE-FILECHECK-BEGIN lowering
-// LOWERING-DAG: fn main() {
+// LOWERING-DAG: fn main() -> std::process::ExitCode {
 // LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-DAG:     let {{__v[0-9]+}}: u32 = 305419896;
 // LOWERING-DAG:     let {{__v[0-9]+}}: u32 = 0;
@@ -78,12 +78,12 @@ int main(void) {
 // LOWERING-DAG:         )
 // LOWERING-DAG:     };
 // LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:     std::process::exit({{__v[0-9]+}} as i32);
+// LOWERING-DAG:     return std::process::ExitCode::SUCCESS;
 // LOWERING-DAG: }
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: fn main() {
+// REWRITES-DAG: fn main() -> std::process::ExitCode {
 // REWRITES-DAG:     let {{__v[0-9]+}}: u32 = 305419896;
 // REWRITES-DAG:     let {{__v[0-9]+}}: i32 = -12345;
 // REWRITES-DAG:     let {{__v[0-9]+}}: u32 = 5;
@@ -104,6 +104,7 @@ int main(void) {
 // REWRITES-DAG:     let {{__v[0-9]+}}: i32 = (if {{__v[0-9]+}} < 0 { !{{__v[0-9]+}} } else { {{__v[0-9]+}} }.leading_zeros() as i32) - 1;
 // REWRITES-DAG:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}}.rotate_left({{__v[0-9]+}} as u32);
 // REWRITES-DAG:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}}.rotate_right({{__v[0-9]+}} as u32);
+// REWRITES-DAG:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-DAG:     unsafe {
 // REWRITES-DAG:         printf(
 // REWRITES-DAG:             c"%u %u %d %d %d %d %d %d %d %u %u\n".as_ptr(),
@@ -120,6 +121,7 @@ int main(void) {
 // REWRITES-DAG:             {{__v[0-9]+}},
 // REWRITES-DAG:         )
 // REWRITES-DAG:     };
-// REWRITES-DAG:     std::process::exit(0 as i32);
+// REWRITES-DAG:     unsafe { fflush(std::ptr::null_mut()) };
+// REWRITES-DAG:     return std::process::ExitCode::SUCCESS;
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites
