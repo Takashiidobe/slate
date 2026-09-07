@@ -6,8 +6,7 @@ size_t lowest_bit(unsigned long long x) {
 }
 
 int main(void) {
-  unsigned long long x = 0;
-  scanf("%llu", &x);
+  unsigned long long x = 0x1230000ULL;
   size_t n = lowest_bit(x);
   printf("%zu\n", n);
   return 0;
@@ -29,7 +28,6 @@ int main(void) {
 // LOWERING-NEXT: )]
 // LOWERING-EMPTY:
 // LOWERING-NEXT: unsafe extern "C" {
-// LOWERING-NEXT:     fn scanf(_0: *const core::ffi::c_char, ...) -> i32;
 // LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
@@ -43,14 +41,8 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut x: u64 = 0;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = 0;
-// LOWERING-NEXT:     x = {{__v[0-9]+}};
-// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%llu\0".as_ptr() as *mut i8;
-// LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = b"%llu\0".as_ptr() as *mut u8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { scanf({{__v[0-9]+}} as *const core::ffi::c_char, std::ptr::addr_of_mut!(x)) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = x;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = 19070976;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = lowest_bit({{__v[0-9]+}});
 // LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%zu\n\0".as_ptr() as *mut i8;
 // LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = b"%zu\n\0".as_ptr() as *mut u8;
@@ -76,7 +68,6 @@ int main(void) {
 // REWRITES-NEXT: )]
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe extern "C" {
-// REWRITES-NEXT:     fn scanf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
@@ -86,9 +77,7 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     let mut x: u64 = 0;
-// REWRITES-NEXT:     unsafe { scanf(c"%llu".as_ptr(), std::ptr::addr_of_mut!(x)) };
-// REWRITES-NEXT:     unsafe { printf(c"%zu\n".as_ptr(), lowest_bit(x)) };
+// REWRITES-NEXT:     unsafe { printf(c"%zu\n".as_ptr(), lowest_bit(19070976)) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

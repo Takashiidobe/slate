@@ -518,6 +518,14 @@ fn saturate_int(v: i128, prim: Prim) -> i128 {
     }
 }
 
+fn long_prim() -> Prim {
+    if crate::frontend::toolchain::active_long_bits() == 64 {
+        Prim::I64
+    } else {
+        Prim::I32
+    }
+}
+
 fn fold_atoi(ctx: &CallCtx, prim: Prim) -> Option<Expr> {
     let lit = ctx.const_str_arg(0)?;
     let value = saturate_int(c_atoi_prefix(&lit), prim);
@@ -773,10 +781,10 @@ pub(super) fn rules() -> Vec<Box<dyn NodeRule>> {
             fold_atoi(ctx, Prim::I32).or_else(|| ato_helper(ctx, "__slate_atoi"))
         }),
         libc_call(Known::Atol, |ctx| {
-            fold_atoi(ctx, Prim::I64).or_else(|| ato_helper(ctx, "__slate_atol"))
+            fold_atoi(ctx, long_prim()).or_else(|| ato_helper(ctx, "__slate_atol"))
         }),
         libc_call(Known::Atoll, |ctx| {
-            fold_atoi(ctx, Prim::I64).or_else(|| ato_helper(ctx, "__slate_atol"))
+            fold_atoi(ctx, Prim::I64).or_else(|| ato_helper(ctx, "__slate_atoll"))
         }),
         libc_call(Known::Atof, fold_atof),
         libc_call(Known::MemCpy, |ctx| {

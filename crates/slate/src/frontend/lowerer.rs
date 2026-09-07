@@ -671,10 +671,11 @@ fn type_alignment(ty: &Type) -> u32 {
 fn effective_type_alignment(
     ty: &Type,
     records: &BTreeMap<String, crate::frontend::c_ast::Record>,
+    pointer_bytes: u64,
 ) -> u32 {
     if let Type::Custom(name) = ty
         && let Some(record) = records.get(name)
-        && let Some(align) = record_natural_align(record, records)
+        && let Some(align) = record_natural_align(record, records, pointer_bytes)
     {
         return align as u32;
     }
@@ -1905,7 +1906,14 @@ impl __SlateVaArgs {
             global
                 .alignment
                 .and_then(|alignment| u32::try_from(alignment).ok())
-                .filter(|alignment| *alignment > effective_type_alignment(ty, &self.records))
+                .filter(|alignment| {
+                    *alignment
+                        > effective_type_alignment(
+                            ty,
+                            &self.records,
+                            u64::from(self.target_pointer_bits) / 8,
+                        )
+                })
         });
         let weak = global.linkage == GlobalLinkageKind::WeakAny;
         let thread_local = global.tls_model.is_some();
@@ -2711,11 +2719,16 @@ impl __SlateVaArgs {
     }
 
     fn layout_query_value(&self, query: &LayoutQuery) -> Option<i128> {
+        let pointer_bytes = u64::from(self.target_pointer_bits) / 8;
         match query {
-            LayoutQuery::Size(ty) => c_layout(ty, &self.records).map(|layout| layout.size),
-            LayoutQuery::Align(ty) => c_layout(ty, &self.records).map(|layout| layout.align),
+            LayoutQuery::Size(ty) => {
+                c_layout(ty, &self.records, pointer_bytes).map(|layout| layout.size)
+            }
+            LayoutQuery::Align(ty) => {
+                c_layout(ty, &self.records, pointer_bytes).map(|layout| layout.align)
+            }
             LayoutQuery::Offset { record, field } => {
-                record_field_offset(record, field, &self.records)
+                record_field_offset(record, field, &self.records, pointer_bytes)
             }
         }
         .map(i128::from)
@@ -3402,6 +3415,7 @@ fn layout_call(name: &str, ty: &Type) -> Expr {
 fn c_layout(
     ty: &crate::frontend::c_ast::CType,
     records: &BTreeMap<String, crate::frontend::c_ast::Record>,
+    pointer_bytes: u64,
 ) -> Option<CLayout> {
     use crate::frontend::c_ast::CType;
     match ty {
@@ -3420,25 +3434,28 @@ fn c_layout(
             },
         ),
         CType::Float { bits } => scalar_layout(*bits),
-        CType::Ptr(_) | CType::FuncPtr { .. } => Some(CLayout { size: 8, align: 8 }),
+        CType::Ptr(_) | CType::FuncPtr { .. } => Some(CLayout {
+            size: pointer_bytes,
+            align: pointer_bytes,
+        }),
         CType::Array(elem, Some(len)) => {
-            let elem = c_layout(elem, records)?;
+            let elem = c_layout(elem, records, pointer_bytes)?;
             Some(CLayout {
                 size: align_to(elem.size, elem.align) * len,
                 align: elem.align,
             })
         }
         CType::Array(elem, None) => {
-            let elem = c_layout(elem, records)?;
+            let elem = c_layout(elem, records, pointer_bytes)?;
             Some(CLayout {
                 size: 0,
                 align: elem.align,
             })
         }
-        CType::Record(name) => record_layout(name, records),
+        CType::Record(name) => record_layout(name, records, pointer_bytes),
         CType::Enum(_) => scalar_layout(32),
         CType::Complex(inner) => {
-            let elem = c_layout(inner, records)?;
+            let elem = c_layout(inner, records, pointer_bytes)?;
             Some(CLayout {
                 size: align_to(elem.size, elem.align) * 2,
                 align: elem.align,
@@ -3459,9 +3476,10 @@ fn scalar_layout(bits: u32) -> Option<CLayout> {
 fn record_layout(
     name: &str,
     records: &BTreeMap<String, crate::frontend::c_ast::Record>,
+    pointer_bytes: u64,
 ) -> Option<CLayout> {
     let record = records.get(&sanitize_ident(name).into_string())?;
-    let natural_align = record_natural_align(record, records)?;
+    let natural_align = record_natural_align(record, records, pointer_bytes)?;
     let align = record
         .align
         .map(u64::from)
@@ -3471,7 +3489,7 @@ fn record_layout(
         RecordKind::Struct => {
             let mut offset = 0;
             for field in &record.fields {
-                let field_layout = c_layout(&field.ty, records)?;
+                let field_layout = c_layout(&field.ty, records, pointer_bytes)?;
                 let field_align = record.packed.map_or(field_layout.align, |packed| {
                     field_layout.align.min(u64::from(packed))
                 });
@@ -3487,7 +3505,9 @@ fn record_layout(
             let size = record
                 .fields
                 .iter()
-                .filter_map(|field| c_layout(&field.ty, records).map(|layout| layout.size))
+                .filter_map(|field| {
+                    c_layout(&field.ty, records, pointer_bytes).map(|layout| layout.size)
+                })
                 .max()
                 .unwrap_or(0);
             Some(CLayout {
@@ -3501,12 +3521,13 @@ fn record_layout(
 fn record_natural_align(
     record: &crate::frontend::c_ast::Record,
     records: &BTreeMap<String, crate::frontend::c_ast::Record>,
+    pointer_bytes: u64,
 ) -> Option<u64> {
     record
         .fields
         .iter()
         .map(|field| {
-            c_layout(&field.ty, records).map(|layout| {
+            c_layout(&field.ty, records, pointer_bytes).map(|layout| {
                 record
                     .packed
                     .map_or(layout.align, |packed| layout.align.min(u64::from(packed)))
@@ -3520,6 +3541,7 @@ fn record_field_offset(
     record_name: &str,
     field_name: &str,
     records: &BTreeMap<String, crate::frontend::c_ast::Record>,
+    pointer_bytes: u64,
 ) -> Option<u64> {
     let record = records.get(&sanitize_ident(record_name).into_string())?;
     if record.kind != RecordKind::Struct {
@@ -3527,7 +3549,7 @@ fn record_field_offset(
     }
     let mut offset = 0;
     for field in &record.fields {
-        let field_layout = c_layout(&field.ty, records)?;
+        let field_layout = c_layout(&field.ty, records, pointer_bytes)?;
         let field_align = record.packed.map_or(field_layout.align, |packed| {
             field_layout.align.min(u64::from(packed))
         });

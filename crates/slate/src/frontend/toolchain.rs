@@ -393,6 +393,7 @@ pub struct TargetConfig {
     pub arch: &'static str,
     pub endian: &'static str,
     pub env: &'static str,
+    pub long_bits: u32,
     pub long_double_bits: u32,
     pub os: &'static str,
     pub pointer_width: String,
@@ -431,10 +432,16 @@ pub fn target_config(target: &str) -> Result<TargetConfig, TargetError> {
     } else {
         80
     };
+    let long_bits = if pointer_width == "32" || (os == "windows" && env == "msvc") {
+        32
+    } else {
+        64
+    };
     Ok(TargetConfig {
         arch,
         endian: "little",
         env,
+        long_bits,
         long_double_bits,
         os,
         pointer_width,
@@ -531,6 +538,16 @@ pub fn long_double_bits(target: &str) -> u32 {
 
 pub fn active_long_double_bits() -> u32 {
     long_double_bits(&active_target())
+}
+
+pub fn long_bits(target: &str) -> u32 {
+    target_config(target)
+        .map(|config| config.long_bits)
+        .unwrap_or_else(|error| panic!("long target mapping required for `{target}`: {error}"))
+}
+
+pub fn active_long_bits() -> u32 {
+    long_bits(&active_target())
 }
 
 pub fn target_has_native_fma(bits: u32) -> bool {

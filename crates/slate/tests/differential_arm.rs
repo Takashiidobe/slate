@@ -26,16 +26,6 @@ fn skip_reason(name: &str) -> Option<&'static str> {
              pointer operand unconditionally, but arm char is unsigned, so CIR itself \
              fails verification here regardless of slate's lowerer",
         ),
-        "compound_literal_address"
-        | "numeric_parse_fixup"
-        | "local_record_same_tag"
-        | "builtin_ctzll_shift"
-        | "atoi_atof_const_fold"
-        | "atoi_atol_prelude_dynamic" => Some(
-            "known bug (slate-3f8g.4.16.12): slate lowers C 'long'/'unsigned long'/size_t-\
-             returning builtins as 64-bit unconditionally, but armv7-unknown-linux-gnueabihf \
-             is ILP32 (32-bit long, confirmed on-device)",
-        ),
         "c23_stdlib_memory_management" => Some(
             "environment limitation, not a slate bug: the armv7 sysroot's glibc.so.6 (ARM's \
              official 15.2.rel1 toolchain, glibc 2.42) doesn't export free_sized/\

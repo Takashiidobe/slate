@@ -705,9 +705,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         {
             ty = Type::Custom(enum_name.clone());
         }
-        let alignment = u32::try_from(op.alignment)
-            .ok()
-            .filter(|alignment| *alignment > effective_type_alignment(&ty, &self.parent.records));
+        let alignment = u32::try_from(op.alignment).ok().filter(|alignment| {
+            *alignment
+                > effective_type_alignment(
+                    &ty,
+                    &self.parent.records,
+                    u64::from(self.parent.target_pointer_bits) / 8,
+                )
+        });
         self.slots.insert(result.clone(), name.clone());
         self.slot_types.insert(result.clone(), ty.clone());
         let init = self.parent.default_value_expr(&ty);

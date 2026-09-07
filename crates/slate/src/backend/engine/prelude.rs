@@ -6,6 +6,7 @@ use crate::function_identity::CallBinding;
 
 pub(super) const ATOI: &str = "__slate_atoi";
 pub(super) const ATOL: &str = "__slate_atol";
+pub(super) const ATOLL: &str = "__slate_atoll";
 
 pub(in crate::backend) fn char_prim() -> Prim {
     if crate::frontend::toolchain::char_is_signed_default(
@@ -24,7 +25,7 @@ pub(in crate::backend) fn inject(program: &mut Program) {
         for item in &program.items {
             item_calls(item, &mut calls);
         }
-        for name in [ATOI, ATOL] {
+        for name in [ATOI, ATOL, ATOLL] {
             if calls.iter().any(|(callee, _)| callee.as_str() == name) {
                 needed.push(name);
             }
@@ -77,8 +78,17 @@ fn insert_pos(items: &[Item]) -> usize {
 
 fn build(name: &str) -> Item {
     match name {
-        ATOL => ato_int_prelude(ATOL, Prim::I64),
+        ATOL => ato_int_prelude(ATOL, long_prim()),
+        ATOLL => ato_int_prelude(ATOLL, Prim::I64),
         _ => ato_int_prelude(ATOI, Prim::I32),
+    }
+}
+
+fn long_prim() -> Prim {
+    if crate::frontend::toolchain::active_long_bits() == 64 {
+        Prim::I64
+    } else {
+        Prim::I32
     }
 }
 
@@ -199,11 +209,29 @@ fn ato_int_prelude(name: &str, ret: Prim) -> Item {
         ))),
         args: vec![slice],
     };
-    let parsed = mcall(
-        mcall(mcall(text, "unwrap", Vec::new()), "parse", Vec::new()),
+    let parsed_i128 = mcall(
+        Expr::MethodCallGeneric {
+            recv: Box::new(mcall(text, "unwrap", Vec::new())),
+            method: "parse".into(),
+            type_args: vec![Type::Prim(Prim::I128)],
+            args: Vec::new(),
+        },
         "unwrap_or",
-        vec![Expr::Value(RustValue::TypedInt(0, ret))],
+        vec![Expr::Value(RustValue::TypedInt(0, Prim::I128))],
     );
+    let ret_bound = |name: &str| Expr::Cast {
+        expr: Box::new(var(&format!("{}::{name}", ret.spelling()))),
+        ty: Type::Prim(Prim::I128),
+    };
+    let clamped = mcall(
+        parsed_i128,
+        "clamp",
+        vec![ret_bound("MIN"), ret_bound("MAX")],
+    );
+    let parsed = Expr::Cast {
+        expr: Box::new(clamped),
+        ty: Type::Prim(ret),
+    };
 
     let body = vec![
         let_stmt("bytes", false, bytes),

@@ -2545,8 +2545,10 @@ fn int_bits(s: &str) -> u32 {
         16
     } else if s.contains("__int128") {
         128
-    } else if s.contains("long") {
+    } else if s.contains("long long") {
         64
+    } else if s.contains("long") {
+        toolchain::active_long_bits()
     } else {
         32
     }

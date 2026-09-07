@@ -149,8 +149,9 @@ int main(void) {
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     return std::str::from_utf8(&bytes[(start..i)])
 // REWRITES-NEXT:         .unwrap()
-// REWRITES-NEXT:         .parse()
-// REWRITES-NEXT:         .unwrap_or(0i32);
+// REWRITES-NEXT:         .parse::<i128>()
+// REWRITES-NEXT:         .unwrap_or(0i128)
+// REWRITES-NEXT:         .clamp(i32::MIN as i128, i32::MAX as i128) as i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: fn __slate_atol(s: *const i8) -> i64 {
@@ -174,8 +175,35 @@ int main(void) {
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     return std::str::from_utf8(&bytes[(start..i)])
 // REWRITES-NEXT:         .unwrap()
-// REWRITES-NEXT:         .parse()
-// REWRITES-NEXT:         .unwrap_or(0i64);
+// REWRITES-NEXT:         .parse::<i128>()
+// REWRITES-NEXT:         .unwrap_or(0i128)
+// REWRITES-NEXT:         .clamp(i64::MIN as i128, i64::MAX as i128) as i64;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: fn __slate_atoll(s: *const i8) -> i64 {
+// REWRITES-AARCH64-GNU-NEXT: fn __slate_atoll(s: *const u8) -> i64 {
+// REWRITES-NEXT:     let bytes = unsafe { std::ffi::CStr::from_ptr(s) }.to_bytes();
+// REWRITES-NEXT:     let n = bytes.len();
+// REWRITES-NEXT:     let mut i = 0usize;
+// REWRITES-NEXT:     while i < n && (bytes[i].is_ascii_whitespace() || bytes[i] == 11u8) {
+// REWRITES-NEXT:         i += 1usize;
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let start = i;
+// REWRITES-NEXT:     if i < n && (bytes[i] == 43u8 || bytes[i] == 45u8) {
+// REWRITES-NEXT:         i += 1usize;
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let digits = i;
+// REWRITES-NEXT:     while i < n && bytes[i].is_ascii_digit() {
+// REWRITES-NEXT:         i += 1usize;
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     if i == digits {
+// REWRITES-NEXT:         return 0i64;
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     return std::str::from_utf8(&bytes[(start..i)])
+// REWRITES-NEXT:         .unwrap()
+// REWRITES-NEXT:         .parse::<i128>()
+// REWRITES-NEXT:         .unwrap_or(0i128)
+// REWRITES-NEXT:         .clamp(i64::MIN as i128, i64::MAX as i128) as i64;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
@@ -232,8 +260,8 @@ int main(void) {
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = c.as_mut_ptr() as *mut u8;
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf({{__v[0-9]+}} as *const core::ffi::c_char, unsafe {
-// REWRITES-X86_64-GNU-NEXT:             __slate_atol({{__v[0-9]+}} as *const i8)
-// REWRITES-AARCH64-GNU-NEXT:             __slate_atol({{__v[0-9]+}} as *const u8)
+// REWRITES-X86_64-GNU-NEXT:             __slate_atoll({{__v[0-9]+}} as *const i8)
+// REWRITES-AARCH64-GNU-NEXT:             __slate_atoll({{__v[0-9]+}} as *const u8)
 // REWRITES-NEXT:         })
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
