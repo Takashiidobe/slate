@@ -26,31 +26,6 @@ fn skip_reason(name: &str) -> Option<&'static str> {
              pointer operand unconditionally, but arm char is unsigned, so CIR itself \
              fails verification here regardless of slate's lowerer",
         ),
-        "c11"
-        | "c23_library"
-        | "c89"
-        | "complex_equality"
-        | "gnu_builtins_numeric"
-        | "gnu_libm"
-        | "long_double_aggregate_increment"
-        | "long_double_comparisons"
-        | "long_double_complex"
-        | "long_double_extern_sin"
-        | "long_double_literal_edge"
-        | "long_double_literal_macro"
-        | "long_double_literal_precision"
-        | "long_double_pointer_out"
-        | "long_double_strtold_f80"
-        | "long_double_struct"
-        | "long_double_union_representation"
-        | "long_double_variadic"
-        | "long_double_memcpy" => Some(
-            "known bug (slate-3f8g.4.16.11): long_double_bits() wrongly treats 32-bit arm \
-                 the same as aarch64's 128-bit quad long double, so the generated f80/f128 shim \
-                 emits __int128/__float128 C code that armv7 gcc rejects outright, or the byte \
-                 layout mismatches; armhf long double is actually ABI-identical to double \
-                 (8 bytes, confirmed on-device)",
-        ),
         "compound_literal_address"
         | "numeric_parse_fixup"
         | "local_record_same_tag"

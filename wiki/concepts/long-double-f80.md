@@ -23,6 +23,7 @@ rustc itself uses internally) since Rust has no native 80-bit float type.
 implementation detail:
 
 - Linux x86_64: 80-bit value, 16-byte size, 16-byte alignment (x87 extended).
+- 32-bit ARM Linux: ABI-identical to `double` — 8-byte size and alignment.
 - macOS and MSVC targets: `long double` is ABI-identical to `double` — 8-byte
   size and alignment.
 

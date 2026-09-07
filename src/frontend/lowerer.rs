@@ -3324,7 +3324,9 @@ fn c_type_to_type(ty: &crate::frontend::c_ast::CType, va_list_boxed: bool) -> Ty
         },
         CType::Float { bits: 16 } => Type::Prim(Prim::F16),
         CType::Float { bits: 32 } => Type::Prim(Prim::F32),
-        CType::Float { bits: 80 } if crate::frontend::toolchain::uses_f64_long_double_abi() => {
+        CType::Float { bits: 80 }
+            if crate::frontend::toolchain::active_long_double_bits() == 64 =>
+        {
             Type::Prim(Prim::F64)
         }
         CType::Float { bits: 80 } => Type::LongDouble,
@@ -3393,16 +3395,16 @@ fn c_layout(
         CType::Bool => Some(CLayout { size: 1, align: 1 }),
         CType::Int { bits, .. } => scalar_layout(*bits),
         CType::Char { .. } => scalar_layout(8),
-        CType::Float { bits: 80 } => {
-            Some(if crate::frontend::toolchain::uses_f64_long_double_abi() {
+        CType::Float { bits: 80 } => Some(
+            if crate::frontend::toolchain::active_long_double_bits() == 64 {
                 CLayout { size: 8, align: 8 }
             } else {
                 CLayout {
                     size: 16,
                     align: 16,
                 }
-            })
-        }
+            },
+        ),
         CType::Float { bits } => scalar_layout(*bits),
         CType::Ptr(_) | CType::FuncPtr { .. } => Some(CLayout { size: 8, align: 8 }),
         CType::Array(elem, Some(len)) => {
@@ -3532,7 +3534,7 @@ fn align_to(value: u64, align: u64) -> u64 {
 fn ctype_uses_long_double(ty: &crate::frontend::c_ast::CType) -> bool {
     use crate::frontend::c_ast::CType;
     match ty {
-        CType::Float { bits: 80 } => !crate::frontend::toolchain::uses_f64_long_double_abi(),
+        CType::Float { bits: 80 } => crate::frontend::toolchain::active_long_double_bits() != 64,
         CType::Ptr(inner) | CType::Array(inner, _) => ctype_uses_long_double(inner),
         CType::FuncPtr { ret, params } => {
             ctype_uses_long_double(ret) || params.iter().any(ctype_uses_long_double)
