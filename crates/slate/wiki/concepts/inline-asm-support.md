@@ -177,6 +177,95 @@ Slate has a scalable-vector representation.
 
 Fixture: `tests/fixtures/aarch64/asm_aarch64_fp_register_constraint.c`.
 
+AArch64 immediate/constant constraints: `I`/`J`/`K`/`L`/`M`/`N` were already
+routed to the `Constant` path before this ticket, since `parse_constraint_atoms`
+never gated those letters by `target_arch` — they resolve `const` whenever CIR
+proves the operand compile-time-constant, same as x86's reuse of the same
+letters (`slate-3f8g.4.15.7`), with no per-letter GCC encoding-range
+re-validation (trust the upstream compiler). Confirmed via CIR dump that `I`
+(add/sub 12-bit imm), `K`/`L` (32-/64-bit logical bitmask imm) all arrive as
+plain constant SSA values, identical in shape to `J`/`M`/`N`/`O`. `Y`
+(floating-point constant zero) and `Z` (integer constant zero) were added as
+new `ConstantEligible` atoms, gated to `Arm64` since the letters aren't used
+elsewhere. `Z` lowers through the existing integer `known_arith_value` path
+with no code changes needed; `Y` is parsed but not exercisable end-to-end —
+`known_arith_value` returns `Option<i128>` (no float-constant tracking
+exists anywhere in the lowerer), so a real `Y` operand today falls through
+to the "not a known constant" error. Filed as follow-up (needs an
+`f64`-valued sibling to `known_arith_value`, likely shared with any future
+x86 float-immediate work).
+
+`S` (absolute symbolic address) is out of scope: CIR does not preserve
+symbol identity through an `S` operand — `"S"(global_var)` lowers to a
+`cir.get_global` + `cir.load`, i.e. the *value* of the global, not an
+address reference Slate could bind to a real Rust symbol/global-asm operand.
+There is no CIR-side hook to recover the original symbol name once lowering
+reaches this point.
+
+Fixing `S` surfaced a real latent bug: `'a'`/`'b'`/`'c'`/`'d'`/`'S'`/`'D'` in
+`parse_constraint_atoms` matched unconditionally as x86 `FixedReg` letters
+regardless of `target_arch`. On AArch64 a bare `S` constraint would have
+silently resolved to Rust's x86 `esi` register name — wrong codegen with no
+diagnostic, not even a build error (assuming `esi` happened to parse as a
+valid-looking token downstream). Gated all six letters behind
+`target_arch.is_x86()`, so an AArch64 `S` now correctly falls through to
+`Constraint::Unsupported` (fail loud) instead of misresolving.
+
+Note: this repo's installed reference `clang` (22.1.8, used as the
+differential-test ground truth, distinct from the CIR-enabled `SLATE_CLANG`
+fork) currently has real bugs in both letters that make them uncompilable
+regardless of Slate: `"Z"(0)` — the *only* legal value for `Z` — is rejected
+with "value out of range for constraint 'Z'" (confirmed `aarch64-linux-gnu-gcc`
+16.1.0 accepts identical code fine), and any `Y` operand is rejected with
+"constraint 'Y' expects an integer constant expression" even for a literal
+`0.0`. This blocks differential fixture coverage of `Z` and `Y` on this
+toolchain independent of the `known_arith_value` gap above.
+
+Fixture: `tests/fixtures/aarch64/asm_aarch64_immediate_constant_constraints.c`
+(`I`, `K`, `L`).
+
+AArch64 memory constraints: `Q` (plain base-register address, no
+offset/index — required by `ldxr`/`stxr` exclusive-access instructions) now
+maps to `ConstraintAtom::Memory` (gated to `Arm64`, since `Q` collides with
+x86's byte-addressable-abcd letter). No distinct handling beyond the
+existing `m`/`o`/`V` address-passthrough path was needed: Slate always
+materializes the operand's address in a plain register with no
+displacement, which already satisfies `Q`'s no-offset restriction. Before
+this fix, `Q` on AArch64 fell through to the x86 `ByteAddressableAbcd` reg
+class (`reg_abcd`, which doesn't exist on AArch64 in Rust's `asm!`), which
+would have failed loudly at `rustc` time rather than miscompiling — but the
+Slate-level constraint tracking was still wrong.
+
+The multi-referenced-memory-slot restriction (a `Constraint::Memory` operand
+referenced more than once in the template is unsupported — see the x86
+storage-class table above) applies equally to `Q`; the canonical
+`ldxr`/`stxr` idiom that ties one `+Q` operand to both instructions hits it.
+Worked around in the fixture by passing the same C lvalue as two distinct
+`+Q` operands (two independent address-materializations of the same
+pointer) rather than referencing one operand slot twice — legal C, and each
+slot is referenced exactly once in the template.
+
+`Ush` (adrp-range symbol constraint) is out of scope: rejected outright by
+the CIR-enabled Clang frontend before CIR generation
+(`invalid input constraint 'Ush' in asm`), the same category as ARM32's `k`
+stack-pointer constraint — no CIR ever reaches Slate for it, so there is no
+possible workaround on Slate's side.
+
+Fixture: `tests/fixtures/aarch64/asm_aarch64_exclusive_memory_constraint.c`.
+
+AArch64 SVE predicate-register constraints `Upl` (P0-P7) and `Upa` (P0-P15):
+declined, not deferred. Real-usage audit (web/code search) found no
+concrete non-GCC-internal example of either letter in the wild — SVE inline
+asm is inherently rare (server/HPC-only hardware, needs `-march=+sve`), same
+frequency class as x86's `y`/`A`. More fundamentally, Arm's own inline-SVE-asm
+guidance states SVE vector/predicate values cannot appear as ordinary
+asm *outputs* at all and must stay internal to the asm block — the same
+"can only be a clobber, not a bound operand" shape as x86 `y` (`mmx_reg`).
+Slate also has no scalable-vector type representation to give a `Upl`/`Upa`
+operand a Rust type in the first place, the identical blocker already
+recorded above for NEON's `y` (SVE) constraint. No follow-up filed;
+revisit only if a concrete fixture/corpus case demands it.
+
 ## ARM (32-bit)
 
 Supported: `r` and `l` (Thumb1 low regs r0-r7, alias for `r` elsewhere) both

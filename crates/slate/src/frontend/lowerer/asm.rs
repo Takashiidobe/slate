@@ -113,15 +113,16 @@ fn parse_constraint_atoms(
                 'r' => ConstraintAtom::Reg,
                 'l' if target_arch == TargetArch::Arm => ConstraintAtom::Reg,
                 'g' => ConstraintAtom::General,
-                'a' => ConstraintAtom::FixedReg(X86Reg::Eax),
-                'b' => ConstraintAtom::FixedReg(X86Reg::Ebx),
-                'c' => ConstraintAtom::FixedReg(X86Reg::Ecx),
-                'd' => ConstraintAtom::FixedReg(X86Reg::Edx),
-                'S' => ConstraintAtom::FixedReg(X86Reg::Esi),
-                'D' => ConstraintAtom::FixedReg(X86Reg::Edi),
+                'a' if target_arch.is_x86() => ConstraintAtom::FixedReg(X86Reg::Eax),
+                'b' if target_arch.is_x86() => ConstraintAtom::FixedReg(X86Reg::Ebx),
+                'c' if target_arch.is_x86() => ConstraintAtom::FixedReg(X86Reg::Ecx),
+                'd' if target_arch.is_x86() => ConstraintAtom::FixedReg(X86Reg::Edx),
+                'S' if target_arch.is_x86() => ConstraintAtom::FixedReg(X86Reg::Esi),
+                'D' if target_arch.is_x86() => ConstraintAtom::FixedReg(X86Reg::Edi),
                 'i' | 'n' | 'I' | 'J' | 'K' | 'L' | 'M' | 'N' | 'O' => {
                     ConstraintAtom::ConstantEligible
                 }
+                'Y' | 'Z' if target_arch == TargetArch::Arm64 => ConstraintAtom::ConstantEligible,
                 'p' => ConstraintAtom::Address,
                 'm' => ConstraintAtom::Memory,
                 'o' => ConstraintAtom::Offsettable,
@@ -143,6 +144,7 @@ fn parse_constraint_atoms(
                 }
                 'x' => ConstraintAtom::SseReg,
                 'y' => ConstraintAtom::AvxReg,
+                'Q' if target_arch == TargetArch::Arm64 => ConstraintAtom::Memory,
                 'Q' => ConstraintAtom::ByteAddressableAbcd,
                 'q' => ConstraintAtom::ByteAddressableGpr,
                 'A' => ConstraintAtom::EdxEaxPair,

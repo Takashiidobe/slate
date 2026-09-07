@@ -9,6 +9,7 @@ fn fixtures_dir() -> PathBuf {
 fn skip_reason(name: &str) -> Option<&'static str> {
     match name {
         "bitint_shift"
+        | "f128_intrinsics"
         | "float128"
         | "long_double"
         | "saturating_arith"

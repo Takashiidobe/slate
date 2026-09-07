@@ -918,7 +918,11 @@ fn build_batch(
         command
             .arg("--target")
             .arg(cross.rust_triple)
-            .env(&cross.cargo_linker_env, &cross.linker);
+            .env(&cross.cargo_linker_env, &cross.linker)
+            .env(
+                format!("CC_{}", cross.rust_triple.replace('-', "_")),
+                &cross.linker,
+            );
     }
     let o = command
         .output()
