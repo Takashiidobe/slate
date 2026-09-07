@@ -329,6 +329,11 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
             .and_then(|triple| TargetArch::try_from(triple).ok())
             .map(TargetArch::pointer_bits)
             .unwrap_or(64),
+        target_arch: cir
+            .triple
+            .as_deref()
+            .and_then(|triple| TargetArch::try_from(triple).ok())
+            .unwrap_or(TargetArch::X86_64),
     };
     lowerer.lower_module(cir, c)
 }
@@ -1002,6 +1007,7 @@ struct Lowerer<'a> {
     bitfield_storages: BitfieldStorages,
     global_sym_types: BTreeMap<String, CirType>,
     target_pointer_bits: u32,
+    target_arch: TargetArch,
 }
 
 struct FunctionLowerer<'a, 'b> {

@@ -151,3 +151,56 @@ into the same `Constraint::Memory` address-passthrough path as `m` — no
 distinct offsettable-vs-not handling exists or is needed, since Slate always
 materializes the address in a register rather than picking a displacement
 form.
+
+## AArch64 (epic `slate-3f8g.4.16`)
+
+`'r'` needed no new resolution logic: `constraint_allows_generic_reg` already
+treats bare `r` as `AsmRegConstraint::Generic` regardless of arch, and
+`ResolvedAsmReg::Generic` already lowers to the arch-agnostic
+`AsmReg::Class("reg")` — Rust's `reg` class exists identically on AArch64
+(X0-X30). The actual gap was register-*width* selection
+(`slate-3f8g.4.16.5`):
+
+- **Implicit width** (no GCC template modifier on the placeholder): Slate
+  always attaches a Rust `{N:modifier}` register-view suffix for a generic
+  reg operand (`Constraint::wants_register_modifier`). The modifier alphabet
+  is arch-specific and was previously hardcoded to x86's AT&T letters
+  (`l`/`x`/`e`/`r` for 8/16/32/64-bit, `RegWidth::att_size_modifier`).
+  `rust_asm_register_modifier` is now dispatched on `TargetArch`: AArch64 has
+  only two register views (`w` for Wn, ≤32-bit; `x` for Xn, 64-bit, also the
+  default) — there is no per-byte/halfword modifier the way x86 has, since
+  AArch64 GPRs have no sub-32-bit addressable view. ARM (32-bit) and RISC-V
+  return no modifier at all: both have a single register width and no
+  alternate view syntax.
+- **Explicit `%w`/`%x`** (GCC template modifiers that force a width,
+  independent of the operand's declared type): CIR preserves these as
+  `${N:w}`/`${N:x}` in its `$`-prefixed template syntax, identical in shape
+  to the `%c`/`%l`/`%a` modifiers Slate already parsed. Added
+  `TemplateModifier::RegisterWidth(char)`, parsed only when `target_arch ==
+  Arm64` — x86 also has a `%w` letter (word/16-bit, part of the still-open
+  `%b`/`%h`/`%w`/`%k`/`%q` family in `slate-3f8g.4.15.9`) with a completely
+  different meaning, so the two must not share a code path or the x86 ticket
+  would inherit the wrong resolution.
+
+Fixed a latent blocker uncovered while landing the first real (non-x86)
+target: CIR's `AsmFlavor` enum only has `X86Att`/`X86Intel` variants and is
+apparently always populated even for non-x86 `cir.asm` ops, so
+`cir_asm_dialect` was unconditionally returning `Some(Att)` regardless of
+target, which made every generated `asm!` carry `options(att_syntax)` — an
+x86-only option that rustc rejects outright on other targets. Dialect
+resolution is now gated on `TargetArch::is_x86()` at the one call site
+(`intrinsics.rs::lower_extended_asm`); non-x86 targets get `dialect = None`
+and rely on the raw template text alone, matching how AArch64 asm has no
+AT&T/Intel distinction to begin with.
+
+`Lowerer` now carries a `target_arch: TargetArch` field alongside
+`target_pointer_bits`, threaded through `translate_asm_template` ->
+`render_operand_reference` -> `register_modifier_suffix` ->
+`rust_asm_register_modifier`, and into `parse_asm_template` ->
+`TemplateModifier::parse`. Verified against real `aarch64-unknown-linux-gnu`
+codegen via `SLATE_TARGET=aarch64-unknown-linux-gnu cargo run -- translate`,
+and runtime-differential-tested under `qemu-aarch64-static`
+(`tests/differential_aarch64.rs`, `asm_aarch64_reg_width_modifiers.c`) —
+that fixture's `add %w0, %w0, #1 / add %x0, %x0, #0` sequence specifically
+exercises the 32-bit view's zero-extension into the upper 32 bits, not just
+that the modifier letters round-trip textually.

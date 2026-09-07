@@ -678,14 +678,18 @@ enum TemplateModifier {
     Const,
     Label,
     Address,
+    RegisterWidth(char),
 }
 
 impl TemplateModifier {
-    fn parse(modifier: &str) -> Option<Self> {
+    fn parse(modifier: &str, target_arch: TargetArch) -> Option<Self> {
         match modifier {
             "c" => Some(Self::Const),
             "l" => Some(Self::Label),
             "a" => Some(Self::Address),
+            "w" | "x" if target_arch == TargetArch::Arm64 => {
+                Some(Self::RegisterWidth(modifier.chars().next()?))
+            }
             _ => None,
         }
     }
@@ -700,7 +704,7 @@ enum TemplatePiece {
     },
 }
 
-fn parse_asm_template(template: &str) -> Option<Vec<TemplatePiece>> {
+fn parse_asm_template(template: &str, target_arch: TargetArch) -> Option<Vec<TemplatePiece>> {
     let mut pieces = Vec::new();
     let mut literal = String::new();
     let mut chars = template.chars().peekable();
@@ -734,7 +738,7 @@ fn parse_asm_template(template: &str) -> Option<Vec<TemplatePiece>> {
                 .unwrap_or((body.as_str(), None));
             (
                 slot.parse::<usize>().ok()?,
-                modifier.and_then(TemplateModifier::parse),
+                modifier.and_then(|modifier| TemplateModifier::parse(modifier, target_arch)),
             )
         } else {
             let mut digits = String::new();
@@ -790,10 +794,11 @@ fn register_modifier_suffix(
     constraints: &[Constraint],
     ty: &Type,
     pointer_bits: u32,
+    target_arch: TargetArch,
 ) -> Option<char> {
     constraint
         .wants_register_modifier(constraints, ty, pointer_bits)
-        .then(|| rust_asm_register_modifier(ty))
+        .then(|| rust_asm_register_modifier(ty, target_arch))
         .flatten()
 }
 
@@ -810,6 +815,7 @@ fn render_operand_reference(
     ty: &Type,
     dialect: Option<AsmDialect>,
     pointer_bits: u32,
+    target_arch: TargetArch,
 ) -> Option<()> {
     if constraint.is_explicit_register() {
         let bits = asm_operand_bits(ty, pointer_bits);
@@ -853,8 +859,12 @@ fn render_operand_reference(
     }
     out.push('{');
     out.push_str(&rust_slot.to_string());
-    if modifier.is_none()
-        && let Some(suffix) = register_modifier_suffix(constraint, constraints, ty, pointer_bits)
+    if let Some(TemplateModifier::RegisterWidth(ch)) = modifier {
+        out.push(':');
+        out.push(ch);
+    } else if modifier.is_none()
+        && let Some(suffix) =
+            register_modifier_suffix(constraint, constraints, ty, pointer_bits, target_arch)
     {
         out.push(':');
         out.push(suffix);
@@ -870,8 +880,9 @@ pub(super) fn translate_asm_template(
     types: &[Type],
     dialect: Option<AsmDialect>,
     pointer_bits: u32,
+    target_arch: TargetArch,
 ) -> Option<String> {
-    let pieces = parse_asm_template(template)?;
+    let pieces = parse_asm_template(template, target_arch)?;
     let mut memory_slot_reference_counts: BTreeMap<usize, usize> = BTreeMap::new();
     for piece in &pieces {
         if let TemplatePiece::Operand { slot, .. } = piece
@@ -905,6 +916,7 @@ pub(super) fn translate_asm_template(
                     ty,
                     dialect,
                     pointer_bits,
+                    target_arch,
                 )?;
             }
         }
@@ -927,6 +939,7 @@ pub(super) fn translate_asm_template(
             constraints,
             types.get(source_slot)?,
             pointer_bits,
+            target_arch,
         ) {
             translated.push(':');
             translated.push(suffix);
@@ -936,8 +949,15 @@ pub(super) fn translate_asm_template(
     Some(translated)
 }
 
-pub(super) fn rust_asm_register_modifier(ty: &Type) -> Option<char> {
-    Some(RegWidth::from_bits(int_bits(&ty.render())?)?.att_size_modifier())
+pub(super) fn rust_asm_register_modifier(ty: &Type, target_arch: TargetArch) -> Option<char> {
+    let bits = int_bits(&ty.render())?;
+    match target_arch {
+        TargetArch::X86 | TargetArch::X86_64 => {
+            Some(RegWidth::from_bits(bits)?.att_size_modifier())
+        }
+        TargetArch::Arm64 => Some(if bits == 64 { 'x' } else { 'w' }),
+        TargetArch::Arm | TargetArch::RiscV32 | TargetArch::RiscV64 => None,
+    }
 }
 
 pub(super) fn asm_operand_bits(ty: &Type, pointer_bits: u32) -> u32 {

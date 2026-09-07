@@ -232,7 +232,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .map(|ty| self.parent.rust_type(ty))
             .collect();
         template_types.extend(std::iter::repeat_n(Type::Unit, label_count));
-        let dialect = cir_asm_dialect(op.asm_flavor);
+        let dialect = self
+            .parent
+            .target_arch
+            .is_x86()
+            .then(|| cir_asm_dialect(op.asm_flavor))
+            .flatten();
         let (template, dialect) = normalize_asm_dialect_wrapper(template, dialect);
         let Some(mut template) = translate_asm_template(
             &template,
@@ -241,6 +246,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             &template_types,
             dialect,
             self.parent.target_pointer_bits,
+            self.parent.target_arch,
         ) else {
             unsupported!(
                 "lower: could not translate inline asm template `{}`",
