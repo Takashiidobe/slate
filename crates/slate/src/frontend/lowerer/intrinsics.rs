@@ -117,7 +117,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     }
                     tied_outputs[output_index] = Some(operand_index);
                 }
-                Constraint::Constant | Constraint::Reg { .. } => {}
+                Constraint::Constant | Constraint::Reg { .. } | Constraint::Memory => {}
                 Constraint::FlagOutput(_) | Constraint::Unsupported => {
                     unsupported!(
                         "lower: unsupported inline asm input constraint `{}`",
@@ -371,6 +371,13 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         ),
                     }
                 }
+                Constraint::Memory => AsmOperand::In {
+                    reg: AsmReg::Class("reg".into()),
+                    value: self.typed_operand_expr(
+                        input_operands[operand_index],
+                        &operand_types[operand_index],
+                    ),
+                },
                 Constraint::FlagOutput(_) | Constraint::Unsupported => {
                     unreachable!("input constraints are validated as tied, constant, or reg above")
                 }
