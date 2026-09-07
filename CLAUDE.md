@@ -91,8 +91,6 @@ SLATE_CLANG=~/llvm-project/build-cir/bin/clang ./tools/macro-dump-plugin/build.s
 Rerun this after rebuilding `SLATE_CLANG` from source - the plugin links
 against that tree's headers and must be rebuilt in lockstep.
 
-## Build & Test
-
 ## Agent startup checklist
 
 Before running a command that parses C:
@@ -115,6 +113,8 @@ Android, macOS, and MSVC fixtures are collected by the normal host profiles
 when their target prerequisites and FileCheck prefixes are available; their
 oracle/bootstrap instructions live in the corresponding `wiki/concepts/*oracle.md`
 documents.
+
+## Build & Test
 
 > **Always use a release nextest profile to test** (not `cargo test`).
 
@@ -159,6 +159,25 @@ automatically loaded or exported for bash/nextest. In fish, set exported
 variables explicitly (for example, `set -gx SLATE_ARM_SYSROOT ...`) or export
 the variables in the shell that launches Cargo. The current ARM differential
 runner shares `SLATE_DIFF_FIXTURE=<name>` for single-fixture selection.
+
+For corpus cases, use the suite-specific selector and test name rather than
+`SLATE_DIFF_FIXTURE`:
+
+```bash
+SLATE_GCC_TORTURE_FIXTURE=<name> cargo nextest r --release --test gcc_torture_suite \
+  -E 'test(gcc_torture_unsupported_triage_report)' --run-ignored ignored-only --nocapture
+SLATE_GCC_DG_FIXTURE=<name> cargo nextest r --release --test gcc_dg_suite \
+  -E 'test(gcc_dg_unsupported_triage_report)' --run-ignored ignored-only --nocapture
+SLATE_LIBC_TEST_FIXTURE=<name> cargo nextest r --release --test libc_test_functional_suite \
+  -E 'test(libc_test_functional_unsupported_triage_report)' --run-ignored ignored-only --nocapture
+```
+
+Batch suites write translated Rust under `target/*-suite/<group>/` and actual
+debug binaries under the corresponding `target/test-cache/` Cargo target. A
+`could not parse/generate dep info` error usually means the named cache
+subdirectory is stale; remove only that specific `target/test-cache/target-*`
+directory and rerun. Do not delete the whole `target/` tree while diagnosing a
+single case.
 
 During feature development, isolate the new differential fixture:
 

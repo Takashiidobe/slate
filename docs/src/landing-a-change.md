@@ -15,11 +15,9 @@ C -> CIR -> parse -> lower -> Rust source -> Fixup Rust
   Test changes with the `lowering` profile.
 - `src/backend/` fixup/idiomatization passes that run after baseline
   lowering to recover idiom (safe references, `Vec`/`Box`, `for x in ..`,
-  compound assignment, ...) without changing behavior. Each pass is a
-  `QueryRule` in `src/backend/query/rules/` that selects candidates, checks
-  preconditions against read-only analysis in `src/backend/facts/`, and
-  returns an edit set; `src/backend/mod.rs` runs a fixed, hand-written
-  sequence of these passes. See [Rewriting](./writing-a-rewrite.md).
+  compound assignment, ...) without changing behavior. Current rules live in
+  `src/backend/engine/rules/` and are scheduled by the worklist engine. See
+  [Rewriting](./writing-a-rewrite.md).
   Covered by the `rewrites` profile.
 - `libc-shim/` the freestanding libc headers and implementations
   Slate compiles C against (`-nostdlib`). Covered by the `libc` profile.
