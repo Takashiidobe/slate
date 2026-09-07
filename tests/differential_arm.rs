@@ -61,6 +61,15 @@ fn skip_reason(name: &str) -> Option<&'static str> {
             "likely the same struct-stat field-layout bug tracked for stat_struct above \
              (st_mtime reads as 0 instead of the real mtime)",
         ),
+        "c23_library" => Some(
+            "environment limitation, not a slate bug (slate-iow4): the armv7 ARM GNU \
+             toolchain 15.2.rel1 sysroot's libc doesn't export memset_explicit, so linking \
+             the Rust batch binary fails with an undefined reference",
+        ),
+        "long_double_complex" => Some(
+            "known bug (slate-3f8g.4.16.16): ARM32 f64 long-double complex arithmetic is not \
+             differential-exact (last-bit rounding differences in div/div_assign)",
+        ),
         _ => None,
     }
 }
