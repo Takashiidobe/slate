@@ -75,7 +75,8 @@ enum ConstraintAtom {
     NonOffsettable,
     SseReg,
     AvxReg,
-    ByteAddressableReg,
+    ByteAddressableAbcd,
+    ByteAddressableGpr,
     EdxEaxPair,
     Other,
 }
@@ -97,7 +98,8 @@ fn parse_constraint_atoms(constraint: &str) -> impl Iterator<Item = ConstraintAt
         'V' => ConstraintAtom::NonOffsettable,
         'x' => ConstraintAtom::SseReg,
         'y' => ConstraintAtom::AvxReg,
-        'q' | 'Q' => ConstraintAtom::ByteAddressableReg,
+        'Q' => ConstraintAtom::ByteAddressableAbcd,
+        'q' => ConstraintAtom::ByteAddressableGpr,
         'A' => ConstraintAtom::EdxEaxPair,
         _ => ConstraintAtom::Other,
     })
@@ -174,6 +176,9 @@ pub(super) enum AsmRegConstraint {
     Generic,
     FixedLetter(X86Reg),
     ExplicitName(String),
+    Sse,
+    ByteAddressableAbcd,
+    ByteAddressableGpr,
 }
 
 fn parse_reg_constraint(constraint: &str) -> Option<AsmRegConstraint> {
@@ -191,6 +196,9 @@ fn parse_reg_constraint(constraint: &str) -> Option<AsmRegConstraint> {
         .as_slice()
     {
         [ConstraintAtom::FixedReg(reg)] => Some(AsmRegConstraint::FixedLetter(*reg)),
+        [ConstraintAtom::SseReg] => Some(AsmRegConstraint::Sse),
+        [ConstraintAtom::ByteAddressableAbcd] => Some(AsmRegConstraint::ByteAddressableAbcd),
+        [ConstraintAtom::ByteAddressableGpr] => Some(AsmRegConstraint::ByteAddressableGpr),
         _ => None,
     }
 }
@@ -292,15 +300,24 @@ impl Constraint {
         self.is_explicit_register() || matches!(self, Self::FlagOutput(_))
     }
 
-    pub(super) fn wants_register_modifier(&self, constraints: &[Constraint]) -> bool {
+    pub(super) fn wants_register_modifier(
+        &self,
+        constraints: &[Constraint],
+        ty: &Type,
+        pointer_bits: u32,
+    ) -> bool {
         match self {
             Self::Reg {
-                kind: AsmRegConstraint::Generic,
+                kind: AsmRegConstraint::Generic | AsmRegConstraint::ByteAddressableAbcd,
                 ..
             } => true,
-            Self::Tied(output_index) => constraints
-                .get(*output_index)
-                .is_some_and(|target| target.wants_register_modifier(constraints)),
+            Self::Reg {
+                kind: AsmRegConstraint::ByteAddressableGpr,
+                ..
+            } => !(pointer_bits == 64 && asm_operand_bits(ty, pointer_bits) == 8),
+            Self::Tied(output_index) => constraints.get(*output_index).is_some_and(|target| {
+                target.wants_register_modifier(constraints, ty, pointer_bits)
+            }),
             _ => false,
         }
     }
@@ -311,17 +328,36 @@ pub(super) enum ResolvedAsmReg {
     Generic,
     Family(X86Reg),
     Literal(String),
+    Sse,
+    Class(&'static str),
 }
 
-pub(super) fn asm_reg_for_constraint(kind: AsmRegConstraint) -> ResolvedAsmReg {
-    match kind {
+pub(super) fn asm_reg_for_constraint(
+    kind: AsmRegConstraint,
+    pointer_bits: u32,
+    operand_bits: u32,
+) -> Option<ResolvedAsmReg> {
+    Some(match kind {
         AsmRegConstraint::Generic => ResolvedAsmReg::Generic,
         AsmRegConstraint::FixedLetter(reg) => ResolvedAsmReg::Family(reg),
         AsmRegConstraint::ExplicitName(name) => match X86Reg::from_spelling(&name) {
             Some(reg) => ResolvedAsmReg::Family(reg),
             None => ResolvedAsmReg::Literal(name),
         },
-    }
+        AsmRegConstraint::Sse => ResolvedAsmReg::Sse,
+        AsmRegConstraint::ByteAddressableAbcd => {
+            if operand_bits == 8 {
+                return None;
+            }
+            ResolvedAsmReg::Class("reg_abcd")
+        }
+        AsmRegConstraint::ByteAddressableGpr => match (pointer_bits, operand_bits) {
+            (64, 8) => ResolvedAsmReg::Class("reg_byte"),
+            (64, _) => ResolvedAsmReg::Generic,
+            (_, 8) => return None,
+            _ => ResolvedAsmReg::Class("reg_abcd"),
+        },
+    })
 }
 
 pub(super) fn resolved_asm_reg_to_backend(resolved: &ResolvedAsmReg, bits: u32) -> Option<AsmReg> {
@@ -331,12 +367,17 @@ pub(super) fn resolved_asm_reg_to_backend(resolved: &ResolvedAsmReg, bits: u32) 
             AsmReg::Explicit(reg.sized_name(RegWidth::from_bits(bits)?).into())
         }
         ResolvedAsmReg::Literal(name) => AsmReg::Explicit(name.clone()),
+        ResolvedAsmReg::Sse => AsmReg::Class("xmm_reg".into()),
+        ResolvedAsmReg::Class(name) => AsmReg::Class((*name).into()),
     })
 }
 
 pub(super) fn reg_constraint_family(kind: &AsmRegConstraint) -> Option<X86Reg> {
     match kind {
-        AsmRegConstraint::Generic => None,
+        AsmRegConstraint::Generic
+        | AsmRegConstraint::Sse
+        | AsmRegConstraint::ByteAddressableAbcd
+        | AsmRegConstraint::ByteAddressableGpr => None,
         AsmRegConstraint::FixedLetter(reg) => Some(*reg),
         AsmRegConstraint::ExplicitName(name) => X86Reg::from_spelling(name),
     }
@@ -466,6 +507,13 @@ impl TargetArch {
     pub(super) fn is_x86(self) -> bool {
         matches!(self, Self::X86 | Self::X86_64)
     }
+
+    pub(super) fn pointer_bits(self) -> u32 {
+        match self {
+            Self::X86 | Self::Arm | Self::RiscV32 => 32,
+            Self::X86_64 | Self::Arm64 | Self::RiscV64 => 64,
+        }
+    }
 }
 
 impl TryFrom<&str> for TargetArch {
@@ -514,6 +562,7 @@ pub(super) fn x86_flag_output_suffix(
     condition: &str,
     ty: &Type,
     dialect: Option<AsmDialect>,
+    pointer_bits: u32,
 ) -> Option<String> {
     if !matches!(
         condition,
@@ -549,7 +598,7 @@ pub(super) fn x86_flag_output_suffix(
     ) {
         return None;
     }
-    let width = RegWidth::from_bits(asm_operand_bits(ty))?;
+    let width = RegWidth::from_bits(asm_operand_bits(ty, pointer_bits))?;
     let att_mov = width.zero_extend_from_byte_mnemonic()?;
     let modifier = width.att_size_modifier();
     let set = format!("set{condition} {{{rust_slot}:l}}");
@@ -729,10 +778,10 @@ fn intel_ptr_size_keyword(bits: u32) -> &'static str {
     }
 }
 
-fn memory_operand_pointee_bits(ty: &Type) -> u32 {
+fn memory_operand_pointee_bits(ty: &Type, pointer_bits: u32) -> u32 {
     match ty {
         Type::Ptr { inner, .. } => int_bits(&inner.render()).unwrap_or(32),
-        _ => asm_operand_bits(ty),
+        _ => asm_operand_bits(ty, pointer_bits),
     }
 }
 
@@ -740,13 +789,18 @@ fn register_modifier_suffix(
     constraint: &Constraint,
     constraints: &[Constraint],
     ty: &Type,
+    pointer_bits: u32,
 ) -> Option<char> {
     constraint
-        .wants_register_modifier(constraints)
+        .wants_register_modifier(constraints, ty, pointer_bits)
         .then(|| rust_asm_register_modifier(ty))
         .flatten()
 }
 
+#[expect(
+    clippy::too_many_arguments,
+    reason = "each param is a distinct piece of per-operand template-rendering state"
+)]
 fn render_operand_reference(
     out: &mut String,
     rust_slot: usize,
@@ -755,10 +809,11 @@ fn render_operand_reference(
     constraints: &[Constraint],
     ty: &Type,
     dialect: Option<AsmDialect>,
+    pointer_bits: u32,
 ) -> Option<()> {
     if constraint.is_explicit_register() {
-        let resolved = asm_reg_for_constraint(constraint.reg_kind()?.clone());
-        let bits = asm_operand_bits(ty);
+        let bits = asm_operand_bits(ty, pointer_bits);
+        let resolved = asm_reg_for_constraint(constraint.reg_kind()?.clone(), pointer_bits, bits)?;
         let AsmReg::Explicit(name) = resolved_asm_reg_to_backend(&resolved, bits)? else {
             return None;
         };
@@ -783,7 +838,10 @@ fn render_operand_reference(
         }
         let (open, close) = dialect_address_brackets(dialect);
         if matches!(dialect, Some(AsmDialect::Intel)) {
-            out.push_str(intel_ptr_size_keyword(memory_operand_pointee_bits(ty)));
+            out.push_str(intel_ptr_size_keyword(memory_operand_pointee_bits(
+                ty,
+                pointer_bits,
+            )));
             out.push(' ');
         }
         out.push(open);
@@ -796,7 +854,7 @@ fn render_operand_reference(
     out.push('{');
     out.push_str(&rust_slot.to_string());
     if modifier.is_none()
-        && let Some(suffix) = register_modifier_suffix(constraint, constraints, ty)
+        && let Some(suffix) = register_modifier_suffix(constraint, constraints, ty, pointer_bits)
     {
         out.push(':');
         out.push(suffix);
@@ -811,6 +869,7 @@ pub(super) fn translate_asm_template(
     constraints: &[Constraint],
     types: &[Type],
     dialect: Option<AsmDialect>,
+    pointer_bits: u32,
 ) -> Option<String> {
     let pieces = parse_asm_template(template)?;
     let mut memory_slot_reference_counts: BTreeMap<usize, usize> = BTreeMap::new();
@@ -845,6 +904,7 @@ pub(super) fn translate_asm_template(
                     constraints,
                     ty,
                     dialect,
+                    pointer_bits,
                 )?;
             }
         }
@@ -862,9 +922,12 @@ pub(super) fn translate_asm_template(
         }
         translated.push_str("\n/* {");
         translated.push_str(&rust_slot.to_string());
-        if let Some(suffix) =
-            register_modifier_suffix(constraint, constraints, types.get(source_slot)?)
-        {
+        if let Some(suffix) = register_modifier_suffix(
+            constraint,
+            constraints,
+            types.get(source_slot)?,
+            pointer_bits,
+        ) {
             translated.push(':');
             translated.push(suffix);
         }
@@ -877,9 +940,9 @@ pub(super) fn rust_asm_register_modifier(ty: &Type) -> Option<char> {
     Some(RegWidth::from_bits(int_bits(&ty.render())?)?.att_size_modifier())
 }
 
-pub(super) fn asm_operand_bits(ty: &Type) -> u32 {
+pub(super) fn asm_operand_bits(ty: &Type, pointer_bits: u32) -> u32 {
     match ty {
-        Type::Ptr { .. } | Type::FnPtr { .. } => 64,
+        Type::Ptr { .. } | Type::FnPtr { .. } => pointer_bits,
         _ => int_bits(&ty.render()).unwrap_or(32),
     }
 }

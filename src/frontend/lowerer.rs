@@ -323,6 +323,12 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
             storages
         },
         global_sym_types: BTreeMap::new(),
+        target_pointer_bits: cir
+            .triple
+            .as_deref()
+            .and_then(|triple| TargetArch::try_from(triple).ok())
+            .map(TargetArch::pointer_bits)
+            .unwrap_or(64),
     };
     lowerer.lower_module(cir, c)
 }
@@ -995,6 +1001,7 @@ struct Lowerer<'a> {
     needed_enum_from_impls: std::cell::RefCell<BTreeSet<(String, Type)>>,
     bitfield_storages: BitfieldStorages,
     global_sym_types: BTreeMap<String, CirType>,
+    target_pointer_bits: u32,
 }
 
 struct FunctionLowerer<'a, 'b> {
