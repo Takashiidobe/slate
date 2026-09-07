@@ -36,9 +36,12 @@ fn skip_reason(name: &str) -> Option<&'static str> {
              doesn't define SYS_gettid",
         ),
         "complex" | "stdlib_complex_cx_limited_range" => Some(
-            "known bug (slate-3f8g.4.16.13, needs investigation): double _Complex arithmetic \
-             crashes under qemu-arm-static on armv7 hard-float ABI; root cause not yet \
-             identified",
+            "environment limitation, not a slate bug (slate-3f8g.4.16.13): rustc's extern \"C\" \
+             ABI lowering for a #[repr(C)] struct of two f64 fields does not match armv7 \
+             hard-float AAPCS-VFP's calling convention for a real C '_Complex double' return \
+             value -- confirmed by hand-writing a minimal Rust program (no slate involved) that \
+             calls __muldc3 the same way and segfaults identically, while the equivalent C call \
+             to the same libgcc symbol under the same qemu-arm-static/toolchain works correctly",
         ),
         "int128_arith" | "int128_struct" | "f128_intrinsics" | "c99" | "local_vla"
         | "builtin_alloca" => Some(
