@@ -37,21 +37,33 @@ dump plugin.
 2. Isolate it while iterating, instead of running all the tests
    ```sh
    SLATE_DIFF_FIXTURE=<name> cargo nextest r --release --profile lowering \
-     --nocapture
+     --test differential -E 'test(generated_differential)' --nocapture
    ```
-3. Use `cargo run -- translate-lowered <file.c>` to see baseline output
+3. Establish differential parity before adding shape assertions. Then wrap
+   only the interesting statements with `@lowering-*` and `@rewrite-*` markers
+   and regenerate with `tools/update_filecheck.py` or the `justfile` recipes.
+4. Review the generated FileCheck diff manually. Accept it only when it
+   captures desirable code generation; regeneration is not approval of a
+   regression.
+5. Rerun the isolated fixture so both differential execution and FileCheck
+   pass.
+6. Use `cargo run -- translate-lowered <file.c>` to see baseline output
    before any fixups run, so you can tell whether a failure belongs in
    lowering or in a fixup pass.
-4. Implement the change in `src/frontend/`.
+7. Implement the change in `src/frontend/`.
    Every op inside a function body goes through
    `FunctionLowerer::lower_op` (`lowerer.rs`), which matches on
    a `self.lower_xxx(op)` handler per op.
    New ops get a new `Op::X(v) => self.lower_x(&v)` arm
    plus a `lower_x` implementation in the matching file.
-5. Run the full `lowering` profile it also covers the chibicc,
+8. Run the full `lowering` profile; it also covers the chibicc,
    gcc-torture, c-testsuite, and libc-test suite, since a change can
    regress other fixtures.
-6. `cargo fmt` and `cargo clippy` before finishing.
+9. Run `cargo fmt` and `cargo clippy` as final gates. They do not replace the
+   differential test or the full profile; rerun tests after them only if they
+   changed source or fixture inputs.
+10. Do not close the task until the relevant full profile is green and the
+    FileCheck diff has been reviewed.
 
 ## Landing a libc-shim change
 

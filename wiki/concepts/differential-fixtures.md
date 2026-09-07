@@ -144,6 +144,33 @@ collectors. Corpus suites use their own selectors, such as
 `SLATE_LIBC_TEST_FIXTURE`; use their suite-specific ignored triage report when
 the case is in an unsupported bucket.
 
+## Acceptance workflow
+
+FileCheck generation is scaffolding, not a correctness oracle. Use this order
+when adding or changing a fixture:
+
+1. Select the fixture with its suite-specific environment variable and run the
+   relevant lowering or rewrites profile. First establish C/Rust differential
+   parity without relying on new shape checks.
+2. Add `@lowering-begin`/`@rewrite-begin` regions around the statements whose
+   generated form proves the change. Use the `*-fn-*` markers only when the
+   function signature itself is part of the contract.
+3. Run `tools/update_filecheck.py` or the corresponding `just` recipe for the
+   affected profile(s).
+4. Inspect the resulting C-file diff. Accept regenerated checks only when they
+   encode the intended, desirable lowering or rewrite. A check that merely
+   matches an accidental or worse code shape must be narrowed, rewritten, or
+   rejected.
+5. Rerun the isolated fixture; this time the generated FileCheck assertions must
+   pass as well as the runtime differential comparison.
+6. Run the complete relevant nextest profile. The profile must be green before
+   the change is considered complete; do not hide a failure by regenerating its
+   expected output.
+7. Run formatting and linting after the test gates. `cargo fmt` and `cargo
+   clippy` are final quality checks, not replacements for differential or
+   full-profile testing. Retest after them only if they modify test inputs or
+   generated sources.
+
 Cross-target differential runners have separate nextest profiles. ARM32 uses
 `arm-lowering` and `arm-rewrites` for `armv7-unknown-linux-gnueabihf`; AArch64
 uses `aarch64-lowering` and `aarch64-rewrites`. ARM32 also needs an installed
