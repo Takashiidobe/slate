@@ -2,7 +2,7 @@ use super::walk;
 use crate::backend::engine::NodeRule;
 use crate::backend::engine::arena::{Arena, FunctionOptimizer, NodeId, NodeKind, NodeKindTag};
 use crate::backend::rust_ast::{
-    BinOp, Expr, Ident, Prim, RustValue, Stmt, Type, UnaryOp, is_temp_name,
+    AsmOperand, BinOp, Expr, Ident, Prim, RustValue, Stmt, Type, UnaryOp, is_temp_name,
 };
 use crate::function_identity::CallBinding;
 
@@ -1051,6 +1051,11 @@ fn is_top_level_use(arena: &Arena, id: NodeId, name: Ident) -> bool {
         Some(NodeKind::Unsafe { stmts, tail }) if tail.is_none() && stmts.len() == 1 => {
             is_top_level_use(arena, stmts[0], name)
         }
+        Some(NodeKind::InlineAsm(asm)) => asm
+            .operands
+            .iter()
+            .filter_map(asm_operand_read_expr)
+            .any(|expr| expr_ident(expr) == Some(name)),
         _ => false,
     }
 }
@@ -1097,6 +1102,7 @@ fn is_movable_pure_temp(arena: &Arena, id: NodeId) -> bool {
             is_temp_name(name.as_str())
                 && classify_purity(init, expr_effects(init)) == Purity::MovablePure
         }
+        Some(NodeKind::Let { init: None, .. }) => true,
         _ => false,
     }
 }
@@ -1186,6 +1192,14 @@ fn type_stable_arg_init(init: &Expr, ty: Option<&Type>) -> bool {
     }
 }
 
+fn asm_operand_read_expr(op: &AsmOperand) -> Option<&Expr> {
+    match op {
+        AsmOperand::In { value, .. } | AsmOperand::Const(value) => Some(value),
+        AsmOperand::InOut { input, .. } => Some(input),
+        AsmOperand::Out { .. } | AsmOperand::Label { .. } => None,
+    }
+}
+
 fn call_arg_uses_name(expr: &Expr, name: Ident) -> bool {
     match expr {
         Expr::Var(var) => *var == name,
@@ -1244,6 +1258,11 @@ fn kind_call_or_macro_arg_use(kind: &NodeKind, name: Ident) -> bool {
         }
         NodeKind::Expr(expr) => call_or_macro_arg_use_expr(expr, name),
         NodeKind::Return(Some(expr)) => call_or_macro_arg_use_expr(expr, name),
+        NodeKind::InlineAsm(asm) => asm
+            .operands
+            .iter()
+            .filter_map(asm_operand_read_expr)
+            .any(|expr| call_arg_uses_name(expr, name)),
         _ => false,
     }
 }

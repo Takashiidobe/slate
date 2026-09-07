@@ -180,15 +180,13 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:     unsafe {
 // REWRITES-X86_64-GNU-NEXT:         core::arch::asm!("addl $2, {0:e}", inlateout(reg) {{__v[0-9]+}} => {{__v[0-9]+}}, options(att_syntax));
 // REWRITES-X86_64-GNU-NEXT:     }
-// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = 2;
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32;
 // REWRITES-X86_64-GNU-NEXT:     unsafe {
-// REWRITES-X86_64-GNU-NEXT:         core::arch::asm!("imull {1:e}, {0:e}", inlateout(reg) {{__v[0-9]+}} => {{__v[0-9]+}}, in(reg) {{__v[0-9]+}}, options(att_syntax));
+// REWRITES-X86_64-GNU-NEXT:         core::arch::asm!("imull {1:e}, {0:e}", inlateout(reg) {{__v[0-9]+}} => {{__v[0-9]+}}, in(reg) 2, options(att_syntax));
 // REWRITES-X86_64-GNU-NEXT:     }
-// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = 1;
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32;
 // REWRITES-X86_64-GNU-NEXT:     unsafe {
-// REWRITES-X86_64-GNU-NEXT:         core::arch::asm!("movl {1:e}, {0:e}\n\taddl {2:e}, {0:e}", out(reg) {{__v[0-9]+}}, in(reg) {{__v[0-9]+}}, in(reg) {{__v[0-9]+}}, options(att_syntax));
+// REWRITES-X86_64-GNU-NEXT:         core::arch::asm!("movl {1:e}, {0:e}\n\taddl {2:e}, {0:e}", out(reg) {{__v[0-9]+}}, in(reg) {{__v[0-9]+}}, in(reg) 1, options(att_syntax));
 // REWRITES-X86_64-GNU-NEXT:     }
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32;
 // REWRITES-X86_64-GNU-NEXT:     unsafe {

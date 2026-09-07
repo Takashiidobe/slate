@@ -26,13 +26,11 @@ int main(void) { return cpuid_leaf7_ebx_nonzero(); }
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-X86_64-GNU-DAG: let {{__v[0-9]+}}: i32 = 7;
-// REWRITES-X86_64-GNU-DAG: let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-X86_64-GNU-DAG: let {{__v[0-9]+}}: u32;
 // REWRITES-X86_64-GNU-DAG: let {{__v[0-9]+}}: u32;
 // REWRITES-X86_64-GNU-DAG: let {{__v[0-9]+}}: u32;
 // REWRITES-X86_64-GNU-DAG: unsafe {
-// REWRITES-X86_64-GNU-DAG:     core::arch::asm!("push %rbx\n\tcpuid\n\tmov %ebx, %edi\n\tpop %rbx", lateout("eax") {{__v[0-9]+}}, lateout("edi") {{__v[0-9]+}}, lateout("ecx") {{__v[0-9]+}}, in("eax") {{__v[0-9]+}}, in("ecx") {{__v[0-9]+}}, options(att_syntax));
+// REWRITES-X86_64-GNU-DAG:     core::arch::asm!("push %rbx\n\tcpuid\n\tmov %ebx, %edi\n\tpop %rbx", lateout("eax") {{__v[0-9]+}}, lateout("edi") {{__v[0-9]+}}, lateout("ecx") {{__v[0-9]+}}, in("eax") 7, in("ecx") 0, options(att_syntax));
 // REWRITES-X86_64-GNU-DAG: }
 // REWRITES-X86_64-GNU-DAG: f7a = {{__v[0-9]+}};
 // REWRITES-X86_64-GNU-DAG: f7c = {{__v[0-9]+}};
