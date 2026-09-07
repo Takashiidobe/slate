@@ -69,8 +69,22 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         };
         let element_type = self.parent.rust_type(element_type);
         let (module, name) = match (self.parent.target_arch, constraint.reg_kind()) {
-            (TargetArch::Arm64, Some(AsmRegConstraint::Aarch64Float(_))) => {
+            (
+                TargetArch::Arm | TargetArch::Arm64,
+                Some(AsmRegConstraint::ArmFloat(_) | AsmRegConstraint::Aarch64Float(_)),
+            ) => {
                 let name = match (element_type, *size) {
+                    (Type::Prim(Prim::I8), 8) => "int8x8_t",
+                    (Type::Prim(Prim::U8), 8) => "uint8x8_t",
+                    (Type::Prim(Prim::I16), 4) => "int16x4_t",
+                    (Type::Prim(Prim::U16), 4) => "uint16x4_t",
+                    (Type::Prim(Prim::I32), 2) => "int32x2_t",
+                    (Type::Prim(Prim::U32), 2) => "uint32x2_t",
+                    (Type::Prim(Prim::I64), 1) => "int64x1_t",
+                    (Type::Prim(Prim::U64), 1) => "uint64x1_t",
+                    (Type::Prim(Prim::F16), 4) => "float16x4_t",
+                    (Type::Prim(Prim::F32), 2) => "float32x2_t",
+                    (Type::Prim(Prim::F64), 1) => "float64x1_t",
                     (Type::Prim(Prim::I8), 16) => "int8x16_t",
                     (Type::Prim(Prim::U8), 16) => "uint8x16_t",
                     (Type::Prim(Prim::I16), 8) => "int16x8_t",
@@ -84,7 +98,13 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     (Type::Prim(Prim::F64), 2) => "float64x2_t",
                     _ => return None,
                 };
-                ("aarch64", name)
+                let module = if self.parent.target_arch == TargetArch::Arm64 {
+                    "aarch64"
+                } else {
+                    self.parent.uses_arm_neon_intrinsics.set(true);
+                    "arm"
+                };
+                (module, name)
             }
             (TargetArch::X86 | TargetArch::X86_64, Some(AsmRegConstraint::Sse)) => {
                 let name = match (element_type, *size) {

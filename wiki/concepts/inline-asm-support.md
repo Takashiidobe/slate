@@ -205,6 +205,14 @@ or `qreg_low8`; `x` selects `sreg_low16`, `dreg_low8`, or `qreg_low4`.
 
 Fixture: `tests/fixtures/arm/asm_arm_vfp_register_constraint.c`.
 
+Fixed-width ARM NEON vector operands bridge Rust arrays through the matching
+`core::arch::arm` SIMD type before entering `qreg`/`dreg`/`sreg` asm operands,
+then transmute back to the array type. Functions using ARM floating-point asm
+automatically receive Rust's `neon` target feature and the required unstable
+crate features.
+
+Fixture: `tests/fixtures/arm/asm_arm_neon_vector_operand.c`.
+
 The ARM `y` and `z` constraints name legacy iWMMXt registers. They remain
 explicitly unsupported: the current Rust ARM `asm!` register classes expose no
 iWMMXt class, and the repository audit found no ARM fixture or corpus case that

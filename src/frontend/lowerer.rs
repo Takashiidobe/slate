@@ -250,6 +250,7 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
         uses_asm_goto_outputs: std::cell::Cell::new(false),
         uses_llvm_intrinsics: std::cell::Cell::new(false),
         uses_portable_simd: std::cell::Cell::new(false),
+        uses_arm_neon_intrinsics: std::cell::Cell::new(false),
         uses_memchr: std::cell::Cell::new(false),
         synthetic_externs: BTreeMap::new(),
         variadic_defs: BTreeSet::new(),
@@ -973,6 +974,7 @@ struct Lowerer<'a> {
     uses_asm_goto_outputs: std::cell::Cell<bool>,
     uses_llvm_intrinsics: std::cell::Cell<bool>,
     uses_portable_simd: std::cell::Cell<bool>,
+    uses_arm_neon_intrinsics: std::cell::Cell<bool>,
     uses_memchr: std::cell::Cell<bool>,
     synthetic_externs: BTreeMap<String, ExternFnDecl>,
     variadic_defs: BTreeSet<String>,
@@ -1669,6 +1671,7 @@ impl __SlateVaArgs {
                 exports: Vec::new(),
             }));
         }
+        self.add_arm_neon_target_features(module);
         self.unsafe_functions
             .extend(unsafe_defined_functions(module));
         self.unsafe_functions.extend(
@@ -1869,6 +1872,17 @@ impl __SlateVaArgs {
         if self.uses_portable_simd.get() {
             insert_crate_feature(&mut items, Feature::PortableSimd);
             insert_crate_feature(&mut items, Feature::SimdFfi);
+        }
+        if self.uses_arm_neon_intrinsics.get() {
+            insert_crate_feature(&mut items, Feature::ArmTargetFeature);
+            insert_crate_feature(&mut items, Feature::StdarchArmNeonIntrinsics);
+        }
+        if self
+            .target_feature_functions
+            .values()
+            .any(|features| features.iter().any(|feature| feature == "neon"))
+        {
+            insert_crate_feature(&mut items, Feature::ArmTargetFeature);
         }
         for feature in &self.project.crate_features {
             insert_crate_feature(&mut items, *feature);

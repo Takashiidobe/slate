@@ -1,6 +1,36 @@
 use super::*;
 
 impl<'a> Lowerer<'a> {
+    pub(super) fn add_arm_neon_target_features(&mut self, module: &clang_ir::model::Module) {
+        if self.target_arch != TargetArch::Arm {
+            return;
+        }
+        for function in &module.functions {
+            let Some(body) = function.body.as_ref() else {
+                continue;
+            };
+            let mut uses_arm_float_asm = false;
+            walk_region_ops(body, &mut |op| {
+                if let Op::Asm(asm) = op {
+                    uses_arm_float_asm |= asm.constraints.split(',').any(|constraint| {
+                        matches!(constraint.trim().trim_start_matches('='), "w" | "t" | "x")
+                    });
+                }
+                !uses_arm_float_asm
+            });
+            if uses_arm_float_asm {
+                let features = self
+                    .target_feature_functions
+                    .entry(function.name.clone())
+                    .or_default();
+                if !features.iter().any(|feature| feature == "neon") {
+                    features.push("neon".into());
+                    features.sort();
+                }
+            }
+        }
+    }
+
     pub(super) fn lower_func_alias(
         &mut self,
         function: &CirFunction,
