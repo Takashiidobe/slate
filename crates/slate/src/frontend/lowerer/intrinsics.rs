@@ -60,6 +60,37 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
     }
 
+    fn aarch64_simd_type(&self, constraint: &Constraint, cir_ty: &CirType) -> Option<Type> {
+        if !matches!(
+            constraint.reg_kind(),
+            Some(AsmRegConstraint::Aarch64Float(_))
+        ) {
+            return None;
+        }
+        let CirType::Vector {
+            element_type, size, ..
+        } = cir_ty
+        else {
+            return None;
+        };
+        let element_type = self.parent.rust_type(element_type);
+        let name = match (element_type, *size) {
+            (Type::Prim(Prim::I8), 16) => "int8x16_t",
+            (Type::Prim(Prim::U8), 16) => "uint8x16_t",
+            (Type::Prim(Prim::I16), 8) => "int16x8_t",
+            (Type::Prim(Prim::U16), 8) => "uint16x8_t",
+            (Type::Prim(Prim::I32), 4) => "int32x4_t",
+            (Type::Prim(Prim::U32), 4) => "uint32x4_t",
+            (Type::Prim(Prim::I64), 2) => "int64x2_t",
+            (Type::Prim(Prim::U64), 2) => "uint64x2_t",
+            (Type::Prim(Prim::F16), 8) => "float16x8_t",
+            (Type::Prim(Prim::F32), 4) => "float32x4_t",
+            (Type::Prim(Prim::F64), 2) => "float64x2_t",
+            _ => return None,
+        };
+        Some(Type::Custom(format!("core::arch::aarch64::{name}")))
+    }
+
     fn lower_extended_asm(&mut self, op: &inst::Asm) {
         macro_rules! unsupported {
             ($($arg:tt)*) => {{
@@ -263,6 +294,18 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .map(|ty| self.parent.rust_type(ty))
             .collect();
         template_types.extend(std::iter::repeat_n(Type::Unit, label_count));
+        let mut asm_operand_types: Vec<Option<Type>> = constraints[..total_output_count]
+            .iter()
+            .zip(&output_cir_types)
+            .map(|(constraint, ty)| self.aarch64_simd_type(constraint, ty))
+            .chain(
+                constraints[total_output_count..]
+                    .iter()
+                    .zip(&operand_types)
+                    .map(|(constraint, ty)| self.aarch64_simd_type(constraint, ty)),
+            )
+            .collect();
+        asm_operand_types.extend(std::iter::repeat_n(None, label_count));
         let dialect = self
             .parent
             .target_arch
@@ -502,11 +545,15 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 let narrowed = self.byte_widen_out_expr(&widened_name, &orig_ty);
                 (Expr::Var(widened_name.into()), None, narrowed)
             } else {
-                let direct_output = (register_index == 0)
-                    .then_some(op.res.as_ref())
-                    .flatten()
-                    .and_then(|result| self.asm_output_places.get(result))
-                    .cloned();
+                let simd_ty = asm_operand_types[output_index].clone();
+                let direct_output = simd_ty.is_none().then(|| {
+                    (register_index == 0)
+                        .then_some(op.res.as_ref())
+                        .flatten()
+                        .and_then(|result| self.asm_output_places.get(result))
+                        .cloned()
+                });
+                let direct_output = direct_output.flatten();
                 let (output, output_name) = if let Some(output) = direct_output {
                     (output, None)
                 } else {
@@ -514,18 +561,39 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     self.push_stmt(Stmt::Let {
                         name: name.clone(),
                         mutable: false,
-                        ty: Some(self.parent.rust_type(&output_cir_types[output_index])),
+                        ty: Some(simd_ty.clone().unwrap_or_else(|| {
+                            self.parent.rust_type(&output_cir_types[output_index])
+                        })),
                         init: None,
                     });
                     (Expr::Var(name.clone().into()), Some(name))
                 };
-                let result_expr = output.clone();
+                let result_expr = if let Some(simd_ty) = simd_ty {
+                    Expr::Transmute {
+                        from: simd_ty,
+                        to: self.parent.rust_type(&output_cir_types[output_index]),
+                        expr: Box::new(output.clone()),
+                    }
+                } else {
+                    output.clone()
+                };
                 (output, output_name, result_expr)
             };
             if let Some(operand_index) = tied_outputs[output_index] {
                 let input = self.operand_expr(input_operands[operand_index]);
                 let input = if byte_widen {
                     self.byte_widen_in_expr(input)
+                } else {
+                    input
+                };
+                let input = if let Some(simd_ty) =
+                    asm_operand_types[total_output_count + operand_index].clone()
+                {
+                    Expr::Transmute {
+                        from: self.parent.rust_type(&operand_types[operand_index]),
+                        to: simd_ty,
+                        expr: Box::new(input),
+                    }
                 } else {
                     input
                 };
@@ -619,6 +687,17 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         self.byte_widen_in_expr(raw_value)
                     } else {
                         raw_value
+                    };
+                    let value = if let Some(simd_ty) =
+                        asm_operand_types[total_output_count + operand_index].clone()
+                    {
+                        Expr::Transmute {
+                            from: self.parent.rust_type(&operand_types[operand_index]),
+                            to: simd_ty,
+                            expr: Box::new(value),
+                        }
+                    } else {
+                        value
                     };
                     AsmOperand::In { reg, value }
                 }
