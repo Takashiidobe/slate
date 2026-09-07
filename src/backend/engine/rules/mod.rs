@@ -43,6 +43,7 @@ pub(super) fn registry() -> Vec<Box<dyn NodeRule>> {
         Box::new(inline_temps::LateInlineTemps),
         Box::new(inline_temps::EffectfulTempForward),
         Box::new(inline_temps::InlineConstArgTemps),
+        Box::new(inline_temps::AsmOutputTempFold),
         Box::new(peel_casts::PeelCasts),
         Box::new(constant_index_casts::ConstantIndexCasts),
         Box::new(pattern_range::MatchRangeFold),

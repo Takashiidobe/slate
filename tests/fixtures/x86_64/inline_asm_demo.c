@@ -152,13 +152,9 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:     let mut eax: u32 = 0;
 // REWRITES-X86_64-GNU-NEXT:     let mut ecx: u32 = 0;
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u32;
-// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u32;
-// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u32;
 // REWRITES-X86_64-GNU-NEXT:     unsafe {
-// REWRITES-X86_64-GNU-NEXT:         core::arch::asm!("push %rbx\n\tcpuid\n\tmov %ebx, %edi\n\tpop %rbx", lateout("eax") {{__v[0-9]+}}, lateout("edi") {{__v[0-9]+}}, lateout("ecx") {{__v[0-9]+}}, in("eax") 7, in("ecx") 0, options(att_syntax));
+// REWRITES-X86_64-GNU-NEXT:         core::arch::asm!("push %rbx\n\tcpuid\n\tmov %ebx, %edi\n\tpop %rbx", lateout("eax") eax, lateout("edi") {{__v[0-9]+}}, lateout("ecx") ecx, in("eax") 7, in("ecx") 0, options(att_syntax));
 // REWRITES-X86_64-GNU-NEXT:     }
-// REWRITES-X86_64-GNU-NEXT:     eax = {{__v[0-9]+}};
-// REWRITES-X86_64-GNU-NEXT:     ecx = {{__v[0-9]+}};
 // REWRITES-X86_64-GNU-NEXT:     (({{__v[0-9]+}} != 0 || eax != 0 || ecx != 0) as i32) as u32
 // REWRITES-X86_64-GNU-NEXT: }
 // SLATE-FILECHECK-END rewrites
