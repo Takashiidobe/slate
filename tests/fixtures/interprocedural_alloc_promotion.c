@@ -86,6 +86,10 @@ int main(void) {
 // REWRITES-NEXT:     fn free(_0: *mut core::ffi::c_void);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
 // REWRITES-NEXT: fn alloc() -> Box<[i32]> {
 // REWRITES-NEXT:     let {{__v[0-9]+}}: u64 = 10;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: u64 = 4 * {{__v[0-9]+}};
@@ -109,7 +113,9 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = c"%d\n".as_ptr() as *mut i8;
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = c"%d\n".as_ptr() as *mut u8;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.add(0) };
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, unsafe { *{{__v[0-9]+}} }) };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     unsafe { free({{__v[0-9]+}} as *mut core::ffi::c_void) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }

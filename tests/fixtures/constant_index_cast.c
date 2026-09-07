@@ -25,5 +25,6 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: let {{__v[0-9]+}}: i64 = 3;
 // REWRITES-DAG: arr[({{__v[0-9]+}} as usize)] = 5;
-// REWRITES-DAG: unsafe { printf(c"%d\n".as_ptr(), arr[3]) };
+// REWRITES-DAG: println!("{}", arr[3]);
+// REWRITES-DAG: let _ = std::io::Write::flush(&mut std::io::stdout());
 // SLATE-FILECHECK-END rewrites

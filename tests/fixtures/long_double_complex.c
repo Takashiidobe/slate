@@ -1253,39 +1253,16 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             }
 // REWRITES-X86_64-GNU-NEXT:         }
 // REWRITES-X86_64-GNU-NEXT:     }
-// REWRITES-X86_64-GNU-NEXT: }
-// REWRITES-X86_64-GNU-EMPTY:
-// REWRITES-NEXT: unsafe extern "C" {
-// REWRITES-NEXT:     fn abort() -> !;
-// REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
-// REWRITES-X86_64-GNU-NEXT:     fn cabsl(_0: num_complex::Complex<LongDouble>) -> LongDouble;
-// REWRITES-X86_64-GNU-NEXT:     fn cargl(_0: num_complex::Complex<LongDouble>) -> LongDouble;
-// REWRITES-X86_64-GNU-NEXT:     fn cprojl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
-// REWRITES-X86_64-GNU-NEXT:     fn csqrtl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
-// REWRITES-X86_64-GNU-NEXT:     fn cexpl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
-// REWRITES-X86_64-GNU-NEXT:     fn clogl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
+// REWRITES-AARCH64-GNU-NEXT: unsafe extern "C" {
+// REWRITES-AARCH64-GNU-NEXT:     fn abort() -> !;
+// REWRITES-AARCH64-GNU-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-AARCH64-GNU-NEXT:     fn cabsl(_0: num_complex::Complex<f128>) -> f128;
 // REWRITES-AARCH64-GNU-NEXT:     fn cargl(_0: num_complex::Complex<f128>) -> f128;
 // REWRITES-AARCH64-GNU-NEXT:     fn cprojl(_0: num_complex::Complex<f128>) -> num_complex::Complex<f128>;
 // REWRITES-AARCH64-GNU-NEXT:     fn csqrtl(_0: num_complex::Complex<f128>) -> num_complex::Complex<f128>;
 // REWRITES-AARCH64-GNU-NEXT:     fn cexpl(_0: num_complex::Complex<f128>) -> num_complex::Complex<f128>;
 // REWRITES-AARCH64-GNU-NEXT:     fn clogl(_0: num_complex::Complex<f128>) -> num_complex::Complex<f128>;
-// REWRITES-NEXT:     fn cpowl(
-// REWRITES-X86_64-GNU-NEXT:         _0: num_complex::Complex<LongDouble>,
-// REWRITES-X86_64-GNU-NEXT:         _1: num_complex::Complex<LongDouble>,
-// REWRITES-X86_64-GNU-NEXT:     ) -> num_complex::Complex<LongDouble>;
-// REWRITES-X86_64-GNU-NEXT:     fn csinl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
-// REWRITES-X86_64-GNU-NEXT:     fn ccosl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
-// REWRITES-X86_64-GNU-NEXT:     fn ctanl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
-// REWRITES-X86_64-GNU-NEXT:     fn casinl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
-// REWRITES-X86_64-GNU-NEXT:     fn cacosl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
-// REWRITES-X86_64-GNU-NEXT:     fn catanl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
-// REWRITES-X86_64-GNU-NEXT:     fn csinhl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
-// REWRITES-X86_64-GNU-NEXT:     fn ccoshl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
-// REWRITES-X86_64-GNU-NEXT:     fn ctanhl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
-// REWRITES-X86_64-GNU-NEXT:     fn casinhl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
-// REWRITES-X86_64-GNU-NEXT:     fn cacoshl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
-// REWRITES-X86_64-GNU-NEXT:     fn catanhl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
+// REWRITES-AARCH64-GNU-NEXT:     fn cpowl(
 // REWRITES-AARCH64-GNU-NEXT:         _0: num_complex::Complex<f128>,
 // REWRITES-AARCH64-GNU-NEXT:         _1: num_complex::Complex<f128>,
 // REWRITES-AARCH64-GNU-NEXT:     ) -> num_complex::Complex<f128>;
@@ -1301,6 +1278,34 @@ int main(void) {
 // REWRITES-AARCH64-GNU-NEXT:     fn casinhl(_0: num_complex::Complex<f128>) -> num_complex::Complex<f128>;
 // REWRITES-AARCH64-GNU-NEXT:     fn cacoshl(_0: num_complex::Complex<f128>) -> num_complex::Complex<f128>;
 // REWRITES-AARCH64-GNU-NEXT:     fn catanhl(_0: num_complex::Complex<f128>) -> num_complex::Complex<f128>;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-X86_64-GNU-NEXT:     fn abort() -> !;
+// REWRITES-X86_64-GNU-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
+// REWRITES-X86_64-GNU-NEXT:     fn cabsl(_0: num_complex::Complex<LongDouble>) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn cargl(_0: num_complex::Complex<LongDouble>) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT:     fn cprojl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
+// REWRITES-X86_64-GNU-NEXT:     fn csqrtl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
+// REWRITES-X86_64-GNU-NEXT:     fn cexpl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
+// REWRITES-X86_64-GNU-NEXT:     fn clogl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
+// REWRITES-X86_64-GNU-NEXT:     fn cpowl(
+// REWRITES-X86_64-GNU-NEXT:         _0: num_complex::Complex<LongDouble>,
+// REWRITES-X86_64-GNU-NEXT:         _1: num_complex::Complex<LongDouble>,
+// REWRITES-X86_64-GNU-NEXT:     ) -> num_complex::Complex<LongDouble>;
+// REWRITES-X86_64-GNU-NEXT:     fn csinl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
+// REWRITES-X86_64-GNU-NEXT:     fn ccosl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
+// REWRITES-X86_64-GNU-NEXT:     fn ctanl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
+// REWRITES-X86_64-GNU-NEXT:     fn casinl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
+// REWRITES-X86_64-GNU-NEXT:     fn cacosl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
+// REWRITES-X86_64-GNU-NEXT:     fn catanl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
+// REWRITES-X86_64-GNU-NEXT:     fn csinhl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
+// REWRITES-X86_64-GNU-NEXT:     fn ccoshl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
+// REWRITES-X86_64-GNU-NEXT:     fn ctanhl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
+// REWRITES-X86_64-GNU-NEXT:     fn casinhl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
+// REWRITES-X86_64-GNU-NEXT:     fn cacoshl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
+// REWRITES-X86_64-GNU-NEXT:     fn catanhl(_0: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
+// REWRITES-AARCH64-GNU-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
@@ -1476,13 +1481,6 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}}.re;
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = a;
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}}.im;
-// REWRITES-X86_64-GNU-NEXT:     unsafe {
-// REWRITES-X86_64-GNU-NEXT:         __slate_printf__ri32_pi8_f80_f80(
-// REWRITES-X86_64-GNU-NEXT:             c"real_field=%La imag_field=%La\n".as_ptr() as *mut i8,
-// REWRITES-X86_64-GNU-NEXT:             {{__v[0-9]+}},
-// REWRITES-X86_64-GNU-NEXT:             {{__v[0-9]+}},
-// REWRITES-X86_64-GNU-NEXT:         )
-// REWRITES-X86_64-GNU-NEXT:     };
 // REWRITES-AARCH64-GNU-NEXT:     print_lc(c"mix".as_ptr() as *mut u8, mix_complex(a, b));
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: f128 = 9.000000e+00f128;
 // REWRITES-AARCH64-GNU-NEXT:     a.re = {{__v[0-9]+}};
@@ -1493,7 +1491,16 @@ int main(void) {
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: f128 = {{__v[0-9]+}}.re;
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: num_complex::Complex<f128> = a;
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: f128 = {{__v[0-9]+}}.im;
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-X86_64-GNU-NEXT:     unsafe {
+// REWRITES-X86_64-GNU-NEXT:         __slate_printf__ri32_pi8_f80_f80(
+// REWRITES-X86_64-GNU-NEXT:             c"real_field=%La imag_field=%La\n".as_ptr() as *mut i8,
+// REWRITES-X86_64-GNU-NEXT:             {{__v[0-9]+}},
+// REWRITES-X86_64-GNU-NEXT:             {{__v[0-9]+}},
+// REWRITES-X86_64-GNU-NEXT:         )
+// REWRITES-X86_64-GNU-NEXT:     };
 // REWRITES-AARCH64-GNU-NEXT:     unsafe { printf(c"real_field=%La imag_field=%La\n".as_ptr(), {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
@@ -1614,6 +1621,7 @@ int main(void) {
 // REWRITES-AARCH64-GNU-NEXT:         re: 3.000000e+00f128,
 // REWRITES-AARCH64-GNU-NEXT:         im: 4.000000e+00f128,
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe {
 // REWRITES-X86_64-GNU-NEXT:         __slate_printf__ri32_pi8_f80(c"cabs=%La\n".as_ptr() as *mut i8, unsafe {
 // REWRITES-X86_64-GNU-NEXT:             __slate_cabsl__rf80_cf80({{__v[0-9]+}} as num_complex::Complex<LongDouble>)
@@ -1621,6 +1629,8 @@ int main(void) {
 // REWRITES-AARCH64-GNU-NEXT:             cabsl({{__v[0-9]+}} as num_complex::Complex<f128>)
 // REWRITES-NEXT:         })
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe {
 // REWRITES-X86_64-GNU-NEXT:         __slate_printf__ri32_pi8_f80(c"carg=%La\n".as_ptr() as *mut i8, unsafe {
 // REWRITES-X86_64-GNU-NEXT:             __slate_cargl__rf80_cf80({{__v[0-9]+}} as num_complex::Complex<LongDouble>)
@@ -1628,6 +1638,7 @@ int main(void) {
 // REWRITES-AARCH64-GNU-NEXT:             cargl({{__v[0-9]+}} as num_complex::Complex<f128>)
 // REWRITES-NEXT:         })
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: num_complex::Complex<f128> = num_complex::Complex {
 // REWRITES-NEXT:         re: {{__v[0-9]+}}.re,
@@ -1852,18 +1863,24 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:     });
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}}.re;
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}}.im;
+// REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: f128 = {{__v[0-9]+}}.re;
+// REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: f128 = {{__v[0-9]+}}.im;
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:     unsafe {
 // REWRITES-X86_64-GNU-NEXT:         __slate_printf__ri32_pi8_f80_f80(c"creal=%La cimag=%La\n".as_ptr() as *mut i8, {{__v[0-9]+}}, {{__v[0-9]+}})
 // REWRITES-X86_64-GNU-NEXT:     };
-// REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: f128 = {{__v[0-9]+}}.re;
-// REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: f128 = {{__v[0-9]+}}.im;
 // REWRITES-AARCH64-GNU-NEXT:     unsafe { printf(c"creal=%La cimag=%La\n".as_ptr(), {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: fn print_lc({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: num_complex::Complex<LongDouble>) {
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{arg[0-9]+}}.re;
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{arg[0-9]+}}.im;
+// REWRITES-AARCH64-GNU-NEXT: fn print_lc({{arg[0-9]+}}: *mut u8, {{arg[0-9]+}}: num_complex::Complex<f128>) {
+// REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: f128 = {{arg[0-9]+}}.re;
+// REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: f128 = {{arg[0-9]+}}.im;
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:     unsafe {
 // REWRITES-X86_64-GNU-NEXT:         __slate_printf__ri32_pi8_pi8_f80_f80(
 // REWRITES-X86_64-GNU-NEXT:             c"%s=%Lax%Lai\n".as_ptr() as *mut i8,
@@ -1872,10 +1889,8 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             {{__v[0-9]+}},
 // REWRITES-X86_64-GNU-NEXT:         )
 // REWRITES-X86_64-GNU-NEXT:     };
-// REWRITES-AARCH64-GNU-NEXT: fn print_lc({{arg[0-9]+}}: *mut u8, {{arg[0-9]+}}: num_complex::Complex<f128>) {
-// REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: f128 = {{arg[0-9]+}}.re;
-// REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: f128 = {{arg[0-9]+}}.im;
 // REWRITES-AARCH64-GNU-NEXT:     unsafe { printf(c"%s=%Lax%Lai\n".as_ptr(), {{arg[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
@@ -2056,5 +2071,9 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:         _2: LongDouble,
 // REWRITES-X86_64-GNU-NEXT:         _3: LongDouble,
 // REWRITES-X86_64-GNU-NEXT:     ) -> i32;
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: unsafe extern "C" {
+// REWRITES-X86_64-GNU-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // REWRITES-X86_64-GNU-NEXT: }
 // SLATE-FILECHECK-END rewrites

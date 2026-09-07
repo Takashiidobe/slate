@@ -210,10 +210,14 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), sum_do_while(5)) };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), sum_do_while(0)) };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), runs_once_when_false()) };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), continue_checks_condition(6)) };
+// REWRITES-NEXT:     println!("{}", sum_do_while(5));
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     println!("{}", sum_do_while(0));
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     println!("{}", runs_once_when_false());
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     println!("{}", continue_checks_condition(6));
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

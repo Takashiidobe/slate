@@ -72,7 +72,8 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), msvc_arm_guarded_pragma(1)) };
+// REWRITES-NEXT:     println!("{}", msvc_arm_guarded_pragma(1));
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

@@ -124,7 +124,8 @@ int main(int argc, char **argv) {
 // REWRITES-NEXT:     __slate_argv_ptrs.push(std::ptr::null_mut());
 // REWRITES-NEXT:     let {{arg[0-9]+}}: i32 = __slate_argv_storage.len() as i32;
 // REWRITES-NEXT:     __slate_argv_ptrs.as_mut_ptr();
-// REWRITES-NEXT:     unsafe { printf(c"before\n".as_ptr()) };
+// REWRITES-NEXT:     println!("before");
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     let {{__v[0-9]+}}: bool = {{arg[0-9]+}} == 1;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: bool = true;
@@ -142,7 +143,8 @@ int main(int argc, char **argv) {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
 // REWRITES-NEXT:         {{__v[0-9]+}}
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     unsafe { printf(c"after\n".as_ptr()) };
+// REWRITES-NEXT:     println!("after");
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

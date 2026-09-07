@@ -92,7 +92,8 @@ int main(void) {
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = cold_path(3);
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = always_inlined({{__v[0-9]+}});
-// REWRITES-NEXT:     unsafe { printf(c"%d %d %d\n".as_ptr(), {{__v[0-9]+}}, {{__v[0-9]+}}, never_inlined({{__v[0-9]+}})) };
+// REWRITES-NEXT:     println!("{} {} {}", {{__v[0-9]+}}, {{__v[0-9]+}}, never_inlined({{__v[0-9]+}}));
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

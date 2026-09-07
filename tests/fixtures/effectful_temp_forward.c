@@ -55,11 +55,13 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: fn safe_forward({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
 // REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{arg[0-9]+}} + {{arg[0-9]+}};
-// REWRITES-DAG:     unsafe { printf(c"%d\n".as_ptr(), add({{arg[0-9]+}}, {{arg[0-9]+}})) };
+// REWRITES-DAG:     println!("{}", add({{arg[0-9]+}}, {{arg[0-9]+}}));
+// REWRITES-DAG:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-DAG:     {{__v[0-9]+}} + {{__v[0-9]+}}
 // REWRITES-DAG: }
 // REWRITES-DAG: fn blocked_forward({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) {
-// REWRITES-DAG:     unsafe { printf(c"%d %d\n".as_ptr(), add({{arg[0-9]+}}, {{arg[0-9]+}}), side_effect()) };
+// REWRITES-DAG:     println!("{} {}", add({{arg[0-9]+}}, {{arg[0-9]+}}), side_effect());
+// REWRITES-DAG:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-DAG:     return;
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

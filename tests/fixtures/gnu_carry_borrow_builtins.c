@@ -139,6 +139,10 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe fn add_with_carry({{arg[0-9]+}}: u32, {{arg[0-9]+}}: u32, {{arg[0-9]+}}: u32, {{arg[0-9]+}}: *mut u32) -> u32 {
 // REWRITES-NEXT:     let {{__v[0-9]+}} = {{arg[0-9]+}}.overflowing_add({{arg[0-9]+}});
 // REWRITES-NEXT:     let {{__v[0-9]+}}: u32 = {{__v[0-9]+}}.0 as u32;
@@ -167,6 +171,7 @@ int main(void) {
 // REWRITES-NEXT:     let mut carry: u32 = 0;
 // REWRITES-NEXT:     let mut borrow: u32 = 0;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: u32 = 4294967295u32;
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             c"%u %u\n".as_ptr(),
@@ -174,6 +179,8 @@ int main(void) {
 // REWRITES-NEXT:             carry,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             c"%u %u\n".as_ptr(),
@@ -181,6 +188,8 @@ int main(void) {
 // REWRITES-NEXT:             carry,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             c"%u %u\n".as_ptr(),
@@ -188,6 +197,8 @@ int main(void) {
 // REWRITES-NEXT:             borrow,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             c"%u %u\n".as_ptr(),
@@ -195,6 +206,7 @@ int main(void) {
 // REWRITES-NEXT:             borrow,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

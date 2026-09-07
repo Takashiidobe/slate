@@ -122,16 +122,22 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), from_int(0) as i32) };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), from_int(42) as i32) };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), from_compare(2, 5) as i32) };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), from_compare(9, 5) as i32) };
+// REWRITES-NEXT:     println!("{}", from_int(0) as i32);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     println!("{}", from_int(42) as i32);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     println!("{}", from_compare(2, 5) as i32);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     println!("{}", from_compare(9, 5) as i32);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 2;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), use_bool({{__v[0-9]+}})) };
+// REWRITES-NEXT:     println!("{}", use_bool({{__v[0-9]+}}));
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), use_bool({{__v[0-9]+}})) };
+// REWRITES-NEXT:     println!("{}", use_bool({{__v[0-9]+}}));
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

@@ -189,13 +189,12 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = unsafe { {{__v[0-9]+}}.add(3) };
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = c"xyz".as_ptr() as *mut u8;
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = unsafe { {{__v[0-9]+}}.add(3) };
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"%d %d\n".as_ptr(),
-// REWRITES-NEXT:             check_target({{__v[0-9]+}}, {{__v[0-9]+}}, unsafe { &mut (*std::ptr::addr_of_mut!(tok)) }),
-// REWRITES-NEXT:             tok,
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
+// REWRITES-NEXT:     println!(
+// REWRITES-NEXT:         "{} {}",
+// REWRITES-NEXT:         check_target({{__v[0-9]+}}, {{__v[0-9]+}}, unsafe { &mut (*std::ptr::addr_of_mut!(tok)) }),
+// REWRITES-NEXT:         tok
+// REWRITES-NEXT:     );
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

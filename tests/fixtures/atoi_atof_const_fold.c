@@ -122,26 +122,44 @@ int main(void) {
 // REWRITES-NEXT:     fn atof(_0: *const core::ffi::c_char) -> f64;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = c"-7xyz".as_ptr() as *mut i8;
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = c"-7xyz".as_ptr() as *mut u8;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { 42i32 };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), {{__v[0-9]+}}) };
+// REWRITES-NEXT:     println!("{}", {{__v[0-9]+}});
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { 13i32 };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), {{__v[0-9]+}}) };
+// REWRITES-NEXT:     println!("{}", {{__v[0-9]+}});
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { -7i32 };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), {{__v[0-9]+}}) };
+// REWRITES-NEXT:     println!("{}", {{__v[0-9]+}});
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { 0i32 };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), {{__v[0-9]+}}) };
+// REWRITES-NEXT:     println!("{}", {{__v[0-9]+}});
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i64 = unsafe { 1000000000000i64 };
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe { printf(c"%ld\n".as_ptr(), {{__v[0-9]+}}) };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i64 = unsafe { -9000000000000i64 };
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe { printf(c"%lld\n".as_ptr(), {{__v[0-9]+}}) };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { 3.14 };
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe { printf(c"%.2f\n".as_ptr(), {{__v[0-9]+}}) };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { 2.0 };
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe { printf(c"%.1f\n".as_ptr(), {{__v[0-9]+}}) };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe { printf(c"%.2f\n".as_ptr(), unsafe { atof(c"6.5garbage".as_ptr()) }) };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

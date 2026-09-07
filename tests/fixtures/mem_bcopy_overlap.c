@@ -115,10 +115,12 @@ int main(void) {
 // REWRITES-NEXT:     unsafe { std::ptr::copy({{__v[0-9]+}} as *const u8, {{__v[0-9]+}} as *mut u8, {{__v[0-9]+}} as usize) };
 // REWRITES-NEXT:     let mut i: i32 = 0;
 // REWRITES-NEXT:     while i < 8 {
-// REWRITES-NEXT:         unsafe { printf(c"%d ".as_ptr(), buf[((i as i64) as usize)] as i32) };
+// REWRITES-NEXT:         print!("{} ", buf[((i as i64) as usize)] as i32);
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:         i += 1;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     unsafe { printf(c"\n".as_ptr()) };
+// REWRITES-NEXT:     println!("");
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

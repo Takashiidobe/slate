@@ -78,13 +78,10 @@ int main(void) {
 // REWRITES-NEXT: fn main() {
 // REWRITES-X86_64-GNU-NEXT:     (unsafe { setlocale(6 as i32, c"C".as_ptr()) }) as *mut i8;
 // REWRITES-AARCH64-GNU-NEXT:     (unsafe { setlocale(6 as i32, c"C".as_ptr()) }) as *mut u8;
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"%d %d\n".as_ptr(),
-// REWRITES-NEXT:             unsafe { toupper(113 as i32) },
-// REWRITES-NEXT:             unsafe { tolower(81 as i32) },
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
+// REWRITES-NEXT:     println!("{} {}", unsafe { toupper(113 as i32) }, unsafe {
+// REWRITES-NEXT:         tolower(81 as i32)
+// REWRITES-NEXT:     });
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

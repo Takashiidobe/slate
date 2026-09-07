@@ -1775,6 +1775,10 @@ int main(void) {
 // REWRITES-NEXT:     ) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
+// REWRITES-AARCH64-GNU-NEXT: unsafe extern "C" {
+// REWRITES-AARCH64-GNU-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// REWRITES-AARCH64-GNU-NEXT: }
+// REWRITES-AARCH64-GNU-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = c"%d %d %d %d %d %d\n".as_ptr() as *mut i8;
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = c"%d %d %d %d %d %d\n".as_ptr() as *mut u8;
@@ -1785,6 +1789,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = c23_time();
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = c23_io();
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = c23_limits();
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
@@ -1796,6 +1801,7 @@ int main(void) {
 // REWRITES-NEXT:             {{__v[0-9]+}} + {{__v[0-9]+}},
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
@@ -2457,5 +2463,9 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:         _2: *const core::ffi::c_char,
 // REWRITES-X86_64-GNU-NEXT:         _3: LongDouble,
 // REWRITES-X86_64-GNU-NEXT:     ) -> i32;
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: unsafe extern "C" {
+// REWRITES-X86_64-GNU-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // REWRITES-X86_64-GNU-NEXT: }
 // SLATE-FILECHECK-END rewrites

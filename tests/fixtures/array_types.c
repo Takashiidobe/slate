@@ -128,9 +128,16 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), sum_char_array()) };
+// REWRITES-NEXT:     println!("{}", sum_char_array());
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe { printf(c"%.2f\n".as_ptr(), pick_double_array(2)) };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

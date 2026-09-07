@@ -152,16 +152,13 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), adjust(6)) };
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"%d %d %d\n".as_ptr(),
-// REWRITES-NEXT:             unsafe { counter },
-// REWRITES-NEXT:             unsafe { zeroed },
-// REWRITES-X86_64-GNU-NEXT:             unsafe { (*numbers)[2] },
-// REWRITES-AARCH64-GNU-NEXT:             unsafe { numbers[2] },
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
+// REWRITES-NEXT:     println!("{}", adjust(6));
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     println!("{} {} {}", unsafe { counter }, unsafe { zeroed }, unsafe {
+// REWRITES-X86_64-GNU-NEXT:         (*numbers)[2]
+// REWRITES-AARCH64-GNU-NEXT:         numbers[2]
+// REWRITES-NEXT:     });
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

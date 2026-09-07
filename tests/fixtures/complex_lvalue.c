@@ -125,11 +125,15 @@ int main(void) {
 // REWRITES-NEXT:     let {{__v[0-9]+}}: f64 = pick(unsafe { &mut (*std::ptr::addr_of_mut!(z.re)) });
 // REWRITES-NEXT:     let {{__v[0-9]+}}: f64 = pick(unsafe { &mut (*std::ptr::addr_of_mut!(z.im)) });
 // REWRITES-NEXT:     let {{__v[0-9]+}}: num_complex::Complex<f64> = z;
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), {{__v[0-9]+}}.re as i32) };
+// REWRITES-NEXT:     println!("{}", {{__v[0-9]+}}.re as i32);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     let {{__v[0-9]+}}: num_complex::Complex<f64> = z;
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), {{__v[0-9]+}}.im as i32) };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), {{__v[0-9]+}} as i32) };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), {{__v[0-9]+}} as i32) };
+// REWRITES-NEXT:     println!("{}", {{__v[0-9]+}}.im as i32);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     println!("{}", {{__v[0-9]+}} as i32);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     println!("{}", {{__v[0-9]+}} as i32);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

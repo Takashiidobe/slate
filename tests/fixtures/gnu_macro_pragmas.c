@@ -79,11 +79,8 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(c"%d %d\n".as_ptr(), unsafe { macro_inner }, unsafe {
-// REWRITES-NEXT:             macro_outer
-// REWRITES-NEXT:         })
-// REWRITES-NEXT:     };
+// REWRITES-NEXT:     println!("{} {}", unsafe { macro_inner }, unsafe { macro_outer });
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

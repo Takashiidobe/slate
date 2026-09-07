@@ -15,7 +15,8 @@ int main(void) {
 
 // REWRITES-LABEL: {{^}}fn main() {
 // REWRITES-DAG: unsafe { toupper(
-// REWRITES-DAG: unsafe { tolower(
+// REWRITES-DAG: unsafe {
+// REWRITES-DAG: tolower(
 // REWRITES: {{^}}}
 
 // SLATE-FILECHECK-BEGIN lowering

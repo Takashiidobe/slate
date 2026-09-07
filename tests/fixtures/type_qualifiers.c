@@ -139,16 +139,17 @@ int main(void) {
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut left: i32 = 7;
 // REWRITES-NEXT:     let mut right: i32 = 11;
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), add_const_param(2)) };
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"%d\n".as_ptr(),
-// REWRITES-NEXT:             add_restrict_pointers(unsafe { &(*std::ptr::addr_of_mut!(left)) }, unsafe {
-// REWRITES-NEXT:                 &(*std::ptr::addr_of_mut!(right))
-// REWRITES-NEXT:             }),
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), add_atomic_value(6)) };
+// REWRITES-NEXT:     println!("{}", add_const_param(2));
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     println!(
+// REWRITES-NEXT:         "{}",
+// REWRITES-NEXT:         add_restrict_pointers(unsafe { &(*std::ptr::addr_of_mut!(left)) }, unsafe {
+// REWRITES-NEXT:             &(*std::ptr::addr_of_mut!(right))
+// REWRITES-NEXT:         })
+// REWRITES-NEXT:     );
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     println!("{}", add_atomic_value(6));
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

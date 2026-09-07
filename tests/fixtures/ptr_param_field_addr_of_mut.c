@@ -94,7 +94,8 @@ int main(void) {
 // REWRITES-DAG:     let {{__v[0-9]+}}: i32 = r.dict.x;
 // REWRITES-DAG:     let {{__v[0-9]+}}: i32 = r.io.y;
 // REWRITES-DAG:     let {{__v[0-9]+}}: i32 = r.cctx;
-// REWRITES-DAG:     unsafe { printf(c"%d %d %d\n".as_ptr(), {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// REWRITES-DAG:     println!("{} {} {}", {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
+// REWRITES-DAG:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-DAG:     __retval = 0;
 // REWRITES-DAG:     std::process::exit(__retval as i32);
 // REWRITES-DAG:     std::process::exit(__retval as i32);

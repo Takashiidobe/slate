@@ -98,9 +98,11 @@ int main(void) {
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { isalpha(c as i32) };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
 // REWRITES-NEXT:     if {{__v[0-9]+}} {
-// REWRITES-NEXT:         unsafe { printf(c"yes\n".as_ptr()) };
+// REWRITES-NEXT:         println!("yes");
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         unsafe { printf(c"no\n".as_ptr()) };
+// REWRITES-NEXT:         println!("no");
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }

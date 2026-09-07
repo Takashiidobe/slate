@@ -175,6 +175,10 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-X86_64-GNU-NEXT:     let mut {{__slate_alloca_frame[0-9]+}}: __SlateAllocaFrame0 = __SlateAllocaFrame0(
 // REWRITES-X86_64-GNU-NEXT:         std::ptr::null_mut(),
@@ -227,6 +231,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i32 = {{__slate_alloca_frame[0-9]+}}.2.as_mut_ptr() as *mut i32;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i64 = unsafe { {{__v[0-9]+}}.offset_from({{__v[0-9]+}}) as i64 };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i32 = {{__slate_alloca_frame[0-9]+}}.2.as_mut_ptr() as *mut i32;
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
@@ -239,6 +244,7 @@ int main(void) {
 // REWRITES-NEXT:             unsafe { {{__v[0-9]+}}.offset_from({{__v[0-9]+}}) as i64 },
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

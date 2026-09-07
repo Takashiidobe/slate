@@ -142,12 +142,14 @@ int main(void) {
 // REWRITES-NEXT:     o.a.x = 3;
 // REWRITES-NEXT:     o.a.y = 4;
 // REWRITES-NEXT:     o.z = 5;
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), o.a.x + o.a.y + o.z) };
+// REWRITES-NEXT:     println!("{}", o.a.x + o.a.y + o.z);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     init = Outer {
 // REWRITES-NEXT:         a: Inner { x: 1, y: 2 },
 // REWRITES-NEXT:         z: 3,
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), init.a.x + init.a.y + init.z) };
+// REWRITES-NEXT:     println!("{}", init.a.x + init.a.y + init.z);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

@@ -117,7 +117,7 @@ int main(void) {
 // LOWERING-MSVC-NEXT: }
 // SLATE-FILECHECK-END lowering-msvc
 
-// SLATE-FILECHECK-BEGIN rewrites-msvc
+// SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-MSVC: #![feature(c_variadic)]
 // REWRITES-MSVC-NEXT: #![allow(
 // REWRITES-MSVC-NEXT:     dead_code,
@@ -147,6 +147,10 @@ int main(void) {
 // REWRITES-MSVC-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-MSVC-NEXT:     fn strlen(_0: *const core::ffi::c_char) -> usize;
 // REWRITES-MSVC-NEXT:     fn isdigit(_0: i32) -> i32;
+// REWRITES-MSVC-NEXT: }
+// REWRITES-MSVC-EMPTY:
+// REWRITES-MSVC-NEXT: unsafe extern "C" {
+// REWRITES-MSVC-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // REWRITES-MSVC-NEXT: }
 // REWRITES-MSVC-EMPTY:
 // REWRITES-MSVC-NEXT: fn call_imported_msvc(
@@ -185,7 +189,9 @@ int main(void) {
 // REWRITES-MSVC-NEXT:     let {{__v[0-9]+}}: *mut i8 = buffer.as_mut_ptr() as *mut i8;
 // REWRITES-MSVC-NEXT:     let {{__v[0-9]+}}: u64 = (unsafe { strlen({{__v[0-9]+}} as *const core::ffi::c_char) }) as u64;
 // REWRITES-MSVC-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { isdigit(55 as i32) };
+// REWRITES-MSVC-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-MSVC-NEXT:     unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, ({{__v[0-9]+}} != 0) as i32) };
+// REWRITES-MSVC-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-MSVC-NEXT:     std::process::exit(0 as i32);
 // REWRITES-MSVC-NEXT: }
-// SLATE-FILECHECK-END rewrites-msvc
+// SLATE-FILECHECK-END rewrites

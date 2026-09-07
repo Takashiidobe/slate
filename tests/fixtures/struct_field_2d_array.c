@@ -387,6 +387,10 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut t: table = table { rows: {{\[\[}}0; 3]; 4] };
 // REWRITES-NEXT:     let mut c: cube = cube {
@@ -399,17 +403,18 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: *mut i8 = std::ptr::addr_of_mut!(t.rows[((i as i64) as usize)]) as *mut i8;
 // REWRITES-AARCH64-GNU-NEXT:         let {{__v[0-9]+}}: *mut u8 = c"%s\n".as_ptr() as *mut u8;
 // REWRITES-AARCH64-GNU-NEXT:         let {{__v[0-9]+}}: *mut u8 = std::ptr::addr_of_mut!(t.rows[((i as i64) as usize)]) as *mut u8;
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:         unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
+// REWRITES-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     fill_cube(unsafe { &mut (*std::ptr::addr_of_mut!(c)) });
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"%d %d %d\n".as_ptr(),
-// REWRITES-NEXT:             c.v[0][0][0],
-// REWRITES-NEXT:             c.v[1][2][3],
-// REWRITES-NEXT:             sum_cube_via_ptr(unsafe { &mut (*std::ptr::addr_of_mut!(c)) }),
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
+// REWRITES-NEXT:     println!(
+// REWRITES-NEXT:         "{} {} {}",
+// REWRITES-NEXT:         c.v[0][0][0],
+// REWRITES-NEXT:         c.v[1][2][3],
+// REWRITES-NEXT:         sum_cube_via_ptr(unsafe { &mut (*std::ptr::addr_of_mut!(c)) })
+// REWRITES-NEXT:     );
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

@@ -111,6 +111,10 @@ int main(void) {
 // REWRITES-NEXT:     fn pragma_weak_alias(_0: i32) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
 // REWRITES-NEXT: #[unsafe(no_mangle)]
 // REWRITES-NEXT: pub extern "C-unwind" fn pragma_weak_target({{arg[0-9]+}}: i32) -> i32 {
 // REWRITES-NEXT:     {{arg[0-9]+}} + 7
@@ -131,6 +135,7 @@ int main(void) {
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     .unwrap() as *const u8)
 // REWRITES-NEXT:         == (Some(pragma_weak_target).unwrap() as *const u8);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
@@ -139,6 +144,7 @@ int main(void) {
 // REWRITES-NEXT:             pragma_actual(13),
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

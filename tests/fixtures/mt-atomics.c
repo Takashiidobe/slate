@@ -218,6 +218,10 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-X86_64-GNU-NEXT:     let mut threads: aligned::Aligned<aligned::A16, [u64; 4]> = aligned::Aligned([0; 4]);
 // REWRITES-AARCH64-GNU-NEXT:     let mut threads: [u64; 4] = [0; 4];
@@ -251,7 +255,9 @@ int main(void) {
 // REWRITES-NEXT:         std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(counter))
 // REWRITES-NEXT:             .load(std::sync::atomic::Ordering::SeqCst)
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

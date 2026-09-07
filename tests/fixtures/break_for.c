@@ -127,8 +127,10 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), first_multiple(50, 7)) };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), first_multiple(3, 7)) };
+// REWRITES-NEXT:     println!("{}", first_multiple(50, 7));
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     println!("{}", first_multiple(3, 7));
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

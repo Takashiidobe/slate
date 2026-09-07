@@ -1611,6 +1611,10 @@ int main(void) {
 // REWRITES-NEXT:     fn quick_exit(_0: i32) -> !;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
+// REWRITES-AARCH64-GNU-NEXT: unsafe extern "C" {
+// REWRITES-AARCH64-GNU-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// REWRITES-AARCH64-GNU-NEXT: }
+// REWRITES-AARCH64-GNU-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut anonymous: C11Anonymous = C11Anonymous {
 // REWRITES-NEXT:         __slate_anon_0: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() },
@@ -1888,30 +1892,31 @@ int main(void) {
 // REWRITES-NEXT:     if {{__v[0-9]+}} {
 // REWRITES-NEXT:         c11_never_return(99);
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d".as_ptr(),
-// REWRITES-NEXT:             {{__v[0-9]+}},
-// REWRITES-NEXT:             {{__v[0-9]+}},
-// REWRITES-NEXT:             {{__v[0-9]+}},
-// REWRITES-NEXT:             {{__v[0-9]+}},
-// REWRITES-NEXT:             {{__v[0-9]+}},
-// REWRITES-NEXT:             {{__v[0-9]+}},
-// REWRITES-NEXT:             1 as i32,
-// REWRITES-NEXT:             {{__v[0-9]+}},
-// REWRITES-NEXT:             {{__v[0-9]+}},
-// REWRITES-NEXT:             {{__v[0-9]+}},
-// REWRITES-NEXT:             concurrency_total,
-// REWRITES-NEXT:             {{__v[0-9]+}},
-// REWRITES-NEXT:             {{__v[0-9]+}},
-// REWRITES-NEXT:             {{__v[0-9]+}},
-// REWRITES-NEXT:             {{__v[0-9]+}},
-// REWRITES-NEXT:             {{__v[0-9]+}},
-// REWRITES-NEXT:             {{__v[0-9]+}},
-// REWRITES-NEXT:             0 as i32,
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
+// REWRITES-NEXT:     print!(
+// REWRITES-NEXT:         "{} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}",
+// REWRITES-NEXT:         {{__v[0-9]+}},
+// REWRITES-NEXT:         {{__v[0-9]+}},
+// REWRITES-NEXT:         {{__v[0-9]+}},
+// REWRITES-NEXT:         {{__v[0-9]+}},
+// REWRITES-NEXT:         {{__v[0-9]+}},
+// REWRITES-NEXT:         {{__v[0-9]+}},
+// REWRITES-NEXT:         1 as i32,
+// REWRITES-NEXT:         {{__v[0-9]+}},
+// REWRITES-NEXT:         {{__v[0-9]+}},
+// REWRITES-NEXT:         {{__v[0-9]+}},
+// REWRITES-NEXT:         concurrency_total,
+// REWRITES-NEXT:         {{__v[0-9]+}},
+// REWRITES-NEXT:         {{__v[0-9]+}},
+// REWRITES-NEXT:         {{__v[0-9]+}},
+// REWRITES-NEXT:         {{__v[0-9]+}},
+// REWRITES-NEXT:         {{__v[0-9]+}},
+// REWRITES-NEXT:         {{__v[0-9]+}},
+// REWRITES-NEXT:         0 as i32
+// REWRITES-NEXT:     );
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe { putchar(10 as i32) };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
@@ -2071,5 +2076,9 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_to_u64(__a: LongDouble) -> u64;
 // REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_to_u8(__a: LongDouble) -> u8;
 // REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_trunc(__a: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: unsafe extern "C" {
+// REWRITES-X86_64-GNU-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // REWRITES-X86_64-GNU-NEXT: }
 // SLATE-FILECHECK-END rewrites

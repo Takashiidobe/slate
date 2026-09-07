@@ -689,19 +689,18 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"%d %d %d %d %d %d %d %d\n".as_ptr(),
-// REWRITES-NEXT:             alias_same_object(),
-// REWRITES-NEXT:             alias_struct_fields(),
-// REWRITES-NEXT:             circular_list(),
-// REWRITES-NEXT:             parent_pointer_tree(),
-// REWRITES-NEXT:             self_referential_struct(),
-// REWRITES-NEXT:             overlapping_array_pointers(),
-// REWRITES-NEXT:             global_alias_with_local(),
-// REWRITES-NEXT:             type_punning(),
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
+// REWRITES-NEXT:     println!(
+// REWRITES-NEXT:         "{} {} {} {} {} {} {} {}",
+// REWRITES-NEXT:         alias_same_object(),
+// REWRITES-NEXT:         alias_struct_fields(),
+// REWRITES-NEXT:         circular_list(),
+// REWRITES-NEXT:         parent_pointer_tree(),
+// REWRITES-NEXT:         self_referential_struct(),
+// REWRITES-NEXT:         overlapping_array_pointers(),
+// REWRITES-NEXT:         global_alias_with_local(),
+// REWRITES-NEXT:         type_punning()
+// REWRITES-NEXT:     );
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

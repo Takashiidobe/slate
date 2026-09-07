@@ -99,7 +99,8 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = path.as_mut_ptr() as *mut i8;
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = path.as_mut_ptr() as *mut u8;
 // REWRITES-NEXT:     fd = unsafe { mkstemp({{__v[0-9]+}} as *mut core::ffi::c_char) };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), (fd >= 0) as i32) };
+// REWRITES-NEXT:     println!("{}", (fd >= 0) as i32);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     let {{__v[0-9]+}}: bool = fd >= 0;
 // REWRITES-NEXT:     if {{__v[0-9]+}} {
 // REWRITES-NEXT:         unsafe { close(fd as i32) };

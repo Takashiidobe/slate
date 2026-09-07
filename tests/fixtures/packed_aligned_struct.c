@@ -121,7 +121,8 @@ int main(void) {
 // REWRITES-NEXT: #[repr(C, packed)]
 // REWRITES-NEXT: #[derive(Clone, Copy)]
 // REWRITES-NEXT: struct PackedAligned__packed {
-// REWRITES-NEXT:     a: i8,
+// REWRITES-X86_64-GNU-NEXT:     a: i8,
+// REWRITES-AARCH64-GNU-NEXT:     a: u8,
 // REWRITES-NEXT:     b: i32,
 // REWRITES-NEXT:     __pad_1: [u8; 3],
 // REWRITES-NEXT: }
@@ -147,6 +148,10 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut s: aligned::Aligned<aligned::A4, PackedAligned> =
 // REWRITES-NEXT:         aligned::Aligned(PackedAligned(PackedAligned__packed {
@@ -156,6 +161,7 @@ int main(void) {
 // REWRITES-NEXT:         }));
 // REWRITES-NEXT:     s.a = 7;
 // REWRITES-NEXT:     unsafe { std::ptr::write_unaligned(std::ptr::addr_of_mut!(s.b), 4660 as i32) };
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             c"%zu %zu\n".as_ptr(),
@@ -163,20 +169,27 @@ int main(void) {
 // REWRITES-NEXT:             std::mem::align_of::<PackedAligned>() as u64,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe { printf(c"%zu %zu\n".as_ptr(), 0 as u64, 1 as u64) };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(c"%d %x\n".as_ptr(), s.a as i32, unsafe {
 // REWRITES-NEXT:             std::ptr::read_unaligned(std::ptr::addr_of!(s.b))
 // REWRITES-NEXT:         })
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { std::ptr::read_unaligned(std::ptr::addr_of!(s.b)) };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + 1;
 // REWRITES-NEXT:     unsafe { std::ptr::write_unaligned(std::ptr::addr_of_mut!(s.b), {{__v[0-9]+}}) };
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(c"%x\n".as_ptr(), unsafe {
 // REWRITES-NEXT:             std::ptr::read_unaligned(std::ptr::addr_of!(s.b))
 // REWRITES-NEXT:         })
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

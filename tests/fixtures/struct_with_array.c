@@ -162,7 +162,8 @@ int main(void) {
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i64 = 2;
 // REWRITES-NEXT:     b.data[({{__v[0-9]+}} as usize)] = 30;
 // REWRITES-NEXT:     b.len = 3;
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), b.data[1] + b.len) };
+// REWRITES-NEXT:     println!("{}", b.data[1] + b.len);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     init = Buf {
 // REWRITES-NEXT:         data: [1, 2, 3],
 // REWRITES-NEXT:         len: 3,
@@ -170,7 +171,8 @@ int main(void) {
 // REWRITES-NEXT:     for i in 0..init.len {
 // REWRITES-NEXT:         sum += init.data[((i as i64) as usize)];
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), sum) };
+// REWRITES-NEXT:     println!("{}", sum);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

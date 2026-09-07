@@ -137,14 +137,14 @@ int main(void) {
 // REWRITES-NEXT:     p.top = {{__v[0-9]+}} as *mut color_t;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: *mut u32 = p.start as *mut u32;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: *mut u32 = unsafe { {{__v[0-9]+}}.add(1) };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), (unsafe { *{{__v[0-9]+}} }) as i32) };
+// REWRITES-NEXT:     println!("{}", (unsafe { *{{__v[0-9]+}} }) as i32);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     let {{__v[0-9]+}}: *mut u32 = p.top as *mut u32;
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"%d\n".as_ptr(),
-// REWRITES-NEXT:             (unsafe { {{__v[0-9]+}}.offset_from(p.start as *mut u32) as i64 }) as i32,
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
+// REWRITES-NEXT:     println!(
+// REWRITES-NEXT:         "{}",
+// REWRITES-NEXT:         (unsafe { {{__v[0-9]+}}.offset_from(p.start as *mut u32) as i64 }) as i32
+// REWRITES-NEXT:     );
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

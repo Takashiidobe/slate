@@ -195,7 +195,8 @@ int main(void) {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: *mut Option<unsafe extern "C-unwind" fn()> =
 // REWRITES-NEXT:             unsafe { {{__v[0-9]+}}.offset((i as i64) as isize) };
 // REWRITES-NEXT:         unsafe { unsafe { *{{__v[0-9]+}} }.unwrap()() };
-// REWRITES-NEXT:         unsafe { printf(c"%d\n".as_ptr(), unsafe { last_ran }) };
+// REWRITES-NEXT:         println!("{}", unsafe { last_ran });
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     unsafe { free(suite.tests as *mut core::ffi::c_void) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);

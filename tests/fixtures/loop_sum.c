@@ -108,9 +108,12 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), sum_to(10)) };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), sum_to(1)) };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), sum_to(0)) };
+// REWRITES-NEXT:     println!("{}", sum_to(10));
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     println!("{}", sum_to(1));
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     println!("{}", sum_to(0));
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

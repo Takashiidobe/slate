@@ -514,21 +514,23 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:     dump80(c"mul".as_ptr() as *mut i8, {{__v[0-9]+}} * {{__v[0-9]+}});
 // REWRITES-X86_64-GNU-NEXT:     dump80(c"div".as_ptr() as *mut i8, {{__v[0-9]+}} / {{__v[0-9]+}});
 // REWRITES-X86_64-GNU-NEXT:     dump80(c"neg".as_ptr() as *mut i8, -{{__v[0-9]+}});
-// REWRITES-X86_64-GNU-NEXT:     unsafe {
-// REWRITES-X86_64-GNU-NEXT:         printf(
-// REWRITES-X86_64-GNU-NEXT:             c"%d %d %d %d\n".as_ptr(),
-// REWRITES-X86_64-GNU-NEXT:             ({{__v[0-9]+}} < {{__v[0-9]+}}) as i32,
-// REWRITES-X86_64-GNU-NEXT:             ({{__v[0-9]+}} > {{__v[0-9]+}}) as i32,
-// REWRITES-X86_64-GNU-NEXT:             ({{__v[0-9]+}} == {{__v[0-9]+}}) as i32,
-// REWRITES-X86_64-GNU-NEXT:             ({{__v[0-9]+}} != {{__v[0-9]+}}) as i32,
-// REWRITES-X86_64-GNU-NEXT:         )
-// REWRITES-X86_64-GNU-NEXT:     };
-// REWRITES-X86_64-GNU-NEXT:     unsafe { printf(c"%d\n".as_ptr(), __slate_f80_to_i32({{__v[0-9]+}} + {{__v[0-9]+}})) };
+// REWRITES-X86_64-GNU-NEXT:     println!(
+// REWRITES-X86_64-GNU-NEXT:         "{} {} {} {}",
+// REWRITES-X86_64-GNU-NEXT:         ({{__v[0-9]+}} < {{__v[0-9]+}}) as i32,
+// REWRITES-X86_64-GNU-NEXT:         ({{__v[0-9]+}} > {{__v[0-9]+}}) as i32,
+// REWRITES-X86_64-GNU-NEXT:         ({{__v[0-9]+}} == {{__v[0-9]+}}) as i32,
+// REWRITES-X86_64-GNU-NEXT:         ({{__v[0-9]+}} != {{__v[0-9]+}}) as i32
+// REWRITES-X86_64-GNU-NEXT:     );
+// REWRITES-X86_64-GNU-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-X86_64-GNU-NEXT:     println!("{}", __slate_f80_to_i32({{__v[0-9]+}} + {{__v[0-9]+}}));
+// REWRITES-X86_64-GNU-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i64 = 1234567890123i64;
 // REWRITES-X86_64-GNU-NEXT:     dump80(c"from_i64".as_ptr() as *mut i8, __slate_f80_from_i64({{__v[0-9]+}}));
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = c"%d\n".as_ptr() as *mut i8;
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_i32(123456789 as i32);
+// REWRITES-X86_64-GNU-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:     unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, __slate_f80_to_i32({{__v[0-9]+}})) };
+// REWRITES-X86_64-GNU-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:     std::process::exit(0 as i32);
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
@@ -549,13 +551,18 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:     unsafe {
 // REWRITES-X86_64-GNU-NEXT:         std::ptr::copy_nonoverlapping({{__v[0-9]+}} as *const u8, {{__v[0-9]+}} as *mut u8, (10 as u64) as usize)
 // REWRITES-X86_64-GNU-NEXT:     };
+// REWRITES-X86_64-GNU-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:     unsafe { printf(c"%s".as_ptr(), {{arg[0-9]+}}) };
+// REWRITES-X86_64-GNU-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:     let mut i: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:     while i < 10 {
+// REWRITES-X86_64-GNU-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:         unsafe { printf(c"%02x".as_ptr(), bytes[((i as i64) as usize)] as i32) };
+// REWRITES-X86_64-GNU-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:         i += 1;
 // REWRITES-X86_64-GNU-NEXT:     }
-// REWRITES-X86_64-GNU-NEXT:     unsafe { printf(c"\n".as_ptr()) };
+// REWRITES-X86_64-GNU-NEXT:     println!("");
+// REWRITES-X86_64-GNU-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:     return;
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
@@ -647,5 +654,9 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_to_u64(__a: LongDouble) -> u64;
 // REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_to_u8(__a: LongDouble) -> u8;
 // REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_trunc(__a: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: unsafe extern "C" {
+// REWRITES-X86_64-GNU-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // REWRITES-X86_64-GNU-NEXT: }
 // SLATE-FILECHECK-END rewrites

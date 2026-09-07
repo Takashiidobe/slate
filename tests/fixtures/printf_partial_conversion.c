@@ -65,10 +65,18 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     unsafe { printf(c"first %d\n".as_ptr(), 1 as i32) };
+// REWRITES-NEXT:     println!("first {}", 1 as i32);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe { printf(c"dynamic %*d\n".as_ptr(), 5 as i32, 2 as i32) };
-// REWRITES-NEXT:     unsafe { printf(c"last %d\n".as_ptr(), 3 as i32) };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// REWRITES-NEXT:     println!("last {}", 3 as i32);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

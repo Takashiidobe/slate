@@ -1175,6 +1175,10 @@ int main(void) {
 // REWRITES-NEXT:     fn gnu_get_libc_version() -> *const core::ffi::c_char;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = c"%d %d %d\n".as_ptr() as *mut i8;
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = c"%d %d %d\n".as_ptr() as *mut u8;
@@ -1182,7 +1186,9 @@ int main(void) {
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = gnu_time_extensions();
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = gnu_pattern_extensions();
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = gnu_runtime_extensions();
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}} + {{__v[0-9]+}}) };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

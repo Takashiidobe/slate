@@ -336,20 +336,20 @@ int main(void) {
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES: #![feature(f128)]
-// REWRITES-NEXT: #![allow(
-// REWRITES-NEXT:     dead_code,
-// REWRITES-NEXT:     unused,
-// REWRITES-NEXT:     non_camel_case_types,
-// REWRITES-NEXT:     non_snake_case,
-// REWRITES-NEXT:     non_upper_case_globals,
-// REWRITES-NEXT:     arithmetic_overflow,
-// REWRITES-NEXT:     unconditional_panic,
-// REWRITES-NEXT:     suspicious_runtime_symbol_definitions,
-// REWRITES-NEXT:     unpredictable_function_pointer_comparisons,
-// REWRITES-NEXT:     unused_comparisons
-// REWRITES-NEXT: )]
-// REWRITES-EMPTY:
+// REWRITES-X86_64-GNU: #![feature(f128)]
+// REWRITES-X86_64-GNU-NEXT: #![allow(
+// REWRITES-X86_64-GNU-NEXT:     dead_code,
+// REWRITES-X86_64-GNU-NEXT:     unused,
+// REWRITES-X86_64-GNU-NEXT:     non_camel_case_types,
+// REWRITES-X86_64-GNU-NEXT:     non_snake_case,
+// REWRITES-X86_64-GNU-NEXT:     non_upper_case_globals,
+// REWRITES-X86_64-GNU-NEXT:     arithmetic_overflow,
+// REWRITES-X86_64-GNU-NEXT:     unconditional_panic,
+// REWRITES-X86_64-GNU-NEXT:     suspicious_runtime_symbol_definitions,
+// REWRITES-X86_64-GNU-NEXT:     unpredictable_function_pointer_comparisons,
+// REWRITES-X86_64-GNU-NEXT:     unused_comparisons
+// REWRITES-X86_64-GNU-NEXT: )]
+// REWRITES-X86_64-GNU-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: #[repr(C, align(16))]
 // REWRITES-X86_64-GNU-NEXT: #[derive(Clone, Copy)]
 // REWRITES-X86_64-GNU-NEXT: struct LongDouble([u8; 10]);
@@ -445,56 +445,57 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:     }
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
-// REWRITES-NEXT: #[repr(C)]
-// REWRITES-NEXT: #[derive(Clone, Copy)]
-// REWRITES-NEXT: union ld_union {
+// REWRITES-X86_64-GNU-NEXT: #[repr(C)]
+// REWRITES-X86_64-GNU-NEXT: #[derive(Clone, Copy)]
+// REWRITES-X86_64-GNU-NEXT: union ld_union {
 // REWRITES-X86_64-GNU-NEXT:     ld: LongDouble,
-// REWRITES-AARCH64-GNU-NEXT:     ld: f128,
-// REWRITES-NEXT:     bytes: [u8; 16],
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: unsafe extern "C" {
-// REWRITES-NEXT:     fn memset(_0: *mut core::ffi::c_void, _1: i32, _2: usize) -> *mut core::ffi::c_void;
-// REWRITES-NEXT:     fn memcpy(
-// REWRITES-NEXT:         _0: *mut core::ffi::c_void,
-// REWRITES-NEXT:         _1: *const core::ffi::c_void,
-// REWRITES-NEXT:         _2: usize,
-// REWRITES-NEXT:     ) -> *mut core::ffi::c_void;
-// REWRITES-NEXT:     fn puts(_0: *const core::ffi::c_char) -> i32;
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     let mut __retval: i32 = 0;
-// REWRITES-NEXT:     let mut src: ld_union = unsafe { std::mem::zeroed::<ld_union>() };
-// REWRITES-NEXT:     let mut dst: ld_union = unsafe { std::mem::zeroed::<ld_union>() };
-// REWRITES-NEXT:     let mut i: i32 = 0;
-// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(src) as *mut core::ffi::c_void;
-// REWRITES-NEXT:     unsafe { std::ptr::write_bytes({{__v[0-9]+}} as *mut u8, (0 as i32) as u8, (16 as u64) as usize) };
-// REWRITES-NEXT:     while i < 10 {
-// REWRITES-NEXT:         unsafe {
-// REWRITES-NEXT:             src.bytes[((i as i64) as usize)] = (i * 17 + 3) as u8;
-// REWRITES-NEXT:         }
-// REWRITES-NEXT:         i += 1;
-// REWRITES-NEXT:     }
-// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(dst) as *mut core::ffi::c_void;
-// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(src) as *mut core::ffi::c_void;
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         std::ptr::copy_nonoverlapping({{__v[0-9]+}} as *const u8, {{__v[0-9]+}} as *mut u8, (16 as u64) as usize)
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     i = 0;
-// REWRITES-NEXT:     while i < 10 {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: bool = ((unsafe { dst.bytes[((i as i64) as usize)] }) as i32)
-// REWRITES-NEXT:             != ((unsafe { src.bytes[((i as i64) as usize)] }) as i32);
-// REWRITES-NEXT:         if {{__v[0-9]+}} {
-// REWRITES-NEXT:             __retval = 1;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
-// REWRITES-NEXT:         }
-// REWRITES-NEXT:         i += 1;
-// REWRITES-NEXT:     }
-// REWRITES-NEXT:     unsafe { puts(c"ok".as_ptr()) };
-// REWRITES-NEXT:     __retval = 0;
-// REWRITES-NEXT:     std::process::exit(__retval as i32);
-// REWRITES-NEXT: }
+// REWRITES-X86_64-GNU-NEXT:     bytes: [u8; 16],
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: unsafe extern "C" {
+// REWRITES-X86_64-GNU-NEXT:     fn memset(_0: *mut core::ffi::c_void, _1: i32, _2: usize) -> *mut core::ffi::c_void;
+// REWRITES-X86_64-GNU-NEXT:     fn memcpy(
+// REWRITES-X86_64-GNU-NEXT:         _0: *mut core::ffi::c_void,
+// REWRITES-X86_64-GNU-NEXT:         _1: *const core::ffi::c_void,
+// REWRITES-X86_64-GNU-NEXT:         _2: usize,
+// REWRITES-X86_64-GNU-NEXT:     ) -> *mut core::ffi::c_void;
+// REWRITES-X86_64-GNU-NEXT:     fn puts(_0: *const core::ffi::c_char) -> i32;
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: fn main() {
+// REWRITES-X86_64-GNU-NEXT:     let mut __retval: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:     let mut src: ld_union = unsafe { std::mem::zeroed::<ld_union>() };
+// REWRITES-X86_64-GNU-NEXT:     let mut dst: ld_union = unsafe { std::mem::zeroed::<ld_union>() };
+// REWRITES-X86_64-GNU-NEXT:     let mut i: i32 = 0;
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(src) as *mut core::ffi::c_void;
+// REWRITES-X86_64-GNU-NEXT:     unsafe { std::ptr::write_bytes({{__v[0-9]+}} as *mut u8, (0 as i32) as u8, (16 as u64) as usize) };
+// REWRITES-X86_64-GNU-NEXT:     while i < 10 {
+// REWRITES-X86_64-GNU-NEXT:         unsafe {
+// REWRITES-X86_64-GNU-NEXT:             src.bytes[((i as i64) as usize)] = (i * 17 + 3) as u8;
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         i += 1;
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(dst) as *mut core::ffi::c_void;
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(src) as *mut core::ffi::c_void;
+// REWRITES-X86_64-GNU-NEXT:     unsafe {
+// REWRITES-X86_64-GNU-NEXT:         std::ptr::copy_nonoverlapping({{__v[0-9]+}} as *const u8, {{__v[0-9]+}} as *mut u8, (16 as u64) as usize)
+// REWRITES-X86_64-GNU-NEXT:     };
+// REWRITES-X86_64-GNU-NEXT:     i = 0;
+// REWRITES-X86_64-GNU-NEXT:     while i < 10 {
+// REWRITES-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bool = ((unsafe { dst.bytes[((i as i64) as usize)] }) as i32)
+// REWRITES-X86_64-GNU-NEXT:             != ((unsafe { src.bytes[((i as i64) as usize)] }) as i32);
+// REWRITES-X86_64-GNU-NEXT:         if {{__v[0-9]+}} {
+// REWRITES-X86_64-GNU-NEXT:             __retval = 1;
+// REWRITES-X86_64-GNU-NEXT:             std::process::exit(__retval as i32);
+// REWRITES-X86_64-GNU-NEXT:         }
+// REWRITES-X86_64-GNU-NEXT:         i += 1;
+// REWRITES-X86_64-GNU-NEXT:     }
+// REWRITES-X86_64-GNU-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-X86_64-GNU-NEXT:     unsafe { puts(c"ok".as_ptr()) };
+// REWRITES-X86_64-GNU-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// REWRITES-X86_64-GNU-NEXT:     __retval = 0;
+// REWRITES-X86_64-GNU-NEXT:     std::process::exit(__retval as i32);
+// REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: unsafe extern "C" {
 // REWRITES-X86_64-GNU-NEXT:     safe fn __slate_cf80_div(
@@ -584,5 +585,9 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_to_u64(__a: LongDouble) -> u64;
 // REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_to_u8(__a: LongDouble) -> u8;
 // REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_trunc(__a: LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: unsafe extern "C" {
+// REWRITES-X86_64-GNU-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // REWRITES-X86_64-GNU-NEXT: }
 // SLATE-FILECHECK-END rewrites

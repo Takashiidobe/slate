@@ -141,6 +141,10 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-X86_64-GNU-NEXT:     let mut dst: aligned::Aligned<aligned::A16, [i8; 16]> = aligned::Aligned([0; 16]);
 // REWRITES-X86_64-GNU-NEXT:     let mut src: [i8; 8] = [0; 8];
@@ -168,8 +172,10 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = dst.as_mut_ptr() as *mut i8;
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = dst.as_mut_ptr() as *mut u8;
 // REWRITES-NEXT:     unsafe { moved[(0usize..9usize)].copy_from_slice(&dst[(0usize..9usize)]) };
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:     unsafe { printf(c"%s\n".as_ptr(), moved.as_mut_ptr() as *mut i8) };
 // REWRITES-AARCH64-GNU-NEXT:     unsafe { printf(c"%s\n".as_ptr(), moved.as_mut_ptr() as *mut u8) };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

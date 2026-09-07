@@ -146,14 +146,22 @@ int main(void) {
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: num_complex::Complex<f64> = unsafe { __muldc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: num_complex::Complex<f64> = unsafe { __divdc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), {{__v[0-9]+}}.re as i32) };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), {{__v[0-9]+}}.im as i32) };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), {{__v[0-9]+}}.re as i32) };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), {{__v[0-9]+}}.im as i32) };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), {{__v[0-9]+}}.re as i32) };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), {{__v[0-9]+}}.im as i32) };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), (100.0 * {{__v[0-9]+}}.re) as i32) };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), (100.0 * {{__v[0-9]+}}.im) as i32) };
+// REWRITES-NEXT:     println!("{}", {{__v[0-9]+}}.re as i32);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     println!("{}", {{__v[0-9]+}}.im as i32);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     println!("{}", {{__v[0-9]+}}.re as i32);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     println!("{}", {{__v[0-9]+}}.im as i32);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     println!("{}", {{__v[0-9]+}}.re as i32);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     println!("{}", {{__v[0-9]+}}.im as i32);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     println!("{}", (100.0 * {{__v[0-9]+}}.re) as i32);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     println!("{}", (100.0 * {{__v[0-9]+}}.im) as i32);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

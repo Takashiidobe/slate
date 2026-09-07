@@ -181,6 +181,10 @@ int main(void) {
 // REWRITES-NEXT:     fn fgets(_0: *mut core::ffi::c_char, _1: i32, _2: *mut libc::FILE) -> *mut core::ffi::c_char;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut __retval: i32 = 0;
 // REWRITES-X86_64-GNU-NEXT:     let mut name: aligned::Aligned<aligned::A16, [i8; 31]> = aligned::Aligned([0; 31]);
@@ -201,18 +205,24 @@ int main(void) {
 // REWRITES-NEXT:     f = unsafe { fopen({{__v[0-9]+}} as *const core::ffi::c_char, c"w".as_ptr()) };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: bool = !(f != std::ptr::null_mut());
 // REWRITES-NEXT:     if {{__v[0-9]+}} {
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:         unsafe { puts(c"open-fail".as_ptr()) };
+// REWRITES-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:         __retval = 0;
 // REWRITES-NEXT:         std::process::exit(__retval as i32);
 // REWRITES-NEXT:     }
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe { fputs(c"owned\n".as_ptr(), f as *mut libc::FILE) };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     unsafe { fclose(f as *mut libc::FILE) };
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = name.as_mut_ptr() as *mut i8;
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = name.as_mut_ptr() as *mut u8;
 // REWRITES-NEXT:     g = unsafe { fopen({{__v[0-9]+}} as *const core::ffi::c_char, c"r".as_ptr()) };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: bool = !(g != std::ptr::null_mut());
 // REWRITES-NEXT:     if {{__v[0-9]+}} {
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:         unsafe { puts(c"reopen-fail".as_ptr()) };
+// REWRITES-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:         __retval = 0;
 // REWRITES-NEXT:         std::process::exit(__retval as i32);
 // REWRITES-NEXT:     }
@@ -227,12 +237,14 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:     }) as *mut i8;
 // REWRITES-AARCH64-GNU-NEXT:     }) as *mut u8;
 // REWRITES-NEXT:     unsafe { fclose(g as *mut libc::FILE) };
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         fputs(
 // REWRITES-NEXT:             buf.as_mut_ptr() as *const core::ffi::c_char,
 // REWRITES-NEXT:             (unsafe { stdout }) as *mut libc::FILE,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     unsafe { remove(name.as_mut_ptr() as *const core::ffi::c_char) };
 // REWRITES-NEXT:     __retval = 0;
 // REWRITES-NEXT:     std::process::exit(__retval as i32);

@@ -151,6 +151,10 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe fn scale(mut n: i32, mut arr: *mut i32) {
 // REWRITES-NEXT:     for i in 0..n {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = 2;
@@ -170,12 +174,19 @@ int main(void) {
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut values: [i32; 3] = [1, 2, 3];
 // REWRITES-NEXT:     unsafe { scale(3, values.as_mut_ptr() as *mut i32) };
-// REWRITES-NEXT:     unsafe { printf(c"%d %d %d\n".as_ptr(), values[0], values[1], values[2]) };
+// REWRITES-NEXT:     println!("{} {} {}", values[0], values[1], values[2]);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe { printf(c"%f\n".as_ptr(), 1000.5 as f64) };
-// REWRITES-X86_64-GNU-NEXT:     unsafe { printf(c"%d %d\n".as_ptr(), (27 as i8) as i32, (37 as i8) as i32) };
-// REWRITES-AARCH64-GNU-NEXT:     unsafe { printf(c"%d %d\n".as_ptr(), (27 as u8) as i32, (37 as u8) as i32) };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// REWRITES-X86_64-GNU-NEXT:     println!("{} {}", (27 as i8) as i32, (37 as i8) as i32);
+// REWRITES-AARCH64-GNU-NEXT:     println!("{} {}", (27 as u8) as i32, (37 as u8) as i32);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe { printf(c"%zu\n".as_ptr(), 1 as u64) };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), add(3, 4)) };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// REWRITES-NEXT:     println!("{}", add(3, 4));
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

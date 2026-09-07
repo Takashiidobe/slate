@@ -180,7 +180,8 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:             out.as_mut_ptr() as *mut i32,
 // REWRITES-X86_64-GNU-NEXT:         )
 // REWRITES-X86_64-GNU-NEXT:     };
-// REWRITES-X86_64-GNU-NEXT:     unsafe { printf(c"%d %d %d %d\n".as_ptr(), out[0], out[1], out[2], out[3]) };
+// REWRITES-X86_64-GNU-NEXT:     println!("{} {} {} {}", out[0], out[1], out[2], out[3]);
+// REWRITES-X86_64-GNU-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:     std::process::exit(0 as i32);
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:

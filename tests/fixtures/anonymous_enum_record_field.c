@@ -100,13 +100,8 @@ int main(void) {
 // REWRITES-NEXT:     let {{__v[0-9]+}}: Conditional = Conditional { ctx: {{_unnamed_at_[0-9A-Za-z_]+}}::IN_THEN };
 // REWRITES-NEXT:     conditional = {{__v[0-9]+}};
 // REWRITES-NEXT:     conditional.ctx = {{_unnamed_at_[0-9A-Za-z_]+}}::IN_ELSE;
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"%d %d\n".as_ptr(),
-// REWRITES-NEXT:             (conditional.ctx as u32) as i32,
-// REWRITES-NEXT:             4 as i32,
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
+// REWRITES-NEXT:     println!("{} {}", (conditional.ctx as u32) as i32, 4 as i32);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

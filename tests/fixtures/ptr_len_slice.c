@@ -165,6 +165,10 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-X86_64-GNU-NEXT:     let mut values: aligned::Aligned<aligned::A16, [i32; 4]> = aligned::Aligned([0; 4]);
 // REWRITES-X86_64-GNU-NEXT:     *values = [2, 4, 6, 8];
@@ -172,15 +176,18 @@ int main(void) {
 // REWRITES-AARCH64-GNU-NEXT:     let mut values: [i32; 4] = [2, 4, 6, 8];
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = c"%d\n".as_ptr() as *mut u8;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i32 = values.as_mut_ptr() as *mut i32;
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
 // REWRITES-NEXT:             sum(unsafe { std::slice::from_raw_parts({{__v[0-9]+}} as *const i32, (4 as i32) as usize) }),
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i32 = values.as_mut_ptr() as *mut i32;
 // REWRITES-NEXT:     bump(unsafe { std::slice::from_raw_parts_mut({{__v[0-9]+}} as *mut i32, (4 as i32) as usize) });
-// REWRITES-NEXT:     unsafe { printf(c"%d %d\n".as_ptr(), values[0], values[3]) };
+// REWRITES-NEXT:     println!("{} {}", values[0], values[3]);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

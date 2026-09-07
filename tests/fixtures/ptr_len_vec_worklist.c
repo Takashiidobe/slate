@@ -194,14 +194,13 @@ int main(void) {
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i32 = values;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = len;
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"%d\n".as_ptr(),
-// REWRITES-NEXT:             forward_consume(unsafe {
-// REWRITES-NEXT:                 Vec::from_raw_parts({{__v[0-9]+}} as *mut i32, {{__v[0-9]+}} as usize, {{__v[0-9]+}} as usize)
-// REWRITES-NEXT:             }),
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
+// REWRITES-NEXT:     println!(
+// REWRITES-NEXT:         "{}",
+// REWRITES-NEXT:         forward_consume(unsafe {
+// REWRITES-NEXT:             Vec::from_raw_parts({{__v[0-9]+}} as *mut i32, {{__v[0-9]+}} as usize, {{__v[0-9]+}} as usize)
+// REWRITES-NEXT:         })
+// REWRITES-NEXT:     );
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

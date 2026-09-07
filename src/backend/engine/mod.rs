@@ -1,5 +1,6 @@
 mod arena;
 mod prelude;
+mod printf_format;
 mod rules;
 
 use arena::{Arena, FunctionOptimizer, NodeId, NodeKindTag};
@@ -82,6 +83,7 @@ pub(in crate::backend) fn apply(program: &mut Program) {
         apply_item(item, &registry);
     }
     prelude::inject(program);
+    printf_format::rewrite(program);
 }
 
 fn apply_item(item: &mut Item, registry: &RuleRegistry) {

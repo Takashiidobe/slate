@@ -160,14 +160,13 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:
 // REWRITES-X86_64-GNU-NEXT: fn main() {
-// REWRITES-X86_64-GNU-NEXT:     unsafe {
-// REWRITES-X86_64-GNU-NEXT:         printf(
-// REWRITES-X86_64-GNU-NEXT:             c"%d %d %d\n".as_ptr(),
-// REWRITES-X86_64-GNU-NEXT:             gnu_extended_asm(7),
-// REWRITES-X86_64-GNU-NEXT:             gnu_numeric_operands(19, 4),
-// REWRITES-X86_64-GNU-NEXT:             gnu_multiple_outputs(),
-// REWRITES-X86_64-GNU-NEXT:         )
-// REWRITES-X86_64-GNU-NEXT:     };
+// REWRITES-X86_64-GNU-NEXT:     println!(
+// REWRITES-X86_64-GNU-NEXT:         "{} {} {}",
+// REWRITES-X86_64-GNU-NEXT:         gnu_extended_asm(7),
+// REWRITES-X86_64-GNU-NEXT:         gnu_numeric_operands(19, 4),
+// REWRITES-X86_64-GNU-NEXT:         gnu_multiple_outputs()
+// REWRITES-X86_64-GNU-NEXT:     );
+// REWRITES-X86_64-GNU-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:     std::process::exit(0 as i32);
 // REWRITES-X86_64-GNU-NEXT: }
 // REWRITES-X86_64-GNU-EMPTY:

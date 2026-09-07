@@ -66,12 +66,14 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn farewell() {
-// REWRITES-NEXT:     unsafe { printf(c"destructor ran\n".as_ptr()) };
+// REWRITES-NEXT:     println!("destructor ran");
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     unsafe { printf(c"main ran\n".as_ptr()) };
+// REWRITES-NEXT:     println!("main ran");
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     farewell();
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }

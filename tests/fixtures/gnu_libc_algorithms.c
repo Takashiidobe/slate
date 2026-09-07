@@ -1216,15 +1216,14 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"%d %d %d %d\n".as_ptr(),
-// REWRITES-NEXT:             gnu_qsort_extension(),
-// REWRITES-NEXT:             gnu_getopt_extensions(),
-// REWRITES-NEXT:             gnu_argp_extensions(),
-// REWRITES-NEXT:             gnu_search_extensions(),
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
+// REWRITES-NEXT:     println!(
+// REWRITES-NEXT:         "{} {} {} {}",
+// REWRITES-NEXT:         gnu_qsort_extension(),
+// REWRITES-NEXT:         gnu_getopt_extensions(),
+// REWRITES-NEXT:         gnu_argp_extensions(),
+// REWRITES-NEXT:         gnu_search_extensions()
+// REWRITES-NEXT:     );
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

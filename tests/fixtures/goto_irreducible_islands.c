@@ -319,7 +319,8 @@ done:
 // REWRITES-DAG:             }
 // REWRITES-DAG:         }
 // REWRITES-DAG:     }
-// REWRITES-DAG:     unsafe { printf(c"%d %d\n".as_ptr(), x, y) };
+// REWRITES-DAG:     println!("{} {}", x, y);
+// REWRITES-DAG:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-DAG:     std::process::exit(__retval as i32);
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

@@ -357,7 +357,8 @@ int main(void) {
 // REWRITES-NEXT:             unsafe {
 // REWRITES-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-NEXT:             }
-// REWRITES-NEXT:             unsafe { printf(c"recovered risky %d\n".as_ptr(), i) };
+// REWRITES-NEXT:             println!("recovered risky {}", i);
+// REWRITES-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:         } else {
 // REWRITES-NEXT:             unsafe { d.run.unwrap()(i) };
 // REWRITES-NEXT:         }
@@ -378,13 +379,15 @@ int main(void) {
 // REWRITES-NEXT:             unsafe {
 // REWRITES-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-NEXT:             }
-// REWRITES-NEXT:             unsafe { printf(c"recovered content_like %d\n".as_ptr(), i2) };
+// REWRITES-NEXT:             println!("recovered content_like {}", i2);
+// REWRITES-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:         } else {
 // REWRITES-NEXT:             unsafe { d.run.unwrap()(i2) };
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         i2 += 1;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     unsafe { printf(c"failures=%d\n".as_ptr(), unsafe { failures }) };
+// REWRITES-NEXT:     println!("failures={}", unsafe { failures });
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
@@ -399,7 +402,8 @@ int main(void) {
 // REWRITES-NEXT:             )
 // REWRITES-NEXT:         };
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     unsafe { printf(c"callback %d\n".as_ptr(), x) };
+// REWRITES-NEXT:     println!("callback {}", x);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

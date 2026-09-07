@@ -164,7 +164,8 @@ overflow:
 // REWRITES-NEXT:         sum += i;
 // REWRITES-NEXT:         let {{__v[0-9]+}}: bool = sum > 100;
 // REWRITES-NEXT:         if {{__v[0-9]+}} {
-// REWRITES-NEXT:             unsafe { printf(c"overflow\n".as_ptr()) };
+// REWRITES-NEXT:             println!("overflow");
+// REWRITES-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:             __retval = 0;
 // REWRITES-NEXT:             std::process::exit(__retval as i32);
 // REWRITES-NEXT:         } else {
@@ -174,7 +175,8 @@ overflow:
 // REWRITES-NEXT:             }
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), sum) };
+// REWRITES-NEXT:     println!("{}", sum);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     __retval = 0;
 // REWRITES-NEXT:     std::process::exit(__retval as i32);
 // REWRITES-NEXT: }

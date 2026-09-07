@@ -127,14 +127,17 @@ int main(void) {
 // REWRITES-NEXT: #[repr(C)]
 // REWRITES-NEXT: #[derive(Clone, Copy)]
 // REWRITES-NEXT: struct {{anon_[0-9]+}} {
-// REWRITES-NEXT:     value: *mut i8,
+// REWRITES-X86_64-GNU-NEXT:     value: *mut i8,
+// REWRITES-AARCH64-GNU-NEXT:     value: *mut u8,
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[repr(C)]
 // REWRITES-NEXT: #[derive(Clone, Copy)]
 // REWRITES-NEXT: struct {{anon_[0-9]+}} {
-// REWRITES-NEXT:     handle: *mut i8,
-// REWRITES-NEXT:     suffix: *mut i8,
+// REWRITES-X86_64-GNU-NEXT:     handle: *mut i8,
+// REWRITES-X86_64-GNU-NEXT:     suffix: *mut i8,
+// REWRITES-AARCH64-GNU-NEXT:     handle: *mut u8,
+// REWRITES-AARCH64-GNU-NEXT:     suffix: *mut u8,
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[repr(C)]
@@ -148,28 +151,40 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut e: event = event {
 // REWRITES-NEXT:         r#type: 0,
 // REWRITES-NEXT:         data: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() },
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let mut h: [i8; 2] = [0; 2];
-// REWRITES-NEXT:     let mut s: [i8; 2] = [0; 2];
+// REWRITES-X86_64-GNU-NEXT:     let mut h: [i8; 2] = [0; 2];
+// REWRITES-X86_64-GNU-NEXT:     let mut s: [i8; 2] = [0; 2];
+// REWRITES-AARCH64-GNU-NEXT:     let mut h: [u8; 2] = [0; 2];
+// REWRITES-AARCH64-GNU-NEXT:     let mut s: [u8; 2] = [0; 2];
 // REWRITES-NEXT:     e.r#type = 1;
 // REWRITES-NEXT:     h = [72, 0];
 // REWRITES-NEXT:     s = [83, 0];
-// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i8 = h.as_mut_ptr() as *mut i8;
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = h.as_mut_ptr() as *mut i8;
+// REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = h.as_mut_ptr() as *mut u8;
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         e.data.tag.handle = {{__v[0-9]+}};
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i8 = s.as_mut_ptr() as *mut i8;
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = s.as_mut_ptr() as *mut i8;
+// REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = s.as_mut_ptr() as *mut u8;
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         e.data.tag.suffix = {{__v[0-9]+}};
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = e.r#type;
-// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i8 = unsafe { e.data.tag.handle };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i8 = unsafe { e.data.tag.suffix };
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = unsafe { e.data.tag.handle };
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = unsafe { e.data.tag.suffix };
+// REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = unsafe { e.data.tag.handle };
+// REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = unsafe { e.data.tag.suffix };
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe { printf(c"%d %s%s\n".as_ptr(), {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

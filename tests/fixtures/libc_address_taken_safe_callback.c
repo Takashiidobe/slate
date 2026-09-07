@@ -132,7 +132,8 @@ int main(void) {
 // REWRITES-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void =
 // REWRITES-NEXT:         unsafe { unsafe { alloc.realloc_fn }.unwrap()({{__v[0-9]+}}, 8 as u64) };
 // REWRITES-NEXT:     unsafe { unsafe { alloc.free_fn }.unwrap()({{__v[0-9]+}}) };
-// REWRITES-NEXT:     unsafe { printf(c"ok\n".as_ptr()) };
+// REWRITES-NEXT:     println!("ok");
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

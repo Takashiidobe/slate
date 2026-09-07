@@ -170,7 +170,8 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     run_case(Some(check), 0);
-// REWRITES-NEXT:     unsafe { printf(c"failures: %d\n".as_ptr(), unsafe { failures }) };
+// REWRITES-NEXT:     println!("failures: {}", unsafe { failures });
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
@@ -179,7 +180,8 @@ int main(void) {
 // REWRITES-NEXT:     if {{__v[0-9]+}} {
 // REWRITES-NEXT:         fail_now();
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     unsafe { printf(c"PASS\n".as_ptr()) };
+// REWRITES-NEXT:     println!("PASS");
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
@@ -191,7 +193,8 @@ int main(void) {
 // REWRITES-NEXT:         unsafe {
 // REWRITES-NEXT:             failures = (unsafe { failures }) + 1;
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         unsafe { printf(c"FAIL\n".as_ptr()) };
+// REWRITES-NEXT:         println!("FAIL");
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:         return;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     unsafe { {{arg[0-9]+}}.unwrap()({{arg[0-9]+}}) };

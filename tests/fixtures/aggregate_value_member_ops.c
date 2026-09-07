@@ -215,10 +215,14 @@ int main(void) {
 // REWRITES-NEXT:         data: [8, 9, 10],
 // REWRITES-NEXT:         marker: 11,
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), take_pair({{__v[0-9]+}})) };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), take_pair({{__v[0-9]+}})) };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), nested_total({{__v[0-9]+}})) };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), array_value({{__v[0-9]+}})) };
+// REWRITES-NEXT:     println!("{}", take_pair({{__v[0-9]+}}));
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     println!("{}", take_pair({{__v[0-9]+}}));
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     println!("{}", nested_total({{__v[0-9]+}}));
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     println!("{}", array_value({{__v[0-9]+}}));
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

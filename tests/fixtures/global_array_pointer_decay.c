@@ -102,10 +102,15 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let {{__v[0-9]+}}: *mut u32 = std::ptr::addr_of_mut!(values).cast::<u32>();
 // REWRITES-NEXT:     let {{__v[0-9]+}}: u32 = update({{__v[0-9]+}});
 // REWRITES-NEXT:     let {{__v[0-9]+}}: *mut u32 = std::ptr::addr_of_mut!(aligned_values).cast::<u32>();
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             c"%u %u %u\n".as_ptr(),
@@ -114,6 +119,7 @@ int main(void) {
 // REWRITES-NEXT:             middle(unsafe { &(*std::ptr::addr_of_mut!(values)) }),
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

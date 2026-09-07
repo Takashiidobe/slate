@@ -137,7 +137,8 @@ int main(int argc, char **argv) {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
 // REWRITES-NEXT:         {{__v[0-9]+}}
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     unsafe { printf(c"after\n".as_ptr()) };
+// REWRITES-NEXT:     println!("after");
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

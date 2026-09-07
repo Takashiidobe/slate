@@ -24,13 +24,12 @@ int main(void) {
 // REWRITES-DAG:             1 as i32,
 // REWRITES-DAG:         )
 // REWRITES-DAG:     };
-// REWRITES-DAG:     unsafe {
-// REWRITES-DAG:         printf(
-// REWRITES-DAG:             c"%d %d\n".as_ptr(),
-// REWRITES-DAG:             ({{__v[0-9]+}} == 1) as i32,
-// REWRITES-DAG:             (value.tv_nsec >= 0 && value.tv_nsec < 1000000000) as i32,
-// REWRITES-DAG:         )
-// REWRITES-DAG:     };
+// REWRITES-DAG:     println!(
+// REWRITES-DAG:         "{} {}",
+// REWRITES-DAG:         ({{__v[0-9]+}} == 1) as i32,
+// REWRITES-DAG:         (value.tv_nsec >= 0 && value.tv_nsec < 1000000000) as i32
+// REWRITES-DAG:     );
+// REWRITES-DAG:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-DAG:     std::process::exit(0 as i32);
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

@@ -48,7 +48,8 @@ int main(void) {
 // REWRITES-DAG:         },
 // REWRITES-DAG:     ];
 // REWRITES-DAG:     let {{__v[0-9]+}}: i32 = error_log[0].code;
-// REWRITES-DAG:     unsafe { printf(c"%d\n".as_ptr(), {{__v[0-9]+}}) };
+// REWRITES-DAG:     println!("{}", {{__v[0-9]+}});
+// REWRITES-DAG:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-DAG:     std::process::exit(0 as i32);
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

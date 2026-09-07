@@ -117,25 +117,34 @@ int main(void) {
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 5;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 20 - {{__v[0-9]+}};
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), {{__v[0-9]+}}) };
+// REWRITES-NEXT:     println!("{}", {{__v[0-9]+}});
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} * 3;
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), {{__v[0-9]+}}) };
+// REWRITES-NEXT:     println!("{}", {{__v[0-9]+}});
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} / 5;
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), {{__v[0-9]+}}) };
+// REWRITES-NEXT:     println!("{}", {{__v[0-9]+}});
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} % 7;
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), {{__v[0-9]+}}) };
+// REWRITES-NEXT:     println!("{}", {{__v[0-9]+}});
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 3;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} << {{__v[0-9]+}};
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), {{__v[0-9]+}}) };
+// REWRITES-NEXT:     println!("{}", {{__v[0-9]+}});
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 2;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} >> {{__v[0-9]+}};
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), {{__v[0-9]+}}) };
+// REWRITES-NEXT:     println!("{}", {{__v[0-9]+}});
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} & 6;
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), {{__v[0-9]+}}) };
+// REWRITES-NEXT:     println!("{}", {{__v[0-9]+}});
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} ^ 3;
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), {{__v[0-9]+}}) };
+// REWRITES-NEXT:     println!("{}", {{__v[0-9]+}});
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} | 8;
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), {{__v[0-9]+}}) };
+// REWRITES-NEXT:     println!("{}", {{__v[0-9]+}});
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

@@ -128,20 +128,24 @@ int main(void) {
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = full.x;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = full.y;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = full.z;
-// REWRITES-NEXT:     unsafe { printf(c"%d %d %d\n".as_ptr(), {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// REWRITES-NEXT:     println!("{} {} {}", {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = partial.x;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = partial.y;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = partial.z;
-// REWRITES-NEXT:     unsafe { printf(c"%d %d %d\n".as_ptr(), {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// REWRITES-NEXT:     println!("{} {} {}", {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = designated.x;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = designated.y;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = designated.z;
-// REWRITES-NEXT:     unsafe { printf(c"%d %d %d\n".as_ptr(), {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// REWRITES-NEXT:     println!("{} {} {}", {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     copy = full;
 // REWRITES-NEXT:     copy.x = 42;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = full.x;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = copy.x;
-// REWRITES-NEXT:     unsafe { printf(c"%d %d\n".as_ptr(), {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// REWRITES-NEXT:     println!("{} {}", {{__v[0-9]+}}, {{__v[0-9]+}});
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

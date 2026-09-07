@@ -134,6 +134,10 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-X86_64-GNU-NEXT:     let mut a: aligned::Aligned<aligned::A16, [i32; 5]> = aligned::Aligned([0; 5]);
 // REWRITES-X86_64-GNU-NEXT:     let mut partial: aligned::Aligned<aligned::A16, [i32; 4]> = aligned::Aligned([0; 4]);
@@ -151,10 +155,15 @@ int main(void) {
 // REWRITES-NEXT:     for i in a.iter().copied() {
 // REWRITES-NEXT:         sum += i;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), sum) };
-// REWRITES-NEXT:     unsafe { printf(c"%d %d\n".as_ptr(), partial[1], partial[3]) };
+// REWRITES-NEXT:     println!("{}", sum);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     println!("{} {}", partial[1], partial[3]);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:     unsafe { printf(c"%s\n".as_ptr(), s.as_mut_ptr() as *mut i8) };
 // REWRITES-AARCH64-GNU-NEXT:     unsafe { printf(c"%s\n".as_ptr(), s.as_mut_ptr() as *mut u8) };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             c"%s %d\n".as_ptr(),
@@ -163,6 +172,7 @@ int main(void) {
 // REWRITES-NEXT:             padded[4] as i32,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

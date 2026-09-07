@@ -291,30 +291,28 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(c"%d\n".as_ptr(), unsafe {
-// REWRITES-NEXT:             sum(
-// REWRITES-NEXT:                 4,
-// REWRITES-NEXT:                 __SlateVaArgs::new(vec![
-// REWRITES-NEXT:                     __SlateVaArg::new(10 as i32),
-// REWRITES-NEXT:                     __SlateVaArg::new(20 as i32),
-// REWRITES-NEXT:                     __SlateVaArg::new(30 as i32),
-// REWRITES-NEXT:                     __SlateVaArg::new(40 as i32),
-// REWRITES-NEXT:                 ]),
-// REWRITES-NEXT:             )
-// REWRITES-NEXT:         })
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(c"%d\n".as_ptr(), unsafe {
-// REWRITES-NEXT:             pick_second(
-// REWRITES-NEXT:                 5,
-// REWRITES-NEXT:                 __SlateVaArgs::new(vec![
-// REWRITES-NEXT:                     __SlateVaArg::new(7 as i32),
-// REWRITES-NEXT:                     __SlateVaArg::new(9 as i32),
-// REWRITES-NEXT:                 ]),
-// REWRITES-NEXT:             )
-// REWRITES-NEXT:         })
-// REWRITES-NEXT:     };
+// REWRITES-NEXT:     println!("{}", unsafe {
+// REWRITES-NEXT:         sum(
+// REWRITES-NEXT:             4,
+// REWRITES-NEXT:             __SlateVaArgs::new(vec![
+// REWRITES-NEXT:                 __SlateVaArg::new(10 as i32),
+// REWRITES-NEXT:                 __SlateVaArg::new(20 as i32),
+// REWRITES-NEXT:                 __SlateVaArg::new(30 as i32),
+// REWRITES-NEXT:                 __SlateVaArg::new(40 as i32),
+// REWRITES-NEXT:             ]),
+// REWRITES-NEXT:         )
+// REWRITES-NEXT:     });
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     println!("{}", unsafe {
+// REWRITES-NEXT:         pick_second(
+// REWRITES-NEXT:             5,
+// REWRITES-NEXT:             __SlateVaArgs::new(vec![
+// REWRITES-NEXT:                 __SlateVaArg::new(7 as i32),
+// REWRITES-NEXT:                 __SlateVaArg::new(9 as i32),
+// REWRITES-NEXT:             ]),
+// REWRITES-NEXT:         )
+// REWRITES-NEXT:     });
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

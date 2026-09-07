@@ -325,7 +325,8 @@ int main(void) {
 // REWRITES-NEXT:             unsafe {
 // REWRITES-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-NEXT:             }
-// REWRITES-NEXT:             unsafe { printf(c"recovered quiet %d\n".as_ptr(), i) };
+// REWRITES-NEXT:             println!("recovered quiet {}", i);
+// REWRITES-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:         } else {
 // REWRITES-NEXT:             unsafe { c.run.unwrap()(i, 0 as i32) };
 // REWRITES-NEXT:         }
@@ -348,13 +349,15 @@ int main(void) {
 // REWRITES-NEXT:             unsafe {
 // REWRITES-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-NEXT:             }
-// REWRITES-NEXT:             unsafe { printf(c"recovered panicky %d\n".as_ptr(), i2) };
+// REWRITES-NEXT:             println!("recovered panicky {}", i2);
+// REWRITES-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:         } else {
 // REWRITES-NEXT:             unsafe { c.run.unwrap()(i2, 0 as i32) };
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         i2 += 1;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     unsafe { printf(c"failures=%d\n".as_ptr(), unsafe { failures }) };
+// REWRITES-NEXT:     println!("failures={}", unsafe { failures });
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
@@ -364,7 +367,8 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: extern "C-unwind" fn quiet_callback({{arg[0-9]+}}: i32) {
-// REWRITES-NEXT:     unsafe { printf(c"quiet %d\n".as_ptr(), {{arg[0-9]+}}) };
+// REWRITES-NEXT:     println!("quiet {}", {{arg[0-9]+}});
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
@@ -379,7 +383,8 @@ int main(void) {
 // REWRITES-NEXT:             )
 // REWRITES-NEXT:         };
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     unsafe { printf(c"panicky %d\n".as_ptr(), x) };
+// REWRITES-NEXT:     println!("panicky {}", x);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

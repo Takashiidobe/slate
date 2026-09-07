@@ -101,7 +101,8 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     unsafe { printf(c"before\n".as_ptr()) };
+// REWRITES-NEXT:     println!("before");
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 5;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: bool = 5 == {{__v[0-9]+}};
 // REWRITES-NEXT:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
@@ -120,7 +121,8 @@ int main(void) {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
 // REWRITES-NEXT:         {{__v[0-9]+}}
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     unsafe { printf(c"after\n".as_ptr()) };
+// REWRITES-NEXT:     println!("after");
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

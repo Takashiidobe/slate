@@ -137,15 +137,17 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut total: i32 = 10;
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), bump_through_pointer(5)) };
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"%d\n".as_ptr(),
-// REWRITES-NEXT:             add_into_pointer(unsafe { &mut (*std::ptr::addr_of_mut!(total)) }, 7),
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), total) };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), pick_with_pointer_arithmetic(2)) };
+// REWRITES-NEXT:     println!("{}", bump_through_pointer(5));
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     println!(
+// REWRITES-NEXT:         "{}",
+// REWRITES-NEXT:         add_into_pointer(unsafe { &mut (*std::ptr::addr_of_mut!(total)) }, 7)
+// REWRITES-NEXT:     );
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     println!("{}", total);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     println!("{}", pick_with_pointer_arithmetic(2));
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

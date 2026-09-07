@@ -372,6 +372,10 @@ int main(void) {
 // REWRITES-NEXT:     fn strcspn(_0: *const core::ffi::c_char, _1: *const core::ffi::c_char) -> usize;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-X86_64-GNU-NEXT:     let mut alpha: [i8; 4] = [0; 4];
 // REWRITES-X86_64-GNU-NEXT:     let mut beta: [i8; 4] = [0; 4];
@@ -454,6 +458,7 @@ int main(void) {
 // REWRITES-NEXT:             (1 as u64) as usize,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
@@ -464,6 +469,7 @@ int main(void) {
 // REWRITES-NEXT:             ({{__v[0-9]+}} == 0) as i32,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = hay.as_mut_ptr() as *mut i8;
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 =
 // REWRITES-X86_64-GNU-NEXT:         (unsafe { strchr({{__v[0-9]+}} as *const core::ffi::c_char, 97 as i32) }) as *mut i8;
@@ -536,6 +542,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = reject.as_mut_ptr() as *mut i8;
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = hay.as_mut_ptr() as *mut u8;
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = reject.as_mut_ptr() as *mut u8;
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
@@ -554,6 +561,7 @@ int main(void) {
 // REWRITES-NEXT:             }) as u64,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = c"%d %d\n".as_ptr() as *mut i8;
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = hay.as_mut_ptr() as *mut i8;
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 =
@@ -569,6 +577,7 @@ int main(void) {
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = hay.as_mut_ptr() as *mut u8;
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 =
 // REWRITES-AARCH64-GNU-NEXT:         (unsafe { strchr({{__v[0-9]+}} as *const core::ffi::c_char, 122 as i32) }) as *mut u8;
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
@@ -576,6 +585,7 @@ int main(void) {
 // REWRITES-NEXT:             ({{__v[0-9]+}} == std::ptr::null_mut()) as i32,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = c"%d\n".as_ptr() as *mut i8;
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = utf8.as_mut_ptr() as *mut i8;
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 =
@@ -584,12 +594,14 @@ int main(void) {
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = utf8.as_mut_ptr() as *mut u8;
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 =
 // REWRITES-AARCH64-GNU-NEXT:         (unsafe { strchr({{__v[0-9]+}} as *const core::ffi::c_char, 169 as i32) }) as *mut u8;
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
 // REWRITES-NEXT:             ({{__v[0-9]+}} != std::ptr::null_mut()) as i32,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

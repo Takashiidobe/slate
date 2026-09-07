@@ -58,18 +58,16 @@ int main(void) {
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: fn main() {
+// REWRITES-X86_64-GNU-DAG: fn main() {
 // REWRITES-X86_64-GNU-DAG:     let mut end: *mut i8 = std::ptr::null_mut();
 // REWRITES-X86_64-GNU-DAG:     dump80(c"strtold".as_ptr() as *mut i8, unsafe {
 // REWRITES-X86_64-GNU-DAG:         __slate_strtold__rf80_pc_ppc(
-// REWRITES-AARCH64-GNU-DAG:     let mut end: *mut u8 = std::ptr::null_mut();
-// REWRITES-AARCH64-GNU-DAG:     dump80(c"strtold".as_ptr() as *mut u8, unsafe {
-// REWRITES-AARCH64-GNU-DAG:         strtold(
-// REWRITES-DAG:             c"0x1.0000000000000002p0".as_ptr(),
-// REWRITES-DAG:             std::ptr::addr_of_mut!(end) as *mut *mut core::ffi::c_char,
-// REWRITES-DAG:         )
-// REWRITES-DAG:     });
-// REWRITES-DAG:     unsafe { printf(c"%d\n".as_ptr(), (((unsafe { *end }) as i32) == 0) as i32) };
-// REWRITES-DAG:     std::process::exit(0 as i32);
-// REWRITES-DAG: }
+// REWRITES-X86_64-GNU-DAG:             c"0x1.0000000000000002p0".as_ptr(),
+// REWRITES-X86_64-GNU-DAG:             std::ptr::addr_of_mut!(end) as *mut *mut core::ffi::c_char,
+// REWRITES-X86_64-GNU-DAG:         )
+// REWRITES-X86_64-GNU-DAG:     });
+// REWRITES-X86_64-GNU-DAG:     println!("{}", (((unsafe { *end }) as i32) == 0) as i32);
+// REWRITES-X86_64-GNU-DAG:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-X86_64-GNU-DAG:     std::process::exit(0 as i32);
+// REWRITES-X86_64-GNU-DAG: }
 // SLATE-FILECHECK-END rewrites

@@ -105,6 +105,10 @@ int main(void) {
 // REWRITES-NEXT:     fn remove(_0: *const core::ffi::c_char) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut __retval: i32 = 0;
 // REWRITES-NEXT:     let mut f: *mut libc::FILE =
@@ -114,7 +118,9 @@ int main(void) {
 // REWRITES-NEXT:         __retval = 1;
 // REWRITES-NEXT:         std::process::exit(__retval as i32);
 // REWRITES-NEXT:     }
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe { fprintf(f as *mut libc::FILE, c"value: %d\n".as_ptr(), 7 as i32) };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     unsafe { fclose(f as *mut libc::FILE) };
 // REWRITES-NEXT:     unsafe { remove(c"slate_fprintf_non_standard.tmp".as_ptr()) };
 // REWRITES-NEXT:     __retval = 0;

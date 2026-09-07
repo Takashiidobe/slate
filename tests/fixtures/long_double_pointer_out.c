@@ -374,6 +374,10 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
+// REWRITES-AARCH64-GNU-NEXT: unsafe extern "C" {
+// REWRITES-AARCH64-GNU-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// REWRITES-AARCH64-GNU-NEXT: }
+// REWRITES-AARCH64-GNU-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-X86_64-GNU-NEXT:     let mut parsed: LongDouble = LongDouble([0; 10]);
 // REWRITES-AARCH64-GNU-NEXT:     let mut parsed: f128 = 0.0f128;
@@ -387,9 +391,11 @@ int main(void) {
 // REWRITES-NEXT:             std::ptr::addr_of_mut!(parsed),
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:     unsafe {
 // REWRITES-X86_64-GNU-NEXT:         __slate_printf__ri32_pi8_i32_f80(c"%d %La\n".as_ptr() as *mut i8, {{__v[0-9]+}} as i32, parsed)
 // REWRITES-AARCH64-GNU-NEXT:     unsafe { printf(c"%d %La\n".as_ptr(), {{__v[0-9]+}}, parsed) };
+// REWRITES-AARCH64-GNU-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} != 1 {
 // REWRITES-AARCH64-GNU-NEXT:         let {{__v[0-9]+}}: bool = true;
 // REWRITES-AARCH64-GNU-NEXT:         {{__v[0-9]+}}
@@ -399,6 +405,7 @@ int main(void) {
 // REWRITES-AARCH64-GNU-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
 // REWRITES-AARCH64-GNU-NEXT:         {{__v[0-9]+}}
 // REWRITES-NEXT:     };
+// REWRITES-X86_64-GNU-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-X86_64-GNU-NEXT:     std::process::exit(
 // REWRITES-X86_64-GNU-NEXT:         ({{__v[0-9]+}} != 1 || parsed != LongDouble([1, 0, 0, 0, 0, 0, 0, 128, 255, 63])) as i32,
 // REWRITES-X86_64-GNU-NEXT:     );
@@ -495,5 +502,9 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:     safe fn __slate_f80_trunc(__a: LongDouble) -> LongDouble;
 // REWRITES-X86_64-GNU-NEXT:     fn __slate_printf__ri32_pi8_i32_f80(_0: *mut i8, _1: i32, _2: LongDouble) -> i32;
 // REWRITES-X86_64-GNU-NEXT:     fn __slate_sscanf__ri32_pi8_pi8_pf80(_0: *mut i8, _1: *mut i8, _2: *mut LongDouble) -> i32;
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: unsafe extern "C" {
+// REWRITES-X86_64-GNU-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // REWRITES-X86_64-GNU-NEXT: }
 // SLATE-FILECHECK-END rewrites

@@ -99,15 +99,25 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i8 = 65;
-// REWRITES-X86_64-GNU-NEXT:     unsafe { printf(c"%d\n".as_ptr(), add_char(10, -5) as i32) };
+// REWRITES-X86_64-GNU-NEXT:     println!("{}", add_char(10, -5) as i32);
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: u8 = 65;
-// REWRITES-AARCH64-GNU-NEXT:     unsafe { printf(c"%d\n".as_ptr(), add_char(10, (-5 as i8) as u8) as i32) };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), (200 as u8) as i32) };
+// REWRITES-AARCH64-GNU-NEXT:     println!("{}", add_char(10, (-5 as i8) as u8) as i32);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     println!("{}", (200 as u8) as i32);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe { printf(c"%c\n".as_ptr(), {{__v[0-9]+}} as i32) };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = ({{__v[0-9]+}} as i32) + 1;
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe { printf(c"%c\n".as_ptr(), {{__v[0-9]+}}) };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

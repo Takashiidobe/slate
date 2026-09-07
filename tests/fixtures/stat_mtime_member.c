@@ -164,16 +164,17 @@ int main(void) {
 // REWRITES-NEXT: struct stat {
 // REWRITES-NEXT:     st_dev: u64,
 // REWRITES-NEXT:     st_ino: u64,
-// REWRITES-AARCH64-GNU-NEXT:     st_mode: u32,
-// REWRITES-NEXT:     st_nlink: u64,
-// REWRITES-X86_64-GNU-NEXT:     st_mode: u32,
+// REWRITES-X86_64-GNU-NEXT:     st_nlink: u64,
+// REWRITES-NEXT:     st_mode: u32,
+// REWRITES-AARCH64-GNU-NEXT:     st_nlink: u32,
 // REWRITES-NEXT:     st_uid: u32,
 // REWRITES-NEXT:     st_gid: u32,
 // REWRITES-X86_64-GNU-NEXT:     __pad0: u32,
 // REWRITES-NEXT:     st_rdev: u64,
 // REWRITES-AARCH64-GNU-NEXT:     __pad: u64,
 // REWRITES-NEXT:     st_size: i64,
-// REWRITES-NEXT:     st_blksize: i64,
+// REWRITES-X86_64-GNU-NEXT:     st_blksize: i64,
+// REWRITES-AARCH64-GNU-NEXT:     st_blksize: i32,
 // REWRITES-AARCH64-GNU-NEXT:     __pad2: i32,
 // REWRITES-NEXT:     st_blocks: i64,
 // REWRITES-NEXT:     st_atim: libc::timespec,
@@ -186,6 +187,10 @@ int main(void) {
 // REWRITES-NEXT: unsafe extern "C" {
 // REWRITES-NEXT:     fn stat(_0: *const core::ffi::c_char, _1: *mut stat) -> i32;
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
@@ -232,7 +237,9 @@ int main(void) {
 // REWRITES-NEXT:         std::process::exit(__retval as i32);
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i64 = info.st_mtim.tv_sec;
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe { printf(c"%lld\n".as_ptr(), {{__v[0-9]+}}) };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     std::process::exit(__retval as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

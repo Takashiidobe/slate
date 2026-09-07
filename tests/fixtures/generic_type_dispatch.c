@@ -39,5 +39,6 @@ int main(void) {
 // REWRITES-DAG: let {{__v[0-9]+}}: i32 = int_score(7 as i32);
 // REWRITES-DAG: let {{__v[0-9]+}}: i32 = long_score(8 as i64);
 // REWRITES-DAG: let {{__v[0-9]+}}: *mut i32 = array.as_mut_ptr() as *mut i32;
-// REWRITES-DAG: unsafe { printf(c"%d %d %d\n".as_ptr(), {{__v[0-9]+}}, {{__v[0-9]+}}, pointer_score({{__v[0-9]+}})) };
+// REWRITES-DAG: println!("{} {} {}", {{__v[0-9]+}}, {{__v[0-9]+}}, pointer_score({{__v[0-9]+}}));
+// REWRITES-DAG: let _ = std::io::Write::flush(&mut std::io::stdout());
 // SLATE-FILECHECK-END rewrites

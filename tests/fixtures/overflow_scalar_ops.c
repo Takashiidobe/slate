@@ -118,37 +118,39 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 2147483647;
 // REWRITES-NEXT:     let {{__v[0-9]+}} = {{__v[0-9]+}}.overflowing_add(1 as i32);
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"%d %d\n".as_ptr(),
-// REWRITES-NEXT:             ({{__v[0-9]+}}.1 || ({{__v[0-9]+}}.0 < -2147483648 || {{__v[0-9]+}}.0 > 2147483647)) as i32,
-// REWRITES-NEXT:             {{__v[0-9]+}}.0 as i32,
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
+// REWRITES-NEXT:     println!(
+// REWRITES-NEXT:         "{} {}",
+// REWRITES-NEXT:         ({{__v[0-9]+}}.1 || ({{__v[0-9]+}}.0 < -2147483648 || {{__v[0-9]+}}.0 > 2147483647)) as i32,
+// REWRITES-NEXT:         {{__v[0-9]+}}.0 as i32
+// REWRITES-NEXT:     );
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 1;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = -2147483647 - {{__v[0-9]+}};
 // REWRITES-NEXT:     let {{__v[0-9]+}} = {{__v[0-9]+}}.overflowing_sub(1 as i32);
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"%d %d\n".as_ptr(),
-// REWRITES-NEXT:             ({{__v[0-9]+}}.1 || ({{__v[0-9]+}}.0 < -2147483648 || {{__v[0-9]+}}.0 > 2147483647)) as i32,
-// REWRITES-NEXT:             {{__v[0-9]+}}.0 as i32,
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
+// REWRITES-NEXT:     println!(
+// REWRITES-NEXT:         "{} {}",
+// REWRITES-NEXT:         ({{__v[0-9]+}}.1 || ({{__v[0-9]+}}.0 < -2147483648 || {{__v[0-9]+}}.0 > 2147483647)) as i32,
+// REWRITES-NEXT:         {{__v[0-9]+}}.0 as i32
+// REWRITES-NEXT:     );
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 1073741824;
 // REWRITES-NEXT:     let {{__v[0-9]+}} = {{__v[0-9]+}}.overflowing_mul(2 as i32);
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"%d %d\n".as_ptr(),
-// REWRITES-NEXT:             ({{__v[0-9]+}}.1 || ({{__v[0-9]+}}.0 < -2147483648 || {{__v[0-9]+}}.0 > 2147483647)) as i32,
-// REWRITES-NEXT:             {{__v[0-9]+}}.0 as i32,
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
+// REWRITES-NEXT:     println!(
+// REWRITES-NEXT:         "{} {}",
+// REWRITES-NEXT:         ({{__v[0-9]+}}.1 || ({{__v[0-9]+}}.0 < -2147483648 || {{__v[0-9]+}}.0 > 2147483647)) as i32,
+// REWRITES-NEXT:         {{__v[0-9]+}}.0 as i32
+// REWRITES-NEXT:     );
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     let {{__v[0-9]+}}: u32 = 4294967295u32;
 // REWRITES-NEXT:     let {{__v[0-9]+}} = {{__v[0-9]+}}.overflowing_add(1 as u32);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             c"%d %u\n".as_ptr(),
@@ -156,9 +158,11 @@ int main(void) {
 // REWRITES-NEXT:             {{__v[0-9]+}}.0 as u32,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i64 = 3037000500i64;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i64 = 3037000500i64;
 // REWRITES-NEXT:     let {{__v[0-9]+}} = {{__v[0-9]+}}.overflowing_mul({{__v[0-9]+}});
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             c"%d %lld\n".as_ptr(),
@@ -166,6 +170,7 @@ int main(void) {
 // REWRITES-NEXT:             {{__v[0-9]+}}.0 as i64,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

@@ -179,7 +179,8 @@ done:
 // REWRITES-NEXT:             r = 30;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), r) };
+// REWRITES-NEXT:     println!("{}", r);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(__retval as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

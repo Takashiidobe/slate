@@ -129,42 +129,46 @@ int main(void) {
 // REWRITES-NEXT:     fn tolower(_0: i32) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 81;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 113;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 53;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 33;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = -1;
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"%d %d %d %d %d\n".as_ptr(),
-// REWRITES-NEXT:             unsafe { toupper({{__v[0-9]+}} as i32) },
-// REWRITES-NEXT:             unsafe { toupper({{__v[0-9]+}} as i32) },
-// REWRITES-NEXT:             unsafe { toupper({{__v[0-9]+}} as i32) },
-// REWRITES-NEXT:             unsafe { toupper({{__v[0-9]+}} as i32) },
-// REWRITES-NEXT:             unsafe { toupper({{__v[0-9]+}} as i32) },
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"%d %d %d %d %d\n".as_ptr(),
-// REWRITES-NEXT:             unsafe { tolower({{__v[0-9]+}} as i32) },
-// REWRITES-NEXT:             unsafe { tolower({{__v[0-9]+}} as i32) },
-// REWRITES-NEXT:             unsafe { tolower({{__v[0-9]+}} as i32) },
-// REWRITES-NEXT:             unsafe { tolower({{__v[0-9]+}} as i32) },
-// REWRITES-NEXT:             unsafe { tolower({{__v[0-9]+}} as i32) },
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
+// REWRITES-NEXT:     println!(
+// REWRITES-NEXT:         "{} {} {} {} {}",
+// REWRITES-NEXT:         unsafe { toupper({{__v[0-9]+}} as i32) },
+// REWRITES-NEXT:         unsafe { toupper({{__v[0-9]+}} as i32) },
+// REWRITES-NEXT:         unsafe { toupper({{__v[0-9]+}} as i32) },
+// REWRITES-NEXT:         unsafe { toupper({{__v[0-9]+}} as i32) },
+// REWRITES-NEXT:         unsafe { toupper({{__v[0-9]+}} as i32) }
+// REWRITES-NEXT:     );
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     println!(
+// REWRITES-NEXT:         "{} {} {} {} {}",
+// REWRITES-NEXT:         unsafe { tolower({{__v[0-9]+}} as i32) },
+// REWRITES-NEXT:         unsafe { tolower({{__v[0-9]+}} as i32) },
+// REWRITES-NEXT:         unsafe { tolower({{__v[0-9]+}} as i32) },
+// REWRITES-NEXT:         unsafe { tolower({{__v[0-9]+}} as i32) },
+// REWRITES-NEXT:         unsafe { tolower({{__v[0-9]+}} as i32) }
+// REWRITES-NEXT:     );
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = c"%d %d\n".as_ptr() as *mut i8;
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = c"%d %d\n".as_ptr() as *mut u8;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = next_lower();
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { toupper({{__v[0-9]+}} as i32) };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = next_lower();
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, unsafe {
 // REWRITES-NEXT:             tolower({{__v[0-9]+}} as i32)
 // REWRITES-NEXT:         })
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

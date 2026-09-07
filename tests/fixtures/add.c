@@ -34,5 +34,6 @@ int main(void) {
 // REWRITES-DAG: fn add({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
 // REWRITES-DAG:     {{arg[0-9]+}} + {{arg[0-9]+}}
 // REWRITES-DAG: }
-// REWRITES-DAG: unsafe { printf(c"%d\n".as_ptr(), add(2, 3)) };
+// REWRITES-DAG: println!("{}", add(2, 3));
+// REWRITES-DAG: let _ = std::io::Write::flush(&mut std::io::stdout());
 // SLATE-FILECHECK-END rewrites

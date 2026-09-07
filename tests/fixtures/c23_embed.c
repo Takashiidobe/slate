@@ -277,12 +277,18 @@ int main(void) {
 // REWRITES-NEXT:     fn putchar(_0: i32) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut framed_ok: i32 = 0;
 // REWRITES-NEXT:     let mut empty_ok: i32 = 0;
 // REWRITES-NEXT:     let mut i: u64 = 0;
 // REWRITES-NEXT:     while i < 4 {
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:         unsafe { putchar((unsafe { main_data[(i as usize)] }) as i32) };
+// REWRITES-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:         i += 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{__v[0-9]+}}: u64 = 8;

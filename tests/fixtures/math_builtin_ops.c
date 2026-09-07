@@ -174,6 +174,10 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut a: f64 = 0.0;
 // REWRITES-NEXT:     let mut b: f64 = 0.0;
@@ -217,6 +221,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(f)) };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i64 = unsafe { lround({{__v[0-9]+}} as f64) };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(f)) };
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             c"%.3f %.3f %.3f %.3f %ld %lld %.3f\n".as_ptr(),
@@ -229,6 +234,7 @@ int main(void) {
 // REWRITES-NEXT:             unsafe { __slate_builtin_exp10(2.0 as f64) },
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

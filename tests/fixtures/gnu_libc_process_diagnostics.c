@@ -278,6 +278,10 @@ int main(void) {
 // REWRITES-NEXT:     );
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut captured: i32 = 0;
 // REWRITES-NEXT:     captured = -1;
@@ -291,6 +295,7 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = c"mcheck:%d %d\n".as_ptr() as *mut i8;
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = c"mcheck:%d %d\n".as_ptr() as *mut u8;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = mcheck_status::MCHECK_OK as i32;
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
@@ -298,17 +303,20 @@ int main(void) {
 // REWRITES-NEXT:             ({{__v[0-9]+}} == {{__v[0-9]+}}) as i32,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     unsafe { free({{__v[0-9]+}} as *mut core::ffi::c_void) };
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         error_one_per_line = 0;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     unsafe { error(0 as i32, 0 as i32, c"first message".as_ptr()) };
 // REWRITES-NEXT:     unsafe { error(0 as i32, 0 as i32, c"second message".as_ptr()) };
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(c"count_after_two:%u\n".as_ptr(), unsafe {
 // REWRITES-NEXT:             error_message_count
 // REWRITES-NEXT:         })
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         error_one_per_line = 1;
 // REWRITES-NEXT:     }
@@ -330,11 +338,13 @@ int main(void) {
 // REWRITES-NEXT:             c"deduped message".as_ptr(),
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(c"count_after_dedup:%u\n".as_ptr(), unsafe {
 // REWRITES-NEXT:             error_message_count
 // REWRITES-NEXT:         })
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         error_at_line(
 // REWRITES-NEXT:             0 as i32,
@@ -344,13 +354,16 @@ int main(void) {
 // REWRITES-NEXT:             c"different line".as_ptr(),
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(c"count_after_new_line:%u\n".as_ptr(), unsafe {
 // REWRITES-NEXT:             error_message_count
 // REWRITES-NEXT:         })
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     unsafe { error(5 as i32, 0 as i32, c"fatal message".as_ptr()) };
-// REWRITES-NEXT:     unsafe { printf(c"unreachable\n".as_ptr()) };
+// REWRITES-NEXT:     println!("unreachable");
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
@@ -358,7 +371,8 @@ int main(void) {
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         *({{arg[0-9]+}} as *mut i32) = {{arg[0-9]+}};
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     unsafe { printf(c"on_exit:%d\n".as_ptr(), {{arg[0-9]+}}) };
+// REWRITES-NEXT:     println!("on_exit:{}", {{arg[0-9]+}});
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

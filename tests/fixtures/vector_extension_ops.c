@@ -89,14 +89,13 @@ int main(void) {
 // REWRITES-NEXT:     ];
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 20;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: [i32; 4] = [{{__v[0-9]+}}[0usize], {{__v[0-9]+}}, {{__v[0-9]+}}[2usize], {{__v[0-9]+}}[3usize]];
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"%d %d %d\n".as_ptr(),
-// REWRITES-NEXT:             {{__v[0-9]+}}[0],
-// REWRITES-NEXT:             {{__v[0-9]+}}[1],
-// REWRITES-NEXT:             [{{__v[0-9]+}}[3usize], {{__v[0-9]+}}[2usize], {{__v[0-9]+}}[1usize], {{__v[0-9]+}}[0usize]][0],
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
+// REWRITES-NEXT:     println!(
+// REWRITES-NEXT:         "{} {} {}",
+// REWRITES-NEXT:         {{__v[0-9]+}}[0],
+// REWRITES-NEXT:         {{__v[0-9]+}}[1],
+// REWRITES-NEXT:         [{{__v[0-9]+}}[3usize], {{__v[0-9]+}}[2usize], {{__v[0-9]+}}[1usize], {{__v[0-9]+}}[0usize]][0]
+// REWRITES-NEXT:     );
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

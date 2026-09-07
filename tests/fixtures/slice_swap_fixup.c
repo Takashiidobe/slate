@@ -421,19 +421,22 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:     *a = [5, 3, 4, 1, 2];
 // REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i32 = a.as_mut_ptr() as *mut i32;
 // REWRITES-NEXT:     pairwise_swap(unsafe { std::slice::from_raw_parts_mut({{__v[0-9]+}} as *mut i32, (5 as i32) as usize) });
-// REWRITES-NEXT:     unsafe { printf(c"%d %d %d %d %d\n".as_ptr(), a[0], a[1], a[2], a[3], a[4]) };
+// REWRITES-NEXT:     println!("{} {} {} {} {}", a[0], a[1], a[2], a[3], a[4]);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     b = [3, 1, 2];
 // REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i32 = b.as_mut_ptr() as *mut i32;
 // REWRITES-NEXT:     pairwise_swap_tmp_reused(unsafe {
 // REWRITES-NEXT:         std::slice::from_raw_parts_mut({{__v[0-9]+}} as *mut i32, (3 as i32) as usize)
 // REWRITES-NEXT:     });
-// REWRITES-NEXT:     unsafe { printf(c"%d %d %d\n".as_ptr(), b[0], b[1], b[2]) };
+// REWRITES-NEXT:     println!("{} {} {}", b[0], b[1], b[2]);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     c = [7, 8, 9];
 // REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i32 = c.as_mut_ptr() as *mut i32;
 // REWRITES-NEXT:     nested_self_swap(unsafe {
 // REWRITES-NEXT:         std::slice::from_raw_parts_mut({{__v[0-9]+}} as *mut i32, (3 as i32) as usize)
 // REWRITES-NEXT:     });
-// REWRITES-NEXT:     unsafe { printf(c"%d %d %d\n".as_ptr(), c[0], c[1], c[2]) };
+// REWRITES-NEXT:     println!("{} {} {}", c[0], c[1], c[2]);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
@@ -499,7 +502,8 @@ int main(void) {
 // REWRITES-NEXT:                 unsafe {
 // REWRITES-NEXT:                     *{{__v[0-9]+}} = {{__v[0-9]+}};
 // REWRITES-NEXT:                 }
-// REWRITES-NEXT:                 unsafe { printf(c"tmp=%d\n".as_ptr(), {{__v[0-9]+}}) };
+// REWRITES-NEXT:                 println!("tmp={}", {{__v[0-9]+}});
+// REWRITES-NEXT:                 let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:             }
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:     }

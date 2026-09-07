@@ -33,13 +33,8 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: fn main() {
-// REWRITES-DAG:     unsafe {
-// REWRITES-DAG:         printf(
-// REWRITES-DAG:             c"%d %d\n".as_ptr(),
-// REWRITES-DAG:             pragma_weak_alias(29),
-// REWRITES-DAG:             pragma_actual(13),
-// REWRITES-DAG:         )
-// REWRITES-DAG:     };
+// REWRITES-DAG:     println!("{} {}", pragma_weak_alias(29), pragma_actual(13));
+// REWRITES-DAG:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-DAG:     std::process::exit(0 as i32);
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

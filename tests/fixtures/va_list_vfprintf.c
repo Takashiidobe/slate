@@ -87,13 +87,13 @@ int main(void) {
 // REWRITES-NEXT:     unpredictable_function_pointer_comparisons,
 // REWRITES-NEXT:     unused_comparisons
 // REWRITES-NEXT: )]
-// REWRITES-EMPTY:
+// REWRITES-AARCH64-GNU-EMPTY:
 // REWRITES-AARCH64-GNU-NEXT: #[repr(C)]
 // REWRITES-AARCH64-GNU-NEXT: #[derive(Clone, Copy)]
 // REWRITES-AARCH64-GNU-NEXT: struct __va_list {
 // REWRITES-AARCH64-GNU-NEXT:     __slate_empty: [u8; 0],
 // REWRITES-AARCH64-GNU-NEXT: }
-// REWRITES-AARCH64-GNU-EMPTY:
+// REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe extern "C" {
 // REWRITES-NEXT:     static mut stdout: *mut libc::FILE;
 // REWRITES-NEXT:     fn vfprintf(
@@ -101,6 +101,10 @@ int main(void) {
 // REWRITES-NEXT:         _1: *const core::ffi::c_char,
 // REWRITES-NEXT:         _2: core::ffi::VaList<'_>,
 // REWRITES-NEXT:     ) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
@@ -122,6 +126,7 @@ int main(void) {
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         args = __slate_va_args.clone();
 // REWRITES-NEXT:     }
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         vfprintf(
 // REWRITES-NEXT:             (unsafe { stdout }) as *mut libc::FILE,
@@ -129,6 +134,7 @@ int main(void) {
 // REWRITES-NEXT:             args.clone(),
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

@@ -155,8 +155,10 @@ int square(int x) { return x * x; }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     unsafe { printf(c"%d %d\n".as_ptr(), is_odd(7), is_even(10)) };
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), square(5)) };
+// REWRITES-NEXT:     println!("{} {}", is_odd(7), is_even(10));
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-NEXT:     println!("{}", square(5));
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

@@ -84,7 +84,8 @@ int main(void) {
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         *{{__v[0-9]+}} = 41;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     unsafe { printf(c"%d %d\n".as_ptr(), unsafe { *{{__v[0-9]+}} }, {{__v[0-9]+}}) };
+// REWRITES-NEXT:     println!("{} {}", unsafe { *{{__v[0-9]+}} }, {{__v[0-9]+}});
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe { free({{__v[0-9]+}} as *mut core::ffi::c_void) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }

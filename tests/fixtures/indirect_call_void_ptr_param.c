@@ -188,12 +188,14 @@ int main(void) {
 // REWRITES-NEXT: extern "C-unwind" fn print_handler(mut p: *mut core::ffi::c_void, mut extra: i32) {
 // REWRITES-NEXT:     let {{__v[0-9]+}}: bool = extra == 0;
 // REWRITES-NEXT:     if {{__v[0-9]+}} {
-// REWRITES-X86_64-GNU-NEXT:         unsafe { printf(c"zero %d\n".as_ptr(), (unsafe { *(p as *mut i8) }) as i32) };
-// REWRITES-AARCH64-GNU-NEXT:         unsafe { printf(c"zero %d\n".as_ptr(), (unsafe { *(p as *mut u8) }) as i32) };
+// REWRITES-X86_64-GNU-NEXT:         println!("zero {}", (unsafe { *(p as *mut i8) }) as i32);
+// REWRITES-AARCH64-GNU-NEXT:         println!("zero {}", (unsafe { *(p as *mut u8) }) as i32);
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:         return;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { (*(p as *mut Data)).value };
-// REWRITES-NEXT:     unsafe { printf(c"%d %d\n".as_ptr(), {{__v[0-9]+}}, extra) };
+// REWRITES-NEXT:     println!("{} {}", {{__v[0-9]+}}, extra);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

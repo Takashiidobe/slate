@@ -180,9 +180,11 @@ int main(void) {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: u32 = Status::E_OK as u32;
 // REWRITES-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
 // REWRITES-NEXT:         if {{__v[0-9]+}} {
-// REWRITES-NEXT:             unsafe { printf(c"ok\n".as_ptr()) };
+// REWRITES-NEXT:             println!("ok");
+// REWRITES-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:         } else {
-// REWRITES-NEXT:             unsafe { printf(c"fail\n".as_ptr()) };
+// REWRITES-NEXT:             println!("fail");
+// REWRITES-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     std::process::exit(0 as i32);

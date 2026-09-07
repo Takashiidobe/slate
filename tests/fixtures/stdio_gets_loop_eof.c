@@ -295,6 +295,10 @@ int main(void) {
 // REWRITES-NEXT:     fn fgets(_0: *mut core::ffi::c_char, _1: i32, _2: *mut libc::FILE) -> *mut core::ffi::c_char;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut __retval: i32 = 0;
 // REWRITES-NEXT:     let mut f: *mut libc::FILE = std::ptr::null_mut();
@@ -309,16 +313,22 @@ int main(void) {
 // REWRITES-NEXT:     f = unsafe { fopen(c"slate_stdio_gets_loop_eof.tmp".as_ptr(), c"w".as_ptr()) };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: bool = !(f != std::ptr::null_mut());
 // REWRITES-NEXT:     if {{__v[0-9]+}} {
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:         unsafe { puts(c"open-fail".as_ptr()) };
+// REWRITES-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:         __retval = 0;
 // REWRITES-NEXT:         std::process::exit(__retval as i32);
 // REWRITES-NEXT:     }
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe { fputs(c"only\n".as_ptr(), f as *mut libc::FILE) };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     unsafe { fclose(f as *mut libc::FILE) };
 // REWRITES-NEXT:     g = unsafe { fopen(c"slate_stdio_gets_loop_eof.tmp".as_ptr(), c"r".as_ptr()) };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: bool = !(g != std::ptr::null_mut());
 // REWRITES-NEXT:     if {{__v[0-9]+}} {
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:         unsafe { puts(c"reopen-fail".as_ptr()) };
+// REWRITES-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:         __retval = 0;
 // REWRITES-NEXT:         std::process::exit(__retval as i32);
 // REWRITES-NEXT:     }
@@ -337,19 +347,25 @@ int main(void) {
 // REWRITES-NEXT:         if !({{__v[0-9]+}} != std::ptr::null_mut()) {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:         unsafe {
 // REWRITES-NEXT:             fputs(
 // REWRITES-NEXT:                 line.as_mut_ptr() as *const core::ffi::c_char,
 // REWRITES-NEXT:                 (unsafe { stdout }) as *mut libc::FILE,
 // REWRITES-NEXT:             )
 // REWRITES-NEXT:         };
+// REWRITES-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     unsafe { fclose(g as *mut libc::FILE) };
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe { puts(c"done".as_ptr()) };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     h = unsafe { fopen(c"slate_stdio_gets_loop_eof.tmp".as_ptr(), c"w".as_ptr()) };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: bool = !(h != std::ptr::null_mut());
 // REWRITES-NEXT:     if {{__v[0-9]+}} {
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:         unsafe { puts(c"open-fail".as_ptr()) };
+// REWRITES-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:         __retval = 0;
 // REWRITES-NEXT:         std::process::exit(__retval as i32);
 // REWRITES-NEXT:     }
@@ -357,7 +373,9 @@ int main(void) {
 // REWRITES-NEXT:     e = unsafe { fopen(c"slate_stdio_gets_loop_eof.tmp".as_ptr(), c"r".as_ptr()) };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: bool = !(e != std::ptr::null_mut());
 // REWRITES-NEXT:     if {{__v[0-9]+}} {
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:         unsafe { puts(c"reopen-fail".as_ptr()) };
+// REWRITES-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:         __retval = 0;
 // REWRITES-NEXT:         std::process::exit(__retval as i32);
 // REWRITES-NEXT:     }
@@ -376,15 +394,19 @@ int main(void) {
 // REWRITES-NEXT:         if !({{__v[0-9]+}} != std::ptr::null_mut()) {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
+// REWRITES-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:         unsafe {
 // REWRITES-NEXT:             fputs(
 // REWRITES-NEXT:                 empty_line.as_mut_ptr() as *const core::ffi::c_char,
 // REWRITES-NEXT:                 (unsafe { stdout }) as *mut libc::FILE,
 // REWRITES-NEXT:             )
 // REWRITES-NEXT:         };
+// REWRITES-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     unsafe { fclose(e as *mut libc::FILE) };
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     unsafe { puts(c"empty-done".as_ptr()) };
+// REWRITES-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     unsafe { remove(c"slate_stdio_gets_loop_eof.tmp".as_ptr()) };
 // REWRITES-NEXT:     __retval = 0;
 // REWRITES-NEXT:     std::process::exit(__retval as i32);

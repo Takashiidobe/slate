@@ -59,44 +59,50 @@ int main(void) {
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES: #![feature(c_variadic)]
-// REWRITES-NEXT: #![allow(
-// REWRITES-NEXT:     dead_code,
-// REWRITES-NEXT:     unused,
-// REWRITES-NEXT:     non_camel_case_types,
-// REWRITES-NEXT:     non_snake_case,
-// REWRITES-NEXT:     non_upper_case_globals,
-// REWRITES-NEXT:     arithmetic_overflow,
-// REWRITES-NEXT:     unconditional_panic,
-// REWRITES-NEXT:     suspicious_runtime_symbol_definitions,
-// REWRITES-NEXT:     unpredictable_function_pointer_comparisons,
-// REWRITES-NEXT:     unused_comparisons
-// REWRITES-NEXT: )]
-// REWRITES-EMPTY:
-// REWRITES-NEXT: unsafe extern "C" {
-// REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     let mut flag: bool = false;
-// REWRITES-NEXT:     flag = false;
-// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i8 = std::ptr::addr_of_mut!(flag) as *mut i8;
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = (unsafe {
-// REWRITES-NEXT:         std::sync::atomic::AtomicI8::from_ptr({{__v[0-9]+}}).swap(1, std::sync::atomic::Ordering::SeqCst)
-// REWRITES-NEXT:     }) != 0;
-// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i8 = std::ptr::addr_of_mut!(flag) as *mut i8;
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = (unsafe {
-// REWRITES-NEXT:         std::sync::atomic::AtomicI8::from_ptr({{__v[0-9]+}}).swap(1, std::sync::atomic::Ordering::SeqCst)
-// REWRITES-NEXT:     }) != 0;
-// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i8 = std::ptr::addr_of_mut!(flag) as *mut i8;
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         std::sync::atomic::AtomicI8::from_ptr({{__v[0-9]+}}).store(0, std::sync::atomic::Ordering::SeqCst)
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i8 = c"%d %d %d\n".as_ptr() as *mut i8;
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = !flag;
-// REWRITES-NEXT:     unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}} as i32) };
-// REWRITES-NEXT:     std::process::exit(0 as i32);
-// REWRITES-NEXT: }
+// REWRITES-X86_64-GNU: #![feature(c_variadic)]
+// REWRITES-X86_64-GNU-NEXT: #![allow(
+// REWRITES-X86_64-GNU-NEXT:     dead_code,
+// REWRITES-X86_64-GNU-NEXT:     unused,
+// REWRITES-X86_64-GNU-NEXT:     non_camel_case_types,
+// REWRITES-X86_64-GNU-NEXT:     non_snake_case,
+// REWRITES-X86_64-GNU-NEXT:     non_upper_case_globals,
+// REWRITES-X86_64-GNU-NEXT:     arithmetic_overflow,
+// REWRITES-X86_64-GNU-NEXT:     unconditional_panic,
+// REWRITES-X86_64-GNU-NEXT:     suspicious_runtime_symbol_definitions,
+// REWRITES-X86_64-GNU-NEXT:     unpredictable_function_pointer_comparisons,
+// REWRITES-X86_64-GNU-NEXT:     unused_comparisons
+// REWRITES-X86_64-GNU-NEXT: )]
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: unsafe extern "C" {
+// REWRITES-X86_64-GNU-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: unsafe extern "C" {
+// REWRITES-X86_64-GNU-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
+// REWRITES-X86_64-GNU-NEXT: }
+// REWRITES-X86_64-GNU-EMPTY:
+// REWRITES-X86_64-GNU-NEXT: fn main() {
+// REWRITES-X86_64-GNU-NEXT:     let mut flag: bool = false;
+// REWRITES-X86_64-GNU-NEXT:     flag = false;
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = std::ptr::addr_of_mut!(flag) as *mut i8;
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: bool = (unsafe {
+// REWRITES-X86_64-GNU-NEXT:         std::sync::atomic::AtomicI8::from_ptr({{__v[0-9]+}}).swap(1, std::sync::atomic::Ordering::SeqCst)
+// REWRITES-X86_64-GNU-NEXT:     }) != 0;
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = std::ptr::addr_of_mut!(flag) as *mut i8;
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: bool = (unsafe {
+// REWRITES-X86_64-GNU-NEXT:         std::sync::atomic::AtomicI8::from_ptr({{__v[0-9]+}}).swap(1, std::sync::atomic::Ordering::SeqCst)
+// REWRITES-X86_64-GNU-NEXT:     }) != 0;
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = std::ptr::addr_of_mut!(flag) as *mut i8;
+// REWRITES-X86_64-GNU-NEXT:     unsafe {
+// REWRITES-X86_64-GNU-NEXT:         std::sync::atomic::AtomicI8::from_ptr({{__v[0-9]+}}).store(0, std::sync::atomic::Ordering::SeqCst)
+// REWRITES-X86_64-GNU-NEXT:     };
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = c"%d %d %d\n".as_ptr() as *mut i8;
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: bool = !flag;
+// REWRITES-X86_64-GNU-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// REWRITES-X86_64-GNU-NEXT:     unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}} as i32) };
+// REWRITES-X86_64-GNU-NEXT:     unsafe { fflush(std::ptr::null_mut()) };
+// REWRITES-X86_64-GNU-NEXT:     std::process::exit(0 as i32);
+// REWRITES-X86_64-GNU-NEXT: }
 // SLATE-FILECHECK-END rewrites

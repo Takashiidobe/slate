@@ -208,16 +208,15 @@ int main(void) {
 // REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = -1;
 // REWRITES-NEXT:         {{__v[0-9]+}}
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"%d %d %d %d %d\n".as_ptr(),
-// REWRITES-NEXT:             {{__v[0-9]+}},
-// REWRITES-NEXT:             worker_result,
-// REWRITES-NEXT:             update_values(23, 29),
-// REWRITES-NEXT:             {{__v[0-9]+}},
-// REWRITES-NEXT:             {{__v[0-9]+}},
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
+// REWRITES-NEXT:     println!(
+// REWRITES-NEXT:         "{} {} {} {} {}",
+// REWRITES-NEXT:         {{__v[0-9]+}},
+// REWRITES-NEXT:         worker_result,
+// REWRITES-NEXT:         update_values(23, 29),
+// REWRITES-NEXT:         {{__v[0-9]+}},
+// REWRITES-NEXT:         {{__v[0-9]+}}
+// REWRITES-NEXT:     );
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

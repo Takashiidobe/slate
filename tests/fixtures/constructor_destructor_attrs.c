@@ -78,18 +78,21 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn register_default() {
-// REWRITES-NEXT:     unsafe { printf(c"ctor: default\n".as_ptr()) };
+// REWRITES-NEXT:     println!("ctor: default");
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn cleanup_default() {
-// REWRITES-NEXT:     unsafe { printf(c"dtor: default\n".as_ptr()) };
+// REWRITES-NEXT:     println!("dtor: default");
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     register_default();
-// REWRITES-NEXT:     unsafe { printf(c"main\n".as_ptr()) };
+// REWRITES-NEXT:     println!("main");
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     cleanup_default();
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }

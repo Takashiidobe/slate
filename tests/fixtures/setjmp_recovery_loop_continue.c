@@ -216,7 +216,8 @@ int main(void) {
 // REWRITES-NEXT:             unsafe {
 // REWRITES-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-NEXT:             }
-// REWRITES-NEXT:             unsafe { printf(c"recovered %d\n".as_ptr(), i) };
+// REWRITES-NEXT:             println!("recovered {}", i);
+// REWRITES-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:         } else {
 // REWRITES-NEXT:             run_test(i);
 // REWRITES-NEXT:             if i == 3 {
@@ -224,18 +225,18 @@ int main(void) {
 // REWRITES-NEXT:                     teardown_failures = (unsafe { teardown_failures }) + 1;
 // REWRITES-NEXT:                 }
 // REWRITES-NEXT:             } else {
-// REWRITES-NEXT:                 unsafe { printf(c"teardown ok %d\n".as_ptr(), i) };
+// REWRITES-NEXT:                 println!("teardown ok {}", i);
+// REWRITES-NEXT:                 let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:             }
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         i += 1;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"failures=%d teardown_failures=%d\n".as_ptr(),
-// REWRITES-NEXT:             unsafe { failures },
-// REWRITES-NEXT:             unsafe { teardown_failures },
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
+// REWRITES-NEXT:     println!(
+// REWRITES-NEXT:         "failures={} teardown_failures={}",
+// REWRITES-NEXT:         unsafe { failures },
+// REWRITES-NEXT:         unsafe { teardown_failures }
+// REWRITES-NEXT:     );
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
@@ -250,7 +251,8 @@ int main(void) {
 // REWRITES-NEXT:             )
 // REWRITES-NEXT:         };
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     unsafe { printf(c"ran %d\n".as_ptr(), i) };
+// REWRITES-NEXT:     println!("ran {}", i);
+// REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites
