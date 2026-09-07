@@ -345,16 +345,10 @@ pub(super) fn asm_reg_for_constraint(
             None => ResolvedAsmReg::Literal(name),
         },
         AsmRegConstraint::Sse => ResolvedAsmReg::Sse,
-        AsmRegConstraint::ByteAddressableAbcd => {
-            if operand_bits == 8 {
-                return None;
-            }
-            ResolvedAsmReg::Class("reg_abcd")
-        }
+        AsmRegConstraint::ByteAddressableAbcd => ResolvedAsmReg::Class("reg_abcd"),
         AsmRegConstraint::ByteAddressableGpr => match (pointer_bits, operand_bits) {
             (64, 8) => ResolvedAsmReg::Class("reg_byte"),
             (64, _) => ResolvedAsmReg::Generic,
-            (_, 8) => return None,
             _ => ResolvedAsmReg::Class("reg_abcd"),
         },
     })
@@ -690,9 +684,38 @@ impl TemplateModifier {
             "w" | "x" if target_arch == TargetArch::Arm64 => {
                 Some(Self::RegisterWidth(modifier.chars().next()?))
             }
+            "b" | "w" | "k" | "q" | "h" if target_arch.is_x86() => {
+                Some(Self::RegisterWidth(x86_width_override_modifier(modifier)?))
+            }
             _ => None,
         }
     }
+}
+
+fn x86_width_override_modifier(modifier: &str) -> Option<char> {
+    match modifier {
+        "b" => Some(RegWidth::Byte.att_size_modifier()),
+        "w" => Some(RegWidth::Word.att_size_modifier()),
+        "k" => Some(RegWidth::Dword.att_size_modifier()),
+        "q" => Some(RegWidth::Qword.att_size_modifier()),
+        "h" => Some('h'),
+        _ => None,
+    }
+}
+
+pub(super) fn asm_template_byte_view_modifier(
+    template: &str,
+    slot: usize,
+    target_arch: TargetArch,
+) -> Option<char> {
+    let pieces = parse_asm_template(template, target_arch)?;
+    pieces.into_iter().find_map(|piece| match piece {
+        TemplatePiece::Operand {
+            slot: piece_slot,
+            modifier: Some(TemplateModifier::RegisterWidth(ch @ ('l' | 'h'))),
+        } if piece_slot == slot => Some(ch),
+        _ => None,
+    })
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
