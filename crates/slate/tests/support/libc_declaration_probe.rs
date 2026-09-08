@@ -118,8 +118,10 @@ fn collect_functions(
     symbol: &str,
     types: &mut BTreeSet<(String, bool, FunctionStorage)>,
     aliases: &BTreeMap<String, String>,
+    header: &str,
 ) {
     if node.get("kind").and_then(Value::as_str) == Some("FunctionDecl")
+        && node_is_public_header_declaration(node, header)
         && node.get("name").and_then(Value::as_str) == Some(symbol)
         && let Some(type_spelling) = node
             .pointer("/type/desugaredQualType")
@@ -144,9 +146,35 @@ fn collect_functions(
     }
     if let Some(children) = node.get("inner").and_then(Value::as_array) {
         for child in children {
-            collect_functions(child, symbol, types, aliases);
+            collect_functions(child, symbol, types, aliases, header);
         }
     }
+}
+
+fn declaration_file(node: &Value) -> Option<&str> {
+    [
+        "/loc/file",
+        "/loc/spellingLoc/file",
+        "/loc/expansionLoc/file",
+        "/range/begin/file",
+        "/range/begin/spellingLoc/file",
+        "/range/begin/expansionLoc/file",
+    ]
+    .iter()
+    .find_map(|path| node.pointer(path).and_then(Value::as_str))
+}
+
+fn is_public_header_file(file: &str, header: &str) -> bool {
+    let file = file.replace('\\', "/");
+    let header = header.trim_start_matches("./");
+    file == header
+        || file.ends_with(&format!("/{header}"))
+        || file.split('/').any(|component| component == "bits")
+}
+
+fn node_is_public_header_declaration(node: &Value, header: &str) -> bool {
+    declaration_file(node).is_some_and(|file| is_public_header_file(file, header))
+        || declaration_file(node).is_none() && node.pointer("/loc/includedFrom/file").is_some()
 }
 
 fn collect_type_aliases(node: &Value, aliases: &mut BTreeMap<String, String>) {
@@ -189,13 +217,16 @@ fn collect_type_surface(
     node: &Value,
     aliases: &BTreeMap<String, String>,
     surface: &mut OracleTypeSurface,
+    header: &str,
 ) {
     match node.get("kind").and_then(Value::as_str) {
         Some("TypedefDecl") => {
-            if let (Some(name), Some(underlying_type)) = (
-                node.get("name").and_then(Value::as_str),
-                type_spelling(node, aliases),
-            ) {
+            if node_is_public_header_declaration(node, header)
+                && let (Some(name), Some(underlying_type)) = (
+                    node.get("name").and_then(Value::as_str),
+                    type_spelling(node, aliases),
+                )
+            {
                 surface.typedefs.push(OracleTypedef {
                     name: name.to_string(),
                     underlying_type,
@@ -205,6 +236,9 @@ fn collect_type_surface(
         Some("RecordDecl")
             if node.get("completeDefinition").and_then(Value::as_bool) == Some(true) =>
         {
+            if !node_is_public_header_declaration(node, header) {
+                return;
+            }
             let Some(tag) = node
                 .get("name")
                 .and_then(Value::as_str)
@@ -240,6 +274,9 @@ fn collect_type_surface(
             });
         }
         Some("EnumDecl") => {
+            if !node_is_public_header_declaration(node, header) {
+                return;
+            }
             let Some(tag) = node
                 .get("name")
                 .and_then(Value::as_str)
@@ -272,7 +309,7 @@ fn collect_type_surface(
     }
     if let Some(children) = node.get("inner").and_then(Value::as_array) {
         for child in children {
-            collect_type_surface(child, aliases, surface);
+            collect_type_surface(child, aliases, surface, header);
         }
     }
 }
@@ -483,6 +520,7 @@ pub fn extract_oracle_header_macros(
         }
         if !line.starts_with("#define ")
             || definition_file.starts_with('<')
+            || !is_public_header_file(&definition_file, header)
             || definition_file == source.to_string_lossy()
         {
             continue;
@@ -742,7 +780,7 @@ pub fn extract_oracle_function(
     let mut aliases = BTreeMap::new();
     collect_type_aliases(&root, &mut aliases);
     let mut types = BTreeSet::new();
-    collect_functions(&root, symbol, &mut types, &aliases);
+    collect_functions(&root, symbol, &mut types, &aliases, header);
     let values: Vec<_> = types.into_iter().collect();
     match values.as_slice() {
         [(type_spelling, variadic, storage)] => Ok(OracleFunction {
@@ -772,7 +810,7 @@ pub fn extract_oracle_header_functions(
     let mut aliases = BTreeMap::new();
     collect_type_aliases(&root, &mut aliases);
     let mut by_name = BTreeMap::new();
-    collect_all_functions(&root, &mut by_name, &aliases);
+    collect_all_functions(&root, &mut by_name, &aliases, header);
     by_name
         .into_iter()
         .map(|(name, types)| match types.as_slice() {
@@ -797,6 +835,7 @@ fn collect_objects(
     header: &str,
 ) {
     if node.get("kind").and_then(Value::as_str) == Some("VarDecl")
+        && node_is_public_header_declaration(node, header)
         && node.get("storageClass").and_then(Value::as_str) == Some("extern")
         && let (Some(name), Some(type_spelling)) = (
             node.get("name").and_then(Value::as_str),
@@ -889,7 +928,7 @@ pub fn extract_oracle_type_surface(
         records: Vec::new(),
         enums: Vec::new(),
     };
-    collect_type_surface(&root, &aliases, &mut surface);
+    collect_type_surface(&root, &aliases, &mut surface, header);
     let dump = record_layout_dump(config, &output_dir.join("oracle-header.c"))?;
     std::fs::write(output_dir.join("oracle-record-layouts.txt"), &dump)
         .map_err(|error| format!("write record layouts: {error}"))?;
@@ -1092,8 +1131,10 @@ fn collect_all_functions(
     node: &Value,
     functions: &mut BTreeMap<String, Vec<(String, bool, FunctionStorage)>>,
     aliases: &BTreeMap<String, String>,
+    header: &str,
 ) {
     if node.get("kind").and_then(Value::as_str) == Some("FunctionDecl")
+        && node_is_public_header_declaration(node, header)
         && let (Some(name), Some(type_spelling)) = (
             node.get("name").and_then(Value::as_str),
             node.pointer("/type/desugaredQualType")
@@ -1118,7 +1159,7 @@ fn collect_all_functions(
     }
     if let Some(children) = node.get("inner").and_then(Value::as_array) {
         for child in children {
-            collect_all_functions(child, functions, aliases);
+            collect_all_functions(child, functions, aliases, header);
         }
     }
 }
