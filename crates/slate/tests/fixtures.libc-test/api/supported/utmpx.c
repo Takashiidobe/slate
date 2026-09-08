@@ -15,7 +15,13 @@ static void f() {
     F(char, ut_line[0])
     F(pid_t, ut_pid)
     F(short, ut_type)
+#if defined(__SLATE_LIBC_GLIBC) &&                                           \
+    (defined(__SLATE_ARCH_X86_64) || defined(__SLATE_ARCH_X86) ||            \
+     defined(__SLATE_ARCH_ARM))
+    { struct utmpx x2; (void)&x2.ut_tv; }
+#else
     F(struct timeval, ut_tv)
+#endif
   }
   C(EMPTY)
   C(BOOT_TIME)

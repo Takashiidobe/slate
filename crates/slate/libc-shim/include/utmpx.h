@@ -22,12 +22,22 @@ struct utmpx {
     short __e_termination;
     short __e_exit;
   } ut_exit;
+#if defined(__SLATE_LIBC_GLIBC) &&                                            \
+    (defined(__SLATE_ARCH_X86_64) || defined(__SLATE_ARCH_X86) ||            \
+     defined(__SLATE_ARCH_ARM))
+  int ut_session;
+  struct {
+    unsigned tv_sec;
+    int      tv_usec;
+  } ut_tv;
+#else
 #if __BYTE_ORDER == 1234
   int ut_session, __ut_pad2;
 #else
   int __ut_pad2, ut_session;
 #endif
   struct timeval ut_tv;
+#endif
   unsigned       ut_addr_v6[4];
   char           __unused[20];
 };

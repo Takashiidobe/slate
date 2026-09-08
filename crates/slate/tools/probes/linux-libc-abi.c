@@ -12,12 +12,17 @@
 #include <dirent.h>
 #include <dlfcn.h>
 #include <fcntl.h>
+#include <fnmatch.h>
 #include <getopt.h>
+#include <glob.h>
+#include <grp.h>
 #include <ifaddrs.h>
 #include <netdb.h>
 #include <netinet/in.h>
 #include <poll.h>
 #include <pthread.h>
+#include <pwd.h>
+#include <regex.h>
 #include <sched.h>
 #include <semaphore.h>
 #include <setjmp.h>
@@ -49,8 +54,10 @@
 #include <ucontext.h>
 #include <unistd.h>
 #include <utime.h>
+#include <utmpx.h>
 #include <wchar.h>
 #include <wctype.h>
+#include <wordexp.h>
 
 #if defined(__SLATE_ARCH_X86) || defined(__SLATE_ARCH_X86_64)
 #include <sys/reg.h>
@@ -371,6 +378,115 @@ static void emit_extensions(void) {
   OFFSET("struct_semid_ds", struct semid_ds, sem_nsems);
 }
 
+static void emit_regex(void) {
+  SIZE("regex_t", regex_t);
+  ALIGN("regex_t", regex_t);
+  OFFSET("regex_t", regex_t, re_nsub);
+  SIZE("regmatch_t", regmatch_t);
+  ALIGN("regmatch_t", regmatch_t);
+  OFFSET("regmatch_t", regmatch_t, rm_so);
+  OFFSET("regmatch_t", regmatch_t, rm_eo);
+}
+
+static void emit_glob_wordexp(void) {
+  SIZE("glob_t", glob_t);
+  ALIGN("glob_t", glob_t);
+  OFFSET("glob_t", glob_t, gl_pathc);
+  OFFSET("glob_t", glob_t, gl_pathv);
+  OFFSET("glob_t", glob_t, gl_offs);
+
+  SIZE("wordexp_t", wordexp_t);
+  ALIGN("wordexp_t", wordexp_t);
+  OFFSET("wordexp_t", wordexp_t, we_wordc);
+  OFFSET("wordexp_t", wordexp_t, we_wordv);
+  OFFSET("wordexp_t", wordexp_t, we_offs);
+
+  MACRO(GLOB_ERR);
+  MACRO(GLOB_MARK);
+  MACRO(GLOB_NOSORT);
+  MACRO(GLOB_DOOFFS);
+  MACRO(GLOB_NOCHECK);
+  MACRO(GLOB_APPEND);
+  MACRO(GLOB_NOESCAPE);
+  MACRO(GLOB_PERIOD);
+  MACRO(GLOB_TILDE);
+  MACRO(GLOB_TILDE_CHECK);
+  MACRO(GLOB_NOSPACE);
+  MACRO(GLOB_ABORTED);
+  MACRO(GLOB_NOMATCH);
+  MACRO(GLOB_NOSYS);
+#if defined(__SLATE_LIBC_GLIBC)
+  PRESENCE("glob.GLOB_MAGCHAR", 1);
+  MACRO(GLOB_MAGCHAR);
+  MACRO(GLOB_ALTDIRFUNC);
+  MACRO(GLOB_BRACE);
+  MACRO(GLOB_NOMAGIC);
+  MACRO(GLOB_ONLYDIR);
+#else
+  PRESENCE("glob.GLOB_MAGCHAR", 0);
+#endif
+
+  MACRO(FNM_PATHNAME);
+  MACRO(FNM_NOESCAPE);
+  MACRO(FNM_PERIOD);
+  MACRO(FNM_LEADING_DIR);
+  MACRO(FNM_CASEFOLD);
+  MACRO(FNM_FILE_NAME);
+  MACRO(FNM_NOMATCH);
+  MACRO(FNM_NOSYS);
+#if defined(__SLATE_LIBC_GLIBC)
+  PRESENCE("fnmatch.FNM_EXTMATCH", 1);
+  MACRO(FNM_EXTMATCH);
+#else
+  PRESENCE("fnmatch.FNM_EXTMATCH", 0);
+#endif
+
+  MACRO(WRDE_DOOFFS);
+  MACRO(WRDE_APPEND);
+  MACRO(WRDE_NOCMD);
+  MACRO(WRDE_REUSE);
+  MACRO(WRDE_SHOWERR);
+  MACRO(WRDE_UNDEF);
+  MACRO(WRDE_NOSPACE);
+  MACRO(WRDE_BADCHAR);
+  MACRO(WRDE_BADVAL);
+  MACRO(WRDE_CMDSUB);
+  MACRO(WRDE_SYNTAX);
+  MACRO(WRDE_NOSYS);
+}
+
+static void emit_accounts(void) {
+  SIZE("struct_passwd", struct passwd);
+  ALIGN("struct_passwd", struct passwd);
+  OFFSET("struct_passwd", struct passwd, pw_name);
+  OFFSET("struct_passwd", struct passwd, pw_passwd);
+  OFFSET("struct_passwd", struct passwd, pw_uid);
+  OFFSET("struct_passwd", struct passwd, pw_gid);
+  OFFSET("struct_passwd", struct passwd, pw_gecos);
+  OFFSET("struct_passwd", struct passwd, pw_dir);
+  OFFSET("struct_passwd", struct passwd, pw_shell);
+
+  SIZE("struct_group", struct group);
+  ALIGN("struct_group", struct group);
+  OFFSET("struct_group", struct group, gr_name);
+  OFFSET("struct_group", struct group, gr_passwd);
+  OFFSET("struct_group", struct group, gr_gid);
+  OFFSET("struct_group", struct group, gr_mem);
+
+  SIZE("struct_utmpx", struct utmpx);
+  ALIGN("struct_utmpx", struct utmpx);
+  OFFSET("struct_utmpx", struct utmpx, ut_type);
+  OFFSET("struct_utmpx", struct utmpx, ut_pid);
+  OFFSET("struct_utmpx", struct utmpx, ut_line);
+  OFFSET("struct_utmpx", struct utmpx, ut_id);
+  OFFSET("struct_utmpx", struct utmpx, ut_user);
+  OFFSET("struct_utmpx", struct utmpx, ut_host);
+  OFFSET("struct_utmpx", struct utmpx, ut_exit);
+  OFFSET("struct_utmpx", struct utmpx, ut_session);
+  OFFSET("struct_utmpx", struct utmpx, ut_tv);
+  OFFSET("struct_utmpx", struct utmpx, ut_addr_v6);
+}
+
 static void emit_misc(void) {
   SIZE("struct_utimbuf", struct utimbuf);
   ALIGN("struct_utimbuf", struct utimbuf);
@@ -679,6 +795,9 @@ int main(void) {
   emit_extensions();
   emit_ucontext();
 #endif
+  emit_regex();
+  emit_glob_wordexp();
+  emit_accounts();
   emit_misc();
   emit_registers();
   emit_hwcap();
