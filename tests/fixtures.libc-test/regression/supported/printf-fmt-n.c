@@ -1,0 +1,93 @@
+#define _GNU_SOURCE 1
+
+#include <stdint.h>
+#include <unistd.h>
+
+/* TODO: not thread-safe nor fork-safe */
+extern volatile int t_status;
+
+#define T_LOC2(l) __FILE__ ":" #l
+#define T_LOC1(l) T_LOC2(l)
+#define t_error(...) t_printf(T_LOC1(__LINE__) ": " __VA_ARGS__)
+
+int t_printf(const char *s, ...);
+
+int t_vmfill(void **, size_t *, int);
+int t_memfill(void);
+
+void t_fdfill(void);
+
+void t_randseed(uint64_t s);
+uint64_t t_randn(uint64_t n);
+uint64_t t_randint(uint64_t a, uint64_t b);
+void t_shuffle(uint64_t *p, size_t n);
+void t_randrange(uint64_t *p, size_t n);
+int t_choose(uint64_t n, size_t k, uint64_t *p);
+
+char *t_pathrel(char *buf, size_t n, char *argv0, char *p);
+
+int t_setrlim(int r, long lim);
+
+int t_setutf8(void);
+
+#include <stdio.h>
+#include <stdarg.h>
+#include <unistd.h>
+
+volatile int t_status = 0;
+
+int t_printf(const char *s, ...)
+{
+	va_list ap;
+	char buf[512];
+	int n;
+
+	t_status = 1;
+	va_start(ap, s);
+	n = vsnprintf(buf, sizeof buf, s, ap);
+	va_end(ap);
+	if (n < 0)
+		n = 0;
+	else if (n >= sizeof buf) {
+		n = sizeof buf;
+		buf[n - 1] = '\n';
+		buf[n - 2] = '.';
+		buf[n - 3] = '.';
+		buf[n - 4] = '.';
+	}
+	return write(1, buf, n);
+}
+
+// commit: 5cbd76c6b05b381f269e0e204e10690d69f1d6ea 2011-02-16
+// commit: bdc9ed15651b70e89f83c5a9f7d1ba349e624503 2011-02-20
+// printf %n fmt
+#include <stdint.h>
+#include <stdio.h>
+
+#define T(n,nfmt,fmt) do { \
+	if ((ret = sprintf(buf, "%256d%d" nfmt "%d", 1, 2, &n, 3)) != 258) \
+		t_error("expexted sprintf to write 258 chars, got %d\n", ret); \
+	if (n != 257) \
+		t_error("%%n format failed: wanted 257, got " fmt "\n", n); \
+} while(0)
+
+int main(void)
+{
+	char buf[1024];
+	int ret;
+	int i;
+	long l;
+	long long ll;
+	short h;
+	size_t z;
+	uintmax_t j;
+
+	T(i,    "%n",   "%d");
+	T(l,   "%ln",  "%ld");
+	T(ll, "%lln", "%lld");
+	T(h,   "%hn",   "%d");
+	T(z,   "%zn",  "%zd");
+	T(j,   "%jn",  "%jd");
+
+	return t_status;
+}

@@ -737,7 +737,7 @@ impl BatchBuild {
     }
 }
 
-#[derive(Default, Clone)]
+#[derive(Clone)]
 pub struct RunConfig {
     pub args: Vec<String>,
     pub stdin: Vec<u8>,
@@ -746,6 +746,22 @@ pub struct RunConfig {
     pub timeout_seconds: Option<u64>,
     pub c_args: Vec<String>,
     pub extra_files: Vec<PathBuf>,
+    pub extra_files_dir: PathBuf,
+}
+
+impl Default for RunConfig {
+    fn default() -> Self {
+        RunConfig {
+            args: Vec::new(),
+            stdin: Vec::new(),
+            env: BTreeMap::new(),
+            compare_stderr: false,
+            timeout_seconds: None,
+            c_args: Vec::new(),
+            extra_files: Vec::new(),
+            extra_files_dir: PathBuf::from("src/functional"),
+        }
+    }
 }
 
 /// A cargo bin target name derived from a case name (alnum/underscore only).
@@ -824,7 +840,7 @@ pub fn compare_batch_with_jobs_for_target(
                 let name = extra
                     .file_name()
                     .ok_or_else(|| format!("extra file has no name: {}", extra.display()))?;
-                let dest_dir = run_dir.join("src/functional");
+                let dest_dir = run_dir.join(&case.config.extra_files_dir);
                 std::fs::create_dir_all(&dest_dir)
                     .map_err(|e| format!("create {}: {e}", dest_dir.display()))?;
                 std::fs::copy(extra, dest_dir.join(name))
