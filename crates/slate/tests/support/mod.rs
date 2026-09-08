@@ -3,6 +3,7 @@
     reason = "test helper toolbox; helpers may sit unused between runs"
 )]
 pub mod filecheck;
+pub mod libc_declaration_probe;
 pub mod libc_probe;
 pub mod libc_shim;
 
