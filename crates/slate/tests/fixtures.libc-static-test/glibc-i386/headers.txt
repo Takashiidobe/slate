@@ -5,3 +5,4 @@ ctype.h
 errno.h
 fenv.h
 complex.h
+math.h
