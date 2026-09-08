@@ -61,6 +61,19 @@
 #define MNT_EXPIRE      4
 #define UMOUNT_NOFOLLOW 8
 
+#if defined(__SLATE_LIBC_GLIBC)
+#include <stdint.h>
+
+#define MOUNT_ATTR_SIZE_VER0 32
+
+struct mount_attr {
+  uint64_t attr_set;
+  uint64_t attr_clr;
+  uint64_t propagation;
+  uint64_t userns_fd;
+};
+#endif
+
 int mount(const char *, const char *, const char *, unsigned long,
           const void *);
 int umount(const char *);

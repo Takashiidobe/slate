@@ -11,7 +11,11 @@
 
 #include <sys/time.h>
 
+#if defined(__SLATE_LIBC_GLIBC) && defined(__SLATE_WORDSIZE_32)
+typedef unsigned long rlim_t;
+#else
 typedef unsigned long long rlim_t;
+#endif
 
 struct rlimit {
   rlim_t rlim_cur;
@@ -36,8 +40,9 @@ struct rusage {
   long           ru_nsignals;
   long           ru_nvcsw;
   long           ru_nivcsw;
-  /* room for more... */
+#if defined(__SLATE_LIBC_MUSL)
   long           __reserved[16];
+#endif
 };
 
 int getrlimit(int, struct rlimit *);

@@ -234,6 +234,7 @@ struct tcp_info {
   uint32_t tcpi_rcv_rtt;
   uint32_t tcpi_rcv_space;
   uint32_t tcpi_total_retrans;
+#if !defined(__SLATE_LIBC_GLIBC) || !defined(__SLATE_ARCH_ARM)
   uint64_t tcpi_pacing_rate;
   uint64_t tcpi_max_pacing_rate;
   uint64_t tcpi_bytes_acked;
@@ -256,6 +257,25 @@ struct tcp_info {
   uint32_t tcpi_reord_seen;
   uint32_t tcpi_rcv_ooopack;
   uint32_t tcpi_snd_wnd;
+#if defined(__SLATE_LIBC_GLIBC) && !defined(__SLATE_ARCH_ARM)
+  uint32_t tcpi_rcv_wnd;
+  uint32_t tcpi_rehash;
+  uint16_t tcpi_total_rto;
+  uint16_t tcpi_total_rto_recoveries;
+  uint32_t tcpi_total_rto_time;
+  uint32_t tcpi_received_ce;
+  uint32_t tcpi_delivered_e1_bytes;
+  uint32_t tcpi_delivered_e0_bytes;
+  uint32_t tcpi_delivered_ce_bytes;
+  uint32_t tcpi_received_e1_bytes;
+  uint32_t tcpi_received_e0_bytes;
+  uint32_t tcpi_received_ce_bytes;
+  uint32_t tcpi_ecn_mode : 2;
+  uint32_t tcpi_accecn_opt_seen : 2;
+  uint32_t tcpi_accecn_fail_mode : 4;
+  uint32_t tcpi_options2 : 24;
+#endif
+#endif
 };
 
 #define TCP_MD5SIG_MAXKEYLEN 80
@@ -298,6 +318,7 @@ struct tcp_zerocopy_receive {
   uint64_t address;
   uint32_t length;
   uint32_t recv_skip_hint;
+#if !defined(__SLATE_LIBC_GLIBC) || !defined(__SLATE_ARCH_ARM)
   uint32_t inq;
   int32_t  err;
   uint64_t copybuf_address;
@@ -307,6 +328,7 @@ struct tcp_zerocopy_receive {
   uint64_t msg_controllen;
   uint32_t msg_flags;
   uint32_t reserved;
+#endif
 };
 
 #endif

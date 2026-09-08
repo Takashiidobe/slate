@@ -28,11 +28,31 @@
 #include <wchar.h>
 #include <wctype.h>
 
+#if defined(__SLATE_LIBC_GLIBC) || defined(__SLATE_LIBC_MUSL)
+#define _GNU_SOURCE
+#include <netinet/tcp.h>
+#include <sys/fanotify.h>
+#include <sys/inotify.h>
+#include <sys/mount.h>
+#include <sys/procfs.h>
+#include <sys/resource.h>
+#include <sys/signalfd.h>
+#undef _GNU_SOURCE
+#endif
+
+#if defined(__SLATE_LIBC_GLIBC)
+#if defined(__SLATE_ARCH_X86_64) || defined(__SLATE_ARCH_X86)
+#include <sys/pidfd.h>
+#endif
+#include <sys/rseq.h>
+#endif
+
 #define SIZE(name, type) printf("size\t%s\t%zu\n", name, sizeof(type))
 #define ALIGN(name, type) printf("align\t%s\t%zu\n", name, _Alignof(type))
 #define OFFSET(name, type, field) \
   printf("offset\t%s.%s\t%zu\n", name, #field, offsetof(type, field))
 #define MACRO(name) printf("macro\t%s\t%ld\n", #name, (long)(name))
+#define PRESENCE(name, value) printf("presence\t%s\t%d\n", name, value)
 
 static void emit_types(void) {
   SIZE("char", char);
@@ -126,6 +146,101 @@ static void emit_network(void) {
   OFFSET("struct_msghdr", struct msghdr, msg_control);
 }
 
+static void emit_extensions(void) {
+  SIZE("struct_elf_prstatus", struct elf_prstatus);
+  ALIGN("struct_elf_prstatus", struct elf_prstatus);
+  OFFSET("struct_elf_prstatus", struct elf_prstatus, pr_utime);
+  OFFSET("struct_elf_prstatus", struct elf_prstatus, pr_stime);
+  OFFSET("struct_elf_prstatus", struct elf_prstatus, pr_reg);
+  OFFSET("struct_elf_prstatus", struct elf_prstatus, pr_fpvalid);
+  SIZE("struct_elf_prpsinfo", struct elf_prpsinfo);
+  OFFSET("struct_elf_prpsinfo", struct elf_prpsinfo, pr_uid);
+  OFFSET("struct_elf_prpsinfo", struct elf_prpsinfo, pr_gid);
+
+  SIZE("struct_rusage", struct rusage);
+  ALIGN("struct_rusage", struct rusage);
+  OFFSET("struct_rusage", struct rusage, ru_utime);
+  OFFSET("struct_rusage", struct rusage, ru_stime);
+  OFFSET("struct_rusage", struct rusage, ru_maxrss);
+  OFFSET("struct_rusage", struct rusage, ru_nvcsw);
+  OFFSET("struct_rusage", struct rusage, ru_nivcsw);
+  SIZE("struct_rlimit", struct rlimit);
+  OFFSET("struct_rlimit", struct rlimit, rlim_cur);
+  OFFSET("struct_rlimit", struct rlimit, rlim_max);
+
+  SIZE("struct_fanotify_event_metadata", struct fanotify_event_metadata);
+  OFFSET("struct_fanotify_event_metadata", struct fanotify_event_metadata,
+         mask);
+  OFFSET("struct_fanotify_event_metadata", struct fanotify_event_metadata,
+         fd);
+  OFFSET("struct_fanotify_event_metadata", struct fanotify_event_metadata,
+         pid);
+  SIZE("struct_fanotify_event_info_header", struct fanotify_event_info_header);
+  OFFSET("struct_fanotify_event_info_header", struct fanotify_event_info_header,
+         len);
+  SIZE("struct_fanotify_event_info_fid", struct fanotify_event_info_fid);
+  OFFSET("struct_fanotify_event_info_fid", struct fanotify_event_info_fid, fsid);
+  SIZE("struct_fanotify_response", struct fanotify_response);
+  OFFSET("struct_fanotify_response", struct fanotify_response, response);
+
+  SIZE("struct_signalfd_siginfo", struct signalfd_siginfo);
+  OFFSET("struct_signalfd_siginfo", struct signalfd_siginfo, ssi_signo);
+  OFFSET("struct_signalfd_siginfo", struct signalfd_siginfo, ssi_pid);
+  OFFSET("struct_signalfd_siginfo", struct signalfd_siginfo, ssi_utime);
+  OFFSET("struct_signalfd_siginfo", struct signalfd_siginfo, ssi_arch);
+  SIZE("struct_inotify_event", struct inotify_event);
+  OFFSET("struct_inotify_event", struct inotify_event, wd);
+  OFFSET("struct_inotify_event", struct inotify_event, mask);
+  OFFSET("struct_inotify_event", struct inotify_event, len);
+
+  SIZE("struct_tcp_info", struct tcp_info);
+  OFFSET("struct_tcp_info", struct tcp_info, tcpi_state);
+  OFFSET("struct_tcp_info", struct tcp_info, tcpi_rto);
+#if !defined(__SLATE_ARCH_ARM)
+  OFFSET("struct_tcp_info", struct tcp_info, tcpi_pacing_rate);
+  OFFSET("struct_tcp_info", struct tcp_info, tcpi_bytes_sent);
+#endif
+  SIZE("struct_tcp_md5sig", struct tcp_md5sig);
+  OFFSET("struct_tcp_md5sig", struct tcp_md5sig, tcpm_addr);
+  OFFSET("struct_tcp_md5sig", struct tcp_md5sig, tcpm_key);
+  SIZE("struct_tcp_zerocopy_receive", struct tcp_zerocopy_receive);
+#if !defined(__SLATE_ARCH_ARM)
+  OFFSET("struct_tcp_zerocopy_receive", struct tcp_zerocopy_receive,
+         copybuf_address);
+#endif
+
+#if defined(__SLATE_LIBC_GLIBC) && defined(MOUNT_ATTR_SIZE_VER0)
+  PRESENCE("sys.mount.struct_mount_attr", 1);
+  SIZE("struct_mount_attr", struct mount_attr);
+  ALIGN("struct_mount_attr", struct mount_attr);
+  OFFSET("struct_mount_attr", struct mount_attr, attr_set);
+  OFFSET("struct_mount_attr", struct mount_attr, userns_fd);
+#elif defined(__SLATE_LIBC_GLIBC)
+  PRESENCE("sys.mount.struct_mount_attr", 0);
+#endif
+
+#if defined(__SLATE_LIBC_GLIBC)
+  PRESENCE("sys.rseq.struct_rseq_cs", 1);
+  SIZE("struct_rseq_cs", struct rseq_cs);
+  ALIGN("struct_rseq_cs", struct rseq_cs);
+  OFFSET("struct_rseq_cs", struct rseq_cs, start_ip);
+  OFFSET("struct_rseq_cs", struct rseq_cs, abort_ip);
+  PRESENCE("sys.rseq.struct_rseq", 1);
+  SIZE("struct_rseq", struct rseq);
+  ALIGN("struct_rseq", struct rseq);
+  OFFSET("struct_rseq", struct rseq, cpu_id_start);
+  OFFSET("struct_rseq", struct rseq, rseq_cs);
+  OFFSET("struct_rseq", struct rseq, flags);
+#if defined(__SLATE_ARCH_X86_64) || defined(__SLATE_ARCH_X86)
+  PRESENCE("sys.pidfd.struct_pidfd_info", 1);
+  SIZE("struct_pidfd_info", struct pidfd_info);
+  OFFSET("struct_pidfd_info", struct pidfd_info, mask);
+  OFFSET("struct_pidfd_info", struct pidfd_info, pid);
+  OFFSET("struct_pidfd_info", struct pidfd_info, supported_mask);
+#endif
+#endif
+}
+
 static void emit_threads(void) {
   SIZE("pthread_t", pthread_t);
   SIZE("pthread_key_t", pthread_key_t);
@@ -174,6 +289,9 @@ int main(void) {
   emit_filesystem();
   emit_time_signal();
   emit_network();
+#if defined(__SLATE_LIBC_GLIBC) || defined(__SLATE_LIBC_MUSL)
+  emit_extensions();
+#endif
   emit_threads();
   emit_macros();
   return 0;
