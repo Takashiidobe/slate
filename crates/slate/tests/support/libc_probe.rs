@@ -200,6 +200,93 @@ fn musl_root() -> PathBuf {
         .unwrap_or_else(|_| home().join("toolchains/slate-musl"))
 }
 
+fn oracle_target_dir(name: &str) -> PathBuf {
+    Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("target")
+        .join(name)
+}
+
+fn freebsd_dist_arch(arch: Architecture) -> Result<(&'static str, &'static str), String> {
+    match arch {
+        Architecture::X86_64 => Ok(("amd64", "SLATE_FREEBSD_AMD64_SYSROOT")),
+        Architecture::Aarch64 => Ok(("arm64", "SLATE_FREEBSD_ARM64_SYSROOT")),
+        _ => Err(format!(
+            "FreeBSD ABI probes only cover x86_64/aarch64; got {}",
+            arch_key(arch)
+        )),
+    }
+}
+
+fn require_bionic_arch(arch: Architecture) -> Result<(), String> {
+    match arch {
+        Architecture::X86_64 | Architecture::Aarch64 => Ok(()),
+        _ => Err(format!(
+            "Android NDK ABI probes only cover x86_64/aarch64; got {}",
+            arch_key(arch)
+        )),
+    }
+}
+
+fn android_ndk_root() -> PathBuf {
+    std::env::var("SLATE_ANDROID_NDK")
+        .map(PathBuf::from)
+        .unwrap_or_else(|_| oracle_target_dir("android-ndk-oracle").join("ndk"))
+}
+
+fn android_ndk_sysroot(ndk_root: &Path) -> Result<PathBuf, String> {
+    let prebuilt_dir = ndk_root.join("toolchains/llvm/prebuilt");
+    let host_tag = std::fs::read_dir(&prebuilt_dir)
+        .map_err(|_| {
+            format!(
+                "Android NDK LLVM prebuilt toolchain is missing: {}",
+                prebuilt_dir.display()
+            )
+        })?
+        .filter_map(|entry| entry.ok())
+        .find(|entry| entry.path().is_dir())
+        .map(|entry| entry.file_name())
+        .ok_or_else(|| {
+            format!(
+                "Android NDK LLVM prebuilt toolchain is missing: {}",
+                prebuilt_dir.display()
+            )
+        })?;
+    let sysroot = require_dir(
+        &prebuilt_dir.join(&host_tag).join("sysroot"),
+        "Android NDK sysroot",
+    )?;
+    require_file(
+        &sysroot.join("usr/include/stdio.h"),
+        "Android NDK sysroot headers",
+    )?;
+    Ok(sysroot)
+}
+
+fn discover_macos_sdk() -> Option<PathBuf> {
+    if let Ok(value) = std::env::var("SLATE_MACOS_SDK") {
+        return Some(PathBuf::from(value));
+    }
+    let output = Command::new("xcrun")
+        .args(["--sdk", "macosx", "--show-sdk-path"])
+        .output()
+        .ok()?;
+    if !output.status.success() {
+        return None;
+    }
+    let path = String::from_utf8_lossy(&output.stdout).trim().to_string();
+    if path.is_empty() {
+        None
+    } else {
+        Some(PathBuf::from(path))
+    }
+}
+
+fn msvc_sysroot_root() -> PathBuf {
+    std::env::var("SLATE_MSVC_SYSROOT")
+        .map(PathBuf::from)
+        .unwrap_or_else(|_| oracle_target_dir("msvc-sysroot"))
+}
+
 fn qemu_for(arch: Architecture) -> Result<Option<PathBuf>, String> {
     let override_name = format!("SLATE_LIBC_QEMU_{}", arch_key(arch).to_uppercase());
     if let Ok(value) = std::env::var(&override_name) {
@@ -354,12 +441,132 @@ pub fn resolve(arch: Architecture, libc: LibcVariant) -> Result<ProbeConfig, Str
                 linker_post_args,
             )
         }
-        LibcVariant::Bionic | LibcVariant::Darwin | LibcVariant::FreeBsd | LibcVariant::Msvc => {
-            unreachable!("libc ABI probes only cover musl and glibc")
+        LibcVariant::FreeBsd => {
+            let (dist_arch, sysroot_env) = freebsd_dist_arch(arch)?;
+            let default_sysroot = oracle_target_dir("freebsd-oracle")
+                .join("sysroots")
+                .join(dist_arch);
+            let sysroot_value = std::env::var(sysroot_env)
+                .map(PathBuf::from)
+                .unwrap_or(default_sysroot);
+            let sysroot = require_dir(
+                &sysroot_value,
+                &format!(
+                    "FreeBSD {dist_arch} sysroot; run tools/bootstrap-freebsd-oracle.sh or set {sysroot_env}"
+                ),
+            )?;
+            let target_triple = TestConfig::new(arch, libc)
+                .target()
+                .expect("FreeBSD target triple is defined for x86_64/aarch64")
+                .to_string();
+            let linker_args = vec![
+                format!("--target={target_triple}"),
+                format!("--sysroot={}", sysroot.display()),
+            ];
+            (
+                target_triple,
+                sysroot,
+                slate_clang.clone(),
+                slate_clang.clone(),
+                linker_args,
+                Vec::new(),
+            )
+        }
+        LibcVariant::Bionic => {
+            require_bionic_arch(arch)?;
+            let ndk_root = require_dir(
+                &android_ndk_root(),
+                "Android NDK; run tools/bootstrap-android-ndk.sh or set SLATE_ANDROID_NDK",
+            )?;
+            let sysroot = android_ndk_sysroot(&ndk_root)?;
+            let target_triple = TestConfig::new(arch, libc)
+                .target()
+                .expect("Android target triple is defined for x86_64/aarch64")
+                .to_string();
+            let linker_args = vec![
+                "-static".to_string(),
+                format!("--target={target_triple}"),
+                format!("--sysroot={}", sysroot.display()),
+            ];
+            (
+                target_triple,
+                sysroot,
+                slate_clang.clone(),
+                slate_clang.clone(),
+                linker_args,
+                Vec::new(),
+            )
+        }
+        LibcVariant::Darwin => {
+            if arch != Architecture::Aarch64 {
+                return Err(format!(
+                    "macOS ABI probes only cover aarch64; got {}",
+                    arch_key(arch)
+                ));
+            }
+            let sdk_root = discover_macos_sdk().ok_or_else(|| {
+                "macOS SDK is missing; run tools/bootstrap-macos-oracle.sh or set SLATE_MACOS_SDK"
+                    .to_string()
+            })?;
+            let sysroot = require_dir(&sdk_root, "macOS SDK")?;
+            require_file(&sysroot.join("usr/include/stdio.h"), "macOS SDK headers")?;
+            let target_triple = TestConfig::new(arch, libc)
+                .target()
+                .expect("macOS target triple is defined for aarch64")
+                .to_string();
+            let linker_args = vec![
+                format!("--target={target_triple}"),
+                format!("--sysroot={}", sysroot.display()),
+            ];
+            (
+                target_triple,
+                sysroot,
+                slate_clang.clone(),
+                slate_clang.clone(),
+                linker_args,
+                Vec::new(),
+            )
+        }
+        LibcVariant::Msvc => {
+            if arch != Architecture::X86_64 {
+                return Err(format!(
+                    "MSVC ABI probes only cover x86_64; got {}",
+                    arch_key(arch)
+                ));
+            }
+            let sysroot = require_dir(
+                &msvc_sysroot_root(),
+                "MSVC reference sysroot; run tools/bootstrap-msvc-sysroot.sh or set SLATE_MSVC_SYSROOT",
+            )?;
+            let crt_include = require_dir(&sysroot.join("crt/include"), "MSVC CRT include root")?;
+            let ucrt_include =
+                require_dir(&sysroot.join("sdk/include/ucrt"), "MSVC UCRT include root")?;
+            let target_triple = TestConfig::new(arch, libc)
+                .target()
+                .expect("MSVC target triple is defined for x86_64")
+                .to_string();
+            let linker_args = vec![
+                "-isystem".to_string(),
+                crt_include.to_string_lossy().into_owned(),
+                "-isystem".to_string(),
+                ucrt_include.to_string_lossy().into_owned(),
+                format!("--target={target_triple}"),
+            ];
+            (
+                target_triple,
+                sysroot,
+                slate_clang.clone(),
+                slate_clang.clone(),
+                linker_args,
+                Vec::new(),
+            )
         }
     };
 
-    let runner = qemu_for(arch)?;
+    let runner = match libc {
+        LibcVariant::Darwin => None,
+        _ => qemu_for(arch)?,
+    };
     let runner_args = runner
         .as_ref()
         .map(|_| vec!["-L".to_string(), sysroot.to_string_lossy().into_owned()])

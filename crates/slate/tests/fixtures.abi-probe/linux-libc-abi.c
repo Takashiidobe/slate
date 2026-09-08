@@ -3,8 +3,8 @@
 #endif
 
 #include <arpa/inet.h>
-#if defined(__SLATE_LIBC_MUSL) ||                                             \
-    (defined(__SLATE_LIBC_GLIBC) &&                                          \
+#if defined(__SLATE_LIBC_MUSL) ||                                              \
+    (defined(__SLATE_LIBC_GLIBC) &&                                            \
      (defined(__SLATE_ARCH_X86_64) || defined(__SLATE_ARCH_X86)))
 #include <crypt.h>
 #define SLATE_PROBE_HAVE_CRYPT 1
@@ -33,8 +33,8 @@
 #include <setjmp.h>
 #include <signal.h>
 #include <stddef.h>
-#include <stdint.h>
 #include <stdio.h>
+#include <sys/auxv.h>
 #include <sys/epoll.h>
 #include <sys/ipc.h>
 #include <sys/mman.h>
@@ -52,10 +52,9 @@
 #include <sys/times.h>
 #include <sys/types.h>
 #include <sys/un.h>
+#include <sys/user.h>
 #include <sys/utsname.h>
 #include <sys/wait.h>
-#include <sys/auxv.h>
-#include <sys/user.h>
 #include <termios.h>
 #include <threads.h>
 #include <time.h>
@@ -64,7 +63,6 @@
 #include <utime.h>
 #include <utmpx.h>
 #include <wchar.h>
-#include <wctype.h>
 #include <wordexp.h>
 
 #if defined(__SLATE_ARCH_X86) || defined(__SLATE_ARCH_X86_64)
@@ -88,13 +86,13 @@
 #include <sys/rseq.h>
 #endif
 
-#define SIZE(name, type) printf("size\t%s\t%zu\n", name, sizeof(type))
+#define SIZE(name, type)  printf("size\t%s\t%zu\n", name, sizeof(type))
 #define ALIGN(name, type) printf("align\t%s\t%zu\n", name, _Alignof(type))
-#define OFFSET(name, type, field) \
+#define OFFSET(name, type, field)                                              \
   printf("offset\t%s.%s\t%zu\n", name, #field, offsetof(type, field))
-#define MACRO(name) printf("macro\t%s\t%ld\n", #name, (long)(name))
+#define MACRO(name)              printf("macro\t%s\t%ld\n", #name, (long)(name))
 #define MACRO_VALUE(label, expr) printf("macro\t%s\t%ld\n", label, (long)(expr))
-#define PRESENCE(name, value) printf("presence\t%s\t%d\n", name, value)
+#define PRESENCE(name, value)    printf("presence\t%s\t%d\n", name, value)
 
 static void emit_types(void) {
   SIZE("char", char);
@@ -277,15 +275,14 @@ static void emit_extensions(void) {
   SIZE("struct_fanotify_event_metadata", struct fanotify_event_metadata);
   OFFSET("struct_fanotify_event_metadata", struct fanotify_event_metadata,
          mask);
-  OFFSET("struct_fanotify_event_metadata", struct fanotify_event_metadata,
-         fd);
-  OFFSET("struct_fanotify_event_metadata", struct fanotify_event_metadata,
-         pid);
+  OFFSET("struct_fanotify_event_metadata", struct fanotify_event_metadata, fd);
+  OFFSET("struct_fanotify_event_metadata", struct fanotify_event_metadata, pid);
   SIZE("struct_fanotify_event_info_header", struct fanotify_event_info_header);
   OFFSET("struct_fanotify_event_info_header", struct fanotify_event_info_header,
          len);
   SIZE("struct_fanotify_event_info_fid", struct fanotify_event_info_fid);
-  OFFSET("struct_fanotify_event_info_fid", struct fanotify_event_info_fid, fsid);
+  OFFSET("struct_fanotify_event_info_fid", struct fanotify_event_info_fid,
+         fsid);
   SIZE("struct_fanotify_response", struct fanotify_response);
   OFFSET("struct_fanotify_response", struct fanotify_response, response);
 
