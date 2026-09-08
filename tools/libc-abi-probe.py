@@ -55,6 +55,7 @@ def probe(args):
     compile_args.extend(["-std=gnu23", "-O0"])
     if args.shim:
         compile_args.extend(["-nostdlibinc", "-isystem", str(args.shim)])
+        compile_args.append("-D__SLATE_LIBC_SHIM")
     compile_args.extend(args.define)
     compile_args.extend(args.extra_arg)
 

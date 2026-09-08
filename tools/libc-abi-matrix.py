@@ -78,7 +78,6 @@ ABI_FAMILIES = {
     "stat-time",
 }
 
-
 def env_path(name, default=None):
     value = os.environ.get(name, default)
     return Path(value).expanduser() if value else None
@@ -258,8 +257,8 @@ def run_probe(configuration, shim, output):
         command.append(f"--linker-post-arg={value}")
     if shim:
         command.extend(["--shim", str(SHIM)])
-        for value in configuration["defines"]:
-            command.append(f"--define={value}")
+    for value in configuration["defines"]:
+        command.append(f"--define={value}")
     if configuration["runner"]:
         command.extend(["--runner", str(configuration["runner"])])
         for value in configuration["runner_args"]:
