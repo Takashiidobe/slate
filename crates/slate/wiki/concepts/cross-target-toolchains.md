@@ -55,6 +55,29 @@ defines. Records are keyed by kind and name, so a size and alignment for the
 same type cannot overwrite one another. The comparison rejects different probe
 sources before comparing records.
 
+Run the target matrix with:
+
+```bash
+python3 tools/libc-abi-matrix.py --libc musl
+```
+
+The matrix compiles both oracle and shim probes with `SLATE_CLANG`, links with
+the target libc wrapper, and runs cross-target binaries through QEMU. Glibc
+sysroots are intentionally required explicitly:
+
+```bash
+export SLATE_GLIBC_SYSROOT_X86_64=/path/to/x86_64/sysroot
+export SLATE_GLIBC_SYSROOT_X86=/path/to/i686/sysroot
+export SLATE_GLIBC_SYSROOT_ARM=/path/to/arm/sysroot
+export SLATE_GLIBC_SYSROOT_AARCH64=/path/to/aarch64/sysroot
+python3 tools/libc-abi-matrix.py --libc glibc
+```
+
+The runner never substitutes the host sysroot for an unset target sysroot.
+For non-native glibc targets, set the matching linker as well, using either
+the `SLATE_GLIBC_LINKER_*` name or the existing target linker variable such as
+`SLATE_ARM_LINKER` or `SLATE_AARCH64_LINKER`.
+
 ## Target matrix
 
 | Target | Clang triple | Rust target | Linker | QEMU | Slate status |
