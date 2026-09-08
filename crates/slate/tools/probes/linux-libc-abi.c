@@ -9,6 +9,7 @@
 #include <crypt.h>
 #define SLATE_PROBE_HAVE_CRYPT 1
 #endif
+#include <aio.h>
 #include <dirent.h>
 #include <dlfcn.h>
 #include <fcntl.h>
@@ -17,6 +18,9 @@
 #include <glob.h>
 #include <grp.h>
 #include <ifaddrs.h>
+#include <langinfo.h>
+#include <mntent.h>
+#include <mqueue.h>
 #include <netdb.h>
 #include <netinet/in.h>
 #include <poll.h>
@@ -24,6 +28,7 @@
 #include <pwd.h>
 #include <regex.h>
 #include <sched.h>
+#include <search.h>
 #include <semaphore.h>
 #include <setjmp.h>
 #include <signal.h>
@@ -44,8 +49,11 @@
 #include <sys/sysinfo.h>
 #include <sys/time.h>
 #include <sys/timeb.h>
+#include <sys/times.h>
 #include <sys/types.h>
 #include <sys/un.h>
+#include <sys/utsname.h>
+#include <sys/wait.h>
 #include <sys/auxv.h>
 #include <sys/user.h>
 #include <termios.h>
@@ -85,6 +93,7 @@
 #define OFFSET(name, type, field) \
   printf("offset\t%s.%s\t%zu\n", name, #field, offsetof(type, field))
 #define MACRO(name) printf("macro\t%s\t%ld\n", #name, (long)(name))
+#define MACRO_VALUE(label, expr) printf("macro\t%s\t%ld\n", label, (long)(expr))
 #define PRESENCE(name, value) printf("presence\t%s\t%d\n", name, value)
 
 static void emit_types(void) {
@@ -741,6 +750,105 @@ static void emit_odds_and_ends(void) {
   MACRO(GRND_NONBLOCK);
   MACRO(GRND_RANDOM);
   MACRO(GRND_INSECURE);
+
+  SIZE("struct_utsname", struct utsname);
+  ALIGN("struct_utsname", struct utsname);
+  OFFSET("struct_utsname", struct utsname, sysname);
+  OFFSET("struct_utsname", struct utsname, nodename);
+  OFFSET("struct_utsname", struct utsname, release);
+  OFFSET("struct_utsname", struct utsname, version);
+  OFFSET("struct_utsname", struct utsname, machine);
+  OFFSET("struct_utsname", struct utsname, domainname);
+
+  SIZE("struct_tms", struct tms);
+  ALIGN("struct_tms", struct tms);
+  OFFSET("struct_tms", struct tms, tms_utime);
+  OFFSET("struct_tms", struct tms, tms_stime);
+  OFFSET("struct_tms", struct tms, tms_cutime);
+  OFFSET("struct_tms", struct tms, tms_cstime);
+
+  SIZE("struct_mntent", struct mntent);
+  ALIGN("struct_mntent", struct mntent);
+  OFFSET("struct_mntent", struct mntent, mnt_fsname);
+  OFFSET("struct_mntent", struct mntent, mnt_dir);
+  OFFSET("struct_mntent", struct mntent, mnt_type);
+  OFFSET("struct_mntent", struct mntent, mnt_opts);
+  OFFSET("struct_mntent", struct mntent, mnt_freq);
+  OFFSET("struct_mntent", struct mntent, mnt_passno);
+
+  SIZE("ENTRY", ENTRY);
+  ALIGN("ENTRY", ENTRY);
+  OFFSET("ENTRY", ENTRY, key);
+  OFFSET("ENTRY", ENTRY, data);
+}
+
+static void emit_aio_mqueue(void) {
+  SIZE("struct_aiocb", struct aiocb);
+  ALIGN("struct_aiocb", struct aiocb);
+  OFFSET("struct_aiocb", struct aiocb, aio_fildes);
+  OFFSET("struct_aiocb", struct aiocb, aio_lio_opcode);
+  OFFSET("struct_aiocb", struct aiocb, aio_reqprio);
+  OFFSET("struct_aiocb", struct aiocb, aio_buf);
+  OFFSET("struct_aiocb", struct aiocb, aio_nbytes);
+  OFFSET("struct_aiocb", struct aiocb, aio_sigevent);
+  OFFSET("struct_aiocb", struct aiocb, aio_offset);
+
+  SIZE("struct_mq_attr", struct mq_attr);
+  ALIGN("struct_mq_attr", struct mq_attr);
+  OFFSET("struct_mq_attr", struct mq_attr, mq_flags);
+  OFFSET("struct_mq_attr", struct mq_attr, mq_maxmsg);
+  OFFSET("struct_mq_attr", struct mq_attr, mq_msgsize);
+  OFFSET("struct_mq_attr", struct mq_attr, mq_curmsgs);
+}
+
+static void emit_wait_mman_langinfo(void) {
+  MACRO(WNOHANG);
+  MACRO(WUNTRACED);
+  MACRO_VALUE("WIFEXITED(0)", WIFEXITED(0));
+  MACRO_VALUE("WIFEXITED(256)", WIFEXITED(256));
+  MACRO_VALUE("WEXITSTATUS(256)", WEXITSTATUS(256));
+  MACRO_VALUE("WIFSIGNALED(9)", WIFSIGNALED(9));
+  MACRO_VALUE("WTERMSIG(9)", WTERMSIG(9));
+  MACRO_VALUE("WIFSTOPPED(0x137f)", WIFSTOPPED(0x137f));
+  MACRO_VALUE("WSTOPSIG(0x137f)", WSTOPSIG(0x137f));
+  MACRO_VALUE("WCOREDUMP(0x80)", WCOREDUMP(0x80));
+
+  MACRO(MAP_SHARED);
+  MACRO(MAP_FIXED);
+  MACRO(MAP_ANONYMOUS);
+  MACRO(MAP_NORESERVE);
+  MACRO(MAP_GROWSDOWN);
+  MACRO(MAP_DENYWRITE);
+  MACRO(MAP_EXECUTABLE);
+  MACRO(MAP_LOCKED);
+  MACRO(MAP_POPULATE);
+  MACRO(MAP_NONBLOCK);
+  MACRO(MAP_STACK);
+  MACRO(MAP_HUGETLB);
+  MACRO(PROT_NONE);
+  MACRO(PROT_READ);
+  MACRO(PROT_WRITE);
+  MACRO(PROT_EXEC);
+  MACRO(PROT_GROWSDOWN);
+  MACRO(PROT_GROWSUP);
+
+  MACRO(CODESET);
+  MACRO(D_T_FMT);
+  MACRO(D_FMT);
+  MACRO(T_FMT);
+  MACRO(T_FMT_AMPM);
+  MACRO(ABDAY_1);
+  MACRO(DAY_1);
+  MACRO(ABMON_1);
+  MACRO(MON_1);
+  MACRO(AM_STR);
+  MACRO(PM_STR);
+  MACRO(RADIXCHAR);
+  MACRO(THOUSEP);
+  MACRO(YESEXPR);
+  MACRO(NOEXPR);
+  MACRO(ERA);
+  MACRO(CRNCYSTR);
 }
 
 static void emit_threads(void) {
@@ -802,6 +910,10 @@ int main(void) {
   emit_registers();
   emit_hwcap();
   emit_odds_and_ends();
+#if defined(__SLATE_LIBC_GLIBC) || defined(__SLATE_LIBC_MUSL)
+  emit_aio_mqueue();
+  emit_wait_mman_langinfo();
+#endif
   emit_threads();
   emit_macros();
   return 0;
