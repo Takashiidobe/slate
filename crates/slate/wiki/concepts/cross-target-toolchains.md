@@ -84,6 +84,23 @@ python3 tools/libc-abi-matrix.py --libc glibc --arch i386 --family stat-time
 Available ABI families are `pthread`, `setjmp-ucontext`, `socket-epoll`,
 `sched`, and `stat-time`.
 
+The matrix runs as part of `cargo nextest r --release --profile libc`
+(`tests/libc_abi_matrix_suite.rs`), unrestricted by default since the full
+matrix finishes in a couple of seconds. Narrow it to one target/libc/family
+during local iteration with `SLATE_LIBC_ABI_LIBC`, `SLATE_LIBC_ABI_ARCH`, and
+`SLATE_LIBC_ABI_FAMILY` (comma-separated for `--arch`/`--family` repeats),
+which map onto the script's own flags:
+
+```bash
+SLATE_LIBC_ABI_LIBC=musl SLATE_LIBC_ABI_ARCH=aarch64 SLATE_LIBC_ABI_FAMILY=pthread \
+  cargo nextest r --release --profile libc -E 'test(libc_abi_matrix)'
+```
+
+A failure panics with the full captured stdout/stderr, which includes every
+per-record `FAIL name: oracle=... candidate=...` line from the matrix script
+so the first ABI/declaration mismatch is visible directly in the test output,
+not just a compilation failure.
+
 The local defaults are `/` for x86-64 and i386, the checked-in ARM GNU
 toolchain's libc directory for ARM32, and `/usr/aarch64-linux-gnu` for
 AArch64. For non-native glibc targets, set the matching linker using either
