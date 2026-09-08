@@ -2,6 +2,7 @@
 #error "Never include <bits/arm/hwcap.h> directly; include a public header instead."
 #endif
 
+#if defined(__SLATE_LIBC_MUSL)
 #define HWCAP_SWP       (1 << 0)
 #define HWCAP_HALF      (1 << 1)
 #define HWCAP_THUMB     (1 << 2)
@@ -25,6 +26,7 @@
 #define HWCAP_IDIV      (HWCAP_IDIVA | HWCAP_IDIVT)
 #define HWCAP_LPAE      (1 << 20)
 #define HWCAP_EVTSTRM   (1 << 21)
+#endif
 
 #define HWCAP2_AES   (1 << 0)
 #define HWCAP2_PMULL (1 << 1)
