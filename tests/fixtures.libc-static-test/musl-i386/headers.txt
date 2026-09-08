@@ -2,3 +2,4 @@ strings.h
 assert.h
 float.h
 ctype.h
+errno.h
