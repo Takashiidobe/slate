@@ -31,25 +31,34 @@ struct msghdr {
   void         *msg_name;
   socklen_t     msg_namelen;
   struct iovec *msg_iov;
-#if defined(__SLATE_WORDSIZE_64)
+#if defined(__SLATE_LIBC_GLIBC) && defined(__SLATE_WORDSIZE_64)
   size_t msg_iovlen;
 #else
   int msg_iovlen;
+#if defined(__SLATE_WORDSIZE_64) && defined(__SLATE_ENDIAN_LITTLE)
+  int __slate_msg_iovlen_pad;
+#endif
 #endif
   void *msg_control;
-#if defined(__SLATE_WORDSIZE_64)
+#if defined(__SLATE_LIBC_GLIBC) && defined(__SLATE_WORDSIZE_64)
   size_t msg_controllen;
 #else
   socklen_t msg_controllen;
+#if defined(__SLATE_WORDSIZE_64) && defined(__SLATE_ENDIAN_LITTLE)
+  int __slate_msg_controllen_pad;
+#endif
 #endif
   int msg_flags;
 };
 
 struct cmsghdr {
-#if defined(__SLATE_WORDSIZE_64)
+#if defined(__SLATE_LIBC_GLIBC) && defined(__SLATE_WORDSIZE_64)
   size_t cmsg_len;
 #else
   socklen_t cmsg_len;
+#if defined(__SLATE_WORDSIZE_64) && defined(__SLATE_ENDIAN_LITTLE)
+  int __slate_cmsg_len_pad;
+#endif
 #endif
   int cmsg_level;
   int cmsg_type;

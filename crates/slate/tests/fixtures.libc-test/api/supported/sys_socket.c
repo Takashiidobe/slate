@@ -24,9 +24,17 @@ static void f() {
     F(void *, msg_name)
     F(socklen_t, msg_namelen)
     F(struct iovec *, msg_iov)
+#if defined(__SLATE_LIBC_GLIBC) && defined(__SLATE_WORDSIZE_64)
+    F(size_t, msg_iovlen)
+#else
     F(int, msg_iovlen)
+#endif
     F(void *, msg_control)
+#if defined(__SLATE_LIBC_GLIBC) && defined(__SLATE_WORDSIZE_64)
+    F(size_t, msg_controllen)
+#else
     F(socklen_t, msg_controllen)
+#endif
     F(int, msg_flags)
   }
   {
@@ -36,7 +44,11 @@ static void f() {
   }
   {
     struct cmsghdr x;
+#if defined(__SLATE_LIBC_GLIBC) && defined(__SLATE_WORDSIZE_64)
+    F(size_t, cmsg_len)
+#else
     F(socklen_t, cmsg_len)
+#endif
     F(int, cmsg_level)
     F(int, cmsg_type)
   }
