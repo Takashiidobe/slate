@@ -315,6 +315,7 @@ pub struct ProbeConfig {
     pub runner: Option<PathBuf>,
     pub runner_args: Vec<String>,
     pub defines: Vec<String>,
+    pub can_execute: bool,
 }
 
 pub fn resolve(arch: Architecture, libc: LibcVariant) -> Result<ProbeConfig, String> {
@@ -564,7 +565,7 @@ pub fn resolve(arch: Architecture, libc: LibcVariant) -> Result<ProbeConfig, Str
     };
 
     let runner = match libc {
-        LibcVariant::Darwin => None,
+        LibcVariant::Darwin | LibcVariant::FreeBsd => None,
         _ => qemu_for(arch)?,
     };
     let runner_args = runner
@@ -584,6 +585,7 @@ pub fn resolve(arch: Architecture, libc: LibcVariant) -> Result<ProbeConfig, Str
         runner,
         runner_args,
         defines,
+        can_execute: libc != LibcVariant::FreeBsd,
     })
 }
 
@@ -632,14 +634,18 @@ fn parse_probe_output(output: &str) -> Result<BTreeMap<String, i64>, String> {
     Ok(records)
 }
 
-pub fn run_probe(config: &ProbeConfig, shim: bool) -> Result<BTreeMap<String, i64>, String> {
-    let work_dir = Path::new(env!("CARGO_MANIFEST_DIR"))
+fn probe_work_dir(config: &ProbeConfig, shim: bool) -> PathBuf {
+    Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("target/libc-abi-probe")
         .join(format!(
             "{}-{}",
             config.label.replace('/', "-"),
             if shim { "shim" } else { "oracle" }
-        ));
+        ))
+}
+
+pub fn compile_and_link_probe(config: &ProbeConfig, shim: bool) -> Result<PathBuf, String> {
+    let work_dir = probe_work_dir(config, shim);
     std::fs::create_dir_all(&work_dir)
         .map_err(|error| format!("create {}: {error}", work_dir.display()))?;
 
@@ -668,6 +674,12 @@ pub fn run_probe(config: &ProbeConfig, shim: bool) -> Result<BTreeMap<String, i6
     link.args(&config.linker_post_args);
     link.arg("-o").arg(&executable);
     run_command(link, &format!("link probe ({})", config.label))?;
+
+    Ok(executable)
+}
+
+pub fn run_probe(config: &ProbeConfig, shim: bool) -> Result<BTreeMap<String, i64>, String> {
+    let executable = compile_and_link_probe(config, shim)?;
 
     let run = if let Some(runner) = &config.runner {
         let mut cmd = Command::new(runner);

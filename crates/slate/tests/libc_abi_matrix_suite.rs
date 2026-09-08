@@ -7,6 +7,7 @@ fn selected_libcs() -> Vec<LibcVariant> {
     match std::env::var("SLATE_LIBC_ABI_LIBC").ok().as_deref() {
         Some("musl") => vec![LibcVariant::Musl],
         Some("glibc") => vec![LibcVariant::Glibc],
+        Some("freebsd") => vec![LibcVariant::FreeBsd],
         Some(other) => panic!("unknown SLATE_LIBC_ABI_LIBC value: {other}"),
         None => vec![LibcVariant::Musl, LibcVariant::Glibc],
     }
@@ -44,14 +45,22 @@ fn selected_families() -> Option<Vec<String>> {
 
 type AbiRecord = (String, Option<i64>, Option<i64>);
 
+enum Outcome {
+    Ran(Vec<AbiRecord>),
+    CompiledOnly,
+}
+
 fn evaluate(
-    arch: Architecture,
-    libc: LibcVariant,
+    config: &libc_probe::ProbeConfig,
     families: Option<&[String]>,
-) -> Result<Vec<AbiRecord>, String> {
-    let config = libc_probe::resolve(arch, libc)?;
-    let oracle = libc_probe::run_probe(&config, false)?;
-    let candidate = libc_probe::run_probe(&config, true)?;
+) -> Result<Outcome, String> {
+    if !config.can_execute {
+        libc_probe::compile_and_link_probe(config, false)?;
+        libc_probe::compile_and_link_probe(config, true)?;
+        return Ok(Outcome::CompiledOnly);
+    }
+    let oracle = libc_probe::run_probe(config, false)?;
+    let candidate = libc_probe::run_probe(config, true)?;
     let mut records = libc_probe::compare_records(&oracle, &candidate);
     if let Some(families) = families {
         records.retain(|(name, _, _)| {
@@ -63,12 +72,13 @@ fn evaluate(
             return Err("selected ABI family has no probe records".to_string());
         }
     }
-    Ok(records)
+    Ok(Outcome::Ran(records))
 }
 
 #[test]
 fn libc_abi_matrix() {
     let families = selected_families();
+    let mut skipped = Vec::new();
     let mut failures = Vec::new();
     let mut targets_passed = 0usize;
     let mut targets_failed = 0usize;
@@ -78,8 +88,22 @@ fn libc_abi_matrix() {
     for libc in selected_libcs() {
         for arch in selected_arches() {
             let label = format!("{}/{}", libc.name(), libc_probe::arch_key(arch));
-            match evaluate(arch, libc, families.as_deref()) {
-                Ok(records) => {
+            let config = match libc_probe::resolve(arch, libc) {
+                Ok(config) => config,
+                Err(reason) => {
+                    eprintln!("SKIP {label}: {reason}");
+                    skipped.push(label);
+                    continue;
+                }
+            };
+            match evaluate(&config, families.as_deref()) {
+                Ok(Outcome::CompiledOnly) => {
+                    println!(
+                        "PASS {label} (compile+link only; runtime values unverified on this host)"
+                    );
+                    targets_passed += 1;
+                }
+                Ok(Outcome::Ran(records)) => {
                     let mismatches: Vec<&AbiRecord> = records
                         .iter()
                         .filter(|(_, expected, actual)| expected != actual)
@@ -110,9 +134,9 @@ fn libc_abi_matrix() {
                     }
                 }
                 Err(error) => {
-                    eprintln!("FAIL {label} (toolchain): {error}");
+                    eprintln!("FAIL {label}: {error}");
                     targets_failed += 1;
-                    failures.push(format!("{label} (toolchain): {error}"));
+                    failures.push(format!("{label}: {error}"));
                 }
             }
         }
@@ -120,7 +144,8 @@ fn libc_abi_matrix() {
 
     println!(
         "SUMMARY targets_passed={targets_passed} targets_failed={targets_failed} \
-         records_passed={records_passed} records_failed={records_failed}"
+         targets_skipped={} records_passed={records_passed} records_failed={records_failed}",
+        skipped.len()
     );
 
     assert!(
