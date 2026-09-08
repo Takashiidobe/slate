@@ -7,6 +7,7 @@ default-filter = '''
   + binary_id(=slate::header_compilation)
   + binary_id(=slate::libc_abi_matrix_suite)
   + binary_id(=slate::libc_declaration_probe)
+  + binary_id(=slate::libc_declaration_matrix_suite)
   + binary_id(=slate::libc_runtime_matrix_suite)
 '''
 

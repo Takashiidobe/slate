@@ -453,7 +453,7 @@ fn parse_macro_definition(
         parameters,
         replacement: replacement.to_string(),
         definition_file: definition_file.to_string(),
-        private: name.starts_with("__"),
+        private: name.starts_with('_'),
     })
 }
 
@@ -939,7 +939,7 @@ pub fn render_type_surface_probe(
 ) -> Result<String, String> {
     let mut checks = Vec::new();
     for typedef in &surface.typedefs {
-        if !typedef.name.starts_with("__") && simple_type(&typedef.underlying_type) {
+        if !typedef.name.starts_with('_') && simple_type(&typedef.underlying_type) {
             let oracle_name = format!("slate_oracle_typedef_{}", identifier(&typedef.name));
             checks.push(format!(
                 "typedef {} {oracle_name};\n_Static_assert(__builtin_types_compatible_p({oracle_name}, {}), \"typedef {} differs from oracle\");",
@@ -948,6 +948,9 @@ pub fn render_type_surface_probe(
         }
     }
     for record in &surface.records {
+        if record.tag.starts_with('_') {
+            continue;
+        }
         let tag = if record.is_union { "union" } else { "struct" };
         if let Some(size) = record.size {
             checks.push(format!("_Static_assert(sizeof({tag} {}) == {size}, \"{tag} {} size differs from oracle\");", record.tag, record.tag));
@@ -974,7 +977,13 @@ pub fn render_type_surface_probe(
         }
     }
     for enumeration in &surface.enums {
+        if enumeration.tag.starts_with('_') {
+            continue;
+        }
         for enumerator in &enumeration.enumerators {
+            if enumerator.name.starts_with('_') {
+                continue;
+            }
             if simple_type(&enumerator.type_spelling) {
                 checks.push(format!(
                     "_Static_assert(__builtin_types_compatible_p(__typeof__({}), __typeof__(({})0)), \"enum {} type differs from oracle\");",
@@ -1011,6 +1020,70 @@ pub fn write_type_surface_probe(
     Ok(GeneratedProbe {
         object: output_dir.join("shim-type-surface.o"),
         executable: output_dir.join("shim-type-surface"),
+        source,
+    })
+}
+
+fn probe_body(source: String, header: &str) -> String {
+    let prefix = format!("#include <{header}>\n\n");
+    source
+        .strip_prefix(&prefix)
+        .unwrap_or(&source)
+        .strip_suffix("\n\nint main(void) { return 0; }\n")
+        .unwrap_or(&source)
+        .to_string()
+}
+
+pub fn write_header_matrix_probe(
+    header: &str,
+    functions: &[OracleFunction],
+    objects: &[OracleObject],
+    surface: &OracleTypeSurface,
+    macros: &[OracleMacro],
+    output_dir: &Path,
+) -> Result<GeneratedProbe, String> {
+    let mut bodies = Vec::new();
+    let public_functions: Vec<_> = functions
+        .iter()
+        .filter(|function| !function.name.starts_with('_'))
+        .cloned()
+        .collect();
+    if !public_functions.is_empty() {
+        bodies.push(probe_body(
+            render_header_shim_probe(&public_functions)?,
+            header,
+        ));
+    }
+    for object in objects {
+        if !object.name.starts_with('_')
+            && let Ok(source) = render_object_probe(object)
+        {
+            bodies.push(probe_body(source, header));
+        }
+    }
+    if let Ok(source) = render_type_surface_probe(header, surface) {
+        bodies.push(probe_body(source, header));
+    }
+    if let Ok(source) = render_header_macro_presence_probe(macros) {
+        bodies.push(probe_body(source, header));
+    }
+    if bodies.is_empty() {
+        return Err(format!("{header} has no matrix probe strategy"));
+    }
+    std::fs::create_dir_all(output_dir)
+        .map_err(|error| format!("create {}: {error}", output_dir.display()))?;
+    let source = output_dir.join("shim-header-matrix.c");
+    std::fs::write(
+        &source,
+        format!(
+            "#include <{header}>\n\n{}\n\nint main(void) {{ return 0; }}\n",
+            bodies.join("\n\n")
+        ),
+    )
+    .map_err(|error| format!("write {}: {error}", source.display()))?;
+    Ok(GeneratedProbe {
+        object: output_dir.join("shim-header-matrix.o"),
+        executable: output_dir.join("shim-header-matrix"),
         source,
     })
 }
