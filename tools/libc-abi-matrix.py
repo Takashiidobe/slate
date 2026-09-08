@@ -30,7 +30,7 @@ TARGETS = {
         "wordsize_define": "__SLATE_WORDSIZE_32",
         "compiler_args": ["-m32"],
         "musl_linker": "musl-clang",
-        "qemu": "qemu-i386-static",
+        "qemu": None,
     },
     "arm": {
         "musl_target": "arm-linux-musleabihf",
@@ -50,6 +50,24 @@ TARGETS = {
         "musl_linker": "musl-gcc",
         "qemu": "qemu-aarch64-static",
     },
+}
+
+LOCAL_GLIBC_SYSROOTS = {
+    "x86_64": Path("/"),
+    "i386": Path("/"),
+    "arm": Path.home()
+    / "toolchains/arm-gnu-toolchain-15.2.rel1-x86_64-arm-none-linux-gnueabihf"
+    / "arm-none-linux-gnueabihf/libc",
+    "aarch64": Path("/usr/aarch64-linux-gnu"),
+}
+
+LOCAL_GLIBC_LINKERS = {
+    "x86_64": None,
+    "i386": "clang",
+    "arm": Path.home()
+    / "toolchains/arm-gnu-toolchain-15.2.rel1-x86_64-arm-none-linux-gnueabihf"
+    / "bin/arm-none-linux-gnueabihf-gcc",
+    "aarch64": Path("/usr/bin/aarch64-linux-gnu-gcc"),
 }
 
 
@@ -155,7 +173,7 @@ def config(name, libc, slate_clang, musl_root):
         }
         sysroot_value = next(
             (os.environ[name] for name in sysroot_names[name] if os.environ.get(name)),
-            None,
+            LOCAL_GLIBC_SYSROOTS[name],
         )
         sysroot = require_dir(
             env_path(sysroot_names[name][0], sysroot_value),
@@ -171,7 +189,7 @@ def config(name, libc, slate_clang, musl_root):
         }
         linker_env = next(
             (os.environ[name] for name in linker_names[name] if os.environ.get(name)),
-            None,
+            LOCAL_GLIBC_LINKERS[name],
         )
         if linker_env:
             linker = require_executable(linker_env, f"glibc {name} linker")
@@ -179,7 +197,7 @@ def config(name, libc, slate_clang, musl_root):
             linker_post_args = []
         elif name == "x86_64":
             linker = slate_clang
-            linker_args = [f"--target={target_triple}", f"--sysroot={sysroot}", "-static"]
+            linker_args = [f"--target={target_triple}", f"--sysroot={sysroot}"]
             linker_post_args = []
         else:
             raise RuntimeError(

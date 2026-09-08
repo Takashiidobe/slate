@@ -62,8 +62,9 @@ python3 tools/libc-abi-matrix.py --libc musl
 ```
 
 The matrix compiles both oracle and shim probes with `SLATE_CLANG`, links with
-the target libc wrapper, and runs cross-target binaries through QEMU. Glibc
-sysroots are intentionally required explicitly:
+the target libc wrapper, and runs cross-target binaries through QEMU where
+needed. On this development host, the runner has defaults for the installed
+glibc sysroots and linkers. Environment variables override those defaults:
 
 ```bash
 export SLATE_GLIBC_SYSROOT_X86_64=/path/to/x86_64/sysroot
@@ -73,10 +74,16 @@ export SLATE_GLIBC_SYSROOT_AARCH64=/path/to/aarch64/sysroot
 python3 tools/libc-abi-matrix.py --libc glibc
 ```
 
-The runner never substitutes the host sysroot for an unset target sysroot.
-For non-native glibc targets, set the matching linker as well, using either
+The local defaults are `/` for x86-64 and i386, the checked-in ARM GNU
+toolchain's libc directory for ARM32, and `/usr/aarch64-linux-gnu` for
+AArch64. For non-native glibc targets, set the matching linker using either
 the `SLATE_GLIBC_LINKER_*` name or the existing target linker variable such as
-`SLATE_ARM_LINKER` or `SLATE_AARCH64_LINKER`.
+`SLATE_ARM_LINKER` or `SLATE_AARCH64_LINKER` when using a different machine.
+
+The x86-64 glibc probe uses dynamic linking when the sysroot does not provide
+static `libc.a`; static linking is not required for an ABI oracle. i686 probes
+can execute natively on an x86-64 Linux kernel, so the matrix does not route
+them through QEMU. ARM32 and AArch64 still require QEMU for execution.
 
 ## Target matrix
 
@@ -84,7 +91,7 @@ the `SLATE_GLIBC_LINKER_*` name or the existing target linker variable such as
 | --- | --- | --- | --- | --- | --- |
 | ARM32 GNU hard-float | `armv7-linux-gnueabihf` | `armv7-unknown-linux-gnueabihf` | `arm-none-linux-gnueabihf-gcc` or distro equivalent | `qemu-arm-static` | implemented |
 | AArch64 GNU | `aarch64-linux-gnu` | `aarch64-unknown-linux-gnu` | `aarch64-linux-gnu-gcc` | `qemu-aarch64-static` | implemented |
-| i686 GNU | `i686-linux-gnu` | `i686-unknown-linux-gnu` | Clang with `-m32` | `qemu-i386-static` or native execution | implemented |
+| i686 GNU | `i686-linux-gnu` | `i686-unknown-linux-gnu` | Clang with `-m32` | native execution | implemented |
 
 The i686 target is 32-bit x86 (`target_arch = "x86"`), not x86-64's x32
 ABI. The Rust target and the Clang target must both select the ordinary i386
