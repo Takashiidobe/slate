@@ -876,8 +876,7 @@ pub fn compile_rs_batch(cases: &[RustCase], work_dir: &Path) -> Vec<(String, Res
     })
 }
 
-/// Write one crate with a `src/bin/<name>.rs` per case and build them together.
-fn build_batch(
+pub fn build_batch(
     cases: &[RustCase],
     project: &Path,
     bin_dir: &Path,

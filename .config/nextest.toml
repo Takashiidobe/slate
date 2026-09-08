@@ -6,6 +6,7 @@ default-filter = '''
   + binary_id(=slate::libc_test_regression_suite)
   + binary_id(=slate::header_compilation)
   + binary_id(=slate::libc_abi_matrix_suite)
+  + binary_id(=slate::libc_runtime_matrix_suite)
 '''
 
 [profile.rewrites]
@@ -17,6 +18,7 @@ default-filter = '''
     + binary_id(=slate::libc_test_regression_suite)
     + binary_id(=slate::header_compilation)
     + binary_id(=slate::libc_abi_matrix_suite)
+    + binary_id(=slate::libc_runtime_matrix_suite)
     + binary_id(=slate::differential_aarch64)
     + binary_id(=slate::differential_arm)
     + binary_id(=slate::differential_i686)
