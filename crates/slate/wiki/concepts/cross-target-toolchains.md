@@ -14,6 +14,29 @@ The sysroot is part of the ABI contract. Do not use host headers or libraries
 as a substitute for the target sysroot: a successful link against the wrong
 libc can still produce a binary with incorrect layouts or symbol behavior.
 
+## Musl oracle sysroots
+
+The libc ABI probes use a real target musl installation rather than the musl
+source tree or the host libc. Build the four supported musl targets with:
+
+```bash
+SLATE_MUSL_SYSROOT_ROOT="$HOME/toolchains/slate-musl" \
+SLATE_MUSL_BUILD_ROOT="$HOME/toolchains/slate-musl/build" \
+./tools/bootstrap-musl-sysroots.sh
+```
+
+The script builds x86-64, i686, ARM32 hard-float, and AArch64 sysroots under
+`$SLATE_MUSL_SYSROOT_ROOT/{x86_64,i386,arm,aarch64}`. It records the musl
+revision and compiler in `.slate-musl-target`, and refuses to reuse a build
+directory after its source or compiler changes. Override `MUSL_SOURCE`,
+`SLATE_MUSL_ARM_CC`, or `SLATE_MUSL_AARCH64_CC` when the local toolchain is in
+a nonstandard location.
+
+These are the musl oracle inputs for libc-shim probes. Glibc probes must use
+the corresponding real glibc target sysroots; neither libc is a substitute for
+the other. Compile-only probes require the headers and libraries, while runtime
+differential tests additionally require the target loader and QEMU.
+
 ## Target matrix
 
 | Target | Clang triple | Rust target | Linker | QEMU | Slate status |
