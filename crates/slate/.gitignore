@@ -5,6 +5,7 @@ diagnostics
 __pycache__/
 
 /tools/macro-dump-plugin/build/
+*.so
 
 # Beads / Dolt files (added by bd init)
 .dolt/

@@ -862,11 +862,14 @@ static void emit_threads(void) {
   SIZE("pthread_rwlock_t", pthread_rwlock_t);
   SIZE("pthread_rwlockattr_t", pthread_rwlockattr_t);
   SIZE("pthread_once_t", pthread_once_t);
+  SIZE("pthread_barrier_t", pthread_barrier_t);
+  SIZE("pthread_barrierattr_t", pthread_barrierattr_t);
   SIZE("sem_t", sem_t);
   SIZE("struct_sched_param", struct sched_param);
   ALIGN("pthread_t", pthread_t);
   ALIGN("pthread_mutex_t", pthread_mutex_t);
   ALIGN("pthread_cond_t", pthread_cond_t);
+  ALIGN("pthread_barrier_t", pthread_barrier_t);
   ALIGN("sem_t", sem_t);
 }
 

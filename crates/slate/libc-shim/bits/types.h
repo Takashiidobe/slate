@@ -443,9 +443,17 @@ typedef union {
 } __pthread_rwlock_t;
 #endif
 
-typedef struct {
-  char __size[32];
+#if defined(__SLATE_ARCH_X86) || defined(__SLATE_ARCH_ARM)
+typedef union {
+  char __size[20];
+  long __align;
 } __pthread_barrier_t;
+#else
+typedef union {
+  char __size[32];
+  long __align;
+} __pthread_barrier_t;
+#endif
 
 typedef int __pthread_once_t;
 
@@ -478,10 +486,17 @@ typedef union {
   long __align;
 } __pthread_rwlockattr_t;
 
+#if defined(__SLATE_LIBC_GLIBC) && defined(__SLATE_ARCH_AARCH64)
+typedef union {
+  char __size[8];
+  long __align;
+} __pthread_barrierattr_t;
+#else
 typedef union {
   char __size[4];
   int  __align;
 } __pthread_barrierattr_t;
+#endif
 
 typedef volatile int __pthread_spinlock_t;
 
