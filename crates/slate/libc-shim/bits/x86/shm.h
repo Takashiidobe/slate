@@ -4,6 +4,23 @@
 
 #define SHMLBA 4096
 
+#if defined(__SLATE_LIBC_GLIBC)
+struct shmid_ds {
+  struct ipc_perm shm_perm;
+  size_t          shm_segsz;
+  time_t          shm_atime;
+  unsigned long   __shm_atime_high;
+  time_t          shm_dtime;
+  unsigned long   __shm_dtime_high;
+  time_t          shm_ctime;
+  unsigned long   __shm_ctime_high;
+  pid_t           shm_cpid;
+  pid_t           shm_lpid;
+  unsigned long   shm_nattch;
+  unsigned long   __glibc_reserved5;
+  unsigned long   __glibc_reserved6;
+};
+#else
 struct shmid_ds {
   struct ipc_perm shm_perm;
   size_t          shm_segsz;
@@ -23,6 +40,7 @@ struct shmid_ds {
   time_t          shm_dtime;
   time_t          shm_ctime;
 };
+#endif
 
 struct shminfo {
   unsigned long shmmax, shmmin, shmmni, shmseg, shmall, __unused[4];

@@ -2,6 +2,18 @@
 #error "Never include <bits/arm/sem.h> directly; include a public header instead."
 #endif
 
+#if defined(__SLATE_LIBC_GLIBC)
+struct semid_ds {
+  struct ipc_perm sem_perm;
+  time_t          sem_otime;
+  unsigned long   __sem_otime_high;
+  time_t          sem_ctime;
+  unsigned long   __sem_ctime_high;
+  unsigned long   sem_nsems;
+  unsigned long   __glibc_reserved3;
+  unsigned long   __glibc_reserved4;
+};
+#else
 struct semid_ds {
   struct ipc_perm sem_perm;
   unsigned long   __sem_otime_lo;
@@ -20,3 +32,4 @@ struct semid_ds {
   time_t sem_otime;
   time_t sem_ctime;
 };
+#endif

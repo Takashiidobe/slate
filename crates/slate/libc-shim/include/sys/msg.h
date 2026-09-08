@@ -16,7 +16,9 @@ typedef unsigned long msglen_t;
 
 #include <bits/msg.h>
 
+#if !defined(__SLATE_LIBC_GLIBC)
 #define __msg_cbytes msg_cbytes
+#endif
 
 #define MSG_NOERROR 010000
 #define MSG_EXCEPT  020000
