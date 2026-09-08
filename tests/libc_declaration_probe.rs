@@ -4,8 +4,11 @@ use std::path::Path;
 
 use support::libc_declaration_probe::{
     compile_and_link_shim_probe, extract_oracle_function, extract_oracle_header_functions,
-    extract_oracle_header_macros, write_header_macro_presence_probe, write_header_shim_probe,
-    write_oracle_declarations, write_oracle_macro_manifest, write_shim_probe,
+    extract_oracle_header_macros, extract_oracle_header_objects, extract_oracle_type_surface,
+    select_oracle_object_macro_value_probes, write_header_macro_presence_probe,
+    write_header_object_macro_value_probe, write_header_shim_probe, write_object_macro_value_probe,
+    write_object_probe, write_oracle_declarations, write_oracle_macro_manifest,
+    write_oracle_type_manifest, write_shim_probe, write_type_surface_probe,
 };
 use support::libc_probe::{arch_from_key, resolve};
 use support::libc_shim::{Architecture, LibcVariant};
@@ -159,6 +162,24 @@ fn verify_oracle_header_macro_presence() {
 }
 
 #[test]
+#[ignore = "manual oracle header macro value probe"]
+fn verify_oracle_header_macro_values() {
+    let (libc, config) = selected_config();
+    let header = selected_header();
+    let output = header_output(libc, &config, &header);
+    let macros = extract_oracle_header_macros(&config, &header, &output)
+        .expect("extract oracle header macros");
+    let selected = select_oracle_object_macro_value_probes(&config, &macros, &output)
+        .expect("classify oracle object macro value probes");
+    let probe = write_header_object_macro_value_probe(&selected, &output)
+        .expect("write shim macro value probe");
+
+    println!("value-checked macros: {}", selected.len());
+    println!("generated: {}", probe.source.display());
+    compile_and_link_shim_probe(&config, &probe).expect("verify shim macro types and values");
+}
+
+#[test]
 fn fcntl_header_macros_are_collected_from_glibc_oracle() {
     let libc = LibcVariant::Glibc;
     let header = "fcntl.h";
@@ -180,4 +201,70 @@ fn fcntl_header_macros_are_collected_from_glibc_oracle() {
     assert_eq!(o_rdonly.replacement, "00");
     assert!(!o_rdonly.private);
     assert!(o_rdonly.definition_file.ends_with("fcntl-linux.h"));
+    let probe =
+        write_object_macro_value_probe(o_rdonly, &output).expect("write O_RDONLY value probe");
+    compile_and_link_shim_probe(&config, &probe).expect("verify O_RDONLY macro type and value");
+}
+
+#[test]
+fn fcntl_header_type_surface_is_collected_from_glibc_oracle() {
+    let libc = LibcVariant::Glibc;
+    let header = "fcntl.h";
+    let config = resolve(Architecture::X86_64, libc).expect("resolve glibc x86_64 oracle");
+    let output = header_output(libc, &config, header);
+    let surface = extract_oracle_type_surface(&config, header, &output)
+        .expect("extract fcntl.h type surface");
+    let manifest =
+        write_oracle_type_manifest(&surface, &output).expect("write fcntl.h type manifest");
+    assert!(manifest.is_file(), "type manifest was not written");
+    assert!(
+        surface
+            .typedefs
+            .iter()
+            .any(|typedef| typedef.name == "mode_t")
+    );
+    let flock = surface
+        .records
+        .iter()
+        .find(|record| record.tag == "flock")
+        .expect("fcntl.h oracle did not expose struct flock");
+    assert!(flock.fields.iter().any(|field| field.name == "l_type"));
+    assert!(
+        surface
+            .enums
+            .iter()
+            .any(|enumeration| enumeration.tag == "__pid_type")
+    );
+    let probe = write_type_surface_probe(header, &surface, &output)
+        .expect("write fcntl.h type surface probe");
+    assert!(probe.source.is_file(), "type surface probe was not written");
+}
+
+#[test]
+fn unistd_environ_object_matches_glibc_oracle() {
+    let libc = LibcVariant::Glibc;
+    let config = resolve(Architecture::X86_64, libc).expect("resolve glibc x86_64 oracle");
+    let output = header_output(libc, &config, "unistd.h");
+    let environ = extract_oracle_header_objects(&config, "unistd.h", &output)
+        .expect("extract unistd.h objects")
+        .into_iter()
+        .find(|object| object.name == "environ")
+        .expect("oracle environ object");
+    assert_eq!(environ.type_spelling, "char **");
+    let probe = write_object_probe(&environ, &output).expect("write environ probe");
+    compile_and_link_shim_probe(&config, &probe).expect("verify environ object");
+}
+
+#[test]
+#[ignore = "manual oracle type surface shim probe"]
+fn verify_oracle_header_type_surface() {
+    let (libc, config) = selected_config();
+    let header = selected_header();
+    let output = header_output(libc, &config, &header);
+    let surface = extract_oracle_type_surface(&config, &header, &output)
+        .expect("extract oracle type surface");
+    let probe = write_type_surface_probe(&header, &surface, &output)
+        .expect("write shim type surface probe");
+    println!("generated: {}", probe.source.display());
+    compile_and_link_shim_probe(&config, &probe).expect("verify shim type surface");
 }

@@ -41,6 +41,57 @@ pub struct OracleFunction {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+pub struct OracleObject {
+    pub header: String,
+    pub name: String,
+    pub type_spelling: String,
+    pub thread_local: bool,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct OracleTypedef {
+    pub name: String,
+    pub underlying_type: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct OracleField {
+    pub name: String,
+    pub type_spelling: String,
+    pub bit_width: Option<String>,
+    pub offset: Option<usize>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct OracleRecord {
+    pub tag: String,
+    pub is_union: bool,
+    pub fields: Vec<OracleField>,
+    pub size: Option<usize>,
+    pub align: Option<usize>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct OracleEnumerator {
+    pub name: String,
+    pub type_spelling: String,
+    pub value: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct OracleEnum {
+    pub tag: String,
+    pub enumerators: Vec<OracleEnumerator>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct OracleTypeSurface {
+    pub typedefs: Vec<OracleTypedef>,
+    pub records: Vec<OracleRecord>,
+    pub enums: Vec<OracleEnum>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct GeneratedProbe {
     pub source: PathBuf,
     pub object: PathBuf,
@@ -116,6 +167,116 @@ fn collect_type_aliases(node: &Value, aliases: &mut BTreeMap<String, String>) {
     }
 }
 
+fn type_spelling(node: &Value, aliases: &BTreeMap<String, String>) -> Option<String> {
+    node.pointer("/type/desugaredQualType")
+        .or_else(|| node.pointer("/type/qualType"))
+        .and_then(Value::as_str)
+        .map(|spelling| canonicalize_type(spelling, aliases))
+}
+
+fn constant_value(node: &Value) -> Option<String> {
+    node.get("value")
+        .and_then(Value::as_str)
+        .map(str::to_string)
+        .or_else(|| {
+            node.get("inner")
+                .and_then(Value::as_array)
+                .and_then(|children| children.iter().find_map(constant_value))
+        })
+}
+
+fn collect_type_surface(
+    node: &Value,
+    aliases: &BTreeMap<String, String>,
+    surface: &mut OracleTypeSurface,
+) {
+    match node.get("kind").and_then(Value::as_str) {
+        Some("TypedefDecl") => {
+            if let (Some(name), Some(underlying_type)) = (
+                node.get("name").and_then(Value::as_str),
+                type_spelling(node, aliases),
+            ) {
+                surface.typedefs.push(OracleTypedef {
+                    name: name.to_string(),
+                    underlying_type,
+                });
+            }
+        }
+        Some("RecordDecl")
+            if node.get("completeDefinition").and_then(Value::as_bool) == Some(true) =>
+        {
+            let Some(tag) = node
+                .get("name")
+                .and_then(Value::as_str)
+                .filter(|tag| !tag.is_empty())
+            else {
+                return;
+            };
+            let fields = node
+                .get("inner")
+                .and_then(Value::as_array)
+                .into_iter()
+                .flatten()
+                .filter(|child| child.get("kind").and_then(Value::as_str) == Some("FieldDecl"))
+                .filter_map(|field| {
+                    Some(OracleField {
+                        name: field.get("name")?.as_str()?.to_string(),
+                        type_spelling: type_spelling(field, aliases)?,
+                        bit_width: field
+                            .get("isBitfield")
+                            .and_then(Value::as_bool)
+                            .filter(|value| *value)
+                            .and_then(|_| constant_value(field)),
+                        offset: None,
+                    })
+                })
+                .collect();
+            surface.records.push(OracleRecord {
+                tag: tag.to_string(),
+                is_union: node.get("tagUsed").and_then(Value::as_str) == Some("union"),
+                fields,
+                size: None,
+                align: None,
+            });
+        }
+        Some("EnumDecl") => {
+            let Some(tag) = node
+                .get("name")
+                .and_then(Value::as_str)
+                .filter(|tag| !tag.is_empty())
+            else {
+                return;
+            };
+            let enumerators = node
+                .get("inner")
+                .and_then(Value::as_array)
+                .into_iter()
+                .flatten()
+                .filter(|child| {
+                    child.get("kind").and_then(Value::as_str) == Some("EnumConstantDecl")
+                })
+                .filter_map(|enumerator| {
+                    Some(OracleEnumerator {
+                        name: enumerator.get("name")?.as_str()?.to_string(),
+                        type_spelling: type_spelling(enumerator, aliases)?,
+                        value: constant_value(enumerator),
+                    })
+                })
+                .collect();
+            surface.enums.push(OracleEnum {
+                tag: tag.to_string(),
+                enumerators,
+            });
+        }
+        _ => {}
+    }
+    if let Some(children) = node.get("inner").and_then(Value::as_array) {
+        for child in children {
+            collect_type_surface(child, aliases, surface);
+        }
+    }
+}
+
 fn canonicalize_type(type_spelling: &str, aliases: &BTreeMap<String, String>) -> String {
     let mut result = String::new();
     let mut identifier = String::new();
@@ -156,6 +317,77 @@ fn header_ast(config: &ProbeConfig, header: &str, source: &Path) -> Result<Value
     let ast = command_output(command, &format!("extract oracle declaration {header}"))?;
     serde_json::from_str(&ast)
         .map_err(|error| format!("parse Clang oracle AST for {header}: {error}"))
+}
+
+fn record_layout_dump(config: &ProbeConfig, source: &Path) -> Result<String, String> {
+    let mut command = Command::new(&config.compiler);
+    command.args(&config.compiler_args);
+    command.arg(format!("--target={}", config.target));
+    command.arg(format!("--sysroot={}", config.sysroot.display()));
+    command.args([
+        "-std=gnu23",
+        "-D_GNU_SOURCE",
+        "-Xclang",
+        "-fdump-record-layouts-complete",
+        "-fsyntax-only",
+    ]);
+    command.args(&config.defines);
+    command.arg(source);
+    let output = command
+        .output()
+        .map_err(|error| format!("extract oracle record layouts: {error}"))?;
+    if !output.status.success() {
+        return Err(format!(
+            "extract oracle record layouts failed: {}",
+            String::from_utf8_lossy(&output.stderr)
+        ));
+    }
+    let mut dump = String::from_utf8_lossy(&output.stdout).into_owned();
+    dump.push_str(&String::from_utf8_lossy(&output.stderr));
+    Ok(dump)
+}
+
+fn merge_record_layouts(surface: &mut OracleTypeSurface, dump: &str) {
+    let mut current: Option<usize> = None;
+    for line in dump.lines() {
+        if let Some((left, right)) = line.split_once('|') {
+            let label = right.trim();
+            if let Some((is_union, tag)) = label
+                .strip_prefix("struct ")
+                .map(|tag| (false, tag))
+                .or_else(|| label.strip_prefix("union ").map(|tag| (true, tag)))
+            {
+                current = surface
+                    .records
+                    .iter()
+                    .position(|record| record.is_union == is_union && record.tag == tag);
+                continue;
+            }
+            if let Some(index) = current
+                && right.starts_with("   ")
+                && !right.starts_with("    ")
+                && let Some(name) = label.split_whitespace().last()
+                && let Ok(offset) = left.trim().split(':').next().unwrap_or_default().parse()
+                && let Some(field) = surface.records[index]
+                    .fields
+                    .iter_mut()
+                    .find(|field| field.name == name)
+            {
+                field.offset = Some(offset);
+            }
+        }
+        if let Some(index) = current
+            && let Some(layout) = line.trim().strip_prefix("| [sizeof=")
+            && let Some((size, align)) = layout
+                .strip_suffix(']')
+                .and_then(|text| text.split_once(", align="))
+            && let (Ok(size), Ok(align)) = (size.parse(), align.parse())
+        {
+            surface.records[index].size = Some(size);
+            surface.records[index].align = Some(align);
+            current = None;
+        }
+    }
 }
 
 fn header_preprocessor_output(
@@ -352,6 +584,152 @@ pub fn write_header_macro_presence_probe(
     })
 }
 
+fn render_object_macro_value_checks(macro_definition: &OracleMacro) -> Result<String, String> {
+    if macro_definition.private {
+        return Err(format!(
+            "{}:{} is private and has no public value probe",
+            macro_definition.header, macro_definition.name
+        ));
+    }
+    if macro_definition.kind != MacroKind::ObjectLike {
+        return Err(format!(
+            "{}:{} is function-like and needs a call strategy",
+            macro_definition.header, macro_definition.name
+        ));
+    }
+    if macro_definition.replacement.is_empty() {
+        return Err(format!(
+            "{}:{} has no replacement tokens to compare",
+            macro_definition.header, macro_definition.name
+        ));
+    }
+    Ok(format!(
+        "#ifndef {}\n#error \"{}:{} macro is missing from libc-shim\"\n#endif\n\n_Static_assert(\n    __builtin_types_compatible_p(__typeof__({}), __typeof__(({}))),\n    \"{}:{} macro type differs from oracle\");\n\n_Static_assert(\n    ({}) == ({}),\n    \"{}:{} macro value differs from oracle\");",
+        macro_definition.name,
+        macro_definition.header,
+        macro_definition.name,
+        macro_definition.name,
+        macro_definition.replacement,
+        macro_definition.header,
+        macro_definition.name,
+        macro_definition.name,
+        macro_definition.replacement,
+        macro_definition.header,
+        macro_definition.name,
+    ))
+}
+
+pub fn render_object_macro_value_probe(macro_definition: &OracleMacro) -> Result<String, String> {
+    Ok(format!(
+        "#include <{}>\n\n{}\n\nint main(void) {{ return 0; }}\n",
+        macro_definition.header,
+        render_object_macro_value_checks(macro_definition)?
+    ))
+}
+
+pub fn write_object_macro_value_probe(
+    macro_definition: &OracleMacro,
+    output_dir: &Path,
+) -> Result<GeneratedProbe, String> {
+    std::fs::create_dir_all(output_dir)
+        .map_err(|error| format!("create {}: {error}", output_dir.display()))?;
+    let source = output_dir.join(format!(
+        "shim-macro-{}.c",
+        identifier(&macro_definition.name)
+    ));
+    std::fs::write(&source, render_object_macro_value_probe(macro_definition)?)
+        .map_err(|error| format!("write {}: {error}", source.display()))?;
+    Ok(GeneratedProbe {
+        object: output_dir.join(format!(
+            "shim-macro-{}.o",
+            identifier(&macro_definition.name)
+        )),
+        executable: output_dir.join(format!("shim-macro-{}", identifier(&macro_definition.name))),
+        source,
+    })
+}
+
+fn oracle_compiles_source(
+    config: &ProbeConfig,
+    source: &Path,
+    object: &Path,
+) -> Result<bool, String> {
+    let mut command = Command::new(&config.compiler);
+    command.args(&config.compiler_args);
+    command.arg(format!("--target={}", config.target));
+    command.arg(format!("--sysroot={}", config.sysroot.display()));
+    command.args(["-std=gnu23", "-D_GNU_SOURCE"]);
+    command.args(&config.defines);
+    command.arg("-c").arg(source).arg("-o").arg(object);
+    let output = command
+        .output()
+        .map_err(|error| format!("classify oracle macro {}: {error}", source.display()))?;
+    Ok(output.status.success())
+}
+
+pub fn select_oracle_object_macro_value_probes(
+    config: &ProbeConfig,
+    macros: &[OracleMacro],
+    output_dir: &Path,
+) -> Result<Vec<OracleMacro>, String> {
+    let classification_dir = output_dir.join("oracle-macro-value-classification");
+    std::fs::create_dir_all(&classification_dir)
+        .map_err(|error| format!("create {}: {error}", classification_dir.display()))?;
+    let mut selected = Vec::new();
+    for macro_definition in macros {
+        let Ok(source_text) = render_object_macro_value_probe(macro_definition) else {
+            continue;
+        };
+        let stem = identifier(&macro_definition.name);
+        let source = classification_dir.join(format!("{stem}.c"));
+        let object = classification_dir.join(format!("{stem}.o"));
+        std::fs::write(&source, source_text)
+            .map_err(|error| format!("write {}: {error}", source.display()))?;
+        if oracle_compiles_source(config, &source, &object)? {
+            selected.push(macro_definition.clone());
+        }
+    }
+    Ok(selected)
+}
+
+pub fn write_header_object_macro_value_probe(
+    macros: &[OracleMacro],
+    output_dir: &Path,
+) -> Result<GeneratedProbe, String> {
+    let Some(header) = macros
+        .first()
+        .map(|macro_definition| &macro_definition.header)
+    else {
+        return Err("oracle header has no object macros with value strategies".to_string());
+    };
+    if macros
+        .iter()
+        .any(|macro_definition| macro_definition.header != *header)
+    {
+        return Err("macro value probe entries must originate from one header".to_string());
+    }
+    let checks = macros
+        .iter()
+        .map(render_object_macro_value_checks)
+        .collect::<Result<Vec<_>, _>>()?;
+    std::fs::create_dir_all(output_dir)
+        .map_err(|error| format!("create {}: {error}", output_dir.display()))?;
+    let source = output_dir.join("shim-macro-values.c");
+    std::fs::write(
+        &source,
+        format!(
+            "#include <{header}>\n\n{}\n\nint main(void) {{ return 0; }}\n",
+            checks.join("\n\n")
+        ),
+    )
+    .map_err(|error| format!("write {}: {error}", source.display()))?;
+    Ok(GeneratedProbe {
+        object: output_dir.join("shim-macro-values.o"),
+        executable: output_dir.join("shim-macro-values"),
+        source,
+    })
+}
+
 pub fn extract_oracle_function(
     config: &ProbeConfig,
     header: &str,
@@ -410,6 +788,231 @@ pub fn extract_oracle_header_functions(
             )),
         })
         .collect()
+}
+
+fn collect_objects(
+    node: &Value,
+    aliases: &BTreeMap<String, String>,
+    objects: &mut BTreeMap<String, OracleObject>,
+    header: &str,
+) {
+    if node.get("kind").and_then(Value::as_str) == Some("VarDecl")
+        && node.get("storageClass").and_then(Value::as_str) == Some("extern")
+        && let (Some(name), Some(type_spelling)) = (
+            node.get("name").and_then(Value::as_str),
+            type_spelling(node, aliases),
+        )
+        && !name.starts_with("__")
+    {
+        objects.entry(name.to_string()).or_insert(OracleObject {
+            header: header.to_string(),
+            name: name.to_string(),
+            type_spelling,
+            thread_local: node
+                .get("tlsKind")
+                .and_then(Value::as_str)
+                .is_some_and(|kind| kind != "none"),
+        });
+    }
+    if let Some(children) = node.get("inner").and_then(Value::as_array) {
+        for child in children {
+            collect_objects(child, aliases, objects, header);
+        }
+    }
+}
+
+pub fn extract_oracle_header_objects(
+    config: &ProbeConfig,
+    header: &str,
+    output_dir: &Path,
+) -> Result<Vec<OracleObject>, String> {
+    std::fs::create_dir_all(output_dir)
+        .map_err(|error| format!("create {}: {error}", output_dir.display()))?;
+    let root = header_ast(config, header, &output_dir.join("oracle-header.c"))?;
+    let mut aliases = BTreeMap::new();
+    collect_type_aliases(&root, &mut aliases);
+    let mut objects = BTreeMap::new();
+    collect_objects(&root, &aliases, &mut objects, header);
+    Ok(objects.into_values().collect())
+}
+
+pub fn render_object_probe(object: &OracleObject) -> Result<String, String> {
+    if !simple_type(&object.type_spelling) {
+        return Err(format!("{} has non-simple type", object.name));
+    }
+    let oracle = format!("slate_oracle_{}", identifier(&object.name));
+    let tls = if object.thread_local {
+        "_Thread_local "
+    } else {
+        ""
+    };
+    Ok(format!(
+        "#include <{}>\n\nextern {tls}{} {oracle};\n\n_Static_assert(__builtin_types_compatible_p(__typeof__({oracle}), __typeof__({})), \"{} object type differs from oracle\");\n\nstatic __typeof__({}) *const slate_reference_{} = &{};\n\nint main(void) {{ return 0; }}\n",
+        object.header,
+        object.type_spelling,
+        object.name,
+        object.name,
+        object.name,
+        identifier(&object.name),
+        object.name
+    ))
+}
+
+pub fn write_object_probe(
+    object: &OracleObject,
+    output_dir: &Path,
+) -> Result<GeneratedProbe, String> {
+    std::fs::create_dir_all(output_dir)
+        .map_err(|error| format!("create {}: {error}", output_dir.display()))?;
+    let source = output_dir.join(format!("shim-object-{}.c", identifier(&object.name)));
+    std::fs::write(&source, render_object_probe(object)?)
+        .map_err(|error| format!("write {}: {error}", source.display()))?;
+    Ok(GeneratedProbe {
+        object: output_dir.join(format!("shim-object-{}.o", identifier(&object.name))),
+        executable: output_dir.join(format!("shim-object-{}", identifier(&object.name))),
+        source,
+    })
+}
+
+pub fn extract_oracle_type_surface(
+    config: &ProbeConfig,
+    header: &str,
+    output_dir: &Path,
+) -> Result<OracleTypeSurface, String> {
+    std::fs::create_dir_all(output_dir)
+        .map_err(|error| format!("create {}: {error}", output_dir.display()))?;
+    let root = header_ast(config, header, &output_dir.join("oracle-header.c"))?;
+    let mut aliases = BTreeMap::new();
+    collect_type_aliases(&root, &mut aliases);
+    let mut surface = OracleTypeSurface {
+        typedefs: Vec::new(),
+        records: Vec::new(),
+        enums: Vec::new(),
+    };
+    collect_type_surface(&root, &aliases, &mut surface);
+    let dump = record_layout_dump(config, &output_dir.join("oracle-header.c"))?;
+    std::fs::write(output_dir.join("oracle-record-layouts.txt"), &dump)
+        .map_err(|error| format!("write record layouts: {error}"))?;
+    merge_record_layouts(&mut surface, &dump);
+    surface
+        .typedefs
+        .sort_by(|left, right| left.name.cmp(&right.name));
+    surface
+        .records
+        .sort_by(|left, right| left.tag.cmp(&right.tag));
+    surface
+        .enums
+        .sort_by(|left, right| left.tag.cmp(&right.tag));
+    Ok(surface)
+}
+
+pub fn write_oracle_type_manifest(
+    surface: &OracleTypeSurface,
+    output_dir: &Path,
+) -> Result<PathBuf, String> {
+    let path = output_dir.join("oracle-types.json");
+    let contents = serde_json::json!({
+        "typedefs": surface.typedefs.iter().map(|typedef| serde_json::json!({ "name": typedef.name, "underlying_type": typedef.underlying_type })).collect::<Vec<_>>(),
+        "records": surface.records.iter().map(|record| serde_json::json!({ "tag": record.tag, "kind": if record.is_union { "union" } else { "struct" }, "size": record.size, "align": record.align, "fields": record.fields.iter().map(|field| serde_json::json!({ "name": field.name, "type": field.type_spelling, "bit_width": field.bit_width, "offset": field.offset })).collect::<Vec<_>>() })).collect::<Vec<_>>(),
+        "enums": surface.enums.iter().map(|enumeration| serde_json::json!({ "tag": enumeration.tag, "enumerators": enumeration.enumerators.iter().map(|enumerator| serde_json::json!({ "name": enumerator.name, "type": enumerator.type_spelling, "value": enumerator.value })).collect::<Vec<_>>() })).collect::<Vec<_>>(),
+    });
+    std::fs::create_dir_all(output_dir)
+        .map_err(|error| format!("create {}: {error}", output_dir.display()))?;
+    std::fs::write(
+        &path,
+        format!(
+            "{}\n",
+            serde_json::to_string_pretty(&contents).expect("serialize type manifest")
+        ),
+    )
+    .map_err(|error| format!("write {}: {error}", path.display()))?;
+    Ok(path)
+}
+
+fn simple_type(type_spelling: &str) -> bool {
+    !type_spelling.contains(['(', '['])
+}
+
+pub fn render_type_surface_probe(
+    header: &str,
+    surface: &OracleTypeSurface,
+) -> Result<String, String> {
+    let mut checks = Vec::new();
+    for typedef in &surface.typedefs {
+        if !typedef.name.starts_with("__") && simple_type(&typedef.underlying_type) {
+            let oracle_name = format!("slate_oracle_typedef_{}", identifier(&typedef.name));
+            checks.push(format!(
+                "typedef {} {oracle_name};\n_Static_assert(__builtin_types_compatible_p({oracle_name}, {}), \"typedef {} differs from oracle\");",
+                typedef.underlying_type, typedef.name, typedef.name
+            ));
+        }
+    }
+    for record in &surface.records {
+        let tag = if record.is_union { "union" } else { "struct" };
+        if let Some(size) = record.size {
+            checks.push(format!("_Static_assert(sizeof({tag} {}) == {size}, \"{tag} {} size differs from oracle\");", record.tag, record.tag));
+        }
+        if let Some(align) = record.align {
+            checks.push(format!("_Static_assert(_Alignof({tag} {}) == {align}, \"{tag} {} alignment differs from oracle\");", record.tag, record.tag));
+        }
+        for field in &record.fields {
+            if let Some(offset) = field.offset.filter(|_| field.bit_width.is_none()) {
+                checks.push(format!("_Static_assert(__builtin_offsetof({tag} {}, {}) == {offset}, \"{tag} {}.{} offset differs from oracle\");", record.tag, field.name, record.tag, field.name));
+            }
+            if simple_type(&field.type_spelling) && field.bit_width.is_none() {
+                let oracle_name = format!(
+                    "slate_oracle_{}_{}_{}",
+                    if record.is_union { "union" } else { "struct" },
+                    identifier(&record.tag),
+                    identifier(&field.name)
+                );
+                checks.push(format!(
+                    "typedef {} {oracle_name};\n_Static_assert(__builtin_types_compatible_p(__typeof__((( {tag} {} *)0)->{}), {oracle_name}), \"{tag} {}.{} field type differs from oracle\");",
+                    field.type_spelling, record.tag, field.name, record.tag, field.name
+                ));
+            }
+        }
+    }
+    for enumeration in &surface.enums {
+        for enumerator in &enumeration.enumerators {
+            if simple_type(&enumerator.type_spelling) {
+                checks.push(format!(
+                    "_Static_assert(__builtin_types_compatible_p(__typeof__({}), __typeof__(({})0)), \"enum {} type differs from oracle\");",
+                    enumerator.name, enumerator.type_spelling, enumerator.name
+                ));
+            }
+            if let Some(value) = &enumerator.value {
+                checks.push(format!(
+                    "_Static_assert({} == ({}), \"enum {} value differs from oracle\");",
+                    enumerator.name, value, enumerator.name
+                ));
+            }
+        }
+    }
+    if checks.is_empty() {
+        return Err(format!("{header} has no safe type-surface checks"));
+    }
+    Ok(format!(
+        "#include <{header}>\n\n{}\n\nint main(void) {{ return 0; }}\n",
+        checks.join("\n\n")
+    ))
+}
+
+pub fn write_type_surface_probe(
+    header: &str,
+    surface: &OracleTypeSurface,
+    output_dir: &Path,
+) -> Result<GeneratedProbe, String> {
+    std::fs::create_dir_all(output_dir)
+        .map_err(|error| format!("create {}: {error}", output_dir.display()))?;
+    let source = output_dir.join("shim-type-surface.c");
+    std::fs::write(&source, render_type_surface_probe(header, surface)?)
+        .map_err(|error| format!("write {}: {error}", source.display()))?;
+    Ok(GeneratedProbe {
+        object: output_dir.join("shim-type-surface.o"),
+        executable: output_dir.join("shim-type-surface"),
+        source,
+    })
 }
 
 fn collect_all_functions(
