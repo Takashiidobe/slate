@@ -1,3 +1,7 @@
+#if defined(__SLATE_LIBC_GLIBC) || defined(__SLATE_LIBC_MUSL)
+#define _GNU_SOURCE
+#endif
+
 #include <arpa/inet.h>
 #include <dirent.h>
 #include <dlfcn.h>
@@ -21,6 +25,7 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <sys/un.h>
+#include <sys/user.h>
 #include <termios.h>
 #include <time.h>
 #include <ucontext.h>
@@ -28,8 +33,11 @@
 #include <wchar.h>
 #include <wctype.h>
 
+#if defined(__SLATE_ARCH_X86) || defined(__SLATE_ARCH_X86_64)
+#include <sys/reg.h>
+#endif
+
 #if defined(__SLATE_LIBC_GLIBC) || defined(__SLATE_LIBC_MUSL)
-#define _GNU_SOURCE
 #include <netinet/tcp.h>
 #include <sys/fanotify.h>
 #include <sys/inotify.h>
@@ -37,7 +45,6 @@
 #include <sys/procfs.h>
 #include <sys/resource.h>
 #include <sys/signalfd.h>
-#undef _GNU_SOURCE
 #endif
 
 #if defined(__SLATE_LIBC_GLIBC)
@@ -133,7 +140,9 @@ static void emit_network(void) {
   SIZE("struct_sockaddr_in6", struct sockaddr_in6);
   SIZE("struct_sockaddr_un", struct sockaddr_un);
   SIZE("struct_msghdr", struct msghdr);
+  ALIGN("struct_msghdr", struct msghdr);
   SIZE("struct_cmsghdr", struct cmsghdr);
+  ALIGN("struct_cmsghdr", struct cmsghdr);
   SIZE("struct_linger", struct linger);
   SIZE("struct_addrinfo", struct addrinfo);
   SIZE("struct_pollfd", struct pollfd);
@@ -142,8 +151,15 @@ static void emit_network(void) {
   OFFSET("struct_sockaddr_in", struct sockaddr_in, sin_family);
   OFFSET("struct_sockaddr_in6", struct sockaddr_in6, sin6_family);
   OFFSET("struct_msghdr", struct msghdr, msg_name);
+  OFFSET("struct_msghdr", struct msghdr, msg_namelen);
   OFFSET("struct_msghdr", struct msghdr, msg_iov);
+  OFFSET("struct_msghdr", struct msghdr, msg_iovlen);
   OFFSET("struct_msghdr", struct msghdr, msg_control);
+  OFFSET("struct_msghdr", struct msghdr, msg_controllen);
+  OFFSET("struct_msghdr", struct msghdr, msg_flags);
+  OFFSET("struct_cmsghdr", struct cmsghdr, cmsg_len);
+  OFFSET("struct_cmsghdr", struct cmsghdr, cmsg_level);
+  OFFSET("struct_cmsghdr", struct cmsghdr, cmsg_type);
 }
 
 static void emit_extensions(void) {
@@ -167,6 +183,35 @@ static void emit_extensions(void) {
   SIZE("struct_rlimit", struct rlimit);
   OFFSET("struct_rlimit", struct rlimit, rlim_cur);
   OFFSET("struct_rlimit", struct rlimit, rlim_max);
+
+  SIZE("struct_statx_timestamp", struct statx_timestamp);
+  ALIGN("struct_statx_timestamp", struct statx_timestamp);
+  OFFSET("struct_statx_timestamp", struct statx_timestamp, tv_sec);
+  OFFSET("struct_statx_timestamp", struct statx_timestamp, tv_nsec);
+  SIZE("struct_statx", struct statx);
+  ALIGN("struct_statx", struct statx);
+  OFFSET("struct_statx", struct statx, stx_mask);
+  OFFSET("struct_statx", struct statx, stx_blksize);
+  OFFSET("struct_statx", struct statx, stx_attributes);
+  OFFSET("struct_statx", struct statx, stx_nlink);
+  OFFSET("struct_statx", struct statx, stx_uid);
+  OFFSET("struct_statx", struct statx, stx_gid);
+  OFFSET("struct_statx", struct statx, stx_mode);
+  OFFSET("struct_statx", struct statx, stx_ino);
+  OFFSET("struct_statx", struct statx, stx_size);
+  OFFSET("struct_statx", struct statx, stx_blocks);
+  OFFSET("struct_statx", struct statx, stx_attributes_mask);
+  OFFSET("struct_statx", struct statx, stx_atime);
+  OFFSET("struct_statx", struct statx, stx_btime);
+  OFFSET("struct_statx", struct statx, stx_ctime);
+  OFFSET("struct_statx", struct statx, stx_mtime);
+  OFFSET("struct_statx", struct statx, stx_rdev_major);
+  OFFSET("struct_statx", struct statx, stx_rdev_minor);
+  OFFSET("struct_statx", struct statx, stx_dev_major);
+  OFFSET("struct_statx", struct statx, stx_dev_minor);
+  OFFSET("struct_statx", struct statx, stx_mnt_id);
+  OFFSET("struct_statx", struct statx, stx_dio_mem_align);
+  OFFSET("struct_statx", struct statx, stx_dio_offset_align);
 
   SIZE("struct_fanotify_event_metadata", struct fanotify_event_metadata);
   OFFSET("struct_fanotify_event_metadata", struct fanotify_event_metadata,
@@ -241,6 +286,95 @@ static void emit_extensions(void) {
 #endif
 }
 
+static void emit_registers(void) {
+#if defined(__SLATE_ARCH_X86_64)
+  PRESENCE("sys.reg.x86_64", 1);
+  MACRO(R15);
+  MACRO(RBP);
+  MACRO(RAX);
+  MACRO(ORIG_RAX);
+  MACRO(RIP);
+  MACRO(EFLAGS);
+  MACRO(RSP);
+  MACRO(GS);
+#elif defined(__SLATE_ARCH_X86)
+  PRESENCE("sys.reg.x86", 1);
+  MACRO(EBX);
+  MACRO(EAX);
+  MACRO(ORIG_EAX);
+  MACRO(EIP);
+  MACRO(EFL);
+  MACRO(UESP);
+  MACRO(SS);
+#endif
+
+#if defined(__SLATE_ARCH_X86_64)
+  PRESENCE("sys.user.struct_user_regs_struct", 1);
+  SIZE("struct_user_regs_struct", struct user_regs_struct);
+  ALIGN("struct_user_regs_struct", struct user_regs_struct);
+  OFFSET("struct_user_regs_struct", struct user_regs_struct, r15);
+  OFFSET("struct_user_regs_struct", struct user_regs_struct, rbp);
+  OFFSET("struct_user_regs_struct", struct user_regs_struct, rax);
+  OFFSET("struct_user_regs_struct", struct user_regs_struct, orig_rax);
+  OFFSET("struct_user_regs_struct", struct user_regs_struct, rip);
+  OFFSET("struct_user_regs_struct", struct user_regs_struct, eflags);
+  OFFSET("struct_user_regs_struct", struct user_regs_struct, rsp);
+  OFFSET("struct_user_regs_struct", struct user_regs_struct, gs);
+  SIZE("struct_user_fpregs_struct", struct user_fpregs_struct);
+  ALIGN("struct_user_fpregs_struct", struct user_fpregs_struct);
+  OFFSET("struct_user_fpregs_struct", struct user_fpregs_struct, cwd);
+  OFFSET("struct_user_fpregs_struct", struct user_fpregs_struct, rip);
+  OFFSET("struct_user_fpregs_struct", struct user_fpregs_struct, mxcsr);
+  OFFSET("struct_user_fpregs_struct", struct user_fpregs_struct, st_space);
+  OFFSET("struct_user_fpregs_struct", struct user_fpregs_struct, xmm_space);
+  SIZE("struct_user", struct user);
+  OFFSET("struct_user", struct user, regs);
+  OFFSET("struct_user", struct user, u_fpvalid);
+  OFFSET("struct_user", struct user, i387);
+  OFFSET("struct_user", struct user, u_debugreg);
+#elif defined(__SLATE_ARCH_X86)
+  PRESENCE("sys.user.struct_user_regs_struct", 1);
+  SIZE("struct_user_regs_struct", struct user_regs_struct);
+  ALIGN("struct_user_regs_struct", struct user_regs_struct);
+  OFFSET("struct_user_regs_struct", struct user_regs_struct, ebx);
+  OFFSET("struct_user_regs_struct", struct user_regs_struct, eax);
+  OFFSET("struct_user_regs_struct", struct user_regs_struct, orig_eax);
+  OFFSET("struct_user_regs_struct", struct user_regs_struct, eip);
+  OFFSET("struct_user_regs_struct", struct user_regs_struct, eflags);
+  OFFSET("struct_user_regs_struct", struct user_regs_struct, esp);
+  SIZE("struct_user", struct user);
+  OFFSET("struct_user", struct user, regs);
+  OFFSET("struct_user", struct user, u_fpvalid);
+  OFFSET("struct_user", struct user, i387);
+  OFFSET("struct_user", struct user, u_debugreg);
+#elif defined(__SLATE_ARCH_AARCH64)
+  PRESENCE("sys.user.struct_user_regs_struct", 1);
+  SIZE("struct_user_regs_struct", struct user_regs_struct);
+  ALIGN("struct_user_regs_struct", struct user_regs_struct);
+  OFFSET("struct_user_regs_struct", struct user_regs_struct, regs);
+  OFFSET("struct_user_regs_struct", struct user_regs_struct, sp);
+  OFFSET("struct_user_regs_struct", struct user_regs_struct, pc);
+  OFFSET("struct_user_regs_struct", struct user_regs_struct, pstate);
+  SIZE("struct_user_fpsimd_struct", struct user_fpsimd_struct);
+  ALIGN("struct_user_fpsimd_struct", struct user_fpsimd_struct);
+  OFFSET("struct_user_fpsimd_struct", struct user_fpsimd_struct, vregs);
+  OFFSET("struct_user_fpsimd_struct", struct user_fpsimd_struct, fpsr);
+  OFFSET("struct_user_fpsimd_struct", struct user_fpsimd_struct, fpcr);
+#elif defined(__SLATE_ARCH_ARM)
+  PRESENCE("sys.user.struct_user_regs_struct", 1);
+  SIZE("struct_user_regs", struct user_regs);
+  ALIGN("struct_user_regs", struct user_regs);
+  OFFSET("struct_user_regs", struct user_regs, uregs);
+  SIZE("struct_user", struct user);
+  OFFSET("struct_user", struct user, regs);
+  OFFSET("struct_user", struct user, u_fpvalid);
+  OFFSET("struct_user", struct user, u_debugreg);
+  OFFSET("struct_user", struct user, u_fp);
+#elif defined(__SLATE_ARCH_RISCV32) || defined(__SLATE_ARCH_RISCV64)
+  PRESENCE("sys.user.struct_user_regs_struct", 0);
+#endif
+}
+
 static void emit_threads(void) {
   SIZE("pthread_t", pthread_t);
   SIZE("pthread_key_t", pthread_key_t);
@@ -292,6 +426,7 @@ int main(void) {
 #if defined(__SLATE_LIBC_GLIBC) || defined(__SLATE_LIBC_MUSL)
   emit_extensions();
 #endif
+  emit_registers();
   emit_threads();
   emit_macros();
   return 0;
