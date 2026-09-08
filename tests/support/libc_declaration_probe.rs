@@ -170,6 +170,11 @@ fn is_public_header_file(file: &str, header: &str) -> bool {
     file == header
         || file.ends_with(&format!("/{header}"))
         || file.split('/').any(|component| component == "bits")
+        || header == "float.h"
+            && file
+                .rsplit('/')
+                .next()
+                .is_some_and(|name| name == "float.h" || name.starts_with("__float_"))
 }
 
 fn node_is_public_header_declaration(node: &Value, header: &str) -> bool {
