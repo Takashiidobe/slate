@@ -36,6 +36,14 @@
 #define FP_ILOGBNAN (-1 - 0x7fffffff)
 #define FP_ILOGB0   FP_ILOGBNAN
 
+#define FP_INT_DOWNWARD 0
+#define FP_INT_TONEAREST 1
+#define FP_INT_TONEARESTFROMZERO 4
+#define FP_INT_TOWARDZERO 3
+#define FP_INT_UPWARD 2
+#define FP_LLOGB0 FP_ILOGB0
+#define FP_LLOGBNAN FP_ILOGBNAN
+
 #ifdef __FP_FAST_FMA
 #define FP_FAST_FMA 1
 #endif
@@ -48,13 +56,11 @@
 #define FP_FAST_FMAL 1
 #endif
 
-enum {
-  FP_NAN       = 0,
-  FP_INFINITE  = 1,
-  FP_ZERO      = 2,
-  FP_SUBNORMAL = 3,
-  FP_NORMAL    = 4,
-};
+#define FP_NAN 0
+#define FP_INFINITE 1
+#define FP_ZERO 2
+#define FP_SUBNORMAL 3
+#define FP_NORMAL 4
 
 #define fpclassify(x)                                                          \
   __builtin_fpclassify(FP_NAN, FP_INFINITE, FP_NORMAL, FP_SUBNORMAL, FP_ZERO, x)
@@ -69,10 +75,22 @@ enum {
 #define isgreater(x, y)      __builtin_isgreater(x, y)
 #define isgreaterequal(x, y) __builtin_isgreaterequal(x, y)
 #define isunordered(x, y)    __builtin_isunordered(x, y)
+#define iscanonical(x)       1
+#define iseqsig(x, y)        ((x) == (y))
+#define issignaling(x)       0
+#define issubnormal(x)       0
+#define iszero(x)            ((x) == 0)
+
+#if defined(__SLATE_LIBC_GLIBC)
+typedef long double long_double_t;
+#endif
 
 double      acos(double);
 float       acosf(float);
 long double acosl(long double);
+
+int (isinf)(double);
+int (isnan)(double);
 
 double      acosh(double);
 float       acoshf(float);
@@ -302,7 +320,7 @@ double      trunc(double);
 float       truncf(float);
 long double truncl(long double);
 
-#if defined(_XOPEN_SOURCE) || defined(_BSD_SOURCE)
+#if defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
 #undef MAXFLOAT
 #define MAXFLOAT 3.40282346638528859812e+38F
 #endif
@@ -338,6 +356,100 @@ long double truncl(long double);
 #define M_SQRT1_2l  0.707106781186547524400844362104849039L /* 1/sqrt(2) */
 #endif
 
+#if defined(__SLATE_LIBC_GLIBC)
+#define M_Ef M_E
+#define M_Ef32 M_E
+#define M_Ef32x M_E
+#define M_Ef64 M_E
+#define M_Ef64x M_E
+#define M_Ef128 M_E
+#define M_LOG2Ef M_LOG2E
+#define M_LOG2Ef32 M_LOG2E
+#define M_LOG2Ef32x M_LOG2E
+#define M_LOG2Ef64 M_LOG2E
+#define M_LOG2Ef64x M_LOG2E
+#define M_LOG2Ef128 M_LOG2E
+#define M_LOG10Ef M_LOG10E
+#define M_LOG10Ef32 M_LOG10E
+#define M_LOG10Ef32x M_LOG10E
+#define M_LOG10Ef64 M_LOG10E
+#define M_LOG10Ef64x M_LOG10E
+#define M_LOG10Ef128 M_LOG10E
+#define M_LN2f M_LN2
+#define M_LN2f32 M_LN2
+#define M_LN2f32x M_LN2
+#define M_LN2f64 M_LN2
+#define M_LN2f64x M_LN2
+#define M_LN2f128 M_LN2
+#define M_LN10f M_LN10
+#define M_LN10f32 M_LN10
+#define M_LN10f32x M_LN10
+#define M_LN10f64 M_LN10
+#define M_LN10f64x M_LN10
+#define M_LN10f128 M_LN10
+#define M_PIf M_PI
+#define M_PIf32 M_PI
+#define M_PIf32x M_PI
+#define M_PIf64 M_PI
+#define M_PIf64x M_PI
+#define M_PIf128 M_PI
+#define M_PI_2f M_PI_2
+#define M_PI_2f32 M_PI_2
+#define M_PI_2f32x M_PI_2
+#define M_PI_2f64 M_PI_2
+#define M_PI_2f64x M_PI_2
+#define M_PI_2f128 M_PI_2
+#define M_PI_4f M_PI_4
+#define M_PI_4f32 M_PI_4
+#define M_PI_4f32x M_PI_4
+#define M_PI_4f64 M_PI_4
+#define M_PI_4f64x M_PI_4
+#define M_PI_4f128 M_PI_4
+#define M_1_PIf M_1_PI
+#define M_1_PIf32 M_1_PI
+#define M_1_PIf32x M_1_PI
+#define M_1_PIf64 M_1_PI
+#define M_1_PIf64x M_1_PI
+#define M_1_PIf128 M_1_PI
+#define M_2_PIf M_2_PI
+#define M_2_PIf32 M_2_PI
+#define M_2_PIf32x M_2_PI
+#define M_2_PIf64 M_2_PI
+#define M_2_PIf64x M_2_PI
+#define M_2_PIf128 M_2_PI
+#define M_2_SQRTPIf M_2_SQRTPI
+#define M_2_SQRTPIf32 M_2_SQRTPI
+#define M_2_SQRTPIf32x M_2_SQRTPI
+#define M_2_SQRTPIf64 M_2_SQRTPI
+#define M_2_SQRTPIf64x M_2_SQRTPI
+#define M_2_SQRTPIf128 M_2_SQRTPI
+#define M_SQRT2f M_SQRT2
+#define M_SQRT2f32 M_SQRT2
+#define M_SQRT2f32x M_SQRT2
+#define M_SQRT2f64 M_SQRT2
+#define M_SQRT2f64x M_SQRT2
+#define M_SQRT2f128 M_SQRT2
+#define M_SQRT1_2f M_SQRT1_2
+#define M_SQRT1_2f32 M_SQRT1_2
+#define M_SQRT1_2f32x M_SQRT1_2
+#define M_SQRT1_2f64 M_SQRT1_2
+#define M_SQRT1_2f64x M_SQRT1_2
+#define M_SQRT1_2f128 M_SQRT1_2
+#define HUGE_VAL_F32 HUGE_VALF
+#define HUGE_VAL_F64 HUGE_VAL
+#define HUGE_VAL_F32X HUGE_VAL
+#define HUGE_VAL_F64X HUGE_VAL
+#define HUGE_VAL_F128 HUGE_VALL
+#define SNAN 0.0
+#define SNANF 0.0F
+#define SNANL 0.0L
+#define SNANF32 0.0F
+#define SNANF32X 0.0F
+#define SNANF64 0.0
+#define SNANF64X 0.0
+#define SNANF128 0.0L
+#endif
+
 extern int signgam;
 
 double j0(double);
@@ -349,7 +461,7 @@ double y1(double);
 double yn(int, double);
 #endif
 
-#if defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
+#if defined(_GNU_SOURCE) || defined(_XOPEN_SOURCE) || defined(_BSD_SOURCE)
 #define HUGE 3.40282346638528859812e+38F
 
 double drem(double, double);
@@ -393,6 +505,57 @@ double      pow10(double);
 float       pow10f(float);
 long double pow10l(long double);
 #endif
+#endif
+
+#if defined(__SLATE_LIBC_GLIBC)
+double acospi(double);
+double asinpi(double);
+double atan2pi(double, double);
+double atanpi(double);
+double compoundn(double, long long);
+double cospi(double);
+double exp10m1(double);
+double exp2m1(double);
+double fmaximum(double, double);
+double fmaximum_mag(double, double);
+double fmaximum_mag_num(double, double);
+double fmaximum_num(double, double);
+double fmaxmag(double, double);
+double fminimum(double, double);
+double fminimum_mag(double, double);
+double fminimum_mag_num(double, double);
+double fminimum_num(double, double);
+double fminmag(double, double);
+#if defined(__SLATE_ARCH_ARM)
+long long fromfp(double, int, unsigned int);
+long long fromfpx(double, int, unsigned int);
+unsigned long long ufromfp(double, int, unsigned int);
+unsigned long long ufromfpx(double, int, unsigned int);
+#else
+double fromfp(double, int, unsigned int);
+double fromfpx(double, int, unsigned int);
+double ufromfp(double, int, unsigned int);
+double ufromfpx(double, int, unsigned int);
+#endif
+double gamma(double);
+double getpayload(const double *);
+long llogb(double);
+double log10p1(double);
+double log2p1(double);
+double logp1(double);
+double nextdown(double);
+double nextup(double);
+double pown(double, long long);
+double powr(double, double);
+double rootn(double, long long);
+double roundeven(double);
+double rsqrt(double);
+int setpayload(double *, double);
+int setpayloadsig(double *, double);
+double sinpi(double);
+double tanpi(double);
+int totalorder(const double *, const double *);
+int totalordermag(const double *, const double *);
 #endif
 
 #endif
