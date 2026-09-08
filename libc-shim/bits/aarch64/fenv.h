@@ -15,15 +15,23 @@
 
 typedef unsigned int fexcept_t;
 
-typedef struct {
+typedef struct fenv_t {
   unsigned int __fpcr;
   unsigned int __fpsr;
 } fenv_t;
 
 #define FE_DFL_ENV ((const fenv_t *)-1)
 
-typedef struct {
+#if !defined(__SLATE_LIBC_GLIBC)
+typedef struct femode_t {
   unsigned int __fpcr;
 } femode_t;
+#endif
 
 #define FE_DFL_MODE ((const femode_t *)-1L)
+
+#if defined(__SLATE_LIBC_GLIBC)
+typedef unsigned int femode_t;
+#define FE_EXCEPT_SHIFT 0
+#define FE_NOMASK_ENV ((const fenv_t *)-1)
+#endif
