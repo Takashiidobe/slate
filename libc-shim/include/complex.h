@@ -14,6 +14,10 @@ double      cimag(double complex z);
 float       cimagf(float complex z);
 long double cimagl(long double complex z);
 
+#if defined(__SLATE_LIBC_GLIBC)
+double complex clog10(double complex z);
+#endif
+
 #ifdef __GNUC__
 #define _Complex_I (__extension__(0.0f + 1.0fi))
 #else
@@ -24,6 +28,25 @@ long double cimagl(long double complex z);
 #define CMPLX(x, y)  __builtin_complex((double)(x), (double)(y))
 #define CMPLXF(x, y) __builtin_complex((float)(x), (float)(y))
 #define CMPLXL(x, y) __builtin_complex((long double)(x), (long double)(y))
+
+#if defined(__SLATE_LIBC_GLIBC)
+#define CMPLXF32(x, y) __builtin_complex((_Float32)(x), (_Float32)(y))
+#define CMPLXF32X(x, y) __builtin_complex((_Float32x)(x), (_Float32x)(y))
+#define CMPLXF64(x, y) __builtin_complex((_Float64)(x), (_Float64)(y))
+#if !defined(__SLATE_ARCH_ARM)
+#define CMPLXF128(x, y) __builtin_complex((_Float128)(x), (_Float128)(y))
+#define CMPLXF64X(x, y) __builtin_complex((_Float64x)(x), (_Float64x)(y))
+#endif
+#endif
+
+#if defined(__SLATE_LIBC_MUSL)
+#define cimag(z) (cimag)(z)
+#define cimagf(z) (cimagf)(z)
+#define cimagl(z) (cimagl)(z)
+#define creal(z) (creal)(z)
+#define crealf(z) (crealf)(z)
+#define creall(z) (creall)(z)
+#endif
 
 /* Inverse trigonometric functions. */
 
