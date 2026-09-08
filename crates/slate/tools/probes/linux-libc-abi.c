@@ -3,6 +3,12 @@
 #endif
 
 #include <arpa/inet.h>
+#if defined(__SLATE_LIBC_MUSL) ||                                             \
+    (defined(__SLATE_LIBC_GLIBC) &&                                          \
+     (defined(__SLATE_ARCH_X86_64) || defined(__SLATE_ARCH_X86)))
+#include <crypt.h>
+#define SLATE_PROBE_HAVE_CRYPT 1
+#endif
 #include <dirent.h>
 #include <dlfcn.h>
 #include <fcntl.h>
@@ -27,9 +33,11 @@
 #include <sys/un.h>
 #include <sys/user.h>
 #include <termios.h>
+#include <threads.h>
 #include <time.h>
 #include <ucontext.h>
 #include <unistd.h>
+#include <utime.h>
 #include <wchar.h>
 #include <wctype.h>
 
@@ -286,6 +294,30 @@ static void emit_extensions(void) {
 #endif
 }
 
+static void emit_misc(void) {
+  SIZE("struct_utimbuf", struct utimbuf);
+  ALIGN("struct_utimbuf", struct utimbuf);
+  OFFSET("struct_utimbuf", struct utimbuf, actime);
+  OFFSET("struct_utimbuf", struct utimbuf, modtime);
+
+#if defined(SLATE_PROBE_HAVE_CRYPT)
+  PRESENCE("crypt.struct_crypt_data", 1);
+  SIZE("struct_crypt_data", struct crypt_data);
+  ALIGN("struct_crypt_data", struct crypt_data);
+#endif
+
+  SIZE("thrd_t", thrd_t);
+  ALIGN("thrd_t", thrd_t);
+  SIZE("tss_t", tss_t);
+  ALIGN("tss_t", tss_t);
+  SIZE("mtx_t", mtx_t);
+  ALIGN("mtx_t", mtx_t);
+  SIZE("cnd_t", cnd_t);
+  ALIGN("cnd_t", cnd_t);
+  SIZE("once_flag", once_flag);
+  ALIGN("once_flag", once_flag);
+}
+
 static void emit_registers(void) {
 #if defined(__SLATE_ARCH_X86_64)
   PRESENCE("sys.reg.x86_64", 1);
@@ -426,6 +458,7 @@ int main(void) {
 #if defined(__SLATE_LIBC_GLIBC) || defined(__SLATE_LIBC_MUSL)
   emit_extensions();
 #endif
+  emit_misc();
   emit_registers();
   emit_threads();
   emit_macros();

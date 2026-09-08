@@ -8,8 +8,8 @@
 #error "<threads.h> is unavailable for the Darwin libc profile (__STDC_NO_THREADS__ is defined)."
 #endif
 
-#define __NEED_cnd_t
-#define __NEED_mtx_t
+#define __NEED_pthread_mutex_t
+#define __NEED_pthread_cond_t
 
 #include <bits/types.h>
 #define thread_local _Thread_local
@@ -32,27 +32,8 @@ enum {
 
 enum { mtx_plain = 0, mtx_recursive = 1, mtx_timed = 2 };
 
-#if defined(__aarch64__) && !defined(__SLATE_LIBC_MUSL)
-typedef union {
-  char __size[48];
-  long __align;
-} mtx_t;
-#elif defined(__LP64__)
-typedef union {
-  char __size[40];
-  long __align;
-} mtx_t;
-#else
-typedef union {
-  char __size[24];
-  long __align;
-} mtx_t;
-#endif
-
-typedef union {
-  char      __size[48];
-  long long __align;
-} cnd_t;
+typedef pthread_mutex_t mtx_t;
+typedef pthread_cond_t  cnd_t;
 
 typedef int once_flag;
 
