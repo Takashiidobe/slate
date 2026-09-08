@@ -37,69 +37,46 @@ the corresponding real glibc target sysroots; neither libc is a substitute for
 the other. Compile-only probes require the headers and libraries, while runtime
 differential tests additionally require the target loader and QEMU.
 
-The shared ABI probe is run twice for one target and compared as normalized JSON:
+The shared ABI probe source lives at `tests/fixtures.abi-probe/linux-libc-abi.c`
+and is compiled twice per target -- once against the real target libc headers
+(the oracle) and once against `libc-shim/include` (the candidate) -- then the
+two runs' `kind\tname\tvalue` record streams are diffed in memory. This whole
+matrix is a single native Rust nextest test, `tests/libc_abi_matrix_suite.rs`
+(backed by `tests/support/libc_probe.rs`), not an external script:
 
 ```bash
-python3 tools/libc-abi-probe.py run \
-  --compiler "$HOME/toolchains/slate-musl/x86_64/bin/musl-clang" \
-  --target x86_64-linux-musl \
-  --sysroot "$HOME/toolchains/slate-musl/x86_64" \
-  --extra-arg=-static \
-  --output /tmp/musl-oracle.json
-
-python3 tools/libc-abi-probe.py compare /tmp/musl-oracle.json /tmp/musl-shim.json
+cargo nextest r --release --profile libc -E 'test(libc_abi_matrix)'
 ```
 
-The shim invocation adds `--shim libc-shim/include` and the exact Slate target
-defines. Records are keyed by kind and name, so a size and alignment for the
-same type cannot overwrite one another. The comparison rejects different probe
-sources before comparing records.
-
-Run the target matrix with:
-
-```bash
-python3 tools/libc-abi-matrix.py --libc musl
-```
-
-The matrix compiles both oracle and shim probes with `SLATE_CLANG`, links with
-the target libc wrapper, and runs cross-target binaries through QEMU where
-needed. On this development host, the runner has defaults for the installed
-glibc sysroots and linkers. Environment variables override those defaults:
+By default it runs the full 4-arch x {musl, glibc} matrix, since that
+completes in about a second. On this development host, `tests/support/libc_probe.rs`
+has defaults for the installed glibc sysroots and linkers; environment
+variables override those defaults:
 
 ```bash
 export SLATE_GLIBC_SYSROOT_X86_64=/path/to/x86_64/sysroot
 export SLATE_GLIBC_SYSROOT_X86=/path/to/i686/sysroot
 export SLATE_GLIBC_SYSROOT_ARM=/path/to/arm/sysroot
 export SLATE_GLIBC_SYSROOT_AARCH64=/path/to/aarch64/sysroot
-python3 tools/libc-abi-matrix.py --libc glibc
 ```
 
-Use `--arch` and `--family` for focused checks before running the full matrix:
-
-```bash
-python3 tools/libc-abi-matrix.py --libc musl --arch aarch64 --family pthread
-python3 tools/libc-abi-matrix.py --libc glibc --arch i386 --family stat-time
-```
-
-Available ABI families are `pthread`, `setjmp-ucontext`, `socket-epoll`,
-`sched`, and `stat-time`.
-
-The matrix runs as part of `cargo nextest r --release --profile libc`
-(`tests/libc_abi_matrix_suite.rs`), unrestricted by default since the full
-matrix finishes in a couple of seconds. Narrow it to one target/libc/family
-during local iteration with `SLATE_LIBC_ABI_LIBC`, `SLATE_LIBC_ABI_ARCH`, and
-`SLATE_LIBC_ABI_FAMILY` (comma-separated for `--arch`/`--family` repeats),
-which map onto the script's own flags:
+Narrow to one target/libc/family for focused checks during local iteration
+with `SLATE_LIBC_ABI_LIBC`, `SLATE_LIBC_ABI_ARCH`, and `SLATE_LIBC_ABI_FAMILY`
+(comma-separated for multiple arches/families):
 
 ```bash
 SLATE_LIBC_ABI_LIBC=musl SLATE_LIBC_ABI_ARCH=aarch64 SLATE_LIBC_ABI_FAMILY=pthread \
   cargo nextest r --release --profile libc -E 'test(libc_abi_matrix)'
 ```
 
-A failure panics with the full captured stdout/stderr, which includes every
-per-record `FAIL name: oracle=... candidate=...` line from the matrix script
-so the first ABI/declaration mismatch is visible directly in the test output,
-not just a compilation failure.
+Available ABI families are `pthread`, `setjmp-ucontext`, `socket-epoll`,
+`sched`, and `stat-time`.
+
+A failure panics with every per-record `FAIL name: oracle=... candidate=...`
+line, so the first ABI/declaration mismatch is visible directly in the test
+output, not just a compilation failure. A target whose toolchain prerequisites
+are missing (no sysroot, no linker, no QEMU) fails with a clear "is missing"
+message rather than a compile/link error.
 
 The local defaults are `/` for x86-64 and i386, the checked-in ARM GNU
 toolchain's libc directory for ARM32, and `/usr/aarch64-linux-gnu` for
