@@ -12,6 +12,8 @@
 #include <dirent.h>
 #include <dlfcn.h>
 #include <fcntl.h>
+#include <getopt.h>
+#include <ifaddrs.h>
 #include <netdb.h>
 #include <netinet/in.h>
 #include <poll.h>
@@ -25,12 +27,17 @@
 #include <stdio.h>
 #include <sys/epoll.h>
 #include <sys/mman.h>
+#include <sys/param.h>
+#include <sys/random.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
 #include <sys/statvfs.h>
+#include <sys/sysinfo.h>
 #include <sys/time.h>
+#include <sys/timeb.h>
 #include <sys/types.h>
 #include <sys/un.h>
+#include <sys/auxv.h>
 #include <sys/user.h>
 #include <termios.h>
 #include <threads.h>
@@ -168,6 +175,16 @@ static void emit_network(void) {
   OFFSET("struct_cmsghdr", struct cmsghdr, cmsg_len);
   OFFSET("struct_cmsghdr", struct cmsghdr, cmsg_level);
   OFFSET("struct_cmsghdr", struct cmsghdr, cmsg_type);
+
+  SIZE("struct_ifaddrs", struct ifaddrs);
+  ALIGN("struct_ifaddrs", struct ifaddrs);
+  OFFSET("struct_ifaddrs", struct ifaddrs, ifa_next);
+  OFFSET("struct_ifaddrs", struct ifaddrs, ifa_name);
+  OFFSET("struct_ifaddrs", struct ifaddrs, ifa_flags);
+  OFFSET("struct_ifaddrs", struct ifaddrs, ifa_addr);
+  OFFSET("struct_ifaddrs", struct ifaddrs, ifa_netmask);
+  OFFSET("struct_ifaddrs", struct ifaddrs, ifa_ifu);
+  OFFSET("struct_ifaddrs", struct ifaddrs, ifa_data);
 }
 
 static void emit_extensions(void) {
@@ -191,6 +208,22 @@ static void emit_extensions(void) {
   SIZE("struct_rlimit", struct rlimit);
   OFFSET("struct_rlimit", struct rlimit, rlim_cur);
   OFFSET("struct_rlimit", struct rlimit, rlim_max);
+
+  SIZE("struct_sysinfo", struct sysinfo);
+  ALIGN("struct_sysinfo", struct sysinfo);
+  OFFSET("struct_sysinfo", struct sysinfo, uptime);
+  OFFSET("struct_sysinfo", struct sysinfo, loads);
+  OFFSET("struct_sysinfo", struct sysinfo, totalram);
+  OFFSET("struct_sysinfo", struct sysinfo, freeram);
+  OFFSET("struct_sysinfo", struct sysinfo, sharedram);
+  OFFSET("struct_sysinfo", struct sysinfo, bufferram);
+  OFFSET("struct_sysinfo", struct sysinfo, totalswap);
+  OFFSET("struct_sysinfo", struct sysinfo, freeswap);
+  OFFSET("struct_sysinfo", struct sysinfo, procs);
+  OFFSET("struct_sysinfo", struct sysinfo, pad);
+  OFFSET("struct_sysinfo", struct sysinfo, totalhigh);
+  OFFSET("struct_sysinfo", struct sysinfo, freehigh);
+  OFFSET("struct_sysinfo", struct sysinfo, mem_unit);
 
   SIZE("struct_statx_timestamp", struct statx_timestamp);
   ALIGN("struct_statx_timestamp", struct statx_timestamp);
@@ -407,6 +440,149 @@ static void emit_registers(void) {
 #endif
 }
 
+static void emit_ucontext(void) {
+  ALIGN("ucontext_t", ucontext_t);
+  OFFSET("ucontext_t", ucontext_t, uc_flags);
+  OFFSET("ucontext_t", ucontext_t, uc_link);
+  OFFSET("ucontext_t", ucontext_t, uc_stack);
+  OFFSET("ucontext_t", ucontext_t, uc_mcontext);
+  OFFSET("ucontext_t", ucontext_t, uc_sigmask);
+  SIZE("mcontext_t", mcontext_t);
+  ALIGN("mcontext_t", mcontext_t);
+
+#if defined(__SLATE_ARCH_X86_64)
+  PRESENCE("sys.ucontext.x86_64", 1);
+  MACRO(REG_R8);
+  MACRO(REG_R15);
+  MACRO(REG_RDI);
+  MACRO(REG_RBP);
+  MACRO(REG_RBX);
+  MACRO(REG_RAX);
+  MACRO(REG_RCX);
+  MACRO(REG_RSP);
+  MACRO(REG_RIP);
+  MACRO(REG_EFL);
+  MACRO(REG_CSGSFS);
+  MACRO(REG_ERR);
+  MACRO(REG_TRAPNO);
+  MACRO(REG_OLDMASK);
+  MACRO(REG_CR2);
+  OFFSET("mcontext_t", mcontext_t, gregs);
+  OFFSET("mcontext_t", mcontext_t, fpregs);
+#elif defined(__SLATE_ARCH_X86)
+  PRESENCE("sys.ucontext.x86", 1);
+  MACRO(REG_GS);
+  MACRO(REG_EDI);
+  MACRO(REG_EBP);
+  MACRO(REG_EBX);
+  MACRO(REG_EDX);
+  MACRO(REG_ECX);
+  MACRO(REG_EAX);
+  MACRO(REG_TRAPNO);
+  MACRO(REG_ERR);
+  MACRO(REG_EIP);
+  MACRO(REG_CS);
+  MACRO(REG_EFL);
+  MACRO(REG_UESP);
+  MACRO(REG_SS);
+  OFFSET("mcontext_t", mcontext_t, gregs);
+  OFFSET("mcontext_t", mcontext_t, fpregs);
+  OFFSET("mcontext_t", mcontext_t, oldmask);
+  OFFSET("mcontext_t", mcontext_t, cr2);
+#elif defined(__SLATE_ARCH_AARCH64)
+  PRESENCE("sys.ucontext.aarch64", 1);
+  OFFSET("mcontext_t", mcontext_t, fault_address);
+  OFFSET("mcontext_t", mcontext_t, regs);
+  OFFSET("mcontext_t", mcontext_t, sp);
+  OFFSET("mcontext_t", mcontext_t, pc);
+  OFFSET("mcontext_t", mcontext_t, pstate);
+#elif defined(__SLATE_ARCH_ARM)
+  PRESENCE("sys.ucontext.arm", 1);
+  OFFSET("mcontext_t", mcontext_t, trap_no);
+  OFFSET("mcontext_t", mcontext_t, error_code);
+  OFFSET("mcontext_t", mcontext_t, oldmask);
+  OFFSET("mcontext_t", mcontext_t, arm_r0);
+  OFFSET("mcontext_t", mcontext_t, arm_fp);
+  OFFSET("mcontext_t", mcontext_t, arm_sp);
+  OFFSET("mcontext_t", mcontext_t, arm_lr);
+  OFFSET("mcontext_t", mcontext_t, arm_pc);
+  OFFSET("mcontext_t", mcontext_t, arm_cpsr);
+  OFFSET("mcontext_t", mcontext_t, fault_address);
+#endif
+}
+
+static void emit_hwcap(void) {
+#if defined(__SLATE_ARCH_AARCH64)
+  PRESENCE("sys.auxv.aarch64", 1);
+  MACRO(HWCAP_FP);
+  MACRO(HWCAP_ASIMD);
+  MACRO(HWCAP_EVTSTRM);
+  MACRO(HWCAP_AES);
+  MACRO(HWCAP_PMULL);
+  MACRO(HWCAP_SHA1);
+  MACRO(HWCAP_SHA2);
+  MACRO(HWCAP_CRC32);
+  MACRO(HWCAP_ATOMICS);
+  MACRO(HWCAP_SVE);
+  MACRO(HWCAP_PACA);
+  MACRO(HWCAP_PACG);
+  MACRO(HWCAP2_SVE2);
+  MACRO(HWCAP2_BTI);
+  MACRO(HWCAP2_MTE);
+#elif defined(__SLATE_ARCH_ARM)
+  PRESENCE("sys.auxv.arm", 1);
+  MACRO(HWCAP_ARM_SWP);
+  MACRO(HWCAP_ARM_THUMB);
+  MACRO(HWCAP_ARM_VFP);
+  MACRO(HWCAP_ARM_NEON);
+  MACRO(HWCAP_ARM_VFPv3);
+  MACRO(HWCAP_ARM_TLS);
+  MACRO(HWCAP_ARM_VFPv4);
+  MACRO(HWCAP_ARM_IDIVA);
+  MACRO(HWCAP_ARM_IDIVT);
+  MACRO(HWCAP_ARM_LPAE);
+  MACRO(HWCAP_ARM_EVTSTRM);
+  MACRO(HWCAP2_AES);
+  MACRO(HWCAP2_PMULL);
+  MACRO(HWCAP2_SHA1);
+  MACRO(HWCAP2_SHA2);
+  MACRO(HWCAP2_CRC32);
+#if defined(__SLATE_LIBC_MUSL)
+  MACRO(HWCAP_NEON);
+  MACRO(HWCAP_VFPv3);
+  MACRO(HWCAP_IDIV);
+#endif
+#endif
+}
+
+static void emit_odds_and_ends(void) {
+  SIZE("struct_option", struct option);
+  ALIGN("struct_option", struct option);
+  OFFSET("struct_option", struct option, name);
+  OFFSET("struct_option", struct option, has_arg);
+  OFFSET("struct_option", struct option, flag);
+  OFFSET("struct_option", struct option, val);
+
+  SIZE("struct_timeb", struct timeb);
+  ALIGN("struct_timeb", struct timeb);
+  OFFSET("struct_timeb", struct timeb, time);
+  OFFSET("struct_timeb", struct timeb, millitm);
+  OFFSET("struct_timeb", struct timeb, timezone);
+  OFFSET("struct_timeb", struct timeb, dstflag);
+
+  MACRO(NBBY);
+  MACRO(MAXPATHLEN);
+  MACRO(MAXHOSTNAMELEN);
+  MACRO(MAXSYMLINKS);
+  MACRO(NOFILE);
+  MACRO(DEV_BSIZE);
+  MACRO(NOGROUP);
+
+  MACRO(GRND_NONBLOCK);
+  MACRO(GRND_RANDOM);
+  MACRO(GRND_INSECURE);
+}
+
 static void emit_threads(void) {
   SIZE("pthread_t", pthread_t);
   SIZE("pthread_key_t", pthread_key_t);
@@ -457,9 +633,12 @@ int main(void) {
   emit_network();
 #if defined(__SLATE_LIBC_GLIBC) || defined(__SLATE_LIBC_MUSL)
   emit_extensions();
+  emit_ucontext();
 #endif
   emit_misc();
   emit_registers();
+  emit_hwcap();
+  emit_odds_and_ends();
   emit_threads();
   emit_macros();
   return 0;

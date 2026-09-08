@@ -16,7 +16,11 @@ struct sysinfo {
   unsigned long  totalhigh;
   unsigned long  freehigh;
   unsigned       mem_unit;
-  char           __reserved[256];
+#if defined(__SLATE_LIBC_GLIBC)
+  char _f[20 - 2 * sizeof(unsigned long) - sizeof(unsigned)];
+#else
+  char __reserved[256];
+#endif
 };
 
 int  sysinfo(struct sysinfo *);

@@ -178,7 +178,9 @@ long       syscall(long, ...);
 int        execvpe(const char *, char *const[], char *const[]);
 int        issetugid(void);
 int        getentropy(void *, size_t);
+#if !defined(__SLATE_LIBC_GLIBC)
 extern int optreset;
+#endif
 #endif
 
 #ifdef _GNU_SOURCE

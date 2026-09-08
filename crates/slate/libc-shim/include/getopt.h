@@ -1,9 +1,14 @@
 #ifndef _SLATE_GETOPT_H
 #define _SLATE_GETOPT_H
 
+#include <features.h>
+
 int          getopt(int, char *const[], const char *);
 extern char *optarg;
-extern int   optind, opterr, optopt, optreset;
+extern int   optind, opterr, optopt;
+#if !defined(__SLATE_LIBC_GLIBC)
+extern int optreset;
+#endif
 
 struct option {
   const char *name;
