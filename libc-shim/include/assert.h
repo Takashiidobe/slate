@@ -29,6 +29,12 @@
           (__assert_fail(#__VA_ARGS__, __FILE__, __LINE__, __func__), 0)))
 #endif
 
+#if defined(__SLATE_LIBC_GLIBC) && defined(_GNU_SOURCE)
+#define assert_perror(errnum)                                                  \
+  ((void)(((errnum) == 0) ||                                                   \
+          (__assert_fail("assert_perror", __FILE__, __LINE__, __func__), 0)))
+#endif
+
 #if !defined(__SLATE_LIBC_MSVC) && __STDC_VERSION__ >= 201112L
 #define static_assert _Static_assert
 #endif
