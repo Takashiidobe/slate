@@ -19,11 +19,29 @@
 #define __setjmp_attr
 #endif
 
+#if defined(__SLATE_ARCH_X86_64)
+typedef struct {
+  unsigned long __storage[25];
+} __slate_jmp_buf_tag;
+#elif defined(__SLATE_ARCH_X86)
+typedef struct {
+  unsigned long __storage[39];
+} __slate_jmp_buf_tag;
+#elif defined(__SLATE_ARCH_ARM)
+typedef struct {
+  unsigned long long __storage[49];
+} __slate_jmp_buf_tag;
+#elif defined(__SLATE_ARCH_AARCH64)
+typedef struct {
+  unsigned long __storage[39];
+} __slate_jmp_buf_tag;
+#else
 typedef struct {
   long long          __regs[8];
   int                __mask_was_saved;
   unsigned long long __saved_mask[16];
 } __slate_jmp_buf_tag;
+#endif
 
 typedef __slate_jmp_buf_tag jmp_buf[1];
 

@@ -2,9 +2,26 @@
 #error "Never include <bits/x86/stat.h> directly; include a public header instead."
 #endif
 
-/* copied from kernel definition, but with padding replaced
- * by the corresponding correctly-sized userspace types. */
-
+#if defined(__SLATE_LIBC_GLIBC)
+struct stat {
+  dev_t           st_dev;
+  int             __st_dev_padding;
+  ino_t           st_ino;
+  mode_t          st_mode;
+  nlink_t         st_nlink;
+  uid_t           st_uid;
+  gid_t           st_gid;
+  dev_t           st_rdev;
+  int             __st_rdev_padding;
+  off_t           st_size;
+  blksize_t       st_blksize;
+  blkcnt_t        st_blocks;
+  struct timespec st_atim;
+  struct timespec st_mtim;
+  struct timespec st_ctim;
+  unsigned long __glibc_reserved[2];
+};
+#else
 struct stat {
   dev_t     st_dev;
   int       __st_dev_padding;
@@ -27,3 +44,4 @@ struct stat {
   struct timespec st_mtim;
   struct timespec st_ctim;
 };
+#endif

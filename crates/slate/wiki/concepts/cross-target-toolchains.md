@@ -74,6 +74,16 @@ export SLATE_GLIBC_SYSROOT_AARCH64=/path/to/aarch64/sysroot
 python3 tools/libc-abi-matrix.py --libc glibc
 ```
 
+Use `--arch` and `--family` for focused checks before running the full matrix:
+
+```bash
+python3 tools/libc-abi-matrix.py --libc musl --arch aarch64 --family pthread
+python3 tools/libc-abi-matrix.py --libc glibc --arch i386 --family stat-time
+```
+
+Available ABI families are `pthread`, `setjmp-ucontext`, `socket-epoll`,
+`sched`, and `stat-time`.
+
 The local defaults are `/` for x86-64 and i386, the checked-in ARM GNU
 toolchain's libc directory for ARM32, and `/usr/aarch64-linux-gnu` for
 AArch64. For non-native glibc targets, set the matching linker using either
