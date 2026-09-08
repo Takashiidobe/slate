@@ -60,7 +60,21 @@ def probe(args):
 
     with tempfile.TemporaryDirectory(prefix="slate-libc-probe-") as directory:
         executable = Path(directory) / "probe"
-        command(compile_args + [str(SOURCE), "-o", str(executable)])
+        if args.linker:
+            object_file = Path(directory) / "probe.o"
+            command(compile_args + ["-c", str(SOURCE), "-o", str(object_file)])
+            command(
+                [
+                    args.linker,
+                    *args.linker_arg,
+                    str(object_file),
+                    *args.linker_post_arg,
+                    "-o",
+                    str(executable),
+                ]
+            )
+        else:
+            command(compile_args + [str(SOURCE), "-o", str(executable)])
         run_args = [*args.runner, *args.runner_arg, str(executable)]
         output = command(run_args)
 
@@ -71,6 +85,9 @@ def probe(args):
         "mode": "shim" if args.shim else "oracle",
         "compiler": args.compiler,
         "compiler_args": args.compiler_arg,
+        "linker": args.linker,
+        "linker_args": args.linker_arg,
+        "linker_post_args": args.linker_post_arg,
         "target": args.target,
         "sysroot": args.sysroot,
         "defines": args.define,
@@ -112,6 +129,9 @@ def parser():
     run = subparsers.add_parser("run")
     run.add_argument("--compiler", required=True)
     run.add_argument("--compiler-arg", action="append", default=[])
+    run.add_argument("--linker")
+    run.add_argument("--linker-arg", action="append", default=[])
+    run.add_argument("--linker-post-arg", action="append", default=[])
     run.add_argument("--target", required=True)
     run.add_argument("--sysroot", required=True)
     run.add_argument("--shim", type=Path)
