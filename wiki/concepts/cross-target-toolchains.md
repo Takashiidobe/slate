@@ -37,6 +37,24 @@ the corresponding real glibc target sysroots; neither libc is a substitute for
 the other. Compile-only probes require the headers and libraries, while runtime
 differential tests additionally require the target loader and QEMU.
 
+The shared ABI probe is run twice for one target and compared as normalized JSON:
+
+```bash
+python3 tools/libc-abi-probe.py run \
+  --compiler "$HOME/toolchains/slate-musl/x86_64/bin/musl-clang" \
+  --target x86_64-linux-musl \
+  --sysroot "$HOME/toolchains/slate-musl/x86_64" \
+  --extra-arg=-static \
+  --output /tmp/musl-oracle.json
+
+python3 tools/libc-abi-probe.py compare /tmp/musl-oracle.json /tmp/musl-shim.json
+```
+
+The shim invocation adds `--shim libc-shim/include` and the exact Slate target
+defines. Records are keyed by kind and name, so a size and alignment for the
+same type cannot overwrite one another. The comparison rejects different probe
+sources before comparing records.
+
 ## Target matrix
 
 | Target | Clang triple | Rust target | Linker | QEMU | Slate status |
