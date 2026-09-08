@@ -21,6 +21,9 @@ struct aiocb {
   off_t           aio_offset;
   void           *__next, *__prev;
   char            __dummy4[32 - 2 * sizeof(void *)];
+#if defined(__SLATE_LIBC_GLIBC) && defined(__SLATE_WORDSIZE_32)
+  char            __dummy5[4];
+#endif
 };
 
 enum {
