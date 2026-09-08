@@ -327,14 +327,32 @@ fn canonicalize_type(type_spelling: &str, aliases: &BTreeMap<String, String>) ->
             identifier.push(character);
         } else {
             if !identifier.is_empty() {
-                result.push_str(aliases.get(&identifier).map_or(&identifier, String::as_str));
+                if let Some(replacement) = aliases.get(&identifier).filter(|replacement| {
+                    !replacement
+                        .split(|character: char| {
+                            !character.is_ascii_alphanumeric() && character != '_'
+                        })
+                        .any(|token| token == identifier.as_str())
+                }) {
+                    result.push_str(replacement);
+                } else {
+                    result.push_str(&identifier);
+                }
                 identifier.clear();
             }
             result.push(character);
         }
     }
     if !identifier.is_empty() {
-        result.push_str(aliases.get(&identifier).map_or(&identifier, String::as_str));
+        if let Some(replacement) = aliases.get(&identifier).filter(|replacement| {
+            !replacement
+                .split(|character: char| !character.is_ascii_alphanumeric() && character != '_')
+                .any(|token| token == identifier.as_str())
+        }) {
+            result.push_str(replacement);
+        } else {
+            result.push_str(&identifier);
+        }
     }
     result
 }

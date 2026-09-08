@@ -19,16 +19,28 @@
 #define FE_TOWARDZERO 0xc00000
 #endif
 
+#if defined(__SLATE_LIBC_GLIBC)
+typedef unsigned int fexcept_t;
+typedef unsigned int femode_t;
+#else
 typedef unsigned long fexcept_t;
+#endif
 
-typedef struct {
+typedef struct fenv_t {
   unsigned long __cw;
 } fenv_t;
 
 #define FE_DFL_ENV ((const fenv_t *)-1)
 
-typedef struct {
+#if !defined(__SLATE_LIBC_GLIBC)
+typedef struct femode_t {
   unsigned long __cw;
 } femode_t;
+#endif
 
 #define FE_DFL_MODE ((const femode_t *)-1L)
+
+#if defined(__SLATE_LIBC_GLIBC)
+#define FE_EXCEPT_SHIFT 0
+#define FE_NOMASK_ENV ((const fenv_t *)-1)
+#endif

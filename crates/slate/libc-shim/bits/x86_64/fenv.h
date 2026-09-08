@@ -17,7 +17,7 @@
 
 typedef unsigned short fexcept_t;
 
-typedef struct {
+typedef struct fenv_t {
   unsigned short __control_word;
   unsigned short __glibc_reserved1;
   unsigned short __status_word;
@@ -38,10 +38,14 @@ typedef struct {
 
 #define FE_DFL_ENV ((const fenv_t *)-1)
 
-typedef struct {
+typedef struct femode_t {
   unsigned short __control_word;
   unsigned short __glibc_reserved;
   unsigned int   __mxcsr;
 } femode_t;
 
 #define FE_DFL_MODE ((const femode_t *)-1L)
+
+#if defined(__SLATE_LIBC_GLIBC)
+#define FE_NOMASK_ENV ((const fenv_t *)-1)
+#endif
