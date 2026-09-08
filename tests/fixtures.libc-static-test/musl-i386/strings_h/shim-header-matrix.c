@@ -11,7 +11,7 @@ extern char * slate_oracle_rindex(const char *, int);
 extern int slate_oracle_strcasecmp(const char *, const char *);
 extern int slate_oracle_strcasecmp_l(const char *, const char *, struct __locale_struct *);
 extern int slate_oracle_strncasecmp(const char *, const char *, __size_t);
-extern int slate_oracle_strncasecmp_l(const char *, const char *, unsigned long, struct __locale_struct *);
+extern int slate_oracle_strncasecmp_l(const char *, const char *, unsigned int, struct __locale_struct *);
 
 _Static_assert(
     __builtin_types_compatible_p(__typeof__(slate_oracle_bcmp), __typeof__(bcmp)),
@@ -76,5 +76,8 @@ static __typeof__(strncasecmp_l) *const slate_reference_strncasecmp_l = &strncas
 
 typedef struct __locale_struct * slate_oracle_typedef_locale_t;
 _Static_assert(__builtin_types_compatible_p(slate_oracle_typedef_locale_t, locale_t), "typedef locale_t differs from oracle");
+
+typedef unsigned int slate_oracle_typedef_size_t;
+_Static_assert(__builtin_types_compatible_p(slate_oracle_typedef_size_t, size_t), "typedef size_t differs from oracle");
 
 int main(void) { return 0; }

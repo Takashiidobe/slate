@@ -20,15 +20,80 @@ struct DeclarationMatrixDescriptor {
     oracle_root: &'static str,
 }
 
-const DESCRIPTORS: &[DeclarationMatrixDescriptor] = &[DeclarationMatrixDescriptor {
-    name: "glibc-x86_64",
-    architecture: Architecture::X86_64,
-    libc: LibcVariant::Glibc,
-    feature_profile: "default",
-    fixture_root: "tests/fixtures.libc-static-test/glibc-x86_64",
-    manifest: "headers.txt",
-    oracle_root: "target/libc-declaration-oracle/glibc-x86_64",
-}];
+const DESCRIPTORS: &[DeclarationMatrixDescriptor] = &[
+    DeclarationMatrixDescriptor {
+        name: "glibc-x86_64",
+        architecture: Architecture::X86_64,
+        libc: LibcVariant::Glibc,
+        feature_profile: "default",
+        fixture_root: "tests/fixtures.libc-static-test/glibc-x86_64",
+        manifest: "headers.txt",
+        oracle_root: "target/libc-declaration-oracle/glibc-x86_64",
+    },
+    DeclarationMatrixDescriptor {
+        name: "musl-x86_64",
+        architecture: Architecture::X86_64,
+        libc: LibcVariant::Musl,
+        feature_profile: "default",
+        fixture_root: "tests/fixtures.libc-static-test/musl-x86_64",
+        manifest: "headers.txt",
+        oracle_root: "target/libc-declaration-oracle/musl-x86_64",
+    },
+    DeclarationMatrixDescriptor {
+        name: "glibc-i386",
+        architecture: Architecture::X86,
+        libc: LibcVariant::Glibc,
+        feature_profile: "default",
+        fixture_root: "tests/fixtures.libc-static-test/glibc-i386",
+        manifest: "headers.txt",
+        oracle_root: "target/libc-declaration-oracle/glibc-i386",
+    },
+    DeclarationMatrixDescriptor {
+        name: "musl-i386",
+        architecture: Architecture::X86,
+        libc: LibcVariant::Musl,
+        feature_profile: "default",
+        fixture_root: "tests/fixtures.libc-static-test/musl-i386",
+        manifest: "headers.txt",
+        oracle_root: "target/libc-declaration-oracle/musl-i386",
+    },
+    DeclarationMatrixDescriptor {
+        name: "glibc-arm",
+        architecture: Architecture::Arm,
+        libc: LibcVariant::Glibc,
+        feature_profile: "default",
+        fixture_root: "tests/fixtures.libc-static-test/glibc-arm",
+        manifest: "headers.txt",
+        oracle_root: "target/libc-declaration-oracle/glibc-arm",
+    },
+    DeclarationMatrixDescriptor {
+        name: "musl-arm",
+        architecture: Architecture::Arm,
+        libc: LibcVariant::Musl,
+        feature_profile: "default",
+        fixture_root: "tests/fixtures.libc-static-test/musl-arm",
+        manifest: "headers.txt",
+        oracle_root: "target/libc-declaration-oracle/musl-arm",
+    },
+    DeclarationMatrixDescriptor {
+        name: "glibc-aarch64",
+        architecture: Architecture::Aarch64,
+        libc: LibcVariant::Glibc,
+        feature_profile: "default",
+        fixture_root: "tests/fixtures.libc-static-test/glibc-aarch64",
+        manifest: "headers.txt",
+        oracle_root: "target/libc-declaration-oracle/glibc-aarch64",
+    },
+    DeclarationMatrixDescriptor {
+        name: "musl-aarch64",
+        architecture: Architecture::Aarch64,
+        libc: LibcVariant::Musl,
+        feature_profile: "default",
+        fixture_root: "tests/fixtures.libc-static-test/musl-aarch64",
+        manifest: "headers.txt",
+        oracle_root: "target/libc-declaration-oracle/musl-aarch64",
+    },
+];
 
 impl DeclarationMatrixDescriptor {
     fn config(&self) -> support::libc_probe::ProbeConfig {
