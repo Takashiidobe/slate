@@ -238,12 +238,25 @@ def run_probe(configuration, shim, output):
         command.extend(["--runner", str(configuration["runner"])])
         for value in configuration["runner_args"]:
             command.extend([f"--runner-arg={value}"])
-    subprocess.run(command, check=True)
+    result = subprocess.run(command, text=True, capture_output=True)
+    if result.returncode:
+        detail = (result.stdout + result.stderr).strip()
+        raise RuntimeError(detail or "probe execution failed")
 
 
 def compare(oracle, candidate):
-    command = [sys.executable, str(PROBE), "compare", str(oracle), str(candidate)]
-    subprocess.run(command, check=True)
+    left = json.loads(oracle.read_text())
+    right = json.loads(candidate.read_text())
+    if left.get("probe") != right.get("probe"):
+        raise RuntimeError("probe names differ")
+    if left.get("source_sha256") != right.get("source_sha256"):
+        raise RuntimeError("probe sources differ")
+    left_records = left["records"]
+    right_records = right["records"]
+    return [
+        (name, left_records.get(name), right_records.get(name))
+        for name in sorted(set(left_records) | set(right_records))
+    ]
 
 
 def parser():
@@ -276,6 +289,8 @@ def main():
     libcs = ["musl", "glibc"] if args.libc == "all" else [args.libc]
     results = []
     failures = []
+    record_passes = 0
+    record_failures = 0
     for libc in libcs:
         for name in names:
             label = f"{libc}/{name}"
@@ -287,12 +302,37 @@ def main():
                 candidate = directory / "shim.json"
                 run_probe(configuration, False, oracle)
                 run_probe(configuration, True, candidate)
-                compare(oracle, candidate)
-                results.append(label)
-                print(f"{label}: match")
-            except (OSError, RuntimeError, subprocess.CalledProcessError) as error:
+                records = compare(oracle, candidate)
+                mismatches = [
+                    (name, expected, actual)
+                    for name, expected, actual in records
+                    if expected != actual
+                ]
+                record_passes += len(records) - len(mismatches)
+                record_failures += len(mismatches)
+                if mismatches:
+                    detail = "\n".join(
+                        f"{name}: oracle={expected!r} candidate={actual!r}"
+                        for name, expected, actual in mismatches
+                    )
+                    failures.append((label, detail))
+                    print(f"FAIL {label}")
+                else:
+                    results.append(label)
+                    print(f"PASS {label}")
+                for name, expected, actual in records:
+                    if expected == actual:
+                        print(f"  PASS {name}")
+                    else:
+                        print(
+                            f"  FAIL {name}: oracle={expected!r} "
+                            f"candidate={actual!r}"
+                        )
+            except (OSError, RuntimeError) as error:
                 failures.append((label, str(error)))
-                print(f"{label}: failed: {error}", file=sys.stderr)
+                print(f"FAIL {label} (toolchain)", file=sys.stderr)
+                for line in str(error).splitlines():
+                    print(f"  {line}", file=sys.stderr)
 
     manifest = {
         "schema": 1,
@@ -303,6 +343,10 @@ def main():
     }
     args.output_root.mkdir(parents=True, exist_ok=True)
     (args.output_root / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
+    print(
+        f"SUMMARY targets_passed={len(results)} targets_failed={len(failures)} "
+        f"records_passed={record_passes} records_failed={record_failures}"
+    )
     if failures:
         raise SystemExit(1)
 
