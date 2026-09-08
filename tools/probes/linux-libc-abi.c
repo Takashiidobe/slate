@@ -26,9 +26,13 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <sys/epoll.h>
+#include <sys/ipc.h>
 #include <sys/mman.h>
+#include <sys/msg.h>
 #include <sys/param.h>
 #include <sys/random.h>
+#include <sys/sem.h>
+#include <sys/shm.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
 #include <sys/statvfs.h>
@@ -325,6 +329,46 @@ static void emit_extensions(void) {
   OFFSET("struct_pidfd_info", struct pidfd_info, supported_mask);
 #endif
 #endif
+
+  SIZE("struct_ipc_perm", struct ipc_perm);
+  ALIGN("struct_ipc_perm", struct ipc_perm);
+  OFFSET("struct_ipc_perm", struct ipc_perm, __key);
+  OFFSET("struct_ipc_perm", struct ipc_perm, uid);
+  OFFSET("struct_ipc_perm", struct ipc_perm, gid);
+  OFFSET("struct_ipc_perm", struct ipc_perm, cuid);
+  OFFSET("struct_ipc_perm", struct ipc_perm, cgid);
+  OFFSET("struct_ipc_perm", struct ipc_perm, mode);
+  OFFSET("struct_ipc_perm", struct ipc_perm, __seq);
+
+  SIZE("struct_shmid_ds", struct shmid_ds);
+  ALIGN("struct_shmid_ds", struct shmid_ds);
+  OFFSET("struct_shmid_ds", struct shmid_ds, shm_perm);
+  OFFSET("struct_shmid_ds", struct shmid_ds, shm_segsz);
+  OFFSET("struct_shmid_ds", struct shmid_ds, shm_atime);
+  OFFSET("struct_shmid_ds", struct shmid_ds, shm_dtime);
+  OFFSET("struct_shmid_ds", struct shmid_ds, shm_ctime);
+  OFFSET("struct_shmid_ds", struct shmid_ds, shm_cpid);
+  OFFSET("struct_shmid_ds", struct shmid_ds, shm_lpid);
+  OFFSET("struct_shmid_ds", struct shmid_ds, shm_nattch);
+
+  SIZE("struct_msqid_ds", struct msqid_ds);
+  ALIGN("struct_msqid_ds", struct msqid_ds);
+  OFFSET("struct_msqid_ds", struct msqid_ds, msg_perm);
+  OFFSET("struct_msqid_ds", struct msqid_ds, msg_stime);
+  OFFSET("struct_msqid_ds", struct msqid_ds, msg_rtime);
+  OFFSET("struct_msqid_ds", struct msqid_ds, msg_ctime);
+  OFFSET("struct_msqid_ds", struct msqid_ds, __msg_cbytes);
+  OFFSET("struct_msqid_ds", struct msqid_ds, msg_qnum);
+  OFFSET("struct_msqid_ds", struct msqid_ds, msg_qbytes);
+  OFFSET("struct_msqid_ds", struct msqid_ds, msg_lspid);
+  OFFSET("struct_msqid_ds", struct msqid_ds, msg_lrpid);
+
+  SIZE("struct_semid_ds", struct semid_ds);
+  ALIGN("struct_semid_ds", struct semid_ds);
+  OFFSET("struct_semid_ds", struct semid_ds, sem_perm);
+  OFFSET("struct_semid_ds", struct semid_ds, sem_otime);
+  OFFSET("struct_semid_ds", struct semid_ds, sem_ctime);
+  OFFSET("struct_semid_ds", struct semid_ds, sem_nsems);
 }
 
 static void emit_misc(void) {
