@@ -109,7 +109,11 @@ typedef struct __ucontext {
   stack_t            uc_stack;
   mcontext_t         uc_mcontext;
   sigset_t           uc_sigmask;
+#if defined(__SLATE_LIBC_GLIBC)
+  unsigned long      __fpregs_mem[68];
+#else
   unsigned long      __fpregs_mem[64];
+#endif
 } ucontext_t;
 
 #define SA_NOCLDSTOP 1

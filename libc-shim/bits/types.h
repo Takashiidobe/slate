@@ -296,8 +296,13 @@ typedef long long          __blkcnt64_t;
 typedef unsigned long long __fsblkcnt_t;
 typedef unsigned long long __fsfilcnt_t;
 #endif
+#if defined(__SLATE_LIBC_MUSL)
+typedef long long          __time_t;
+typedef long long          __suseconds_t;
+#else
 typedef long               __time_t;
 typedef long               __suseconds_t;
+#endif
 typedef long               __blksize_t;
 typedef long long          __int64_t;
 typedef unsigned long long __uint64_t;
@@ -388,17 +393,51 @@ typedef union {
   long __align;
 } __pthread_attr_t;
 
-typedef struct {
-  char __size[40];
-} __pthread_mutex_t;
-
-typedef struct {
+#if defined(__SLATE_LIBC_GLIBC) && defined(__SLATE_ARCH_AARCH64)
+typedef union {
   char __size[48];
-} __pthread_cond_t;
+  long __align;
+} __pthread_mutex_t;
+#elif defined(__SLATE_LIBC_GLIBC) &&                                         \
+    (defined(__SLATE_ARCH_X86) || defined(__SLATE_ARCH_ARM))
+typedef union {
+  char __size[24];
+  long __align;
+} __pthread_mutex_t;
+#else
+typedef union {
+#if defined(__SLATE_ARCH_X86_64) || defined(__SLATE_ARCH_AARCH64)
+  char __size[40];
+#else
+  char __size[24];
+#endif
+  long __align;
+} __pthread_mutex_t;
+#endif
 
-typedef struct {
-  char __size[56];
+#if defined(__SLATE_LIBC_GLIBC) && defined(__SLATE_ARCH_ARM)
+typedef union {
+  char __size[48];
+  long long __align __attribute__((aligned(8)));
+} __pthread_cond_t;
+#else
+typedef union {
+  char __size[48];
+  long __align;
+} __pthread_cond_t;
+#endif
+
+#if defined(__SLATE_ARCH_X86) || defined(__SLATE_ARCH_ARM)
+typedef union {
+  char __size[32];
+  long __align;
 } __pthread_rwlock_t;
+#else
+typedef union {
+  char __size[56];
+  long __align;
+} __pthread_rwlock_t;
+#endif
 
 typedef struct {
   char __size[32];
@@ -408,6 +447,17 @@ typedef int __pthread_once_t;
 
 typedef unsigned long __pthread_t;
 
+#if defined(__SLATE_LIBC_GLIBC) && defined(__SLATE_ARCH_AARCH64)
+typedef union {
+  char __size[8];
+  long __align;
+} __pthread_mutexattr_t;
+
+typedef union {
+  char __size[8];
+  long __align;
+} __pthread_condattr_t;
+#else
 typedef union {
   char __size[4];
   int  __align;
@@ -417,6 +467,7 @@ typedef union {
   char __size[4];
   int  __align;
 } __pthread_condattr_t;
+#endif
 
 typedef union {
   char __size[8];
@@ -598,7 +649,11 @@ struct timeval {
 #if defined(__NEED_struct_timespec) && !defined(__DEFINED_struct_timespec)
 struct timespec {
   __time_t tv_sec;
+#if defined(__SLATE_LIBC_MUSL) && defined(__SLATE_ARCH_X86)
+  long long tv_nsec;
+#else
   long     tv_nsec;
+#endif
 };
 #define __DEFINED_struct_timespec
 #endif

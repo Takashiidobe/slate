@@ -70,6 +70,14 @@ LOCAL_GLIBC_LINKERS = {
     "aarch64": Path("/usr/bin/aarch64-linux-gnu-gcc"),
 }
 
+ABI_FAMILIES = {
+    "pthread",
+    "setjmp-ucontext",
+    "socket-epoll",
+    "sched",
+    "stat-time",
+}
+
 
 def env_path(name, default=None):
     value = os.environ.get(name, default)
@@ -277,10 +285,30 @@ def compare(oracle, candidate):
     ]
 
 
+def in_family(name, family):
+    if family == "pthread":
+        return "pthread" in name
+    if family == "setjmp-ucontext":
+        return name in {"size:jmp_buf", "size:sigjmp_buf", "size:ucontext_t"}
+    if family == "socket-epoll":
+        return any(value in name for value in ("struct_msghdr", "struct_cmsghdr", "struct_epoll_event"))
+    if family == "sched":
+        return name == "size:struct_sched_param"
+    if family == "stat-time":
+        return (
+            "struct_stat" in name
+            or "struct_timespec" in name
+            or "struct_timeval" in name
+            or name.endswith(":time_t")
+        )
+    return True
+
+
 def parser():
     result = argparse.ArgumentParser()
     result.add_argument("--libc", choices=["musl", "glibc", "all"], default="all")
     result.add_argument("--arch", choices=sorted(TARGETS), action="append")
+    result.add_argument("--family", choices=sorted(ABI_FAMILIES), action="append")
     result.add_argument(
         "--output-root",
         type=Path,
@@ -305,6 +333,7 @@ def main():
     musl_root = env_path("SLATE_MUSL_SYSROOT_ROOT", Path.home() / "toolchains/slate-musl")
     names = args.arch or sorted(TARGETS)
     libcs = ["musl", "glibc"] if args.libc == "all" else [args.libc]
+    families = args.family or [None]
     results = []
     failures = []
     record_passes = 0
@@ -312,6 +341,7 @@ def main():
     for libc in libcs:
         for name in names:
             label = f"{libc}/{name}"
+            display_label = f"{label}/{','.join(args.family)}" if args.family else label
             try:
                 configuration = config(name, libc, slate_clang, musl_root)
                 directory = args.output_root / libc / name
@@ -321,6 +351,14 @@ def main():
                 run_probe(configuration, False, oracle)
                 run_probe(configuration, True, candidate)
                 records = compare(oracle, candidate)
+                if args.family:
+                    records = [
+                        record
+                        for record in records
+                        if any(in_family(record[0], family) for family in families)
+                    ]
+                    if not records:
+                        raise RuntimeError("selected ABI family has no probe records")
                 mismatches = [
                     (name, expected, actual)
                     for name, expected, actual in records
@@ -333,11 +371,11 @@ def main():
                         f"{name}: oracle={expected!r} candidate={actual!r}"
                         for name, expected, actual in mismatches
                     )
-                    failures.append((label, detail))
-                    print(f"FAIL {label}")
+                    failures.append((display_label, detail))
+                    print(f"FAIL {display_label}")
                 else:
-                    results.append(label)
-                    print(f"PASS {label}")
+                    results.append(display_label)
+                    print(f"PASS {display_label}")
                 for name, expected, actual in records:
                     if expected == actual:
                         print(f"  PASS {name}")
@@ -347,8 +385,8 @@ def main():
                             f"candidate={actual!r}"
                         )
             except (OSError, RuntimeError) as error:
-                failures.append((label, str(error)))
-                print(f"FAIL {label} (toolchain)", file=sys.stderr)
+                failures.append((display_label, str(error)))
+                print(f"FAIL {display_label} (toolchain)", file=sys.stderr)
                 for line in str(error).splitlines():
                     print(f"  {line}", file=sys.stderr)
 

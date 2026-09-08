@@ -44,7 +44,11 @@ typedef union epoll_data {
 struct epoll_event {
   uint32_t     events;
   epoll_data_t data;
-} __packed;
+}
+#if defined(__SLATE_ARCH_X86_64) || defined(__SLATE_ARCH_X86)
+__packed
+#endif
+;
 
 struct epoll_params {
   uint32_t busy_poll_usecs;

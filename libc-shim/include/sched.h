@@ -23,6 +23,17 @@
 
 #include <bits/types.h>
 
+#if defined(__SLATE_LIBC_GLIBC)
+struct sched_param {
+  int sched_priority;
+};
+#elif defined(__SLATE_LIBC_MUSL)
+struct sched_param {
+  int  sched_priority;
+  int  __reserved1;
+  long __reserved2[5];
+};
+#else
 struct sched_param {
   int sched_priority;
   int __reserved1;
@@ -36,6 +47,7 @@ struct sched_param {
 #endif
   int __reserved3;
 };
+#endif
 
 int sched_get_priority_max(int);
 int sched_get_priority_min(int);
