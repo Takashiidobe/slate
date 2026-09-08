@@ -17,12 +17,29 @@
 
 #else
 
+#if defined(__SLATE_LIBC_GLIBC)
+
+typedef struct re_pattern_buffer {
+  void          *__buffer;
+  unsigned long  __allocated;
+  unsigned long  __used;
+  unsigned long  __syntax;
+  char          *__fastmap;
+  unsigned char *__translate;
+  size_t         re_nsub;
+  unsigned       __regex_flags;
+} regex_t;
+
+#else
+
 typedef struct re_pattern_buffer {
   size_t re_nsub;
   void  *__opaque, *__padding[4];
   size_t __nsub2;
   char   __padding2;
 } regex_t;
+
+#endif
 
 typedef struct {
   regoff_t rm_so;

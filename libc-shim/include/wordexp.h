@@ -1,9 +1,10 @@
 #ifndef _SLATE_WORDEXP_H
 #define _SLATE_WORDEXP_H
 
-#define __NEED_size_t
+#include <features.h>
 
-typedef unsigned long size_t;
+#define __NEED_size_t
+#include <bits/types.h>
 
 enum {
   WRDE_DOOFFS  = (1 << 0),

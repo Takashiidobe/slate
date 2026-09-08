@@ -71,7 +71,11 @@ typedef int            __daddr_t;
 typedef char          *__caddr_t;
 typedef unsigned short __sa_family_t;
 typedef unsigned int   __socklen_t;
-typedef long           __regoff_t;
+#if defined(__SLATE_LIBC_GLIBC)
+typedef int __regoff_t;
+#else
+typedef long __regoff_t;
+#endif
 typedef int            __error_t;
 #endif
 
