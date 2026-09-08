@@ -107,14 +107,6 @@ _Static_assert(__builtin_types_compatible_p(slate_oracle_typedef_error_t, error_
 #error "errno.h:EDQUOT macro is missing from libc-shim"
 #endif
 
-#ifndef EFSBADCRC
-#error "errno.h:EFSBADCRC macro is missing from libc-shim"
-#endif
-
-#ifndef EFSCORRUPTED
-#error "errno.h:EFSCORRUPTED macro is missing from libc-shim"
-#endif
-
 #ifndef EHOSTDOWN
 #error "errno.h:EHOSTDOWN macro is missing from libc-shim"
 #endif

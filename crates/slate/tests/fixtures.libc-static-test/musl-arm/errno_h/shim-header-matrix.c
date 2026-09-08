@@ -12,8 +12,13 @@ _Static_assert(__builtin_types_compatible_p(__typeof__(slate_oracle_program_invo
 
 static __typeof__(program_invocation_short_name) *const slate_reference_program_invocation_short_name = &program_invocation_short_name;
 
-typedef int slate_oracle_typedef_error_t;
-_Static_assert(__builtin_types_compatible_p(slate_oracle_typedef_error_t, error_t), "typedef error_t differs from oracle");
+#ifndef E2BIG
+#error "errno.h:E2BIG macro is missing from libc-shim"
+#endif
+
+#ifndef EACCES
+#error "errno.h:EACCES macro is missing from libc-shim"
+#endif
 
 #ifndef EADDRINUSE
 #error "errno.h:EADDRINUSE macro is missing from libc-shim"
@@ -31,12 +36,20 @@ _Static_assert(__builtin_types_compatible_p(slate_oracle_typedef_error_t, error_
 #error "errno.h:EAFNOSUPPORT macro is missing from libc-shim"
 #endif
 
+#ifndef EAGAIN
+#error "errno.h:EAGAIN macro is missing from libc-shim"
+#endif
+
 #ifndef EALREADY
 #error "errno.h:EALREADY macro is missing from libc-shim"
 #endif
 
 #ifndef EBADE
 #error "errno.h:EBADE macro is missing from libc-shim"
+#endif
+
+#ifndef EBADF
+#error "errno.h:EBADF macro is missing from libc-shim"
 #endif
 
 #ifndef EBADFD
@@ -63,8 +76,16 @@ _Static_assert(__builtin_types_compatible_p(slate_oracle_typedef_error_t, error_
 #error "errno.h:EBFONT macro is missing from libc-shim"
 #endif
 
+#ifndef EBUSY
+#error "errno.h:EBUSY macro is missing from libc-shim"
+#endif
+
 #ifndef ECANCELED
 #error "errno.h:ECANCELED macro is missing from libc-shim"
+#endif
+
+#ifndef ECHILD
+#error "errno.h:ECHILD macro is missing from libc-shim"
 #endif
 
 #ifndef ECHRNG
@@ -99,6 +120,10 @@ _Static_assert(__builtin_types_compatible_p(slate_oracle_typedef_error_t, error_
 #error "errno.h:EDESTADDRREQ macro is missing from libc-shim"
 #endif
 
+#ifndef EDOM
+#error "errno.h:EDOM macro is missing from libc-shim"
+#endif
+
 #ifndef EDOTDOT
 #error "errno.h:EDOTDOT macro is missing from libc-shim"
 #endif
@@ -107,12 +132,16 @@ _Static_assert(__builtin_types_compatible_p(slate_oracle_typedef_error_t, error_
 #error "errno.h:EDQUOT macro is missing from libc-shim"
 #endif
 
-#ifndef EFSBADCRC
-#error "errno.h:EFSBADCRC macro is missing from libc-shim"
+#ifndef EEXIST
+#error "errno.h:EEXIST macro is missing from libc-shim"
 #endif
 
-#ifndef EFSCORRUPTED
-#error "errno.h:EFSCORRUPTED macro is missing from libc-shim"
+#ifndef EFAULT
+#error "errno.h:EFAULT macro is missing from libc-shim"
+#endif
+
+#ifndef EFBIG
+#error "errno.h:EFBIG macro is missing from libc-shim"
 #endif
 
 #ifndef EHOSTDOWN
@@ -139,8 +168,24 @@ _Static_assert(__builtin_types_compatible_p(slate_oracle_typedef_error_t, error_
 #error "errno.h:EINPROGRESS macro is missing from libc-shim"
 #endif
 
+#ifndef EINTR
+#error "errno.h:EINTR macro is missing from libc-shim"
+#endif
+
+#ifndef EINVAL
+#error "errno.h:EINVAL macro is missing from libc-shim"
+#endif
+
+#ifndef EIO
+#error "errno.h:EIO macro is missing from libc-shim"
+#endif
+
 #ifndef EISCONN
 #error "errno.h:EISCONN macro is missing from libc-shim"
+#endif
+
+#ifndef EISDIR
+#error "errno.h:EISDIR macro is missing from libc-shim"
 #endif
 
 #ifndef EISNAM
@@ -207,6 +252,14 @@ _Static_assert(__builtin_types_compatible_p(slate_oracle_typedef_error_t, error_
 #error "errno.h:EMEDIUMTYPE macro is missing from libc-shim"
 #endif
 
+#ifndef EMFILE
+#error "errno.h:EMFILE macro is missing from libc-shim"
+#endif
+
+#ifndef EMLINK
+#error "errno.h:EMLINK macro is missing from libc-shim"
+#endif
+
 #ifndef EMSGSIZE
 #error "errno.h:EMSGSIZE macro is missing from libc-shim"
 #endif
@@ -235,6 +288,10 @@ _Static_assert(__builtin_types_compatible_p(slate_oracle_typedef_error_t, error_
 #error "errno.h:ENETUNREACH macro is missing from libc-shim"
 #endif
 
+#ifndef ENFILE
+#error "errno.h:ENFILE macro is missing from libc-shim"
+#endif
+
 #ifndef ENOANO
 #error "errno.h:ENOANO macro is missing from libc-shim"
 #endif
@@ -249,6 +306,18 @@ _Static_assert(__builtin_types_compatible_p(slate_oracle_typedef_error_t, error_
 
 #ifndef ENODATA
 #error "errno.h:ENODATA macro is missing from libc-shim"
+#endif
+
+#ifndef ENODEV
+#error "errno.h:ENODEV macro is missing from libc-shim"
+#endif
+
+#ifndef ENOENT
+#error "errno.h:ENOENT macro is missing from libc-shim"
+#endif
+
+#ifndef ENOEXEC
+#error "errno.h:ENOEXEC macro is missing from libc-shim"
 #endif
 
 #ifndef ENOKEY
@@ -267,6 +336,10 @@ _Static_assert(__builtin_types_compatible_p(slate_oracle_typedef_error_t, error_
 #error "errno.h:ENOMEDIUM macro is missing from libc-shim"
 #endif
 
+#ifndef ENOMEM
+#error "errno.h:ENOMEM macro is missing from libc-shim"
+#endif
+
 #ifndef ENOMSG
 #error "errno.h:ENOMSG macro is missing from libc-shim"
 #endif
@@ -283,6 +356,10 @@ _Static_assert(__builtin_types_compatible_p(slate_oracle_typedef_error_t, error_
 #error "errno.h:ENOPROTOOPT macro is missing from libc-shim"
 #endif
 
+#ifndef ENOSPC
+#error "errno.h:ENOSPC macro is missing from libc-shim"
+#endif
+
 #ifndef ENOSR
 #error "errno.h:ENOSR macro is missing from libc-shim"
 #endif
@@ -295,8 +372,16 @@ _Static_assert(__builtin_types_compatible_p(slate_oracle_typedef_error_t, error_
 #error "errno.h:ENOSYS macro is missing from libc-shim"
 #endif
 
+#ifndef ENOTBLK
+#error "errno.h:ENOTBLK macro is missing from libc-shim"
+#endif
+
 #ifndef ENOTCONN
 #error "errno.h:ENOTCONN macro is missing from libc-shim"
+#endif
+
+#ifndef ENOTDIR
+#error "errno.h:ENOTDIR macro is missing from libc-shim"
 #endif
 
 #ifndef ENOTEMPTY
@@ -319,8 +404,16 @@ _Static_assert(__builtin_types_compatible_p(slate_oracle_typedef_error_t, error_
 #error "errno.h:ENOTSUP macro is missing from libc-shim"
 #endif
 
+#ifndef ENOTTY
+#error "errno.h:ENOTTY macro is missing from libc-shim"
+#endif
+
 #ifndef ENOTUNIQ
 #error "errno.h:ENOTUNIQ macro is missing from libc-shim"
+#endif
+
+#ifndef ENXIO
+#error "errno.h:ENXIO macro is missing from libc-shim"
 #endif
 
 #ifndef EOPNOTSUPP
@@ -335,8 +428,16 @@ _Static_assert(__builtin_types_compatible_p(slate_oracle_typedef_error_t, error_
 #error "errno.h:EOWNERDEAD macro is missing from libc-shim"
 #endif
 
+#ifndef EPERM
+#error "errno.h:EPERM macro is missing from libc-shim"
+#endif
+
 #ifndef EPFNOSUPPORT
 #error "errno.h:EPFNOSUPPORT macro is missing from libc-shim"
+#endif
+
+#ifndef EPIPE
+#error "errno.h:EPIPE macro is missing from libc-shim"
 #endif
 
 #ifndef EPROTO
@@ -349,6 +450,10 @@ _Static_assert(__builtin_types_compatible_p(slate_oracle_typedef_error_t, error_
 
 #ifndef EPROTOTYPE
 #error "errno.h:EPROTOTYPE macro is missing from libc-shim"
+#endif
+
+#ifndef ERANGE
+#error "errno.h:ERANGE macro is missing from libc-shim"
 #endif
 
 #ifndef EREMCHG
@@ -371,12 +476,24 @@ _Static_assert(__builtin_types_compatible_p(slate_oracle_typedef_error_t, error_
 #error "errno.h:ERFKILL macro is missing from libc-shim"
 #endif
 
+#ifndef EROFS
+#error "errno.h:EROFS macro is missing from libc-shim"
+#endif
+
 #ifndef ESHUTDOWN
 #error "errno.h:ESHUTDOWN macro is missing from libc-shim"
 #endif
 
 #ifndef ESOCKTNOSUPPORT
 #error "errno.h:ESOCKTNOSUPPORT macro is missing from libc-shim"
+#endif
+
+#ifndef ESPIPE
+#error "errno.h:ESPIPE macro is missing from libc-shim"
+#endif
+
+#ifndef ESRCH
+#error "errno.h:ESRCH macro is missing from libc-shim"
 #endif
 
 #ifndef ESRMNT
@@ -403,6 +520,10 @@ _Static_assert(__builtin_types_compatible_p(slate_oracle_typedef_error_t, error_
 #error "errno.h:ETOOMANYREFS macro is missing from libc-shim"
 #endif
 
+#ifndef ETXTBSY
+#error "errno.h:ETXTBSY macro is missing from libc-shim"
+#endif
+
 #ifndef EUCLEAN
 #error "errno.h:EUCLEAN macro is missing from libc-shim"
 #endif
@@ -417,6 +538,10 @@ _Static_assert(__builtin_types_compatible_p(slate_oracle_typedef_error_t, error_
 
 #ifndef EWOULDBLOCK
 #error "errno.h:EWOULDBLOCK macro is missing from libc-shim"
+#endif
+
+#ifndef EXDEV
+#error "errno.h:EXDEV macro is missing from libc-shim"
 #endif
 
 #ifndef EXFULL
