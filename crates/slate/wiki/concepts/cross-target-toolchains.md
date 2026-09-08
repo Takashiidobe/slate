@@ -89,6 +89,108 @@ static `libc.a`; static linking is not required for an ABI oracle. i686 probes
 can execute natively on an x86-64 Linux kernel, so the matrix does not route
 them through QEMU. ARM32 and AArch64 still require QEMU for execution.
 
+AArch64 musl links with a fully manual `-nostdlib -nostartfiles -nodefaultlibs`
+sequence (explicit `crt1.o`/`crti.o`/`crtn.o` plus a `--start-group -lc -lgcc
+-lgcc_eh --end-group`) instead of the `musl-gcc` wrapper's own specs file,
+because the host's `aarch64-linux-gnu-gcc` defaults pull in a nonexistent
+`-latomic_asneeded`. Override that linker with `SLATE_MUSL_AARCH64_LINKER`
+(default `aarch64-linux-gnu-gcc`). x86-64 and i386 musl link through the
+sysroot's own `bin/musl-clang` wrapper instead; that wrapper only preserves a
+caller's `-l*`/`-L*` flags when the caller supplies at least one `-l` flag
+itself (it wraps the *whole* argument list in `-l-user-start`/`-l-user-end`
+markers the first time it sees `-l*` anywhere), so callers must pass an
+explicit `-Wl,--start-group -lc -lgcc -Wl,--end-group` rather than relying on
+Clang's own default library injection, or the link silently drops `libc`.
+`tests/support/libc_probe.rs::resolve` already encodes all of this per arch;
+reuse it rather than re-deriving the link line.
+
+QEMU selection can be overridden per architecture regardless of libc with
+`SLATE_LIBC_QEMU_<ARCH>` (`X86_64`, `X86`, `ARM`, `AARCH64`), which must point
+at an existing executable when set.
+
+## Runtime differential matrix
+
+The ABI matrix above only proves layout and declaration parity; it does not
+compile or run an arbitrary C program end to end. `tests/libc_runtime_matrix_suite.rs`
+(`libc_runtime_matrix` test) closes that gap: for every (arch, libc) pair it
+translates a handful of small, architecture-portable fixtures, builds both the
+C oracle (via the same `libc_probe::resolve` toolchain used by the ABI matrix)
+and the generated Rust (via a matching Cargo cross-target), runs both under
+the same QEMU runner (or natively), and asserts stdout and exit status match.
+It is deliberately light -- three fixtures, not the full `tests/fixtures/`
+corpus -- so it stays fast enough to run every time the `libc` profile does.
+
+```bash
+cargo nextest r --release --profile libc -E 'test(libc_runtime_matrix)'
+```
+
+Like the ABI matrix, it runs the full 4-arch x {musl, glibc} matrix by default
+and skips (not fails) any target whose sysroot, cross linker, or installed
+Rust target is missing. Narrow it the same way:
+
+```bash
+SLATE_LIBC_RUNTIME_LIBC=musl SLATE_LIBC_RUNTIME_ARCH=aarch64 SLATE_LIBC_RUNTIME_FIXTURE=alias_global \
+  cargo nextest r --release --profile libc -E 'test(libc_runtime_matrix)'
+```
+
+The Rust side needs the matching `rustup target add` for each musl/glibc
+triple (`x86_64-unknown-linux-musl`, `i686-unknown-linux-musl`,
+`armv7-unknown-linux-musleabihf`, `aarch64-unknown-linux-musl`, and the
+`*-gnu` glibc equivalents already covered by the target matrix below). musl
+Rust targets need no custom sysroot -- rustup's musl `rust-std` component is
+self-contained -- just a linker driver (`SLATE_MUSL_RUST_CC`, default
+`clang`) and, for ARM32/AArch64, `-fuse-ld=lld` since the host's default
+linker does not understand those `ld` emulation modes. The glibc Rust
+cross-targets reuse the same `config.linker`/`config.linker_args` that
+`libc_probe::resolve` already validated for the C oracle, so no separate
+glibc-specific Rust env vars are needed.
+
+## Standards baseline vs. glibc oracle vs. musl oracle
+
+Slate's own C headers (`libc-shim/include`) are the *standards baseline*: a
+standards-compliant (mostly musl-shaped, POSIX-first) set of declarations that
+Slate compiles user C against with `-nostdlib`, and that the generated Rust's
+`libc` crate bindings must match at the ABI level. See
+[libc](../../docs/src/libc.md) for why this baseline exists and why glibc and
+musl can disagree on a function's exact signature (`strerror_r` is the classic
+example).
+
+The *glibc oracle* and *musl oracle* are the real system headers/libraries for
+each libc, used only to check the standards baseline for correctness -- never
+as a substitute for each other, and never as a substitute for the shim in
+translated output. The ABI matrix compiles the same probe source against an
+oracle and against the shim (`-D__SLATE_LIBC_SHIM`) and diffs the two record
+streams; the runtime matrix compiles the *fixture under test* against an
+oracle only (the shim is exercised indirectly, through the `libc` crate, on
+the Rust side). A target passing the ABI matrix does not by itself prove the
+runtime matrix passes, and vice versa: the ABI matrix catches layout/signature
+drift, the runtime matrix catches behavioral drift (wrong lowering, wrong
+codegen) that layout-correct headers can still hide.
+
+## Cache locations
+
+Both libc test suites cache their build artifacts under `target/` and reuse
+them across runs (nextest does not clean between runs):
+
+- `target/libc-abi-probe/<libc>-<arch>-{oracle,shim}/` -- ABI matrix probe
+  objects, executables, and JSON records, one directory per (libc, arch,
+  oracle-or-shim) combination.
+- `target/libc-runtime-matrix/<libc>-<arch>/<fixture>/` -- runtime matrix
+  translated Rust, the C oracle object/executable, the Cargo batch crate, and
+  run output, one directory per (libc, arch, fixture) combination.
+- `target/test-cache/<mangled-project-path>/` -- the Cargo `--target-dir` used
+  by every generated-crate build across the test suites, including the
+  runtime matrix's per-fixture Cargo projects (`test_target_dir_for_project`
+  in `tests/support/mod.rs`). This is where `slate`'s own release binary ends
+  up during testing; `./target/release/slate` built by a plain `cargo build`
+  is a different, stale binary.
+- `$SLATE_MUSL_SYSROOT_ROOT` (default `$HOME/toolchains/slate-musl`) -- the
+  bootstrapped musl sysroots themselves, outside `target/` since they are a
+  toolchain, not a build artifact.
+
+Deleting a specific stale subdirectory (e.g. after a toolchain upgrade) is
+safe; deleting all of `target/` forces every suite to rebuild everything.
+
 ## Target matrix
 
 | Target | Clang triple | Rust target | Linker | QEMU | Slate status |

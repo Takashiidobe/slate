@@ -5,6 +5,7 @@
 - [Lowerer internals](concepts/lowerer-internals.md)
 - [Passes](concepts/passes.md)
 - [libc-shim](concepts/libc-shim.md)
+- [Cross-target toolchains](concepts/cross-target-toolchains.md)
 - [gcc-torture triage](concepts/gcc-torture-triage.md)
 - [Android NDK oracle](concepts/android-ndk-oracle.md)
 - [FreeBSD libc oracle](concepts/freebsd-libc-oracle.md)
