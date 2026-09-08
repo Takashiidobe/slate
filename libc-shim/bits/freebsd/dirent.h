@@ -16,4 +16,6 @@ struct dirent {
   char           d_name[256];
 };
 
+#define d_ino d_fileno
+
 #endif

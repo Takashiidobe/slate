@@ -1,6 +1,9 @@
 #if defined(__SLATE_LIBC_GLIBC) || defined(__SLATE_LIBC_MUSL)
 #define _GNU_SOURCE
 #endif
+#if defined(__SLATE_LIBC_FREEBSD)
+#define _BSD_SOURCE
+#endif
 
 #include <arpa/inet.h>
 #if defined(__SLATE_LIBC_MUSL) ||                                              \
@@ -19,7 +22,9 @@
 #include <grp.h>
 #include <ifaddrs.h>
 #include <langinfo.h>
+#if defined(__SLATE_LIBC_GLIBC) || defined(__SLATE_LIBC_MUSL)
 #include <mntent.h>
+#endif
 #include <mqueue.h>
 #include <netdb.h>
 #include <netinet/in.h>
@@ -35,7 +40,9 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <sys/auxv.h>
+#if defined(__SLATE_LIBC_GLIBC) || defined(__SLATE_LIBC_MUSL)
 #include <sys/epoll.h>
+#endif
 #include <sys/ipc.h>
 #include <sys/mman.h>
 #include <sys/msg.h>
@@ -46,7 +53,9 @@
 #include <sys/socket.h>
 #include <sys/stat.h>
 #include <sys/statvfs.h>
+#if defined(__SLATE_LIBC_GLIBC) || defined(__SLATE_LIBC_MUSL)
 #include <sys/sysinfo.h>
+#endif
 #include <sys/time.h>
 #include <sys/timeb.h>
 #include <sys/times.h>
@@ -161,7 +170,9 @@ static void emit_time_signal(void) {
   SIZE("sigset_t", sigset_t);
   SIZE("struct_sigaction", struct sigaction);
   SIZE("stack_t", stack_t);
+#if defined(__SLATE_LIBC_GLIBC) || defined(__SLATE_LIBC_MUSL)
   SIZE("ucontext_t", ucontext_t);
+#endif
   SIZE("jmp_buf", jmp_buf);
   SIZE("sigjmp_buf", sigjmp_buf);
 }
@@ -179,7 +190,9 @@ static void emit_network(void) {
   SIZE("struct_linger", struct linger);
   SIZE("struct_addrinfo", struct addrinfo);
   SIZE("struct_pollfd", struct pollfd);
+#if defined(__SLATE_LIBC_GLIBC) || defined(__SLATE_LIBC_MUSL)
   SIZE("struct_epoll_event", struct epoll_event);
+#endif
   OFFSET("struct_sockaddr", struct sockaddr, sa_family);
   OFFSET("struct_sockaddr_in", struct sockaddr_in, sin_family);
   OFFSET("struct_sockaddr_in6", struct sockaddr_in6, sin6_family);
@@ -201,10 +214,11 @@ static void emit_network(void) {
   OFFSET("struct_ifaddrs", struct ifaddrs, ifa_flags);
   OFFSET("struct_ifaddrs", struct ifaddrs, ifa_addr);
   OFFSET("struct_ifaddrs", struct ifaddrs, ifa_netmask);
-  OFFSET("struct_ifaddrs", struct ifaddrs, ifa_ifu);
+  OFFSET("struct_ifaddrs", struct ifaddrs, ifa_dstaddr);
   OFFSET("struct_ifaddrs", struct ifaddrs, ifa_data);
 }
 
+#if defined(__SLATE_LIBC_GLIBC) || defined(__SLATE_LIBC_MUSL)
 static void emit_extensions(void) {
   SIZE("struct_elf_prstatus", struct elf_prstatus);
   ALIGN("struct_elf_prstatus", struct elf_prstatus);
@@ -383,6 +397,7 @@ static void emit_extensions(void) {
   OFFSET("struct_semid_ds", struct semid_ds, sem_ctime);
   OFFSET("struct_semid_ds", struct semid_ds, sem_nsems);
 }
+#endif
 
 static void emit_regex(void) {
   SIZE("regex_t", regex_t);
@@ -414,9 +429,13 @@ static void emit_glob_wordexp(void) {
   MACRO(GLOB_NOCHECK);
   MACRO(GLOB_APPEND);
   MACRO(GLOB_NOESCAPE);
+#if defined(__SLATE_LIBC_GLIBC) || defined(__SLATE_LIBC_MUSL)
   MACRO(GLOB_PERIOD);
+#endif
   MACRO(GLOB_TILDE);
+#if defined(__SLATE_LIBC_GLIBC) || defined(__SLATE_LIBC_MUSL)
   MACRO(GLOB_TILDE_CHECK);
+#endif
   MACRO(GLOB_NOSPACE);
   MACRO(GLOB_ABORTED);
   MACRO(GLOB_NOMATCH);
@@ -487,10 +506,12 @@ static void emit_accounts(void) {
   OFFSET("struct_utmpx", struct utmpx, ut_id);
   OFFSET("struct_utmpx", struct utmpx, ut_user);
   OFFSET("struct_utmpx", struct utmpx, ut_host);
+  OFFSET("struct_utmpx", struct utmpx, ut_tv);
+#if defined(__SLATE_LIBC_GLIBC) || defined(__SLATE_LIBC_MUSL)
   OFFSET("struct_utmpx", struct utmpx, ut_exit);
   OFFSET("struct_utmpx", struct utmpx, ut_session);
-  OFFSET("struct_utmpx", struct utmpx, ut_tv);
   OFFSET("struct_utmpx", struct utmpx, ut_addr_v6);
+#endif
 }
 
 static void emit_misc(void) {
@@ -517,6 +538,7 @@ static void emit_misc(void) {
   ALIGN("once_flag", once_flag);
 }
 
+#if defined(__SLATE_LIBC_GLIBC) || defined(__SLATE_LIBC_MUSL)
 static void emit_registers(void) {
 #if defined(__SLATE_ARCH_X86_64)
   PRESENCE("sys.reg.x86_64", 1);
@@ -605,7 +627,9 @@ static void emit_registers(void) {
   PRESENCE("sys.user.struct_user_regs_struct", 0);
 #endif
 }
+#endif
 
+#if defined(__SLATE_LIBC_GLIBC) || defined(__SLATE_LIBC_MUSL)
 static void emit_ucontext(void) {
   ALIGN("ucontext_t", ucontext_t);
   OFFSET("ucontext_t", ucontext_t, uc_flags);
@@ -676,6 +700,7 @@ static void emit_ucontext(void) {
   OFFSET("mcontext_t", mcontext_t, fault_address);
 #endif
 }
+#endif
 
 static void emit_hwcap(void) {
 #if defined(__SLATE_ARCH_AARCH64)
@@ -755,7 +780,9 @@ static void emit_odds_and_ends(void) {
   OFFSET("struct_utsname", struct utsname, release);
   OFFSET("struct_utsname", struct utsname, version);
   OFFSET("struct_utsname", struct utsname, machine);
+#if defined(__SLATE_LIBC_GLIBC) || defined(__SLATE_LIBC_MUSL)
   OFFSET("struct_utsname", struct utsname, domainname);
+#endif
 
   SIZE("struct_tms", struct tms);
   ALIGN("struct_tms", struct tms);
@@ -764,6 +791,7 @@ static void emit_odds_and_ends(void) {
   OFFSET("struct_tms", struct tms, tms_cutime);
   OFFSET("struct_tms", struct tms, tms_cstime);
 
+#if defined(__SLATE_LIBC_GLIBC) || defined(__SLATE_LIBC_MUSL)
   SIZE("struct_mntent", struct mntent);
   ALIGN("struct_mntent", struct mntent);
   OFFSET("struct_mntent", struct mntent, mnt_fsname);
@@ -772,6 +800,7 @@ static void emit_odds_and_ends(void) {
   OFFSET("struct_mntent", struct mntent, mnt_opts);
   OFFSET("struct_mntent", struct mntent, mnt_freq);
   OFFSET("struct_mntent", struct mntent, mnt_passno);
+#endif
 
   SIZE("ENTRY", ENTRY);
   ALIGN("ENTRY", ENTRY);
@@ -779,6 +808,7 @@ static void emit_odds_and_ends(void) {
   OFFSET("ENTRY", ENTRY, data);
 }
 
+#if defined(__SLATE_LIBC_GLIBC) || defined(__SLATE_LIBC_MUSL)
 static void emit_aio_mqueue(void) {
   SIZE("struct_aiocb", struct aiocb);
   ALIGN("struct_aiocb", struct aiocb);
@@ -847,6 +877,7 @@ static void emit_wait_mman_langinfo(void) {
   MACRO(ERA);
   MACRO(CRNCYSTR);
 }
+#endif
 
 static void emit_threads(void) {
   SIZE("pthread_t", pthread_t);
@@ -907,7 +938,9 @@ int main(void) {
   emit_glob_wordexp();
   emit_accounts();
   emit_misc();
+#if defined(__SLATE_LIBC_GLIBC) || defined(__SLATE_LIBC_MUSL)
   emit_registers();
+#endif
   emit_hwcap();
   emit_odds_and_ends();
 #if defined(__SLATE_LIBC_GLIBC) || defined(__SLATE_LIBC_MUSL)

@@ -45,35 +45,32 @@ arm64 counterpart, and writes raw same-path diffs under
 `summary.txt`. A same-path match only identifies declarations to investigate;
 it does not prove that FreeBSD shares another platform's ABI.
 
-## Probes
+## ABI matrix
 
-Run one probe by architecture and mode:
-
-```bash
-tools/probe-freebsd-libc.sh --arch aarch64 --mode layouts
-tools/probe-freebsd-libc.sh --arch x86_64 --mode symbols
-```
-
-Available modes are `predefined`, `header-macros`, `preprocess`, `ast`,
-`layouts`, `assembly`, `availability`, and `symbols`. Results are written under
-`target/freebsd-oracle/probes/<architecture>/15.1-RELEASE`. The symbol mode
-records both the representative object's undefined imports and the selected
-architecture's `libc.so.7` dynamic symbols. Probes require Clang,
-`llvm-readobj`, and `llvm-readelf`; their paths can be overridden with
-`SLATE_FREEBSD_CLANG`, `SLATE_FREEBSD_LLVM_READOBJ`, and
-`SLATE_FREEBSD_LLVM_READELF`.
-
-Run the complete bootstrap and probe smoke test with:
+FreeBSD's ABI probe (`tests/fixtures.abi-probe/linux-libc-abi.c`, the same
+schema-versioned `kind\tname\tvalue` probe used for glibc/musl, with FreeBSD
+branches added for its divergent record set) is wired into the unified matrix
+instead of the retired `tools/probe-freebsd-libc.sh`/`tools/test-freebsd-oracle.sh`
+scripts:
 
 ```bash
-tools/test-freebsd-oracle.sh
+SLATE_LIBC_ABI_LIBC=freebsd SLATE_LIBC_ABI_ARCH=x86_64,aarch64 \
+  cargo nextest r --release --profile libc --test libc_abi_matrix_suite -E 'test(libc_abi_matrix)'
 ```
 
-This oracle does not yet select a FreeBSD `libc-shim` profile, translate a
-FreeBSD fixture, link generated Rust, or execute FreeBSD binaries. Those are
-separate implementation steps. Updating the baseline requires changing the
-release, source commit, both archive identities, checksums, targets, tests, and
-documentation together.
+`tests/support/libc_probe.rs::resolve()` locates the bootstrapped sysroots via
+`SLATE_FREEBSD_AMD64_SYSROOT`/`SLATE_FREEBSD_ARM64_SYSROOT` (or
+`target/freebsd-oracle/sysroots/<amd64|arm64>` from `tools/bootstrap-freebsd-oracle.sh`)
+and compiles/links the probe against both the oracle and `libc-shim`. FreeBSD
+binaries cannot execute on a Linux host (linux-user QEMU only emulates Linux's
+syscall ABI, not FreeBSD's), so `ProbeConfig::can_execute` is `false` for
+FreeBSD: the matrix verifies compile+link agreement and reports
+`PASS ... (compile+link only; runtime values unverified on this host)` rather
+than diffing runtime sizeof/offsetof values. Real runtime differential
+verification needs actual or virtualized FreeBSD execution, which is separate
+follow-on work. Updating the baseline requires changing the release, source
+commit, both archive identities, checksums, targets, tests, and documentation
+together.
 
 ## Target selection
 
