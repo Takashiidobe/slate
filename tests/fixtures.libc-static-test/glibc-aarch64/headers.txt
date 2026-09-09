@@ -50,3 +50,8 @@ grp.h
 gshadow.h
 iconv.h
 ieee754.h
+ifaddrs.h
+inttypes.h
+langinfo.h
+lastlog.h
+libgen.h

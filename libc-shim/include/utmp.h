@@ -1,7 +1,13 @@
 #ifndef _SLATE_UTMP_H
 #define _SLATE_UTMP_H
 
+#if defined(__SLATE_LIBC_GLIBC)
+#include <sys/types.h>
+
+struct utmp;
+#else
 #include <utmpx.h>
+#endif
 
 #define ACCOUNTING  9
 #define UT_NAMESIZE 32
@@ -14,12 +20,14 @@ struct lastlog {
   char   ll_host[UT_HOSTSIZE];
 };
 
-#define ut_time       ut_tv.tv_sec
-#define ut_name       ut_user
-#define ut_addr       ut_addr_v6[0]
-#define utmp          utmpx
-#define e_exit        __e_exit
+#if !defined(__SLATE_LIBC_GLIBC)
+#define ut_time ut_tv.tv_sec
+#define ut_name ut_user
+#define ut_addr ut_addr_v6[0]
+#define utmp utmpx
+#define e_exit __e_exit
 #define e_termination __e_termination
+#endif
 
 void         endutent(void);
 struct utmp *getutent(void);
