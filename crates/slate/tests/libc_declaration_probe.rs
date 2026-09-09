@@ -3,8 +3,10 @@ mod support;
 use std::path::Path;
 
 use support::libc_declaration_probe::{
-    compile_and_link_shim_probe, extract_oracle_function, extract_oracle_header_functions,
+    compile_and_link_oracle_probe, compile_and_link_shim_probe, diff_header_files,
+    extract_oracle_function, extract_oracle_header_files, extract_oracle_header_functions,
     extract_oracle_header_macros, extract_oracle_header_objects, extract_oracle_type_surface,
+    extract_shim_header_files, extract_shim_header_functions,
     select_oracle_object_macro_value_probes, write_header_macro_presence_probe,
     write_header_object_macro_value_probe, write_header_shim_probe, write_object_macro_value_probe,
     write_object_probe, write_oracle_declarations, write_oracle_macro_manifest,
@@ -267,4 +269,39 @@ fn verify_oracle_header_type_surface() {
         .expect("write shim type surface probe");
     println!("generated: {}", probe.source.display());
     compile_and_link_shim_probe(&config, &probe).expect("verify shim type surface");
+}
+
+#[test]
+#[ignore = "manual bidirectional header-file diff probe"]
+fn diff_shim_header_files_against_oracle() {
+    let (libc, config) = selected_config();
+    let header = selected_header();
+    let output = header_output(libc, &config, &header);
+    let oracle_files = extract_oracle_header_files(&config, &header, &output.join("oracle-files"))
+        .expect("extract oracle header files");
+    let shim_files = extract_shim_header_files(&config, &header, &output.join("shim-files"))
+        .expect("extract shim header files");
+    let diff = diff_header_files(&oracle_files, &shim_files);
+
+    println!("oracle files: {oracle_files:?}");
+    println!("shim files: {shim_files:?}");
+    println!("extra in shim: {:?}", diff.extra_in_shim);
+    println!("missing from shim: {:?}", diff.missing_from_shim);
+}
+
+#[test]
+#[ignore = "manual reverse-direction shim-to-oracle probe"]
+fn verify_shim_header_declarations_against_oracle() {
+    let (libc, config) = selected_config();
+    let header = selected_header();
+    let output = header_output(libc, &config, &header);
+    let functions = extract_shim_header_functions(&config, &header, &output)
+        .expect("extract shim header declarations");
+    let probe =
+        write_header_shim_probe(&functions, &output).expect("write reverse shim compliance probe");
+
+    println!("shim declarations: {}", functions.len());
+    println!("generated: {}", probe.source.display());
+    compile_and_link_oracle_probe(&config, &probe)
+        .expect("verify shim declarations against the real oracle");
 }

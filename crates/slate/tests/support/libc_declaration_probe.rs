@@ -118,10 +118,10 @@ fn collect_functions(
     symbol: &str,
     types: &mut BTreeSet<(String, bool, FunctionStorage)>,
     aliases: &BTreeMap<String, String>,
-    header: &str,
+    is_public: &dyn Fn(&Value) -> bool,
 ) {
     if node.get("kind").and_then(Value::as_str) == Some("FunctionDecl")
-        && node_is_public_header_declaration(node, header)
+        && is_public(node)
         && node.get("name").and_then(Value::as_str) == Some(symbol)
         && let Some(type_spelling) = node
             .pointer("/type/desugaredQualType")
@@ -146,7 +146,7 @@ fn collect_functions(
     }
     if let Some(children) = node.get("inner").and_then(Value::as_array) {
         for child in children {
-            collect_functions(child, symbol, types, aliases, header);
+            collect_functions(child, symbol, types, aliases, is_public);
         }
     }
 }
@@ -179,7 +179,109 @@ fn is_public_header_file(file: &str, header: &str) -> bool {
 
 fn node_is_public_header_declaration(node: &Value, header: &str) -> bool {
     declaration_file(node).is_some_and(|file| is_public_header_file(file, header))
-        || declaration_file(node).is_none() && node.pointer("/loc/includedFrom/file").is_some()
+        || declaration_file(node).is_none()
+            && node
+                .pointer("/loc/includedFrom/file")
+                .and_then(Value::as_str)
+                .is_some_and(|file| file.ends_with("/oracle-header.c"))
+            && node.get("kind").and_then(Value::as_str) == Some("VarDecl")
+            && node.get("name").and_then(Value::as_str) == Some("environ")
+}
+
+fn is_public_shim_header_file(file: &str) -> bool {
+    let file = file.replace('\\', "/");
+    let shim_root = libc_shim_dir().to_string_lossy().replace('\\', "/");
+    file.starts_with(&shim_root)
+        && file
+            .rsplit('/')
+            .next()
+            .is_some_and(|name| !name.starts_with("__"))
+}
+
+fn node_is_public_shim_declaration(node: &Value) -> bool {
+    declaration_file(node).is_some_and(is_public_shim_header_file)
+}
+
+fn is_public_declaration_file(file: &str) -> bool {
+    let file = file.replace('\\', "/");
+    file.ends_with(".h")
+        && !file.split('/').any(|component| component == "bits")
+        && file
+            .rsplit('/')
+            .next()
+            .is_some_and(|name| !name.starts_with("__"))
+}
+
+fn header_relative_name(file: &str) -> String {
+    let file = file.replace('\\', "/");
+    let components: Vec<&str> = file.split('/').collect();
+    match components.len() {
+        0 => String::new(),
+        1 => components[0].to_string(),
+        _ => format!(
+            "{}/{}",
+            components[components.len() - 2],
+            components[components.len() - 1]
+        ),
+    }
+}
+
+fn collect_declaration_files(node: &Value, files: &mut BTreeSet<String>) {
+    if let Some(file) = declaration_file(node)
+        && is_public_declaration_file(file)
+    {
+        files.insert(header_relative_name(file));
+    }
+    if let Some(children) = node.get("inner").and_then(Value::as_array) {
+        for child in children {
+            collect_declaration_files(child, files);
+        }
+    }
+}
+
+pub fn extract_oracle_header_files(
+    config: &ProbeConfig,
+    header: &str,
+    output_dir: &Path,
+) -> Result<BTreeSet<String>, String> {
+    std::fs::create_dir_all(output_dir)
+        .map_err(|error| format!("create {}: {error}", output_dir.display()))?;
+    let root = header_ast(config, header, &output_dir.join("oracle-header.c"))?;
+    let mut files = BTreeSet::new();
+    collect_declaration_files(&root, &mut files);
+    Ok(files)
+}
+
+pub fn extract_shim_header_files(
+    config: &ProbeConfig,
+    header: &str,
+    output_dir: &Path,
+) -> Result<BTreeSet<String>, String> {
+    std::fs::create_dir_all(output_dir)
+        .map_err(|error| format!("create {}: {error}", output_dir.display()))?;
+    let root = shim_header_ast(config, header, &output_dir.join("shim-header.c"))?;
+    let mut files = BTreeSet::new();
+    collect_declaration_files(&root, &mut files);
+    Ok(files)
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct HeaderFileDiff {
+    pub extra_in_shim: Vec<String>,
+    pub missing_from_shim: Vec<String>,
+}
+
+impl HeaderFileDiff {
+    pub fn is_empty(&self) -> bool {
+        self.extra_in_shim.is_empty() && self.missing_from_shim.is_empty()
+    }
+}
+
+pub fn diff_header_files(oracle: &BTreeSet<String>, shim: &BTreeSet<String>) -> HeaderFileDiff {
+    HeaderFileDiff {
+        extra_in_shim: shim.difference(oracle).cloned().collect(),
+        missing_from_shim: oracle.difference(shim).cloned().collect(),
+    }
 }
 
 fn collect_type_aliases(node: &Value, aliases: &mut BTreeMap<String, String>) {
@@ -222,11 +324,11 @@ fn collect_type_surface(
     node: &Value,
     aliases: &BTreeMap<String, String>,
     surface: &mut OracleTypeSurface,
-    header: &str,
+    is_public: &dyn Fn(&Value) -> bool,
 ) {
     match node.get("kind").and_then(Value::as_str) {
         Some("TypedefDecl") => {
-            if node_is_public_header_declaration(node, header)
+            if is_public(node)
                 && let (Some(name), Some(underlying_type)) = (
                     node.get("name").and_then(Value::as_str),
                     type_spelling(node, aliases),
@@ -241,7 +343,7 @@ fn collect_type_surface(
         Some("RecordDecl")
             if node.get("completeDefinition").and_then(Value::as_bool) == Some(true) =>
         {
-            if !node_is_public_header_declaration(node, header) {
+            if !is_public(node) {
                 return;
             }
             let Some(tag) = node
@@ -279,7 +381,7 @@ fn collect_type_surface(
             });
         }
         Some("EnumDecl") => {
-            if !node_is_public_header_declaration(node, header) {
+            if !is_public(node) {
                 return;
             }
             let Some(tag) = node
@@ -314,7 +416,7 @@ fn collect_type_surface(
     }
     if let Some(children) = node.get("inner").and_then(Value::as_array) {
         for child in children {
-            collect_type_surface(child, aliases, surface, header);
+            collect_type_surface(child, aliases, surface, is_public);
         }
     }
 }
@@ -379,6 +481,30 @@ fn header_ast(config: &ProbeConfig, header: &str, source: &Path) -> Result<Value
         .map_err(|error| format!("parse Clang oracle AST for {header}: {error}"))
 }
 
+fn shim_header_ast(config: &ProbeConfig, header: &str, source: &Path) -> Result<Value, String> {
+    std::fs::write(source, format!("#include <{header}>\n"))
+        .map_err(|error| format!("write {}: {error}", source.display()))?;
+
+    let mut command = Command::new(&config.compiler);
+    command.args(&config.compiler_args);
+    command.arg(format!("--target={}", config.target));
+    command.arg("-nostdlibinc");
+    command.arg("-isystem").arg(libc_shim_dir());
+    command.arg("-D__SLATE_LIBC_SHIM");
+    command.args([
+        "-std=gnu23",
+        "-D_GNU_SOURCE",
+        "-Xclang",
+        "-ast-dump=json",
+        "-fsyntax-only",
+    ]);
+    command.args(&config.defines);
+    command.arg(source);
+    let ast = command_output(command, &format!("extract shim declaration {header}"))?;
+    serde_json::from_str(&ast)
+        .map_err(|error| format!("parse Clang shim AST for {header}: {error}"))
+}
+
 fn record_layout_dump(config: &ProbeConfig, source: &Path) -> Result<String, String> {
     let mut command = Command::new(&config.compiler);
     command.args(&config.compiler_args);
@@ -399,6 +525,36 @@ fn record_layout_dump(config: &ProbeConfig, source: &Path) -> Result<String, Str
     if !output.status.success() {
         return Err(format!(
             "extract oracle record layouts failed: {}",
+            String::from_utf8_lossy(&output.stderr)
+        ));
+    }
+    let mut dump = String::from_utf8_lossy(&output.stdout).into_owned();
+    dump.push_str(&String::from_utf8_lossy(&output.stderr));
+    Ok(dump)
+}
+
+fn shim_record_layout_dump(config: &ProbeConfig, source: &Path) -> Result<String, String> {
+    let mut command = Command::new(&config.compiler);
+    command.args(&config.compiler_args);
+    command.arg(format!("--target={}", config.target));
+    command.arg("-nostdlibinc");
+    command.arg("-isystem").arg(libc_shim_dir());
+    command.arg("-D__SLATE_LIBC_SHIM");
+    command.args([
+        "-std=gnu23",
+        "-D_GNU_SOURCE",
+        "-Xclang",
+        "-fdump-record-layouts-complete",
+        "-fsyntax-only",
+    ]);
+    command.args(&config.defines);
+    command.arg(source);
+    let output = command
+        .output()
+        .map_err(|error| format!("extract shim record layouts: {error}"))?;
+    if !output.status.success() {
+        return Err(format!(
+            "extract shim record layouts failed: {}",
             String::from_utf8_lossy(&output.stderr)
         ));
     }
@@ -468,6 +624,26 @@ fn header_preprocessor_output(
     command_output(command, &format!("extract oracle macros {header}"))
 }
 
+fn shim_header_preprocessor_output(
+    config: &ProbeConfig,
+    header: &str,
+    source: &Path,
+) -> Result<String, String> {
+    std::fs::write(source, format!("#include <{header}>\n"))
+        .map_err(|error| format!("write {}: {error}", source.display()))?;
+
+    let mut command = Command::new(&config.compiler);
+    command.args(&config.compiler_args);
+    command.arg(format!("--target={}", config.target));
+    command.arg("-nostdlibinc");
+    command.arg("-isystem").arg(libc_shim_dir());
+    command.arg("-D__SLATE_LIBC_SHIM");
+    command.args(["-std=gnu23", "-D_GNU_SOURCE", "-E", "-dD"]);
+    command.args(&config.defines);
+    command.arg(source);
+    command_output(command, &format!("extract shim macros {header}"))
+}
+
 fn line_marker_path(line: &str) -> Option<String> {
     let marker = line.strip_prefix("# ")?;
     let start = marker.find('"')? + 1;
@@ -517,18 +693,12 @@ fn parse_macro_definition(
     })
 }
 
-pub fn extract_oracle_header_macros(
-    config: &ProbeConfig,
+fn parse_macro_directives(
     header: &str,
-    output_dir: &Path,
+    output: &str,
+    source: &Path,
+    is_public: &dyn Fn(&str) -> bool,
 ) -> Result<Vec<OracleMacro>, String> {
-    std::fs::create_dir_all(output_dir)
-        .map_err(|error| format!("create {}: {error}", output_dir.display()))?;
-    let source = output_dir.join("oracle-macros.c");
-    let output = header_preprocessor_output(config, header, &source)?;
-    let raw = output_dir.join("oracle-macros.dD");
-    std::fs::write(&raw, &output).map_err(|error| format!("write {}: {error}", raw.display()))?;
-
     let mut macros = BTreeMap::new();
     let mut definition_file = String::new();
     let mut lines = output.lines();
@@ -543,7 +713,7 @@ pub fn extract_oracle_header_macros(
         }
         if !line.starts_with("#define ")
             || definition_file.starts_with('<')
-            || !is_public_header_file(&definition_file, header)
+            || !is_public(&definition_file)
             || definition_file == source.to_string_lossy()
         {
             continue;
@@ -564,6 +734,36 @@ pub fn extract_oracle_header_macros(
         }
     }
     Ok(macros.into_values().collect())
+}
+
+pub fn extract_oracle_header_macros(
+    config: &ProbeConfig,
+    header: &str,
+    output_dir: &Path,
+) -> Result<Vec<OracleMacro>, String> {
+    std::fs::create_dir_all(output_dir)
+        .map_err(|error| format!("create {}: {error}", output_dir.display()))?;
+    let source = output_dir.join("oracle-macros.c");
+    let output = header_preprocessor_output(config, header, &source)?;
+    let raw = output_dir.join("oracle-macros.dD");
+    std::fs::write(&raw, &output).map_err(|error| format!("write {}: {error}", raw.display()))?;
+    parse_macro_directives(header, &output, &source, &|file| {
+        is_public_header_file(file, header)
+    })
+}
+
+pub fn extract_shim_header_macros(
+    config: &ProbeConfig,
+    header: &str,
+    output_dir: &Path,
+) -> Result<Vec<OracleMacro>, String> {
+    std::fs::create_dir_all(output_dir)
+        .map_err(|error| format!("create {}: {error}", output_dir.display()))?;
+    let source = output_dir.join("shim-macros.c");
+    let output = shim_header_preprocessor_output(config, header, &source)?;
+    let raw = output_dir.join("shim-macros.dD");
+    std::fs::write(&raw, &output).map_err(|error| format!("write {}: {error}", raw.display()))?;
+    parse_macro_directives(header, &output, &source, &is_public_shim_header_file)
 }
 
 pub fn write_oracle_macro_manifest(
@@ -803,7 +1003,9 @@ pub fn extract_oracle_function(
     let mut aliases = BTreeMap::new();
     collect_type_aliases(&root, &mut aliases);
     let mut types = BTreeSet::new();
-    collect_functions(&root, symbol, &mut types, &aliases, header);
+    collect_functions(&root, symbol, &mut types, &aliases, &|node| {
+        node_is_public_header_declaration(node, header)
+    });
     let values: Vec<_> = types.into_iter().collect();
     match values.as_slice() {
         [(type_spelling, variadic, storage)] => Ok(OracleFunction {
@@ -833,7 +1035,9 @@ pub fn extract_oracle_header_functions(
     let mut aliases = BTreeMap::new();
     collect_type_aliases(&root, &mut aliases);
     let mut by_name = BTreeMap::new();
-    collect_all_functions(&root, &mut by_name, &aliases, header);
+    collect_all_functions(&root, &mut by_name, &aliases, &|node| {
+        node_is_public_header_declaration(node, header)
+    });
     by_name
         .into_iter()
         .map(|(name, types)| match types.as_slice() {
@@ -851,14 +1055,49 @@ pub fn extract_oracle_header_functions(
         .collect()
 }
 
+pub fn extract_shim_header_functions(
+    config: &ProbeConfig,
+    header: &str,
+    output_dir: &Path,
+) -> Result<Vec<OracleFunction>, String> {
+    std::fs::create_dir_all(output_dir)
+        .map_err(|error| format!("create {}: {error}", output_dir.display()))?;
+    let root = shim_header_ast(config, header, &output_dir.join("shim-header.c"))?;
+    let mut aliases = BTreeMap::new();
+    collect_type_aliases(&root, &mut aliases);
+    let mut by_name = BTreeMap::new();
+    collect_all_functions(
+        &root,
+        &mut by_name,
+        &aliases,
+        &node_is_public_shim_declaration,
+    );
+    by_name
+        .into_iter()
+        .map(|(name, types)| match types.as_slice() {
+            [(type_spelling, variadic, storage)] => Ok(OracleFunction {
+                header: header.to_string(),
+                name,
+                type_spelling: type_spelling.clone(),
+                variadic: *variadic,
+                storage: storage.clone(),
+            }),
+            _ => Err(format!(
+                "{header}:{name} has conflicting shim function declarations: {types:?}"
+            )),
+        })
+        .collect()
+}
+
 fn collect_objects(
     node: &Value,
     aliases: &BTreeMap<String, String>,
     objects: &mut BTreeMap<String, OracleObject>,
     header: &str,
+    is_public: &dyn Fn(&Value) -> bool,
 ) {
     if node.get("kind").and_then(Value::as_str) == Some("VarDecl")
-        && node_is_public_header_declaration(node, header)
+        && is_public(node)
         && node.get("storageClass").and_then(Value::as_str) == Some("extern")
         && let (Some(name), Some(type_spelling)) = (
             node.get("name").and_then(Value::as_str),
@@ -878,7 +1117,7 @@ fn collect_objects(
     }
     if let Some(children) = node.get("inner").and_then(Value::as_array) {
         for child in children {
-            collect_objects(child, aliases, objects, header);
+            collect_objects(child, aliases, objects, header, is_public);
         }
     }
 }
@@ -894,7 +1133,30 @@ pub fn extract_oracle_header_objects(
     let mut aliases = BTreeMap::new();
     collect_type_aliases(&root, &mut aliases);
     let mut objects = BTreeMap::new();
-    collect_objects(&root, &aliases, &mut objects, header);
+    collect_objects(&root, &aliases, &mut objects, header, &|node| {
+        node_is_public_header_declaration(node, header)
+    });
+    Ok(objects.into_values().collect())
+}
+
+pub fn extract_shim_header_objects(
+    config: &ProbeConfig,
+    header: &str,
+    output_dir: &Path,
+) -> Result<Vec<OracleObject>, String> {
+    std::fs::create_dir_all(output_dir)
+        .map_err(|error| format!("create {}: {error}", output_dir.display()))?;
+    let root = shim_header_ast(config, header, &output_dir.join("shim-header.c"))?;
+    let mut aliases = BTreeMap::new();
+    collect_type_aliases(&root, &mut aliases);
+    let mut objects = BTreeMap::new();
+    collect_objects(
+        &root,
+        &aliases,
+        &mut objects,
+        header,
+        &node_is_public_shim_declaration,
+    );
     Ok(objects.into_values().collect())
 }
 
@@ -951,9 +1213,48 @@ pub fn extract_oracle_type_surface(
         records: Vec::new(),
         enums: Vec::new(),
     };
-    collect_type_surface(&root, &aliases, &mut surface, header);
+    collect_type_surface(&root, &aliases, &mut surface, &|node| {
+        node_is_public_header_declaration(node, header)
+    });
     let dump = record_layout_dump(config, &output_dir.join("oracle-header.c"))?;
     std::fs::write(output_dir.join("oracle-record-layouts.txt"), &dump)
+        .map_err(|error| format!("write record layouts: {error}"))?;
+    merge_record_layouts(&mut surface, &dump);
+    surface
+        .typedefs
+        .sort_by(|left, right| left.name.cmp(&right.name));
+    surface
+        .records
+        .sort_by(|left, right| left.tag.cmp(&right.tag));
+    surface
+        .enums
+        .sort_by(|left, right| left.tag.cmp(&right.tag));
+    Ok(surface)
+}
+
+pub fn extract_shim_type_surface(
+    config: &ProbeConfig,
+    header: &str,
+    output_dir: &Path,
+) -> Result<OracleTypeSurface, String> {
+    std::fs::create_dir_all(output_dir)
+        .map_err(|error| format!("create {}: {error}", output_dir.display()))?;
+    let root = shim_header_ast(config, header, &output_dir.join("shim-header.c"))?;
+    let mut aliases = BTreeMap::new();
+    collect_type_aliases(&root, &mut aliases);
+    let mut surface = OracleTypeSurface {
+        typedefs: Vec::new(),
+        records: Vec::new(),
+        enums: Vec::new(),
+    };
+    collect_type_surface(
+        &root,
+        &aliases,
+        &mut surface,
+        &node_is_public_shim_declaration,
+    );
+    let dump = shim_record_layout_dump(config, &output_dir.join("shim-header.c"))?;
+    std::fs::write(output_dir.join("shim-record-layouts.txt"), &dump)
         .map_err(|error| format!("write record layouts: {error}"))?;
     merge_record_layouts(&mut surface, &dump);
     surface
@@ -1108,6 +1409,7 @@ pub fn write_header_matrix_probe(
     let public_functions: Vec<_> = functions
         .iter()
         .filter(|function| !function.name.starts_with('_'))
+        .filter(|function| !(function.header == "alloca.h" && function.name == "alloca"))
         .cloned()
         .collect();
     if !public_functions.is_empty() {
@@ -1154,10 +1456,10 @@ fn collect_all_functions(
     node: &Value,
     functions: &mut BTreeMap<String, Vec<(String, bool, FunctionStorage)>>,
     aliases: &BTreeMap<String, String>,
-    header: &str,
+    is_public: &dyn Fn(&Value) -> bool,
 ) {
     if node.get("kind").and_then(Value::as_str) == Some("FunctionDecl")
-        && node_is_public_header_declaration(node, header)
+        && is_public(node)
         && let (Some(name), Some(type_spelling)) = (
             node.get("name").and_then(Value::as_str),
             node.pointer("/type/desugaredQualType")
@@ -1182,7 +1484,7 @@ fn collect_all_functions(
     }
     if let Some(children) = node.get("inner").and_then(Value::as_array) {
         for child in children {
-            collect_all_functions(child, functions, aliases, header);
+            collect_all_functions(child, functions, aliases, is_public);
         }
     }
 }
@@ -1360,6 +1662,45 @@ pub fn compile_and_link_shim_probe(
     command_output(
         link,
         &format!("link shim declaration probe {}", probe.source.display()),
+    )?;
+    Ok(())
+}
+
+pub fn compile_and_link_oracle_probe(
+    config: &ProbeConfig,
+    probe: &GeneratedProbe,
+) -> Result<(), String> {
+    let mut compile = Command::new(&config.compiler);
+    compile.args(&config.compiler_args);
+    compile.arg(format!("--target={}", config.target));
+    compile.arg(format!("--sysroot={}", config.sysroot.display()));
+    compile.args([
+        "-std=gnu23",
+        "-D_GNU_SOURCE",
+        "-Werror=implicit-function-declaration",
+    ]);
+    compile.args(&config.defines);
+    compile
+        .arg("-c")
+        .arg(&probe.source)
+        .arg("-o")
+        .arg(&probe.object);
+    command_output(
+        compile,
+        &format!(
+            "compile oracle declaration probe {}",
+            probe.source.display()
+        ),
+    )?;
+
+    let mut link = Command::new(&config.linker);
+    link.args(&config.linker_args);
+    link.arg(&probe.object);
+    link.args(&config.linker_post_args);
+    link.arg("-o").arg(&probe.executable);
+    command_output(
+        link,
+        &format!("link oracle declaration probe {}", probe.source.display()),
     )?;
     Ok(())
 }

@@ -3,7 +3,10 @@
 
 #include <errno.h>
 #include <features.h>
+#include <getopt.h>
 #include <stdio.h>
+
+#if defined(__SLATE_LIBC_GLIBC)
 
 #ifndef __error_t_defined
 #define __error_t_defined 1
@@ -108,5 +111,7 @@ void argp_failure(const struct argp_state *__restrict, int, int,
 extern const char *argp_program_version;
 extern const char *argp_program_bug_address;
 extern void (*argp_program_version_hook)(FILE *, struct argp_state *);
+
+#endif
 
 #endif

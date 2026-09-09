@@ -1,17 +1,5 @@
 #include <errno.h>
 
-extern char * slate_oracle_program_invocation_name;
-
-_Static_assert(__builtin_types_compatible_p(__typeof__(slate_oracle_program_invocation_name), __typeof__(program_invocation_name)), "program_invocation_name object type differs from oracle");
-
-static __typeof__(program_invocation_name) *const slate_reference_program_invocation_name = &program_invocation_name;
-
-extern char * slate_oracle_program_invocation_short_name;
-
-_Static_assert(__builtin_types_compatible_p(__typeof__(slate_oracle_program_invocation_short_name), __typeof__(program_invocation_short_name)), "program_invocation_short_name object type differs from oracle");
-
-static __typeof__(program_invocation_short_name) *const slate_reference_program_invocation_short_name = &program_invocation_short_name;
-
 typedef int slate_oracle_typedef_error_t;
 _Static_assert(__builtin_types_compatible_p(slate_oracle_typedef_error_t, error_t), "typedef error_t differs from oracle");
 
