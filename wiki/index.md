@@ -78,3 +78,4 @@ superseded each one for what actually applies now.
 - [atoi/atol/atoll/atof const-fold lift (Tier A)](concepts/atoi-atol-atoll-atof-const-fold-lift-tier-a.md)
 - [atoi/atol/atoll Tier B prelude helper + handwritten filecheck](concepts/atoi-atol-atoll-tier-b-prelude-helper-handwritten-filecheck.md)
 - [Goto Lowering](concepts/goto-lowering.md)
+- [Linux libc header-matrix handoff](concepts/linux-libc-header-matrix-handoff.md)
