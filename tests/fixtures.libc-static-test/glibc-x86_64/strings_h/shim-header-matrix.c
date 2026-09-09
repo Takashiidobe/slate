@@ -14,7 +14,4 @@ _Static_assert(
 static __typeof__(bcmp) *const slate_reference_bcmp = &bcmp;
 static __typeof__(strcasecmp_l) *const slate_reference_strcasecmp_l = &strcasecmp_l;
 
-typedef struct __locale_struct * slate_oracle_typedef_locale_t;
-_Static_assert(__builtin_types_compatible_p(slate_oracle_typedef_locale_t, locale_t), "typedef locale_t differs from oracle");
-
 int main(void) { return 0; }

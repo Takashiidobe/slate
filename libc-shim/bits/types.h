@@ -97,6 +97,11 @@ typedef unsigned int __sigset_t;
 typedef struct {
   unsigned int __bits[4];
 } __sigset_t;
+#elif defined(__SLATE_LIBC_GLIBC)
+struct __sigset_t {
+  unsigned long __bits[128 / sizeof(unsigned long)];
+};
+typedef struct __sigset_t __sigset_t;
 #elif !defined(__SLATE_LIBC_MSVC)
 typedef struct {
   unsigned long __bits[128 / sizeof(unsigned long)];
@@ -621,6 +626,21 @@ typedef __sigset_t sigset_t;
 #endif
 #undef __NEED_sigset_t
 
+#if defined(__NEED_union_sigval) && !defined(__DEFINED_union_sigval)
+union sigval {
+  int   sival_int;
+  void *sival_ptr;
+};
+#define __DEFINED_union_sigval
+#endif
+#undef __NEED_union_sigval
+
+#if defined(__NEED_sigval_t) && !defined(__DEFINED_sigval_t)
+typedef union sigval sigval_t;
+#define __DEFINED_sigval_t
+#endif
+#undef __NEED_sigval_t
+
 #if defined(__NEED_wchar_t) && !defined(__DEFINED_wchar_t)
 typedef __slate_wchar_t wchar_t;
 #define __DEFINED_wchar_t
@@ -684,6 +704,15 @@ struct timespec {
 #define __DEFINED_struct_timespec
 #endif
 #undef __NEED_struct_timespec
+
+#if defined(__NEED_struct_osockaddr) && !defined(__DEFINED_struct_osockaddr)
+struct osockaddr {
+  unsigned short sa_family;
+  char           sa_data[14];
+};
+#define __DEFINED_struct_osockaddr
+#endif
+#undef __NEED_struct_osockaddr
 
 #if defined(__NEED_struct_winsize) && !defined(__DEFINED_struct_winsize)
 struct winsize {

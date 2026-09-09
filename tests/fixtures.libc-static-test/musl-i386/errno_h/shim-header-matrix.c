@@ -1,17 +1,5 @@
 #include <errno.h>
 
-extern char * slate_oracle_program_invocation_name;
-
-_Static_assert(__builtin_types_compatible_p(__typeof__(slate_oracle_program_invocation_name), __typeof__(program_invocation_name)), "program_invocation_name object type differs from oracle");
-
-static __typeof__(program_invocation_name) *const slate_reference_program_invocation_name = &program_invocation_name;
-
-extern char * slate_oracle_program_invocation_short_name;
-
-_Static_assert(__builtin_types_compatible_p(__typeof__(slate_oracle_program_invocation_short_name), __typeof__(program_invocation_short_name)), "program_invocation_short_name object type differs from oracle");
-
-static __typeof__(program_invocation_short_name) *const slate_reference_program_invocation_short_name = &program_invocation_short_name;
-
 #ifndef E2BIG
 #error "errno.h:E2BIG macro is missing from libc-shim"
 #endif

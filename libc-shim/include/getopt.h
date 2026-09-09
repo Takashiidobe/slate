@@ -21,10 +21,8 @@ int getopt_long(int, char *const *, const char *, const struct option *, int *);
 int getopt_long_only(int, char *const *, const char *, const struct option *,
                      int *);
 
-enum {
-  no_argument       = 0,
-  required_argument = 1,
-  optional_argument = 2,
-};
+#define no_argument 0
+#define required_argument 1
+#define optional_argument 2
 
 #endif

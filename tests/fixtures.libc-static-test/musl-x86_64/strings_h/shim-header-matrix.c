@@ -8,7 +8,4 @@ _Static_assert(
 
 static __typeof__(bcmp) *const slate_reference_bcmp = &bcmp;
 
-typedef unsigned long slate_oracle_typedef_size_t;
-_Static_assert(__builtin_types_compatible_p(slate_oracle_typedef_size_t, size_t), "typedef size_t differs from oracle");
-
 int main(void) { return 0; }

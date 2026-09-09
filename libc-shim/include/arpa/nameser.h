@@ -4,6 +4,15 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#if defined(__SLATE_LIBC_GLIBC)
+#include <arpa/nameser_compat.h>
+#include <signal.h>
+#include <sys/select.h>
+#include <sys/types.h>
+#include <sys/ucontext.h>
+#include <unistd.h>
+#endif
+
 #define __NAMESER      19991006
 #define NS_PACKETSZ    512
 #define NS_MAXDNAME    1025

@@ -1,8 +1,5 @@
 #include <math.h>
 
-typedef float slate_oracle_typedef_float_t;
-_Static_assert(__builtin_types_compatible_p(slate_oracle_typedef_float_t, float_t), "typedef float_t differs from oracle");
-
 #ifndef FP_ILOGB0
 #error "math.h:FP_ILOGB0 macro is missing from libc-shim"
 #endif

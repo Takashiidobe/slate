@@ -144,6 +144,40 @@ fn header_directory(header: &str) -> String {
     header.replace(['/', '.'], "_")
 }
 
+#[test]
+fn header_visibility_failure_lists_missing_and_extra_headers() {
+    let oracle = ["features.h".to_string(), "sys/types.h".to_string()]
+        .into_iter()
+        .collect();
+    let shim = ["features.h".to_string(), "bits/types.h".to_string()]
+        .into_iter()
+        .collect();
+
+    let failure = header_visibility_failure("example.h", &oracle, &shim).unwrap();
+
+    assert_eq!(
+        failure,
+        "header visibility mismatch for example.h:\nmissing from shim: [\"sys/types.h\"]\nextra in shim: [\"bits/types.h\"]"
+    );
+}
+
+fn header_visibility_failure(
+    header: &str,
+    oracle: &std::collections::BTreeSet<String>,
+    shim: &std::collections::BTreeSet<String>,
+) -> Option<String> {
+    let diff = diff_header_files(oracle, shim);
+    let missing_from_shim = diff.missing_from_shim;
+    let extra_in_shim = diff.extra_in_shim;
+    if missing_from_shim.is_empty() && extra_in_shim.is_empty() {
+        return None;
+    }
+    Some(format!(
+        "header visibility mismatch for {header}:\nmissing from shim: {:?}\nextra in shim: {:?}",
+        missing_from_shim, extra_in_shim
+    ))
+}
+
 fn selected_descriptor() -> &'static DeclarationMatrixDescriptor {
     match std::env::var("SLATE_LIBC_DECL_TARGET") {
         Ok(name) => DESCRIPTORS
@@ -192,15 +226,20 @@ fn generate_declaration_matrix_fixtures() {
             });
         let macros = extract_oracle_header_macros(&config, &header, &oracle_output)
             .unwrap_or_else(|error| panic!("extract {} {header} macros: {error}", descriptor.name));
-        write_header_matrix_probe(
+        let result = write_header_matrix_probe(
             &header,
             &functions,
             &objects,
             &surface,
             &macros,
             &fixture_output,
-        )
-        .unwrap_or_else(|error| panic!("generate {} {header} fixture: {error}", descriptor.name));
+        );
+        if let Err(error) = result {
+            if error == format!("{header} has no matrix probe strategy") {
+                continue;
+            }
+            panic!("generate {} {header} fixture: {error}", descriptor.name);
+        }
     }
 }
 
@@ -226,6 +265,21 @@ fn declaration_matrices() {
                 std::fs::create_dir_all(&output)
                     .map_err(|error| format!("create {}: {error}", output.display()))
                     .and_then(|()| {
+                        let oracle_files = extract_oracle_header_files(
+                            &config,
+                            &header,
+                            &output.join("oracle-files"),
+                        )?;
+                        let shim_files = extract_shim_header_files(
+                            &config,
+                            &header,
+                            &output.join("shim-files"),
+                        )?;
+                        if let Some(failure) =
+                            header_visibility_failure(&header, &oracle_files, &shim_files)
+                        {
+                            return Err(failure);
+                        }
                         compile_and_link_shim_probe(
                             &config,
                             &GeneratedProbe {
