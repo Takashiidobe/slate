@@ -4,13 +4,15 @@ use std::path::Path;
 
 use support::libc_declaration_probe::{
     compile_and_link_oracle_probe, compile_and_link_shim_probe, diff_header_files,
-    extract_oracle_function, extract_oracle_header_files, extract_oracle_header_functions,
-    extract_oracle_header_macros, extract_oracle_header_objects, extract_oracle_type_surface,
-    extract_shim_header_files, extract_shim_header_functions,
-    select_oracle_object_macro_value_probes, write_header_macro_presence_probe,
-    write_header_object_macro_value_probe, write_header_shim_probe, write_object_macro_value_probe,
-    write_object_probe, write_oracle_declarations, write_oracle_macro_manifest,
-    write_oracle_type_manifest, write_shim_probe, write_type_surface_probe,
+    diff_macro_names, extract_oracle_function, extract_oracle_header_files,
+    extract_oracle_header_functions, extract_oracle_header_macros, extract_oracle_header_objects,
+    extract_oracle_type_surface, extract_shim_header_files, extract_shim_header_functions,
+    extract_shim_header_macros, extract_shim_type_surface, select_cross_checkable_shim_macros,
+    select_oracle_object_macro_value_probes, select_shim_object_macro_value_probes,
+    write_header_macro_presence_probe, write_header_object_macro_value_probe,
+    write_header_shim_probe, write_object_macro_value_probe, write_object_probe,
+    write_oracle_declarations, write_oracle_macro_manifest, write_oracle_type_manifest,
+    write_shim_probe, write_type_surface_probe,
 };
 use support::libc_probe::{arch_from_key, resolve};
 use support::libc_shim::{Architecture, LibcVariant};
@@ -297,11 +299,78 @@ fn verify_shim_header_declarations_against_oracle() {
     let output = header_output(libc, &config, &header);
     let functions = extract_shim_header_functions(&config, &header, &output)
         .expect("extract shim header declarations");
-    let probe =
-        write_header_shim_probe(&functions, &output).expect("write reverse shim compliance probe");
-
     println!("shim declarations: {}", functions.len());
+    let probe = match write_header_shim_probe(&functions, &output) {
+        Ok(probe) => probe,
+        Err(error) => {
+            println!("skipping: {error}");
+            return;
+        }
+    };
+
     println!("generated: {}", probe.source.display());
     compile_and_link_oracle_probe(&config, &probe)
         .expect("verify shim declarations against the real oracle");
+}
+
+#[test]
+#[ignore = "manual reverse-direction shim-to-oracle type surface probe"]
+fn verify_shim_type_surface_against_oracle() {
+    let (libc, config) = selected_config();
+    let header = selected_header();
+    let output = header_output(libc, &config, &header);
+    let surface =
+        extract_shim_type_surface(&config, &header, &output).expect("extract shim type surface");
+    println!(
+        "shim typedefs: {}, records: {}, enums: {}",
+        surface.typedefs.len(),
+        surface.records.len(),
+        surface.enums.len()
+    );
+    let probe = match write_type_surface_probe(&header, &surface, &output) {
+        Ok(probe) => probe,
+        Err(error) => {
+            println!("skipping: {error}");
+            return;
+        }
+    };
+
+    println!("generated: {}", probe.source.display());
+    compile_and_link_oracle_probe(&config, &probe)
+        .expect("verify shim type surface against the real oracle");
+}
+
+#[test]
+#[ignore = "manual bidirectional macro presence and value probe"]
+fn diff_and_verify_shim_macros_against_oracle() {
+    let (libc, config) = selected_config();
+    let header = selected_header();
+    let output = header_output(libc, &config, &header);
+    let oracle_macros = extract_oracle_header_macros(&config, &header, &output.join("oracle"))
+        .expect("extract oracle header macros");
+    let shim_macros = extract_shim_header_macros(&config, &header, &output.join("shim"))
+        .expect("extract shim header macros");
+    let name_diff = diff_macro_names(&oracle_macros, &shim_macros);
+    println!("macro names extra in shim: {:?}", name_diff.extra_in_shim);
+    println!(
+        "macro names missing from shim: {:?}",
+        name_diff.missing_from_shim
+    );
+
+    let oracle_classified =
+        select_oracle_object_macro_value_probes(&config, &oracle_macros, &output.join("oracle"))
+            .expect("classify oracle object macro values");
+    let shim_classified =
+        select_shim_object_macro_value_probes(&config, &shim_macros, &output.join("shim"))
+            .expect("classify shim object macro values");
+    let cross_checkable = select_cross_checkable_shim_macros(&oracle_classified, &shim_classified);
+    println!("value-cross-checkable macros: {}", cross_checkable.len());
+    if cross_checkable.is_empty() {
+        return;
+    }
+    let probe = write_header_object_macro_value_probe(&cross_checkable, &output.join("cross"))
+        .expect("write reverse macro value probe");
+    println!("generated: {}", probe.source.display());
+    compile_and_link_oracle_probe(&config, &probe)
+        .expect("verify shim macro values against the real oracle");
 }

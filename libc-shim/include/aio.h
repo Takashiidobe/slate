@@ -26,7 +26,7 @@ struct aiocb {
   int             __error_code;
   ssize_t         __return_value;
   off_t           aio_offset;
-  char            __pad[sizeof(off64_t) - sizeof(off_t)];
+  char            __pad[sizeof(__off64_t) - sizeof(__off_t)];
   char            __glibc_reserved[32];
 };
 #else

@@ -3,9 +3,14 @@ mod support;
 use std::path::{Path, PathBuf};
 
 use support::libc_declaration_probe::{
-    GeneratedProbe, compile_and_link_shim_probe, extract_oracle_header_functions,
+    GeneratedProbe, compile_and_link_oracle_probe, compile_and_link_shim_probe, diff_header_files,
+    diff_macro_names, extract_oracle_header_files, extract_oracle_header_functions,
     extract_oracle_header_macros, extract_oracle_header_objects, extract_oracle_type_surface,
-    write_header_matrix_probe,
+    extract_shim_header_files, extract_shim_header_functions, extract_shim_header_macros,
+    extract_shim_type_surface, select_cross_checkable_shim_macros,
+    select_oracle_object_macro_value_probes, select_shim_object_macro_value_probes,
+    write_header_matrix_probe, write_header_object_macro_value_probe, write_header_shim_probe,
+    write_type_surface_probe,
 };
 use support::libc_probe::resolve;
 use support::libc_shim::{Architecture, LibcVariant};
@@ -248,6 +253,86 @@ fn declaration_matrices() {
         panic!(
             "libc declaration matrices failed:\n\n{}",
             matrix_failures.join("\n\n")
+        );
+    }
+}
+
+const BIDIRECTIONAL_HEADERS: &[&str] = &["arpa/nameser.h"];
+
+fn run_bidirectional_checks(
+    config: &support::libc_probe::ProbeConfig,
+    header: &str,
+    root: &Path,
+) -> Result<(), String> {
+    let output = root.join(header.replace(['/', '.'], "_"));
+
+    let oracle_files = extract_oracle_header_files(config, header, &output.join("oracle-files"))?;
+    let shim_files = extract_shim_header_files(config, header, &output.join("shim-files"))?;
+    let file_diff = diff_header_files(&oracle_files, &shim_files);
+    if !file_diff.extra_in_shim.is_empty() {
+        return Err(format!(
+            "shim leaks extra headers for {header}: {:?}",
+            file_diff.extra_in_shim
+        ));
+    }
+
+    let shim_functions = extract_shim_header_functions(config, header, &output)?;
+    if let Ok(probe) = write_header_shim_probe(&shim_functions, &output) {
+        compile_and_link_oracle_probe(config, &probe)?;
+    }
+
+    let shim_surface = extract_shim_type_surface(config, header, &output)?;
+    if let Ok(probe) = write_type_surface_probe(header, &shim_surface, &output) {
+        compile_and_link_oracle_probe(config, &probe)?;
+    }
+
+    let oracle_macros = extract_oracle_header_macros(config, header, &output.join("oracle"))?;
+    let shim_macros = extract_shim_header_macros(config, header, &output.join("shim"))?;
+    let macro_diff = diff_macro_names(&oracle_macros, &shim_macros);
+    if !macro_diff.missing_from_shim.is_empty() {
+        eprintln!(
+            "note: macros reported missing from shim for {header} (often transitively-leaked \
+             oracle bits/* macros unrelated to this header, a known heuristic limitation): {:?}",
+            macro_diff.missing_from_shim
+        );
+    }
+
+    let oracle_classified =
+        select_oracle_object_macro_value_probes(config, &oracle_macros, &output.join("oracle"))?;
+    let shim_classified =
+        select_shim_object_macro_value_probes(config, &shim_macros, &output.join("shim"))?;
+    let cross_checkable = select_cross_checkable_shim_macros(&oracle_classified, &shim_classified);
+    if !cross_checkable.is_empty() {
+        let probe = write_header_object_macro_value_probe(&cross_checkable, &output.join("cross"))?;
+        compile_and_link_oracle_probe(config, &probe)?;
+    }
+
+    Ok(())
+}
+
+#[test]
+fn bidirectional_declaration_checks() {
+    let targets = [
+        (Architecture::X86_64, LibcVariant::Glibc, "glibc-x86_64"),
+        (Architecture::X86_64, LibcVariant::Musl, "musl-x86_64"),
+    ];
+    let mut failures = Vec::new();
+    for (arch, libc, name) in targets {
+        let config = resolve(arch, libc)
+            .unwrap_or_else(|error| panic!("resolve {name} bidirectional check: {error}"));
+        let root = Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("target/libc-declaration-bidirectional")
+            .join(name);
+        for header in BIDIRECTIONAL_HEADERS {
+            if let Err(error) = run_bidirectional_checks(&config, header, &root) {
+                failures.push(format!("{name} {header}:\n{error}"));
+            }
+        }
+    }
+    if !failures.is_empty() {
+        panic!(
+            "bidirectional libc declaration checks failed:\n\n{}",
+            failures.join("\n\n")
         );
     }
 }

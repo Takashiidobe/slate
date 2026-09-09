@@ -3,10 +3,6 @@
 
 #include <stddef.h>
 #include <stdint.h>
-#include <getopt.h>
-#include <pthread.h>
-#include <signal.h>
-#include <unistd.h>
 
 #define __NAMESER      19991006
 #define NS_PACKETSZ    512
