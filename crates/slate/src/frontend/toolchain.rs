@@ -378,11 +378,25 @@ fn target_features(target: &str) -> Result<TargetFeatures, TargetError> {
     Ok(TargetFeatures { names })
 }
 
+thread_local! {
+    static TARGET_OVERRIDE: std::cell::RefCell<Option<String>> = const { std::cell::RefCell::new(None) };
+}
+
 pub fn active_target() -> String {
+    if let Some(target) = TARGET_OVERRIDE.with(|cell| cell.borrow().clone()) {
+        return target;
+    }
     std::env::var("SLATE_TARGET")
         .ok()
         .filter(|target| !target.trim().is_empty())
         .unwrap_or_else(|| env!("SLATE_BUILD_TARGET").to_string())
+}
+
+pub fn with_target_override<T>(target: &str, f: impl FnOnce() -> T) -> T {
+    TARGET_OVERRIDE.with(|cell| *cell.borrow_mut() = Some(target.to_string()));
+    let result = f();
+    TARGET_OVERRIDE.with(|cell| *cell.borrow_mut() = None);
+    result
 }
 
 pub fn target_is_host_default() -> bool {

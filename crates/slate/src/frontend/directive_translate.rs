@@ -5,6 +5,7 @@ use super::{self as frontend, c_ast};
 use crate::backend;
 use crate::backend::rust_ast::{Attr, Cfg, Expr, Item, Program, TraitRef, Type};
 use crate::ctx;
+use rayon::prelude::*;
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 use thiserror::Error;
@@ -201,18 +202,18 @@ pub fn translate_targets_with_args(
         }
     }
 
-    let saved_target = std::env::var("SLATE_TARGET").ok();
-    let result = (|| {
-        let mut variants = Vec::with_capacity(deduped_targets.len());
-        for target in &deduped_targets {
-            unsafe { std::env::set_var("SLATE_TARGET", target) };
+    let variants: Vec<TargetVariant> = deduped_targets
+        .par_iter()
+        .map(|target| {
             let config = super::toolchain::target_config(target).map_err(|source| {
                 DirectiveError::Target {
                     target: target.clone(),
                     source,
                 }
             })?;
-            let program = translate_directives_program_with_args(path, extra_args)?;
+            let program = super::toolchain::with_target_override(target, || {
+                translate_directives_program_with_args(path, extra_args)
+            })?;
             let mut atoms = vec![
                 Cfg::Opt {
                     key: "target_arch".into(),
@@ -226,18 +227,13 @@ pub fn translate_targets_with_args(
                     value: config.env.into(),
                 });
             }
-            variants.push(TargetVariant {
+            Ok(TargetVariant {
                 cfg: Cfg::All(atoms),
                 program,
-            });
-        }
-        Ok(merge_target_variants(&variants))
-    })();
-    match saved_target {
-        Some(value) => unsafe { std::env::set_var("SLATE_TARGET", value) },
-        None => unsafe { std::env::remove_var("SLATE_TARGET") },
-    }
-    format_program(&result?)
+            })
+        })
+        .collect::<Result<_, DirectiveError>>()?;
+    format_program(&merge_target_variants(&variants))
 }
 
 fn cfg_atom_key(cfg: &Cfg) -> Option<String> {
