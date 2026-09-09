@@ -539,6 +539,10 @@ def default_targets_for_path(path):
         return [
             ("MSVC", target_environment("x86_64-pc-windows-msvc")),
         ]
+    if "freebsd" in parts or path.parent.name == "freebsd":
+        return [
+            ("FREEBSD", target_environment("x86_64-unknown-freebsd")),
+        ]
     if "arm" in parts or path.parent.name == "arm":
         return [
             ("ARMV7-GNU", target_environment("armv7-unknown-linux-gnueabihf")),
