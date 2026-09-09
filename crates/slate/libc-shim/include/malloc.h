@@ -4,7 +4,13 @@
 #include <features.h>
 
 #include <stddef.h>
+
+#if defined(__SLATE_LIBC_GLIBC)
 #include <stdio.h>
+#else
+#define __NEED_FILE
+#include <bits/types.h>
+#endif
 
 void *malloc(size_t);
 void *calloc(size_t, size_t);
