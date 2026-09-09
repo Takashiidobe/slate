@@ -10,8 +10,11 @@ fn glibc_only_headers_are_rejected_by_musl() {
     for header in ["envz.h", "error.h", "execinfo.h"] {
         let source = header_include_program(&[header.to_string()]);
         assert!(
-            compile_test_program(&TestConfig::new(Architecture::X86_64, LibcVariant::Musl), &source)
-                .is_err(),
+            compile_test_program(
+                &TestConfig::new(Architecture::X86_64, LibcVariant::Musl),
+                &source
+            )
+            .is_err(),
             "<{header}> must be rejected for musl"
         );
     }
