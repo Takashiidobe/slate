@@ -17,6 +17,17 @@
 #define SEEK_DATA 3
 #define SEEK_HOLE 4
 
+#if defined(__SLATE_LIBC_GLIBC)
+#define TEMP_FAILURE_RETRY(expression)                                       \
+  (__extension__({                                                          \
+    long int __result;                                                       \
+    do                                                                       \
+      __result = (long int)(expression);                                     \
+    while (__result == -1L && errno == EINTR);                               \
+    __result;                                                                \
+  }))
+#endif
+
 #define __NEED_size_t
 #define __NEED_ssize_t
 #define __NEED_uid_t

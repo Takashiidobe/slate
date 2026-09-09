@@ -120,10 +120,13 @@ void   explicit_bzero(void *, size_t);
 #endif
 
 #ifdef _GNU_SOURCE
+#if !defined(__SLATE_LIBC_MUSL)
 #include <alloca.h>
+#endif
 
-#define strdupa(s) strcpy((char *)alloca(strlen(s) + 1), (s))
+#define strdupa(s) strcpy((char *)__builtin_alloca(strlen(s) + 1), (s))
 
+#if !defined(__SLATE_LIBC_MUSL)
 static __inline char *__slate_strndupa_finish(void *buf, const char *s,
                                              size_t len) {
   char *out = (char *)buf;
@@ -132,8 +135,9 @@ static __inline char *__slate_strndupa_finish(void *buf, const char *s,
   return out;
 }
 #define strndupa(s, n)                                                       \
-  __slate_strndupa_finish(alloca(strnlen((s), (n)) + 1), (s),                \
+  __slate_strndupa_finish(__builtin_alloca(strnlen((s), (n)) + 1), (s),      \
                            strnlen((s), (n)))
+#endif
 
 int         strverscmp(const char *, const char *);
 char       *strchrnul(const char *, int);

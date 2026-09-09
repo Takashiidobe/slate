@@ -3,46 +3,6 @@
 
 #include <features.h>
 
-#include <sys/types.h>
-
-#if !defined(__SLATE_LIBC_DARWIN) && !defined(__SLATE_LIBC_FREEBSD)
-enum {
-  O_RDONLY   = 0,
-  O_WRONLY   = 1,
-  O_RDWR     = 2,
-  O_CREAT    = 0100,
-  O_TRUNC    = 01000,
-  O_APPEND   = 02000,
-  O_NONBLOCK = 04000,
-  O_CLOEXEC  = 02000000,
-};
-
-enum {
-  F_DUPFD         = 0,
-  F_GETFD         = 1,
-  F_SETFD         = 2,
-  F_GETFL         = 3,
-  F_SETFL         = 4,
-  F_GETLK         = 5,
-  F_SETLK         = 6,
-  F_SETLKW        = 7,
-  F_SETOWN        = 8,
-  F_GETOWN        = 9,
-  F_SETSIG        = 10,
-  F_GETSIG        = 11,
-  F_SETOWN_EX     = 15,
-  F_GETOWN_EX     = 16,
-  F_SETLEASE      = 1024,
-  F_GETLEASE      = 1025,
-  F_NOTIFY        = 1026,
-  F_DUPFD_CLOEXEC = 1030,
-  F_SETPIPE_SZ    = 1031,
-  F_GETPIPE_SZ    = 1032,
-  F_ADD_SEALS     = 1033,
-  F_GET_SEALS     = 1034,
-};
-#endif
-
 #define __NEED_off_t
 #define __NEED_pid_t
 #define __NEED_mode_t
@@ -63,6 +23,15 @@ enum {
 #include <bits/fcntl.h>
 #endif
 #include <stdint.h>
+
+#if defined(__SLATE_LIBC_GLIBC) && defined(__SLATE_ARCH_ARM)
+#undef F_GETLK
+#undef F_SETLK
+#undef F_SETLKW
+#define F_GETLK  5
+#define F_SETLK  6
+#define F_SETLKW 7
+#endif
 
 struct flock {
   short l_type;
@@ -86,7 +55,7 @@ struct open_how {
   uint64_t mode;
   uint64_t resolve;
 };
-int openat2(int, const char *, struct open_how *, size_t);
+int openat2(int, const char *, const struct open_how *, size_t);
 #endif
 
 #ifndef S_IRUSR
@@ -125,6 +94,20 @@ int openat2(int, const char *, struct open_how *, size_t);
 #define AT_REMOVEDIR        0x200
 #define AT_SYMLINK_FOLLOW   0x400
 #define AT_EACCESS          0x200
+#if defined(__SLATE_LIBC_GLIBC)
+#define AT_HANDLE_FID           AT_REMOVEDIR
+#define AT_HANDLE_MNT_ID_UNIQUE 1
+#if !defined(__SLATE_ARCH_ARM)
+#define AT_EXECVE_CHECK       0x10000
+#define AT_HANDLE_CONNECTABLE 2
+#define FD_PIDFS_ROOT         (-10002)
+#endif
+#if defined(__SLATE_ARCH_X86) || defined(__SLATE_ARCH_X86_64)
+#define FD_NSFS_ROOT (-10003)
+#define F_GETDELEG   1039
+#define F_SETDELEG   1040
+#endif
+#endif
 #else
 #define FD_CLOEXEC 1
 #endif
@@ -136,6 +119,34 @@ int openat2(int, const char *, struct open_how *, size_t);
 #ifndef POSIX_FADV_DONTNEED
 #define POSIX_FADV_DONTNEED 4
 #define POSIX_FADV_NOREUSE  5
+#endif
+
+#if defined(__SLATE_LIBC_GLIBC)
+#define F_DUPFD_QUERY  1027
+#define F_CREATED_QUERY 1028
+#define F_EXLCK         4
+#define F_SHLCK         8
+#define LOCK_SH         1
+#define LOCK_EX         2
+#define LOCK_NB         4
+#define LOCK_UN         8
+#define LOCK_MAND       32
+#define LOCK_READ       64
+#define LOCK_WRITE      128
+#define LOCK_RW         192
+#define F_SEAL_EXEC     0x0020
+#define O_FSYNC         O_SYNC
+#define SYNC_FILE_RANGE_WRITE_AND_WAIT                                   \
+  (SYNC_FILE_RANGE_WRITE | SYNC_FILE_RANGE_WAIT_BEFORE |                 \
+   SYNC_FILE_RANGE_WAIT_AFTER)
+#define S_IFMT   0170000
+#define S_IFDIR  0040000
+#define S_IFCHR  0020000
+#define S_IFBLK  0060000
+#define S_IFREG  0100000
+#define S_IFIFO  0010000
+#define S_IFLNK  0120000
+#define S_IFSOCK 0140000
 #endif
 
 #undef SEEK_SET
@@ -215,6 +226,9 @@ int lockf(int, int, off_t);
 #define F_GET_FILE_RW_HINT 1037
 #define F_SET_FILE_RW_HINT 1038
 
+#if defined(__SLATE_LIBC_GLIBC)
+#define RWH_WRITE_LIFE_NOT_SET 0
+#endif
 #define RWF_WRITE_LIFE_NOT_SET 0
 #define RWH_WRITE_LIFE_NONE    1
 #define RWH_WRITE_LIFE_SHORT   2
@@ -269,13 +283,24 @@ int     sync_file_range(int, off_t, off_t, unsigned);
 ssize_t vmsplice(int, const struct iovec *, size_t, unsigned);
 ssize_t splice(int, off_t *, int, off_t *, size_t, unsigned);
 ssize_t tee(int, int, size_t, unsigned);
+#if defined(__SLATE_LIBC_MUSL)
+#define loff_t off_t
+#else
 typedef off_t loff_t;
 #endif
+#endif
 
-#if defined(_LARGEFILE64_SOURCE) || defined(__SLATE_LIBC_BIONIC)
+#if defined(_LARGEFILE64_SOURCE) || defined(__SLATE_LIBC_GLIBC) ||             \
+    defined(__SLATE_LIBC_BIONIC)
+#if defined(__SLATE_LIBC_GLIBC) && !defined(__SLATE_WORDSIZE_64)
+#define F_GETLK64  12
+#define F_SETLK64  13
+#define F_SETLKW64 14
+#else
 #define F_GETLK64         F_GETLK
 #define F_SETLK64         F_SETLK
 #define F_SETLKW64        F_SETLKW
+#endif
 #define flock64           flock
 #define open64            open
 #define openat64          openat

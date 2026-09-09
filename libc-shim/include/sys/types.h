@@ -9,6 +9,11 @@
 
 #else
 
+#if defined(__SLATE_LIBC_MUSL)
+#include <endian.h>
+#include <sys/select.h>
+#endif
+
 #define __NEED_mode_t
 #define __NEED_pid_t
 #define __NEED_ssize_t
@@ -53,6 +58,11 @@ typedef unsigned char  u_char;
 typedef unsigned short u_short;
 typedef unsigned int   u_int;
 typedef unsigned long  u_long;
+typedef unsigned long  ulong;
+typedef __uint8_t      u_int8_t;
+typedef __uint16_t     u_int16_t;
+typedef __uint32_t     u_int32_t;
+typedef __uint64_t     u_int64_t;
 #endif
 
 #endif
