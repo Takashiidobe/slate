@@ -13,6 +13,7 @@ enum FixtureFlavor {
     Bionic,
     Macos,
     Msvc,
+    FreeBsd,
 }
 
 impl FixtureFlavor {
@@ -22,6 +23,7 @@ impl FixtureFlavor {
             FixtureFlavor::Bionic => "bionic",
             FixtureFlavor::Macos => "macos",
             FixtureFlavor::Msvc => "msvc",
+            FixtureFlavor::FreeBsd => "freebsd",
         }
     }
 
@@ -31,6 +33,7 @@ impl FixtureFlavor {
             FixtureFlavor::Bionic => Some("aarch64-linux-android21"),
             FixtureFlavor::Macos => Some("arm64-apple-macos11.0"),
             FixtureFlavor::Msvc => Some("x86_64-pc-windows-msvc"),
+            FixtureFlavor::FreeBsd => Some("x86_64-unknown-freebsd15.1"),
         }
     }
 
@@ -40,6 +43,7 @@ impl FixtureFlavor {
             FixtureFlavor::Bionic => Some("aarch64-linux-android"),
             FixtureFlavor::Macos => Some("aarch64-apple-darwin"),
             FixtureFlavor::Msvc => Some("x86_64-pc-windows-msvc"),
+            FixtureFlavor::FreeBsd => Some("x86_64-unknown-freebsd"),
         }
     }
 
@@ -80,6 +84,18 @@ impl FixtureFlavor {
                 "-D__SLATE_WORDSIZE_64",
                 "-D__SLATE_ENDIAN_LITTLE",
             ],
+            FixtureFlavor::FreeBsd => &[
+                "-D_SLATE_LIBC",
+                "-D__SLATE_ARCH_X86_64",
+                "-D__SLATE_VENDOR_UNKNOWN",
+                "-D__SLATE_KERNEL_FREEBSD",
+                "-D__SLATE_PLATFORM_FREEBSD",
+                "-D__SLATE_LIBC_FREEBSD",
+                "-D__SLATE_OBJ_ELF",
+                "-D__SLATE_WORDSIZE_64",
+                "-D__SLATE_ENDIAN_LITTLE",
+                "-D__SLATE_FREEBSD_VERSION__=1501000",
+            ],
         }
     }
 
@@ -93,6 +109,8 @@ impl FixtureFlavor {
             (FixtureFlavor::Macos, Rewrites) => &["REWRITES-MACOS"],
             (FixtureFlavor::Msvc, Lowering) => &["LOWERING-MSVC"],
             (FixtureFlavor::Msvc, Rewrites) => &["REWRITES-MSVC"],
+            (FixtureFlavor::FreeBsd, Lowering) => &["LOWERING-FREEBSD"],
+            (FixtureFlavor::FreeBsd, Rewrites) => &["REWRITES-FREEBSD"],
         }
     }
 
@@ -214,6 +232,12 @@ fn fixtures() -> Vec<Fixture> {
     collect_fixtures(
         &dir.join("msvc"),
         FixtureFlavor::Msvc,
+        &selected,
+        &mut fixtures,
+    );
+    collect_fixtures(
+        &dir.join("freebsd"),
+        FixtureFlavor::FreeBsd,
         &selected,
         &mut fixtures,
     );
@@ -519,6 +543,14 @@ fn run_cross_target_fixture(
         }
     }
     if flavor == FixtureFlavor::Msvc {
+        check_generated_rust_for_target(
+            name,
+            flavor.translation_target().unwrap(),
+            &rust,
+            &work_dir.join("target-check"),
+        )?;
+    }
+    if flavor == FixtureFlavor::FreeBsd {
         check_generated_rust_for_target(
             name,
             flavor.translation_target().unwrap(),
