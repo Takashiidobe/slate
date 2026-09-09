@@ -32,3 +32,6 @@ err.h
 fmtmsg.h
 fnmatch.h
 elf.h
+ftw.h
+getopt.h
+glob.h
