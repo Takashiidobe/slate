@@ -20,3 +20,6 @@ arpa/nameser_compat.h
 arpa/telnet.h
 arpa/tftp.h
 byteswap.h
+ctype.h
+endian.h
+limits.h
