@@ -268,10 +268,17 @@ typedef long          __int64_t;
 typedef unsigned long __uint64_t;
 typedef long          __int_least64_t;
 typedef unsigned long __uint_least64_t;
+#if defined(__SLATE_LIBC_MUSL)
+typedef int            __int_fast16_t;
+typedef unsigned int   __uint_fast16_t;
+typedef int            __int_fast32_t;
+typedef unsigned int   __uint_fast32_t;
+#else
 typedef long          __int_fast16_t;
 typedef unsigned long __uint_fast16_t;
 typedef long          __int_fast32_t;
 typedef unsigned long __uint_fast32_t;
+#endif
 typedef long          __int_fast64_t;
 typedef unsigned long __uint_fast64_t;
 typedef long          __intptr_t;

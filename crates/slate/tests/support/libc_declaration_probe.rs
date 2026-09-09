@@ -284,6 +284,20 @@ pub fn diff_header_files(oracle: &BTreeSet<String>, shim: &BTreeSet<String>) -> 
     }
 }
 
+pub fn diff_macro_names(oracle: &[OracleMacro], shim: &[OracleMacro]) -> HeaderFileDiff {
+    let oracle_names: BTreeSet<String> = oracle
+        .iter()
+        .filter(|macro_definition| !macro_definition.private)
+        .map(|macro_definition| macro_definition.name.clone())
+        .collect();
+    let shim_names: BTreeSet<String> = shim
+        .iter()
+        .filter(|macro_definition| !macro_definition.private)
+        .map(|macro_definition| macro_definition.name.clone())
+        .collect();
+    diff_header_files(&oracle_names, &shim_names)
+}
+
 fn collect_type_aliases(node: &Value, aliases: &mut BTreeMap<String, String>) {
     if node.get("kind").and_then(Value::as_str) == Some("TypedefDecl")
         && let (Some(name), Some(type_spelling)) = (
@@ -928,6 +942,26 @@ fn oracle_compiles_source(
     Ok(output.status.success())
 }
 
+fn shim_compiles_source(
+    config: &ProbeConfig,
+    source: &Path,
+    object: &Path,
+) -> Result<bool, String> {
+    let mut command = Command::new(&config.compiler);
+    command.args(&config.compiler_args);
+    command.arg(format!("--target={}", config.target));
+    command.arg("-nostdlibinc");
+    command.arg("-isystem").arg(libc_shim_dir());
+    command.arg("-D__SLATE_LIBC_SHIM");
+    command.args(["-std=gnu23", "-D_GNU_SOURCE"]);
+    command.args(&config.defines);
+    command.arg("-c").arg(source).arg("-o").arg(object);
+    let output = command
+        .output()
+        .map_err(|error| format!("classify shim macro {}: {error}", source.display()))?;
+    Ok(output.status.success())
+}
+
 pub fn select_oracle_object_macro_value_probes(
     config: &ProbeConfig,
     macros: &[OracleMacro],
@@ -951,6 +985,46 @@ pub fn select_oracle_object_macro_value_probes(
         }
     }
     Ok(selected)
+}
+
+pub fn select_shim_object_macro_value_probes(
+    config: &ProbeConfig,
+    macros: &[OracleMacro],
+    output_dir: &Path,
+) -> Result<Vec<OracleMacro>, String> {
+    let classification_dir = output_dir.join("shim-macro-value-classification");
+    std::fs::create_dir_all(&classification_dir)
+        .map_err(|error| format!("create {}: {error}", classification_dir.display()))?;
+    let mut selected = Vec::new();
+    for macro_definition in macros {
+        let Ok(source_text) = render_object_macro_value_probe(macro_definition) else {
+            continue;
+        };
+        let stem = identifier(&macro_definition.name);
+        let source = classification_dir.join(format!("{stem}.c"));
+        let object = classification_dir.join(format!("{stem}.o"));
+        std::fs::write(&source, source_text)
+            .map_err(|error| format!("write {}: {error}", source.display()))?;
+        if shim_compiles_source(config, &source, &object)? {
+            selected.push(macro_definition.clone());
+        }
+    }
+    Ok(selected)
+}
+
+pub fn select_cross_checkable_shim_macros(
+    oracle_classified: &[OracleMacro],
+    shim_classified: &[OracleMacro],
+) -> Vec<OracleMacro> {
+    let oracle_names: BTreeSet<&str> = oracle_classified
+        .iter()
+        .map(|macro_definition| macro_definition.name.as_str())
+        .collect();
+    shim_classified
+        .iter()
+        .filter(|macro_definition| oracle_names.contains(macro_definition.name.as_str()))
+        .cloned()
+        .collect()
 }
 
 pub fn write_header_object_macro_value_probe(
