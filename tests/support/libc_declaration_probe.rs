@@ -219,6 +219,7 @@ fn is_ignored_transitive_header(file: &str, config: &ProbeConfig) -> bool {
         relative.as_str(),
         "alloca.h"
             | "arpa/nameser_compat.h"
+            | "endian.h"
             | "getopt.h"
             | "signal.h"
             | "sys/cdefs.h"
@@ -255,9 +256,10 @@ fn is_public_shim_header_file(file: &str) -> bool {
             .is_some_and(|name| !name.starts_with("__"))
 }
 
-fn node_is_public_shim_declaration(node: &Value, config: &ProbeConfig) -> bool {
+fn node_is_public_shim_declaration(node: &Value, header: &str, config: &ProbeConfig) -> bool {
     declaration_file(node).is_some_and(|file| {
-        is_public_shim_header_file(file) && !is_ignored_transitive_header(file, config)
+        is_public_shim_header_file(file)
+            && (header_relative_name(file) == header || !is_ignored_transitive_header(file, config))
     })
 }
 
@@ -313,6 +315,7 @@ pub fn extract_oracle_header_files(
     let root = header_ast(config, header, &output_dir.join("oracle-header.c"))?;
     let mut files = BTreeSet::new();
     collect_declaration_files(&root, &mut files, config);
+    files.remove(header);
     Ok(files)
 }
 
@@ -326,6 +329,7 @@ pub fn extract_shim_header_files(
     let root = shim_header_ast(config, header, &output_dir.join("shim-header.c"))?;
     let mut files = BTreeSet::new();
     collect_declaration_files(&root, &mut files, config);
+    files.remove(header);
     Ok(files)
 }
 
@@ -842,7 +846,8 @@ pub fn extract_shim_header_macros(
     let raw = output_dir.join("shim-macros.dD");
     std::fs::write(&raw, &output).map_err(|error| format!("write {}: {error}", raw.display()))?;
     parse_macro_directives(header, &output, &source, &|file| {
-        is_public_shim_header_file(file) && !is_ignored_transitive_header(file, config)
+        is_public_shim_header_file(file)
+            && (header_relative_name(file) == header || !is_ignored_transitive_header(file, config))
     })
 }
 
@@ -1207,7 +1212,7 @@ pub fn extract_shim_header_functions(
     collect_type_aliases(&root, &mut aliases);
     let mut by_name = BTreeMap::new();
     collect_all_functions(&root, &mut by_name, &aliases, &|node| {
-        node_is_public_shim_declaration(node, config)
+        node_is_public_shim_declaration(node, header, config)
     });
     by_name
         .into_iter()
@@ -1288,7 +1293,7 @@ pub fn extract_shim_header_objects(
     collect_type_aliases(&root, &mut aliases);
     let mut objects = BTreeMap::new();
     collect_objects(&root, &aliases, &mut objects, header, &|node| {
-        node_is_public_shim_declaration(node, config)
+        node_is_public_shim_declaration(node, header, config)
     });
     Ok(objects.into_values().collect())
 }
@@ -1381,7 +1386,7 @@ pub fn extract_shim_type_surface(
         enums: Vec::new(),
     };
     collect_type_surface(&root, &aliases, &mut surface, &|node| {
-        node_is_public_shim_declaration(node, config)
+        node_is_public_shim_declaration(node, header, config)
     });
     let dump = shim_record_layout_dump(config, &output_dir.join("shim-header.c"))?;
     std::fs::write(output_dir.join("shim-record-layouts.txt"), &dump)
@@ -1560,9 +1565,6 @@ pub fn write_header_matrix_probe(
     }
     if let Ok(source) = render_header_macro_presence_probe(macros) {
         bodies.push(probe_body(source, header));
-    }
-    if bodies.is_empty() {
-        return Err(format!("{header} has no matrix probe strategy"));
     }
     std::fs::create_dir_all(output_dir)
         .map_err(|error| format!("create {}: {error}", output_dir.display()))?;

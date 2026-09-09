@@ -359,6 +359,7 @@ int ns_skiprr(const unsigned char *, const unsigned char *, ns_sect, int);
 int ns_name_uncompress(const unsigned char *, const unsigned char *,
                        const unsigned char *, char *, size_t);
 
+#if !defined(__SLATE_LIBC_GLIBC)
 #define __BIND 19950621
 
 typedef struct {
@@ -523,5 +524,6 @@ typedef struct {
 #define GETLONG  NS_GET32
 #define PUTSHORT NS_PUT16
 #define PUTLONG  NS_PUT32
+#endif
 
 #endif
