@@ -40,6 +40,13 @@ shim extension to every profile. Bidirectional checking is currently limited
 to `arpa/nameser.h`; only add a header there when its public surface is
 expected to be exact in both directions.
 
+`crypt.h` is supplied by standalone libxcrypt on current GNU systems, not by
+the glibc core headers alone. Every glibc target needs a matched libxcrypt
+development header and library in its oracle sysroot. A program that references
+its functions must link `-lcrypt`; a declaration-only header probe does not.
+The configured ARM and AArch64 GNU sysroots lack that package, which is an
+oracle provisioning gap rather than an ABI or header-visibility distinction.
+
 ## Required workflow for one header
 
 1. Read the ticket and inspect the real oracle for every supported descriptor.

@@ -2,6 +2,10 @@
 #define _SLATE_ENVZ_H
 #include <features.h>
 
+#if !defined(__SLATE_LIBC_GLIBC)
+#error "<envz.h> is only available with glibc"
+#endif
+
 #include <argz.h>
 
 #define __NEED_size_t

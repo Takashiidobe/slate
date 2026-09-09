@@ -5,6 +5,18 @@ use support::libc_shim::{
     header_include_program, libc_shim_dir,
 };
 
+#[test]
+fn glibc_only_headers_are_rejected_by_musl() {
+    for header in ["envz.h", "error.h", "execinfo.h"] {
+        let source = header_include_program(&[header.to_string()]);
+        assert!(
+            compile_test_program(&TestConfig::new(Architecture::X86_64, LibcVariant::Musl), &source)
+                .is_err(),
+            "<{header}> must be rejected for musl"
+        );
+    }
+}
+
 fn discover_bits_headers(root: &std::path::Path) -> Vec<std::path::PathBuf> {
     let mut pending = vec![root.to_path_buf()];
     let mut headers = Vec::new();
@@ -24,7 +36,7 @@ fn discover_bits_headers(root: &std::path::Path) -> Vec<std::path::PathBuf> {
 
 fn compile_all_headers(arch: Architecture, libc: LibcVariant) {
     let config = TestConfig::new(arch, libc);
-    let headers = discover_public_headers(&libc_shim_dir())
+    let headers = discover_public_headers(&libc_shim_dir(), libc)
         .unwrap_or_else(|e| panic!("discover headers for {}: {e}", config.name()));
     assert!(!headers.is_empty(), "no public headers discovered");
     let failures = headers

@@ -3,6 +3,10 @@
 
 #include <features.h>
 
+#if !defined(__SLATE_LIBC_GLIBC)
+#error "<error.h> is only available with glibc"
+#endif
+
 void error(int status, int errnum, const char *format, ...);
 void error_at_line(int status, int errnum, const char *filename,
                     unsigned int lineno, const char *format, ...);

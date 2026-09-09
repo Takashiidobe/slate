@@ -32,3 +32,7 @@ cpio.h
 crypt.h
 dirent.h
 dlfcn.h
+envz.h
+err.h
+error.h
+execinfo.h

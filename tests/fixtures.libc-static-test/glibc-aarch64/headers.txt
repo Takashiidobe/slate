@@ -31,3 +31,7 @@ unistd.h
 cpio.h
 dirent.h
 dlfcn.h
+envz.h
+err.h
+error.h
+execinfo.h

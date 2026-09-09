@@ -3,6 +3,10 @@
 
 #include <features.h>
 
+#if !defined(__SLATE_LIBC_GLIBC)
+#error "<execinfo.h> is only available with glibc"
+#endif
+
 int backtrace(void **__array, int __size);
 
 char **backtrace_symbols(void *const *__array, int __size);

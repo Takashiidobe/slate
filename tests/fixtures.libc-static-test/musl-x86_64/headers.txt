@@ -28,3 +28,4 @@ cpio.h
 crypt.h
 dirent.h
 dlfcn.h
+err.h

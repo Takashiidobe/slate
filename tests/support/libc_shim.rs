@@ -197,14 +197,45 @@ impl TestConfig {
     }
 }
 
-pub fn discover_public_headers(include_dir: &Path) -> Result<Vec<String>, String> {
-    fn walk(dir: &Path, root: &Path, out: &mut Vec<String>) -> Result<(), String> {
+pub fn discover_public_headers(
+    include_dir: &Path,
+    libc: LibcVariant,
+) -> Result<Vec<String>, String> {
+    let exclusions = match libc {
+        LibcVariant::Musl => include_dir.parent().unwrap().join("glibc-only-headers.txt"),
+        LibcVariant::Glibc => include_dir.parent().unwrap().join("musl-only-headers.txt"),
+        _ => return discover_public_headers_for(include_dir, &std::collections::BTreeSet::new()),
+    };
+    let excluded = if exclusions.is_file() {
+        fs::read_to_string(&exclusions)
+            .map_err(|e| format!("read {}: {e}", exclusions.display()))?
+            .lines()
+            .map(str::trim)
+            .filter(|line| !line.is_empty() && !line.starts_with('#'))
+            .map(str::to_string)
+            .collect()
+    } else {
+        std::collections::BTreeSet::new()
+    };
+    discover_public_headers_for(include_dir, &excluded)
+}
+
+fn discover_public_headers_for(
+    include_dir: &Path,
+    excluded: &std::collections::BTreeSet<String>,
+) -> Result<Vec<String>, String> {
+    fn walk(
+        dir: &Path,
+        root: &Path,
+        excluded: &std::collections::BTreeSet<String>,
+        out: &mut Vec<String>,
+    ) -> Result<(), String> {
         for entry in fs::read_dir(dir).map_err(|e| format!("read {}: {e}", dir.display()))? {
             let path = entry
                 .map_err(|e| format!("read entry in {}: {e}", dir.display()))?
                 .path();
             if path.is_dir() {
-                walk(&path, root, out)?;
+                walk(&path, root, excluded, out)?;
                 continue;
             }
             if path.extension().and_then(|e| e.to_str()) != Some("h") {
@@ -223,13 +254,15 @@ pub fn discover_public_headers(include_dir: &Path) -> Result<Vec<String>, String
             if content.trim_start().starts_with("#error") {
                 continue;
             }
-            out.push(rel);
+            if !excluded.contains(&rel) {
+                out.push(rel);
+            }
         }
         Ok(())
     }
 
     let mut headers = Vec::new();
-    walk(include_dir, include_dir, &mut headers)?;
+    walk(include_dir, include_dir, excluded, &mut headers)?;
     headers.sort();
     Ok(headers)
 }
