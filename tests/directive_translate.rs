@@ -67,6 +67,18 @@ fn directive_filecheck_fixtures() -> Vec<String> {
     fixtures
 }
 
+fn fixture_targets(name: &str) -> Option<String> {
+    let src = cfg_fixtures_dir().join(name);
+    let fixture = std::fs::read_to_string(&src).ok()?;
+    fixture.lines().find_map(|line| {
+        line.trim_start()
+            .strip_prefix("//")?
+            .trim_start()
+            .strip_prefix("SLATE-TARGETS:")
+            .map(|targets| targets.trim().to_string())
+    })
+}
+
 fn translate(name: &str) -> String {
     translate_with_clang_args(name, None)
 }
@@ -74,7 +86,11 @@ fn translate(name: &str) -> String {
 fn translate_with_clang_args(name: &str, clang_args: Option<&str>) -> String {
     let src = cfg_fixtures_dir().join(name);
     let mut command = Command::new(env!("CARGO_BIN_EXE_slate"));
-    command.arg("translate").arg(&src);
+    command.arg("translate");
+    if let Some(targets) = fixture_targets(name) {
+        command.arg(format!("--targets={targets}"));
+    }
+    command.arg(&src);
     match clang_args {
         Some(args) => {
             command.env("SLATE_CLANG_ARGS", args);
@@ -169,35 +185,7 @@ fn generated_directive_filecheck() {
 
 #[test]
 fn target_only_divergence_needs_no_source_ifdef_and_splices_by_target_arch() {
-    let src = cfg_fixtures_dir().join("target_only_divergence.c");
-    let out = Command::new(env!("CARGO_BIN_EXE_slate"))
-        .arg("translate")
-        .arg("--targets=x86_64-linux-gnu,aarch64-linux-gnu")
-        .arg(&src)
-        .output()
-        .expect("run slate translate --targets");
-    assert!(
-        out.status.success(),
-        "translate --targets failed:\n{}",
-        String::from_utf8_lossy(&out.stderr)
-    );
-    let rust = String::from_utf8(out.stdout).expect("generated Rust is utf8");
-
-    assert_eq!(rust.matches("fn printf(").count(), 1);
-
-    check_rust_shape(
-        "target_only_divergence",
-        concat!(
-            "// COMMON: #[cfg(target_arch = \"x86_64\")]\n",
-            "// COMMON-NEXT: fn main()\n",
-            "// COMMON: #[cfg(target_arch = \"aarch64\")]\n",
-            "// COMMON-NEXT: fn main()\n",
-            "// COMMON: println!(\"{}\", 295 as i32);\n",
-            "// COMMON: println!(\"{}\", 69 as i32);\n",
-        ),
-        &rust,
-        support::filecheck::Profile::Rewrites,
-    );
+    let rust = translate("target_only_divergence.c");
 
     let output = compile_and_run("target_only_divergence", &rust);
     assert!(output.status.success());
@@ -216,39 +204,7 @@ fn target_only_divergence_needs_no_source_ifdef_and_splices_by_target_arch() {
 
 #[test]
 fn target_and_macro_divergence_compose_without_cross_product() {
-    let src = cfg_fixtures_dir().join("target_and_macro_divergence.c");
-    let out = Command::new(env!("CARGO_BIN_EXE_slate"))
-        .arg("translate")
-        .arg("--targets=x86_64-linux-gnu,aarch64-linux-gnu")
-        .arg(&src)
-        .output()
-        .expect("run slate translate --targets");
-    assert!(
-        out.status.success(),
-        "translate --targets failed:\n{}",
-        String::from_utf8_lossy(&out.stderr)
-    );
-    let rust = String::from_utf8(out.stdout).expect("generated Rust is utf8");
-
-    assert_eq!(rust.matches("fn feature_code()").count(), 2);
-    assert_eq!(rust.matches("fn main()").count(), 2);
-
-    check_rust_shape(
-        "target_and_macro_divergence",
-        concat!(
-            "// COMMON: #[cfg(feature = \"my_feature\")]\n",
-            "// COMMON-NEXT: fn feature_code()\n",
-            "// COMMON: #[cfg(not(feature = \"my_feature\"))]\n",
-            "// COMMON-NEXT: fn feature_code()\n",
-            "// COMMON-NOT: #[cfg(any(target_arch\n",
-            "// COMMON: #[cfg(target_arch = \"x86_64\")]\n",
-            "// COMMON-NEXT: fn main()\n",
-            "// COMMON: #[cfg(target_arch = \"aarch64\")]\n",
-            "// COMMON-NEXT: fn main()\n",
-        ),
-        &rust,
-        support::filecheck::Profile::Rewrites,
-    );
+    let rust = translate("target_and_macro_divergence.c");
 
     let output = compile_and_run("target_and_macro_divergence", &rust);
     assert!(output.status.success());
