@@ -46,3 +46,8 @@ libintl.h
 link.h
 locale.h
 malloc.h
+memory.h
+mntent.h
+monetary.h
+mqueue.h
+net/ethernet.h

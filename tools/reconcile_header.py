@@ -27,7 +27,7 @@ else (multi-line continuations, types, decls, structs) is out of scope and
 must go through the existing manual per-header workflow.
 
 Usage:
-    python3 tools/reconcile_header.py <header> [<header> ...] [--dry-run]
+    python3 tools/reconcile_header.py [--jobs=N] <header> [<header> ...]
 """
 
 import json
@@ -35,6 +35,7 @@ import os
 import re
 import subprocess
 import sys
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
@@ -158,6 +159,92 @@ def run_matrix(descriptor):
     )
 
 
+def worker_count(jobs, work_items):
+    return max(1, min(jobs, work_items))
+
+
+def discover_headers(headers, jobs):
+    tasks = [(header, descriptor) for header in headers for descriptor in DESCRIPTORS]
+
+    def discover(task):
+        header, descriptor = task
+        libc, arch = descriptor.split("-", 1)
+        return header, descriptor, emit_oracle_macros(header, libc, arch)
+
+    oracle = {header: {} for header in headers}
+    with ThreadPoolExecutor(max_workers=worker_count(jobs, len(tasks))) as executor:
+        for header, descriptor, macros in executor.map(discover, tasks):
+            if macros is not None:
+                oracle[header][descriptor] = macros
+    return oracle
+
+
+def matrix_output_for(descriptor, headers):
+    generate_fixture(descriptor)
+    result = run_matrix(descriptor)
+    output = result.stdout + result.stderr
+    missing = {header: set() for header in headers}
+    for header, name in MISSING_MACRO_RE.findall(output):
+        if header in missing:
+            missing[header].add(name)
+    remainder = MISSING_MACRO_RE.sub("", output)
+    other = {}
+    if result.returncode != 0 and not (
+        any(missing.values()) and "error" not in remainder.replace("#error", "")
+    ):
+        tail = "\n".join(line for line in output.splitlines() if line.strip())[-4000:]
+        affected = [
+            header
+            for header in headers
+            if re.search(rf"^\s*{re.escape(header)}:", output, re.M)
+        ]
+        if not affected:
+            affected = headers
+        other = {header: [tail] for header in affected}
+    return descriptor, missing, other
+
+
+def run_descriptor_jobs(headers, oracle, jobs):
+    descriptor_headers = {
+        descriptor: [header for header in headers if descriptor in oracle[header]]
+        for descriptor in DESCRIPTORS
+    }
+    descriptor_headers = {
+        descriptor: listed
+        for descriptor, listed in descriptor_headers.items()
+        if listed
+    }
+    missing = {header: {} for header in headers}
+    other_errors = {header: {} for header in headers}
+
+    def run_descriptor(item):
+        descriptor, listed = item
+        return matrix_output_for(descriptor, listed)
+
+    with ThreadPoolExecutor(
+        max_workers=worker_count(jobs, len(descriptor_headers))
+    ) as executor:
+        for descriptor, found, errors in executor.map(
+            run_descriptor, descriptor_headers.items()
+        ):
+            for header, names in found.items():
+                missing[header][descriptor] = names
+            for header, error in errors.items():
+                other_errors[header][descriptor] = error
+    return missing, other_errors
+
+
+def validate_descriptors(descriptors, jobs):
+    with ThreadPoolExecutor(max_workers=worker_count(jobs, len(descriptors))) as executor:
+        results = list(executor.map(run_matrix, descriptors))
+    failures = []
+    for descriptor, result in zip(descriptors, results):
+        if result.returncode:
+            output = result.stdout + result.stderr
+            failures.append((descriptor, output[-4000:]))
+    return failures
+
+
 MISSING_MACRO_RE = re.compile(r'"([^"]+\.h):([A-Za-z_][A-Za-z0-9_]*) macro is missing')
 
 
@@ -255,14 +342,11 @@ def find_definition_order(path, names_of_interest):
     return order
 
 
-def reconcile(header):
+def reconcile(header, oracle=None, missing_by_descriptor=None, other_errors=None,
+              add_manifest=True):
     print(f"=== {header} ===")
-    oracle = {}
-    for d in DESCRIPTORS:
-        libc, arch = d.split("-", 1)
-        macros = emit_oracle_macros(header, libc, arch)
-        if macros is not None:
-            oracle[d] = macros
+    if oracle is None:
+        oracle = discover_headers([header], 1)[header]
     if not oracle:
         print(f"  header not found in any of the 8 oracles; skipping")
         return
@@ -270,10 +354,9 @@ def reconcile(header):
     applicable = sorted(oracle.keys())
     print(f"  present in: {', '.join(applicable)}")
 
-    added_to_manifest = []
-    for d in applicable:
-        if add_to_manifest(d, header):
-            added_to_manifest.append(d)
+    if add_manifest:
+        for d in applicable:
+            add_to_manifest(d, header)
 
     shim_path = SHIM_INCLUDE / header
     if not shim_path.exists():
@@ -282,13 +365,14 @@ def reconcile(header):
     shim_text = shim_path.read_text()
     shim_names = set(re.findall(r"^#\s*define\s+([A-Za-z_][A-Za-z0-9_]*)", shim_text, re.M))
 
-    missing_by_descriptor = {}
-    other_errors = {}
-    for d in applicable:
-        names, other = missing_macros_for(d, header)
-        missing_by_descriptor[d] = names
-        if other:
-            other_errors[d] = other
+    if missing_by_descriptor is None:
+        missing_by_descriptor = {}
+        other_errors = {}
+        for d in applicable:
+            names, other = missing_macros_for(d, header)
+            missing_by_descriptor[d] = names
+            if other:
+                other_errors[d] = other
 
     all_missing = set()
     for names in missing_by_descriptor.values():
@@ -416,13 +500,59 @@ def reconcile(header):
                 print(f"    [{d}] {e}")
 
 
+def reconcile_batch(headers, jobs):
+    oracle = discover_headers(headers, jobs)
+    applicable_headers = []
+    for header in headers:
+        if not oracle[header]:
+            print(f"=== {header} ===")
+            print("  header not found in any of the 8 oracles; skipping")
+            continue
+        applicable_headers.append(header)
+        for descriptor in sorted(oracle[header]):
+            add_to_manifest(descriptor, header)
+
+    if not applicable_headers:
+        return
+
+    missing, other_errors = run_descriptor_jobs(applicable_headers, oracle, jobs)
+    for header in applicable_headers:
+        reconcile(
+            header,
+            oracle=oracle[header],
+            missing_by_descriptor=missing[header],
+            other_errors=other_errors[header],
+            add_manifest=False,
+        )
+
+    descriptors = sorted(
+        {
+            descriptor
+            for header in applicable_headers
+            for descriptor in oracle[header]
+        }
+    )
+    failures = validate_descriptors(descriptors, jobs)
+    if failures:
+        print("FINAL MATRIX ERRORS (needs manual fixup):")
+        for descriptor, output in failures:
+            print(f"  [{descriptor}] {output}")
+    else:
+        print("final declaration matrices pass across all applicable descriptors")
+
+
 def main(argv):
-    headers = [a for a in argv[1:] if not a.startswith("--")]
+    jobs = min(8, len(DESCRIPTORS))
+    headers = []
+    for arg in argv[1:]:
+        if arg.startswith("--jobs="):
+            jobs = int(arg.split("=", 1)[1])
+        elif not arg.startswith("--"):
+            headers.append(arg)
     if not headers:
         print(__doc__, file=sys.stderr)
         return 2
-    for header in headers:
-        reconcile(header)
+    reconcile_batch(headers, jobs)
     return 0
 
 
