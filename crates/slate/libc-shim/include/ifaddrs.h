@@ -2,9 +2,6 @@
 #define _SLATE_IFADDRS_H
 
 #include <features.h>
-#include <netinet/in.h>
-#include <sys/socket.h>
-
 #if defined(__SLATE_LIBC_DARWIN)
 
 #include <bits/darwin/ifaddrs.h>
@@ -14,6 +11,17 @@
 #include <bits/freebsd/ifaddrs.h>
 
 #else
+
+#if defined(__SLATE_LIBC_GLIBC)
+#include <sys/types.h>
+#include <sys/socket.h>
+#elif defined(__SLATE_LIBC_MUSL)
+#include <netinet/in.h>
+#include <inttypes.h>
+#else
+#include <netinet/in.h>
+#include <sys/socket.h>
+#endif
 
 struct ifaddrs {
   struct ifaddrs  *ifa_next;

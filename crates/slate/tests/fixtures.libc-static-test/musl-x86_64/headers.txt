@@ -37,3 +37,8 @@ getopt.h
 glob.h
 grp.h
 iconv.h
+ifaddrs.h
+inttypes.h
+langinfo.h
+lastlog.h
+libgen.h
