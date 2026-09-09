@@ -1,52 +1,32 @@
 #ifndef _SLATE_ARPA_FTP_H
 #define _SLATE_ARPA_FTP_H
 
-enum {
-  PRELIM    = 1,
-  COMPLETE  = 2,
-  CONTINUE  = 3,
-  TRANSIENT = 4,
-  ERROR     = 5,
-};
-
-enum {
-  TYPE_A = 1,
-  TYPE_E = 2,
-  TYPE_I = 3,
-  TYPE_L = 4,
-};
-
-enum {
-  FORM_N = 1,
-  FORM_T = 2,
-  FORM_C = 3,
-};
-
-enum {
-  STRU_F = 1,
-  STRU_R = 2,
-  STRU_P = 3,
-};
-
-enum {
-  MODE_S = 1,
-  MODE_B = 2,
-  MODE_C = 3,
-};
-
-enum {
-  REC_ESC = '\377',
-  REC_EOR = '\001',
-  REC_EOF = '\002',
-};
-
-enum {
-  BLK_EOR       = 0x80,
-  BLK_EOF       = 0x40,
-  BLK_ERRORS    = 0x20,
-  BLK_RESTART   = 0x10,
-  BLK_BYTECOUNT = 2,
-};
+#define PRELIM 1
+#define COMPLETE 2
+#define CONTINUE 3
+#define TRANSIENT 4
+#define ERROR 5
+#define TYPE_A 1
+#define TYPE_E 2
+#define TYPE_I 3
+#define TYPE_L 4
+#define FORM_N 1
+#define FORM_T 2
+#define FORM_C 3
+#define STRU_F 1
+#define STRU_R 2
+#define STRU_P 3
+#define MODE_S 1
+#define MODE_B 2
+#define MODE_C 3
+#define REC_ESC '\377'
+#define REC_EOR '\001'
+#define REC_EOF '\002'
+#define BLK_EOR 0x80
+#define BLK_EOF 0x40
+#define BLK_ERRORS 0x20
+#define BLK_RESTART 0x10
+#define BLK_BYTECOUNT 2
 
 #ifdef FTP_NAMES
 char *modenames[] = {"0", "Stream", "Block", "Compressed"};

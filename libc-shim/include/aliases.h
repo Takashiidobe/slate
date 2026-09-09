@@ -3,7 +3,13 @@
 
 #include <features.h>
 
+#include <stdint.h>
+#include <signal.h>
+#include <sys/time.h>
+
 #include <sys/types.h>
+
+#if defined(__SLATE_LIBC_GLIBC)
 
 struct aliasent {
   char  *alias_name;
@@ -28,5 +34,7 @@ int getaliasbyname_r(const char *__restrict __name,
                      struct aliasent *__restrict __result_buf,
                      char *__restrict __buffer, size_t __buflen,
                      struct aliasent **__restrict __result);
+
+#endif
 
 #endif /* aliases.h */

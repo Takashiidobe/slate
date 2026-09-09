@@ -6,3 +6,9 @@ errno.h
 fenv.h
 complex.h
 math.h
+aio.h
+alloca.h
+ar.h
+arpa/ftp.h
+arpa/inet.h
+arpa/nameser.h

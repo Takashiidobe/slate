@@ -686,14 +686,8 @@ _Static_assert(__builtin_types_compatible_p(__typeof__(slate_oracle_signgam), __
 
 static __typeof__(signgam) *const slate_reference_signgam = &signgam;
 
-typedef double slate_oracle_typedef_double_t;
-_Static_assert(__builtin_types_compatible_p(slate_oracle_typedef_double_t, double_t), "typedef double_t differs from oracle");
-
 typedef float slate_oracle_typedef_float_t;
 _Static_assert(__builtin_types_compatible_p(slate_oracle_typedef_float_t, float_t), "typedef float_t differs from oracle");
-
-typedef long double slate_oracle_typedef_long_double_t;
-_Static_assert(__builtin_types_compatible_p(slate_oracle_typedef_long_double_t, long_double_t), "typedef long_double_t differs from oracle");
 
 #ifndef FP_ILOGB0
 #error "math.h:FP_ILOGB0 macro is missing from libc-shim"

@@ -2,7 +2,11 @@
 #define _SLATE_ARGZ_H
 
 #include <features.h>
+#include <errno.h>
+#include <locale.h>
 #include <stddef.h>
+
+#if defined(__SLATE_LIBC_GLIBC)
 
 #ifndef __error_t_defined
 #define __error_t_defined 1
@@ -32,5 +36,7 @@ error_t argz_replace(char **__restrict argz, size_t *__restrict argz_len,
                      unsigned int *__restrict replace_count);
 char   *argz_next(const char *__restrict argz, size_t argz_len,
                   const char *__restrict entry);
+
+#endif
 
 #endif /* _SLATE_ARGZ_H */

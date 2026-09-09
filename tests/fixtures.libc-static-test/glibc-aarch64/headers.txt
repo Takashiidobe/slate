@@ -6,3 +6,13 @@ errno.h
 fenv.h
 complex.h
 math.h
+a.out.h
+aio.h
+aliases.h
+alloca.h
+ar.h
+argp.h
+argz.h
+arpa/ftp.h
+arpa/inet.h
+arpa/nameser.h

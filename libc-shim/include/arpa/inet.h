@@ -3,6 +3,12 @@
 
 #include <features.h>
 #include <netinet/in.h>
+#include <pthread.h>
+#include <signal.h>
+#include <stdint.h>
+#include <sys/select.h>
+#include <sys/time.h>
+#include <time.h>
 
 #define __NEED_uint16_t
 #define __NEED_uint32_t

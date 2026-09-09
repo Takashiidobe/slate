@@ -2,13 +2,34 @@
 #define _SLATE_AIO_H
 
 #include <features.h>
+#include <stdint.h>
 #include <signal.h>
+#include <sys/select.h>
+#include <sys/time.h>
 #include <time.h>
 
 #define __NEED_ssize_t
 #define __NEED_off_t
 #include <bits/types.h>
 
+#if defined(__SLATE_LIBC_GLIBC)
+struct aiocb {
+  int             aio_fildes;
+  int             aio_lio_opcode;
+  int             aio_reqprio;
+  volatile void  *aio_buf;
+  size_t          aio_nbytes;
+  struct sigevent aio_sigevent;
+  struct aiocb   *__next_prio;
+  int             __abs_prio;
+  int             __policy;
+  int             __error_code;
+  ssize_t         __return_value;
+  off_t           aio_offset;
+  char            __pad[sizeof(off64_t) - sizeof(off_t)];
+  char            __glibc_reserved[32];
+};
+#else
 struct aiocb {
   int             aio_fildes, aio_lio_opcode, aio_reqprio;
   volatile void  *aio_buf;
@@ -25,12 +46,24 @@ struct aiocb {
   char            __dummy5[4];
 #endif
 };
+#endif
 
 enum {
   AIO_CANCELED    = 0,
   AIO_NOTCANCELED = 1,
   AIO_ALLDONE     = 2,
 };
+
+#if defined(__SLATE_LIBC_GLIBC)
+#define AIO_CANCELED AIO_CANCELED
+#define AIO_NOTCANCELED AIO_NOTCANCELED
+#define AIO_ALLDONE AIO_ALLDONE
+#define LIO_READ LIO_READ
+#define LIO_WRITE LIO_WRITE
+#define LIO_NOP LIO_NOP
+#define LIO_WAIT LIO_WAIT
+#define LIO_NOWAIT LIO_NOWAIT
+#endif
 
 enum {
   LIO_READ  = 0,
