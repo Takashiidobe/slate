@@ -93,6 +93,12 @@ pub enum DirectiveError {
     },
     #[error("format generated Rust: {message}")]
     Format { message: String },
+    #[error("resolve target `{target}`: {source}")]
+    Target {
+        target: String,
+        #[source]
+        source: super::toolchain::TargetError,
+    },
 }
 
 #[derive(Debug, Clone)]
@@ -127,6 +133,14 @@ pub fn translate_directives_with_args(
     path: &Path,
     extra_args: &[String],
 ) -> Result<String, DirectiveError> {
+    let program = translate_directives_program_with_args(path, extra_args)?;
+    format_program(&program)
+}
+
+fn translate_directives_program_with_args(
+    path: &Path,
+    extra_args: &[String],
+) -> Result<Program, DirectiveError> {
     let (source, _raw) = preprocess::read_source(path).map_err(|source| DirectiveError::Read {
         path: path.to_path_buf(),
         source,
@@ -137,7 +151,7 @@ pub fn translate_directives_with_args(
         None => {
             let mut program = translate_one(path, extra_args)?.program;
             insert_directive_items(&mut program, directive_items);
-            return format_program(&program);
+            return Ok(program);
         }
         Some(plan) => plan,
     };
@@ -156,7 +170,99 @@ pub fn translate_directives_with_args(
     }
     let mut program = merge_variants(&baseline, &variants, &plan.pp);
     insert_directive_items(&mut program, directive_items);
-    format_program(&program)
+    Ok(program)
+}
+
+struct TargetVariant {
+    cfg: Cfg,
+    program: Program,
+}
+
+pub fn translate_targets_with_args(
+    path: &Path,
+    extra_args: &[String],
+    targets: &[String],
+) -> Result<String, DirectiveError> {
+    let saved_target = std::env::var("SLATE_TARGET").ok();
+    let result = (|| {
+        let mut variants = Vec::with_capacity(targets.len());
+        for target in targets {
+            unsafe { std::env::set_var("SLATE_TARGET", target) };
+            let arch = super::toolchain::target_config(target)
+                .map_err(|source| DirectiveError::Target {
+                    target: target.clone(),
+                    source,
+                })?
+                .arch;
+            let program = translate_directives_program_with_args(path, extra_args)?;
+            variants.push(TargetVariant {
+                cfg: Cfg::Opt {
+                    key: "target_arch".into(),
+                    value: arch.into(),
+                },
+                program,
+            });
+        }
+        Ok(merge_target_variants(&variants))
+    })();
+    match saved_target {
+        Some(value) => unsafe { std::env::set_var("SLATE_TARGET", value) },
+        None => unsafe { std::env::remove_var("SLATE_TARGET") },
+    }
+    format_program(&result?)
+}
+
+fn merge_target_variants(variants: &[TargetVariant]) -> Program {
+    let mut order = Vec::new();
+    let mut seen_keys = BTreeSet::new();
+    let mut by_key: BTreeMap<String, Vec<(usize, Item)>> = BTreeMap::new();
+
+    for (vi, variant) in variants.iter().enumerate() {
+        for item in &variant.program.items {
+            if matches!(item, Item::CrateAttrs(_)) {
+                continue;
+            }
+            let key = item_key(item);
+            if seen_keys.insert(key.clone()) {
+                order.push(key.clone());
+            }
+            by_key.entry(key).or_default().push((vi, item.clone()));
+        }
+    }
+
+    let mut items = Vec::new();
+    for item in &variants[0].program.items {
+        if let Item::CrateAttrs(_) = item {
+            items.push(item.clone());
+        }
+    }
+
+    for key in order {
+        let entries = &by_key[&key];
+        let mut groups: Vec<(Item, Vec<usize>)> = Vec::new();
+        for (vi, item) in entries {
+            match groups.iter_mut().find(|(existing, _)| existing == item) {
+                Some(group) => group.1.push(*vi),
+                None => groups.push((item.clone(), vec![*vi])),
+            }
+        }
+        for (item, vis) in groups {
+            if vis.len() == variants.len() {
+                items.push(item);
+                continue;
+            }
+            let cfg = if vis.len() == 1 {
+                variants[vis[0]].cfg.clone()
+            } else {
+                Cfg::Any(vis.iter().map(|&vi| variants[vi].cfg.clone()).collect())
+            };
+            items.push(Item::Cfg {
+                cfg,
+                item: Box::new(item),
+            });
+        }
+    }
+    Program { items }
 }
 
 pub fn should_auto_expand(source: &str) -> bool {

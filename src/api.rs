@@ -105,6 +105,15 @@ pub fn translate_with_args(path: &Path, extra_args: &[String]) -> Result<String,
     backend::format_rust(&source).map_err(|message| Error::Format { message })
 }
 
+pub fn translate_targets_with_args(
+    path: &Path,
+    extra_args: &[String],
+    targets: &[String],
+) -> Result<String, Error> {
+    directive_translate::translate_targets_with_args(path, extra_args, targets)
+        .map_err(Error::Directive)
+}
+
 pub fn lowered_program(path: &Path) -> Result<(Module, rust_ast::Program), Error> {
     lowered_program_with_args(path, &[])
 }

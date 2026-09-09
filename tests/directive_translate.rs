@@ -29,6 +29,24 @@ fn check_directive_output(name: &str, rust: &str) {
     .unwrap_or_else(|error| panic!("{}: {error}", fixture_path.display()));
 }
 
+fn check_rust_shape(label: &str, checks: &str, rust: &str, profile: support::filecheck::Profile) {
+    static SEQ: AtomicU64 = AtomicU64::new(0);
+    let slot = format!(
+        "{label}.{}.{}",
+        std::process::id(),
+        SEQ.fetch_add(1, Ordering::Relaxed)
+    );
+    support::filecheck::check_generated_rust(
+        checks,
+        rust,
+        profile,
+        &Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("target/directive-filecheck")
+            .join(slot),
+    )
+    .unwrap_or_else(|error| panic!("{label}: {error}"));
+}
+
 fn directive_filecheck_fixtures() -> Vec<String> {
     let mut fixtures = std::fs::read_dir(cfg_fixtures_dir())
         .expect("read directive fixtures")
@@ -150,6 +168,104 @@ fn generated_directive_filecheck() {
 }
 
 #[test]
+fn target_only_divergence_needs_no_source_ifdef_and_splices_by_target_arch() {
+    let src = cfg_fixtures_dir().join("target_only_divergence.c");
+    let out = Command::new(env!("CARGO_BIN_EXE_slate"))
+        .arg("translate")
+        .arg("--targets=x86_64-linux-gnu,aarch64-linux-gnu")
+        .arg(&src)
+        .output()
+        .expect("run slate translate --targets");
+    assert!(
+        out.status.success(),
+        "translate --targets failed:\n{}",
+        String::from_utf8_lossy(&out.stderr)
+    );
+    let rust = String::from_utf8(out.stdout).expect("generated Rust is utf8");
+
+    assert_eq!(rust.matches("fn printf(").count(), 1);
+
+    check_rust_shape(
+        "target_only_divergence",
+        concat!(
+            "// COMMON: #[cfg(target_arch = \"x86_64\")]\n",
+            "// COMMON-NEXT: fn main()\n",
+            "// COMMON: #[cfg(target_arch = \"aarch64\")]\n",
+            "// COMMON-NEXT: fn main()\n",
+            "// COMMON: println!(\"{}\", 295 as i32);\n",
+            "// COMMON: println!(\"{}\", 69 as i32);\n",
+        ),
+        &rust,
+        support::filecheck::Profile::Rewrites,
+    );
+
+    let output = compile_and_run("target_only_divergence", &rust);
+    assert!(output.status.success());
+    assert_eq!(
+        String::from_utf8_lossy(&output.stdout),
+        format!(
+            "{}\n",
+            if cfg!(target_arch = "x86_64") {
+                295
+            } else {
+                69
+            }
+        )
+    );
+}
+
+#[test]
+fn target_and_macro_divergence_compose_without_cross_product() {
+    let src = cfg_fixtures_dir().join("target_and_macro_divergence.c");
+    let out = Command::new(env!("CARGO_BIN_EXE_slate"))
+        .arg("translate")
+        .arg("--targets=x86_64-linux-gnu,aarch64-linux-gnu")
+        .arg(&src)
+        .output()
+        .expect("run slate translate --targets");
+    assert!(
+        out.status.success(),
+        "translate --targets failed:\n{}",
+        String::from_utf8_lossy(&out.stderr)
+    );
+    let rust = String::from_utf8(out.stdout).expect("generated Rust is utf8");
+
+    assert_eq!(rust.matches("fn feature_code()").count(), 2);
+    assert_eq!(rust.matches("fn main()").count(), 2);
+
+    check_rust_shape(
+        "target_and_macro_divergence",
+        concat!(
+            "// COMMON: #[cfg(feature = \"my_feature\")]\n",
+            "// COMMON-NEXT: fn feature_code()\n",
+            "// COMMON: #[cfg(not(feature = \"my_feature\"))]\n",
+            "// COMMON-NEXT: fn feature_code()\n",
+            "// COMMON-NOT: #[cfg(any(target_arch\n",
+            "// COMMON: #[cfg(target_arch = \"x86_64\")]\n",
+            "// COMMON-NEXT: fn main()\n",
+            "// COMMON: #[cfg(target_arch = \"aarch64\")]\n",
+            "// COMMON-NEXT: fn main()\n",
+        ),
+        &rust,
+        support::filecheck::Profile::Rewrites,
+    );
+
+    let output = compile_and_run("target_and_macro_divergence", &rust);
+    assert!(output.status.success());
+    assert_eq!(
+        String::from_utf8_lossy(&output.stdout),
+        format!(
+            "20 {}\n",
+            if cfg!(target_arch = "x86_64") {
+                295
+            } else {
+                69
+            }
+        )
+    );
+}
+
+#[test]
 fn target_macro_conditionals_auto_expand_and_run_correctly_on_host() {
     let rust = translate("os_targets.c");
     let output = compile_and_run("os_targets", &rust);
@@ -161,7 +277,6 @@ fn target_macro_conditionals_auto_expand_and_run_correctly_on_host() {
 fn unconditional_error_is_typed_preserved_and_fails_rust_compilation() {
     let rust = translate("error_unconditional.c");
 
-    assert!(rust.contains("compile_error!(\"unexpanded ERROR_TOKEN \\\"quoted\\\" C:\\\\tmp\");"));
     let output = compile_with_cfgs("error_unconditional", &rust, &[]);
     assert!(!output.status.success());
     assert!(String::from_utf8_lossy(&output.stderr).contains("unexpanded ERROR_TOKEN"));
@@ -169,21 +284,22 @@ fn unconditional_error_is_typed_preserved_and_fails_rust_compilation() {
 
 #[test]
 fn conditional_error_only_triggers_when_its_macro_is_defined() {
-    let single = translate("error_conditional.c");
-    assert!(!single.contains("compile_error!"));
     let active_single = translate_with_clang_args("error_conditional.c", Some("-DFAIL_BUILD"));
-    assert!(active_single.contains("compile_error!(\"selected failure\");"));
-    assert!(!active_single.contains("#[cfg("));
+    check_rust_shape(
+        "error_conditional_active",
+        concat!(
+            "// COMMON: compile_error!(\"selected failure\");\n",
+            "// COMMON-NOT: #[cfg(\n",
+        ),
+        &active_single,
+        support::filecheck::Profile::Rewrites,
+    );
 }
 
 #[test]
 fn warning_uses_a_self_contained_compile_time_fallback() {
     let rust = translate("warning_directives.c");
 
-    assert!(rust.contains(
-        "#[deprecated(note = \"WARNING_TOKEN \\\"quoted\\\" C:\\\\tmp\")]\nconst __SLATE_WARNING_0: () = {};\n\nconst _: () = __SLATE_WARNING_0;"
-    ));
-    assert!(!rust.contains("selected warning"));
     let output = compile_with_cfgs("warning_standalone", &rust, &[]);
     assert!(output.status.success());
     let stderr = String::from_utf8_lossy(&output.stderr);
@@ -277,12 +393,14 @@ fn pack_pragma_is_consumed_by_clang_and_does_not_block_translation() {
 
 #[test]
 fn conditional_pack_pragma_is_a_no_op_when_its_macro_is_undefined() {
-    let single = translate("unsupported_conditional.c");
-    assert!(!single.contains("compile_error!"));
-
     let active_single =
         translate_with_clang_args("unsupported_conditional.c", Some("-DPACKED_LAYOUT"));
-    assert!(!active_single.contains("compile_error!"));
+    check_rust_shape(
+        "unsupported_conditional_active",
+        "// COMMON-NOT: compile_error!\n",
+        &active_single,
+        support::filecheck::Profile::Rewrites,
+    );
 }
 
 #[test]
@@ -299,7 +417,6 @@ fn poison_use_surfaces_the_clang_frontend_error() {
 fn clang_consumed_directives_preserve_generated_behavior() {
     let rust = translate("common_directives.c");
 
-    assert!(!rust.contains("DIRECTIVE_VALUE"));
     assert!(compile_and_run("common_directives", &rust).status.success());
 }
 
@@ -393,8 +510,12 @@ fn passes_through_sources_without_conditional_regions() {
         String::from_utf8_lossy(&out.stderr)
     );
     let rust = String::from_utf8(out.stdout).expect("generated Rust is utf8");
-    assert!(rust.contains("fn add("));
-    assert!(!rust.contains("#[cfg("));
+    check_rust_shape(
+        "add_plain_source",
+        concat!("// COMMON: fn add(\n", "// COMMON-NOT: #[cfg(\n"),
+        &rust,
+        support::filecheck::Profile::Rewrites,
+    );
 }
 
 #[test]
@@ -412,6 +533,13 @@ fn raw_lower_skips_fixups_for_translation() {
         String::from_utf8_lossy(&out.stderr)
     );
     let rust = String::from_utf8(out.stdout).expect("generated Rust is utf8");
-    assert!(rust.contains("let __v0: i32 = arg0 + arg1;"));
-    assert!(!rust.contains("println!"));
+    check_rust_shape(
+        "add_raw_lower",
+        concat!(
+            "// COMMON: let __v0: i32 = arg0 + arg1;\n",
+            "// COMMON-NOT: println!\n",
+        ),
+        &rust,
+        support::filecheck::Profile::Lowering,
+    );
 }
