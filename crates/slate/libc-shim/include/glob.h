@@ -51,6 +51,9 @@ void globfree(glob_t *);
 #define GLOB_ABORTED 2
 #define GLOB_NOMATCH 3
 #define GLOB_NOSYS   4
+#if defined(__SLATE_LIBC_GLIBC)
+#define GLOB_ABEND GLOB_ABORTED
+#endif
 
 #if defined(_LARGEFILE64_SOURCE)
 #define glob64     glob

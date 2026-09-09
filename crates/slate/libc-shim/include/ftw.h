@@ -2,6 +2,9 @@
 #define _SLATE_FTW_H
 
 #include <features.h>
+#if defined(__SLATE_LIBC_GLIBC)
+#include <sys/types.h>
+#endif
 #include <sys/stat.h>
 
 #define FTW_F   1
@@ -16,6 +19,14 @@
 #define FTW_MOUNT 2
 #define FTW_CHDIR 4
 #define FTW_DEPTH 8
+#if defined(__SLATE_LIBC_GLIBC)
+#define FTW_ACTIONRETVAL 16
+
+#define FTW_CONTINUE      0
+#define FTW_STOP          1
+#define FTW_SKIP_SUBTREE  2
+#define FTW_SKIP_SIBLINGS 3
+#endif
 
 struct FTW {
   int base;

@@ -41,3 +41,8 @@ fnmatch.h
 fpu_control.h
 fstab.h
 elf.h
+fts.h
+ftw.h
+gconv.h
+getopt.h
+glob.h

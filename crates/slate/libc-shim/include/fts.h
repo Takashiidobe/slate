@@ -3,6 +3,10 @@
 
 #include <features.h>
 #include <sys/types.h>
+#if defined(__SLATE_ARCH_X86) || defined(__SLATE_ARCH_X86_64)
+#include <sys/stat.h>
+#include <dirent.h>
+#endif
 
 typedef struct {
   struct _ftsent  *fts_cur;     /* current node */
@@ -23,6 +27,13 @@ typedef struct {
 #define FTS_SEEDOT     0x0020 /* return dot and dot-dot */
 #define FTS_XDEV       0x0040 /* don't cross devices */
 #define FTS_WHITEOUT   0x0080 /* return whiteout information */
+#if defined(__SLATE_LIBC_GLIBC) && (defined(__SLATE_ARCH_X86) || defined(__SLATE_ARCH_X86_64))
+#define FTS_TIGHT_CYCLE_CHECK 0x0400
+#define FTS_CWDFD 0x0800
+#define FTS_DEFER_STAT 0x1000
+#define FTS_VERBATIM 0x2000
+#define FTS_MOUNT 0x4000
+#endif
 #define FTS_OPTIONMASK 0x00ff /* valid user option mask */
 
 #define FTS_NAMEONLY 0x0100 /* (private) child names only */
