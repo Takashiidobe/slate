@@ -75,12 +75,75 @@ oracle provisioning gap rather than an ABI or header-visibility distinction.
    ```
 
 5. Reconcile the shim using the narrowest public-header ownership and feature
-   gate that matches the oracle. Then run the focused matrix for all affected
-   descriptors, `cargo nextest r --release --profile libc`, `cargo fmt`, and
-   `cargo clippy --all-targets`.
+   gate that matches the oracle -- for a pure missing-macro gap, steps 2-4 and
+   most of this step can be done by `tools/reconcile_header.py` instead (see
+   below). Then run the focused matrix for all affected descriptors and
+   `cargo nextest r --release --profile libc`. Only run `cargo fmt` and
+   `cargo clippy --all-targets` if the change touched a `.rs` file; a header
+   port that only edits `libc-shim/include/*.h`, `headers.txt` manifests, or
+   `tools/*.py` has nothing for either to check.
 
 The C-parsing prerequisite still applies: verify the CIR Clang, matching
 `cir-opt`, and macro-dump plugin before a test that invokes Slate parsing.
+
+## Automating steps 2-4: `tools/reconcile_header.py`
+
+For a header whose gap is purely missing `#define` macros, run:
+
+```bash
+python3 tools/reconcile_header.py <header> [<header> ...]
+```
+
+Per header it does steps 2-4 itself and most of step 5:
+
+1. probes all eight oracles via the existing `emit_oracle_header_macros`
+   ignored test (`SLATE_LIBC_DECL_LIBC`/`SLATE_LIBC_DECL_ARCH`/
+   `SLATE_LIBC_DECL_HEADER`) to learn which descriptors actually expose the
+   header, and each macro's real value there;
+2. adds the header only to the manifests whose oracle exposes it;
+3. generates the fixture and runs the real matrix per descriptor to get the
+   compiler-verified missing-macro set (never guesses from a header diff);
+4. groups missing macros by `(descriptor-presence pattern, value)` and picks
+   the narrowest `__SLATE_LIBC_*`/`__SLATE_ARCH_*`/`__SLATE_WORDSIZE_*` guard
+   for that pattern from a small lattice, falling back to an explicit
+   `(libc && arch) || (libc && arch) || ...` expression for any pattern that
+   isn't a clean libc/arch/wordsize split;
+5. anchors each group's insertion after the nearest preceding macro that
+   already exists in the shim header, ordered using the oracle's own
+   `definition_file` (real source order -- both the generated fixture and
+   `oracle-macros.json` list macros alphabetically, which is not usable for
+   placement);
+6. writes the merged header in place.
+
+A macro whose value differs across descriptors that share a missing pattern
+is a real conflict (needs an `#if` branch inside the guard, not a flat
+block) and is never auto-inserted; it prints under `CONFLICTS` instead.
+Anything that isn't a plain single-line `#define NAME VALUE` -- multi-line
+macros, enums, structs, decls, and glibc's `#define X X` self-referential
+feature-marker idiom (paired with an enum of the same name, e.g.
+`FTW_STOP`) -- is out of its scope and is either skipped or reported under
+`NON-MACRO ERRORS`/`CONFLICTS` for manual reconciliation. A header whose real
+oracle content is entirely non-macro (structs, enums, function-pointer
+typedefs -- `gconv.h` was this) needs a hand-written transliteration same as
+before; the tool only reports "not yet reconciled" for it.
+
+It also never silently treats a non-macro test failure (a header-visibility
+mismatch, a type-surface mismatch) as success -- any matrix failure it can't
+fully attribute to `#error "...macro is missing..."` lines is surfaced
+verbatim under `NON-MACRO ERRORS` rather than swallowed.
+
+Always rerun the tool after any manual fix (include-closure gate, hand-written
+struct) -- it re-probes and re-runs the real matrix rather than trusting its
+own prior output, so it will pick up whatever macro gaps the manual fix
+exposed next. Finish every header the same way regardless of how it got
+there: rerun the full matrix per descriptor, review the diff, then `cargo
+nextest r --release --profile libc`.
+
+For a single flat oracle header where the whole gap needs hand placement
+(elf.h's scale made per-macro placement worth doing directly), the smaller
+building block `tools/extract_missing_macros.py <missing-names-file>
+<oracle-header> <out-file>` pulls just the `#define` blocks for a list of
+missing names out of a real header file in that file's own source order.
 
 ## Include-closure rule
 
