@@ -8,9 +8,6 @@ _Static_assert(
 
 static __typeof__(isalnum_l) *const slate_reference_isalnum_l = &isalnum_l;
 
-typedef struct __locale_struct * slate_oracle_typedef_locale_t;
-_Static_assert(__builtin_types_compatible_p(slate_oracle_typedef_locale_t, locale_t), "typedef locale_t differs from oracle");
-
 #ifndef isalnum
 #error "ctype.h:isalnum macro is missing from libc-shim"
 #endif

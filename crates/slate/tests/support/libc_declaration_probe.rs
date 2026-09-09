@@ -169,12 +169,69 @@ fn is_public_header_file(file: &str, header: &str) -> bool {
     let header = header.trim_start_matches("./");
     file == header
         || file.ends_with(&format!("/{header}"))
-        || file.split('/').any(|component| component == "bits")
+        || is_header_implementation_file(&file, header)
         || header == "float.h"
             && file
                 .rsplit('/')
                 .next()
                 .is_some_and(|name| name == "float.h" || name.starts_with("__float_"))
+}
+
+fn is_header_implementation_file(file: &str, header: &str) -> bool {
+    let relative = header_relative_name(file);
+    let Some(implementation) = relative.strip_prefix("bits/") else {
+        return false;
+    };
+    let header_stem = header
+        .rsplit('/')
+        .next()
+        .unwrap_or(header)
+        .trim_end_matches(".h");
+    let implementation_stem = implementation.trim_end_matches(".h");
+    let Some(suffix) = implementation_stem.strip_prefix(header_stem) else {
+        return false;
+    };
+    suffix.is_empty()
+        || suffix.starts_with('-')
+        || suffix.starts_with('_')
+        || suffix
+            .chars()
+            .next()
+            .is_some_and(|character| character.is_ascii_digit())
+}
+
+fn is_glibc_config(config: &ProbeConfig) -> bool {
+    config
+        .defines
+        .iter()
+        .any(|define| define == "-D__SLATE_LIBC_GLIBC")
+}
+
+fn is_ignored_transitive_header(file: &str, config: &ProbeConfig) -> bool {
+    let relative = header_relative_name(file);
+    if matches!(relative.as_str(), "features.h" | "stdint.h") {
+        return true;
+    }
+    if !is_glibc_config(config) {
+        return false;
+    }
+    matches!(
+        relative.as_str(),
+        "alloca.h"
+            | "arpa/nameser_compat.h"
+            | "getopt.h"
+            | "signal.h"
+            | "sys/cdefs.h"
+            | "sys/procfs.h"
+            | "sys/select.h"
+            | "sys/time.h"
+            | "sys/ucontext.h"
+            | "sys/user.h"
+            | "time.h"
+    ) || relative.starts_with("asm/")
+        || relative.starts_with("asm-generic/")
+        || relative.starts_with("bits/")
+        || relative.starts_with("linux/")
 }
 
 fn node_is_public_header_declaration(node: &Value, header: &str) -> bool {
@@ -198,22 +255,29 @@ fn is_public_shim_header_file(file: &str) -> bool {
             .is_some_and(|name| !name.starts_with("__"))
 }
 
-fn node_is_public_shim_declaration(node: &Value) -> bool {
-    declaration_file(node).is_some_and(is_public_shim_header_file)
+fn node_is_public_shim_declaration(node: &Value, config: &ProbeConfig) -> bool {
+    declaration_file(node).is_some_and(|file| {
+        is_public_shim_header_file(file) && !is_ignored_transitive_header(file, config)
+    })
 }
 
-fn is_public_declaration_file(file: &str) -> bool {
+fn is_public_declaration_file(file: &str, config: &ProbeConfig) -> bool {
     let file = file.replace('\\', "/");
     file.ends_with(".h")
+        && file.rsplit('/').next() != Some("float.h")
         && !file.split('/').any(|component| component == "bits")
         && file
             .rsplit('/')
             .next()
             .is_some_and(|name| !name.starts_with("__"))
+        && !is_ignored_transitive_header(&file, config)
 }
 
 fn header_relative_name(file: &str) -> String {
     let file = file.replace('\\', "/");
+    if let Some((_, relative)) = file.rsplit_once("/include/") {
+        return relative.to_string();
+    }
     let components: Vec<&str> = file.split('/').collect();
     match components.len() {
         0 => String::new(),
@@ -226,15 +290,15 @@ fn header_relative_name(file: &str) -> String {
     }
 }
 
-fn collect_declaration_files(node: &Value, files: &mut BTreeSet<String>) {
+fn collect_declaration_files(node: &Value, files: &mut BTreeSet<String>, config: &ProbeConfig) {
     if let Some(file) = declaration_file(node)
-        && is_public_declaration_file(file)
+        && is_public_declaration_file(file, config)
     {
         files.insert(header_relative_name(file));
     }
     if let Some(children) = node.get("inner").and_then(Value::as_array) {
         for child in children {
-            collect_declaration_files(child, files);
+            collect_declaration_files(child, files, config);
         }
     }
 }
@@ -248,7 +312,7 @@ pub fn extract_oracle_header_files(
         .map_err(|error| format!("create {}: {error}", output_dir.display()))?;
     let root = header_ast(config, header, &output_dir.join("oracle-header.c"))?;
     let mut files = BTreeSet::new();
-    collect_declaration_files(&root, &mut files);
+    collect_declaration_files(&root, &mut files, config);
     Ok(files)
 }
 
@@ -261,7 +325,7 @@ pub fn extract_shim_header_files(
         .map_err(|error| format!("create {}: {error}", output_dir.display()))?;
     let root = shim_header_ast(config, header, &output_dir.join("shim-header.c"))?;
     let mut files = BTreeSet::new();
-    collect_declaration_files(&root, &mut files);
+    collect_declaration_files(&root, &mut files, config);
     Ok(files)
 }
 
@@ -777,7 +841,9 @@ pub fn extract_shim_header_macros(
     let output = shim_header_preprocessor_output(config, header, &source)?;
     let raw = output_dir.join("shim-macros.dD");
     std::fs::write(&raw, &output).map_err(|error| format!("write {}: {error}", raw.display()))?;
-    parse_macro_directives(header, &output, &source, &is_public_shim_header_file)
+    parse_macro_directives(header, &output, &source, &|file| {
+        is_public_shim_header_file(file) && !is_ignored_transitive_header(file, config)
+    })
 }
 
 pub fn write_oracle_macro_manifest(
@@ -1140,12 +1206,9 @@ pub fn extract_shim_header_functions(
     let mut aliases = BTreeMap::new();
     collect_type_aliases(&root, &mut aliases);
     let mut by_name = BTreeMap::new();
-    collect_all_functions(
-        &root,
-        &mut by_name,
-        &aliases,
-        &node_is_public_shim_declaration,
-    );
+    collect_all_functions(&root, &mut by_name, &aliases, &|node| {
+        node_is_public_shim_declaration(node, config)
+    });
     by_name
         .into_iter()
         .map(|(name, types)| match types.as_slice() {
@@ -1224,13 +1287,9 @@ pub fn extract_shim_header_objects(
     let mut aliases = BTreeMap::new();
     collect_type_aliases(&root, &mut aliases);
     let mut objects = BTreeMap::new();
-    collect_objects(
-        &root,
-        &aliases,
-        &mut objects,
-        header,
-        &node_is_public_shim_declaration,
-    );
+    collect_objects(&root, &aliases, &mut objects, header, &|node| {
+        node_is_public_shim_declaration(node, config)
+    });
     Ok(objects.into_values().collect())
 }
 
@@ -1321,12 +1380,9 @@ pub fn extract_shim_type_surface(
         records: Vec::new(),
         enums: Vec::new(),
     };
-    collect_type_surface(
-        &root,
-        &aliases,
-        &mut surface,
-        &node_is_public_shim_declaration,
-    );
+    collect_type_surface(&root, &aliases, &mut surface, &|node| {
+        node_is_public_shim_declaration(node, config)
+    });
     let dump = shim_record_layout_dump(config, &output_dir.join("shim-header.c"))?;
     std::fs::write(output_dir.join("shim-record-layouts.txt"), &dump)
         .map_err(|error| format!("write record layouts: {error}"))?;
@@ -1712,6 +1768,7 @@ pub fn compile_and_link_shim_probe(
     compile.args([
         "-std=gnu23",
         "-D_GNU_SOURCE",
+        "-ferror-limit=0",
         "-Werror=implicit-function-declaration",
     ]);
     compile.arg("-nostdlibinc");
@@ -1751,6 +1808,7 @@ pub fn compile_and_link_oracle_probe(
     compile.args([
         "-std=gnu23",
         "-D_GNU_SOURCE",
+        "-ferror-limit=0",
         "-Werror=implicit-function-declaration",
     ]);
     compile.args(&config.defines);

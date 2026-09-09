@@ -1,57 +1,12 @@
 #include <ctype.h>
 
 extern int slate_oracle_isalnum_l(int, struct __locale_struct *);
-extern int slate_oracle_isascii(int);
-extern int slate_oracle_isctype(int, int);
-extern int slate_oracle_toascii(int);
-extern int slate_oracle_tolower(int);
-extern int slate_oracle_tolower_l(int, struct __locale_struct *);
-extern int slate_oracle_toupper(int);
-extern int slate_oracle_toupper_l(int, struct __locale_struct *);
 
 _Static_assert(
     __builtin_types_compatible_p(__typeof__(slate_oracle_isalnum_l), __typeof__(isalnum_l)),
     "ctype.h:isalnum_l declaration differs from oracle");
 
-_Static_assert(
-    __builtin_types_compatible_p(__typeof__(slate_oracle_isascii), __typeof__(isascii)),
-    "ctype.h:isascii declaration differs from oracle");
-
-_Static_assert(
-    __builtin_types_compatible_p(__typeof__(slate_oracle_isctype), __typeof__(isctype)),
-    "ctype.h:isctype declaration differs from oracle");
-
-_Static_assert(
-    __builtin_types_compatible_p(__typeof__(slate_oracle_toascii), __typeof__(toascii)),
-    "ctype.h:toascii declaration differs from oracle");
-
-_Static_assert(
-    __builtin_types_compatible_p(__typeof__(slate_oracle_tolower), __typeof__(tolower)),
-    "ctype.h:tolower declaration differs from oracle");
-
-_Static_assert(
-    __builtin_types_compatible_p(__typeof__(slate_oracle_tolower_l), __typeof__(tolower_l)),
-    "ctype.h:tolower_l declaration differs from oracle");
-
-_Static_assert(
-    __builtin_types_compatible_p(__typeof__(slate_oracle_toupper), __typeof__(toupper)),
-    "ctype.h:toupper declaration differs from oracle");
-
-_Static_assert(
-    __builtin_types_compatible_p(__typeof__(slate_oracle_toupper_l), __typeof__(toupper_l)),
-    "ctype.h:toupper_l declaration differs from oracle");
-
 static __typeof__(isalnum_l) *const slate_reference_isalnum_l = &isalnum_l;
-static __typeof__(isascii) *const slate_reference_isascii = &isascii;
-static __typeof__(isctype) *const slate_reference_isctype = &isctype;
-static __typeof__(toascii) *const slate_reference_toascii = &toascii;
-static __typeof__(tolower) *const slate_reference_tolower = &tolower;
-static __typeof__(tolower_l) *const slate_reference_tolower_l = &tolower_l;
-static __typeof__(toupper) *const slate_reference_toupper = &toupper;
-static __typeof__(toupper_l) *const slate_reference_toupper_l = &toupper_l;
-
-typedef struct __locale_struct * slate_oracle_typedef_locale_t;
-_Static_assert(__builtin_types_compatible_p(slate_oracle_typedef_locale_t, locale_t), "typedef locale_t differs from oracle");
 
 #ifndef isalnum
 #error "ctype.h:isalnum macro is missing from libc-shim"

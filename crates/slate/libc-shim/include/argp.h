@@ -3,7 +3,9 @@
 
 #include <errno.h>
 #include <features.h>
+#include <ctype.h>
 #include <getopt.h>
+#include <limits.h>
 #include <stdio.h>
 
 #if defined(__SLATE_LIBC_GLIBC)
@@ -61,6 +63,26 @@ struct argp {
 #define ARGP_KEY_HELP_EXTRA 0x2000004
 #define ARGP_KEY_HELP_DUP_ARGS_NOTE 0x2000005
 #define ARGP_KEY_HELP_ARGS_DOC 0x2000006
+
+#define ARGP_HELP_USAGE 0x01
+#define ARGP_HELP_SHORT_USAGE 0x02
+#define ARGP_HELP_SEE 0x04
+#define ARGP_HELP_LONG 0x08
+#define ARGP_HELP_PRE_DOC 0x10
+#define ARGP_HELP_POST_DOC 0x20
+#define ARGP_HELP_DOC (ARGP_HELP_PRE_DOC | ARGP_HELP_POST_DOC)
+#define ARGP_HELP_BUG_ADDR 0x40
+#define ARGP_HELP_LONG_ONLY 0x80
+#define ARGP_HELP_EXIT_ERR 0x100
+#define ARGP_HELP_EXIT_OK 0x200
+#define ARGP_HELP_STD_ERR (ARGP_HELP_SEE | ARGP_HELP_EXIT_ERR)
+#define ARGP_HELP_STD_USAGE \
+  (ARGP_HELP_SHORT_USAGE | ARGP_HELP_SEE | ARGP_HELP_EXIT_ERR)
+#define ARGP_HELP_STD_HELP \
+  (ARGP_HELP_SHORT_USAGE | ARGP_HELP_LONG | ARGP_HELP_EXIT_OK | \
+   ARGP_HELP_DOC | ARGP_HELP_BUG_ADDR)
+
+#define AIO_PRIO_DELTA_MAX 20
 
 struct argp_child {
   const struct argp *argp;

@@ -3,8 +3,9 @@
 
 #include <features.h>
 #include <errno.h>
-#include <locale.h>
 #include <stddef.h>
+#include <string.h>
+#include <strings.h>
 
 #if defined(__SLATE_LIBC_GLIBC)
 

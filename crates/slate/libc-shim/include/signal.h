@@ -27,12 +27,8 @@ int           raise(int);
 #if !defined(_POSIX_SOURCE) && !defined(_POSIX_C_SOURCE) &&                    \
     !defined(_XOPEN_SOURCE) && !defined(_GNU_SOURCE) && !defined(_BSD_SOURCE)
 #define __NEED_pid_t
+#define __NEED_union_sigval
 #include <bits/types.h>
-
-union sigval {
-  int   sival_int;
-  void *sival_ptr;
-};
 
 struct sigevent {
   union sigval sigev_value;
@@ -65,7 +61,14 @@ struct sigevent {
 #define __NEED_time_t
 #define __NEED_clock_t
 #define __NEED_sigset_t
+#define __NEED_union_sigval
+#define __NEED_sigval_t
 #include <bits/types.h>
+
+struct sigstack {
+  void *ss_sp;
+  int   ss_onstack;
+};
 
 enum {
   SIG_BLOCK   = 0,
@@ -131,11 +134,6 @@ typedef struct sigaltstack stack_t;
 #define CLD_TRAPPED   4
 #define CLD_STOPPED   5
 #define CLD_CONTINUED 6
-
-union sigval {
-  int   sival_int;
-  void *sival_ptr;
-};
 
 typedef struct {
 #ifdef __SI_SWAP_ERRNO_CODE
@@ -253,6 +251,7 @@ int __libc_current_sigrtmax(void);
 #define SIGRTMAX (__libc_current_sigrtmax())
 
 int kill(pid_t, int);
+int tgkill(pid_t, pid_t, int);
 
 int sigemptyset(sigset_t *);
 int sigfillset(sigset_t *);

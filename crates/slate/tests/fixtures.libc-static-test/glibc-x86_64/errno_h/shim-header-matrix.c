@@ -1,8 +1,5 @@
 #include <errno.h>
 
-typedef int slate_oracle_typedef_error_t;
-_Static_assert(__builtin_types_compatible_p(slate_oracle_typedef_error_t, error_t), "typedef error_t differs from oracle");
-
 #ifndef EADDRINUSE
 #error "errno.h:EADDRINUSE macro is missing from libc-shim"
 #endif

@@ -3,13 +3,21 @@
 
 #include <features.h>
 #include <netinet/in.h>
-#include <pthread.h>
-#include <signal.h>
+#include <stddef.h>
 #include <stdint.h>
-#include <sys/select.h>
+#if defined(__SLATE_LIBC_MUSL)
+#include <inttypes.h>
+#endif
+#if defined(__SLATE_LIBC_GLIBC)
+#include <signal.h>
 #include <sys/time.h>
+#include <sys/types.h>
 #include <time.h>
+#endif
 
+#if defined(__SLATE_LIBC_GLIBC)
+#define __NEED_struct_osockaddr
+#endif
 #define __NEED_uint16_t
 #define __NEED_uint32_t
 #include <bits/types.h>

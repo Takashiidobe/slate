@@ -4,10 +4,18 @@
 #include <features.h>
 #include <stdint.h>
 #include <signal.h>
+#if defined(__SLATE_LIBC_GLIBC)
+#include <sys/types.h>
+#else
+#include <time.h>
+#endif
+#if defined(__SLATE_LIBC_GLIBC)
 #include <sys/select.h>
 #include <sys/time.h>
 #include <time.h>
+#endif
 
+#define __NEED_struct_timespec
 #define __NEED_ssize_t
 #define __NEED_off_t
 #include <bits/types.h>
@@ -54,7 +62,7 @@ enum {
   AIO_ALLDONE     = 2,
 };
 
-#if defined(__SLATE_LIBC_GLIBC)
+#if defined(__SLATE_LIBC_GLIBC) || defined(__SLATE_LIBC_MUSL)
 #define AIO_CANCELED AIO_CANCELED
 #define AIO_NOTCANCELED AIO_NOTCANCELED
 #define AIO_ALLDONE AIO_ALLDONE
