@@ -1,29 +1,27 @@
 #ifndef _SLATE_ARPA_TELNET_H
 #define _SLATE_ARPA_TELNET_H
 
-enum {
-  xEOF  = 236,
-  SUSP  = 237,
-  ABORT = 238,
-  EOR   = 239,
-  SE    = 240,
-  NOP   = 241,
-  DM    = 242,
-  SYNCH = 242,
-  BREAK = 243,
-  IP    = 244,
-  AO    = 245,
-  AYT   = 246,
-  EC    = 247,
-  EL    = 248,
-  GA    = 249,
-  SB    = 250,
-  WILL  = 251,
-  WONT  = 252,
-  DO    = 253,
-  DONT  = 254,
-  IAC   = 255,
-};
+#define xEOF 236
+#define SUSP 237
+#define ABORT 238
+#define EOR 239
+#define SE 240
+#define NOP 241
+#define DM 242
+#define SYNCH 242
+#define BREAK 243
+#define IP 244
+#define AO 245
+#define AYT 246
+#define EC 247
+#define EL 248
+#define GA 249
+#define SB 250
+#define WILL 251
+#define WONT 252
+#define DO 253
+#define DONT 254
+#define IAC 255
 
 #define telcmds                                                                \
   ((char[][6]){"EOF", "SUSP", "ABORT", "EOR", "SE",   "NOP", "DMARK",          \
