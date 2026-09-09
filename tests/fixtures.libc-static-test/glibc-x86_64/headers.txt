@@ -46,3 +46,8 @@ ftw.h
 gconv.h
 getopt.h
 glob.h
+gnu-versions.h
+grp.h
+gshadow.h
+iconv.h
+ieee754.h

@@ -35,3 +35,5 @@ elf.h
 ftw.h
 getopt.h
 glob.h
+grp.h
+iconv.h

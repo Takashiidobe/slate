@@ -40,4 +40,8 @@ int setgroups(size_t, const gid_t *);
 int initgroups(const char *, gid_t);
 #endif
 
+#if defined(__SLATE_LIBC_GLIBC)
+#define NSS_BUFLEN_GROUP 1024
+#endif
+
 #endif
