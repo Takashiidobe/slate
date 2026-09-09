@@ -40,3 +40,4 @@ fmtmsg.h
 fnmatch.h
 fpu_control.h
 fstab.h
+elf.h

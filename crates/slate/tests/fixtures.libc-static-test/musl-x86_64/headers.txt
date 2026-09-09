@@ -31,3 +31,4 @@ dlfcn.h
 err.h
 fmtmsg.h
 fnmatch.h
+elf.h

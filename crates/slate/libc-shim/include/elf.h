@@ -107,6 +107,9 @@ typedef struct {
 #define ELFOSABI_TRU64      10
 #define ELFOSABI_MODESTO    11
 #define ELFOSABI_OPENBSD    12
+#if defined(__SLATE_LIBC_GLIBC)
+#define ELFOSABI_ARM_AEABI 64
+#endif
 #define ELFOSABI_ARM        97
 #define ELFOSABI_STANDALONE 255
 
@@ -131,6 +134,9 @@ typedef struct {
 #define EM_386         3
 #define EM_68K         4
 #define EM_88K         5
+#if defined(__SLATE_LIBC_GLIBC)
+#define EM_IAMCU 6
+#endif
 #define EM_860         7
 #define EM_MIPS        8
 #define EM_S370        9
@@ -143,6 +149,9 @@ typedef struct {
 #define EM_PPC         20
 #define EM_PPC64       21
 #define EM_S390        22
+#if defined(__SLATE_LIBC_GLIBC)
+#define EM_SPU 23
+#endif
 
 #define EM_V800       36
 #define EM_FR20       37
@@ -172,6 +181,10 @@ typedef struct {
 #define EM_TINYJ      61
 #define EM_X86_64     62
 #define EM_PDSP       63
+#if defined(__SLATE_LIBC_GLIBC)
+#define EM_PDP10 64
+#define EM_PDP11 65
+#endif
 
 #define EM_FX66          66
 #define EM_ST9PLUS       67
@@ -277,6 +290,9 @@ typedef struct {
 #define EM_CLOUDSHIELD   192
 #define EM_COREA_1ST     193
 #define EM_COREA_2ND     194
+#if defined(__SLATE_LIBC_GLIBC)
+#define EM_ARCV2 195
+#endif
 #define EM_ARC_COMPACT2  195
 #define EM_OPEN8         196
 #define EM_RL78          197
@@ -287,6 +303,9 @@ typedef struct {
 #define EM_BA2           202
 #define EM_XCORE         203
 #define EM_MCHP_PIC      204
+#if defined(__SLATE_LIBC_GLIBC)
+#define EM_INTELGT 205
+#endif
 #define EM_KM32          210
 #define EM_KMX32         211
 #define EM_EMX16         212
@@ -407,6 +426,9 @@ typedef struct {
 #define SHF_COMPRESSED (1 << 11)
 #define SHF_MASKOS     0x0ff00000
 #define SHF_MASKPROC   0xf0000000
+#if defined(__SLATE_LIBC_GLIBC)
+#define SHF_GNU_RETAIN (1 << 21)
+#endif
 #define SHF_ORDERED    (1 << 30)
 #define SHF_EXCLUDE    (1U << 31)
 
@@ -584,6 +606,9 @@ typedef struct {
 #define PT_GNU_STACK    0x6474e551
 #define PT_GNU_RELRO    0x6474e552
 #define PT_GNU_PROPERTY 0x6474e553
+#if defined(__SLATE_LIBC_GLIBC)
+#define PT_GNU_SFRAME 0x6474e554
+#endif
 #define PT_LOSUNW       0x6ffffffa
 #define PT_SUNWBSS      0x6ffffffa
 #define PT_SUNWSTACK    0x6ffffffb
@@ -636,9 +661,18 @@ typedef struct {
 #define NT_PPC_TM_CTAR          0x10d
 #define NT_PPC_TM_CPPR          0x10e
 #define NT_PPC_TM_CDSCR         0x10f
+#if defined(__SLATE_LIBC_GLIBC)
+#define NT_PPC_PKEY     0x110
+#define NT_PPC_DEXCR    0x111
+#define NT_PPC_HASHKEYR 0x112
+#endif
 #define NT_386_TLS              0x200
 #define NT_386_IOPERM           0x201
 #define NT_X86_XSTATE           0x202
+#if defined(__SLATE_LIBC_GLIBC)
+#define NT_X86_SHSTK        0x204
+#define NT_X86_XSAVE_LAYOUT 0x205
+#endif
 #define NT_S390_HIGH_GPRS       0x300
 #define NT_S390_TIMER           0x301
 #define NT_S390_TODCMP          0x302
@@ -653,6 +687,9 @@ typedef struct {
 #define NT_S390_GS_CB           0x30b
 #define NT_S390_GS_BC           0x30c
 #define NT_S390_RI_CB           0x30d
+#if defined(__SLATE_LIBC_GLIBC)
+#define NT_S390_PV_CPU_DATA 0x30e
+#endif
 #define NT_ARM_VFP              0x400
 #define NT_ARM_TLS              0x401
 #define NT_ARM_HW_BREAK         0x402
@@ -664,6 +701,14 @@ typedef struct {
 #define NT_ARM_PACG_KEYS        0x408
 #define NT_ARM_TAGGED_ADDR_CTRL 0x409
 #define NT_ARM_PAC_ENABLED_KEYS 0x40a
+#if defined(__SLATE_LIBC_GLIBC)
+#define NT_ARM_SSVE 0x40b
+#define NT_ARM_ZA   0x40c
+#define NT_ARM_ZT   0x40d
+#define NT_ARM_FPMR 0x40e
+#define NT_ARM_POE  0x40f
+#define NT_ARM_GCS  0x410
+#endif
 #define NT_METAG_CBUF           0x500
 #define NT_METAG_RPIPE          0x501
 #define NT_METAG_TLS            0x502
@@ -674,6 +719,10 @@ typedef struct {
 #define NT_MIPS_MSA             0x802
 #define NT_RISCV_CSR            0x900
 #define NT_RISCV_VECTOR         0x901
+#if defined(__SLATE_LIBC_GLIBC)
+#define NT_RISCV_TAGGED_ADDR_CTRL 0x902
+#define NT_RISCV_USER_CFI         0x903
+#endif
 #define NT_VERSION              1
 #define NT_LOONGARCH_CPUCFG     0xa00
 #define NT_LOONGARCH_CSR        0xa01
@@ -831,6 +880,11 @@ typedef struct {
 #define DF_1_SINGLETON  0x02000000
 #define DF_1_STUB       0x04000000
 #define DF_1_PIE        0x08000000
+#if defined(__SLATE_LIBC_GLIBC)
+#define DF_1_KMOD       0x10000000
+#define DF_1_WEAKFILTER 0x20000000
+#define DF_1_NOCOMMON   0x40000000
+#endif
 
 #define DTF_1_PARINIT 0x00000001
 #define DTF_1_CONFEXP 0x00000002
@@ -967,6 +1021,10 @@ typedef struct {
 #define AT_RANDOM 25
 
 #define AT_HWCAP2 26
+#if defined(__SLATE_LIBC_GLIBC)
+#define AT_RSEQ_FEATURE_SIZE 27
+#define AT_RSEQ_ALIGN        28
+#endif
 #define AT_HWCAP3 29
 #define AT_HWCAP4 30
 
@@ -1006,6 +1064,9 @@ typedef struct {
 #define ELF_NOTE_SOLARIS "SUNW Solaris"
 
 #define ELF_NOTE_GNU "GNU"
+#if defined(__SLATE_LIBC_GLIBC)
+#define ELF_NOTE_FDO "FDO"
+#endif
 
 #define ELF_NOTE_PAGESIZE_HINT 1
 
@@ -1016,10 +1077,43 @@ typedef struct {
 #define ELF_NOTE_OS_GNU      1
 #define ELF_NOTE_OS_SOLARIS2 2
 #define ELF_NOTE_OS_FREEBSD  3
+#if defined(__SLATE_LIBC_GLIBC)
+#define NT_GNU_HWCAP 2
+#endif
 
 #define NT_GNU_BUILD_ID        3
 #define NT_GNU_GOLD_VERSION    4
 #define NT_GNU_PROPERTY_TYPE_0 5
+#if defined(__SLATE_LIBC_GLIBC)
+#define NT_FDO_PACKAGING_METADATA                    0xcafe1a7e
+#define NT_FDO_DLOPEN_METADATA                       0x407c0c0a
+#define NOTE_GNU_PROPERTY_SECTION_NAME               ".note.gnu.property"
+#define GNU_PROPERTY_STACK_SIZE                      1
+#define GNU_PROPERTY_NO_COPY_ON_PROTECTED            2
+#define GNU_PROPERTY_UINT32_AND_LO                   0xb0000000
+#define GNU_PROPERTY_UINT32_AND_HI                   0xb0007fff
+#define GNU_PROPERTY_UINT32_OR_LO                    0xb0008000
+#define GNU_PROPERTY_UINT32_OR_HI                    0xb000ffff
+#define GNU_PROPERTY_1_NEEDED                        GNU_PROPERTY_UINT32_OR_LO
+#define GNU_PROPERTY_1_NEEDED_INDIRECT_EXTERN_ACCESS (1U << 0)
+#define GNU_PROPERTY_LOPROC                          0xc0000000
+#define GNU_PROPERTY_HIPROC                          0xdfffffff
+#define GNU_PROPERTY_LOUSER                          0xe0000000
+#define GNU_PROPERTY_HIUSER                          0xffffffff
+#define GNU_PROPERTY_AARCH64_FEATURE_1_AND           0xc0000000
+#define GNU_PROPERTY_AARCH64_FEATURE_1_BTI           (1U << 0)
+#define GNU_PROPERTY_AARCH64_FEATURE_1_PAC           (1U << 1)
+#define GNU_PROPERTY_AARCH64_FEATURE_1_GCS           (1U << 2)
+#define GNU_PROPERTY_X86_ISA_1_USED                  0xc0010002
+#define GNU_PROPERTY_X86_ISA_1_NEEDED                0xc0008002
+#define GNU_PROPERTY_X86_FEATURE_1_AND               0xc0000002
+#define GNU_PROPERTY_X86_ISA_1_BASELINE              (1U << 0)
+#define GNU_PROPERTY_X86_ISA_1_V2                    (1U << 1)
+#define GNU_PROPERTY_X86_ISA_1_V3                    (1U << 2)
+#define GNU_PROPERTY_X86_ISA_1_V4                    (1U << 3)
+#define GNU_PROPERTY_X86_FEATURE_1_IBT               (1U << 0)
+#define GNU_PROPERTY_X86_FEATURE_1_SHSTK             (1U << 1)
+#endif
 
 typedef struct {
   Elf32_Xword m_value;
@@ -1236,6 +1330,11 @@ typedef struct {
 #define R_SPARC_H34              85
 #define R_SPARC_SIZE32           86
 #define R_SPARC_SIZE64           87
+#if defined(__SLATE_LIBC_GLIBC)
+#define R_SPARC_WDISP10   88
+#define R_SPARC_JMP_IREL  248
+#define R_SPARC_IRELATIVE 249
+#endif
 #define R_SPARC_GNU_VTINHERIT    250
 #define R_SPARC_GNU_VTENTRY      251
 #define R_SPARC_REV32            252
@@ -1249,11 +1348,24 @@ typedef struct {
 #define EF_MIPS_PIC         2
 #define EF_MIPS_CPIC        4
 #define EF_MIPS_XGOT        8
+#if defined(__SLATE_LIBC_GLIBC)
+#define EF_MIPS_UCODE 16
+#endif
 #define EF_MIPS_64BIT_WHIRL 16
 #define EF_MIPS_ABI2        32
 #define EF_MIPS_ABI_ON32    64
+#if defined(__SLATE_LIBC_GLIBC)
+#define EF_MIPS_OPTIONS_FIRST 0x00000080
+#define EF_MIPS_32BITMODE     0x00000100
+#endif
 #define EF_MIPS_FP64        512
 #define EF_MIPS_NAN2008     1024
+#if defined(__SLATE_LIBC_GLIBC)
+#define EF_MIPS_ARCH_ASE           0x0f000000
+#define EF_MIPS_ARCH_ASE_MDMX      0x08000000
+#define EF_MIPS_ARCH_ASE_M16       0x04000000
+#define EF_MIPS_ARCH_ASE_MICROMIPS 0x02000000
+#endif
 #define EF_MIPS_ARCH        0xf0000000
 
 #define EF_MIPS_ARCH_1    0x00000000
@@ -1265,6 +1377,38 @@ typedef struct {
 #define EF_MIPS_ARCH_64   0x60000000
 #define EF_MIPS_ARCH_32R2 0x70000000
 #define EF_MIPS_ARCH_64R2 0x80000000
+#if defined(__SLATE_LIBC_GLIBC)
+#define EF_MIPS_ARCH_32R6     0x90000000
+#define EF_MIPS_ARCH_64R6     0xa0000000
+#define EF_MIPS_ABI           0x0000F000
+#define EF_MIPS_ABI_O32       0x00001000
+#define EF_MIPS_ABI_O64       0x00002000
+#define EF_MIPS_ABI_EABI32    0x00003000
+#define EF_MIPS_ABI_EABI64    0x00004000
+#define EF_MIPS_MACH          0x00FF0000
+#define EF_MIPS_MACH_3900     0x00810000
+#define EF_MIPS_MACH_4010     0x00820000
+#define EF_MIPS_MACH_4100     0x00830000
+#define EF_MIPS_MACH_ALLEGREX 0x00840000
+#define EF_MIPS_MACH_4650     0x00850000
+#define EF_MIPS_MACH_4120     0x00870000
+#define EF_MIPS_MACH_4111     0x00880000
+#define EF_MIPS_MACH_SB1      0x008a0000
+#define EF_MIPS_MACH_OCTEON   0x008b0000
+#define EF_MIPS_MACH_XLR      0x008c0000
+#define EF_MIPS_MACH_OCTEON2  0x008d0000
+#define EF_MIPS_MACH_OCTEON3  0x008e0000
+#define EF_MIPS_MACH_5400     0x00910000
+#define EF_MIPS_MACH_5900     0x00920000
+#define EF_MIPS_MACH_IAMR2    0x00930000
+#define EF_MIPS_MACH_5500     0x00980000
+#define EF_MIPS_MACH_9000     0x00990000
+#define EF_MIPS_MACH_LS2E     0x00A00000
+#define EF_MIPS_MACH_LS2F     0x00A10000
+#define EF_MIPS_MACH_GS464    0x00A20000
+#define EF_MIPS_MACH_GS464E   0x00A30000
+#define EF_MIPS_MACH_GS264E   0x00A40000
+#endif
 
 #define E_MIPS_ARCH_1  0x00000000
 #define E_MIPS_ARCH_2  0x10000000
@@ -1319,6 +1463,10 @@ typedef struct {
 #define SHT_MIPS_EH_REGION     0x70000027
 #define SHT_MIPS_XLATE_OLD     0x70000028
 #define SHT_MIPS_PDR_EXCEPTION 0x70000029
+#if defined(__SLATE_LIBC_GLIBC)
+#define SHT_MIPS_ABIFLAGS 0x7000002a
+#define SHT_MIPS_XHASH    0x7000002b
+#endif
 
 #define SHF_MIPS_GPREL   0x10000000
 #define SHF_MIPS_MERGE   0x20000000
@@ -1455,8 +1603,70 @@ typedef struct {
 #define R_MIPS_TLS_TPREL_HI16  49
 #define R_MIPS_TLS_TPREL_LO16  50
 #define R_MIPS_GLOB_DAT        51
+#if defined(__SLATE_LIBC_GLIBC)
+#define R_MIPS_PC21_S2           60
+#define R_MIPS_PC26_S2           61
+#define R_MIPS_PC18_S3           62
+#define R_MIPS_PC19_S2           63
+#define R_MIPS_PCHI16            64
+#define R_MIPS_PCLO16            65
+#define R_MIPS16_26              100
+#define R_MIPS16_GPREL           101
+#define R_MIPS16_GOT16           102
+#define R_MIPS16_CALL16          103
+#define R_MIPS16_HI16            104
+#define R_MIPS16_LO16            105
+#define R_MIPS16_TLS_GD          106
+#define R_MIPS16_TLS_LDM         107
+#define R_MIPS16_TLS_DTPREL_HI16 108
+#define R_MIPS16_TLS_DTPREL_LO16 109
+#define R_MIPS16_TLS_GOTTPREL    110
+#define R_MIPS16_TLS_TPREL_HI16  111
+#define R_MIPS16_TLS_TPREL_LO16  112
+#define R_MIPS16_PC16_S1         113
+#endif
 #define R_MIPS_COPY            126
 #define R_MIPS_JUMP_SLOT       127
+#if defined(__SLATE_LIBC_GLIBC)
+#define R_MIPS_RELATIVE             128
+#define R_MICROMIPS_26_S1           133
+#define R_MICROMIPS_HI16            134
+#define R_MICROMIPS_LO16            135
+#define R_MICROMIPS_GPREL16         136
+#define R_MICROMIPS_LITERAL         137
+#define R_MICROMIPS_GOT16           138
+#define R_MICROMIPS_PC7_S1          139
+#define R_MICROMIPS_PC10_S1         140
+#define R_MICROMIPS_PC16_S1         141
+#define R_MICROMIPS_CALL16          142
+#define R_MICROMIPS_GOT_DISP        145
+#define R_MICROMIPS_GOT_PAGE        146
+#define R_MICROMIPS_GOT_OFST        147
+#define R_MICROMIPS_GOT_HI16        148
+#define R_MICROMIPS_GOT_LO16        149
+#define R_MICROMIPS_SUB             150
+#define R_MICROMIPS_HIGHER          151
+#define R_MICROMIPS_HIGHEST         152
+#define R_MICROMIPS_CALL_HI16       153
+#define R_MICROMIPS_CALL_LO16       154
+#define R_MICROMIPS_SCN_DISP        155
+#define R_MICROMIPS_JALR            156
+#define R_MICROMIPS_HI0_LO16        157
+#define R_MICROMIPS_TLS_GD          162
+#define R_MICROMIPS_TLS_LDM         163
+#define R_MICROMIPS_TLS_DTPREL_HI16 164
+#define R_MICROMIPS_TLS_DTPREL_LO16 165
+#define R_MICROMIPS_TLS_GOTTPREL    166
+#define R_MICROMIPS_TLS_TPREL_HI16  169
+#define R_MICROMIPS_TLS_TPREL_LO16  170
+#define R_MICROMIPS_GPREL7_S2       172
+#define R_MICROMIPS_PC23_S2         173
+#define R_MIPS_PC32                 248
+#define R_MIPS_EH                   249
+#define R_MIPS_GNU_REL16_S2         250
+#define R_MIPS_GNU_VTINHERIT        253
+#define R_MIPS_GNU_VTENTRY          254
+#endif
 
 #define R_MIPS_NUM 128
 
@@ -1524,6 +1734,9 @@ typedef struct {
 
 #define DT_MIPS_RWPLT       0x70000034
 #define DT_MIPS_RLD_MAP_REL 0x70000035
+#if defined(__SLATE_LIBC_GLIBC)
+#define DT_MIPS_XHASH 0x70000036
+#endif
 #define DT_MIPS_NUM         0x36
 
 #define RHF_NONE                   0
@@ -2302,6 +2515,15 @@ enum {
 #define R_AARCH64_TLS_TPREL                    1030
 #define R_AARCH64_TLS_TPREL64                  1030
 #define R_AARCH64_TLSDESC                      1031
+#if defined(__SLATE_LIBC_GLIBC)
+#define R_AARCH64_IRELATIVE     1032
+#define PT_AARCH64_MEMTAG_MTE   (PT_LOPROC + 2)
+#define DT_AARCH64_BTI_PLT      (DT_LOPROC + 1)
+#define DT_AARCH64_PAC_PLT      (DT_LOPROC + 3)
+#define DT_AARCH64_VARIANT_PCS  (DT_LOPROC + 5)
+#define DT_AARCH64_NUM          6
+#define STO_AARCH64_VARIANT_PCS 0x80
+#endif
 
 #define R_ARM_NONE              0
 #define R_ARM_PC24              1
@@ -2316,6 +2538,9 @@ enum {
 #define R_ARM_THM_PC22          10
 #define R_ARM_THM_PC8           11
 #define R_ARM_AMP_VCALL9        12
+#if defined(__SLATE_LIBC_GLIBC)
+#define R_ARM_SWI24 13
+#endif
 #define R_ARM_TLS_DESC          13
 #define R_ARM_THM_SWI8          14
 #define R_ARM_XPC25             15
@@ -2490,6 +2715,14 @@ enum {
 #define R_CKCORE_TLS_DTPMOD32       56
 #define R_CKCORE_TLS_DTPOFF32       57
 #define R_CKCORE_TLS_TPOFF32        58
+#if defined(__SLATE_LIBC_GLIBC)
+#define EF_CSKY_ABIMASK     0XF0000000
+#define EF_CSKY_OTHER       0X0FFF0000
+#define EF_CSKY_PROCESSOR   0X0000FFFF
+#define EF_CSKY_ABIV1       0X10000000
+#define EF_CSKY_ABIV2       0X20000000
+#define SHT_CSKY_ATTRIBUTES (SHT_LOPROC + 1)
+#endif
 
 #define EF_IA_64_MASKOS 0x0000000f
 #define EF_IA_64_ABI64  0x00000010
@@ -2664,6 +2897,9 @@ enum {
 #define R_SH_FUNCDESC_VALUE   208
 
 #define R_SH_NUM 256
+#if defined(__SLATE_LIBC_GLIBC)
+#define EF_S390_HIGH_GPRS 0x00000001
+#endif
 
 #define R_390_NONE       0
 #define R_390_8          1
@@ -2743,6 +2979,9 @@ enum {
 #define R_390_GOT20       58
 #define R_390_GOTPLT20    59
 #define R_390_TLS_GOTIE20 60
+#if defined(__SLATE_LIBC_GLIBC)
+#define R_390_IRELATIVE 61
+#endif
 
 #define R_390_NUM 61
 
@@ -2817,6 +3056,13 @@ enum {
 #define R_X86_64_GOTPCRELX     41
 #define R_X86_64_REX_GOTPCRELX 42
 #define R_X86_64_NUM           43
+#if defined(__SLATE_LIBC_GLIBC)
+#define SHT_X86_64_UNWIND 0x70000001
+#define DT_X86_64_PLT     (DT_LOPROC + 0)
+#define DT_X86_64_PLTSZ   (DT_LOPROC + 1)
+#define DT_X86_64_PLTENT  (DT_LOPROC + 3)
+#define DT_X86_64_NUM     4
+#endif
 
 #define R_MN10300_NONE          0
 #define R_MN10300_32            1
@@ -2842,6 +3088,19 @@ enum {
 #define R_MN10300_GLOB_DAT      21
 #define R_MN10300_JMP_SLOT      22
 #define R_MN10300_RELATIVE      23
+#if defined(__SLATE_LIBC_GLIBC)
+#define R_MN10300_TLS_GD     24
+#define R_MN10300_TLS_LD     25
+#define R_MN10300_TLS_LDO    26
+#define R_MN10300_TLS_GOTIE  27
+#define R_MN10300_TLS_IE     28
+#define R_MN10300_TLS_LE     29
+#define R_MN10300_TLS_DTPMOD 30
+#define R_MN10300_TLS_DTPOFF 31
+#define R_MN10300_TLS_TPOFF  32
+#define R_MN10300_SYM_DIFF   33
+#define R_MN10300_ALIGN      34
+#endif
 
 #define R_MN10300_NUM 24
 
@@ -2978,6 +3237,229 @@ enum {
 #define R_NIOS2_GOT_HA        43
 #define R_NIOS2_CALL_LO       44
 #define R_NIOS2_CALL_HA       45
+#if defined(__SLATE_LIBC_GLIBC)
+#define R_TILEPRO_NONE                       0
+#define R_TILEPRO_32                         1
+#define R_TILEPRO_16                         2
+#define R_TILEPRO_8                          3
+#define R_TILEPRO_32_PCREL                   4
+#define R_TILEPRO_16_PCREL                   5
+#define R_TILEPRO_8_PCREL                    6
+#define R_TILEPRO_LO16                       7
+#define R_TILEPRO_HI16                       8
+#define R_TILEPRO_HA16                       9
+#define R_TILEPRO_COPY                       10
+#define R_TILEPRO_GLOB_DAT                   11
+#define R_TILEPRO_JMP_SLOT                   12
+#define R_TILEPRO_RELATIVE                   13
+#define R_TILEPRO_BROFF_X1                   14
+#define R_TILEPRO_JOFFLONG_X1                15
+#define R_TILEPRO_JOFFLONG_X1_PLT            16
+#define R_TILEPRO_IMM8_X0                    17
+#define R_TILEPRO_IMM8_Y0                    18
+#define R_TILEPRO_IMM8_X1                    19
+#define R_TILEPRO_IMM8_Y1                    20
+#define R_TILEPRO_MT_IMM15_X1                21
+#define R_TILEPRO_MF_IMM15_X1                22
+#define R_TILEPRO_IMM16_X0                   23
+#define R_TILEPRO_IMM16_X1                   24
+#define R_TILEPRO_IMM16_X0_LO                25
+#define R_TILEPRO_IMM16_X1_LO                26
+#define R_TILEPRO_IMM16_X0_HI                27
+#define R_TILEPRO_IMM16_X1_HI                28
+#define R_TILEPRO_IMM16_X0_HA                29
+#define R_TILEPRO_IMM16_X1_HA                30
+#define R_TILEPRO_IMM16_X0_PCREL             31
+#define R_TILEPRO_IMM16_X1_PCREL             32
+#define R_TILEPRO_IMM16_X0_LO_PCREL          33
+#define R_TILEPRO_IMM16_X1_LO_PCREL          34
+#define R_TILEPRO_IMM16_X0_HI_PCREL          35
+#define R_TILEPRO_IMM16_X1_HI_PCREL          36
+#define R_TILEPRO_IMM16_X0_HA_PCREL          37
+#define R_TILEPRO_IMM16_X1_HA_PCREL          38
+#define R_TILEPRO_IMM16_X0_GOT               39
+#define R_TILEPRO_IMM16_X1_GOT               40
+#define R_TILEPRO_IMM16_X0_GOT_LO            41
+#define R_TILEPRO_IMM16_X1_GOT_LO            42
+#define R_TILEPRO_IMM16_X0_GOT_HI            43
+#define R_TILEPRO_IMM16_X1_GOT_HI            44
+#define R_TILEPRO_IMM16_X0_GOT_HA            45
+#define R_TILEPRO_IMM16_X1_GOT_HA            46
+#define R_TILEPRO_MMSTART_X0                 47
+#define R_TILEPRO_MMEND_X0                   48
+#define R_TILEPRO_MMSTART_X1                 49
+#define R_TILEPRO_MMEND_X1                   50
+#define R_TILEPRO_SHAMT_X0                   51
+#define R_TILEPRO_SHAMT_X1                   52
+#define R_TILEPRO_SHAMT_Y0                   53
+#define R_TILEPRO_SHAMT_Y1                   54
+#define R_TILEPRO_DEST_IMM8_X1               55
+#define R_TILEPRO_TLS_GD_CALL                60
+#define R_TILEPRO_IMM8_X0_TLS_GD_ADD         61
+#define R_TILEPRO_IMM8_X1_TLS_GD_ADD         62
+#define R_TILEPRO_IMM8_Y0_TLS_GD_ADD         63
+#define R_TILEPRO_IMM8_Y1_TLS_GD_ADD         64
+#define R_TILEPRO_TLS_IE_LOAD                65
+#define R_TILEPRO_IMM16_X0_TLS_GD            66
+#define R_TILEPRO_IMM16_X1_TLS_GD            67
+#define R_TILEPRO_IMM16_X0_TLS_GD_LO         68
+#define R_TILEPRO_IMM16_X1_TLS_GD_LO         69
+#define R_TILEPRO_IMM16_X0_TLS_GD_HI         70
+#define R_TILEPRO_IMM16_X1_TLS_GD_HI         71
+#define R_TILEPRO_IMM16_X0_TLS_GD_HA         72
+#define R_TILEPRO_IMM16_X1_TLS_GD_HA         73
+#define R_TILEPRO_IMM16_X0_TLS_IE            74
+#define R_TILEPRO_IMM16_X1_TLS_IE            75
+#define R_TILEPRO_IMM16_X0_TLS_IE_LO         76
+#define R_TILEPRO_IMM16_X1_TLS_IE_LO         77
+#define R_TILEPRO_IMM16_X0_TLS_IE_HI         78
+#define R_TILEPRO_IMM16_X1_TLS_IE_HI         79
+#define R_TILEPRO_IMM16_X0_TLS_IE_HA         80
+#define R_TILEPRO_IMM16_X1_TLS_IE_HA         81
+#define R_TILEPRO_TLS_DTPMOD32               82
+#define R_TILEPRO_TLS_DTPOFF32               83
+#define R_TILEPRO_TLS_TPOFF32                84
+#define R_TILEPRO_IMM16_X0_TLS_LE            85
+#define R_TILEPRO_IMM16_X1_TLS_LE            86
+#define R_TILEPRO_IMM16_X0_TLS_LE_LO         87
+#define R_TILEPRO_IMM16_X1_TLS_LE_LO         88
+#define R_TILEPRO_IMM16_X0_TLS_LE_HI         89
+#define R_TILEPRO_IMM16_X1_TLS_LE_HI         90
+#define R_TILEPRO_IMM16_X0_TLS_LE_HA         91
+#define R_TILEPRO_IMM16_X1_TLS_LE_HA         92
+#define R_TILEPRO_GNU_VTINHERIT              128
+#define R_TILEPRO_GNU_VTENTRY                129
+#define R_TILEPRO_NUM                        130
+#define R_TILEGX_NONE                        0
+#define R_TILEGX_64                          1
+#define R_TILEGX_32                          2
+#define R_TILEGX_16                          3
+#define R_TILEGX_8                           4
+#define R_TILEGX_64_PCREL                    5
+#define R_TILEGX_32_PCREL                    6
+#define R_TILEGX_16_PCREL                    7
+#define R_TILEGX_8_PCREL                     8
+#define R_TILEGX_HW0                         9
+#define R_TILEGX_HW1                         10
+#define R_TILEGX_HW2                         11
+#define R_TILEGX_HW3                         12
+#define R_TILEGX_HW0_LAST                    13
+#define R_TILEGX_HW1_LAST                    14
+#define R_TILEGX_HW2_LAST                    15
+#define R_TILEGX_COPY                        16
+#define R_TILEGX_GLOB_DAT                    17
+#define R_TILEGX_JMP_SLOT                    18
+#define R_TILEGX_RELATIVE                    19
+#define R_TILEGX_BROFF_X1                    20
+#define R_TILEGX_JUMPOFF_X1                  21
+#define R_TILEGX_JUMPOFF_X1_PLT              22
+#define R_TILEGX_IMM8_X0                     23
+#define R_TILEGX_IMM8_Y0                     24
+#define R_TILEGX_IMM8_X1                     25
+#define R_TILEGX_IMM8_Y1                     26
+#define R_TILEGX_DEST_IMM8_X1                27
+#define R_TILEGX_MT_IMM14_X1                 28
+#define R_TILEGX_MF_IMM14_X1                 29
+#define R_TILEGX_MMSTART_X0                  30
+#define R_TILEGX_MMEND_X0                    31
+#define R_TILEGX_SHAMT_X0                    32
+#define R_TILEGX_SHAMT_X1                    33
+#define R_TILEGX_SHAMT_Y0                    34
+#define R_TILEGX_SHAMT_Y1                    35
+#define R_TILEGX_IMM16_X0_HW0                36
+#define R_TILEGX_IMM16_X1_HW0                37
+#define R_TILEGX_IMM16_X0_HW1                38
+#define R_TILEGX_IMM16_X1_HW1                39
+#define R_TILEGX_IMM16_X0_HW2                40
+#define R_TILEGX_IMM16_X1_HW2                41
+#define R_TILEGX_IMM16_X0_HW3                42
+#define R_TILEGX_IMM16_X1_HW3                43
+#define R_TILEGX_IMM16_X0_HW0_LAST           44
+#define R_TILEGX_IMM16_X1_HW0_LAST           45
+#define R_TILEGX_IMM16_X0_HW1_LAST           46
+#define R_TILEGX_IMM16_X1_HW1_LAST           47
+#define R_TILEGX_IMM16_X0_HW2_LAST           48
+#define R_TILEGX_IMM16_X1_HW2_LAST           49
+#define R_TILEGX_IMM16_X0_HW0_PCREL          50
+#define R_TILEGX_IMM16_X1_HW0_PCREL          51
+#define R_TILEGX_IMM16_X0_HW1_PCREL          52
+#define R_TILEGX_IMM16_X1_HW1_PCREL          53
+#define R_TILEGX_IMM16_X0_HW2_PCREL          54
+#define R_TILEGX_IMM16_X1_HW2_PCREL          55
+#define R_TILEGX_IMM16_X0_HW3_PCREL          56
+#define R_TILEGX_IMM16_X1_HW3_PCREL          57
+#define R_TILEGX_IMM16_X0_HW0_LAST_PCREL     58
+#define R_TILEGX_IMM16_X1_HW0_LAST_PCREL     59
+#define R_TILEGX_IMM16_X0_HW1_LAST_PCREL     60
+#define R_TILEGX_IMM16_X1_HW1_LAST_PCREL     61
+#define R_TILEGX_IMM16_X0_HW2_LAST_PCREL     62
+#define R_TILEGX_IMM16_X1_HW2_LAST_PCREL     63
+#define R_TILEGX_IMM16_X0_HW0_GOT            64
+#define R_TILEGX_IMM16_X1_HW0_GOT            65
+#define R_TILEGX_IMM16_X0_HW0_PLT_PCREL      66
+#define R_TILEGX_IMM16_X1_HW0_PLT_PCREL      67
+#define R_TILEGX_IMM16_X0_HW1_PLT_PCREL      68
+#define R_TILEGX_IMM16_X1_HW1_PLT_PCREL      69
+#define R_TILEGX_IMM16_X0_HW2_PLT_PCREL      70
+#define R_TILEGX_IMM16_X1_HW2_PLT_PCREL      71
+#define R_TILEGX_IMM16_X0_HW0_LAST_GOT       72
+#define R_TILEGX_IMM16_X1_HW0_LAST_GOT       73
+#define R_TILEGX_IMM16_X0_HW1_LAST_GOT       74
+#define R_TILEGX_IMM16_X1_HW1_LAST_GOT       75
+#define R_TILEGX_IMM16_X0_HW3_PLT_PCREL      76
+#define R_TILEGX_IMM16_X1_HW3_PLT_PCREL      77
+#define R_TILEGX_IMM16_X0_HW0_TLS_GD         78
+#define R_TILEGX_IMM16_X1_HW0_TLS_GD         79
+#define R_TILEGX_IMM16_X0_HW0_TLS_LE         80
+#define R_TILEGX_IMM16_X1_HW0_TLS_LE         81
+#define R_TILEGX_IMM16_X0_HW0_LAST_TLS_LE    82
+#define R_TILEGX_IMM16_X1_HW0_LAST_TLS_LE    83
+#define R_TILEGX_IMM16_X0_HW1_LAST_TLS_LE    84
+#define R_TILEGX_IMM16_X1_HW1_LAST_TLS_LE    85
+#define R_TILEGX_IMM16_X0_HW0_LAST_TLS_GD    86
+#define R_TILEGX_IMM16_X1_HW0_LAST_TLS_GD    87
+#define R_TILEGX_IMM16_X0_HW1_LAST_TLS_GD    88
+#define R_TILEGX_IMM16_X1_HW1_LAST_TLS_GD    89
+#define R_TILEGX_IMM16_X0_HW0_TLS_IE         92
+#define R_TILEGX_IMM16_X1_HW0_TLS_IE         93
+#define R_TILEGX_IMM16_X0_HW0_LAST_PLT_PCREL 94
+#define R_TILEGX_IMM16_X1_HW0_LAST_PLT_PCREL 95
+#define R_TILEGX_IMM16_X0_HW1_LAST_PLT_PCREL 96
+#define R_TILEGX_IMM16_X1_HW1_LAST_PLT_PCREL 97
+#define R_TILEGX_IMM16_X0_HW2_LAST_PLT_PCREL 98
+#define R_TILEGX_IMM16_X1_HW2_LAST_PLT_PCREL 99
+#define R_TILEGX_IMM16_X0_HW0_LAST_TLS_IE    100
+#define R_TILEGX_IMM16_X1_HW0_LAST_TLS_IE    101
+#define R_TILEGX_IMM16_X0_HW1_LAST_TLS_IE    102
+#define R_TILEGX_IMM16_X1_HW1_LAST_TLS_IE    103
+#define R_TILEGX_TLS_DTPMOD64                106
+#define R_TILEGX_TLS_DTPOFF64                107
+#define R_TILEGX_TLS_TPOFF64                 108
+#define R_TILEGX_TLS_DTPMOD32                109
+#define R_TILEGX_TLS_DTPOFF32                110
+#define R_TILEGX_TLS_TPOFF32                 111
+#define R_TILEGX_TLS_GD_CALL                 112
+#define R_TILEGX_IMM8_X0_TLS_GD_ADD          113
+#define R_TILEGX_IMM8_X1_TLS_GD_ADD          114
+#define R_TILEGX_IMM8_Y0_TLS_GD_ADD          115
+#define R_TILEGX_IMM8_Y1_TLS_GD_ADD          116
+#define R_TILEGX_TLS_IE_LOAD                 117
+#define R_TILEGX_IMM8_X0_TLS_ADD             118
+#define R_TILEGX_IMM8_X1_TLS_ADD             119
+#define R_TILEGX_IMM8_Y0_TLS_ADD             120
+#define R_TILEGX_IMM8_Y1_TLS_ADD             121
+#define R_TILEGX_GNU_VTINHERIT               128
+#define R_TILEGX_GNU_VTENTRY                 129
+#define R_TILEGX_NUM                         130
+#define EF_RISCV_RVC                         0x0001
+#define EF_RISCV_FLOAT_ABI                   0x0006
+#define EF_RISCV_FLOAT_ABI_SOFT              0x0000
+#define EF_RISCV_FLOAT_ABI_SINGLE            0x0002
+#define EF_RISCV_FLOAT_ABI_DOUBLE            0x0004
+#define EF_RISCV_FLOAT_ABI_QUAD              0x0006
+#define EF_RISCV_RVE                         0x0008
+#define EF_RISCV_TSO                         0x0010
+#endif
 
 #define R_OR1K_NONE          0
 #define R_OR1K_32            1
@@ -3016,6 +3498,67 @@ enum {
 #define R_OR1K_TLS_DTPMOD    34
 
 #define R_BPF_NONE   0
+#if defined(__SLATE_LIBC_GLIBC)
+#define R_BPF_64_64               1
+#define R_BPF_64_32               10
+#define R_METAG_HIADDR16          0
+#define R_METAG_LOADDR16          1
+#define R_METAG_ADDR32            2
+#define R_METAG_NONE              3
+#define R_METAG_RELBRANCH         4
+#define R_METAG_GETSETOFF         5
+#define R_METAG_REG32OP1          6
+#define R_METAG_REG32OP2          7
+#define R_METAG_REG32OP3          8
+#define R_METAG_REG16OP1          9
+#define R_METAG_REG16OP2          10
+#define R_METAG_REG16OP3          11
+#define R_METAG_REG32OP4          12
+#define R_METAG_HIOG              13
+#define R_METAG_LOOG              14
+#define R_METAG_REL8              15
+#define R_METAG_REL16             16
+#define R_METAG_GNU_VTINHERIT     30
+#define R_METAG_GNU_VTENTRY       31
+#define R_METAG_HI16_GOTOFF       32
+#define R_METAG_LO16_GOTOFF       33
+#define R_METAG_GETSET_GOTOFF     34
+#define R_METAG_GETSET_GOT        35
+#define R_METAG_HI16_GOTPC        36
+#define R_METAG_LO16_GOTPC        37
+#define R_METAG_HI16_PLT          38
+#define R_METAG_LO16_PLT          39
+#define R_METAG_RELBRANCH_PLT     40
+#define R_METAG_GOTOFF            41
+#define R_METAG_PLT               42
+#define R_METAG_COPY              43
+#define R_METAG_JMP_SLOT          44
+#define R_METAG_RELATIVE          45
+#define R_METAG_GLOB_DAT          46
+#define R_METAG_TLS_GD            47
+#define R_METAG_TLS_LDM           48
+#define R_METAG_TLS_LDO_HI16      49
+#define R_METAG_TLS_LDO_LO16      50
+#define R_METAG_TLS_LDO           51
+#define R_METAG_TLS_IE            52
+#define R_METAG_TLS_IENONPIC      53
+#define R_METAG_TLS_IENONPIC_HI16 54
+#define R_METAG_TLS_IENONPIC_LO16 55
+#define R_METAG_TLS_TPOFF         56
+#define R_METAG_TLS_DTPMOD        57
+#define R_METAG_TLS_DTPOFF        58
+#define R_METAG_TLS_LE            59
+#define R_METAG_TLS_LE_HI16       60
+#define R_METAG_TLS_LE_LO16       61
+#define R_NDS32_NONE              0
+#define R_NDS32_32_RELA           20
+#define R_NDS32_COPY              39
+#define R_NDS32_GLOB_DAT          40
+#define R_NDS32_JMP_SLOT          41
+#define R_NDS32_RELATIVE          42
+#define R_NDS32_TLS_TPOFF         102
+#define R_NDS32_TLS_DESC          119
+#endif
 #define R_BPF_MAP_FD 1
 
 #define R_RISCV_NONE         0
@@ -3077,6 +3620,13 @@ enum {
 #define R_RISCV_TLSDESC_LOAD_LO12 63
 #define R_RISCV_TLSDESC_ADD_LO12  64
 #define R_RISCV_TLSDESC_CALL      65
+#if defined(__SLATE_LIBC_GLIBC)
+#define R_RISCV_NUM          66
+#define STO_RISCV_VARIANT_CC 0x80
+#define SHT_RISCV_ATTRIBUTES (SHT_LOPROC + 3)
+#define PT_RISCV_ATTRIBUTES  (PT_LOPROC + 3)
+#define DT_RISCV_VARIANT_CC  (DT_LOPROC + 1)
+#endif
 
 #define EF_LARCH_ABI_MODIFIER_MASK 0x07
 #define EF_LARCH_ABI_SOFT_FLOAT    0x01
@@ -3097,6 +3647,9 @@ enum {
 #define R_LARCH_TLS_TPREL32                10
 #define R_LARCH_TLS_TPREL64                11
 #define R_LARCH_IRELATIVE                  12
+#if defined(__SLATE_LIBC_GLIBC)
+#define R_LARCH_TLS_DESC32 13
+#endif
 #define R_LARCH_TLS_DESC64                 14
 #define R_LARCH_MARK_LA                    20
 #define R_LARCH_MARK_PCREL                 21
@@ -3200,5 +3753,84 @@ enum {
 #define R_LARCH_TLS_LD_PCREL20_S2          124
 #define R_LARCH_TLS_GD_PCREL20_S2          125
 #define R_LARCH_TLS_DESC_PCREL20_S2        126
+#if defined(__SLATE_LIBC_GLIBC)
+#define EF_ARC_MACH_MSK      0x000000ff
+#define EF_ARC_OSABI_MSK     0x00000f00
+#define EF_ARC_ALL_MSK       (EF_ARC_MACH_MSK | EF_ARC_OSABI_MSK)
+#define SHT_ARC_ATTRIBUTES   (SHT_LOPROC + 1)
+#define R_ARC_NONE           0x0
+#define R_ARC_8              0x1
+#define R_ARC_16             0x2
+#define R_ARC_24             0x3
+#define R_ARC_32             0x4
+#define R_ARC_B22_PCREL      0x6
+#define R_ARC_H30            0x7
+#define R_ARC_N8             0x8
+#define R_ARC_N16            0x9
+#define R_ARC_N24            0xA
+#define R_ARC_N32            0xB
+#define R_ARC_SDA            0xC
+#define R_ARC_SECTOFF        0xD
+#define R_ARC_S21H_PCREL     0xE
+#define R_ARC_S21W_PCREL     0xF
+#define R_ARC_S25H_PCREL     0x10
+#define R_ARC_S25W_PCREL     0x11
+#define R_ARC_SDA32          0x12
+#define R_ARC_SDA_LDST       0x13
+#define R_ARC_SDA_LDST1      0x14
+#define R_ARC_SDA_LDST2      0x15
+#define R_ARC_SDA16_LD       0x16
+#define R_ARC_SDA16_LD1      0x17
+#define R_ARC_SDA16_LD2      0x18
+#define R_ARC_S13_PCREL      0x19
+#define R_ARC_W              0x1A
+#define R_ARC_32_ME          0x1B
+#define R_ARC_N32_ME         0x1C
+#define R_ARC_SECTOFF_ME     0x1D
+#define R_ARC_SDA32_ME       0x1E
+#define R_ARC_W_ME           0x1F
+#define R_ARC_H30_ME         0x20
+#define R_ARC_SECTOFF_U8     0x21
+#define R_ARC_SECTOFF_S9     0x22
+#define R_AC_SECTOFF_U8      0x23
+#define R_AC_SECTOFF_U8_1    0x24
+#define R_AC_SECTOFF_U8_2    0x25
+#define R_AC_SECTOFF_S9      0x26
+#define R_AC_SECTOFF_S9_1    0x27
+#define R_AC_SECTOFF_S9_2    0x28
+#define R_ARC_SECTOFF_ME_1   0x29
+#define R_ARC_SECTOFF_ME_2   0x2A
+#define R_ARC_SECTOFF_1      0x2B
+#define R_ARC_SECTOFF_2      0x2C
+#define R_ARC_SDA_12         0x2D
+#define R_ARC_SDA16_ST2      0x30
+#define R_ARC_32_PCREL       0x31
+#define R_ARC_PC32           0x32
+#define R_ARC_GOTPC32        0x33
+#define R_ARC_PLT32          0x34
+#define R_ARC_COPY           0x35
+#define R_ARC_GLOB_DAT       0x36
+#define R_ARC_JMP_SLOT       0x37
+#define R_ARC_RELATIVE       0x38
+#define R_ARC_GOTOFF         0x39
+#define R_ARC_GOTPC          0x3A
+#define R_ARC_GOT32          0x3B
+#define R_ARC_S21W_PCREL_PLT 0x3C
+#define R_ARC_S25H_PCREL_PLT 0x3D
+#define R_ARC_JLI_SECTOFF    0x3F
+#define R_ARC_TLS_DTPMOD     0x42
+#define R_ARC_TLS_DTPOFF     0x43
+#define R_ARC_TLS_TPOFF      0x44
+#define R_ARC_TLS_GD_GOT     0x45
+#define R_ARC_TLS_GD_LD      0x46
+#define R_ARC_TLS_GD_CALL    0x47
+#define R_ARC_TLS_IE_GOT     0x48
+#define R_ARC_TLS_DTPOFF_S9  0x49
+#define R_ARC_TLS_LE_S9      0x4A
+#define R_ARC_TLS_LE_32      0x4B
+#define R_ARC_S25W_PCREL_PLT 0x4C
+#define R_ARC_S21H_PCREL_PLT 0x4D
+#define R_ARC_NPS_CMEM16     0x4E
+#endif
 
 #endif
