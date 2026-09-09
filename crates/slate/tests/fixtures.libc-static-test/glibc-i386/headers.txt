@@ -23,3 +23,8 @@ byteswap.h
 ctype.h
 endian.h
 limits.h
+sys/types.h
+string.h
+stdlib.h
+fcntl.h
+unistd.h

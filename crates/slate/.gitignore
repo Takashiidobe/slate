@@ -4,6 +4,8 @@ diagnostics
 .env
 __pycache__/
 
+tests/fixtures.libc-static-test/**/*.c
+
 /tools/macro-dump-plugin/build/
 *.so
 
