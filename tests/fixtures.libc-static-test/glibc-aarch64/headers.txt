@@ -35,3 +35,7 @@ envz.h
 err.h
 error.h
 execinfo.h
+fmtmsg.h
+fnmatch.h
+fpu_control.h
+fstab.h
