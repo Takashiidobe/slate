@@ -34,4 +34,8 @@ struct mntent *getmntent_r(FILE *, struct mntent *, char *, int);
 int            addmntent(FILE *, const struct mntent *);
 char          *hasmntopt(const struct mntent *, const char *);
 
+#if defined(__SLATE_LIBC_GLIBC)
+#define MNTTAB _PATH_MNTTAB
+#endif
+
 #endif

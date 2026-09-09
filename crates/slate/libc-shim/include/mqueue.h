@@ -3,6 +3,11 @@
 
 #include <features.h>
 
+#if defined(__SLATE_LIBC_GLIBC)
+#include <sys/types.h>
+#include <fcntl.h>
+#endif
+
 #define __NEED_size_t
 #define __NEED_ssize_t
 #define __NEED_pthread_attr_t

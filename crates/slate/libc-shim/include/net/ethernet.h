@@ -3,11 +3,24 @@
 
 #include <features.h>
 
+#if defined(__SLATE_LIBC_GLIBC)
+#include <sys/types.h>
+#include <stdint.h>
+#else
+#include <inttypes.h>
+#include <sys/types.h>
 #include <netinet/if_ether.h>
+#endif
 
 #define __NEED_uint8_t
 #define __NEED_uint16_t
-#include <sys/types.h>
+
+#define ETH_ALEN      6
+#define ETH_TLEN      2
+#define ETH_HLEN      14
+#define ETH_ZLEN      60
+#define ETH_DATA_LEN  1500
+#define ETH_FRAME_LEN 1514
 
 struct ether_addr {
   uint8_t ether_addr_octet[ETH_ALEN];
