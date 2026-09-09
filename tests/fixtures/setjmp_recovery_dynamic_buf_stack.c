@@ -52,9 +52,8 @@ int main(void) {
 // LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[derive(Clone, Copy)]
 // LOWERING-NEXT: struct __slate_jmp_buf_tag {
-// LOWERING-NEXT:     __regs: [i64; 8],
-// LOWERING-NEXT:     __mask_was_saved: i32,
-// LOWERING-NEXT:     __saved_mask: [u64; 16],
+// LOWERING-X86_64-GNU-NEXT:     __storage: [u64; 25],
+// LOWERING-AARCH64-GNU-NEXT:     __storage: [u64; 39],
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: static mut jb_stack: *mut [__slate_jmp_buf_tag; 1] = std::ptr::null_mut();
@@ -71,7 +70,8 @@ int main(void) {
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() -> std::process::ExitCode {
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = 200;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u64 = 200;
+// LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: u64 = 312;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = 8;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} * {{__v[0-9]+}};
 // LOWERING-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc({{__v[0-9]+}} as usize) };
@@ -172,9 +172,8 @@ int main(void) {
 // REWRITES-NEXT: #[repr(C)]
 // REWRITES-NEXT: #[derive(Clone, Copy)]
 // REWRITES-NEXT: struct __slate_jmp_buf_tag {
-// REWRITES-NEXT:     __regs: [i64; 8],
-// REWRITES-NEXT:     __mask_was_saved: i32,
-// REWRITES-NEXT:     __saved_mask: [u64; 16],
+// REWRITES-X86_64-GNU-NEXT:     __storage: [u64; 25],
+// REWRITES-AARCH64-GNU-NEXT:     __storage: [u64; 39],
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: static mut jb_stack: *mut [__slate_jmp_buf_tag; 1] = std::ptr::null_mut();
@@ -191,7 +190,8 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() -> std::process::ExitCode {
 // REWRITES-NEXT:     let {{__v[0-9]+}}: u64 = 8;
-// REWRITES-NEXT:     let {{__v[0-9]+}}: u64 = 200 * {{__v[0-9]+}};
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u64 = 200 * {{__v[0-9]+}};
+// REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: u64 = 312 * {{__v[0-9]+}};
 // REWRITES-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc({{__v[0-9]+}} as usize) };
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         jb_stack = {{__v[0-9]+}} as *mut [__slate_jmp_buf_tag; 1];

@@ -408,12 +408,8 @@ int main(void) {
 // REWRITES-NEXT:         unsafe { fflush(std::ptr::null_mut()) };
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     fill_cube(unsafe { &mut (*std::ptr::addr_of_mut!(c)) });
-// REWRITES-NEXT:     println!(
-// REWRITES-NEXT:         "{} {} {}",
-// REWRITES-NEXT:         c.v[0][0][0],
-// REWRITES-NEXT:         c.v[1][2][3],
-// REWRITES-NEXT:         sum_cube_via_ptr(unsafe { &mut (*std::ptr::addr_of_mut!(c)) })
-// REWRITES-NEXT:     );
+// REWRITES-NEXT:     let __slate_printf_arg2 = sum_cube_via_ptr(unsafe { &mut (*std::ptr::addr_of_mut!(c)) });
+// REWRITES-NEXT:     println!("{} {} {}", c.v[0][0][0], c.v[1][2][3], __slate_printf_arg2);
 // REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     return std::process::ExitCode::SUCCESS;
 // REWRITES-NEXT: }

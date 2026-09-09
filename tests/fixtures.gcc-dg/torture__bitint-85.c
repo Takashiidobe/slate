@@ -36,33 +36,6 @@ int main() {
 // @rewrite-fn-end
 // @lowering-fn-end
 
-// SLATE-FILECHECK-BEGIN lowering
-// LOWERING-DAG: fn bar({{arg[0-9]+}}: bitint::BInt<1024, 16, 128>) {
-// LOWERING-DAG:     let mut y: aligned::Aligned<aligned::A8, bitint::BInt<1024, 16, 128>> =
-// LOWERING-DAG:         aligned::Aligned(bitint::BInt::<1024, 16, 128>::ZERO);
-// LOWERING-DAG:     *y = {{arg[0-9]+}};
-// LOWERING-DAG:     {
-// LOWERING-DAG:         let {{__v[0-9]+}}: bitint::BInt<1024, 16, 128> = *y;
-// LOWERING-DAG:         let {{__v[0-9]+}}: bitint::BInt<1024, 16, 128> = unsafe { *d };
-// LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// LOWERING-DAG:         if {{__v[0-9]+}} {
-// LOWERING-DAG:             unsafe { abort() };
-// LOWERING-DAG:         }
-// LOWERING-DAG:     }
-// LOWERING-DAG:     return;
-// LOWERING-DAG: }
-// LOWERING-DAG: fn main() -> std::process::ExitCode {
-// LOWERING-DAG:     let mut x: aligned::Aligned<aligned::A8, bitint::BInt<1024, 16, 128>> =
-// LOWERING-DAG:         aligned::Aligned(bitint::BInt::<1024, 16, 128>::ZERO);
-// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:     let {{__v[0-9]+}}: bitint::BInt<1024, 16, 128> = unsafe { *d };
-// LOWERING-DAG:     foo({{__v[0-9]+}}, std::ptr::addr_of_mut!(*x));
-// LOWERING-DAG:     let {{__v[0-9]+}}: bitint::BInt<1024, 16, 128> = *x;
-// LOWERING-DAG:     bar({{__v[0-9]+}});
-// LOWERING-DAG:     return std::process::ExitCode::from({{__v[0-9]+}} as u8);
-// LOWERING-DAG: }
-// SLATE-FILECHECK-END lowering
-
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: fn bar({{arg[0-9]+}}: bitint::BInt<1024, 16, 128>) {
 // REWRITES-DAG:     let mut y: aligned::Aligned<aligned::A8, bitint::BInt<1024, 16, 128>> =
@@ -82,3 +55,30 @@ int main() {
 // REWRITES-DAG:     return std::process::ExitCode::SUCCESS;
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites
+
+// SLATE-FILECHECK-BEGIN lowering
+// LOWERING-X86_64-GNU-DAG: fn bar({{arg[0-9]+}}: bitint::BInt<1024, 16, 128>) {
+// LOWERING-X86_64-GNU-DAG:     let mut y: aligned::Aligned<aligned::A8, bitint::BInt<1024, 16, 128>> =
+// LOWERING-X86_64-GNU-DAG:         aligned::Aligned(bitint::BInt::<1024, 16, 128>::ZERO);
+// LOWERING-X86_64-GNU-DAG:     *y = {{arg[0-9]+}};
+// LOWERING-X86_64-GNU-DAG:     {
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: bitint::BInt<1024, 16, 128> = *y;
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: bitint::BInt<1024, 16, 128> = unsafe { *d };
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-DAG:         if {{__v[0-9]+}} {
+// LOWERING-X86_64-GNU-DAG:             unsafe { abort() };
+// LOWERING-X86_64-GNU-DAG:         }
+// LOWERING-X86_64-GNU-DAG:     }
+// LOWERING-X86_64-GNU-DAG:     return;
+// LOWERING-X86_64-GNU-DAG: }
+// LOWERING-X86_64-GNU-DAG: fn main() -> std::process::ExitCode {
+// LOWERING-X86_64-GNU-DAG:     let mut x: aligned::Aligned<aligned::A8, bitint::BInt<1024, 16, 128>> =
+// LOWERING-X86_64-GNU-DAG:         aligned::Aligned(bitint::BInt::<1024, 16, 128>::ZERO);
+// LOWERING-X86_64-GNU-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-DAG:     let {{__v[0-9]+}}: bitint::BInt<1024, 16, 128> = unsafe { *d };
+// LOWERING-X86_64-GNU-DAG:     foo({{__v[0-9]+}}, std::ptr::addr_of_mut!(*x));
+// LOWERING-X86_64-GNU-DAG:     let {{__v[0-9]+}}: bitint::BInt<1024, 16, 128> = *x;
+// LOWERING-X86_64-GNU-DAG:     bar({{__v[0-9]+}});
+// LOWERING-X86_64-GNU-DAG:     return std::process::ExitCode::SUCCESS;
+// LOWERING-X86_64-GNU-DAG: }
+// SLATE-FILECHECK-END lowering

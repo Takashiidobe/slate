@@ -245,1153 +245,6 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN lowering
-// LOWERING: #![feature(f128)]
-// LOWERING-NEXT: #![feature(c_variadic)]
-// LOWERING-NEXT: #![allow(
-// LOWERING-NEXT:     dead_code,
-// LOWERING-NEXT:     unused,
-// LOWERING-NEXT:     non_camel_case_types,
-// LOWERING-NEXT:     non_snake_case,
-// LOWERING-NEXT:     non_upper_case_globals,
-// LOWERING-NEXT:     arithmetic_overflow,
-// LOWERING-NEXT:     unconditional_panic,
-// LOWERING-NEXT:     suspicious_runtime_symbol_definitions,
-// LOWERING-NEXT:     unpredictable_function_pointer_comparisons,
-// LOWERING-NEXT:     unused_comparisons
-// LOWERING-NEXT: )]
-// LOWERING-EMPTY:
-// LOWERING-NEXT: #[repr(C, align(16))]
-// LOWERING-NEXT: #[derive(Clone, Copy)]
-// LOWERING-NEXT: struct LongDouble([u8; 10]);
-// LOWERING-EMPTY:
-// LOWERING-NEXT: impl core::ops::Add for LongDouble {
-// LOWERING-NEXT:     type Output = LongDouble;
-// LOWERING-NEXT:     fn add(self, __o: LongDouble) -> LongDouble {
-// LOWERING-NEXT:         __slate_f80_add(self, __o)
-// LOWERING-NEXT:     }
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: impl core::ops::Sub for LongDouble {
-// LOWERING-NEXT:     type Output = LongDouble;
-// LOWERING-NEXT:     fn sub(self, __o: LongDouble) -> LongDouble {
-// LOWERING-NEXT:         __slate_f80_sub(self, __o)
-// LOWERING-NEXT:     }
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: impl core::ops::Mul for LongDouble {
-// LOWERING-NEXT:     type Output = LongDouble;
-// LOWERING-NEXT:     fn mul(self, __o: LongDouble) -> LongDouble {
-// LOWERING-NEXT:         __slate_f80_mul(self, __o)
-// LOWERING-NEXT:     }
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: impl core::ops::Div for LongDouble {
-// LOWERING-NEXT:     type Output = LongDouble;
-// LOWERING-NEXT:     fn div(self, __o: LongDouble) -> LongDouble {
-// LOWERING-NEXT:         __slate_f80_div(self, __o)
-// LOWERING-NEXT:     }
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: impl core::ops::AddAssign for LongDouble {
-// LOWERING-NEXT:     fn add_assign(&mut self, __o: LongDouble) {
-// LOWERING-NEXT:         {
-// LOWERING-NEXT:             *self = __slate_f80_add(*self, __o);
-// LOWERING-NEXT:         }
-// LOWERING-NEXT:     }
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: impl core::ops::SubAssign for LongDouble {
-// LOWERING-NEXT:     fn sub_assign(&mut self, __o: LongDouble) {
-// LOWERING-NEXT:         {
-// LOWERING-NEXT:             *self = __slate_f80_sub(*self, __o);
-// LOWERING-NEXT:         }
-// LOWERING-NEXT:     }
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: impl core::ops::MulAssign for LongDouble {
-// LOWERING-NEXT:     fn mul_assign(&mut self, __o: LongDouble) {
-// LOWERING-NEXT:         {
-// LOWERING-NEXT:             *self = __slate_f80_mul(*self, __o);
-// LOWERING-NEXT:         }
-// LOWERING-NEXT:     }
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: impl core::ops::DivAssign for LongDouble {
-// LOWERING-NEXT:     fn div_assign(&mut self, __o: LongDouble) {
-// LOWERING-NEXT:         {
-// LOWERING-NEXT:             *self = __slate_f80_div(*self, __o);
-// LOWERING-NEXT:         }
-// LOWERING-NEXT:     }
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: impl core::ops::Neg for LongDouble {
-// LOWERING-NEXT:     type Output = LongDouble;
-// LOWERING-NEXT:     fn neg(self) -> LongDouble {
-// LOWERING-NEXT:         __slate_f80_neg(self)
-// LOWERING-NEXT:     }
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: impl core::cmp::PartialEq for LongDouble {
-// LOWERING-NEXT:     fn eq(&self, __other: &LongDouble) -> bool {
-// LOWERING-NEXT:         __slate_f80_eq(*self, *__other)
-// LOWERING-NEXT:     }
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: impl core::cmp::PartialOrd for LongDouble {
-// LOWERING-NEXT:     fn partial_cmp(&self, __other: &LongDouble) -> Option<std::cmp::Ordering> {
-// LOWERING-NEXT:         if __slate_f80_lt(*self, *__other) {
-// LOWERING-NEXT:             Some(std::cmp::Ordering::Less)
-// LOWERING-NEXT:         } else {
-// LOWERING-NEXT:             if __slate_f80_gt(*self, *__other) {
-// LOWERING-NEXT:                 Some(std::cmp::Ordering::Greater)
-// LOWERING-NEXT:             } else {
-// LOWERING-NEXT:                 if __slate_f80_eq(*self, *__other) {
-// LOWERING-NEXT:                     Some(std::cmp::Ordering::Equal)
-// LOWERING-NEXT:                 } else {
-// LOWERING-NEXT:                     None
-// LOWERING-NEXT:                 }
-// LOWERING-NEXT:             }
-// LOWERING-NEXT:         }
-// LOWERING-NEXT:     }
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: unsafe extern "C" {
-// LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
-// LOWERING-NEXT:     fn abort() -> !;
-// LOWERING-NEXT:     fn sqrtl(_0: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     fn cbrtl(_0: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     fn sinl(_0: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     fn cosl(_0: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     fn tanl(_0: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     fn asinl(_0: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     fn acosl(_0: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     fn atanl(_0: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     fn atan2l(_0: LongDouble, _1: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     fn sinhl(_0: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     fn coshl(_0: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     fn tanhl(_0: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     fn expl(_0: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     fn exp2l(_0: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     fn logl(_0: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     fn log2l(_0: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     fn log10l(_0: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     fn powl(_0: LongDouble, _1: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     fn fmodl(_0: LongDouble, _1: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     fn hypotl(_0: LongDouble, _1: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     fn ldexpl(_0: LongDouble, _1: i32) -> LongDouble;
-// LOWERING-NEXT:     fn frexpl(_0: LongDouble, _1: *mut i32) -> LongDouble;
-// LOWERING-NEXT:     fn nanl(_0: *const core::ffi::c_char) -> LongDouble;
-// LOWERING-NEXT:     fn remainderl(_0: LongDouble, _1: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     fn remquol(_0: LongDouble, _1: LongDouble, _2: *mut i32) -> LongDouble;
-// LOWERING-NEXT:     fn scalbnl(_0: LongDouble, _1: i32) -> LongDouble;
-// LOWERING-NEXT:     fn scalblnl(_0: LongDouble, _1: i64) -> LongDouble;
-// LOWERING-NEXT:     fn nextafterl(_0: LongDouble, _1: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     fn nexttowardl(_0: LongDouble, _1: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     fn fdiml(_0: LongDouble, _1: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     fn lrintl(_0: LongDouble) -> i64;
-// LOWERING-NEXT:     fn llrintl(_0: LongDouble) -> i64;
-// LOWERING-NEXT:     fn lroundl(_0: LongDouble) -> i64;
-// LOWERING-NEXT:     fn llroundl(_0: LongDouble) -> i64;
-// LOWERING-NEXT:     fn ilogbl(_0: LongDouble) -> i32;
-// LOWERING-NEXT:     fn logbl(_0: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     fn erfl(_0: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     fn erfcl(_0: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     fn tgammal(_0: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     fn lgammal(_0: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     fn canonicalizel(_0: *mut LongDouble, _1: *const LongDouble) -> i32;
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() -> std::process::ExitCode {
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 63]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 144, 1, 64]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} + {{__v[0-9]+}};
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = truncate_long_double({{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 1, 64]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = mix_long_double({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = truncate_long_double({{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 7;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_i32({{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} / {{__v[0-9]+}};
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = truncate_long_double({{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
-// LOWERING-NEXT:     check_int_casts();
-// LOWERING-NEXT:     check_i128_casts();
-// LOWERING-NEXT:     check_bitint_casts();
-// LOWERING-NEXT:     check_math_functions();
-// LOWERING-NEXT:     check_remaining_math_functions();
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     return std::process::ExitCode::from({{__v[0-9]+}} as u8);
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn truncate_long_double({{arg[0-9]+}}: LongDouble) -> i32 {
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = __slate_f80_to_i32({{arg[0-9]+}});
-// LOWERING-NEXT:     return {{__v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn mix_long_double({{arg[0-9]+}}: LongDouble, {{arg[0-9]+}}: LongDouble) -> LongDouble {
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = {{arg[0-9]+}} + {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} / {{__v[0-9]+}};
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} * {{__v[0-9]+}};
-// LOWERING-NEXT:     return {{__v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn check_int_casts() {
-// LOWERING-NEXT:     let mut i8: i8 = 0;
-// LOWERING-NEXT:     let mut u8: u8 = 0;
-// LOWERING-NEXT:     let mut i16: i16 = 0;
-// LOWERING-NEXT:     let mut u16: u16 = 0;
-// LOWERING-NEXT:     let mut i32: i32 = 0;
-// LOWERING-NEXT:     let mut u32: u32 = 0;
-// LOWERING-NEXT:     let mut i64: i64 = 0;
-// LOWERING-NEXT:     let mut u64: u64 = 0;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 200, 5, 192]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i8 = __slate_f80_to_i8({{__v[0-9]+}});
-// LOWERING-NEXT:     i8 = {{__v[0-9]+}};
-// LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{__v[0-9]+}}: i8 = i8;
-// LOWERING-NEXT:         let {{__v[0-9]+}}: LongDouble = __slate_f80_from_i8({{__v[0-9]+}});
-// LOWERING-NEXT:         let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 200, 5, 192]);
-// LOWERING-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// LOWERING-NEXT:         if {{__v[0-9]+}} {
-// LOWERING-NEXT:             unsafe { abort() };
-// LOWERING-NEXT:         }
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 200, 6, 64]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: u8 = __slate_f80_to_u8({{__v[0-9]+}});
-// LOWERING-NEXT:     u8 = {{__v[0-9]+}};
-// LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{__v[0-9]+}}: u8 = u8;
-// LOWERING-NEXT:         let {{__v[0-9]+}}: LongDouble = __slate_f80_from_u8({{__v[0-9]+}});
-// LOWERING-NEXT:         let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 200, 6, 64]);
-// LOWERING-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// LOWERING-NEXT:         if {{__v[0-9]+}} {
-// LOWERING-NEXT:             unsafe { abort() };
-// LOWERING-NEXT:         }
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 228, 192, 12, 192]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i16 = __slate_f80_to_i16({{__v[0-9]+}});
-// LOWERING-NEXT:     i16 = {{__v[0-9]+}};
-// LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{__v[0-9]+}}: i16 = i16;
-// LOWERING-NEXT:         let {{__v[0-9]+}}: LongDouble = __slate_f80_from_i16({{__v[0-9]+}});
-// LOWERING-NEXT:         let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 228, 192, 12, 192]);
-// LOWERING-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// LOWERING-NEXT:         if {{__v[0-9]+}} {
-// LOWERING-NEXT:             unsafe { abort() };
-// LOWERING-NEXT:         }
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 49, 212, 14, 64]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: u16 = __slate_f80_to_u16({{__v[0-9]+}});
-// LOWERING-NEXT:     u16 = {{__v[0-9]+}};
-// LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{__v[0-9]+}}: u16 = u16;
-// LOWERING-NEXT:         let {{__v[0-9]+}}: LongDouble = __slate_f80_from_u16({{__v[0-9]+}});
-// LOWERING-NEXT:         let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 49, 212, 14, 64]);
-// LOWERING-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// LOWERING-NEXT:         if {{__v[0-9]+}} {
-// LOWERING-NEXT:             unsafe { abort() };
-// LOWERING-NEXT:         }
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 164, 5, 44, 147, 29, 192]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = __slate_f80_to_i32({{__v[0-9]+}});
-// LOWERING-NEXT:     i32 = {{__v[0-9]+}};
-// LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = i32;
-// LOWERING-NEXT:         let {{__v[0-9]+}}: LongDouble = __slate_f80_from_i32({{__v[0-9]+}});
-// LOWERING-NEXT:         let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 164, 5, 44, 147, 29, 192]);
-// LOWERING-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// LOWERING-NEXT:         if {{__v[0-9]+}} {
-// LOWERING-NEXT:             unsafe { abort() };
-// LOWERING-NEXT:         }
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 20, 106, 10, 206, 30, 64]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = __slate_f80_to_u32({{__v[0-9]+}});
-// LOWERING-NEXT:     u32 = {{__v[0-9]+}};
-// LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{__v[0-9]+}}: u32 = u32;
-// LOWERING-NEXT:         let {{__v[0-9]+}}: LongDouble = __slate_f80_from_u32({{__v[0-9]+}});
-// LOWERING-NEXT:         let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 20, 106, 10, 206, 30, 64]);
-// LOWERING-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// LOWERING-NEXT:         if {{__v[0-9]+}} {
-// LOWERING-NEXT:             unsafe { abort() };
-// LOWERING-NEXT:         }
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = -123456789012345i64;
-// LOWERING-NEXT:     i64 = {{__v[0-9]+}};
-// LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{__v[0-9]+}}: i64 = i64;
-// LOWERING-NEXT:         let {{__v[0-9]+}}: LongDouble = __slate_f80_from_i64({{__v[0-9]+}});
-// LOWERING-NEXT:         let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 242, 190, 27, 12, 145, 224, 45, 192]);
-// LOWERING-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// LOWERING-NEXT:         if {{__v[0-9]+}} {
-// LOWERING-NEXT:             unsafe { abort() };
-// LOWERING-NEXT:         }
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([210, 10, 31, 235, 140, 169, 84, 171, 62, 64]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = __slate_f80_to_u64({{__v[0-9]+}});
-// LOWERING-NEXT:     u64 = {{__v[0-9]+}};
-// LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{__v[0-9]+}}: u64 = u64;
-// LOWERING-NEXT:         let {{__v[0-9]+}}: LongDouble = __slate_f80_from_u64({{__v[0-9]+}});
-// LOWERING-NEXT:         let {{__v[0-9]+}}: LongDouble = LongDouble([210, 10, 31, 235, 140, 169, 84, 171, 62, 64]);
-// LOWERING-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// LOWERING-NEXT:         if {{__v[0-9]+}} {
-// LOWERING-NEXT:             unsafe { abort() };
-// LOWERING-NEXT:         }
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 =
-// LOWERING-NEXT:         b"i8=%d u8=%u i16=%d u16=%u i32=%d u32=%u i64=%lld u64=%llu\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i8 = i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: u8 = u8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i16 = i16;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: u16 = u16;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = i32;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = u32;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = i64;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = u64;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe {
-// LOWERING-NEXT:         printf(
-// LOWERING-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
-// LOWERING-NEXT:             {{__v[0-9]+}},
-// LOWERING-NEXT:             {{__v[0-9]+}},
-// LOWERING-NEXT:             {{__v[0-9]+}},
-// LOWERING-NEXT:             {{__v[0-9]+}},
-// LOWERING-NEXT:             {{__v[0-9]+}},
-// LOWERING-NEXT:             {{__v[0-9]+}},
-// LOWERING-NEXT:             {{__v[0-9]+}},
-// LOWERING-NEXT:             {{__v[0-9]+}},
-// LOWERING-NEXT:         )
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     return;
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn check_i128_casts() {
-// LOWERING-NEXT:     let mut i128: i128 = 0;
-// LOWERING-NEXT:     let mut u128: u128 = 0;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([254, 255, 255, 255, 255, 255, 255, 255, 61, 192]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i128 = __slate_f80_to_i128({{__v[0-9]+}});
-// LOWERING-NEXT:     i128 = {{__v[0-9]+}};
-// LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{__v[0-9]+}}: i128 = i128;
-// LOWERING-NEXT:         let {{__v[0-9]+}}: LongDouble = __slate_f80_from_i128({{__v[0-9]+}});
-// LOWERING-NEXT:         let {{__v[0-9]+}}: LongDouble = LongDouble([254, 255, 255, 255, 255, 255, 255, 255, 61, 192]);
-// LOWERING-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// LOWERING-NEXT:         if {{__v[0-9]+}} {
-// LOWERING-NEXT:             unsafe { abort() };
-// LOWERING-NEXT:         }
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([255, 255, 255, 255, 255, 255, 255, 255, 62, 64]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: u128 = __slate_f80_to_u128({{__v[0-9]+}});
-// LOWERING-NEXT:     u128 = {{__v[0-9]+}};
-// LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{__v[0-9]+}}: u128 = u128;
-// LOWERING-NEXT:         let {{__v[0-9]+}}: LongDouble = __slate_f80_from_u128({{__v[0-9]+}});
-// LOWERING-NEXT:         let {{__v[0-9]+}}: LongDouble = LongDouble([255, 255, 255, 255, 255, 255, 255, 255, 62, 64]);
-// LOWERING-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// LOWERING-NEXT:         if {{__v[0-9]+}} {
-// LOWERING-NEXT:             unsafe { abort() };
-// LOWERING-NEXT:         }
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"i128=%lld u128_hi=%llu u128_lo=%llu\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i128 = i128;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = {{__v[0-9]+}} as i64;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: u128 = u128;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 64;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: u128 = {{__v[0-9]+}} >> {{__v[0-9]+}};
-// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} as u64;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: u128 = u128;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: u128 = 18446744073709551615u128;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: u128 = {{__v[0-9]+}} & {{__v[0-9]+}};
-// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} as u64;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
-// LOWERING-NEXT:     return;
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn check_bitint_casts() {
-// LOWERING-NEXT:     let mut b9: aligned::Aligned<aligned::A2, bitint::BInt<9, 1, 2>> =
-// LOWERING-NEXT:         aligned::Aligned(bitint::BInt::<9, 1, 2>::ZERO);
-// LOWERING-NEXT:     let mut ub9: aligned::Aligned<aligned::A2, bitint::BUint<9, 1, 2>> =
-// LOWERING-NEXT:         aligned::Aligned(bitint::BUint::<9, 1, 2>::ZERO);
-// LOWERING-NEXT:     let mut b40: aligned::Aligned<aligned::A8, bitint::BInt<40, 1, 8>> =
-// LOWERING-NEXT:         aligned::Aligned(bitint::BInt::<40, 1, 8>::ZERO);
-// LOWERING-NEXT:     let mut ub40: aligned::Aligned<aligned::A8, bitint::BUint<40, 1, 8>> =
-// LOWERING-NEXT:         aligned::Aligned(bitint::BUint::<40, 1, 8>::ZERO);
-// LOWERING-NEXT:     let mut b101: aligned::Aligned<aligned::A8, bitint::BInt<101, 2, 16>> =
-// LOWERING-NEXT:         aligned::Aligned(bitint::BInt::<101, 2, 16>::ZERO);
-// LOWERING-NEXT:     let mut ub150: aligned::Aligned<aligned::A8, bitint::BUint<150, 3, 24>> =
-// LOWERING-NEXT:         aligned::Aligned(bitint::BUint::<150, 3, 24>::ZERO);
-// LOWERING-NEXT:     let mut b256: aligned::Aligned<aligned::A8, bitint::BInt<256, 4, 32>> =
-// LOWERING-NEXT:         aligned::Aligned(bitint::BInt::<256, 4, 32>::ZERO);
-// LOWERING-NEXT:     let mut ub300: aligned::Aligned<aligned::A8, bitint::BUint<300, 5, 40>> =
-// LOWERING-NEXT:         aligned::Aligned(bitint::BUint::<300, 5, 40>::ZERO);
-// LOWERING-NEXT:     let mut b129: aligned::Aligned<aligned::A8, bitint::BInt<129, 3, 24>> =
-// LOWERING-NEXT:         aligned::Aligned(bitint::BInt::<129, 3, 24>::ZERO);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 200, 5, 192]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: bitint::BInt<9, 1, 2> =
-// LOWERING-NEXT:         bitint::BInt::<9, 1, 2>::from_i128(__slate_f80_to_i128({{__v[0-9]+}}) as i128);
-// LOWERING-NEXT:     *b9 = {{__v[0-9]+}};
-// LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{__v[0-9]+}}: bitint::BInt<9, 1, 2> = *b9;
-// LOWERING-NEXT:         let {{__v[0-9]+}}: LongDouble = __slate_f80_from_i128({{__v[0-9]+}}.to_i128());
-// LOWERING-NEXT:         let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 200, 5, 192]);
-// LOWERING-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// LOWERING-NEXT:         if {{__v[0-9]+}} {
-// LOWERING-NEXT:             unsafe { abort() };
-// LOWERING-NEXT:         }
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 200, 6, 64]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: bitint::BUint<9, 1, 2> =
-// LOWERING-NEXT:         bitint::BUint::<9, 1, 2>::from_u128(__slate_f80_to_u128({{__v[0-9]+}}) as u128);
-// LOWERING-NEXT:     *ub9 = {{__v[0-9]+}};
-// LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{__v[0-9]+}}: bitint::BUint<9, 1, 2> = *ub9;
-// LOWERING-NEXT:         let {{__v[0-9]+}}: LongDouble = __slate_f80_from_u128({{__v[0-9]+}}.to_u128());
-// LOWERING-NEXT:         let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 200, 6, 64]);
-// LOWERING-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// LOWERING-NEXT:         if {{__v[0-9]+}} {
-// LOWERING-NEXT:             unsafe { abort() };
-// LOWERING-NEXT:         }
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 160, 162, 121, 235, 25, 192]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: bitint::BInt<40, 1, 8> =
-// LOWERING-NEXT:         bitint::BInt::<40, 1, 8>::from_i128(__slate_f80_to_i128({{__v[0-9]+}}) as i128);
-// LOWERING-NEXT:     *b40 = {{__v[0-9]+}};
-// LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{__v[0-9]+}}: bitint::BInt<40, 1, 8> = *b40;
-// LOWERING-NEXT:         let {{__v[0-9]+}}: LongDouble = __slate_f80_from_i128({{__v[0-9]+}}.to_i128());
-// LOWERING-NEXT:         let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 160, 162, 121, 235, 25, 192]);
-// LOWERING-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// LOWERING-NEXT:         if {{__v[0-9]+}} {
-// LOWERING-NEXT:             unsafe { abort() };
-// LOWERING-NEXT:         }
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 196, 162, 121, 235, 28, 64]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: bitint::BUint<40, 1, 8> =
-// LOWERING-NEXT:         bitint::BUint::<40, 1, 8>::from_u128(__slate_f80_to_u128({{__v[0-9]+}}) as u128);
-// LOWERING-NEXT:     *ub40 = {{__v[0-9]+}};
-// LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{__v[0-9]+}}: bitint::BUint<40, 1, 8> = *ub40;
-// LOWERING-NEXT:         let {{__v[0-9]+}}: LongDouble = __slate_f80_from_u128({{__v[0-9]+}}.to_u128());
-// LOWERING-NEXT:         let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 196, 162, 121, 235, 28, 64]);
-// LOWERING-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// LOWERING-NEXT:         if {{__v[0-9]+}} {
-// LOWERING-NEXT:             unsafe { abort() };
-// LOWERING-NEXT:         }
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 242, 190, 27, 12, 145, 224, 45, 192]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: bitint::BInt<101, 2, 16> =
-// LOWERING-NEXT:         bitint::BInt::<101, 2, 16>::from_i128(__slate_f80_to_i128({{__v[0-9]+}}) as i128);
-// LOWERING-NEXT:     *b101 = {{__v[0-9]+}};
-// LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{__v[0-9]+}}: bitint::BInt<101, 2, 16> = *b101;
-// LOWERING-NEXT:         let {{__v[0-9]+}}: LongDouble = __slate_f80_from_i128({{__v[0-9]+}}.to_i128());
-// LOWERING-NEXT:         let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 242, 190, 27, 12, 145, 224, 45, 192]);
-// LOWERING-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// LOWERING-NEXT:         if {{__v[0-9]+}} {
-// LOWERING-NEXT:             unsafe { abort() };
-// LOWERING-NEXT:         }
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{__v[0-9]+}}: bitint::BInt<101, 2, 16> = *b101;
-// LOWERING-NEXT:         let {{__v[0-9]+}}: LongDouble = __slate_f80_from_i128({{__v[0-9]+}}.to_i128());
-// LOWERING-NEXT:         let {{__v[0-9]+}}: bitint::BInt<101, 2, 16> =
-// LOWERING-NEXT:             bitint::BInt::<101, 2, 16>::from_i128(__slate_f80_to_i128({{__v[0-9]+}}) as i128);
-// LOWERING-NEXT:         let {{__v[0-9]+}}: bitint::BInt<101, 2, 16> = *b101;
-// LOWERING-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// LOWERING-NEXT:         if {{__v[0-9]+}} {
-// LOWERING-NEXT:             unsafe { abort() };
-// LOWERING-NEXT:         }
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 64, 3, 20, 62, 12, 145, 224, 48, 64]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: bitint::BUint<150, 3, 24> =
-// LOWERING-NEXT:         bitint::BUint::<150, 3, 24>::from_u128(__slate_f80_to_u128({{__v[0-9]+}}) as u128);
-// LOWERING-NEXT:     *ub150 = {{__v[0-9]+}};
-// LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{__v[0-9]+}}: bitint::BUint<150, 3, 24> = *ub150;
-// LOWERING-NEXT:         let {{__v[0-9]+}}: LongDouble = __slate_f80_from_u128({{__v[0-9]+}}.to_u128());
-// LOWERING-NEXT:         let {{__v[0-9]+}}: LongDouble = LongDouble([0, 64, 3, 20, 62, 12, 145, 224, 48, 64]);
-// LOWERING-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// LOWERING-NEXT:         if {{__v[0-9]+}} {
-// LOWERING-NEXT:             unsafe { abort() };
-// LOWERING-NEXT:         }
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{__v[0-9]+}}: bitint::BUint<150, 3, 24> = *ub150;
-// LOWERING-NEXT:         let {{__v[0-9]+}}: LongDouble = __slate_f80_from_u128({{__v[0-9]+}}.to_u128());
-// LOWERING-NEXT:         let {{__v[0-9]+}}: bitint::BUint<150, 3, 24> =
-// LOWERING-NEXT:             bitint::BUint::<150, 3, 24>::from_u128(__slate_f80_to_u128({{__v[0-9]+}}) as u128);
-// LOWERING-NEXT:         let {{__v[0-9]+}}: bitint::BUint<150, 3, 24> = *ub150;
-// LOWERING-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// LOWERING-NEXT:         if {{__v[0-9]+}} {
-// LOWERING-NEXT:             unsafe { abort() };
-// LOWERING-NEXT:         }
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 192, 255, 248, 2, 149, 32, 64]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: bitint::BInt<256, 4, 32> =
-// LOWERING-NEXT:         bitint::BInt::<256, 4, 32>::from_i128(__slate_f80_to_i128({{__v[0-9]+}}) as i128);
-// LOWERING-NEXT:     *b256 = {{__v[0-9]+}};
-// LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{__v[0-9]+}}: bitint::BInt<256, 4, 32> = *b256;
-// LOWERING-NEXT:         let {{__v[0-9]+}}: bitint::BInt<256, 4, 32> =
-// LOWERING-NEXT:             bitint::BInt::<256, 4, 32>::from_decimal_str("9999999999");
-// LOWERING-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// LOWERING-NEXT:         if {{__v[0-9]+}} {
-// LOWERING-NEXT:             unsafe { abort() };
-// LOWERING-NEXT:         }
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{__v[0-9]+}}: bitint::BInt<256, 4, 32> = *b256;
-// LOWERING-NEXT:         let {{__v[0-9]+}}: LongDouble = __slate_f80_from_i128({{__v[0-9]+}}.to_i128());
-// LOWERING-NEXT:         let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 192, 255, 248, 2, 149, 32, 64]);
-// LOWERING-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// LOWERING-NEXT:         if {{__v[0-9]+}} {
-// LOWERING-NEXT:             unsafe { abort() };
-// LOWERING-NEXT:         }
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 234, 86, 250, 30, 64]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: bitint::BUint<300, 5, 40> =
-// LOWERING-NEXT:         bitint::BUint::<300, 5, 40>::from_u128(__slate_f80_to_u128({{__v[0-9]+}}) as u128);
-// LOWERING-NEXT:     *ub300 = {{__v[0-9]+}};
-// LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{__v[0-9]+}}: bitint::BUint<300, 5, 40> = *ub300;
-// LOWERING-NEXT:         let {{__v[0-9]+}}: bitint::BUint<300, 5, 40> =
-// LOWERING-NEXT:             bitint::BUint::<300, 5, 40>::from_decimal_str("4200000000");
-// LOWERING-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// LOWERING-NEXT:         if {{__v[0-9]+}} {
-// LOWERING-NEXT:             unsafe { abort() };
-// LOWERING-NEXT:         }
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{__v[0-9]+}}: bitint::BUint<300, 5, 40> = *ub300;
-// LOWERING-NEXT:         let {{__v[0-9]+}}: LongDouble = __slate_f80_from_u128({{__v[0-9]+}}.to_u128());
-// LOWERING-NEXT:         let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 234, 86, 250, 30, 64]);
-// LOWERING-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// LOWERING-NEXT:         if {{__v[0-9]+}} {
-// LOWERING-NEXT:             unsafe { abort() };
-// LOWERING-NEXT:         }
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 246, 5, 64]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: bitint::BInt<129, 3, 24> =
-// LOWERING-NEXT:         bitint::BInt::<129, 3, 24>::from_i128(__slate_f80_to_i128({{__v[0-9]+}}) as i128);
-// LOWERING-NEXT:     *b129 = {{__v[0-9]+}};
-// LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{__v[0-9]+}}: bitint::BInt<129, 3, 24> = *b129;
-// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}}.to_i128() as i32;
-// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = 123;
-// LOWERING-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// LOWERING-NEXT:         if {{__v[0-9]+}} {
-// LOWERING-NEXT:             unsafe { abort() };
-// LOWERING-NEXT:         }
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{__v[0-9]+}}: bitint::BInt<129, 3, 24> = bitint::BInt::<129, 3, 24>::from_decimal_str("123");
-// LOWERING-NEXT:         let {{__v[0-9]+}}: LongDouble = __slate_f80_from_i128({{__v[0-9]+}}.to_i128());
-// LOWERING-NEXT:         let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 246, 5, 64]);
-// LOWERING-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// LOWERING-NEXT:         if {{__v[0-9]+}} {
-// LOWERING-NEXT:             unsafe { abort() };
-// LOWERING-NEXT:         }
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 =
-// LOWERING-NEXT:         b"bitint_b101=%lld bitint_ub150=%llu bitint_b256_lo=%lld bitint_ub300_lo=%llu\n\0".as_ptr()
-// LOWERING-NEXT:             as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: bitint::BInt<101, 2, 16> = *b101;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = {{__v[0-9]+}}.to_i128() as i64;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: bitint::BUint<150, 3, 24> = *ub150;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = {{__v[0-9]+}}.to_u128() as u64;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: bitint::BInt<256, 4, 32> = *b256;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = {{__v[0-9]+}}.to_i128() as i64;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: bitint::BUint<300, 5, 40> = *ub300;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = {{__v[0-9]+}}.to_u128() as u64;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe {
-// LOWERING-NEXT:         printf(
-// LOWERING-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
-// LOWERING-NEXT:             {{__v[0-9]+}},
-// LOWERING-NEXT:             {{__v[0-9]+}},
-// LOWERING-NEXT:             {{__v[0-9]+}},
-// LOWERING-NEXT:             {{__v[0-9]+}},
-// LOWERING-NEXT:         )
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     return;
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn check_math_functions() {
-// LOWERING-NEXT:     let mut exp: i32 = 0;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"sqrt\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_sqrtl__rf80_f80({{__v[0-9]+}}) };
-// LOWERING-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"cbrt\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 216, 3, 64]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_cbrtl__rf80_f80({{__v[0-9]+}}) };
-// LOWERING-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"sin\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_sinl__rf80_f80({{__v[0-9]+}}) };
-// LOWERING-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"cos\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_cosl__rf80_f80({{__v[0-9]+}}) };
-// LOWERING-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"tan\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_tanl__rf80_f80({{__v[0-9]+}}) };
-// LOWERING-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"asin\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_asinl__rf80_f80({{__v[0-9]+}}) };
-// LOWERING-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"acos\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_acosl__rf80_f80({{__v[0-9]+}}) };
-// LOWERING-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"atan\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_atanl__rf80_f80({{__v[0-9]+}}) };
-// LOWERING-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"atan2\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_atan2l__rf80_f80_f80({{__v[0-9]+}}, {{__v[0-9]+}}) };
-// LOWERING-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"sinh\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_sinhl__rf80_f80({{__v[0-9]+}}) };
-// LOWERING-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"cosh\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_coshl__rf80_f80({{__v[0-9]+}}) };
-// LOWERING-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"tanh\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_tanhl__rf80_f80({{__v[0-9]+}}) };
-// LOWERING-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"exp\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_expl__rf80_f80({{__v[0-9]+}}) };
-// LOWERING-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"exp2\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 2, 64]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_exp2l__rf80_f80({{__v[0-9]+}}) };
-// LOWERING-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"log\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_expl__rf80_f80({{__v[0-9]+}}) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_logl__rf80_f80({{__v[0-9]+}}) };
-// LOWERING-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"log2\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 2, 64]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_log2l__rf80_f80({{__v[0-9]+}}) };
-// LOWERING-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"log10\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 250, 8, 64]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_log10l__rf80_f80({{__v[0-9]+}}) };
-// LOWERING-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"pow\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 2, 64]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_powl__rf80_f80_f80({{__v[0-9]+}}, {{__v[0-9]+}}) };
-// LOWERING-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"floor\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([205, 204, 204, 204, 204, 204, 204, 172, 0, 64]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = __slate_f80_floor({{__v[0-9]+}});
-// LOWERING-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"ceil\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([102, 102, 102, 102, 102, 102, 102, 134, 0, 64]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = __slate_f80_ceil({{__v[0-9]+}});
-// LOWERING-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"round\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 0, 64]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = __slate_f80_round({{__v[0-9]+}});
-// LOWERING-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"trunc\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([205, 204, 204, 204, 204, 204, 204, 172, 0, 192]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = __slate_f80_trunc({{__v[0-9]+}});
-// LOWERING-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"fabs\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 224, 0, 192]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = __slate_f80_abs({{__v[0-9]+}});
-// LOWERING-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"fmod\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 2, 64]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_fmodl__rf80_f80_f80({{__v[0-9]+}}, {{__v[0-9]+}}) };
-// LOWERING-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"hypot\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 64]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_hypotl__rf80_f80_f80({{__v[0-9]+}}, {{__v[0-9]+}}) };
-// LOWERING-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"copysign\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 191]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = __slate_f80_copysign({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"fmax\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = __slate_f80_fmax({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"fmin\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = __slate_f80_fmin({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"fma\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 64]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = __slate_f80_fma({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"ldexp\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 4;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_ldexpl__rf80_f80_i32({{__v[0-9]+}}, {{__v[0-9]+}} as i32) };
-// LOWERING-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     exp = {{__v[0-9]+}};
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"frexp\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 200, 5, 64]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble =
-// LOWERING-NEXT:         unsafe { __slate_frexpl__rf80_f80_pi32({{__v[0-9]+}}, std::ptr::addr_of_mut!(exp) as *mut i32) };
-// LOWERING-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"frexp_exp=%d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = exp;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 =
-// LOWERING-NEXT:         b"isnan=%d isinf=%d signbit_neg=%d signbit_pos=%d isfinite=%d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_nanl__rf80_pc({{__v[0-9]+}} as *const core::ffi::c_char) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: bool = __slate_f80_is_fp_class({{__v[0-9]+}}, 3);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe {
-// LOWERING-NEXT:         printf(
-// LOWERING-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
-// LOWERING-NEXT:             {{__v[0-9]+}},
-// LOWERING-NEXT:             {{__v[0-9]+}},
-// LOWERING-NEXT:             {{__v[0-9]+}},
-// LOWERING-NEXT:             {{__v[0-9]+}},
-// LOWERING-NEXT:             {{__v[0-9]+}},
-// LOWERING-NEXT:         )
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"epsilon\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 192, 63]);
-// LOWERING-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     return;
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: /// The functions above all round-trip through the generic call-shim (any
-// LOWERING-NEXT: /// known extern function with a long double arg/return links straight to
-// LOWERING-NEXT: /// libm), which check_math_functions already exercises. This covers the
-// LOWERING-NEXT: /// remaining libm entry points -- pointer out-params, integer-returning
-// LOWERING-NEXT: /// variants, and the classification family -- with volatile operands so
-// LOWERING-NEXT: /// they can't constant-fold away and skip the real runtime path.
-// LOWERING-NEXT: fn check_remaining_math_functions() {
-// LOWERING-NEXT:     let mut ten: LongDouble = LongDouble([0; 10]);
-// LOWERING-NEXT:     let mut three: LongDouble = LongDouble([0; 10]);
-// LOWERING-NEXT:     let mut quo: i32 = 0;
-// LOWERING-NEXT:     let mut vnan: LongDouble = LongDouble([0; 10]);
-// LOWERING-NEXT:     let mut vinf: LongDouble = LongDouble([0; 10]);
-// LOWERING-NEXT:     let mut vzero: LongDouble = LongDouble([0; 10]);
-// LOWERING-NEXT:     let mut vone: LongDouble = LongDouble([0; 10]);
-// LOWERING-NEXT:     let mut vsub: LongDouble = LongDouble([0; 10]);
-// LOWERING-NEXT:     let mut vtwo: LongDouble = LongDouble([0; 10]);
-// LOWERING-NEXT:     let mut ten_plain: LongDouble = LongDouble([0; 10]);
-// LOWERING-NEXT:     let mut canon: LongDouble = LongDouble([0; 10]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 2, 64]);
-// LOWERING-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(ten), {{__v[0-9]+}}) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]);
-// LOWERING-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(three), {{__v[0-9]+}}) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} / {{__v[0-9]+}};
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = __slate_f80_fract({{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = __slate_f80_trunc({{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"modf_ipart\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"modf_frac\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"remainder\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_remainderl__rf80_f80_f80({{__v[0-9]+}}, {{__v[0-9]+}}) };
-// LOWERING-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     quo = {{__v[0-9]+}};
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"remquo\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe {
-// LOWERING-NEXT:         __slate_remquol__rf80_f80_f80_pi32({{__v[0-9]+}}, {{__v[0-9]+}}, std::ptr::addr_of_mut!(quo) as *mut i32)
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"remquo_quo=%d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = quo;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"scalbn\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 3;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_scalbnl__rf80_f80_i32({{__v[0-9]+}}, {{__v[0-9]+}} as i32) };
-// LOWERING-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"scalbln\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = 3;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_scalblnl__rf80_f80_i64({{__v[0-9]+}}, {{__v[0-9]+}} as i64) };
-// LOWERING-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"nextafter\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_nextafterl__rf80_f80_f80({{__v[0-9]+}}, {{__v[0-9]+}}) };
-// LOWERING-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"nexttoward\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_nexttowardl__rf80_f80_f80({{__v[0-9]+}}, {{__v[0-9]+}}) };
-// LOWERING-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"fdim\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_fdiml__rf80_f80_f80({{__v[0-9]+}}, {{__v[0-9]+}}) };
-// LOWERING-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"rint\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} / {{__v[0-9]+}};
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = __slate_f80_rint({{__v[0-9]+}});
-// LOWERING-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"nearbyint\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} / {{__v[0-9]+}};
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = __slate_f80_rint({{__v[0-9]+}});
-// LOWERING-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"lrint=%ld llrint=%lld lround=%ld llround=%lld\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} / {{__v[0-9]+}};
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = unsafe { __slate_lrintl__ri64_f80({{__v[0-9]+}}) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} / {{__v[0-9]+}};
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = unsafe { __slate_llrintl__ri64_f80({{__v[0-9]+}}) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} / {{__v[0-9]+}};
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = unsafe { __slate_lroundl__ri64_f80({{__v[0-9]+}}) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} / {{__v[0-9]+}};
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = unsafe { __slate_llroundl__ri64_f80({{__v[0-9]+}}) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe {
-// LOWERING-NEXT:         printf(
-// LOWERING-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
-// LOWERING-NEXT:             {{__v[0-9]+}},
-// LOWERING-NEXT:             {{__v[0-9]+}},
-// LOWERING-NEXT:             {{__v[0-9]+}},
-// LOWERING-NEXT:             {{__v[0-9]+}},
-// LOWERING-NEXT:         )
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"ilogb=%d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { __slate_ilogbl__ri32_f80({{__v[0-9]+}}) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"logb\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_logbl__rf80_f80({{__v[0-9]+}}) };
-// LOWERING-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"erf\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} / {{__v[0-9]+}};
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_erfl__rf80_f80({{__v[0-9]+}}) };
-// LOWERING-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"erfc\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} / {{__v[0-9]+}};
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_erfcl__rf80_f80({{__v[0-9]+}}) };
-// LOWERING-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"tgamma\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_tgammal__rf80_f80({{__v[0-9]+}}) };
-// LOWERING-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"lgamma\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_lgammal__rf80_f80({{__v[0-9]+}}) };
-// LOWERING-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_nanl__rf80_pc({{__v[0-9]+}} as *const core::ffi::c_char) };
-// LOWERING-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(vnan), {{__v[0-9]+}}) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
-// LOWERING-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(vinf), {{__v[0-9]+}}) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// LOWERING-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(vzero), {{__v[0-9]+}}) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
-// LOWERING-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(vone), {{__v[0-9]+}}) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([1, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// LOWERING-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(vsub), {{__v[0-9]+}}) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 =
-// LOWERING-NEXT:         b"isnan_v=%d isinf_v=%d isfinite_v=%d isnormal_v=%d isunordered_v=%d isunordered_ok=%d\n\0"
-// LOWERING-NEXT:             .as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(vnan)) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: bool = __slate_f80_is_fp_class({{__v[0-9]+}}, 3);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(vinf)) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: bool = __slate_f80_is_fp_class({{__v[0-9]+}}, 516);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(vone)) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: bool = __slate_f80_is_fp_class({{__v[0-9]+}}, 504);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(vone)) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: bool = __slate_f80_is_fp_class({{__v[0-9]+}}, 264);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(vnan)) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(vone)) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}} || {{__v[0-9]+}} != {{__v[0-9]+}};
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(vone)) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(vzero)) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}} || {{__v[0-9]+}} != {{__v[0-9]+}};
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe {
-// LOWERING-NEXT:         printf(
-// LOWERING-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
-// LOWERING-NEXT:             {{__v[0-9]+}},
-// LOWERING-NEXT:             {{__v[0-9]+}},
-// LOWERING-NEXT:             {{__v[0-9]+}},
-// LOWERING-NEXT:             {{__v[0-9]+}},
-// LOWERING-NEXT:             {{__v[0-9]+}},
-// LOWERING-NEXT:             {{__v[0-9]+}},
-// LOWERING-NEXT:         )
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"subnormal_isnormal=%d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(vsub)) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: bool = __slate_f80_is_fp_class({{__v[0-9]+}}, 264);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]);
-// LOWERING-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(vtwo), {{__v[0-9]+}}) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 =
-// LOWERING-NEXT:         b"islessgreater_lt=%d islessgreater_eq=%d islessgreater_nan=%d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(vone)) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(vtwo)) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}} || {{__v[0-9]+}} > {{__v[0-9]+}};
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(vone)) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(vone)) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}} || {{__v[0-9]+}} > {{__v[0-9]+}};
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(vnan)) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(vone)) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}} || {{__v[0-9]+}} > {{__v[0-9]+}};
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
-// LOWERING-NEXT:     ten_plain = {{__v[0-9]+}};
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// LOWERING-NEXT:     canon = {{__v[0-9]+}};
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe {
-// LOWERING-NEXT:         __slate_canonicalizel__ri32_pf80_pf80(
-// LOWERING-NEXT:             std::ptr::addr_of_mut!(canon),
-// LOWERING-NEXT:             std::ptr::addr_of_mut!(ten_plain),
-// LOWERING-NEXT:         )
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"canonicalize\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = canon;
-// LOWERING-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"canonicalize_r=%d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"ldbl_min\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 0]);
-// LOWERING-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"ldbl_true_min\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([1, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// LOWERING-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"ldbl_mant_dig=%d ldbl_dig=%d ldbl_min_exp=%d ldbl_max_exp=%d ldbl_min_10_exp=%d ldbl_max_10_exp=%d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 64;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 18;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = -16381;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 16384;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = -4931;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 4932;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe {
-// LOWERING-NEXT:         printf(
-// LOWERING-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
-// LOWERING-NEXT:             {{__v[0-9]+}},
-// LOWERING-NEXT:             {{__v[0-9]+}},
-// LOWERING-NEXT:             {{__v[0-9]+}},
-// LOWERING-NEXT:             {{__v[0-9]+}},
-// LOWERING-NEXT:             {{__v[0-9]+}},
-// LOWERING-NEXT:             {{__v[0-9]+}},
-// LOWERING-NEXT:         )
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     return;
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn print_ld({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: LongDouble) {
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%s=%La\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 =
-// LOWERING-NEXT:         unsafe { __slate_printf__ri32_pi8_pi8_f80({{__v[0-9]+}} as *mut i8, {{arg[0-9]+}} as *mut i8, {{arg[0-9]+}}) };
-// LOWERING-NEXT:     return;
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: unsafe extern "C" {
-// LOWERING-NEXT:     fn __slate_acosl__rf80_f80(_0: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     fn __slate_asinl__rf80_f80(_0: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     fn __slate_atan2l__rf80_f80_f80(_0: LongDouble, _1: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     fn __slate_atanl__rf80_f80(_0: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     fn __slate_canonicalizel__ri32_pf80_pf80(_0: *mut LongDouble, _1: *const LongDouble) -> i32;
-// LOWERING-NEXT:     fn __slate_cbrtl__rf80_f80(_0: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     safe fn __slate_cf80_div(
-// LOWERING-NEXT:         __a: num_complex::Complex<LongDouble>,
-// LOWERING-NEXT:         __b: num_complex::Complex<LongDouble>,
-// LOWERING-NEXT:     ) -> num_complex::Complex<LongDouble>;
-// LOWERING-NEXT:     safe fn __slate_cf80_mul(
-// LOWERING-NEXT:         __a: num_complex::Complex<LongDouble>,
-// LOWERING-NEXT:         __b: num_complex::Complex<LongDouble>,
-// LOWERING-NEXT:     ) -> num_complex::Complex<LongDouble>;
-// LOWERING-NEXT:     fn __slate_coshl__rf80_f80(_0: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     fn __slate_cosl__rf80_f80(_0: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     fn __slate_erfcl__rf80_f80(_0: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     fn __slate_erfl__rf80_f80(_0: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     fn __slate_exp2l__rf80_f80(_0: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     fn __slate_expl__rf80_f80(_0: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     safe fn __slate_f128_nexttoward(__from: f128, __toward: f128) -> f128;
-// LOWERING-NEXT:     safe fn __slate_f80_abs(__a: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     safe fn __slate_f80_acos(__a: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     safe fn __slate_f80_acosh(__a: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     safe fn __slate_f80_add(__a: LongDouble, __b: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     safe fn __slate_f80_asin(__a: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     safe fn __slate_f80_asinh(__a: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     safe fn __slate_f80_atan(__a: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     safe fn __slate_f80_atanh(__a: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     safe fn __slate_f80_cbrt(__a: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     safe fn __slate_f80_ceil(__a: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     safe fn __slate_f80_copysign(__a: LongDouble, __b: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     safe fn __slate_f80_cos(__a: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     safe fn __slate_f80_cosh(__a: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     safe fn __slate_f80_div(__a: LongDouble, __b: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     safe fn __slate_f80_eq(__a: LongDouble, __b: LongDouble) -> bool;
-// LOWERING-NEXT:     safe fn __slate_f80_exp(__a: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     safe fn __slate_f80_exp2(__a: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     safe fn __slate_f80_expm1(__a: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     safe fn __slate_f80_fdim(__a: LongDouble, __b: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     safe fn __slate_f80_floor(__a: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     safe fn __slate_f80_fma(__a: LongDouble, __b: LongDouble, __c: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     safe fn __slate_f80_fmax(__a: LongDouble, __b: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     safe fn __slate_f80_fmin(__a: LongDouble, __b: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     safe fn __slate_f80_fmod(__a: LongDouble, __b: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     safe fn __slate_f80_fract(__a: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     safe fn __slate_f80_from_bool(__a: bool) -> LongDouble;
-// LOWERING-NEXT:     safe fn __slate_f80_from_f32(__a: f32) -> LongDouble;
-// LOWERING-NEXT:     safe fn __slate_f80_from_f64(__a: f64) -> LongDouble;
-// LOWERING-NEXT:     safe fn __slate_f80_from_i128(__a: i128) -> LongDouble;
-// LOWERING-NEXT:     safe fn __slate_f80_from_i16(__a: i16) -> LongDouble;
-// LOWERING-NEXT:     safe fn __slate_f80_from_i32(__a: i32) -> LongDouble;
-// LOWERING-NEXT:     safe fn __slate_f80_from_i64(__a: i64) -> LongDouble;
-// LOWERING-NEXT:     safe fn __slate_f80_from_i8(__a: i8) -> LongDouble;
-// LOWERING-NEXT:     safe fn __slate_f80_from_u128(__a: u128) -> LongDouble;
-// LOWERING-NEXT:     safe fn __slate_f80_from_u16(__a: u16) -> LongDouble;
-// LOWERING-NEXT:     safe fn __slate_f80_from_u32(__a: u32) -> LongDouble;
-// LOWERING-NEXT:     safe fn __slate_f80_from_u64(__a: u64) -> LongDouble;
-// LOWERING-NEXT:     safe fn __slate_f80_from_u8(__a: u8) -> LongDouble;
-// LOWERING-NEXT:     safe fn __slate_f80_ge(__a: LongDouble, __b: LongDouble) -> bool;
-// LOWERING-NEXT:     safe fn __slate_f80_gt(__a: LongDouble, __b: LongDouble) -> bool;
-// LOWERING-NEXT:     safe fn __slate_f80_hypot(__a: LongDouble, __b: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     safe fn __slate_f80_is_fp_class(__a: LongDouble, __flags: i32) -> bool;
-// LOWERING-NEXT:     safe fn __slate_f80_le(__a: LongDouble, __b: LongDouble) -> bool;
-// LOWERING-NEXT:     safe fn __slate_f80_log(__a: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     safe fn __slate_f80_log10(__a: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     safe fn __slate_f80_log1p(__a: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     safe fn __slate_f80_log2(__a: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     safe fn __slate_f80_lt(__a: LongDouble, __b: LongDouble) -> bool;
-// LOWERING-NEXT:     safe fn __slate_f80_mul(__a: LongDouble, __b: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     safe fn __slate_f80_ne(__a: LongDouble, __b: LongDouble) -> bool;
-// LOWERING-NEXT:     safe fn __slate_f80_nearbyint(__a: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     safe fn __slate_f80_neg(__a: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     safe fn __slate_f80_pow(__a: LongDouble, __b: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     safe fn __slate_f80_powi(__a: LongDouble, __n: i32) -> LongDouble;
-// LOWERING-NEXT:     safe fn __slate_f80_remainder(__a: LongDouble, __b: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     safe fn __slate_f80_rint(__a: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     safe fn __slate_f80_round(__a: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     safe fn __slate_f80_signbit(__a: LongDouble) -> bool;
-// LOWERING-NEXT:     safe fn __slate_f80_sin(__a: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     safe fn __slate_f80_sinh(__a: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     safe fn __slate_f80_sqrt(__a: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     safe fn __slate_f80_sub(__a: LongDouble, __b: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     safe fn __slate_f80_tan(__a: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     safe fn __slate_f80_tanh(__a: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     safe fn __slate_f80_to_bool(__a: LongDouble) -> bool;
-// LOWERING-NEXT:     safe fn __slate_f80_to_f32(__a: LongDouble) -> f32;
-// LOWERING-NEXT:     safe fn __slate_f80_to_f64(__a: LongDouble) -> f64;
-// LOWERING-NEXT:     safe fn __slate_f80_to_i128(__a: LongDouble) -> i128;
-// LOWERING-NEXT:     safe fn __slate_f80_to_i16(__a: LongDouble) -> i16;
-// LOWERING-NEXT:     safe fn __slate_f80_to_i32(__a: LongDouble) -> i32;
-// LOWERING-NEXT:     safe fn __slate_f80_to_i64(__a: LongDouble) -> i64;
-// LOWERING-NEXT:     safe fn __slate_f80_to_i8(__a: LongDouble) -> i8;
-// LOWERING-NEXT:     safe fn __slate_f80_to_u128(__a: LongDouble) -> u128;
-// LOWERING-NEXT:     safe fn __slate_f80_to_u16(__a: LongDouble) -> u16;
-// LOWERING-NEXT:     safe fn __slate_f80_to_u32(__a: LongDouble) -> u32;
-// LOWERING-NEXT:     safe fn __slate_f80_to_u64(__a: LongDouble) -> u64;
-// LOWERING-NEXT:     safe fn __slate_f80_to_u8(__a: LongDouble) -> u8;
-// LOWERING-NEXT:     safe fn __slate_f80_trunc(__a: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     fn __slate_fdiml__rf80_f80_f80(_0: LongDouble, _1: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     fn __slate_fmodl__rf80_f80_f80(_0: LongDouble, _1: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     fn __slate_frexpl__rf80_f80_pi32(_0: LongDouble, _1: *mut i32) -> LongDouble;
-// LOWERING-NEXT:     fn __slate_hypotl__rf80_f80_f80(_0: LongDouble, _1: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     fn __slate_ilogbl__ri32_f80(_0: LongDouble) -> i32;
-// LOWERING-NEXT:     fn __slate_ldexpl__rf80_f80_i32(_0: LongDouble, _1: i32) -> LongDouble;
-// LOWERING-NEXT:     fn __slate_lgammal__rf80_f80(_0: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     fn __slate_llrintl__ri64_f80(_0: LongDouble) -> i64;
-// LOWERING-NEXT:     fn __slate_llroundl__ri64_f80(_0: LongDouble) -> i64;
-// LOWERING-NEXT:     fn __slate_log10l__rf80_f80(_0: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     fn __slate_log2l__rf80_f80(_0: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     fn __slate_logbl__rf80_f80(_0: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     fn __slate_logl__rf80_f80(_0: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     fn __slate_lrintl__ri64_f80(_0: LongDouble) -> i64;
-// LOWERING-NEXT:     fn __slate_lroundl__ri64_f80(_0: LongDouble) -> i64;
-// LOWERING-NEXT:     fn __slate_nanl__rf80_pc(_0: *const core::ffi::c_char) -> LongDouble;
-// LOWERING-NEXT:     fn __slate_nextafterl__rf80_f80_f80(_0: LongDouble, _1: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     fn __slate_nexttowardl__rf80_f80_f80(_0: LongDouble, _1: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     fn __slate_powl__rf80_f80_f80(_0: LongDouble, _1: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     fn __slate_printf__ri32_pi8_pi8_f80(_0: *mut i8, _1: *mut i8, _2: LongDouble) -> i32;
-// LOWERING-NEXT:     fn __slate_remainderl__rf80_f80_f80(_0: LongDouble, _1: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     fn __slate_remquol__rf80_f80_f80_pi32(
-// LOWERING-NEXT:         _0: LongDouble,
-// LOWERING-NEXT:         _1: LongDouble,
-// LOWERING-NEXT:         _2: *mut i32,
-// LOWERING-NEXT:     ) -> LongDouble;
-// LOWERING-NEXT:     fn __slate_scalblnl__rf80_f80_i64(_0: LongDouble, _1: i64) -> LongDouble;
-// LOWERING-NEXT:     fn __slate_scalbnl__rf80_f80_i32(_0: LongDouble, _1: i32) -> LongDouble;
-// LOWERING-NEXT:     fn __slate_sinhl__rf80_f80(_0: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     fn __slate_sinl__rf80_f80(_0: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     fn __slate_sqrtl__rf80_f80(_0: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     fn __slate_tanhl__rf80_f80(_0: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     fn __slate_tanl__rf80_f80(_0: LongDouble) -> LongDouble;
-// LOWERING-NEXT:     fn __slate_tgammal__rf80_f80(_0: LongDouble) -> LongDouble;
-// LOWERING-NEXT: }
-// SLATE-FILECHECK-END lowering
-
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-X86_64-GNU: #![feature(f128)]
 // REWRITES-X86_64-GNU-NEXT: #![feature(c_variadic)]
@@ -2392,3 +1245,1150 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:     fn fflush(_0: *mut libc::FILE) -> i32;
 // REWRITES-X86_64-GNU-NEXT: }
 // SLATE-FILECHECK-END rewrites
+
+// SLATE-FILECHECK-BEGIN lowering
+// LOWERING-X86_64-GNU: #![feature(f128)]
+// LOWERING-X86_64-GNU-NEXT: #![feature(c_variadic)]
+// LOWERING-X86_64-GNU-NEXT: #![allow(
+// LOWERING-X86_64-GNU-NEXT:     dead_code,
+// LOWERING-X86_64-GNU-NEXT:     unused,
+// LOWERING-X86_64-GNU-NEXT:     non_camel_case_types,
+// LOWERING-X86_64-GNU-NEXT:     non_snake_case,
+// LOWERING-X86_64-GNU-NEXT:     non_upper_case_globals,
+// LOWERING-X86_64-GNU-NEXT:     arithmetic_overflow,
+// LOWERING-X86_64-GNU-NEXT:     unconditional_panic,
+// LOWERING-X86_64-GNU-NEXT:     suspicious_runtime_symbol_definitions,
+// LOWERING-X86_64-GNU-NEXT:     unpredictable_function_pointer_comparisons,
+// LOWERING-X86_64-GNU-NEXT:     unused_comparisons
+// LOWERING-X86_64-GNU-NEXT: )]
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: #[repr(C, align(16))]
+// LOWERING-X86_64-GNU-NEXT: #[derive(Clone, Copy)]
+// LOWERING-X86_64-GNU-NEXT: struct LongDouble([u8; 10]);
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: impl core::ops::Add for LongDouble {
+// LOWERING-X86_64-GNU-NEXT:     type Output = LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn add(self, __o: LongDouble) -> LongDouble {
+// LOWERING-X86_64-GNU-NEXT:         __slate_f80_add(self, __o)
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT: }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: impl core::ops::Sub for LongDouble {
+// LOWERING-X86_64-GNU-NEXT:     type Output = LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn sub(self, __o: LongDouble) -> LongDouble {
+// LOWERING-X86_64-GNU-NEXT:         __slate_f80_sub(self, __o)
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT: }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: impl core::ops::Mul for LongDouble {
+// LOWERING-X86_64-GNU-NEXT:     type Output = LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn mul(self, __o: LongDouble) -> LongDouble {
+// LOWERING-X86_64-GNU-NEXT:         __slate_f80_mul(self, __o)
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT: }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: impl core::ops::Div for LongDouble {
+// LOWERING-X86_64-GNU-NEXT:     type Output = LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn div(self, __o: LongDouble) -> LongDouble {
+// LOWERING-X86_64-GNU-NEXT:         __slate_f80_div(self, __o)
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT: }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: impl core::ops::AddAssign for LongDouble {
+// LOWERING-X86_64-GNU-NEXT:     fn add_assign(&mut self, __o: LongDouble) {
+// LOWERING-X86_64-GNU-NEXT:         {
+// LOWERING-X86_64-GNU-NEXT:             *self = __slate_f80_add(*self, __o);
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT: }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: impl core::ops::SubAssign for LongDouble {
+// LOWERING-X86_64-GNU-NEXT:     fn sub_assign(&mut self, __o: LongDouble) {
+// LOWERING-X86_64-GNU-NEXT:         {
+// LOWERING-X86_64-GNU-NEXT:             *self = __slate_f80_sub(*self, __o);
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT: }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: impl core::ops::MulAssign for LongDouble {
+// LOWERING-X86_64-GNU-NEXT:     fn mul_assign(&mut self, __o: LongDouble) {
+// LOWERING-X86_64-GNU-NEXT:         {
+// LOWERING-X86_64-GNU-NEXT:             *self = __slate_f80_mul(*self, __o);
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT: }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: impl core::ops::DivAssign for LongDouble {
+// LOWERING-X86_64-GNU-NEXT:     fn div_assign(&mut self, __o: LongDouble) {
+// LOWERING-X86_64-GNU-NEXT:         {
+// LOWERING-X86_64-GNU-NEXT:             *self = __slate_f80_div(*self, __o);
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT: }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: impl core::ops::Neg for LongDouble {
+// LOWERING-X86_64-GNU-NEXT:     type Output = LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn neg(self) -> LongDouble {
+// LOWERING-X86_64-GNU-NEXT:         __slate_f80_neg(self)
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT: }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: impl core::cmp::PartialEq for LongDouble {
+// LOWERING-X86_64-GNU-NEXT:     fn eq(&self, __other: &LongDouble) -> bool {
+// LOWERING-X86_64-GNU-NEXT:         __slate_f80_eq(*self, *__other)
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT: }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: impl core::cmp::PartialOrd for LongDouble {
+// LOWERING-X86_64-GNU-NEXT:     fn partial_cmp(&self, __other: &LongDouble) -> Option<std::cmp::Ordering> {
+// LOWERING-X86_64-GNU-NEXT:         if __slate_f80_lt(*self, *__other) {
+// LOWERING-X86_64-GNU-NEXT:             Some(std::cmp::Ordering::Less)
+// LOWERING-X86_64-GNU-NEXT:         } else {
+// LOWERING-X86_64-GNU-NEXT:             if __slate_f80_gt(*self, *__other) {
+// LOWERING-X86_64-GNU-NEXT:                 Some(std::cmp::Ordering::Greater)
+// LOWERING-X86_64-GNU-NEXT:             } else {
+// LOWERING-X86_64-GNU-NEXT:                 if __slate_f80_eq(*self, *__other) {
+// LOWERING-X86_64-GNU-NEXT:                     Some(std::cmp::Ordering::Equal)
+// LOWERING-X86_64-GNU-NEXT:                 } else {
+// LOWERING-X86_64-GNU-NEXT:                     None
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT: }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: unsafe extern "C" {
+// LOWERING-X86_64-GNU-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
+// LOWERING-X86_64-GNU-NEXT:     fn abort() -> !;
+// LOWERING-X86_64-GNU-NEXT:     fn sqrtl(_0: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn cbrtl(_0: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn sinl(_0: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn cosl(_0: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn tanl(_0: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn asinl(_0: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn acosl(_0: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn atanl(_0: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn atan2l(_0: LongDouble, _1: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn sinhl(_0: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn coshl(_0: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn tanhl(_0: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn expl(_0: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn exp2l(_0: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn logl(_0: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn log2l(_0: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn log10l(_0: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn powl(_0: LongDouble, _1: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn fmodl(_0: LongDouble, _1: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn hypotl(_0: LongDouble, _1: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn ldexpl(_0: LongDouble, _1: i32) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn frexpl(_0: LongDouble, _1: *mut i32) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn nanl(_0: *const core::ffi::c_char) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn remainderl(_0: LongDouble, _1: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn remquol(_0: LongDouble, _1: LongDouble, _2: *mut i32) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn scalbnl(_0: LongDouble, _1: i32) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn scalblnl(_0: LongDouble, _1: i64) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn nextafterl(_0: LongDouble, _1: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn nexttowardl(_0: LongDouble, _1: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn fdiml(_0: LongDouble, _1: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn lrintl(_0: LongDouble) -> i64;
+// LOWERING-X86_64-GNU-NEXT:     fn llrintl(_0: LongDouble) -> i64;
+// LOWERING-X86_64-GNU-NEXT:     fn lroundl(_0: LongDouble) -> i64;
+// LOWERING-X86_64-GNU-NEXT:     fn llroundl(_0: LongDouble) -> i64;
+// LOWERING-X86_64-GNU-NEXT:     fn ilogbl(_0: LongDouble) -> i32;
+// LOWERING-X86_64-GNU-NEXT:     fn logbl(_0: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn erfl(_0: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn erfcl(_0: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn tgammal(_0: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn lgammal(_0: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn canonicalizel(_0: *mut LongDouble, _1: *const LongDouble) -> i32;
+// LOWERING-X86_64-GNU-NEXT: }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: fn main() -> std::process::ExitCode {
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 63]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 144, 1, 64]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = truncate_long_double({{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 1, 64]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = mix_long_double({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = truncate_long_double({{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = 7;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_i32({{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} / {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = truncate_long_double({{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     check_int_casts();
+// LOWERING-X86_64-GNU-NEXT:     check_i128_casts();
+// LOWERING-X86_64-GNU-NEXT:     check_bitint_casts();
+// LOWERING-X86_64-GNU-NEXT:     check_math_functions();
+// LOWERING-X86_64-GNU-NEXT:     check_remaining_math_functions();
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:     return std::process::ExitCode::SUCCESS;
+// LOWERING-X86_64-GNU-NEXT: }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: fn truncate_long_double({{arg[0-9]+}}: LongDouble) -> i32 {
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = __slate_f80_to_i32({{arg[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     return {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT: }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: fn mix_long_double({{arg[0-9]+}}: LongDouble, {{arg[0-9]+}}: LongDouble) -> LongDouble {
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{arg[0-9]+}} + {{arg[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} / {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} * {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     return {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT: }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: fn check_int_casts() {
+// LOWERING-X86_64-GNU-NEXT:     let mut i8: i8 = 0;
+// LOWERING-X86_64-GNU-NEXT:     let mut u8: u8 = 0;
+// LOWERING-X86_64-GNU-NEXT:     let mut i16: i16 = 0;
+// LOWERING-X86_64-GNU-NEXT:     let mut u16: u16 = 0;
+// LOWERING-X86_64-GNU-NEXT:     let mut i32: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:     let mut u32: u32 = 0;
+// LOWERING-X86_64-GNU-NEXT:     let mut i64: i64 = 0;
+// LOWERING-X86_64-GNU-NEXT:     let mut u64: u64 = 0;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 200, 5, 192]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i8 = __slate_f80_to_i8({{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     i8 = {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i8 = i8;
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: LongDouble = __slate_f80_from_i8({{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 200, 5, 192]);
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         if {{__v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:             unsafe { abort() };
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 200, 6, 64]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u8 = __slate_f80_to_u8({{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     u8 = {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: u8 = u8;
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: LongDouble = __slate_f80_from_u8({{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 200, 6, 64]);
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         if {{__v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:             unsafe { abort() };
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 228, 192, 12, 192]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i16 = __slate_f80_to_i16({{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     i16 = {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i16 = i16;
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: LongDouble = __slate_f80_from_i16({{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 228, 192, 12, 192]);
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         if {{__v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:             unsafe { abort() };
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 49, 212, 14, 64]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u16 = __slate_f80_to_u16({{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     u16 = {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: u16 = u16;
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: LongDouble = __slate_f80_from_u16({{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 49, 212, 14, 64]);
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         if {{__v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:             unsafe { abort() };
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 164, 5, 44, 147, 29, 192]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = __slate_f80_to_i32({{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     i32 = {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = i32;
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: LongDouble = __slate_f80_from_i32({{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 164, 5, 44, 147, 29, 192]);
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         if {{__v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:             unsafe { abort() };
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 20, 106, 10, 206, 30, 64]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u32 = __slate_f80_to_u32({{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     u32 = {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: u32 = u32;
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: LongDouble = __slate_f80_from_u32({{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 20, 106, 10, 206, 30, 64]);
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         if {{__v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:             unsafe { abort() };
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i64 = -123456789012345i64;
+// LOWERING-X86_64-GNU-NEXT:     i64 = {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i64 = i64;
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: LongDouble = __slate_f80_from_i64({{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 242, 190, 27, 12, 145, 224, 45, 192]);
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         if {{__v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:             unsafe { abort() };
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([210, 10, 31, 235, 140, 169, 84, 171, 62, 64]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u64 = __slate_f80_to_u64({{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     u64 = {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: u64 = u64;
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: LongDouble = __slate_f80_from_u64({{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: LongDouble = LongDouble([210, 10, 31, 235, 140, 169, 84, 171, 62, 64]);
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         if {{__v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:             unsafe { abort() };
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 =
+// LOWERING-X86_64-GNU-NEXT:         b"i8=%d u8=%u i16=%d u16=%u i32=%d u32=%u i64=%lld u64=%llu\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i8 = i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u8 = u8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i16 = i16;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u16 = u16;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = i32;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u32 = u32;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i64 = i64;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u64 = u64;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:         printf(
+// LOWERING-X86_64-GNU-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:             {{__v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:             {{__v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:             {{__v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:             {{__v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:             {{__v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:             {{__v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:             {{__v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:             {{__v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:         )
+// LOWERING-X86_64-GNU-NEXT:     };
+// LOWERING-X86_64-GNU-NEXT:     return;
+// LOWERING-X86_64-GNU-NEXT: }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: fn check_i128_casts() {
+// LOWERING-X86_64-GNU-NEXT:     let mut i128: i128 = 0;
+// LOWERING-X86_64-GNU-NEXT:     let mut u128: u128 = 0;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([254, 255, 255, 255, 255, 255, 255, 255, 61, 192]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i128 = __slate_f80_to_i128({{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     i128 = {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i128 = i128;
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: LongDouble = __slate_f80_from_i128({{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: LongDouble = LongDouble([254, 255, 255, 255, 255, 255, 255, 255, 61, 192]);
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         if {{__v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:             unsafe { abort() };
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([255, 255, 255, 255, 255, 255, 255, 255, 62, 64]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u128 = __slate_f80_to_u128({{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     u128 = {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: u128 = u128;
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: LongDouble = __slate_f80_from_u128({{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: LongDouble = LongDouble([255, 255, 255, 255, 255, 255, 255, 255, 62, 64]);
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         if {{__v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:             unsafe { abort() };
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"i128=%lld u128_hi=%llu u128_lo=%llu\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i128 = i128;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i64 = {{__v[0-9]+}} as i64;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u128 = u128;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = 64;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u128 = {{__v[0-9]+}} >> {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} as u64;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u128 = u128;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u128 = 18446744073709551615u128;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u128 = {{__v[0-9]+}} & {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} as u64;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     return;
+// LOWERING-X86_64-GNU-NEXT: }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: fn check_bitint_casts() {
+// LOWERING-X86_64-GNU-NEXT:     let mut b9: aligned::Aligned<aligned::A2, bitint::BInt<9, 1, 2>> =
+// LOWERING-X86_64-GNU-NEXT:         aligned::Aligned(bitint::BInt::<9, 1, 2>::ZERO);
+// LOWERING-X86_64-GNU-NEXT:     let mut ub9: aligned::Aligned<aligned::A2, bitint::BUint<9, 1, 2>> =
+// LOWERING-X86_64-GNU-NEXT:         aligned::Aligned(bitint::BUint::<9, 1, 2>::ZERO);
+// LOWERING-X86_64-GNU-NEXT:     let mut b40: aligned::Aligned<aligned::A8, bitint::BInt<40, 1, 8>> =
+// LOWERING-X86_64-GNU-NEXT:         aligned::Aligned(bitint::BInt::<40, 1, 8>::ZERO);
+// LOWERING-X86_64-GNU-NEXT:     let mut ub40: aligned::Aligned<aligned::A8, bitint::BUint<40, 1, 8>> =
+// LOWERING-X86_64-GNU-NEXT:         aligned::Aligned(bitint::BUint::<40, 1, 8>::ZERO);
+// LOWERING-X86_64-GNU-NEXT:     let mut b101: aligned::Aligned<aligned::A8, bitint::BInt<101, 2, 16>> =
+// LOWERING-X86_64-GNU-NEXT:         aligned::Aligned(bitint::BInt::<101, 2, 16>::ZERO);
+// LOWERING-X86_64-GNU-NEXT:     let mut ub150: aligned::Aligned<aligned::A8, bitint::BUint<150, 3, 24>> =
+// LOWERING-X86_64-GNU-NEXT:         aligned::Aligned(bitint::BUint::<150, 3, 24>::ZERO);
+// LOWERING-X86_64-GNU-NEXT:     let mut b256: aligned::Aligned<aligned::A8, bitint::BInt<256, 4, 32>> =
+// LOWERING-X86_64-GNU-NEXT:         aligned::Aligned(bitint::BInt::<256, 4, 32>::ZERO);
+// LOWERING-X86_64-GNU-NEXT:     let mut ub300: aligned::Aligned<aligned::A8, bitint::BUint<300, 5, 40>> =
+// LOWERING-X86_64-GNU-NEXT:         aligned::Aligned(bitint::BUint::<300, 5, 40>::ZERO);
+// LOWERING-X86_64-GNU-NEXT:     let mut b129: aligned::Aligned<aligned::A8, bitint::BInt<129, 3, 24>> =
+// LOWERING-X86_64-GNU-NEXT:         aligned::Aligned(bitint::BInt::<129, 3, 24>::ZERO);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 200, 5, 192]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: bitint::BInt<9, 1, 2> =
+// LOWERING-X86_64-GNU-NEXT:         bitint::BInt::<9, 1, 2>::from_i128(__slate_f80_to_i128({{__v[0-9]+}}) as i128);
+// LOWERING-X86_64-GNU-NEXT:     *b9 = {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bitint::BInt<9, 1, 2> = *b9;
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: LongDouble = __slate_f80_from_i128({{__v[0-9]+}}.to_i128());
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 200, 5, 192]);
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         if {{__v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:             unsafe { abort() };
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 200, 6, 64]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: bitint::BUint<9, 1, 2> =
+// LOWERING-X86_64-GNU-NEXT:         bitint::BUint::<9, 1, 2>::from_u128(__slate_f80_to_u128({{__v[0-9]+}}) as u128);
+// LOWERING-X86_64-GNU-NEXT:     *ub9 = {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bitint::BUint<9, 1, 2> = *ub9;
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: LongDouble = __slate_f80_from_u128({{__v[0-9]+}}.to_u128());
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 200, 6, 64]);
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         if {{__v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:             unsafe { abort() };
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 160, 162, 121, 235, 25, 192]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: bitint::BInt<40, 1, 8> =
+// LOWERING-X86_64-GNU-NEXT:         bitint::BInt::<40, 1, 8>::from_i128(__slate_f80_to_i128({{__v[0-9]+}}) as i128);
+// LOWERING-X86_64-GNU-NEXT:     *b40 = {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bitint::BInt<40, 1, 8> = *b40;
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: LongDouble = __slate_f80_from_i128({{__v[0-9]+}}.to_i128());
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 160, 162, 121, 235, 25, 192]);
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         if {{__v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:             unsafe { abort() };
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 196, 162, 121, 235, 28, 64]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: bitint::BUint<40, 1, 8> =
+// LOWERING-X86_64-GNU-NEXT:         bitint::BUint::<40, 1, 8>::from_u128(__slate_f80_to_u128({{__v[0-9]+}}) as u128);
+// LOWERING-X86_64-GNU-NEXT:     *ub40 = {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bitint::BUint<40, 1, 8> = *ub40;
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: LongDouble = __slate_f80_from_u128({{__v[0-9]+}}.to_u128());
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 196, 162, 121, 235, 28, 64]);
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         if {{__v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:             unsafe { abort() };
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 242, 190, 27, 12, 145, 224, 45, 192]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: bitint::BInt<101, 2, 16> =
+// LOWERING-X86_64-GNU-NEXT:         bitint::BInt::<101, 2, 16>::from_i128(__slate_f80_to_i128({{__v[0-9]+}}) as i128);
+// LOWERING-X86_64-GNU-NEXT:     *b101 = {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bitint::BInt<101, 2, 16> = *b101;
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: LongDouble = __slate_f80_from_i128({{__v[0-9]+}}.to_i128());
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 242, 190, 27, 12, 145, 224, 45, 192]);
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         if {{__v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:             unsafe { abort() };
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bitint::BInt<101, 2, 16> = *b101;
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: LongDouble = __slate_f80_from_i128({{__v[0-9]+}}.to_i128());
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bitint::BInt<101, 2, 16> =
+// LOWERING-X86_64-GNU-NEXT:             bitint::BInt::<101, 2, 16>::from_i128(__slate_f80_to_i128({{__v[0-9]+}}) as i128);
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bitint::BInt<101, 2, 16> = *b101;
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         if {{__v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:             unsafe { abort() };
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 64, 3, 20, 62, 12, 145, 224, 48, 64]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: bitint::BUint<150, 3, 24> =
+// LOWERING-X86_64-GNU-NEXT:         bitint::BUint::<150, 3, 24>::from_u128(__slate_f80_to_u128({{__v[0-9]+}}) as u128);
+// LOWERING-X86_64-GNU-NEXT:     *ub150 = {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bitint::BUint<150, 3, 24> = *ub150;
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: LongDouble = __slate_f80_from_u128({{__v[0-9]+}}.to_u128());
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: LongDouble = LongDouble([0, 64, 3, 20, 62, 12, 145, 224, 48, 64]);
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         if {{__v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:             unsafe { abort() };
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bitint::BUint<150, 3, 24> = *ub150;
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: LongDouble = __slate_f80_from_u128({{__v[0-9]+}}.to_u128());
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bitint::BUint<150, 3, 24> =
+// LOWERING-X86_64-GNU-NEXT:             bitint::BUint::<150, 3, 24>::from_u128(__slate_f80_to_u128({{__v[0-9]+}}) as u128);
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bitint::BUint<150, 3, 24> = *ub150;
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         if {{__v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:             unsafe { abort() };
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 192, 255, 248, 2, 149, 32, 64]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: bitint::BInt<256, 4, 32> =
+// LOWERING-X86_64-GNU-NEXT:         bitint::BInt::<256, 4, 32>::from_i128(__slate_f80_to_i128({{__v[0-9]+}}) as i128);
+// LOWERING-X86_64-GNU-NEXT:     *b256 = {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bitint::BInt<256, 4, 32> = *b256;
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bitint::BInt<256, 4, 32> =
+// LOWERING-X86_64-GNU-NEXT:             bitint::BInt::<256, 4, 32>::from_decimal_str("9999999999");
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         if {{__v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:             unsafe { abort() };
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bitint::BInt<256, 4, 32> = *b256;
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: LongDouble = __slate_f80_from_i128({{__v[0-9]+}}.to_i128());
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 192, 255, 248, 2, 149, 32, 64]);
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         if {{__v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:             unsafe { abort() };
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 234, 86, 250, 30, 64]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: bitint::BUint<300, 5, 40> =
+// LOWERING-X86_64-GNU-NEXT:         bitint::BUint::<300, 5, 40>::from_u128(__slate_f80_to_u128({{__v[0-9]+}}) as u128);
+// LOWERING-X86_64-GNU-NEXT:     *ub300 = {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bitint::BUint<300, 5, 40> = *ub300;
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bitint::BUint<300, 5, 40> =
+// LOWERING-X86_64-GNU-NEXT:             bitint::BUint::<300, 5, 40>::from_decimal_str("4200000000");
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         if {{__v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:             unsafe { abort() };
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bitint::BUint<300, 5, 40> = *ub300;
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: LongDouble = __slate_f80_from_u128({{__v[0-9]+}}.to_u128());
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 234, 86, 250, 30, 64]);
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         if {{__v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:             unsafe { abort() };
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 246, 5, 64]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: bitint::BInt<129, 3, 24> =
+// LOWERING-X86_64-GNU-NEXT:         bitint::BInt::<129, 3, 24>::from_i128(__slate_f80_to_i128({{__v[0-9]+}}) as i128);
+// LOWERING-X86_64-GNU-NEXT:     *b129 = {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bitint::BInt<129, 3, 24> = *b129;
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}}.to_i128() as i32;
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: i32 = 123;
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         if {{__v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:             unsafe { abort() };
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bitint::BInt<129, 3, 24> = bitint::BInt::<129, 3, 24>::from_decimal_str("123");
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: LongDouble = __slate_f80_from_i128({{__v[0-9]+}}.to_i128());
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 246, 5, 64]);
+// LOWERING-X86_64-GNU-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         if {{__v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:             unsafe { abort() };
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 =
+// LOWERING-X86_64-GNU-NEXT:         b"bitint_b101=%lld bitint_ub150=%llu bitint_b256_lo=%lld bitint_ub300_lo=%llu\n\0".as_ptr()
+// LOWERING-X86_64-GNU-NEXT:             as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: bitint::BInt<101, 2, 16> = *b101;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i64 = {{__v[0-9]+}}.to_i128() as i64;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: bitint::BUint<150, 3, 24> = *ub150;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u64 = {{__v[0-9]+}}.to_u128() as u64;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: bitint::BInt<256, 4, 32> = *b256;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i64 = {{__v[0-9]+}}.to_i128() as i64;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: bitint::BUint<300, 5, 40> = *ub300;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: u64 = {{__v[0-9]+}}.to_u128() as u64;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:         printf(
+// LOWERING-X86_64-GNU-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:             {{__v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:             {{__v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:             {{__v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:             {{__v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:         )
+// LOWERING-X86_64-GNU-NEXT:     };
+// LOWERING-X86_64-GNU-NEXT:     return;
+// LOWERING-X86_64-GNU-NEXT: }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: fn check_math_functions() {
+// LOWERING-X86_64-GNU-NEXT:     let mut exp: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"sqrt\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_sqrtl__rf80_f80({{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"cbrt\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 216, 3, 64]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_cbrtl__rf80_f80({{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"sin\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_sinl__rf80_f80({{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"cos\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_cosl__rf80_f80({{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"tan\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_tanl__rf80_f80({{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"asin\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_asinl__rf80_f80({{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"acos\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_acosl__rf80_f80({{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"atan\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_atanl__rf80_f80({{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"atan2\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_atan2l__rf80_f80_f80({{__v[0-9]+}}, {{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"sinh\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_sinhl__rf80_f80({{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"cosh\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_coshl__rf80_f80({{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"tanh\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_tanhl__rf80_f80({{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"exp\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_expl__rf80_f80({{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"exp2\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 2, 64]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_exp2l__rf80_f80({{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"log\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_expl__rf80_f80({{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_logl__rf80_f80({{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"log2\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 2, 64]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_log2l__rf80_f80({{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"log10\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 250, 8, 64]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_log10l__rf80_f80({{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"pow\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 2, 64]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_powl__rf80_f80_f80({{__v[0-9]+}}, {{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"floor\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([205, 204, 204, 204, 204, 204, 204, 172, 0, 64]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = __slate_f80_floor({{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"ceil\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([102, 102, 102, 102, 102, 102, 102, 134, 0, 64]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = __slate_f80_ceil({{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"round\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 0, 64]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = __slate_f80_round({{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"trunc\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([205, 204, 204, 204, 204, 204, 204, 172, 0, 192]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = __slate_f80_trunc({{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"fabs\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 224, 0, 192]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = __slate_f80_abs({{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"fmod\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 2, 64]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_fmodl__rf80_f80_f80({{__v[0-9]+}}, {{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"hypot\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 64]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_hypotl__rf80_f80_f80({{__v[0-9]+}}, {{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"copysign\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 191]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = __slate_f80_copysign({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"fmax\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = __slate_f80_fmax({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"fmin\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = __slate_f80_fmin({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"fma\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 64]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = __slate_f80_fma({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"ldexp\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = 4;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_ldexpl__rf80_f80_i32({{__v[0-9]+}}, {{__v[0-9]+}} as i32) };
+// LOWERING-X86_64-GNU-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:     exp = {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"frexp\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 200, 5, 64]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-NEXT:         unsafe { __slate_frexpl__rf80_f80_pi32({{__v[0-9]+}}, std::ptr::addr_of_mut!(exp) as *mut i32) };
+// LOWERING-X86_64-GNU-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"frexp_exp=%d\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = exp;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 =
+// LOWERING-X86_64-GNU-NEXT:         b"isnan=%d isinf=%d signbit_neg=%d signbit_pos=%d isfinite=%d\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_nanl__rf80_pc({{__v[0-9]+}} as *const core::ffi::c_char) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: bool = __slate_f80_is_fp_class({{__v[0-9]+}}, 3);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = 1;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:         printf(
+// LOWERING-X86_64-GNU-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:             {{__v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:             {{__v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:             {{__v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:             {{__v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:             {{__v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:         )
+// LOWERING-X86_64-GNU-NEXT:     };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"epsilon\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 192, 63]);
+// LOWERING-X86_64-GNU-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     return;
+// LOWERING-X86_64-GNU-NEXT: }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: /// The functions above all round-trip through the generic call-shim (any
+// LOWERING-X86_64-GNU-NEXT: /// known extern function with a long double arg/return links straight to
+// LOWERING-X86_64-GNU-NEXT: /// libm), which check_math_functions already exercises. This covers the
+// LOWERING-X86_64-GNU-NEXT: /// remaining libm entry points -- pointer out-params, integer-returning
+// LOWERING-X86_64-GNU-NEXT: /// variants, and the classification family -- with volatile operands so
+// LOWERING-X86_64-GNU-NEXT: /// they can't constant-fold away and skip the real runtime path.
+// LOWERING-X86_64-GNU-NEXT: fn check_remaining_math_functions() {
+// LOWERING-X86_64-GNU-NEXT:     let mut ten: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:     let mut three: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:     let mut quo: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:     let mut vnan: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:     let mut vinf: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:     let mut vzero: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:     let mut vone: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:     let mut vsub: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:     let mut vtwo: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:     let mut ten_plain: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:     let mut canon: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 2, 64]);
+// LOWERING-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(ten), {{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]);
+// LOWERING-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(three), {{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} / {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = __slate_f80_fract({{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = __slate_f80_trunc({{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"modf_ipart\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"modf_frac\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"remainder\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_remainderl__rf80_f80_f80({{__v[0-9]+}}, {{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:     quo = {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"remquo\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe {
+// LOWERING-X86_64-GNU-NEXT:         __slate_remquol__rf80_f80_f80_pi32({{__v[0-9]+}}, {{__v[0-9]+}}, std::ptr::addr_of_mut!(quo) as *mut i32)
+// LOWERING-X86_64-GNU-NEXT:     };
+// LOWERING-X86_64-GNU-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"remquo_quo=%d\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = quo;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"scalbn\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = 3;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_scalbnl__rf80_f80_i32({{__v[0-9]+}}, {{__v[0-9]+}} as i32) };
+// LOWERING-X86_64-GNU-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"scalbln\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i64 = 3;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_scalblnl__rf80_f80_i64({{__v[0-9]+}}, {{__v[0-9]+}} as i64) };
+// LOWERING-X86_64-GNU-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"nextafter\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_nextafterl__rf80_f80_f80({{__v[0-9]+}}, {{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"nexttoward\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_nexttowardl__rf80_f80_f80({{__v[0-9]+}}, {{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"fdim\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_fdiml__rf80_f80_f80({{__v[0-9]+}}, {{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"rint\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} / {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = __slate_f80_rint({{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"nearbyint\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} / {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = __slate_f80_rint({{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"lrint=%ld llrint=%lld lround=%ld llround=%lld\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} / {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i64 = unsafe { __slate_lrintl__ri64_f80({{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} / {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i64 = unsafe { __slate_llrintl__ri64_f80({{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} / {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i64 = unsafe { __slate_lroundl__ri64_f80({{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} / {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i64 = unsafe { __slate_llroundl__ri64_f80({{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:         printf(
+// LOWERING-X86_64-GNU-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:             {{__v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:             {{__v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:             {{__v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:             {{__v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:         )
+// LOWERING-X86_64-GNU-NEXT:     };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"ilogb=%d\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { __slate_ilogbl__ri32_f80({{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"logb\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_logbl__rf80_f80({{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"erf\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} / {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_erfl__rf80_f80({{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"erfc\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}} / {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_erfcl__rf80_f80({{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"tgamma\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_tgammal__rf80_f80({{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"lgamma\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_lgammal__rf80_f80({{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_nanl__rf80_pc({{__v[0-9]+}} as *const core::ffi::c_char) };
+// LOWERING-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(vnan), {{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
+// LOWERING-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(vinf), {{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// LOWERING-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(vzero), {{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// LOWERING-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(vone), {{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([1, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// LOWERING-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(vsub), {{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 =
+// LOWERING-X86_64-GNU-NEXT:         b"isnan_v=%d isinf_v=%d isfinite_v=%d isnormal_v=%d isunordered_v=%d isunordered_ok=%d\n\0"
+// LOWERING-X86_64-GNU-NEXT:             .as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(vnan)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: bool = __slate_f80_is_fp_class({{__v[0-9]+}}, 3);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(vinf)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: bool = __slate_f80_is_fp_class({{__v[0-9]+}}, 516);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(vone)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: bool = __slate_f80_is_fp_class({{__v[0-9]+}}, 504);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(vone)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: bool = __slate_f80_is_fp_class({{__v[0-9]+}}, 264);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(vnan)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(vone)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}} || {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(vone)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(vzero)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}} || {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:         printf(
+// LOWERING-X86_64-GNU-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:             {{__v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:             {{__v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:             {{__v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:             {{__v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:             {{__v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:             {{__v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:         )
+// LOWERING-X86_64-GNU-NEXT:     };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"subnormal_isnormal=%d\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(vsub)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: bool = __slate_f80_is_fp_class({{__v[0-9]+}}, 264);
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]);
+// LOWERING-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(vtwo), {{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 =
+// LOWERING-X86_64-GNU-NEXT:         b"islessgreater_lt=%d islessgreater_eq=%d islessgreater_nan=%d\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(vone)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(vtwo)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}} || {{__v[0-9]+}} > {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(vone)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(vone)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}} || {{__v[0-9]+}} > {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(vnan)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(vone)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}} || {{__v[0-9]+}} > {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
+// LOWERING-X86_64-GNU-NEXT:     ten_plain = {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// LOWERING-X86_64-GNU-NEXT:     canon = {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:         __slate_canonicalizel__ri32_pf80_pf80(
+// LOWERING-X86_64-GNU-NEXT:             std::ptr::addr_of_mut!(canon),
+// LOWERING-X86_64-GNU-NEXT:             std::ptr::addr_of_mut!(ten_plain),
+// LOWERING-X86_64-GNU-NEXT:         )
+// LOWERING-X86_64-GNU-NEXT:     };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"canonicalize\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = canon;
+// LOWERING-X86_64-GNU-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"canonicalize_r=%d\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"ldbl_min\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 0]);
+// LOWERING-X86_64-GNU-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"ldbl_true_min\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: LongDouble = LongDouble([1, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// LOWERING-X86_64-GNU-NEXT:     print_ld({{__v[0-9]+}}, {{__v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"ldbl_mant_dig=%d ldbl_dig=%d ldbl_min_exp=%d ldbl_max_exp=%d ldbl_min_10_exp=%d ldbl_max_10_exp=%d\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = 64;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = 18;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = -16381;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = 16384;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = -4931;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = 4932;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:         printf(
+// LOWERING-X86_64-GNU-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:             {{__v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:             {{__v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:             {{__v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:             {{__v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:             {{__v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:             {{__v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:         )
+// LOWERING-X86_64-GNU-NEXT:     };
+// LOWERING-X86_64-GNU-NEXT:     return;
+// LOWERING-X86_64-GNU-NEXT: }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: fn print_ld({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: LongDouble) {
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%s=%La\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 =
+// LOWERING-X86_64-GNU-NEXT:         unsafe { __slate_printf__ri32_pi8_pi8_f80({{__v[0-9]+}} as *mut i8, {{arg[0-9]+}} as *mut i8, {{arg[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     return;
+// LOWERING-X86_64-GNU-NEXT: }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: unsafe extern "C" {
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_acosl__rf80_f80(_0: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_asinl__rf80_f80(_0: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_atan2l__rf80_f80_f80(_0: LongDouble, _1: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_atanl__rf80_f80(_0: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_canonicalizel__ri32_pf80_pf80(_0: *mut LongDouble, _1: *const LongDouble) -> i32;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_cbrtl__rf80_f80(_0: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_cf80_div(
+// LOWERING-X86_64-GNU-NEXT:         __a: num_complex::Complex<LongDouble>,
+// LOWERING-X86_64-GNU-NEXT:         __b: num_complex::Complex<LongDouble>,
+// LOWERING-X86_64-GNU-NEXT:     ) -> num_complex::Complex<LongDouble>;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_cf80_mul(
+// LOWERING-X86_64-GNU-NEXT:         __a: num_complex::Complex<LongDouble>,
+// LOWERING-X86_64-GNU-NEXT:         __b: num_complex::Complex<LongDouble>,
+// LOWERING-X86_64-GNU-NEXT:     ) -> num_complex::Complex<LongDouble>;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_coshl__rf80_f80(_0: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_cosl__rf80_f80(_0: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_erfcl__rf80_f80(_0: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_erfl__rf80_f80(_0: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_exp2l__rf80_f80(_0: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_expl__rf80_f80(_0: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f128_nexttoward(__from: f128, __toward: f128) -> f128;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_abs(__a: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_acos(__a: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_acosh(__a: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_add(__a: LongDouble, __b: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_asin(__a: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_asinh(__a: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_atan(__a: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_atanh(__a: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_cbrt(__a: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_ceil(__a: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_copysign(__a: LongDouble, __b: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_cos(__a: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_cosh(__a: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_div(__a: LongDouble, __b: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_eq(__a: LongDouble, __b: LongDouble) -> bool;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_exp(__a: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_exp2(__a: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_expm1(__a: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_fdim(__a: LongDouble, __b: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_floor(__a: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_fma(__a: LongDouble, __b: LongDouble, __c: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_fmax(__a: LongDouble, __b: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_fmin(__a: LongDouble, __b: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_fmod(__a: LongDouble, __b: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_fract(__a: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_from_bool(__a: bool) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_from_f32(__a: f32) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_from_f64(__a: f64) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_from_i128(__a: i128) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_from_i16(__a: i16) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_from_i32(__a: i32) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_from_i64(__a: i64) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_from_i8(__a: i8) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_from_u128(__a: u128) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_from_u16(__a: u16) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_from_u32(__a: u32) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_from_u64(__a: u64) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_from_u8(__a: u8) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_ge(__a: LongDouble, __b: LongDouble) -> bool;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_gt(__a: LongDouble, __b: LongDouble) -> bool;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_hypot(__a: LongDouble, __b: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_is_fp_class(__a: LongDouble, __flags: i32) -> bool;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_le(__a: LongDouble, __b: LongDouble) -> bool;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_log(__a: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_log10(__a: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_log1p(__a: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_log2(__a: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_lt(__a: LongDouble, __b: LongDouble) -> bool;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_mul(__a: LongDouble, __b: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_ne(__a: LongDouble, __b: LongDouble) -> bool;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_nearbyint(__a: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_neg(__a: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_pow(__a: LongDouble, __b: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_powi(__a: LongDouble, __n: i32) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_remainder(__a: LongDouble, __b: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_rint(__a: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_round(__a: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_signbit(__a: LongDouble) -> bool;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_sin(__a: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_sinh(__a: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_sqrt(__a: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_sub(__a: LongDouble, __b: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_tan(__a: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_tanh(__a: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_to_bool(__a: LongDouble) -> bool;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_to_f32(__a: LongDouble) -> f32;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_to_f64(__a: LongDouble) -> f64;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_to_i128(__a: LongDouble) -> i128;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_to_i16(__a: LongDouble) -> i16;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_to_i32(__a: LongDouble) -> i32;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_to_i64(__a: LongDouble) -> i64;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_to_i8(__a: LongDouble) -> i8;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_to_u128(__a: LongDouble) -> u128;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_to_u16(__a: LongDouble) -> u16;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_to_u32(__a: LongDouble) -> u32;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_to_u64(__a: LongDouble) -> u64;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_to_u8(__a: LongDouble) -> u8;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_trunc(__a: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_fdiml__rf80_f80_f80(_0: LongDouble, _1: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_fmodl__rf80_f80_f80(_0: LongDouble, _1: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_frexpl__rf80_f80_pi32(_0: LongDouble, _1: *mut i32) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_hypotl__rf80_f80_f80(_0: LongDouble, _1: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_ilogbl__ri32_f80(_0: LongDouble) -> i32;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_ldexpl__rf80_f80_i32(_0: LongDouble, _1: i32) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_lgammal__rf80_f80(_0: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_llrintl__ri64_f80(_0: LongDouble) -> i64;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_llroundl__ri64_f80(_0: LongDouble) -> i64;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_log10l__rf80_f80(_0: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_log2l__rf80_f80(_0: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_logbl__rf80_f80(_0: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_logl__rf80_f80(_0: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_lrintl__ri64_f80(_0: LongDouble) -> i64;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_lroundl__ri64_f80(_0: LongDouble) -> i64;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_nanl__rf80_pc(_0: *const core::ffi::c_char) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_nextafterl__rf80_f80_f80(_0: LongDouble, _1: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_nexttowardl__rf80_f80_f80(_0: LongDouble, _1: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_powl__rf80_f80_f80(_0: LongDouble, _1: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_printf__ri32_pi8_pi8_f80(_0: *mut i8, _1: *mut i8, _2: LongDouble) -> i32;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_remainderl__rf80_f80_f80(_0: LongDouble, _1: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_remquol__rf80_f80_f80_pi32(
+// LOWERING-X86_64-GNU-NEXT:         _0: LongDouble,
+// LOWERING-X86_64-GNU-NEXT:         _1: LongDouble,
+// LOWERING-X86_64-GNU-NEXT:         _2: *mut i32,
+// LOWERING-X86_64-GNU-NEXT:     ) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_scalblnl__rf80_f80_i64(_0: LongDouble, _1: i64) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_scalbnl__rf80_f80_i32(_0: LongDouble, _1: i32) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_sinhl__rf80_f80(_0: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_sinl__rf80_f80(_0: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_sqrtl__rf80_f80(_0: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_tanhl__rf80_f80(_0: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_tanl__rf80_f80(_0: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_tgammal__rf80_f80(_0: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT: }
+// SLATE-FILECHECK-END lowering

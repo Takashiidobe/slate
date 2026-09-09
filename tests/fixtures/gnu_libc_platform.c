@@ -147,12 +147,15 @@ int main(void) {
 // LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[derive(Clone, Copy)]
 // LOWERING-NEXT: struct re_pattern_buffer {
+// LOWERING-NEXT:     __buffer: *mut core::ffi::c_void,
+// LOWERING-NEXT:     __allocated: u64,
+// LOWERING-NEXT:     __used: u64,
+// LOWERING-NEXT:     __syntax: u64,
+// LOWERING-X86_64-GNU-NEXT:     __fastmap: *mut i8,
+// LOWERING-AARCH64-GNU-NEXT:     __fastmap: *mut u8,
+// LOWERING-NEXT:     __translate: *mut u8,
 // LOWERING-NEXT:     re_nsub: u64,
-// LOWERING-NEXT:     __opaque: *mut core::ffi::c_void,
-// LOWERING-NEXT:     __padding: [*mut core::ffi::c_void; 4],
-// LOWERING-NEXT:     __nsub2: u64,
-// LOWERING-X86_64-GNU-NEXT:     __padding2: i8,
-// LOWERING-AARCH64-GNU-NEXT:     __padding2: u8,
+// LOWERING-NEXT:     __regex_flags: u32,
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[repr(C)]
@@ -206,9 +209,9 @@ int main(void) {
 // LOWERING-NEXT:         _0: *mut re_pattern_buffer,
 // LOWERING-NEXT:         _1: *const core::ffi::c_char,
 // LOWERING-NEXT:         _2: usize,
-// LOWERING-NEXT:         _3: i64,
+// LOWERING-NEXT:         _3: i32,
 // LOWERING-NEXT:         _4: *mut core::ffi::c_void,
-// LOWERING-NEXT:     ) -> i64;
+// LOWERING-NEXT:     ) -> i32;
 // LOWERING-NEXT:     fn regfree(_0: *mut re_pattern_buffer);
 // LOWERING-NEXT:     fn glob(
 // LOWERING-NEXT:         _0: *const core::ffi::c_char,
@@ -518,11 +521,14 @@ int main(void) {
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn gnu_pattern_extensions() -> i32 {
 // LOWERING-NEXT:     let mut expression: re_pattern_buffer = re_pattern_buffer {
+// LOWERING-NEXT:         __buffer: std::ptr::null_mut(),
+// LOWERING-NEXT:         __allocated: 0,
+// LOWERING-NEXT:         __used: 0,
+// LOWERING-NEXT:         __syntax: 0,
+// LOWERING-NEXT:         __fastmap: std::ptr::null_mut(),
+// LOWERING-NEXT:         __translate: std::ptr::null_mut(),
 // LOWERING-NEXT:         re_nsub: 0,
-// LOWERING-NEXT:         __opaque: std::ptr::null_mut(),
-// LOWERING-NEXT:         __padding: [std::ptr::null_mut(); 4],
-// LOWERING-NEXT:         __nsub2: 0,
-// LOWERING-NEXT:         __padding2: 0,
+// LOWERING-NEXT:         __regex_flags: 0,
 // LOWERING-NEXT:     };
 // LOWERING-NEXT:     let mut paths: glob_t = glob_t {
 // LOWERING-NEXT:         gl_pathc: 0,
@@ -532,11 +538,14 @@ int main(void) {
 // LOWERING-NEXT:         __reserved2: [std::ptr::null_mut(); 5],
 // LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: re_pattern_buffer = re_pattern_buffer {
+// LOWERING-NEXT:         __buffer: std::ptr::null_mut(),
+// LOWERING-NEXT:         __allocated: 0,
+// LOWERING-NEXT:         __used: 0,
+// LOWERING-NEXT:         __syntax: 0,
+// LOWERING-NEXT:         __fastmap: std::ptr::null_mut(),
+// LOWERING-NEXT:         __translate: std::ptr::null_mut(),
 // LOWERING-NEXT:         re_nsub: 0,
-// LOWERING-NEXT:         __opaque: std::ptr::null_mut(),
-// LOWERING-NEXT:         __padding: [std::ptr::null_mut(); 4],
-// LOWERING-NEXT:         __nsub2: 0,
-// LOWERING-NEXT:         __padding2: 0,
+// LOWERING-NEXT:         __regex_flags: 0,
 // LOWERING-NEXT:     };
 // LOWERING-NEXT:     expression = {{__v[0-9]+}};
 // LOWERING-NEXT:     let {{__v[0-9]+}}: glob_t = glob_t {
@@ -827,18 +836,18 @@ int main(void) {
 // LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"slate\0".as_ptr() as *mut i8;
 // LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = b"slate\0".as_ptr() as *mut u8;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = 5;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = unsafe {
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe {
 // LOWERING-NEXT:         re_match(
 // LOWERING-NEXT:             std::ptr::addr_of_mut!(expression) as *mut re_pattern_buffer,
 // LOWERING-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
 // LOWERING-NEXT:             {{__v[0-9]+}} as usize,
-// LOWERING-NEXT:             {{__v[0-9]+}} as i64,
+// LOWERING-NEXT:             {{__v[0-9]+}} as i32,
 // LOWERING-NEXT:             {{__v[0-9]+}} as *mut core::ffi::c_void,
 // LOWERING-NEXT:         )
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i64 = 5;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 5;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
@@ -1091,12 +1100,15 @@ int main(void) {
 // REWRITES-NEXT: #[repr(C)]
 // REWRITES-NEXT: #[derive(Clone, Copy)]
 // REWRITES-NEXT: struct re_pattern_buffer {
+// REWRITES-NEXT:     __buffer: *mut core::ffi::c_void,
+// REWRITES-NEXT:     __allocated: u64,
+// REWRITES-NEXT:     __used: u64,
+// REWRITES-NEXT:     __syntax: u64,
+// REWRITES-X86_64-GNU-NEXT:     __fastmap: *mut i8,
+// REWRITES-AARCH64-GNU-NEXT:     __fastmap: *mut u8,
+// REWRITES-NEXT:     __translate: *mut u8,
 // REWRITES-NEXT:     re_nsub: u64,
-// REWRITES-NEXT:     __opaque: *mut core::ffi::c_void,
-// REWRITES-NEXT:     __padding: [*mut core::ffi::c_void; 4],
-// REWRITES-NEXT:     __nsub2: u64,
-// REWRITES-X86_64-GNU-NEXT:     __padding2: i8,
-// REWRITES-AARCH64-GNU-NEXT:     __padding2: u8,
+// REWRITES-NEXT:     __regex_flags: u32,
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[repr(C)]
@@ -1150,9 +1162,9 @@ int main(void) {
 // REWRITES-NEXT:         _0: *mut re_pattern_buffer,
 // REWRITES-NEXT:         _1: *const core::ffi::c_char,
 // REWRITES-NEXT:         _2: usize,
-// REWRITES-NEXT:         _3: i64,
+// REWRITES-NEXT:         _3: i32,
 // REWRITES-NEXT:         _4: *mut core::ffi::c_void,
-// REWRITES-NEXT:     ) -> i64;
+// REWRITES-NEXT:     ) -> i32;
 // REWRITES-NEXT:     fn regfree(_0: *mut re_pattern_buffer);
 // REWRITES-NEXT:     fn glob(
 // REWRITES-NEXT:         _0: *const core::ffi::c_char,
@@ -1374,11 +1386,14 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn gnu_pattern_extensions() -> i32 {
 // REWRITES-NEXT:     let mut expression: re_pattern_buffer = re_pattern_buffer {
+// REWRITES-NEXT:         __buffer: std::ptr::null_mut(),
+// REWRITES-NEXT:         __allocated: 0,
+// REWRITES-NEXT:         __used: 0,
+// REWRITES-NEXT:         __syntax: 0,
+// REWRITES-NEXT:         __fastmap: std::ptr::null_mut(),
+// REWRITES-NEXT:         __translate: std::ptr::null_mut(),
 // REWRITES-NEXT:         re_nsub: 0,
-// REWRITES-NEXT:         __opaque: std::ptr::null_mut(),
-// REWRITES-NEXT:         __padding: [std::ptr::null_mut(); 4],
-// REWRITES-NEXT:         __nsub2: 0,
-// REWRITES-NEXT:         __padding2: 0,
+// REWRITES-NEXT:         __regex_flags: 0,
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let mut paths: glob_t = glob_t {
 // REWRITES-NEXT:         gl_pathc: 0,
@@ -1512,12 +1527,12 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + (({{__v[0-9]+}} == ({{__v[0-9]+}} as *mut i8)) as i32);
 // REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + (({{__v[0-9]+}} == ({{__v[0-9]+}} as *mut u8)) as i32);
 // REWRITES-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
-// REWRITES-NEXT:     let {{__v[0-9]+}}: i64 = unsafe {
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe {
 // REWRITES-NEXT:         re_match(
 // REWRITES-NEXT:             std::ptr::addr_of_mut!(expression) as *mut re_pattern_buffer,
 // REWRITES-NEXT:             c"slate".as_ptr(),
 // REWRITES-NEXT:             (5 as u64) as usize,
-// REWRITES-NEXT:             0 as i64,
+// REWRITES-NEXT:             0 as i32,
 // REWRITES-NEXT:             {{__v[0-9]+}} as *mut core::ffi::c_void,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };

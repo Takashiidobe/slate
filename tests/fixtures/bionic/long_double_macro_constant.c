@@ -59,6 +59,6 @@ int main(void) { return f() == 0.0L; }
 // REWRITES-BIONIC-AARCH64-NEXT: fn main() -> std::process::ExitCode {
 // REWRITES-BIONIC-AARCH64-NEXT:     let {{__v[0-9]+}}: f128 = f();
 // REWRITES-BIONIC-AARCH64-NEXT:     let {{__v[0-9]+}}: f128 = 0.000000e+00f128;
-// REWRITES-BIONIC-AARCH64-NEXT:     return std::process::ExitCode::from(({{__v[0-9]+}} == {{__v[0-9]+}}) as u8);
+// REWRITES-BIONIC-AARCH64-NEXT:     return std::process::ExitCode::from((({{__v[0-9]+}} == {{__v[0-9]+}}) as i32) as u8);
 // REWRITES-BIONIC-AARCH64-NEXT: }
 // SLATE-FILECHECK-END rewrites

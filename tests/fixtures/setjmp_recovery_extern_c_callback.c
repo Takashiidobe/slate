@@ -47,19 +47,14 @@ int main(void) {
 // LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[derive(Clone, Copy)]
 // LOWERING-NEXT: struct __slate_jmp_buf_tag {
-// LOWERING-NEXT:     __regs: [i64; 8],
-// LOWERING-NEXT:     __mask_was_saved: i32,
-// LOWERING-NEXT:     __saved_mask: [u64; 16],
+// LOWERING-X86_64-GNU-NEXT:     __storage: [u64; 25],
+// LOWERING-AARCH64-GNU-NEXT:     __storage: [u64; 39],
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-X86_64-GNU-NEXT: static mut env: aligned::Aligned<aligned::A16, [__slate_jmp_buf_tag; 1]> = aligned::Aligned(
-// LOWERING-AARCH64-GNU-NEXT: static mut env: aligned::Aligned<aligned::A8, [__slate_jmp_buf_tag; 1]> = aligned::Aligned(
-// LOWERING-NEXT:     [__slate_jmp_buf_tag {
-// LOWERING-NEXT:         __regs: [0; 8],
-// LOWERING-NEXT:         __mask_was_saved: 0,
-// LOWERING-NEXT:         __saved_mask: [0; 16],
-// LOWERING-NEXT:     }; 1],
-// LOWERING-NEXT: );
+// LOWERING-X86_64-GNU-NEXT: static mut env: aligned::Aligned<aligned::A16, [__slate_jmp_buf_tag; 1]> =
+// LOWERING-X86_64-GNU-NEXT:     aligned::Aligned([__slate_jmp_buf_tag { __storage: [0; 25] }; 1]);
+// LOWERING-AARCH64-GNU-NEXT: static mut env: aligned::Aligned<aligned::A8, [__slate_jmp_buf_tag; 1]> =
+// LOWERING-AARCH64-GNU-NEXT:     aligned::Aligned([__slate_jmp_buf_tag { __storage: [0; 39] }; 1]);
 // LOWERING-EMPTY:
 // LOWERING-NEXT: static mut failures: i32 = 0;
 // LOWERING-EMPTY:
@@ -146,19 +141,14 @@ int main(void) {
 // REWRITES-NEXT: #[repr(C)]
 // REWRITES-NEXT: #[derive(Clone, Copy)]
 // REWRITES-NEXT: struct __slate_jmp_buf_tag {
-// REWRITES-NEXT:     __regs: [i64; 8],
-// REWRITES-NEXT:     __mask_was_saved: i32,
-// REWRITES-NEXT:     __saved_mask: [u64; 16],
+// REWRITES-X86_64-GNU-NEXT:     __storage: [u64; 25],
+// REWRITES-AARCH64-GNU-NEXT:     __storage: [u64; 39],
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-X86_64-GNU-NEXT: static mut env: aligned::Aligned<aligned::A16, [__slate_jmp_buf_tag; 1]> = aligned::Aligned(
-// REWRITES-AARCH64-GNU-NEXT: static mut env: aligned::Aligned<aligned::A8, [__slate_jmp_buf_tag; 1]> = aligned::Aligned(
-// REWRITES-NEXT:     [__slate_jmp_buf_tag {
-// REWRITES-NEXT:         __regs: [0; 8],
-// REWRITES-NEXT:         __mask_was_saved: 0,
-// REWRITES-NEXT:         __saved_mask: [0; 16],
-// REWRITES-NEXT:     }; 1],
-// REWRITES-NEXT: );
+// REWRITES-X86_64-GNU-NEXT: static mut env: aligned::Aligned<aligned::A16, [__slate_jmp_buf_tag; 1]> =
+// REWRITES-X86_64-GNU-NEXT:     aligned::Aligned([__slate_jmp_buf_tag { __storage: [0; 25] }; 1]);
+// REWRITES-AARCH64-GNU-NEXT: static mut env: aligned::Aligned<aligned::A8, [__slate_jmp_buf_tag; 1]> =
+// REWRITES-AARCH64-GNU-NEXT:     aligned::Aligned([__slate_jmp_buf_tag { __storage: [0; 39] }; 1]);
 // REWRITES-EMPTY:
 // REWRITES-NEXT: static mut failures: i32 = 0;
 // REWRITES-EMPTY:

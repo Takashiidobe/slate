@@ -54,6 +54,86 @@ int main(void) {
   return 0;
 }
 
+// SLATE-FILECHECK-BEGIN rewrites
+// REWRITES: #![allow(
+// REWRITES-NEXT:     dead_code,
+// REWRITES-NEXT:     unused,
+// REWRITES-NEXT:     non_camel_case_types,
+// REWRITES-NEXT:     non_snake_case,
+// REWRITES-NEXT:     non_upper_case_globals,
+// REWRITES-NEXT:     arithmetic_overflow,
+// REWRITES-NEXT:     unconditional_panic,
+// REWRITES-NEXT:     suspicious_runtime_symbol_definitions,
+// REWRITES-NEXT:     unpredictable_function_pointer_comparisons,
+// REWRITES-NEXT:     unused_comparisons
+// REWRITES-NEXT: )]
+// REWRITES-EMPTY:
+// REWRITES-NEXT: #[repr(C)]
+// REWRITES-NEXT: #[derive(Clone, Copy)]
+// REWRITES-NEXT: struct dirent {
+// REWRITES-NEXT:     d_ino: u64,
+// REWRITES-NEXT:     d_off: i64,
+// REWRITES-NEXT:     d_reclen: u16,
+// REWRITES-NEXT:     d_type: u8,
+// REWRITES-BIONIC-AARCH64-NEXT:     d_name: [u8; 256],
+// REWRITES-BIONIC-X86_64-NEXT:     d_name: [i8; 256],
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: #[repr(C)]
+// REWRITES-NEXT: #[derive(Clone, Copy)]
+// REWRITES-NEXT: struct stat {
+// REWRITES-NEXT:     st_dev: u64,
+// REWRITES-NEXT:     st_ino: u64,
+// REWRITES-BIONIC-X86_64-NEXT:     st_nlink: u64,
+// REWRITES-NEXT:     st_mode: u32,
+// REWRITES-BIONIC-AARCH64-NEXT:     st_nlink: u32,
+// REWRITES-NEXT:     st_uid: u32,
+// REWRITES-NEXT:     st_gid: u32,
+// REWRITES-BIONIC-X86_64-NEXT:     __pad0: u32,
+// REWRITES-NEXT:     st_rdev: u64,
+// REWRITES-BIONIC-AARCH64-NEXT:     __pad1: u64,
+// REWRITES-NEXT:     st_size: i64,
+// REWRITES-BIONIC-AARCH64-NEXT:     st_blksize: i32,
+// REWRITES-BIONIC-AARCH64-NEXT:     __pad2: i32,
+// REWRITES-BIONIC-X86_64-NEXT:     st_blksize: i64,
+// REWRITES-NEXT:     st_blocks: i64,
+// REWRITES-NEXT:     st_atim: libc::timespec,
+// REWRITES-NEXT:     st_mtim: libc::timespec,
+// REWRITES-NEXT:     st_ctim: libc::timespec,
+// REWRITES-BIONIC-AARCH64-NEXT:     __unused4: u32,
+// REWRITES-BIONIC-AARCH64-NEXT:     __unused5: u32,
+// REWRITES-BIONIC-X86_64-NEXT:     __pad3: [i64; 3],
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: #[repr(C)]
+// REWRITES-NEXT: #[derive(Clone, Copy)]
+// REWRITES-NEXT: struct statvfs {
+// REWRITES-NEXT:     f_bsize: u64,
+// REWRITES-NEXT:     f_frsize: u64,
+// REWRITES-NEXT:     f_blocks: u64,
+// REWRITES-NEXT:     f_bfree: u64,
+// REWRITES-NEXT:     f_bavail: u64,
+// REWRITES-NEXT:     f_files: u64,
+// REWRITES-NEXT:     f_ffree: u64,
+// REWRITES-NEXT:     f_favail: u64,
+// REWRITES-NEXT:     f_fsid: u64,
+// REWRITES-NEXT:     f_flag: u64,
+// REWRITES-NEXT:     f_namemax: u64,
+// REWRITES-NEXT:     __f_reserved: [u32; 6],
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: #[repr(C)]
+// REWRITES-NEXT: #[derive(Clone, Copy)]
+// REWRITES-NEXT: struct utimbuf {
+// REWRITES-NEXT:     actime: i64,
+// REWRITES-NEXT:     modtime: i64,
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn main() -> std::process::ExitCode {
+// REWRITES-NEXT:     return std::process::ExitCode::SUCCESS;
+// REWRITES-NEXT: }
+// SLATE-FILECHECK-END rewrites
+
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![allow(
 // LOWERING-NEXT:     dead_code,
@@ -188,86 +268,6 @@ int main(void) {
 // LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     return std::process::ExitCode::from({{__v[0-9]+}} as u8);
+// LOWERING-NEXT:     return std::process::ExitCode::SUCCESS;
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
-
-// SLATE-FILECHECK-BEGIN rewrites
-// REWRITES: #![allow(
-// REWRITES-NEXT:     dead_code,
-// REWRITES-NEXT:     unused,
-// REWRITES-NEXT:     non_camel_case_types,
-// REWRITES-NEXT:     non_snake_case,
-// REWRITES-NEXT:     non_upper_case_globals,
-// REWRITES-NEXT:     arithmetic_overflow,
-// REWRITES-NEXT:     unconditional_panic,
-// REWRITES-NEXT:     suspicious_runtime_symbol_definitions,
-// REWRITES-NEXT:     unpredictable_function_pointer_comparisons,
-// REWRITES-NEXT:     unused_comparisons
-// REWRITES-NEXT: )]
-// REWRITES-EMPTY:
-// REWRITES-NEXT: #[repr(C)]
-// REWRITES-NEXT: #[derive(Clone, Copy)]
-// REWRITES-NEXT: struct dirent {
-// REWRITES-NEXT:     d_ino: u64,
-// REWRITES-NEXT:     d_off: i64,
-// REWRITES-NEXT:     d_reclen: u16,
-// REWRITES-NEXT:     d_type: u8,
-// REWRITES-BIONIC-AARCH64-NEXT:     d_name: [u8; 256],
-// REWRITES-BIONIC-X86_64-NEXT:     d_name: [i8; 256],
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: #[repr(C)]
-// REWRITES-NEXT: #[derive(Clone, Copy)]
-// REWRITES-NEXT: struct stat {
-// REWRITES-NEXT:     st_dev: u64,
-// REWRITES-NEXT:     st_ino: u64,
-// REWRITES-BIONIC-X86_64-NEXT:     st_nlink: u64,
-// REWRITES-NEXT:     st_mode: u32,
-// REWRITES-BIONIC-AARCH64-NEXT:     st_nlink: u32,
-// REWRITES-NEXT:     st_uid: u32,
-// REWRITES-NEXT:     st_gid: u32,
-// REWRITES-BIONIC-X86_64-NEXT:     __pad0: u32,
-// REWRITES-NEXT:     st_rdev: u64,
-// REWRITES-BIONIC-AARCH64-NEXT:     __pad1: u64,
-// REWRITES-NEXT:     st_size: i64,
-// REWRITES-BIONIC-AARCH64-NEXT:     st_blksize: i32,
-// REWRITES-BIONIC-AARCH64-NEXT:     __pad2: i32,
-// REWRITES-BIONIC-X86_64-NEXT:     st_blksize: i64,
-// REWRITES-NEXT:     st_blocks: i64,
-// REWRITES-NEXT:     st_atim: libc::timespec,
-// REWRITES-NEXT:     st_mtim: libc::timespec,
-// REWRITES-NEXT:     st_ctim: libc::timespec,
-// REWRITES-BIONIC-AARCH64-NEXT:     __unused4: u32,
-// REWRITES-BIONIC-AARCH64-NEXT:     __unused5: u32,
-// REWRITES-BIONIC-X86_64-NEXT:     __pad3: [i64; 3],
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: #[repr(C)]
-// REWRITES-NEXT: #[derive(Clone, Copy)]
-// REWRITES-NEXT: struct statvfs {
-// REWRITES-NEXT:     f_bsize: u64,
-// REWRITES-NEXT:     f_frsize: u64,
-// REWRITES-NEXT:     f_blocks: u64,
-// REWRITES-NEXT:     f_bfree: u64,
-// REWRITES-NEXT:     f_bavail: u64,
-// REWRITES-NEXT:     f_files: u64,
-// REWRITES-NEXT:     f_ffree: u64,
-// REWRITES-NEXT:     f_favail: u64,
-// REWRITES-NEXT:     f_fsid: u64,
-// REWRITES-NEXT:     f_flag: u64,
-// REWRITES-NEXT:     f_namemax: u64,
-// REWRITES-NEXT:     __f_reserved: [u32; 6],
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: #[repr(C)]
-// REWRITES-NEXT: #[derive(Clone, Copy)]
-// REWRITES-NEXT: struct utimbuf {
-// REWRITES-NEXT:     actime: i64,
-// REWRITES-NEXT:     modtime: i64,
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() -> std::process::ExitCode {
-// REWRITES-NEXT:     return std::process::ExitCode::SUCCESS;
-// REWRITES-NEXT: }
-// SLATE-FILECHECK-END rewrites

@@ -11,7 +11,7 @@ int main(void) { return 0; }
 // REWRITES-MACOS-DAG: fn store_long_double(_0: *mut f64);
 // REWRITES-MACOS-DAG: fn load_long_double(_0: *const f64) -> *const f64;
 
-// SLATE-FILECHECK-BEGIN lowering-macos
+// SLATE-FILECHECK-BEGIN lowering
 // LOWERING-MACOS: #![allow(
 // LOWERING-MACOS-NEXT:     dead_code,
 // LOWERING-MACOS-NEXT:     unused,
@@ -42,6 +42,6 @@ int main(void) { return 0; }
 // LOWERING-MACOS-NEXT: fn main() -> std::process::ExitCode {
 // LOWERING-MACOS-NEXT:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-MACOS-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-MACOS-NEXT:     return std::process::ExitCode::from({{__v[0-9]+}} as u8);
+// LOWERING-MACOS-NEXT:     return std::process::ExitCode::SUCCESS;
 // LOWERING-MACOS-NEXT: }
-// SLATE-FILECHECK-END lowering-macos
+// SLATE-FILECHECK-END lowering

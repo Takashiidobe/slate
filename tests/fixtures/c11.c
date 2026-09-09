@@ -455,6 +455,29 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[repr(C)]
+// LOWERING-NEXT: #[expect(non_camel_case_types)]
+// LOWERING-NEXT: #[derive(Clone, Copy)]
+// LOWERING-NEXT: struct __once_flag {
+// LOWERING-NEXT:     __data: i32,
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: #[repr(C)]
+// LOWERING-NEXT: #[derive(Clone, Copy)]
+// LOWERING-NEXT: union __pthread_cond_t {
+// LOWERING-X86_64-GNU-NEXT:     __size: [i8; 48],
+// LOWERING-AARCH64-GNU-NEXT:     __size: [u8; 48],
+// LOWERING-NEXT:     __align: i64,
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: #[repr(C)]
+// LOWERING-NEXT: #[derive(Clone, Copy)]
+// LOWERING-NEXT: union __pthread_mutex_t {
+// LOWERING-X86_64-GNU-NEXT:     __size: [i8; 40],
+// LOWERING-AARCH64-GNU-NEXT:     __size: [u8; 48],
+// LOWERING-NEXT:     __align: i64,
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[derive(Clone, Copy)]
 // LOWERING-NEXT: union {{anon_[0-9]+}} {
 // LOWERING-NEXT:     integer: i32,
@@ -474,22 +497,6 @@ int main(void) {
 // LOWERING-NEXT:     __wch: i32,
 // LOWERING-X86_64-GNU-NEXT:     __wchb: [i8; 4],
 // LOWERING-AARCH64-GNU-NEXT:     __wchb: [u8; 4],
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: #[repr(C)]
-// LOWERING-NEXT: #[derive(Clone, Copy)]
-// LOWERING-NEXT: union cnd_t {
-// LOWERING-X86_64-GNU-NEXT:     __size: [i8; 48],
-// LOWERING-AARCH64-GNU-NEXT:     __size: [u8; 48],
-// LOWERING-NEXT:     __align: i64,
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: #[repr(C)]
-// LOWERING-NEXT: #[derive(Clone, Copy)]
-// LOWERING-NEXT: union mtx_t {
-// LOWERING-X86_64-GNU-NEXT:     __size: [i8; 40],
-// LOWERING-AARCH64-GNU-NEXT:     __size: [u8; 48],
-// LOWERING-NEXT:     __align: i64,
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: static mut c11_aligned_buffer: aligned::Aligned<aligned::A64, [u8; 64]> = aligned::Aligned([0; 64]);
@@ -520,13 +527,13 @@ int main(void) {
 // LOWERING-NEXT:         _2: *mut core::ffi::c_void,
 // LOWERING-NEXT:     ) -> i32;
 // LOWERING-NEXT:     fn thrd_join(_0: u64, _1: *mut i32) -> i32;
-// LOWERING-NEXT:     fn mtx_init(_0: *mut mtx_t, _1: i32) -> i32;
-// LOWERING-NEXT:     fn mtx_lock(_0: *mut mtx_t) -> i32;
-// LOWERING-NEXT:     fn mtx_unlock(_0: *mut mtx_t) -> i32;
-// LOWERING-NEXT:     fn mtx_destroy(_0: *mut mtx_t);
-// LOWERING-NEXT:     fn cnd_init(_0: *mut cnd_t) -> i32;
-// LOWERING-NEXT:     fn cnd_destroy(_0: *mut cnd_t);
-// LOWERING-NEXT:     fn call_once(_0: *mut i32, _1: Option<unsafe extern "C-unwind" fn()>);
+// LOWERING-NEXT:     fn mtx_init(_0: *mut __pthread_mutex_t, _1: i32) -> i32;
+// LOWERING-NEXT:     fn mtx_lock(_0: *mut __pthread_mutex_t) -> i32;
+// LOWERING-NEXT:     fn mtx_unlock(_0: *mut __pthread_mutex_t) -> i32;
+// LOWERING-NEXT:     fn mtx_destroy(_0: *mut __pthread_mutex_t);
+// LOWERING-NEXT:     fn cnd_init(_0: *mut __pthread_cond_t) -> i32;
+// LOWERING-NEXT:     fn cnd_destroy(_0: *mut __pthread_cond_t);
+// LOWERING-NEXT:     fn call_once(_0: *mut __once_flag, _1: Option<unsafe extern "C-unwind" fn()>);
 // LOWERING-NEXT:     fn tss_create(
 // LOWERING-NEXT:         _0: *mut u32,
 // LOWERING-NEXT:         _1: Option<unsafe extern "C-unwind" fn(*mut core::ffi::c_void)>,
@@ -589,9 +596,9 @@ int main(void) {
 // LOWERING-NEXT:         tv_nsec: 0,
 // LOWERING-NEXT:     };
 // LOWERING-NEXT:     let mut thread: u64 = 0;
-// LOWERING-NEXT:     let mut mutex: mtx_t = unsafe { std::mem::zeroed::<mtx_t>() };
-// LOWERING-NEXT:     let mut condition: cnd_t = unsafe { std::mem::zeroed::<cnd_t>() };
-// LOWERING-NEXT:     let mut once_control: i32 = 0;
+// LOWERING-NEXT:     let mut mutex: __pthread_mutex_t = unsafe { std::mem::zeroed::<__pthread_mutex_t>() };
+// LOWERING-NEXT:     let mut condition: __pthread_cond_t = unsafe { std::mem::zeroed::<__pthread_cond_t>() };
+// LOWERING-NEXT:     let mut once_control: __once_flag = __once_flag { __data: 0 };
 // LOWERING-NEXT:     let mut thread_key: u32 = 0;
 // LOWERING-NEXT:     let mut thread_increment: i32 = 0;
 // LOWERING-NEXT:     let mut thread_result: i32 = 0;
@@ -632,7 +639,7 @@ int main(void) {
 // LOWERING-NEXT:         tv_nsec: 0,
 // LOWERING-NEXT:     };
 // LOWERING-NEXT:     current_time = {{__v[0-9]+}};
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: __once_flag = __once_flag { __data: 0 };
 // LOWERING-NEXT:     once_control = {{__v[0-9]+}};
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 7;
 // LOWERING-NEXT:     thread_increment = {{__v[0-9]+}};
@@ -787,8 +794,12 @@ int main(void) {
 // LOWERING-NEXT:     concurrency_total = {{__v[0-9]+}};
 // LOWERING-NEXT:     {
 // LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 =
-// LOWERING-NEXT:             unsafe { mtx_init(std::ptr::addr_of_mut!(mutex) as *mut mtx_t, {{__v[0-9]+}} as i32) };
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = unsafe {
+// LOWERING-NEXT:             mtx_init(
+// LOWERING-NEXT:                 std::ptr::addr_of_mut!(mutex) as *mut __pthread_mutex_t,
+// LOWERING-NEXT:                 {{__v[0-9]+}} as i32,
+// LOWERING-NEXT:             )
+// LOWERING-NEXT:         };
 // LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
 // LOWERING-NEXT:         if {{__v[0-9]+}} {
@@ -796,25 +807,28 @@ int main(void) {
 // LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = concurrency_total;
 // LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
 // LOWERING-NEXT:             concurrency_total = {{__v[0-9]+}};
-// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = unsafe { mtx_lock(std::ptr::addr_of_mut!(mutex) as *mut mtx_t) };
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 =
+// LOWERING-NEXT:                 unsafe { mtx_lock(std::ptr::addr_of_mut!(mutex) as *mut __pthread_mutex_t) };
 // LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
 // LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
 // LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = concurrency_total;
 // LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
 // LOWERING-NEXT:             concurrency_total = {{__v[0-9]+}};
-// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = unsafe { mtx_unlock(std::ptr::addr_of_mut!(mutex) as *mut mtx_t) };
+// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 =
+// LOWERING-NEXT:                 unsafe { mtx_unlock(std::ptr::addr_of_mut!(mutex) as *mut __pthread_mutex_t) };
 // LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
 // LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
 // LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = concurrency_total;
 // LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
 // LOWERING-NEXT:             concurrency_total = {{__v[0-9]+}};
-// LOWERING-NEXT:             unsafe { mtx_destroy(std::ptr::addr_of_mut!(mutex) as *mut mtx_t) };
+// LOWERING-NEXT:             unsafe { mtx_destroy(std::ptr::addr_of_mut!(mutex) as *mut __pthread_mutex_t) };
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = unsafe { cnd_init(std::ptr::addr_of_mut!(condition) as *mut cnd_t) };
+// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 =
+// LOWERING-NEXT:             unsafe { cnd_init(std::ptr::addr_of_mut!(condition) as *mut __pthread_cond_t) };
 // LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
 // LOWERING-NEXT:         if {{__v[0-9]+}} {
@@ -822,7 +836,7 @@ int main(void) {
 // LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = concurrency_total;
 // LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
 // LOWERING-NEXT:             concurrency_total = {{__v[0-9]+}};
-// LOWERING-NEXT:             unsafe { cnd_destroy(std::ptr::addr_of_mut!(condition) as *mut cnd_t) };
+// LOWERING-NEXT:             unsafe { cnd_destroy(std::ptr::addr_of_mut!(condition) as *mut __pthread_cond_t) };
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
@@ -831,13 +845,13 @@ int main(void) {
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     unsafe {
 // LOWERING-NEXT:         call_once(
-// LOWERING-NEXT:             std::ptr::addr_of_mut!(once_control) as *mut i32,
+// LOWERING-NEXT:             std::ptr::addr_of_mut!(once_control) as *mut __once_flag,
 // LOWERING-NEXT:             Some(c11_once_handler),
 // LOWERING-NEXT:         )
 // LOWERING-NEXT:     };
 // LOWERING-NEXT:     unsafe {
 // LOWERING-NEXT:         call_once(
-// LOWERING-NEXT:             std::ptr::addr_of_mut!(once_control) as *mut i32,
+// LOWERING-NEXT:             std::ptr::addr_of_mut!(once_control) as *mut __once_flag,
 // LOWERING-NEXT:             Some(c11_once_handler),
 // LOWERING-NEXT:         )
 // LOWERING-NEXT:     };
@@ -1506,6 +1520,29 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[repr(C)]
+// REWRITES-NEXT: #[expect(non_camel_case_types)]
+// REWRITES-NEXT: #[derive(Clone, Copy)]
+// REWRITES-NEXT: struct __once_flag {
+// REWRITES-NEXT:     __data: i32,
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: #[repr(C)]
+// REWRITES-NEXT: #[derive(Clone, Copy)]
+// REWRITES-NEXT: union __pthread_cond_t {
+// REWRITES-X86_64-GNU-NEXT:     __size: [i8; 48],
+// REWRITES-AARCH64-GNU-NEXT:     __size: [u8; 48],
+// REWRITES-NEXT:     __align: i64,
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: #[repr(C)]
+// REWRITES-NEXT: #[derive(Clone, Copy)]
+// REWRITES-NEXT: union __pthread_mutex_t {
+// REWRITES-X86_64-GNU-NEXT:     __size: [i8; 40],
+// REWRITES-AARCH64-GNU-NEXT:     __size: [u8; 48],
+// REWRITES-NEXT:     __align: i64,
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: #[repr(C)]
 // REWRITES-NEXT: #[derive(Clone, Copy)]
 // REWRITES-NEXT: union {{anon_[0-9]+}} {
 // REWRITES-NEXT:     integer: i32,
@@ -1525,22 +1562,6 @@ int main(void) {
 // REWRITES-NEXT:     __wch: i32,
 // REWRITES-X86_64-GNU-NEXT:     __wchb: [i8; 4],
 // REWRITES-AARCH64-GNU-NEXT:     __wchb: [u8; 4],
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: #[repr(C)]
-// REWRITES-NEXT: #[derive(Clone, Copy)]
-// REWRITES-NEXT: union cnd_t {
-// REWRITES-X86_64-GNU-NEXT:     __size: [i8; 48],
-// REWRITES-AARCH64-GNU-NEXT:     __size: [u8; 48],
-// REWRITES-NEXT:     __align: i64,
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: #[repr(C)]
-// REWRITES-NEXT: #[derive(Clone, Copy)]
-// REWRITES-NEXT: union mtx_t {
-// REWRITES-X86_64-GNU-NEXT:     __size: [i8; 40],
-// REWRITES-AARCH64-GNU-NEXT:     __size: [u8; 48],
-// REWRITES-NEXT:     __align: i64,
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: static mut c11_aligned_buffer: aligned::Aligned<aligned::A64, [u8; 64]> = aligned::Aligned([0; 64]);
@@ -1571,13 +1592,13 @@ int main(void) {
 // REWRITES-NEXT:         _2: *mut core::ffi::c_void,
 // REWRITES-NEXT:     ) -> i32;
 // REWRITES-NEXT:     fn thrd_join(_0: u64, _1: *mut i32) -> i32;
-// REWRITES-NEXT:     fn mtx_init(_0: *mut mtx_t, _1: i32) -> i32;
-// REWRITES-NEXT:     fn mtx_lock(_0: *mut mtx_t) -> i32;
-// REWRITES-NEXT:     fn mtx_unlock(_0: *mut mtx_t) -> i32;
-// REWRITES-NEXT:     fn mtx_destroy(_0: *mut mtx_t);
-// REWRITES-NEXT:     fn cnd_init(_0: *mut cnd_t) -> i32;
-// REWRITES-NEXT:     fn cnd_destroy(_0: *mut cnd_t);
-// REWRITES-NEXT:     fn call_once(_0: *mut i32, _1: Option<unsafe extern "C-unwind" fn()>);
+// REWRITES-NEXT:     fn mtx_init(_0: *mut __pthread_mutex_t, _1: i32) -> i32;
+// REWRITES-NEXT:     fn mtx_lock(_0: *mut __pthread_mutex_t) -> i32;
+// REWRITES-NEXT:     fn mtx_unlock(_0: *mut __pthread_mutex_t) -> i32;
+// REWRITES-NEXT:     fn mtx_destroy(_0: *mut __pthread_mutex_t);
+// REWRITES-NEXT:     fn cnd_init(_0: *mut __pthread_cond_t) -> i32;
+// REWRITES-NEXT:     fn cnd_destroy(_0: *mut __pthread_cond_t);
+// REWRITES-NEXT:     fn call_once(_0: *mut __once_flag, _1: Option<unsafe extern "C-unwind" fn()>);
 // REWRITES-NEXT:     fn tss_create(
 // REWRITES-NEXT:         _0: *mut u32,
 // REWRITES-NEXT:         _1: Option<unsafe extern "C-unwind" fn(*mut core::ffi::c_void)>,
@@ -1644,9 +1665,9 @@ int main(void) {
 // REWRITES-NEXT:         tv_nsec: 0,
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let mut thread: u64 = 0;
-// REWRITES-NEXT:     let mut mutex: mtx_t = unsafe { std::mem::zeroed::<mtx_t>() };
-// REWRITES-NEXT:     let mut condition: cnd_t = unsafe { std::mem::zeroed::<cnd_t>() };
-// REWRITES-NEXT:     let mut once_control: i32 = 0;
+// REWRITES-NEXT:     let mut mutex: __pthread_mutex_t = unsafe { std::mem::zeroed::<__pthread_mutex_t>() };
+// REWRITES-NEXT:     let mut condition: __pthread_cond_t = unsafe { std::mem::zeroed::<__pthread_cond_t>() };
+// REWRITES-NEXT:     let mut once_control: __once_flag = __once_flag { __data: 0 };
 // REWRITES-NEXT:     let mut thread_key: u32 = 0;
 // REWRITES-NEXT:     let mut thread_increment: i32 = 7;
 // REWRITES-NEXT:     let mut thread_result: i32 = 0;
@@ -1675,6 +1696,7 @@ int main(void) {
 // REWRITES-NEXT:         tv_sec: 0,
 // REWRITES-NEXT:         tv_nsec: 0,
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     once_control = __once_flag { __data: 0 };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 4;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = std::mem::align_of::<C11OverAligned>() as i32;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
@@ -1753,34 +1775,42 @@ int main(void) {
 // REWRITES-NEXT:         + unsafe { c11_thread_local_value };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i32 = unsafe { __errno_location() };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + (((unsafe { *{{__v[0-9]+}} }) == 0) as i32);
-// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { mtx_init(std::ptr::addr_of_mut!(mutex) as *mut mtx_t, 0 as i32) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe {
+// REWRITES-NEXT:         mtx_init(
+// REWRITES-NEXT:             std::ptr::addr_of_mut!(mutex) as *mut __pthread_mutex_t,
+// REWRITES-NEXT:             0 as i32,
+// REWRITES-NEXT:         )
+// REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == 0;
 // REWRITES-NEXT:     if {{__v[0-9]+}} {
 // REWRITES-NEXT:         concurrency_total += 1;
-// REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = unsafe { mtx_lock(std::ptr::addr_of_mut!(mutex) as *mut mtx_t) };
+// REWRITES-NEXT:         let {{__v[0-9]+}}: i32 =
+// REWRITES-NEXT:             unsafe { mtx_lock(std::ptr::addr_of_mut!(mutex) as *mut __pthread_mutex_t) };
 // REWRITES-NEXT:         concurrency_total += ({{__v[0-9]+}} == 0) as i32;
-// REWRITES-NEXT:         let {{__v[0-9]+}}: i32 = unsafe { mtx_unlock(std::ptr::addr_of_mut!(mutex) as *mut mtx_t) };
+// REWRITES-NEXT:         let {{__v[0-9]+}}: i32 =
+// REWRITES-NEXT:             unsafe { mtx_unlock(std::ptr::addr_of_mut!(mutex) as *mut __pthread_mutex_t) };
 // REWRITES-NEXT:         concurrency_total += ({{__v[0-9]+}} == 0) as i32;
-// REWRITES-NEXT:         unsafe { mtx_destroy(std::ptr::addr_of_mut!(mutex) as *mut mtx_t) };
+// REWRITES-NEXT:         unsafe { mtx_destroy(std::ptr::addr_of_mut!(mutex) as *mut __pthread_mutex_t) };
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { cnd_init(std::ptr::addr_of_mut!(condition) as *mut cnd_t) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 =
+// REWRITES-NEXT:         unsafe { cnd_init(std::ptr::addr_of_mut!(condition) as *mut __pthread_cond_t) };
 // REWRITES-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == 0;
 // REWRITES-NEXT:     if {{__v[0-9]+}} {
 // REWRITES-NEXT:         concurrency_total += 1;
-// REWRITES-NEXT:         unsafe { cnd_destroy(std::ptr::addr_of_mut!(condition) as *mut cnd_t) };
+// REWRITES-NEXT:         unsafe { cnd_destroy(std::ptr::addr_of_mut!(condition) as *mut __pthread_cond_t) };
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         c11_once_total = 0;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         call_once(
-// REWRITES-NEXT:             std::ptr::addr_of_mut!(once_control) as *mut i32,
+// REWRITES-NEXT:             std::ptr::addr_of_mut!(once_control) as *mut __once_flag,
 // REWRITES-NEXT:             Some(c11_once_handler),
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         call_once(
-// REWRITES-NEXT:             std::ptr::addr_of_mut!(once_control) as *mut i32,
+// REWRITES-NEXT:             std::ptr::addr_of_mut!(once_control) as *mut __once_flag,
 // REWRITES-NEXT:             Some(c11_once_handler),
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };

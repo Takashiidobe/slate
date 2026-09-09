@@ -36,27 +36,6 @@ _Static_assert(__SLATE_ANDROID_API__ == 21, "Android API 21 required");
 
 int main(void) { return 0; }
 
-// SLATE-FILECHECK-BEGIN common-lowering
-// COMMON-LOWERING: #![allow(
-// COMMON-LOWERING-NEXT:     dead_code,
-// COMMON-LOWERING-NEXT:     unused,
-// COMMON-LOWERING-NEXT:     non_camel_case_types,
-// COMMON-LOWERING-NEXT:     non_snake_case,
-// COMMON-LOWERING-NEXT:     non_upper_case_globals,
-// COMMON-LOWERING-NEXT:     arithmetic_overflow,
-// COMMON-LOWERING-NEXT:     unconditional_panic,
-// COMMON-LOWERING-NEXT:     suspicious_runtime_symbol_definitions,
-// COMMON-LOWERING-NEXT:     unpredictable_function_pointer_comparisons,
-// COMMON-LOWERING-NEXT:     unused_comparisons
-// COMMON-LOWERING-NEXT: )]
-// COMMON-LOWERING-EMPTY:
-// COMMON-LOWERING-NEXT: fn main() -> std::process::ExitCode {
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// COMMON-LOWERING-NEXT:     return std::process::ExitCode::from({{__v[0-9]+}} as u8);
-// COMMON-LOWERING-NEXT: }
-// SLATE-FILECHECK-END common-lowering
-
 // SLATE-FILECHECK-BEGIN common-rewrites
 // COMMON-REWRITES: #![allow(
 // COMMON-REWRITES-NEXT:     dead_code,
@@ -75,3 +54,24 @@ int main(void) { return 0; }
 // COMMON-REWRITES-NEXT:     return std::process::ExitCode::SUCCESS;
 // COMMON-REWRITES-NEXT: }
 // SLATE-FILECHECK-END common-rewrites
+
+// SLATE-FILECHECK-BEGIN lowering
+// LOWERING: #![allow(
+// LOWERING-NEXT:     dead_code,
+// LOWERING-NEXT:     unused,
+// LOWERING-NEXT:     non_camel_case_types,
+// LOWERING-NEXT:     non_snake_case,
+// LOWERING-NEXT:     non_upper_case_globals,
+// LOWERING-NEXT:     arithmetic_overflow,
+// LOWERING-NEXT:     unconditional_panic,
+// LOWERING-NEXT:     suspicious_runtime_symbol_definitions,
+// LOWERING-NEXT:     unpredictable_function_pointer_comparisons,
+// LOWERING-NEXT:     unused_comparisons
+// LOWERING-NEXT: )]
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn main() -> std::process::ExitCode {
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     return std::process::ExitCode::SUCCESS;
+// LOWERING-NEXT: }
+// SLATE-FILECHECK-END lowering

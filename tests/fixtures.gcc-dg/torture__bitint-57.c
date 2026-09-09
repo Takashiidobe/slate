@@ -37,53 +37,6 @@ int main() {
 // @rewrite-fn-end
 // @lowering-fn-end
 
-// SLATE-FILECHECK-BEGIN lowering
-// LOWERING-DAG: unsafe fn foo(
-// LOWERING-DAG:     {{arg[0-9]+}}: bitint::BUint<255, 4, 32>,
-// LOWERING-DAG:     {{arg[0-9]+}}: bitint::BUint<257, 5, 40>,
-// LOWERING-DAG:     {{arg[0-9]+}}: *mut bitint::BUint<512, 8, 64>,
-// LOWERING-DAG: ) {
-// LOWERING-DAG:     let {{__v[0-9]+}}: bitint::BUint<512, 8, 64> = unsafe { *v };
-// LOWERING-DAG:     let {{__v[0-9]+}}: bitint::BUint<512, 8, 64> = bitint::BUint::<512, 8, 64>::from_buint({{arg[0-9]+}});
-// LOWERING-DAG:     let {{__v[0-9]+}}: bitint::BUint<512, 8, 64> = {{__v[0-9]+}} + {{__v[0-9]+}};
-// LOWERING-DAG:     let {{__v[0-9]+}}: bitint::BUint<257, 5, 40> = bitint::BUint::<257, 5, 40>::from_buint({{__v[0-9]+}});
-// LOWERING-DAG:     let {{__v[0-9]+}}: bitint::BUint<257, 5, 40> = bitint::BUint::<257, 5, 40>::from_buint({{arg[0-9]+}});
-// LOWERING-DAG:     let {{__v[0-9]+}}: bitint::BUint<257, 5, 40> = {{__v[0-9]+}} - {{__v[0-9]+}};
-// LOWERING-DAG:     let {{__v[0-9]+}}: bitint::BUint<257, 5, 40> = {{__v[0-9]+}} | {{__v[0-9]+}};
-// LOWERING-DAG:     let {{__v[0-9]+}}: bitint::BUint<257, 5, 40> = bitint::BUint::<257, 5, 40>::from_decimal_str("6");
-// LOWERING-DAG:     let {{__v[0-9]+}}: bitint::BUint<257, 5, 40> = {{__v[0-9]+}} * {{__v[0-9]+}};
-// LOWERING-DAG:     let {{__v[0-9]+}}: bitint::BUint<512, 8, 64> = bitint::BUint::<512, 8, 64>::from_buint({{__v[0-9]+}});
-// LOWERING-DAG:     let {{__v[0-9]+}}: bitint::BUint<512, 8, 64> = unsafe { *u };
-// LOWERING-DAG:     let {{__v[0-9]+}}: bitint::BUint<512, 8, 64> = {{__v[0-9]+}} >> {{__v[0-9]+}}.to_u128();
-// LOWERING-DAG:     unsafe {
-// LOWERING-DAG:         *{{arg[0-9]+}} = {{__v[0-9]+}};
-// LOWERING-DAG:     }
-// LOWERING-DAG:     return;
-// LOWERING-DAG: }
-// LOWERING-DAG: fn main() -> std::process::ExitCode {
-// LOWERING-DAG:     let mut x: aligned::Aligned<aligned::A8, bitint::BUint<512, 8, 64>> =
-// LOWERING-DAG:         aligned::Aligned(bitint::BUint::<512, 8, 64>::ZERO);
-// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:     let {{__v[0-9]+}}: bitint::BUint<255, 4, 32> =
-// LOWERING-DAG:         bitint::BUint::<255, 4, 32>::from_decimal_str("18446744073709551616");
-// LOWERING-DAG:     let {{__v[0-9]+}}: bitint::BUint<257, 5, 40> =
-// LOWERING-DAG:         bitint::BUint::<257, 5, 40>::from_decimal_str("18446744073709551617");
-// LOWERING-DAG:     unsafe { foo({{__v[0-9]+}}, {{__v[0-9]+}}, std::ptr::addr_of_mut!(*x)) };
-// LOWERING-DAG:     {
-// LOWERING-DAG:         let {{__v[0-9]+}}: bitint::BUint<512, 8, 64> = *x;
-// LOWERING-DAG:         let {{__v[0-9]+}}: bitint::BUint<512, 8, 64> = bitint::BUint::<512, 8, 64>::from_decimal_str(
-// LOWERING-DAG:             "231584178474632390847141970017375815706539969331281128078915168015826259279866",
-// LOWERING-DAG:         );
-// LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// LOWERING-DAG:         if {{__v[0-9]+}} {
-// LOWERING-DAG:             unsafe { abort() };
-// LOWERING-DAG:         }
-// LOWERING-DAG:     }
-// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:     return std::process::ExitCode::from({{__v[0-9]+}} as u8);
-// LOWERING-DAG: }
-// SLATE-FILECHECK-END lowering
-
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: unsafe fn foo(
 // REWRITES-DAG:     {{arg[0-9]+}}: bitint::BUint<255, 4, 32>,
@@ -125,3 +78,50 @@ int main() {
 // REWRITES-DAG:     return std::process::ExitCode::SUCCESS;
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites
+
+// SLATE-FILECHECK-BEGIN lowering
+// LOWERING-X86_64-GNU-DAG: unsafe fn foo(
+// LOWERING-X86_64-GNU-DAG:     {{arg[0-9]+}}: bitint::BUint<255, 4, 32>,
+// LOWERING-X86_64-GNU-DAG:     {{arg[0-9]+}}: bitint::BUint<257, 5, 40>,
+// LOWERING-X86_64-GNU-DAG:     {{arg[0-9]+}}: *mut bitint::BUint<512, 8, 64>,
+// LOWERING-X86_64-GNU-DAG: ) {
+// LOWERING-X86_64-GNU-DAG:     let {{__v[0-9]+}}: bitint::BUint<512, 8, 64> = unsafe { *v };
+// LOWERING-X86_64-GNU-DAG:     let {{__v[0-9]+}}: bitint::BUint<512, 8, 64> = bitint::BUint::<512, 8, 64>::from_buint({{arg[0-9]+}});
+// LOWERING-X86_64-GNU-DAG:     let {{__v[0-9]+}}: bitint::BUint<512, 8, 64> = {{__v[0-9]+}} + {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-DAG:     let {{__v[0-9]+}}: bitint::BUint<257, 5, 40> = bitint::BUint::<257, 5, 40>::from_buint({{__v[0-9]+}});
+// LOWERING-X86_64-GNU-DAG:     let {{__v[0-9]+}}: bitint::BUint<257, 5, 40> = bitint::BUint::<257, 5, 40>::from_buint({{arg[0-9]+}});
+// LOWERING-X86_64-GNU-DAG:     let {{__v[0-9]+}}: bitint::BUint<257, 5, 40> = {{__v[0-9]+}} - {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-DAG:     let {{__v[0-9]+}}: bitint::BUint<257, 5, 40> = {{__v[0-9]+}} | {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-DAG:     let {{__v[0-9]+}}: bitint::BUint<257, 5, 40> = bitint::BUint::<257, 5, 40>::from_decimal_str("6");
+// LOWERING-X86_64-GNU-DAG:     let {{__v[0-9]+}}: bitint::BUint<257, 5, 40> = {{__v[0-9]+}} * {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-DAG:     let {{__v[0-9]+}}: bitint::BUint<512, 8, 64> = bitint::BUint::<512, 8, 64>::from_buint({{__v[0-9]+}});
+// LOWERING-X86_64-GNU-DAG:     let {{__v[0-9]+}}: bitint::BUint<512, 8, 64> = unsafe { *u };
+// LOWERING-X86_64-GNU-DAG:     let {{__v[0-9]+}}: bitint::BUint<512, 8, 64> = {{__v[0-9]+}} >> {{__v[0-9]+}}.to_u128();
+// LOWERING-X86_64-GNU-DAG:     unsafe {
+// LOWERING-X86_64-GNU-DAG:         *{{arg[0-9]+}} = {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-DAG:     }
+// LOWERING-X86_64-GNU-DAG:     return;
+// LOWERING-X86_64-GNU-DAG: }
+// LOWERING-X86_64-GNU-DAG: fn main() -> std::process::ExitCode {
+// LOWERING-X86_64-GNU-DAG:     let mut x: aligned::Aligned<aligned::A8, bitint::BUint<512, 8, 64>> =
+// LOWERING-X86_64-GNU-DAG:         aligned::Aligned(bitint::BUint::<512, 8, 64>::ZERO);
+// LOWERING-X86_64-GNU-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-DAG:     let {{__v[0-9]+}}: bitint::BUint<255, 4, 32> =
+// LOWERING-X86_64-GNU-DAG:         bitint::BUint::<255, 4, 32>::from_decimal_str("18446744073709551616");
+// LOWERING-X86_64-GNU-DAG:     let {{__v[0-9]+}}: bitint::BUint<257, 5, 40> =
+// LOWERING-X86_64-GNU-DAG:         bitint::BUint::<257, 5, 40>::from_decimal_str("18446744073709551617");
+// LOWERING-X86_64-GNU-DAG:     unsafe { foo({{__v[0-9]+}}, {{__v[0-9]+}}, std::ptr::addr_of_mut!(*x)) };
+// LOWERING-X86_64-GNU-DAG:     {
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: bitint::BUint<512, 8, 64> = *x;
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: bitint::BUint<512, 8, 64> = bitint::BUint::<512, 8, 64>::from_decimal_str(
+// LOWERING-X86_64-GNU-DAG:             "231584178474632390847141970017375815706539969331281128078915168015826259279866",
+// LOWERING-X86_64-GNU-DAG:         );
+// LOWERING-X86_64-GNU-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-DAG:         if {{__v[0-9]+}} {
+// LOWERING-X86_64-GNU-DAG:             unsafe { abort() };
+// LOWERING-X86_64-GNU-DAG:         }
+// LOWERING-X86_64-GNU-DAG:     }
+// LOWERING-X86_64-GNU-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-DAG:     return std::process::ExitCode::SUCCESS;
+// LOWERING-X86_64-GNU-DAG: }
+// SLATE-FILECHECK-END lowering

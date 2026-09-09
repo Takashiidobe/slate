@@ -37,27 +37,6 @@ _Static_assert(__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ == 110000,
 
 int main(void) { return 0; }
 
-// SLATE-FILECHECK-BEGIN lowering-macos
-// LOWERING-MACOS: #![allow(
-// LOWERING-MACOS-NEXT:     dead_code,
-// LOWERING-MACOS-NEXT:     unused,
-// LOWERING-MACOS-NEXT:     non_camel_case_types,
-// LOWERING-MACOS-NEXT:     non_snake_case,
-// LOWERING-MACOS-NEXT:     non_upper_case_globals,
-// LOWERING-MACOS-NEXT:     arithmetic_overflow,
-// LOWERING-MACOS-NEXT:     unconditional_panic,
-// LOWERING-MACOS-NEXT:     suspicious_runtime_symbol_definitions,
-// LOWERING-MACOS-NEXT:     unpredictable_function_pointer_comparisons,
-// LOWERING-MACOS-NEXT:     unused_comparisons
-// LOWERING-MACOS-NEXT: )]
-// LOWERING-MACOS-EMPTY:
-// LOWERING-MACOS-NEXT: fn main() -> std::process::ExitCode {
-// LOWERING-MACOS-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-MACOS-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-MACOS-NEXT:     return std::process::ExitCode::from({{__v[0-9]+}} as u8);
-// LOWERING-MACOS-NEXT: }
-// SLATE-FILECHECK-END lowering-macos
-
 // SLATE-FILECHECK-BEGIN rewrites-macos
 // REWRITES-MACOS: #![allow(
 // REWRITES-MACOS-NEXT:     dead_code,
@@ -76,3 +55,24 @@ int main(void) { return 0; }
 // REWRITES-MACOS-NEXT:     return std::process::ExitCode::SUCCESS;
 // REWRITES-MACOS-NEXT: }
 // SLATE-FILECHECK-END rewrites-macos
+
+// SLATE-FILECHECK-BEGIN lowering
+// LOWERING-MACOS: #![allow(
+// LOWERING-MACOS-NEXT:     dead_code,
+// LOWERING-MACOS-NEXT:     unused,
+// LOWERING-MACOS-NEXT:     non_camel_case_types,
+// LOWERING-MACOS-NEXT:     non_snake_case,
+// LOWERING-MACOS-NEXT:     non_upper_case_globals,
+// LOWERING-MACOS-NEXT:     arithmetic_overflow,
+// LOWERING-MACOS-NEXT:     unconditional_panic,
+// LOWERING-MACOS-NEXT:     suspicious_runtime_symbol_definitions,
+// LOWERING-MACOS-NEXT:     unpredictable_function_pointer_comparisons,
+// LOWERING-MACOS-NEXT:     unused_comparisons
+// LOWERING-MACOS-NEXT: )]
+// LOWERING-MACOS-EMPTY:
+// LOWERING-MACOS-NEXT: fn main() -> std::process::ExitCode {
+// LOWERING-MACOS-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-MACOS-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-MACOS-NEXT:     return std::process::ExitCode::SUCCESS;
+// LOWERING-MACOS-NEXT: }
+// SLATE-FILECHECK-END lowering

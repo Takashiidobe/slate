@@ -10,54 +10,6 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN lowering
-// LOWERING: #![feature(c_variadic)]
-// LOWERING-NEXT: #![allow(
-// LOWERING-NEXT:     dead_code,
-// LOWERING-NEXT:     unused,
-// LOWERING-NEXT:     non_camel_case_types,
-// LOWERING-NEXT:     non_snake_case,
-// LOWERING-NEXT:     non_upper_case_globals,
-// LOWERING-NEXT:     arithmetic_overflow,
-// LOWERING-NEXT:     unconditional_panic,
-// LOWERING-NEXT:     suspicious_runtime_symbol_definitions,
-// LOWERING-NEXT:     unpredictable_function_pointer_comparisons,
-// LOWERING-NEXT:     unused_comparisons
-// LOWERING-NEXT: )]
-// LOWERING-EMPTY:
-// LOWERING-NEXT: unsafe extern "C" {
-// LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() -> std::process::ExitCode {
-// LOWERING-NEXT:     let mut flag: bool = false;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: bool = false;
-// LOWERING-NEXT:     flag = {{__v[0-9]+}};
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = std::ptr::addr_of_mut!(flag) as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: bool = (unsafe {
-// LOWERING-NEXT:         std::sync::atomic::AtomicI8::from_ptr({{__v[0-9]+}}).swap(1, std::sync::atomic::Ordering::SeqCst)
-// LOWERING-NEXT:     }) != 0;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = std::ptr::addr_of_mut!(flag) as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: bool = (unsafe {
-// LOWERING-NEXT:         std::sync::atomic::AtomicI8::from_ptr({{__v[0-9]+}}).swap(1, std::sync::atomic::Ordering::SeqCst)
-// LOWERING-NEXT:     }) != 0;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = std::ptr::addr_of_mut!(flag) as *mut i8;
-// LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         std::sync::atomic::AtomicI8::from_ptr({{__v[0-9]+}}).store(0, std::sync::atomic::Ordering::SeqCst)
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: bool = flag;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: bool = !{{__v[0-9]+}};
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     return std::process::ExitCode::from({{__v[0-9]+}} as u8);
-// LOWERING-NEXT: }
-// SLATE-FILECHECK-END lowering
-
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-X86_64-GNU: #![feature(c_variadic)]
 // REWRITES-X86_64-GNU-NEXT: #![allow(
@@ -106,3 +58,51 @@ int main(void) {
 // REWRITES-X86_64-GNU-NEXT:     return std::process::ExitCode::SUCCESS;
 // REWRITES-X86_64-GNU-NEXT: }
 // SLATE-FILECHECK-END rewrites
+
+// SLATE-FILECHECK-BEGIN lowering
+// LOWERING-X86_64-GNU: #![feature(c_variadic)]
+// LOWERING-X86_64-GNU-NEXT: #![allow(
+// LOWERING-X86_64-GNU-NEXT:     dead_code,
+// LOWERING-X86_64-GNU-NEXT:     unused,
+// LOWERING-X86_64-GNU-NEXT:     non_camel_case_types,
+// LOWERING-X86_64-GNU-NEXT:     non_snake_case,
+// LOWERING-X86_64-GNU-NEXT:     non_upper_case_globals,
+// LOWERING-X86_64-GNU-NEXT:     arithmetic_overflow,
+// LOWERING-X86_64-GNU-NEXT:     unconditional_panic,
+// LOWERING-X86_64-GNU-NEXT:     suspicious_runtime_symbol_definitions,
+// LOWERING-X86_64-GNU-NEXT:     unpredictable_function_pointer_comparisons,
+// LOWERING-X86_64-GNU-NEXT:     unused_comparisons
+// LOWERING-X86_64-GNU-NEXT: )]
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: unsafe extern "C" {
+// LOWERING-X86_64-GNU-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
+// LOWERING-X86_64-GNU-NEXT: }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: fn main() -> std::process::ExitCode {
+// LOWERING-X86_64-GNU-NEXT:     let mut flag: bool = false;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: bool = false;
+// LOWERING-X86_64-GNU-NEXT:     flag = {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = std::ptr::addr_of_mut!(flag) as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: bool = (unsafe {
+// LOWERING-X86_64-GNU-NEXT:         std::sync::atomic::AtomicI8::from_ptr({{__v[0-9]+}}).swap(1, std::sync::atomic::Ordering::SeqCst)
+// LOWERING-X86_64-GNU-NEXT:     }) != 0;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = std::ptr::addr_of_mut!(flag) as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: bool = (unsafe {
+// LOWERING-X86_64-GNU-NEXT:         std::sync::atomic::AtomicI8::from_ptr({{__v[0-9]+}}).swap(1, std::sync::atomic::Ordering::SeqCst)
+// LOWERING-X86_64-GNU-NEXT:     }) != 0;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = std::ptr::addr_of_mut!(flag) as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     unsafe {
+// LOWERING-X86_64-GNU-NEXT:         std::sync::atomic::AtomicI8::from_ptr({{__v[0-9]+}}).store(0, std::sync::atomic::Ordering::SeqCst)
+// LOWERING-X86_64-GNU-NEXT:     };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: bool = flag;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: bool = !{{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:     return std::process::ExitCode::SUCCESS;
+// LOWERING-X86_64-GNU-NEXT: }
+// SLATE-FILECHECK-END lowering

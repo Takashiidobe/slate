@@ -20,6 +20,9 @@
 #if defined(__SLATE_LIBC_MSVC)
 #define __NEED_uintptr_t
 #endif
+#if defined(__SLATE_LIBC_GLIBC) && __SLATE_GLIBC_MINOR__ >= 43
+#define __NEED_once_flag
+#endif
 #include <bits/types.h>
 
 #if defined(__SLATE_LIBC_MSVC)
@@ -145,11 +148,6 @@ void *bsearch(const void *key, const void *base, size_t nmemb, size_t size,
 #endif
 
 #if defined(__SLATE_LIBC_GLIBC) && __SLATE_GLIBC_MINOR__ >= 43
-struct __once_flag {
-  int __data;
-};
-typedef struct __once_flag once_flag;
-#define ONCE_FLAG_INIT {0}
 void call_once(once_flag *, void (*)(void));
 #endif
 
