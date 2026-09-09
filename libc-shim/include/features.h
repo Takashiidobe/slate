@@ -124,6 +124,7 @@
 
 #ifdef __SLATE_LIBC_GLIBC
 #include <bits/glibc.h>
+#include <sys/cdefs.h>
 #endif
 
 #if __STDC_VERSION__ >= 199901L
