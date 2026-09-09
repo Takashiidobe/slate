@@ -7,3 +7,8 @@
 
 int main(void) { return 0; }
 // DIRECTIVES-DAG: WARNING_TOKEN \"quoted\" C:\\tmp
+// COMMON: #[deprecated(note = "WARNING_TOKEN \"quoted\" C:\\tmp")]
+// COMMON-NEXT: const __SLATE_WARNING_0: () = {};
+// COMMON-EMPTY:
+// COMMON-NEXT: const _: () = __SLATE_WARNING_0;
+// COMMON-NOT: selected warning

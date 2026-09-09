@@ -18,7 +18,7 @@ fn usage() -> ExitCode {
         "  fixup-debug  <file.c> [--up-to-pass <pass>|--only-pass <pass>|--debug-only-pass <pass>]  print fixup pass trace"
     );
     eprintln!(
-        "  translate   [clang args...] <file.c>  C -> Rust (auto-expands target/arch #if regions into cfg items)"
+        "  translate   [--targets=<t1>,<t2>,...] [clang args...] <file.c>  C -> Rust (auto-expands target/arch #if regions into cfg items; --targets diffs and splices target/libc-only divergence with no #if required)"
     );
     eprintln!(
         "  translate-lowered  <file.c>  C -> Rust, raw lowered output with no fixup passes applied"
@@ -145,7 +145,18 @@ fn emit_cir(path: &Path) -> Result<String, String> {
 }
 
 fn translate_with_clang_args(path: &Path, clang_args: &[String]) -> Result<String, String> {
-    cli_report(api::translate_with_args(path, clang_args))
+    let mut targets = None;
+    let mut remaining = Vec::with_capacity(clang_args.len());
+    for arg in clang_args {
+        match arg.strip_prefix("--targets=") {
+            Some(value) => targets = Some(value.split(',').map(str::to_string).collect::<Vec<_>>()),
+            None => remaining.push(arg.clone()),
+        }
+    }
+    match targets {
+        Some(targets) => cli_report(api::translate_targets_with_args(path, &remaining, &targets)),
+        None => cli_report(api::translate_with_args(path, clang_args)),
+    }
 }
 
 fn lowered_program(path: &Path) -> Result<(Module, rust_ast::Program), String> {

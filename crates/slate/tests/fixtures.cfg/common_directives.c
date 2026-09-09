@@ -11,3 +11,5 @@ int main(void) {
   struct included_pair pair = {DIRECTIVE_VALUE, INCLUDED_VALUE};
   return pair.left + pair.right + IMPORTED_VALUE == 46 ? 0 : 1;
 }
+
+// COMMON-NOT: DIRECTIVE_VALUE
