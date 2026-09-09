@@ -36,6 +36,13 @@
 #define LLONG_MAX  0x7fffffffffffffffLL
 #define ULLONG_MAX (2ULL * LLONG_MAX + 1)
 
+#if defined(__SLATE_LIBC_GLIBC)
+#define BOOL_MAX       1
+#define LONG_LONG_MIN  (-__LONG_LONG_MAX__ - 1LL)
+#define LONG_LONG_MAX  __LONG_LONG_MAX__
+#define ULONG_LONG_MAX (__LONG_LONG_MAX__ * 2ULL + 1ULL)
+#endif
+
 #define BOOL_WIDTH __BOOL_WIDTH__
 #define CHAR_WIDTH CHAR_BIT
 #define SCHAR_WIDTH CHAR_BIT
@@ -50,6 +57,18 @@
 #define ULLONG_WIDTH __LLONG_WIDTH__
 
 #define MB_LEN_MAX 4
+
+#if defined(__SLATE_LIBC_GLIBC)
+#define MAX_CANON      255
+#define MAX_INPUT      255
+#define RTSIG_MAX      32
+#define XATTR_NAME_MAX 255
+#define XATTR_SIZE_MAX 65536
+#define XATTR_LIST_MAX 65536
+#elif defined(__SLATE_LIBC_MUSL)
+#define PAGESIZE  4096
+#define PAGE_SIZE PAGESIZE
+#endif
 
 #if defined(_POSIX_SOURCE) || defined(_POSIX_C_SOURCE) ||                      \
     defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
