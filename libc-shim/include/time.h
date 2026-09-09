@@ -169,6 +169,11 @@ int    stime(const time_t *);
 time_t timelocal(struct tm *);
 #endif
 
+#if defined(__SLATE_LIBC_GLIBC) && defined(_GNU_SOURCE)
+#include <bits/timex.h>
+int clock_adjtime(clockid_t, struct timex *);
+#endif
+
 #if defined(_GNU_SOURCE) || defined(_BSD_SOURCE) ||                            \
     (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L)
 time_t timegm(struct tm *);

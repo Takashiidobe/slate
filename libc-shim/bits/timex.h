@@ -1,22 +1,17 @@
-#ifndef _SLATE_SYS_TIMEX_H
-#define _SLATE_SYS_TIMEX_H
+#ifndef _SLATE_BITS_TIMEX_H
+#define _SLATE_BITS_TIMEX_H
 
-#include <features.h>
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/timex.h> directly; include a public header instead."
+#endif
 
-#define __NEED_clockid_t
+#if !defined(__SLATE_LIBC_GLIBC)
+#error "<bits/timex.h> is unavailable for this libc profile."
+#endif
 
+#define __NEED_struct_timeval
 #include <bits/types.h>
 
-#include <sys/time.h>
-
-struct ntptimeval {
-  struct timeval time;
-  long           maxerror, esterror;
-};
-
-#if defined(__SLATE_LIBC_GLIBC)
-#include <bits/timex.h>
-#else
 struct timex {
   unsigned       modes;
   long           offset, freq, maxerror, esterror;
@@ -29,7 +24,6 @@ struct timex {
   int            tai;
   int            __padding[11];
 };
-#endif
 
 #define ADJ_OFFSET            0x0001
 #define ADJ_FREQUENCY         0x0002
@@ -61,42 +55,20 @@ struct timex {
 #define STA_PPSFREQ 0x0002
 #define STA_PPSTIME 0x0004
 #define STA_FLL     0x0008
-
 #define STA_INS      0x0010
 #define STA_DEL      0x0020
 #define STA_UNSYNC   0x0040
 #define STA_FREQHOLD 0x0080
-
 #define STA_PPSSIGNAL 0x0100
 #define STA_PPSJITTER 0x0200
 #define STA_PPSWANDER 0x0400
 #define STA_PPSERROR  0x0800
-
 #define STA_CLOCKERR 0x1000
 #define STA_NANO     0x2000
 #define STA_MODE     0x4000
 #define STA_CLK      0x8000
-
 #define STA_RONLY                                                              \
   (STA_PPSSIGNAL | STA_PPSJITTER | STA_PPSWANDER | STA_PPSERROR |              \
    STA_CLOCKERR | STA_NANO | STA_MODE | STA_CLK)
-
-#define TIME_OK    0
-#define TIME_INS   1
-#define TIME_DEL   2
-#define TIME_OOP   3
-#define TIME_WAIT  4
-#define TIME_ERROR 5
-#define TIME_BAD   TIME_ERROR
-
-#define MAXTC 6
-
-int adjtimex(struct timex *);
-int clock_adjtime(clockid_t, struct timex *);
-
-#if _REDIR_TIME64
-__REDIR(adjtimex, __adjtimex_time64);
-__REDIR(clock_adjtime, __clock_adjtime64);
-#endif
 
 #endif
