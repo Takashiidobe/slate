@@ -178,28 +178,56 @@ struct TargetVariant {
     program: Program,
 }
 
+fn os_cfg(os: &str) -> Cfg {
+    match os {
+        "windows" => Cfg::Flag("windows".into()),
+        _ => Cfg::Opt {
+            key: "target_os".into(),
+            value: os.into(),
+        },
+    }
+}
+
 pub fn translate_targets_with_args(
     path: &Path,
     extra_args: &[String],
     targets: &[String],
 ) -> Result<String, DirectiveError> {
+    let mut deduped_targets = Vec::with_capacity(targets.len());
+    let mut seen_targets = BTreeSet::new();
+    for target in targets {
+        if seen_targets.insert(target.clone()) {
+            deduped_targets.push(target.clone());
+        }
+    }
+
     let saved_target = std::env::var("SLATE_TARGET").ok();
     let result = (|| {
-        let mut variants = Vec::with_capacity(targets.len());
-        for target in targets {
+        let mut variants = Vec::with_capacity(deduped_targets.len());
+        for target in &deduped_targets {
             unsafe { std::env::set_var("SLATE_TARGET", target) };
-            let arch = super::toolchain::target_config(target)
-                .map_err(|source| DirectiveError::Target {
+            let config = super::toolchain::target_config(target).map_err(|source| {
+                DirectiveError::Target {
                     target: target.clone(),
                     source,
-                })?
-                .arch;
+                }
+            })?;
             let program = translate_directives_program_with_args(path, extra_args)?;
-            variants.push(TargetVariant {
-                cfg: Cfg::Opt {
+            let mut atoms = vec![
+                Cfg::Opt {
                     key: "target_arch".into(),
-                    value: arch.into(),
+                    value: config.arch.into(),
                 },
+                os_cfg(config.os),
+            ];
+            if !config.env.is_empty() {
+                atoms.push(Cfg::Opt {
+                    key: "target_env".into(),
+                    value: config.env.into(),
+                });
+            }
+            variants.push(TargetVariant {
+                cfg: Cfg::All(atoms),
                 program,
             });
         }
@@ -210,6 +238,82 @@ pub fn translate_targets_with_args(
         None => unsafe { std::env::remove_var("SLATE_TARGET") },
     }
     format_program(&result?)
+}
+
+fn cfg_atom_key(cfg: &Cfg) -> Option<String> {
+    match cfg {
+        Cfg::Flag(name) => Some(format!("flag:{name}")),
+        Cfg::Opt { key, .. } => Some(key.clone()),
+        Cfg::Not(_) | Cfg::Any(_) | Cfg::All(_) => None,
+    }
+}
+
+fn cfg_atoms(cfg: &Cfg) -> Option<Vec<Cfg>> {
+    match cfg {
+        Cfg::All(atoms) => atoms
+            .iter()
+            .map(|atom| cfg_atom_key(atom).map(|_| atom.clone()))
+            .collect(),
+        atom if cfg_atom_key(atom).is_some() => Some(vec![atom.clone()]),
+        _ => None,
+    }
+}
+
+fn factor_cfgs(cfgs: Vec<Cfg>) -> Cfg {
+    if cfgs.len() == 1 {
+        return cfgs.into_iter().next().unwrap();
+    }
+    let fallback = || Cfg::Any(cfgs.clone());
+
+    let Some(atom_lists): Option<Vec<Vec<Cfg>>> = cfgs.iter().map(cfg_atoms).collect() else {
+        return fallback();
+    };
+    let template_keys: Vec<String> = atom_lists[0]
+        .iter()
+        .map(|atom| cfg_atom_key(atom).expect("cfg_atoms only returns keyed atoms"))
+        .collect();
+    let same_shape = atom_lists.iter().all(|atoms| {
+        atoms.len() == template_keys.len()
+            && atoms
+                .iter()
+                .map(|atom| cfg_atom_key(atom).expect("cfg_atoms only returns keyed atoms"))
+                .eq(template_keys.iter().cloned())
+    });
+    if !same_shape {
+        return fallback();
+    }
+
+    let mut varying_positions = Vec::new();
+    for (i, _) in template_keys.iter().enumerate() {
+        let mut distinct: Vec<&Cfg> = Vec::new();
+        for atoms in &atom_lists {
+            if !distinct.contains(&&atoms[i]) {
+                distinct.push(&atoms[i]);
+            }
+        }
+        if distinct.len() > 1 {
+            varying_positions.push(i);
+        }
+    }
+    let [varying] = varying_positions[..] else {
+        return fallback();
+    };
+
+    let mut result_atoms = Vec::with_capacity(template_keys.len());
+    for i in 0..template_keys.len() {
+        if i == varying {
+            let mut values: Vec<Cfg> = Vec::new();
+            for atoms in &atom_lists {
+                if !values.contains(&atoms[i]) {
+                    values.push(atoms[i].clone());
+                }
+            }
+            result_atoms.push(Cfg::Any(values));
+        } else {
+            result_atoms.push(atom_lists[0][i].clone());
+        }
+    }
+    Cfg::All(result_atoms)
 }
 
 fn merge_target_variants(variants: &[TargetVariant]) -> Program {
@@ -251,11 +355,8 @@ fn merge_target_variants(variants: &[TargetVariant]) -> Program {
                 items.push(item);
                 continue;
             }
-            let cfg = if vis.len() == 1 {
-                variants[vis[0]].cfg.clone()
-            } else {
-                Cfg::Any(vis.iter().map(|&vi| variants[vi].cfg.clone()).collect())
-            };
+            let cfgs: BTreeSet<Cfg> = vis.iter().map(|&vi| variants[vi].cfg.clone()).collect();
+            let cfg = factor_cfgs(cfgs.into_iter().collect());
             items.push(Item::Cfg {
                 cfg,
                 item: Box::new(item),
