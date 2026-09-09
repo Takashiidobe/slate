@@ -4,6 +4,10 @@
 
 #include <features.h>
 
+#if defined(__SLATE_LIBC_MUSL)
+#include <inttypes.h>
+#include <sys/types.h>
+#else
 #define __NEED_uint8_t
 #define __NEED_uint16_t
 #define __NEED_uint32_t
@@ -11,6 +15,11 @@
 #define __NEED_sa_family_t
 #define __NEED_ssize_t
 #include <bits/types.h>
+#endif
+
+#if defined(__SLATE_LIBC_GLIBC)
+#include <sys/types.h>
+#endif
 
 #include <sys/socket.h>
 
@@ -57,6 +66,10 @@ struct arphdr {
 #define ARPHRD_X25        271
 #define ARPHRD_HWX25      272
 #define ARPHRD_CAN        280
+#if defined(__SLATE_LIBC_GLIBC)
+#define ARPHRD_MCTP 290
+#define ARPHRD_IEEE802154_PHY 805
+#endif
 #define ARPHRD_PPP        512
 #define ARPHRD_CISCO      513
 #define ARPHRD_HDLC       ARPHRD_CISCO

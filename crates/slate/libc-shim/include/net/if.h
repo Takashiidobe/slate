@@ -15,8 +15,12 @@ char                *if_indextoname(unsigned int, char *);
 struct if_nameindex *if_nameindex(void);
 void                 if_freenameindex(struct if_nameindex *);
 
-#if defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
+#if (defined(__SLATE_LIBC_GLIBC) && defined(__USE_MISC)) || \
+    defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
 
+#if defined(__SLATE_LIBC_GLIBC)
+#include <sys/types.h>
+#endif
 #include <sys/socket.h>
 
 #define IFF_UP          0x1

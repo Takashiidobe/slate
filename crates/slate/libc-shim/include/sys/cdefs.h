@@ -18,6 +18,7 @@
 #define __attribute_format_arg__(arg)
 #define __attribute_artificial__
 #define __attribute_warn_unused_result__
+#define __attribute_struct_may_alias__ __attribute__((__may_alias__))
 #define __always_inline inline
 #define __extern_always_inline extern inline
 #define __fortify_function __extern_always_inline
