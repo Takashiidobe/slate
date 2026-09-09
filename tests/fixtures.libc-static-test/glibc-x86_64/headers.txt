@@ -56,3 +56,8 @@ inttypes.h
 langinfo.h
 lastlog.h
 libgen.h
+libintl.h
+link.h
+locale.h
+malloc.h
+mcheck.h
