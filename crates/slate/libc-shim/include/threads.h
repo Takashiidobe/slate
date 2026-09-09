@@ -10,6 +10,7 @@
 
 #define __NEED_pthread_mutex_t
 #define __NEED_pthread_cond_t
+#define __NEED_once_flag
 
 #include <bits/types.h>
 #define thread_local _Thread_local
@@ -34,10 +35,6 @@ enum { mtx_plain = 0, mtx_recursive = 1, mtx_timed = 2 };
 
 typedef pthread_mutex_t mtx_t;
 typedef pthread_cond_t  cnd_t;
-
-typedef int once_flag;
-
-#define ONCE_FLAG_INIT 0
 
 int    thrd_create(thrd_t *thr, thrd_start_t func, void *arg);
 int    thrd_equal(thrd_t lhs, thrd_t rhs);

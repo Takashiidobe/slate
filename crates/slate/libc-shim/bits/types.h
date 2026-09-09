@@ -614,6 +614,21 @@ typedef __pthread_key_t pthread_key_t;
 #endif
 #undef __NEED_pthread_key_t
 
+#if defined(__NEED_once_flag) && !defined(__DEFINED_once_flag)
+#if defined(__SLATE_LIBC_GLIBC) && __SLATE_GLIBC_MINOR__ >= 43
+struct __once_flag {
+  int __data;
+};
+typedef struct __once_flag once_flag;
+#define ONCE_FLAG_INIT {0}
+#else
+typedef int once_flag;
+#define ONCE_FLAG_INIT 0
+#endif
+#define __DEFINED_once_flag
+#endif
+#undef __NEED_once_flag
+
 #if defined(__NEED_error_t) && !defined(__DEFINED_error_t)
 typedef __error_t error_t;
 #define __DEFINED_error_t

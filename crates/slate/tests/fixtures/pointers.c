@@ -139,10 +139,8 @@ int main(void) {
 // REWRITES-NEXT:     let mut total: i32 = 10;
 // REWRITES-NEXT:     println!("{}", bump_through_pointer(5));
 // REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// REWRITES-NEXT:     println!(
-// REWRITES-NEXT:         "{}",
-// REWRITES-NEXT:         add_into_pointer(unsafe { &mut (*std::ptr::addr_of_mut!(total)) }, 7)
-// REWRITES-NEXT:     );
+// REWRITES-NEXT:     let __slate_printf_arg0 = add_into_pointer(unsafe { &mut (*std::ptr::addr_of_mut!(total)) }, 7);
+// REWRITES-NEXT:     println!("{}", __slate_printf_arg0);
 // REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // REWRITES-NEXT:     println!("{}", total);
 // REWRITES-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());

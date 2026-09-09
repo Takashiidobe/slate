@@ -33,7 +33,7 @@ int main(void) { return f() == 0.0L; }
 // LOWERING-MSVC-NEXT: }
 // SLATE-FILECHECK-END lowering-msvc
 
-// SLATE-FILECHECK-BEGIN rewrites-msvc
+// SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-MSVC: #![allow(
 // REWRITES-MSVC-NEXT:     dead_code,
 // REWRITES-MSVC-NEXT:     unused,
@@ -53,6 +53,6 @@ int main(void) { return f() == 0.0L; }
 // REWRITES-MSVC-EMPTY:
 // REWRITES-MSVC-NEXT: fn main() -> std::process::ExitCode {
 // REWRITES-MSVC-NEXT:     let {{__v[0-9]+}}: f64 = f();
-// REWRITES-MSVC-NEXT:     return std::process::ExitCode::from(({{__v[0-9]+}} == 0.0) as u8);
+// REWRITES-MSVC-NEXT:     return std::process::ExitCode::from((({{__v[0-9]+}} == 0.0) as i32) as u8);
 // REWRITES-MSVC-NEXT: }
-// SLATE-FILECHECK-END rewrites-msvc
+// SLATE-FILECHECK-END rewrites

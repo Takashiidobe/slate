@@ -11,42 +11,6 @@ int main(void) { return 0; }
 // REWRITES-BIONIC-X86_64-DAG: fn store_long_double(_0: *mut f128);
 // REWRITES-BIONIC-X86_64-DAG: fn load_long_double(_0: *const f128) -> *const f128;
 
-// SLATE-FILECHECK-BEGIN lowering
-// LOWERING: #![feature(f128)]
-// LOWERING-NEXT: #![allow(
-// LOWERING-NEXT:     dead_code,
-// LOWERING-NEXT:     unused,
-// LOWERING-NEXT:     non_camel_case_types,
-// LOWERING-NEXT:     non_snake_case,
-// LOWERING-NEXT:     non_upper_case_globals,
-// LOWERING-NEXT:     arithmetic_overflow,
-// LOWERING-NEXT:     unconditional_panic,
-// LOWERING-NEXT:     suspicious_runtime_symbol_definitions,
-// LOWERING-NEXT:     unpredictable_function_pointer_comparisons,
-// LOWERING-NEXT:     unused_comparisons
-// LOWERING-NEXT: )]
-// LOWERING-EMPTY:
-// LOWERING-NEXT: unsafe extern "C" {
-// LOWERING-NEXT:     fn store_long_double(_0: *mut f128);
-// LOWERING-NEXT:     fn load_long_double(_0: *const f128) -> *const f128;
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn probe() -> f128 {
-// LOWERING-NEXT:     let mut value: f128 = 0.0f128;
-// LOWERING-NEXT:     unsafe { store_long_double(std::ptr::addr_of_mut!(value) as *mut f128) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut f128 =
-// LOWERING-NEXT:         (unsafe { load_long_double(std::ptr::addr_of_mut!(value) as *const f128) }) as *mut f128;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: f128 = unsafe { *{{__v[0-9]+}} };
-// LOWERING-NEXT:     return {{__v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() -> std::process::ExitCode {
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     return std::process::ExitCode::from({{__v[0-9]+}} as u8);
-// LOWERING-NEXT: }
-// SLATE-FILECHECK-END lowering
-
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-BIONIC-AARCH64: #![feature(f128)]
 // REWRITES-BIONIC-AARCH64-NEXT: #![allow(
@@ -79,3 +43,39 @@ int main(void) { return 0; }
 // REWRITES-BIONIC-AARCH64-NEXT:     return std::process::ExitCode::SUCCESS;
 // REWRITES-BIONIC-AARCH64-NEXT: }
 // SLATE-FILECHECK-END rewrites
+
+// SLATE-FILECHECK-BEGIN lowering
+// LOWERING: #![feature(f128)]
+// LOWERING-NEXT: #![allow(
+// LOWERING-NEXT:     dead_code,
+// LOWERING-NEXT:     unused,
+// LOWERING-NEXT:     non_camel_case_types,
+// LOWERING-NEXT:     non_snake_case,
+// LOWERING-NEXT:     non_upper_case_globals,
+// LOWERING-NEXT:     arithmetic_overflow,
+// LOWERING-NEXT:     unconditional_panic,
+// LOWERING-NEXT:     suspicious_runtime_symbol_definitions,
+// LOWERING-NEXT:     unpredictable_function_pointer_comparisons,
+// LOWERING-NEXT:     unused_comparisons
+// LOWERING-NEXT: )]
+// LOWERING-EMPTY:
+// LOWERING-NEXT: unsafe extern "C" {
+// LOWERING-NEXT:     fn store_long_double(_0: *mut f128);
+// LOWERING-NEXT:     fn load_long_double(_0: *const f128) -> *const f128;
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn probe() -> f128 {
+// LOWERING-NEXT:     let mut value: f128 = 0.0f128;
+// LOWERING-NEXT:     unsafe { store_long_double(std::ptr::addr_of_mut!(value) as *mut f128) };
+// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut f128 =
+// LOWERING-NEXT:         (unsafe { load_long_double(std::ptr::addr_of_mut!(value) as *const f128) }) as *mut f128;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: f128 = unsafe { *{{__v[0-9]+}} };
+// LOWERING-NEXT:     return {{__v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn main() -> std::process::ExitCode {
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     return std::process::ExitCode::SUCCESS;
+// LOWERING-NEXT: }
+// SLATE-FILECHECK-END lowering

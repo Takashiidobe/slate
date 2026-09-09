@@ -172,6 +172,38 @@ fn fflush_all_stmt() -> Stmt {
     })))
 }
 
+fn is_call_expr(expr: &Expr) -> bool {
+    matches!(
+        expr,
+        Expr::Call { .. } | Expr::MethodCall { .. } | Expr::MethodCallGeneric { .. }
+    )
+}
+
+fn contains_mut_borrow(expr: &Expr) -> bool {
+    match expr {
+        Expr::Ref { mutable: true, .. } => true,
+        Expr::Ref { .. } | Expr::AddrOf { .. } => false,
+        Expr::Unary { expr, .. } | Expr::Cast { expr, .. } => contains_mut_borrow(expr),
+        Expr::Field { base, .. } | Expr::TupleField { base, .. } => contains_mut_borrow(base),
+        Expr::Index { base, index } => contains_mut_borrow(base) || contains_mut_borrow(index),
+        Expr::Binary { lhs, rhs, .. } => contains_mut_borrow(lhs) || contains_mut_borrow(rhs),
+        Expr::Call { func, args, .. } => {
+            contains_mut_borrow(func) || args.iter().any(contains_mut_borrow)
+        }
+        Expr::MethodCall { recv, args, .. } | Expr::MethodCallGeneric { recv, args, .. } => {
+            contains_mut_borrow(recv) || args.iter().any(contains_mut_borrow)
+        }
+        Expr::Block(block) | Expr::Unsafe(block) => {
+            block.tail.as_deref().is_some_and(contains_mut_borrow)
+        }
+        _ => false,
+    }
+}
+
+fn needs_hoist(expr: &Expr) -> bool {
+    is_call_expr(expr) && contains_mut_borrow(expr)
+}
+
 fn try_convert(stmt: &Stmt) -> Option<Vec<Stmt>> {
     let Stmt::Expr(Expr::Unsafe(block)) = stmt else {
         return None;
@@ -181,13 +213,29 @@ fn try_convert(stmt: &Stmt) -> Option<Vec<Stmt>> {
     }
     let args = printf_call_args(block.tail.as_deref()?)?;
     let plan = decimal_format_plan(args)?;
+    let mut hoisted = Vec::new();
     let mut macro_args = vec![Expr::Str(plan.format)];
-    macro_args.extend(args[1..].iter().cloned());
+    for (index, arg) in args[1..].iter().cloned().enumerate() {
+        if needs_hoist(&arg) {
+            let name = format!("__slate_printf_arg{index}");
+            hoisted.push(Stmt::Let {
+                name: name.clone(),
+                mutable: false,
+                ty: None,
+                init: Some(arg),
+            });
+            macro_args.push(Expr::Var(Ident::from(name)));
+        } else {
+            macro_args.push(arg);
+        }
+    }
     let print_stmt = Stmt::Expr(Expr::Macro {
         name: plan.macro_name.into(),
         args: macro_args,
     });
-    Some(vec![print_stmt, stdout_flush_stmt()])
+    hoisted.push(print_stmt);
+    hoisted.push(stdout_flush_stmt());
+    Some(hoisted)
 }
 
 const STDOUT_TAIL_TEMP: &str = "__slate_stdout_writer_tail";

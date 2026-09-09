@@ -31,6 +31,133 @@ int bionic_locale_scope(void) {
 
 int main(void) { return 0; }
 
+// SLATE-FILECHECK-BEGIN rewrites
+// REWRITES: #![allow(
+// REWRITES-NEXT:     dead_code,
+// REWRITES-NEXT:     unused,
+// REWRITES-NEXT:     non_camel_case_types,
+// REWRITES-NEXT:     non_snake_case,
+// REWRITES-NEXT:     non_upper_case_globals,
+// REWRITES-NEXT:     arithmetic_overflow,
+// REWRITES-NEXT:     unconditional_panic,
+// REWRITES-NEXT:     suspicious_runtime_symbol_definitions,
+// REWRITES-NEXT:     unpredictable_function_pointer_comparisons,
+// REWRITES-NEXT:     unused_comparisons
+// REWRITES-NEXT: )]
+// REWRITES-EMPTY:
+// REWRITES-NEXT: #[repr(C)]
+// REWRITES-NEXT: #[derive(Clone, Copy)]
+// REWRITES-NEXT: struct __locale_map {
+// REWRITES-NEXT:     __slate_empty: [u8; 0],
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: #[repr(C)]
+// REWRITES-NEXT: #[derive(Clone, Copy)]
+// REWRITES-NEXT: struct __locale_struct {
+// REWRITES-NEXT:     cat: [*mut __locale_map; 6],
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: #[repr(C)]
+// REWRITES-NEXT: #[derive(Clone, Copy)]
+// REWRITES-NEXT: struct __mbstate_t {
+// REWRITES-NEXT:     __seq: [u8; 4],
+// REWRITES-NEXT:     __reserved: [u8; 4],
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn fgetpos(_0: *mut libc::FILE, _1: *mut i64) -> i32;
+// REWRITES-NEXT:     fn fsetpos(_0: *mut libc::FILE, _1: *const i64) -> i32;
+// REWRITES-NEXT:     fn memset(_0: *mut core::ffi::c_void, _1: i32, _2: u64) -> *mut core::ffi::c_void;
+// REWRITES-NEXT:     fn mbrtowc(
+// REWRITES-BIONIC-AARCH64-NEXT:         _0: *mut u32,
+// REWRITES-BIONIC-X86_64-NEXT:         _0: *mut i32,
+// REWRITES-NEXT:         _1: *const core::ffi::c_char,
+// REWRITES-NEXT:         _2: usize,
+// REWRITES-NEXT:         _3: *mut __mbstate_t,
+// REWRITES-NEXT:     ) -> usize;
+// REWRITES-BIONIC-AARCH64-NEXT:     fn wcrtomb(_0: *mut core::ffi::c_char, _1: u32, _2: *mut __mbstate_t) -> usize;
+// REWRITES-BIONIC-X86_64-NEXT:     fn wcrtomb(_0: *mut core::ffi::c_char, _1: i32, _2: *mut __mbstate_t) -> usize;
+// REWRITES-NEXT:     fn newlocale(
+// REWRITES-NEXT:         _0: i32,
+// REWRITES-NEXT:         _1: *const core::ffi::c_char,
+// REWRITES-NEXT:         _2: *mut __locale_struct,
+// REWRITES-NEXT:     ) -> *mut __locale_struct;
+// REWRITES-NEXT:     fn uselocale(_0: *mut __locale_struct) -> *mut __locale_struct;
+// REWRITES-NEXT:     fn iswctype(_0: u32, _1: i64) -> i32;
+// REWRITES-NEXT:     fn wctype(_0: *const core::ffi::c_char) -> i64;
+// REWRITES-NEXT:     fn freelocale(_0: *mut __locale_struct);
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn bionic_stream_position(mut stream: *mut libc::FILE, mut pos: *mut i64) -> i32 {
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { fgetpos(stream as *mut libc::FILE, pos as *mut i64) };
+// REWRITES-NEXT:     if {{__v[0-9]+}} != 0 {
+// REWRITES-NEXT:         return -1;
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     unsafe { fsetpos(stream as *mut libc::FILE, pos as *const i64) }
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-BIONIC-AARCH64-NEXT: fn bionic_multibyte_roundtrip(mut {{__v[0-9]+}}: *mut u8, {{arg[0-9]+}}: *mut u8) -> i32 {
+// REWRITES-BIONIC-X86_64-NEXT: fn bionic_multibyte_roundtrip(mut {{__v[0-9]+}}: *mut i8, {{arg[0-9]+}}: *mut i8) -> i32 {
+// REWRITES-NEXT:     let mut decode_state: __mbstate_t = __mbstate_t {
+// REWRITES-NEXT:         __seq: [0; 4],
+// REWRITES-NEXT:         __reserved: [0; 4],
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     let mut encode_state: __mbstate_t = __mbstate_t {
+// REWRITES-NEXT:         __seq: [0; 4],
+// REWRITES-NEXT:         __reserved: [0; 4],
+// REWRITES-NEXT:     };
+// REWRITES-BIONIC-AARCH64-NEXT:     let mut wide: u32 = 0;
+// REWRITES-BIONIC-X86_64-NEXT:     let mut wide: i32 = 0;
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void =
+// REWRITES-NEXT:         std::ptr::addr_of_mut!(decode_state) as *mut core::ffi::c_void;
+// REWRITES-NEXT:     unsafe { std::ptr::write_bytes({{__v[0-9]+}} as *mut u8, (0 as i32) as u8, (8 as u64) as usize) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void =
+// REWRITES-NEXT:         std::ptr::addr_of_mut!(encode_state) as *mut core::ffi::c_void;
+// REWRITES-NEXT:     unsafe { std::ptr::write_bytes({{__v[0-9]+}} as *mut u8, (0 as i32) as u8, (8 as u64) as usize) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: u64 = (unsafe {
+// REWRITES-NEXT:         mbrtowc(
+// REWRITES-BIONIC-AARCH64-NEXT:             std::ptr::addr_of_mut!(wide) as *mut u32,
+// REWRITES-BIONIC-X86_64-NEXT:             std::ptr::addr_of_mut!(wide) as *mut i32,
+// REWRITES-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
+// REWRITES-NEXT:             (1 as u64) as usize,
+// REWRITES-NEXT:             std::ptr::addr_of_mut!(decode_state) as *mut __mbstate_t,
+// REWRITES-NEXT:         )
+// REWRITES-NEXT:     }) as u64;
+// REWRITES-NEXT:     if {{__v[0-9]+}} == 18446744073709551615u64 {
+// REWRITES-NEXT:         return -1;
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{__v[0-9]+}}: u64 = (unsafe {
+// REWRITES-NEXT:         wcrtomb(
+// REWRITES-NEXT:             {{arg[0-9]+}} as *mut core::ffi::c_char,
+// REWRITES-BIONIC-AARCH64-NEXT:             wide as u32,
+// REWRITES-BIONIC-X86_64-NEXT:             wide as i32,
+// REWRITES-NEXT:             std::ptr::addr_of_mut!(encode_state) as *mut __mbstate_t,
+// REWRITES-NEXT:         )
+// REWRITES-NEXT:     }) as u64;
+// REWRITES-NEXT:     {{__v[0-9]+}} as i32
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn bionic_locale_scope() -> i32 {
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut __locale_struct = std::ptr::null_mut();
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut __locale_struct = unsafe {
+// REWRITES-NEXT:         newlocale(
+// REWRITES-NEXT:             2147483647 as i32,
+// REWRITES-NEXT:             c"C".as_ptr(),
+// REWRITES-NEXT:             {{__v[0-9]+}} as *mut __locale_struct,
+// REWRITES-NEXT:         )
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut __locale_struct = unsafe { uselocale({{__v[0-9]+}} as *mut __locale_struct) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i64 = unsafe { wctype(c"alpha".as_ptr()) };
+// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { iswctype(97 as u32, {{__v[0-9]+}} as i64) };
+// REWRITES-NEXT:     unsafe { freelocale({{__v[0-9]+}} as *mut __locale_struct) };
+// REWRITES-NEXT:     {{__v[0-9]+}}
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn main() -> std::process::ExitCode {
+// REWRITES-NEXT:     return std::process::ExitCode::SUCCESS;
+// REWRITES-NEXT: }
+// SLATE-FILECHECK-END rewrites
+
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![allow(
 // LOWERING-NEXT:     dead_code,
@@ -206,133 +333,6 @@ int main(void) { return 0; }
 // LOWERING-NEXT: fn main() -> std::process::ExitCode {
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     return std::process::ExitCode::from({{__v[0-9]+}} as u8);
+// LOWERING-NEXT:     return std::process::ExitCode::SUCCESS;
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
-
-// SLATE-FILECHECK-BEGIN rewrites
-// REWRITES: #![allow(
-// REWRITES-NEXT:     dead_code,
-// REWRITES-NEXT:     unused,
-// REWRITES-NEXT:     non_camel_case_types,
-// REWRITES-NEXT:     non_snake_case,
-// REWRITES-NEXT:     non_upper_case_globals,
-// REWRITES-NEXT:     arithmetic_overflow,
-// REWRITES-NEXT:     unconditional_panic,
-// REWRITES-NEXT:     suspicious_runtime_symbol_definitions,
-// REWRITES-NEXT:     unpredictable_function_pointer_comparisons,
-// REWRITES-NEXT:     unused_comparisons
-// REWRITES-NEXT: )]
-// REWRITES-EMPTY:
-// REWRITES-NEXT: #[repr(C)]
-// REWRITES-NEXT: #[derive(Clone, Copy)]
-// REWRITES-NEXT: struct __locale_map {
-// REWRITES-NEXT:     __slate_empty: [u8; 0],
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: #[repr(C)]
-// REWRITES-NEXT: #[derive(Clone, Copy)]
-// REWRITES-NEXT: struct __locale_struct {
-// REWRITES-NEXT:     cat: [*mut __locale_map; 6],
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: #[repr(C)]
-// REWRITES-NEXT: #[derive(Clone, Copy)]
-// REWRITES-NEXT: struct __mbstate_t {
-// REWRITES-NEXT:     __seq: [u8; 4],
-// REWRITES-NEXT:     __reserved: [u8; 4],
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: unsafe extern "C" {
-// REWRITES-NEXT:     fn fgetpos(_0: *mut libc::FILE, _1: *mut i64) -> i32;
-// REWRITES-NEXT:     fn fsetpos(_0: *mut libc::FILE, _1: *const i64) -> i32;
-// REWRITES-NEXT:     fn memset(_0: *mut core::ffi::c_void, _1: i32, _2: u64) -> *mut core::ffi::c_void;
-// REWRITES-NEXT:     fn mbrtowc(
-// REWRITES-BIONIC-AARCH64-NEXT:         _0: *mut u32,
-// REWRITES-BIONIC-X86_64-NEXT:         _0: *mut i32,
-// REWRITES-NEXT:         _1: *const core::ffi::c_char,
-// REWRITES-NEXT:         _2: usize,
-// REWRITES-NEXT:         _3: *mut __mbstate_t,
-// REWRITES-NEXT:     ) -> usize;
-// REWRITES-BIONIC-AARCH64-NEXT:     fn wcrtomb(_0: *mut core::ffi::c_char, _1: u32, _2: *mut __mbstate_t) -> usize;
-// REWRITES-BIONIC-X86_64-NEXT:     fn wcrtomb(_0: *mut core::ffi::c_char, _1: i32, _2: *mut __mbstate_t) -> usize;
-// REWRITES-NEXT:     fn newlocale(
-// REWRITES-NEXT:         _0: i32,
-// REWRITES-NEXT:         _1: *const core::ffi::c_char,
-// REWRITES-NEXT:         _2: *mut __locale_struct,
-// REWRITES-NEXT:     ) -> *mut __locale_struct;
-// REWRITES-NEXT:     fn uselocale(_0: *mut __locale_struct) -> *mut __locale_struct;
-// REWRITES-NEXT:     fn iswctype(_0: u32, _1: i64) -> i32;
-// REWRITES-NEXT:     fn wctype(_0: *const core::ffi::c_char) -> i64;
-// REWRITES-NEXT:     fn freelocale(_0: *mut __locale_struct);
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: fn bionic_stream_position(mut stream: *mut libc::FILE, mut pos: *mut i64) -> i32 {
-// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { fgetpos(stream as *mut libc::FILE, pos as *mut i64) };
-// REWRITES-NEXT:     if {{__v[0-9]+}} != 0 {
-// REWRITES-NEXT:         return -1;
-// REWRITES-NEXT:     }
-// REWRITES-NEXT:     unsafe { fsetpos(stream as *mut libc::FILE, pos as *const i64) }
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-BIONIC-AARCH64-NEXT: fn bionic_multibyte_roundtrip(mut {{__v[0-9]+}}: *mut u8, {{arg[0-9]+}}: *mut u8) -> i32 {
-// REWRITES-BIONIC-X86_64-NEXT: fn bionic_multibyte_roundtrip(mut {{__v[0-9]+}}: *mut i8, {{arg[0-9]+}}: *mut i8) -> i32 {
-// REWRITES-NEXT:     let mut decode_state: __mbstate_t = __mbstate_t {
-// REWRITES-NEXT:         __seq: [0; 4],
-// REWRITES-NEXT:         __reserved: [0; 4],
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let mut encode_state: __mbstate_t = __mbstate_t {
-// REWRITES-NEXT:         __seq: [0; 4],
-// REWRITES-NEXT:         __reserved: [0; 4],
-// REWRITES-NEXT:     };
-// REWRITES-BIONIC-AARCH64-NEXT:     let mut wide: u32 = 0;
-// REWRITES-BIONIC-X86_64-NEXT:     let mut wide: i32 = 0;
-// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void =
-// REWRITES-NEXT:         std::ptr::addr_of_mut!(decode_state) as *mut core::ffi::c_void;
-// REWRITES-NEXT:     unsafe { std::ptr::write_bytes({{__v[0-9]+}} as *mut u8, (0 as i32) as u8, (8 as u64) as usize) };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut core::ffi::c_void =
-// REWRITES-NEXT:         std::ptr::addr_of_mut!(encode_state) as *mut core::ffi::c_void;
-// REWRITES-NEXT:     unsafe { std::ptr::write_bytes({{__v[0-9]+}} as *mut u8, (0 as i32) as u8, (8 as u64) as usize) };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: u64 = (unsafe {
-// REWRITES-NEXT:         mbrtowc(
-// REWRITES-BIONIC-AARCH64-NEXT:             std::ptr::addr_of_mut!(wide) as *mut u32,
-// REWRITES-BIONIC-X86_64-NEXT:             std::ptr::addr_of_mut!(wide) as *mut i32,
-// REWRITES-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
-// REWRITES-NEXT:             (1 as u64) as usize,
-// REWRITES-NEXT:             std::ptr::addr_of_mut!(decode_state) as *mut __mbstate_t,
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     }) as u64;
-// REWRITES-NEXT:     if {{__v[0-9]+}} == 18446744073709551615u64 {
-// REWRITES-NEXT:         return -1;
-// REWRITES-NEXT:     }
-// REWRITES-NEXT:     let {{__v[0-9]+}}: u64 = (unsafe {
-// REWRITES-NEXT:         wcrtomb(
-// REWRITES-NEXT:             {{arg[0-9]+}} as *mut core::ffi::c_char,
-// REWRITES-BIONIC-AARCH64-NEXT:             wide as u32,
-// REWRITES-BIONIC-X86_64-NEXT:             wide as i32,
-// REWRITES-NEXT:             std::ptr::addr_of_mut!(encode_state) as *mut __mbstate_t,
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     }) as u64;
-// REWRITES-NEXT:     {{__v[0-9]+}} as i32
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: fn bionic_locale_scope() -> i32 {
-// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut __locale_struct = std::ptr::null_mut();
-// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut __locale_struct = unsafe {
-// REWRITES-NEXT:         newlocale(
-// REWRITES-NEXT:             2147483647 as i32,
-// REWRITES-NEXT:             c"C".as_ptr(),
-// REWRITES-NEXT:             {{__v[0-9]+}} as *mut __locale_struct,
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut __locale_struct = unsafe { uselocale({{__v[0-9]+}} as *mut __locale_struct) };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: i64 = unsafe { wctype(c"alpha".as_ptr()) };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { iswctype(97 as u32, {{__v[0-9]+}} as i64) };
-// REWRITES-NEXT:     unsafe { freelocale({{__v[0-9]+}} as *mut __locale_struct) };
-// REWRITES-NEXT:     {{__v[0-9]+}}
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() -> std::process::ExitCode {
-// REWRITES-NEXT:     return std::process::ExitCode::SUCCESS;
-// REWRITES-NEXT: }
-// SLATE-FILECHECK-END rewrites
