@@ -53,3 +53,5 @@ mqueue.h
 net/ethernet.h
 net/if.h
 net/if_arp.h
+pwd.h
+time.h
