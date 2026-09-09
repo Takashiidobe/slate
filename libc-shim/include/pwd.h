@@ -24,6 +24,11 @@
 
 #else
 
+#if defined(__SLATE_LIBC_GLIBC)
+// Only defined for __USE_POSIX and __USE_MISC
+#define NSS_BUFLEN_PASSWD 1024
+#endif
+
 struct passwd {
   char *pw_name;
   char *pw_passwd;
@@ -50,6 +55,6 @@ struct passwd *fgetpwent(FILE *);
 int            putpwent(const struct passwd *, FILE *);
 #endif
 
-#endif 
+#endif
 
 #endif

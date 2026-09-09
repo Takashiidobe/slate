@@ -67,6 +67,15 @@ struct tm {
 #endif
 };
 
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
+#define TIME_UTC 1
+#endif
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L
+#define TIME_MONOTONIC     2
+#define TIME_ACTIVE        3
+#define TIME_THREAD_ACTIVE 4
+#endif
+
 clock_t    clock(void);
 time_t     time(time_t *);
 double     difftime(time_t, time_t);
@@ -82,8 +91,8 @@ struct tm *localtime(const time_t *);
 char *asctime(const struct tm *);
 char *ctime(const time_t *);
 #endif
-int        timespec_get(struct timespec *, int);
-int        timespec_getres(struct timespec *, int);
+int timespec_get(struct timespec *, int);
+int timespec_getres(struct timespec *, int);
 
 #define CLOCKS_PER_SEC 1000000L
 
@@ -112,24 +121,20 @@ struct itimerspec {
   struct timespec it_value;
 };
 
-enum {
-  CLOCK_REALTIME           = 0,
-  CLOCK_MONOTONIC          = 1,
-  CLOCK_PROCESS_CPUTIME_ID = 2,
-  CLOCK_THREAD_CPUTIME_ID  = 3,
-  CLOCK_MONOTONIC_RAW      = 4,
-  CLOCK_REALTIME_COARSE    = 5,
-  CLOCK_MONOTONIC_COARSE   = 6,
-  CLOCK_BOOTTIME           = 7,
-  CLOCK_REALTIME_ALARM     = 8,
-  CLOCK_BOOTTIME_ALARM     = 9,
-  CLOCK_SGI_CYCLE          = 10,
-  CLOCK_TAI                = 11,
-};
+#define CLOCK_REALTIME           0
+#define CLOCK_MONOTONIC          1
+#define CLOCK_PROCESS_CPUTIME_ID 2
+#define CLOCK_THREAD_CPUTIME_ID  3
+#define CLOCK_MONOTONIC_RAW      4
+#define CLOCK_REALTIME_COARSE    5
+#define CLOCK_MONOTONIC_COARSE   6
+#define CLOCK_BOOTTIME           7
+#define CLOCK_REALTIME_ALARM     8
+#define CLOCK_BOOTTIME_ALARM     9
+#define CLOCK_SGI_CYCLE          10
+#define CLOCK_TAI                11
 
-enum {
-  TIMER_ABSTIME = 1,
-};
+#define TIMER_ABSTIME 1
 
 int nanosleep(const struct timespec *, struct timespec *);
 int clock_getres(clockid_t, struct timespec *);

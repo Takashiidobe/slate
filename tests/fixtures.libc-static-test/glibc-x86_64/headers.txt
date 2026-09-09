@@ -71,3 +71,5 @@ net/if_arp.h
 net/if_packet.h
 net/if_ppp.h
 net/if_shaper.h
+time.h
+pwd.h
