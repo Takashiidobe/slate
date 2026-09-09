@@ -29,3 +29,5 @@ crypt.h
 dirent.h
 dlfcn.h
 err.h
+fmtmsg.h
+fnmatch.h
