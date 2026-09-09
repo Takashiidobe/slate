@@ -12,19 +12,28 @@
 
 #else
 
-enum {
-  RTLD_LAZY     = 1,
-  RTLD_NOW      = 2,
-  RTLD_NOLOAD   = 4,
-  RTLD_NODELETE = 4096,
-  RTLD_GLOBAL   = 256,
-  RTLD_LOCAL    = 0,
-};
+#define RTLD_LAZY     1
+#define RTLD_NOW      2
+#define RTLD_NOLOAD   4
+#define RTLD_NODELETE 4096
+#define RTLD_GLOBAL   256
+#define RTLD_LOCAL    0
 
 #define RTLD_NEXT    ((void *)-1)
 #define RTLD_DEFAULT ((void *)0)
 
 #define RTLD_DI_LINKMAP 2
+
+#if defined(__SLATE_LIBC_GLIBC)
+typedef long Lmid_t;
+
+#define LM_ID_BASE         0
+#define LM_ID_NEWLM        (-1L)
+#define RTLD_BINDING_MASK  0x3
+#define RTLD_DEEPBIND      0x8
+#define DL_CALL_FCT(fctp, args) (fctp) args
+#define DLFO_FLAG_SFRAME   (1ULL << 0)
+#endif
 
 int   dlclose(void *);
 char *dlerror(void);

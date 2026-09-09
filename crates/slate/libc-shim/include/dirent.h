@@ -78,6 +78,11 @@ long telldir(DIR *);
 #define DT_SOCK    12
 #define DT_WHT     14
 
+#if defined(__SLATE_LIBC_GLIBC) && defined(_GNU_SOURCE)
+#define MAXNAMLEN 255
+ssize_t getdents64(int, void *, size_t);
+#endif
+
 #if (defined(_GNU_SOURCE) || defined(_BSD_SOURCE)) &&                          \
     !defined(__SLATE_LIBC_DARWIN) && !defined(__SLATE_LIBC_FREEBSD) &&         \
     !defined(__SLATE_LIBC_BIONIC)

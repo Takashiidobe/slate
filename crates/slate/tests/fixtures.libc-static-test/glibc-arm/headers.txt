@@ -28,3 +28,6 @@ string.h
 stdlib.h
 fcntl.h
 unistd.h
+cpio.h
+dirent.h
+dlfcn.h

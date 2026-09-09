@@ -24,3 +24,7 @@ string.h
 stdlib.h
 fcntl.h
 unistd.h
+cpio.h
+crypt.h
+dirent.h
+dlfcn.h
