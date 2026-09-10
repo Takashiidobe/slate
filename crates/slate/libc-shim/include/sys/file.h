@@ -1,18 +1,17 @@
 #ifndef _SLATE_SYS_FILE_H
 #define _SLATE_SYS_FILE_H
 
-enum {
-  LOCK_SH = 1,
-  LOCK_EX = 2,
-  LOCK_NB = 4,
-  LOCK_UN = 8,
-};
+#if defined(__SLATE_LIBC_GLIBC)
+#include <fcntl.h>
+#endif
 
-enum {
-  L_SET  = 0,
-  L_INCR = 1,
-  L_XTND = 2,
-};
+#define LOCK_SH 1
+#define LOCK_EX 2
+#define LOCK_NB 4
+#define LOCK_UN 8
+#define L_SET 0
+#define L_INCR 1
+#define L_XTND 2
 
 int flock(int, int);
 
