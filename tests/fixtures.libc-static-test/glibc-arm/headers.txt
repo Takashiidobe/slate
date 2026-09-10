@@ -141,3 +141,8 @@ stdio.h
 stdio_ext.h
 sys/acct.h
 sys/auxv.h
+sys/bitypes.h
+sys/dir.h
+sys/elf.h
+sys/epoll.h
+sys/errno.h

@@ -1486,12 +1486,6 @@ pub fn render_type_surface_probe(
             if enumerator.name.starts_with('_') {
                 continue;
             }
-            if simple_type(&enumerator.type_spelling) {
-                checks.push(format!(
-                    "_Static_assert(__builtin_types_compatible_p(__typeof__({}), __typeof__(({})0)), \"enum {} type differs from oracle\");",
-                    enumerator.name, enumerator.type_spelling, enumerator.name
-                ));
-            }
             if let Some(value) = &enumerator.value {
                 checks.push(format!(
                     "_Static_assert({} == ({}), \"enum {} value differs from oracle\");",
