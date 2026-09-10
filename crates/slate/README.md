@@ -36,12 +36,39 @@ $ cmake -G Ninja -S ~/llvm-project/llvm -B ~/llvm-project/build-cir
   -DCMAKE_INSTALL_PREFIX=/usr/local
 ```
 
-And a build of the MacroDumpPlugin in `./tools/macro-dump-plugin/MacroDump.cpp`.
+### Building the plugin against an installed clang
 
-Building requires running the build script:
+Note: CIR isn't enabled on clang builds yet so this is just hypothetical
+for the future
+
+You'll need the headers and then point the tool to build properly
+
+**Debian/Ubuntu:**
 
 ```sh
-$ tools/macro-dump-plugin/build.sh
+sudo apt install clang-22 libclang-22-dev llvm-22-dev
+SLATE_CLANG=/usr/bin/clang-22 tools/macro-dump-plugin/build.sh
+```
+
+**Arch:**
+
+```sh
+sudo pacman -S clang llvm
+SLATE_CLANG=/usr/bin/clang tools/macro-dump-plugin/build.sh
+```
+
+**Fedora:**
+
+```sh
+sudo dnf install clang clang-devel llvm-devel
+SLATE_CLANG=/usr/bin/clang tools/macro-dump-plugin/build.sh
+```
+
+**macOS (w/ brew):**
+
+```sh
+brew install llvm
+SLATE_CLANG=$(brew --prefix llvm)/bin/clang tools/macro-dump-plugin/build.sh
 ```
 
 ## Usage
