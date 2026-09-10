@@ -160,3 +160,9 @@ sys/io.h
 sys/ioctl.h
 sys/ipc.h
 sys/kd.h
+sys/klog.h
+sys/mman.h
+sys/mount.h
+sys/msg.h
+sys/mtio.h
+sys/param.h
