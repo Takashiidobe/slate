@@ -80,3 +80,7 @@ values.h
 utmpx.h
 pthread.h
 pty.h
+regex.h
+resolv.h
+sched.h
+scsi/scsi.h

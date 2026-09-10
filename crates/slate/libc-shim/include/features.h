@@ -182,10 +182,10 @@
       member)
 #endif
 
-#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L
-#define __deprecated(...) [[deprecated(__VA_ARGS__)]]
-#elif defined(__GNUC__) || defined(__clang__)
+#if defined(__GNUC__) || defined(__clang__)
 #define __deprecated(...) __attribute__((deprecated(__VA_ARGS__)))
+#elif defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L
+#define __deprecated(...) [[deprecated(__VA_ARGS__)]]
 #elif defined(_MSC_VER)
 #define __deprecated(...) __declspec(deprecated)
 #else

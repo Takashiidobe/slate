@@ -27,17 +27,16 @@
 struct sched_param {
   int sched_priority;
 };
-#elif defined(__SLATE_LIBC_MUSL)
-struct sched_param {
-  int  sched_priority;
-  int  __reserved1;
-  long __reserved2[5];
-};
 #else
 struct sched_param {
   int sched_priority;
   int __reserved1;
-#if _REDIR_TIME64
+#if defined(__SLATE_LIBC_MUSL) && __SIZEOF_LONG__ == 4
+  struct {
+    int __reserved1;
+    int __reserved2;
+  } __reserved2[2];
+#elif _REDIR_TIME64
   long __reserved2[4];
 #else
   struct {
@@ -47,6 +46,10 @@ struct sched_param {
 #endif
   int __reserved3;
 };
+#endif
+
+#if defined(__SLATE_LIBC_GLIBC)
+#define sched_priority sched_priority
 #endif
 
 int sched_get_priority_max(int);
@@ -61,10 +64,27 @@ int sched_yield(void);
 #define SCHED_OTHER         0
 #define SCHED_FIFO          1
 #define SCHED_RR            2
+#if defined(__SLATE_LIBC_GLIBC)
+#define SCHED_NORMAL 0
+#define SCHED_ISO 4
+#define SCHED_EXT 7
+#define SCHED_FLAG_RESET_ON_FORK 0x01
+#define SCHED_FLAG_RECLAIM 0x02
+#define SCHED_FLAG_DL_OVERRUN 0x04
+#define SCHED_FLAG_KEEP_POLICY 0x08
+#define SCHED_FLAG_KEEP_PARAMS 0x10
+#define SCHED_FLAG_UTIL_CLAMP_MIN 0x20
+#define SCHED_FLAG_UTIL_CLAMP_MAX 0x40
+#define SCHED_FLAG_KEEP_ALL (SCHED_FLAG_KEEP_POLICY | SCHED_FLAG_KEEP_PARAMS)
+#define SCHED_FLAG_UTIL_CLAMP (SCHED_FLAG_UTIL_CLAMP_MIN | SCHED_FLAG_UTIL_CLAMP_MAX)
+#endif
 #define SCHED_BATCH         3
 #define SCHED_IDLE          5
 #define SCHED_DEADLINE      6
 #define SCHED_RESET_ON_FORK 0x40000000
+#if defined(__SLATE_LIBC_GLIBC) && (defined(__SLATE_ARCH_X86) || defined(__SLATE_ARCH_X86_64))
+#define SCHED_GETATTR_FLAG_DL_DYNAMIC 0x01
+#endif
 
 #ifdef _GNU_SOURCE
 #define CSIGNAL              0x000000ff

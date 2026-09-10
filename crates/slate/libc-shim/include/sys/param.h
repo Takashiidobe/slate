@@ -36,6 +36,8 @@
 
 #include <endian.h>
 #include <limits.h>
+#if !defined(__SLATE_LIBC_GLIBC)
 #include <sys/resource.h>
+#endif
 
 #endif
