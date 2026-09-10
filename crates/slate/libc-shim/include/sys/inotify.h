@@ -1,7 +1,9 @@
 #ifndef _SYS_INOTIFY_H
 #define _SYS_INOTIFY_H
 
+#if defined(__SLATE_LIBC_MUSL)
 #include <fcntl.h>
+#endif
 #include <stdint.h>
 
 struct inotify_event {
