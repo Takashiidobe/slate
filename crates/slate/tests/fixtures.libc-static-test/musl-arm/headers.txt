@@ -78,3 +78,5 @@ wchar.h
 wait.h
 values.h
 utmpx.h
+pthread.h
+pty.h

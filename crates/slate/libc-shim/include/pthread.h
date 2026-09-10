@@ -67,6 +67,37 @@ enum {
   PTHREAD_PROCESS_SHARED  = 1,
 };
 
+#if defined(__SLATE_LIBC_GLIBC)
+#define PTHREAD_CREATE_JOINABLE PTHREAD_CREATE_JOINABLE
+#define PTHREAD_CREATE_DETACHED PTHREAD_CREATE_DETACHED
+#define PTHREAD_INHERIT_SCHED PTHREAD_INHERIT_SCHED
+#define PTHREAD_EXPLICIT_SCHED PTHREAD_EXPLICIT_SCHED
+#define PTHREAD_SCOPE_SYSTEM PTHREAD_SCOPE_SYSTEM
+#define PTHREAD_SCOPE_PROCESS PTHREAD_SCOPE_PROCESS
+#define PTHREAD_PROCESS_PRIVATE PTHREAD_PROCESS_PRIVATE
+#define PTHREAD_PROCESS_SHARED PTHREAD_PROCESS_SHARED
+#elif defined(__SLATE_LIBC_MUSL)
+#define PTHREAD_CREATE_JOINABLE 0
+#define PTHREAD_CREATE_DETACHED 1
+#define PTHREAD_MUTEX_NORMAL 0
+#define PTHREAD_MUTEX_DEFAULT 0
+#define PTHREAD_MUTEX_RECURSIVE 1
+#define PTHREAD_MUTEX_ERRORCHECK 2
+#define PTHREAD_MUTEX_STALLED 0
+#define PTHREAD_MUTEX_ROBUST 1
+#define PTHREAD_PRIO_NONE 0
+#define PTHREAD_PRIO_INHERIT 1
+#define PTHREAD_PRIO_PROTECT 2
+#define PTHREAD_INHERIT_SCHED 0
+#define PTHREAD_EXPLICIT_SCHED 1
+#define PTHREAD_SCOPE_SYSTEM 0
+#define PTHREAD_SCOPE_PROCESS 1
+#define PTHREAD_PROCESS_PRIVATE 0
+#define PTHREAD_PROCESS_SHARED 1
+#define PTHREAD_CANCEL_MASKED 2
+#define PTHREAD_NULL ((pthread_t)0)
+#endif
+
 #define PTHREAD_MUTEX_INITIALIZER  {{0}}
 #define PTHREAD_RWLOCK_INITIALIZER {{0}}
 #define PTHREAD_COND_INITIALIZER   {{0}}
@@ -91,6 +122,10 @@ int            pthread_join(pthread_t, void **);
 __const pthread_t pthread_self(void);
 
 int pthread_equal(pthread_t, pthread_t);
+
+#if defined(__SLATE_LIBC_MUSL)
+#define pthread_equal(x, y) ((x) == (y))
+#endif
 
 int  pthread_setcancelstate(int, int *);
 int  pthread_setcanceltype(int, int *);
@@ -279,6 +314,17 @@ __REDIR(pthread_timedjoin_np, __pthread_timedjoin_np_time64);
 
 #endif
 
+#endif
+
+#if defined(__SLATE_LIBC_GLIBC)
+#define PTHREAD_STACK_MIN __sysconf (__SC_THREAD_STACK_MIN_VALUE)
+#define PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP { { __PTHREAD_MUTEX_INITIALIZER (PTHREAD_MUTEX_RECURSIVE_NP) } }
+#define PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP { { __PTHREAD_MUTEX_INITIALIZER (PTHREAD_MUTEX_ERRORCHECK_NP) } }
+#define PTHREAD_ADAPTIVE_MUTEX_INITIALIZER_NP { { __PTHREAD_MUTEX_INITIALIZER (PTHREAD_MUTEX_ADAPTIVE_NP) } }
+#define PTHREAD_RWLOCK_WRITER_NONRECURSIVE_INITIALIZER_NP { { __PTHREAD_RWLOCK_INITIALIZER (PTHREAD_RWLOCK_PREFER_WRITER_NONRECURSIVE_NP) } }
+#define PTHREAD_ATTR_NO_SIGMASK_NP (-1)
+#define pthread_cleanup_push_defer_np do { __pthread_unwind_buf_t __cancel_buf; void (*__cancel_routine) (void *) = (routine); void *__cancel_arg = (arg); int __not_first_call = __sigsetjmp_cancel (__cancel_buf.__cancel_jmp_buf, 0); if (__glibc_unlikely (__not_first_call)) { __cancel_routine (__cancel_arg); __pthread_unwind_next (&__cancel_buf); } __pthread_register_cancel_defer (&__cancel_buf); do {
+#define pthread_cleanup_pop_restore_np do { } while (0); } while (0); __pthread_unregister_cancel_restore (&__cancel_buf); if (execute) __cancel_routine (__cancel_arg); } while (0)
 #endif
 
 #endif

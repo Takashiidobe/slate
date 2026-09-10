@@ -473,7 +473,11 @@ typedef union {
 
 typedef int __pthread_once_t;
 
+#if defined(__SLATE_LIBC_MUSL)
+typedef struct __pthread *__pthread_t;
+#else
 typedef unsigned long __pthread_t;
+#endif
 
 #if defined(__SLATE_LIBC_GLIBC) && defined(__SLATE_ARCH_AARCH64)
 typedef union {
