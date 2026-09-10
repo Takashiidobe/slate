@@ -70,11 +70,20 @@ struct sigcontext {
   struct _fpstate *fpstate;
   unsigned long    oldmask, cr2;
 };
+#if defined(__SLATE_LIBC_MUSL)
+struct mcontext_t {
+  gregset_t     gregs;
+  fpregset_t    fpregs;
+  unsigned long oldmask, cr2;
+};
+typedef struct mcontext_t mcontext_t;
+#else
 typedef struct {
   gregset_t     gregs;
   fpregset_t    fpregs;
   unsigned long oldmask, cr2;
 } mcontext_t;
+#endif
 #else
 typedef struct {
   unsigned __space[22];

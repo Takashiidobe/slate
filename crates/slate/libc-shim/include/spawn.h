@@ -3,6 +3,11 @@
 
 #include <features.h>
 
+#if defined(__SLATE_LIBC_GLIBC)
+#include <sched.h>
+#include <sys/types.h>
+#endif
+
 #define __NEED_mode_t
 #define __NEED_pid_t
 #define __NEED_sigset_t
@@ -28,6 +33,10 @@ struct sched_param;
 #define POSIX_SPAWN_SETSCHEDULER  32
 #define POSIX_SPAWN_USEVFORK      64
 #define POSIX_SPAWN_SETSID        128
+
+#if defined(__SLATE_LIBC_GLIBC)
+#define POSIX_SPAWN_SETCGROUP     256
+#endif
 
 typedef struct {
   int      __flags;
@@ -65,6 +74,10 @@ int posix_spawnattr_getflags(const posix_spawnattr_t *__restrict,
 int posix_spawnattr_setpgroup(posix_spawnattr_t *, pid_t);
 int posix_spawnattr_getpgroup(const posix_spawnattr_t *__restrict,
                               pid_t *__restrict);
+#if defined(__SLATE_LIBC_GLIBC)
+int posix_spawnattr_getcgroup_np(const posix_spawnattr_t *__restrict,
+                                 int *__restrict);
+#endif
 
 int posix_spawnattr_setsigmask(posix_spawnattr_t *__restrict,
                                const sigset_t *__restrict);

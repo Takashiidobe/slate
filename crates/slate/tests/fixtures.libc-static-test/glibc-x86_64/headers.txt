@@ -131,3 +131,9 @@ search.h
 semaphore.h
 setjmp.h
 sgtty.h
+shadow.h
+signal.h
+spawn.h
+stab.h
+stdbit.h
+stdc-predef.h

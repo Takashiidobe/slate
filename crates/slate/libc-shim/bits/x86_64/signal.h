@@ -84,11 +84,20 @@ struct sigcontext {
   struct _fpstate *fpstate;
   unsigned long    __reserved1[8];
 };
+#if defined(__SLATE_LIBC_MUSL)
+struct mcontext_t {
+  gregset_t          gregs;
+  fpregset_t         fpregs;
+  unsigned long long __reserved1[8];
+};
+typedef struct mcontext_t mcontext_t;
+#else
 typedef struct {
   gregset_t          gregs;
   fpregset_t         fpregs;
   unsigned long long __reserved1[8];
 } mcontext_t;
+#endif
 #else
 typedef struct {
   unsigned long __space[32];

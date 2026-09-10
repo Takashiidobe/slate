@@ -89,3 +89,7 @@ scsi/sg.h
 search.h
 semaphore.h
 setjmp.h
+shadow.h
+signal.h
+spawn.h
+stdc-predef.h

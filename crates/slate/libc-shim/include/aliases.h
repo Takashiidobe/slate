@@ -4,7 +4,6 @@
 #include <features.h>
 
 #include <stdint.h>
-#include <signal.h>
 #include <sys/time.h>
 
 #include <sys/types.h>

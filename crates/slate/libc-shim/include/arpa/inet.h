@@ -9,7 +9,6 @@
 #include <inttypes.h>
 #endif
 #if defined(__SLATE_LIBC_GLIBC)
-#include <signal.h>
 #include <sys/time.h>
 #include <sys/types.h>
 #include <time.h>
