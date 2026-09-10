@@ -3,7 +3,13 @@
 
 #include <features.h>
 
+#if defined(__SLATE_LIBC_GLIBC)
+typedef struct {
+  int __val[2];
+} fsid_t;
+#else
 #include <sys/statfs.h>
+#endif
 
 struct fanotify_event_metadata {
   unsigned       event_len;
@@ -13,7 +19,7 @@ struct fanotify_event_metadata {
   __aligned(8) unsigned long long mask;
   int fd;
   int pid;
-};
+} __attribute__((aligned(8)));
 
 struct fanotify_event_info_header {
   unsigned char  info_type;

@@ -1,7 +1,9 @@
 #ifndef _SLATE_SYS_EVENTFD_H
 #define _SLATE_SYS_EVENTFD_H
 
+#if defined(__SLATE_LIBC_MUSL)
 #include <fcntl.h>
+#endif
 #include <stdint.h>
 
 typedef uint64_t eventfd_t;
