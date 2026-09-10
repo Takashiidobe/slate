@@ -68,3 +68,5 @@ netinet/ip6.h
 netinet/ip_icmp.h
 netinet/tcp.h
 netinet/udp.h
+netpacket/packet.h
+nl_types.h

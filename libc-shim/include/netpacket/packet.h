@@ -15,46 +15,43 @@ struct packet_mreq {
   unsigned char      mr_address[8];
 };
 
-enum {
-  PACKET_HOST      = 0,
-  PACKET_BROADCAST = 1,
-  PACKET_MULTICAST = 2,
-  PACKET_OTHERHOST = 3,
-  PACKET_OUTGOING  = 4,
-  PACKET_LOOPBACK  = 5,
-  PACKET_FASTROUTE = 6,
-};
+#define PACKET_HOST      0
+#define PACKET_BROADCAST 1
+#define PACKET_MULTICAST 2
+#define PACKET_OTHERHOST 3
+#define PACKET_OUTGOING  4
+#define PACKET_LOOPBACK  5
+#define PACKET_FASTROUTE 6
 
-enum {
-  PACKET_ADD_MEMBERSHIP  = 1,
-  PACKET_DROP_MEMBERSHIP = 2,
-  PACKET_RECV_OUTPUT     = 3,
-  PACKET_RX_RING         = 5,
-  PACKET_STATISTICS      = 6,
-  PACKET_COPY_THRESH     = 7,
-  PACKET_AUXDATA         = 8,
-  PACKET_ORIGDEV         = 9,
-  PACKET_VERSION         = 10,
-  PACKET_HDRLEN          = 11,
-  PACKET_RESERVE         = 12,
-  PACKET_TX_RING         = 13,
-  PACKET_LOSS            = 14,
-  PACKET_VNET_HDR        = 15,
-  PACKET_TX_TIMESTAMP    = 16,
-  PACKET_TIMESTAMP       = 17,
-  PACKET_FANOUT          = 18,
-  PACKET_TX_HAS_OFF      = 19,
-  PACKET_QDISC_BYPASS    = 20,
-  PACKET_ROLLOVER_STATS  = 21,
-  PACKET_FANOUT_DATA     = 22,
-  PACKET_IGNORE_OUTGOING = 23,
-};
+#define PACKET_ADD_MEMBERSHIP  1
+#define PACKET_DROP_MEMBERSHIP 2
+#define PACKET_RECV_OUTPUT     3
+#define PACKET_RX_RING         5
+#define PACKET_STATISTICS      6
+#define PACKET_COPY_THRESH     7
+#define PACKET_AUXDATA         8
+#define PACKET_ORIGDEV         9
+#define PACKET_VERSION         10
+#define PACKET_HDRLEN          11
+#define PACKET_RESERVE         12
+#define PACKET_TX_RING         13
+#define PACKET_LOSS            14
+#define PACKET_VNET_HDR        15
+#define PACKET_TX_TIMESTAMP    16
+#define PACKET_TIMESTAMP       17
+#define PACKET_FANOUT          18
+#define PACKET_TX_HAS_OFF      19
+#define PACKET_QDISC_BYPASS    20
+#define PACKET_ROLLOVER_STATS  21
+#define PACKET_FANOUT_DATA     22
+#define PACKET_IGNORE_OUTGOING 23
+#if defined(__SLATE_LIBC_GLIBC)
+#define PACKET_VNET_HDR_SZ 24
+#endif
 
-enum {
-  PACKET_MR_MULTICAST = 0,
-  PACKET_MR_PROMISC   = 1,
-  PACKET_MR_ALLMULTI  = 2,
-  PACKET_MR_UNICAST   = 3,
-};
+#define PACKET_MR_MULTICAST 0
+#define PACKET_MR_PROMISC   1
+#define PACKET_MR_ALLMULTI  2
+#define PACKET_MR_UNICAST   3
 
 #endif
