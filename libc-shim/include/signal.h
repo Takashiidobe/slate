@@ -48,6 +48,13 @@ struct sigevent {
 #if defined(_POSIX_SOURCE) || defined(_POSIX_C_SOURCE) ||                      \
     defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
 
+#if defined(__SLATE_LIBC_GLIBC)
+#include <unistd.h>
+#if defined(__SLATE_ARCH_AARCH64)
+#include <sys/types.h>
+#endif
+#endif
+
 #ifdef _GNU_SOURCE
 #define __ucontext ucontext
 #endif
@@ -75,6 +82,12 @@ enum {
   SIG_UNBLOCK = 1,
   SIG_SETMASK = 2,
 };
+
+#if defined(__SLATE_LIBC_MUSL)
+#define SIG_BLOCK 0
+#define SIG_UNBLOCK 1
+#define SIG_SETMASK 2
+#endif
 
 #define SI_ASYNCNL (-60)
 #define SI_TKILL   (-6)
@@ -288,6 +301,12 @@ int  sigpause(int);
 int  sigrelse(int);
 void (*sigset(int, void (*)(int)))(int);
 
+#if defined(__SLATE_LIBC_GLIBC)
+#define sigmask(sig) ((int)(1u << ((sig) - 1)))
+int sigreturn(struct sigcontext *) __THROW;
+int sigstack(struct sigstack *, struct sigstack *) __THROW;
+#endif
+
 enum {
   TRAP_BRKPT    = 1,
   TRAP_TRACE    = 2,
@@ -305,6 +324,24 @@ enum {
   SS_AUTODISARM = (1U << 31),
   SS_FLAG_BITS  = SS_AUTODISARM,
 };
+
+#if defined(__SLATE_LIBC_MUSL)
+#define TRAP_BRKPT 1
+#define TRAP_TRACE 2
+#define TRAP_BRANCH 3
+#define TRAP_HWBKPT 4
+#define TRAP_UNK 5
+#define POLL_IN 1
+#define POLL_OUT 2
+#define POLL_MSG 3
+#define POLL_ERR 4
+#define POLL_PRI 5
+#define POLL_HUP 6
+#define SS_ONSTACK 1
+#define SS_DISABLE 2
+#define SS_AUTODISARM (1U << 31)
+#define SS_FLAG_BITS SS_AUTODISARM
+#endif
 #endif
 
 #if defined(_BSD_SOURCE) || defined(_GNU_SOURCE)

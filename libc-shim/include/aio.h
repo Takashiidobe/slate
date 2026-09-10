@@ -3,10 +3,27 @@
 
 #include <features.h>
 #include <stdint.h>
-#include <signal.h>
 #if defined(__SLATE_LIBC_GLIBC)
 #include <sys/types.h>
+#define __NEED_pid_t
+#define __NEED_pthread_attr_t
+#define __NEED_union_sigval
+#include <bits/types.h>
+struct sigevent {
+  union sigval sigev_value;
+  int          sigev_signo;
+  int          sigev_notify;
+  union {
+    char  __pad[64 - 2 * sizeof(int) - sizeof(union sigval)];
+    pid_t sigev_notify_thread_id;
+    struct {
+      void            (*sigev_notify_function)(union sigval);
+      pthread_attr_t *sigev_notify_attributes;
+    } __sev_thread;
+  } __sev_fields;
+};
 #else
+#include <signal.h>
 #include <time.h>
 #endif
 #if defined(__SLATE_LIBC_GLIBC)
