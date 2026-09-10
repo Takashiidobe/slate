@@ -41,7 +41,7 @@
 #define AX25_DIGI_XBAND 0x02
 #define AX25_MAX_DIGIS 8
 
-typedef struct { char ax25_call[7]; } ax25_address;
+typedef struct ax25_address { char ax25_call[7]; } ax25_address;
 struct sockaddr_ax25 { sa_family_t sax25_family; ax25_address sax25_call; int sax25_ndigis; };
 struct full_sockaddr_ax25 { struct sockaddr_ax25 fsa_ax25; ax25_address fsa_digipeater[AX25_MAX_DIGIS]; };
 #define sax25_uid sax25_ndigis

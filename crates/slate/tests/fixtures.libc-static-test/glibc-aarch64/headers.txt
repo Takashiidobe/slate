@@ -96,3 +96,9 @@ netinet/tcp.h
 netinet/udp.h
 netipx/ipx.h
 netiucv/iucv.h
+netpacket/packet.h
+netrom/netrom.h
+netrose/rose.h
+nfs/nfs.h
+nl_types.h
+nss.h
