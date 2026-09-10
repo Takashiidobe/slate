@@ -1,7 +1,9 @@
 #ifndef _SLATE_SYS_EPOLL_H
 #define _SLATE_SYS_EPOLL_H
 
+#if defined(__SLATE_LIBC_MUSL)
 #include <fcntl.h>
+#endif
 #include <stdint.h>
 #include <sys/ioctl.h>
 #include <sys/types.h>
@@ -9,10 +11,9 @@
 #define __NEED_sigset_t
 #include <bits/types.h>
 
-#define EPOLL_CLOEXEC  O_CLOEXEC
-#define EPOLL_NONBLOCK O_NONBLOCK
+#define EPOLL_CLOEXEC  02000000
+#define EPOLL_NONBLOCK 00004000
 
-enum EPOLL_EVENTS { __EPOLL_DUMMY };
 #define EPOLLIN        0x001
 #define EPOLLPRI       0x002
 #define EPOLLOUT       0x004
@@ -48,7 +49,7 @@ struct epoll_event {
 #if defined(__SLATE_ARCH_X86_64) || defined(__SLATE_ARCH_X86)
 __packed
 #endif
-;
+    ;
 
 struct epoll_params {
   uint32_t busy_poll_usecs;

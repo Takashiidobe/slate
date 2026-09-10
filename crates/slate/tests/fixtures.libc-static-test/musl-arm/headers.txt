@@ -98,3 +98,6 @@ stdio.h
 stdio_ext.h
 sys/acct.h
 sys/auxv.h
+sys/dir.h
+sys/epoll.h
+sys/errno.h
