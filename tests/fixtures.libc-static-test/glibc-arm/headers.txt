@@ -114,3 +114,8 @@ wchar.h
 wait.h
 values.h
 utmpx.h
+pthread.h
+pty.h
+protocols/rwhod.h
+protocols/talkd.h
+protocols/timed.h
