@@ -33,6 +33,7 @@
 #define _PROTOCOLS_ROUTED_H
 
 #include <sys/socket.h>
+#include <sys/types.h>
 /*
  * Routing Information Protocol
  *

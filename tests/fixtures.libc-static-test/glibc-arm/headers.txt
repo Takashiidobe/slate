@@ -102,3 +102,9 @@ netrose/rose.h
 nfs/nfs.h
 nl_types.h
 nss.h
+obstack.h
+paths.h
+poll.h
+printf.h
+proc_service.h
+protocols/routed.h

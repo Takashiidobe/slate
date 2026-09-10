@@ -103,7 +103,7 @@ struct __sigset_t {
 };
 typedef struct __sigset_t __sigset_t;
 #elif !defined(__SLATE_LIBC_MSVC)
-typedef struct {
+typedef struct __sigset_t {
   unsigned long __bits[128 / sizeof(unsigned long)];
 } __sigset_t;
 #endif

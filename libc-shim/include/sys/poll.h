@@ -1,2 +1,6 @@
-#warning redirecting incorrect #include <sys/poll.h> to <poll.h>
-#include <poll.h>
+#ifndef _SLATE_SYS_POLL_H
+#define _SLATE_SYS_POLL_H
+
+#include <bits/poll.h>
+
+#endif
