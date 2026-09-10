@@ -6,6 +6,12 @@
 #include <stddef.h>
 #include <string.h>
 
+#if defined(__SLATE_LIBC_GLIBC)
+#define PTR_INT_TYPE __PTRDIFF_TYPE__
+#else
+#define PTR_INT_TYPE ptrdiff_t
+#endif
+
 #define __BPTR_ALIGN(base, pointer, alignment)                                 \
   ((base) + (((pointer) - (base) + (alignment)) & ~(alignment)))
 #define __PTR_ALIGN(base, pointer, alignment)                                  \
@@ -26,8 +32,8 @@ struct obstack {
   char                  *chunk_limit;
 
   union {
-    ptrdiff_t tempint;
-    void     *tempptr;
+    PTR_INT_TYPE tempint;
+    void        *tempptr;
   } temp;
 
   int alignment_mask;

@@ -70,3 +70,5 @@ netinet/tcp.h
 netinet/udp.h
 netpacket/packet.h
 nl_types.h
+paths.h
+poll.h

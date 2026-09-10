@@ -224,6 +224,7 @@ fn is_ignored_transitive_header(file: &str, config: &ProbeConfig) -> bool {
             | "signal.h"
             | "sys/cdefs.h"
             | "sys/procfs.h"
+            | "sys/poll.h"
             | "sys/select.h"
             | "sys/time.h"
             | "sys/ucontext.h"
