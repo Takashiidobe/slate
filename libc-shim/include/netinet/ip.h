@@ -2,6 +2,11 @@
 #define _SLATE_NETINET_IP_H
 
 #include <netinet/in.h>
+#if defined(__SLATE_LIBC_GLIBC)
+#include <sys/types.h>
+#else
+#include <inttypes.h>
+#endif
 #include <stdint.h>
 
 struct timestamp {
@@ -98,6 +103,10 @@ struct ip_timestamp {
 #define IPTOS_DSCP_AF42 0x90
 #define IPTOS_DSCP_AF43 0x98
 #define IPTOS_DSCP_EF   0xb8
+#if defined(__SLATE_LIBC_GLIBC)
+#define IPTOS_DSCP_VA 0xb0
+#define IPTOS_DSCP_LE 0x04
+#endif
 
 #define IPTOS_CLASS_MASK    0xe0
 #define IPTOS_CLASS(x)      ((x) & IPTOS_CLASS_MASK)

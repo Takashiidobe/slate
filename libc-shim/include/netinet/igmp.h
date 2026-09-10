@@ -2,6 +2,11 @@
 #define _SLATE_NETINET_IGMP_H
 
 #include <netinet/in.h>
+#if defined(__SLATE_LIBC_GLIBC)
+#include <sys/types.h>
+#else
+#include <inttypes.h>
+#endif
 #include <stdint.h>
 
 struct igmp {
@@ -24,6 +29,9 @@ struct igmp {
 
 #define IGMP_MTRACE_RESP 0x1e
 #define IGMP_MTRACE      0x1f
+#if defined(__SLATE_LIBC_GLIBC)
+#define IGMP_MRDISC_ADV 0x30
+#endif
 
 #define IGMP_MAX_HOST_REPORT_DELAY 10
 #define IGMP_TIMER_SCALE           10

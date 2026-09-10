@@ -5,6 +5,9 @@
 
 #include <netinet/in.h>
 #include <stdint.h>
+#if defined(__SLATE_LIBC_MUSL)
+#include <inttypes.h>
+#endif
 #include <sys/socket.h>
 #include <sys/types.h>
 
@@ -18,7 +21,11 @@ struct rtentry {
   unsigned long int  rt_pad3;
   unsigned char      rt_tos;
   unsigned char      rt_class;
-  short int          rt_pad4[sizeof(long) / 2 - 1];
+#if defined(__SLATE_WORDSIZE_64)
+  short int          rt_pad4[3];
+#else
+  short int          rt_pad4;
+#endif
   short int          rt_metric;
   char              *rt_dev;
   unsigned long int  rt_mtu;

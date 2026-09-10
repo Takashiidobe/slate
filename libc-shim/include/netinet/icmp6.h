@@ -2,6 +2,10 @@
 #define _SLATE_NETINET_ICMP6_H
 
 #include <netinet/in.h>
+#include <inttypes.h>
+
+#define ICMPV6_EXT_ECHO_REQUEST 160
+#define ICMPV6_EXT_ECHO_REPLY 161
 #include <stdint.h>
 #include <string.h>
 #include <sys/types.h>

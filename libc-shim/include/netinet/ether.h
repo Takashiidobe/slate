@@ -2,6 +2,7 @@
 #define _SLATE_NETINET_ETHER_H
 
 #include <features.h>
+#include <net/ethernet.h>
 
 #include <netinet/if_ether.h>
 

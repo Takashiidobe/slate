@@ -2,6 +2,9 @@
 #define _SLATE_NETINET_IN_SYSTM_H
 
 #include <features.h>
+#if defined(__SLATE_LIBC_GLIBC)
+#include <sys/types.h>
+#endif
 
 #define __NEED_uint16_t
 #define __NEED_uint32_t
