@@ -120,3 +120,8 @@ pty.h
 protocols/rwhod.h
 protocols/talkd.h
 protocols/timed.h
+regex.h
+resolv.h
+rpc/netdb.h
+sched.h
+scsi/scsi.h

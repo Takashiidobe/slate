@@ -56,9 +56,16 @@
 
 #include <arpa/nameser.h>
 #include <netinet/in.h>
+#if defined(__SLATE_LIBC_GLIBC)
 #include <stdio.h>
 #include <sys/param.h>
 #include <sys/types.h>
+#else
+#define __NEED_size_t
+#include <bits/types.h>
+struct _IO_FILE;
+typedef struct _IO_FILE FILE;
+#endif
 
 /* Minimal typedef for res_state used by resolver APIs. */
 #ifndef _SLATE_RES_STATE
@@ -98,6 +105,22 @@ typedef struct __res_state *res_state;
 
 #ifndef _PATH_RESCONF
 #define _PATH_RESCONF "/etc/resolv.conf"
+#if defined(__SLATE_LIBC_MUSL)
+#define MAXNS 3
+#define MAXDFLSRCH 3
+#define MAXDNSRCH 6
+#define MAXRESOLVSORT 10
+#define RES_F_VC 0x00000001
+#define RES_F_CONN 0x00000002
+#define RES_F_EDNS0ERR 0x00000004
+#define RES_EXHAUSTIVE 0x00000001
+#define RES_INSECURE1 0x00000400
+#define RES_INSECURE2 0x00000800
+#define RES_USE_INET6 0x00002000
+#define RES_USEBSTRING 0x00040000
+#define RES_NOIP6DOTINT 0x00080000
+#endif
+
 #endif
 
 struct res_sym {
