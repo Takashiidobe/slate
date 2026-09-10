@@ -84,3 +84,8 @@ regex.h
 resolv.h
 sched.h
 scsi/scsi.h
+scsi/scsi_ioctl.h
+scsi/sg.h
+search.h
+semaphore.h
+setjmp.h

@@ -61,6 +61,9 @@ _Noreturn void _longjmp(jmp_buf env, int val);
 #endif
 
 #define setjmp setjmp
+#if defined(__SLATE_LIBC_GLIBC)
+#define sigsetjmp __sigsetjmp (env, savemask)
+#endif
 
 #undef __setjmp_attr
 

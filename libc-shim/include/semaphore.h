@@ -13,7 +13,6 @@
 #define __NEED_mode_t
 #include <bits/types.h>
 
-#include <fcntl.h>
 #include <bits/freebsd/semaphore.h>
 
 #else
@@ -24,7 +23,11 @@
 #define __NEED_mode_t
 #include <bits/types.h>
 
+#if defined(__SLATE_LIBC_GLIBC)
+#include <sys/types.h>
+#elif defined(__SLATE_LIBC_MUSL)
 #include <fcntl.h>
+#endif
 
 #define SEM_FAILED ((sem_t *)0)
 

@@ -124,3 +124,9 @@ resolv.h
 rpc/netdb.h
 sched.h
 scsi/scsi.h
+scsi/scsi_ioctl.h
+scsi/sg.h
+search.h
+semaphore.h
+setjmp.h
+sgtty.h
