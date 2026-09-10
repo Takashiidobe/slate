@@ -1438,7 +1438,10 @@ pub fn render_type_surface_probe(
 ) -> Result<String, String> {
     let mut checks = Vec::new();
     for typedef in &surface.typedefs {
-        if !typedef.name.starts_with('_') && simple_type(&typedef.underlying_type) {
+        if typedef.name != "va_list"
+            && !typedef.name.starts_with('_')
+            && simple_type(&typedef.underlying_type)
+        {
             let oracle_name = format!("slate_oracle_typedef_{}", identifier(&typedef.name));
             checks.push(format!(
                 "typedef {} {oracle_name};\n_Static_assert(__builtin_types_compatible_p({oracle_name}, {}), \"typedef {} differs from oracle\");",

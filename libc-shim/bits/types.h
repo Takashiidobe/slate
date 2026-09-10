@@ -754,6 +754,9 @@ struct winsize {
 #elif defined(__SLATE_LIBC_DARWIN) || defined(__SLATE_LIBC_FREEBSD)
 typedef struct __sFILE FILE;
 #define __DEFINED_FILE
+#elif defined(__SLATE_LIBC_GLIBC)
+typedef struct _IO_FILE FILE;
+#define __DEFINED_FILE
 #else
 typedef struct FILE FILE;
 #define __DEFINED_FILE

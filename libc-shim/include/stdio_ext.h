@@ -9,6 +9,10 @@ enum {
   FSETLOCKING_BYCALLER = 2,
 };
 
+#define FSETLOCKING_QUERY FSETLOCKING_QUERY
+#define FSETLOCKING_INTERNAL FSETLOCKING_INTERNAL
+#define FSETLOCKING_BYCALLER FSETLOCKING_BYCALLER
+
 void   _flushlbf(void);
 int    __fsetlocking(FILE *, int);
 int    __fwriting(FILE *);
