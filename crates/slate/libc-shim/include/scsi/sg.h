@@ -1,6 +1,9 @@
 #ifndef _SLATE_SCSI_SG_H
 #define _SLATE_SCSI_SG_H
 
+#define __NEED_size_t
+#include <bits/types.h>
+
 #define SG_DXFER_NONE          -1
 #define SG_DXFER_TO_DEV        -2
 #define SG_DXFER_FROM_DEV      -3
@@ -58,7 +61,11 @@
 
 typedef struct sg_iovec {
   void         *iov_base;
+#if defined(__SLATE_LIBC_GLIBC)
+  size_t        iov_len;
+#else
   unsigned long iov_len;
+#endif
 } sg_iovec_t;
 
 typedef struct sg_io_hdr {
