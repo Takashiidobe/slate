@@ -91,3 +91,9 @@ netinet/igmp.h
 netinet/in.h
 netinet/in_systm.h
 netinet/ip.h
+netinet/ip6.h
+netinet/ip_icmp.h
+netinet/tcp.h
+netinet/udp.h
+netipx/ipx.h
+netiucv/iucv.h
