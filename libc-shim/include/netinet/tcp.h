@@ -3,6 +3,8 @@
 
 #include <features.h>
 
+#include <stdint.h>
+
 #define __NEED_uint8_t
 #define __NEED_uint16_t
 #define __NEED_uint32_t
@@ -48,6 +50,44 @@ enum {
   TCP_TX_DELAY             = 37,
 };
 
+#define TCP_NODELAY 1
+#define TCP_MAXSEG 2
+#define TCP_CORK 3
+#define TCP_KEEPIDLE 4
+#define TCP_KEEPINTVL 5
+#define TCP_KEEPCNT 6
+#define TCP_SYNCNT 7
+#define TCP_LINGER2 8
+#define TCP_DEFER_ACCEPT 9
+#define TCP_WINDOW_CLAMP 10
+#define TCP_INFO 11
+#define TCP_QUICKACK 12
+#define TCP_CONGESTION 13
+#define TCP_MD5SIG 14
+#define TCP_THIN_LINEAR_TIMEOUTS 16
+#define TCP_THIN_DUPACK 17
+#define TCP_USER_TIMEOUT 18
+#define TCP_REPAIR 19
+#define TCP_REPAIR_QUEUE 20
+#define TCP_QUEUE_SEQ 21
+#define TCP_REPAIR_OPTIONS 22
+#define TCP_FASTOPEN 23
+#define TCP_TIMESTAMP 24
+#define TCP_NOTSENT_LOWAT 25
+#define TCP_CC_INFO 26
+#define TCP_SAVE_SYN 27
+#define TCP_SAVED_SYN 28
+#define TCP_REPAIR_WINDOW 29
+#define TCP_FASTOPEN_CONNECT 30
+#define TCP_ULP 31
+#define TCP_MD5SIG_EXT 32
+#define TCP_FASTOPEN_KEY 33
+#define TCP_FASTOPEN_NO_COOKIE 34
+#define TCP_ZEROCOPY_RECEIVE 35
+#define TCP_INQ 36
+#define TCP_CM_INQ TCP_INQ
+#define TCP_TX_DELAY 37
+
 enum {
   TCP_ESTABLISHED = 1,
   TCP_SYN_SENT    = 2,
@@ -61,6 +101,18 @@ enum {
   TCP_LISTEN      = 10,
   TCP_CLOSING     = 11,
 };
+
+#define TCP_ESTABLISHED 1
+#define TCP_SYN_SENT 2
+#define TCP_SYN_RECV 3
+#define TCP_FIN_WAIT1 4
+#define TCP_FIN_WAIT2 5
+#define TCP_TIME_WAIT 6
+#define TCP_CLOSE 7
+#define TCP_CLOSE_WAIT 8
+#define TCP_LAST_ACK 9
+#define TCP_LISTEN 10
+#define TCP_CLOSING 11
 
 enum {
   TCP_NLA_PAD,
@@ -121,6 +173,45 @@ typedef uint32_t tcp_seq;
 
 struct tcphdr {
 #ifdef _GNU_SOURCE
+#define TCPI_ECN_MODE_DISABLED 0x0
+#define TCPI_ECN_MODE_RFC3168 0x1
+#define TCPI_ECN_MODE_ACCECN 0x2
+#define TCPI_ECN_MODE_PENDING 0x3
+#define TCPI_OPT_ECN_SEEN 16
+#define TCPI_OPT_SYN_DATA 32
+#define TCPI_OPT_USEC_TS 64
+#define TCPI_OPT_TFO_CHILD 128
+#define TCPOLEN_TSTAMP_APPA (TCPOLEN_TIMESTAMP + 2)
+#define TCPOPT_TSTAMP_HDR ((TCPOPT_NOP << 24) | (TCPOPT_NOP << 16) | (TCPOPT_TIMESTAMP << 8) | TCPOLEN_TIMESTAMP)
+#define TCP_MSS 512
+#define TCP_MAXWIN 65535
+#define TCP_MAX_WINSHIFT 14
+#define TCP_ACCECN_OPT_NOT_SEEN 0x0
+#define TCP_ACCECN_OPT_EMPTY_SEEN 0x1
+#define TCP_ACCECN_OPT_COUNTER_SEEN 0x2
+#define TCP_ACCECN_OPT_FAIL_SEEN 0x3
+#define TCP_ACCECN_ACE_FAIL_SEND 0x1
+#define TCP_ACCECN_ACE_FAIL_RECV 0x2
+#define TCP_ACCECN_OPT_FAIL_SEND 0x4
+#define TCP_ACCECN_OPT_FAIL_RECV 0x8
+#define TCP_AO_KEYF_IFINDEX (1 << 0)
+#define TCP_AO_KEYF_EXCLUDE_OPT (1 << 1)
+#define TCP_AO_MAXKEYLEN 80
+#define TCP_CC_INFO 26
+#define TCP_CM_INQ TCP_INQ
+#define TCP_COOKIE_IN_ALWAYS (1 << 0)
+#define TCP_COOKIE_OUT_NEVER (1 << 1)
+#define TCP_COOKIE_MIN 8
+#define TCP_COOKIE_MAX 16
+#define TCP_COOKIE_PAIR_SIZE (2 * TCP_COOKIE_MAX)
+#define TCP_COOKIE_TRANSACTIONS 15
+#define TCP_DELACK_MAX_US 46
+#define TCP_RTO_MAX_MS 44
+#define TCP_RTO_MIN_US 45
+#define TCP_S_DATA_IN (1 << 2)
+#define TCP_S_DATA_OUT (1 << 3)
+#define TCP_MSS_DEFAULT 536U
+#define TCP_MSS_DESIRED 1220U
 #ifdef __GNUC__
   __extension__
 #endif
@@ -275,9 +366,7 @@ struct tcp_info {
   uint32_t tcpi_accecn_fail_mode : 4;
   uint32_t tcpi_options2 : 24;
 #endif
-#endif
 };
-
 #define TCP_MD5SIG_MAXKEYLEN 80
 
 #define TCP_MD5SIG_FLAG_PREFIX  0x1
@@ -333,4 +422,34 @@ struct tcp_zerocopy_receive {
 
 #endif
 
+#if defined(__SLATE_LIBC_GLIBC) && defined(__SLATE_ARCH_ARM)
+};
+#endif
+
+#endif
+#endif
+#if defined(_GNU_SOURCE)
+#define TCP_MD5SIG_MAXKEYLEN 80
+#define TCP_MD5SIG_FLAG_PREFIX 0x1
+#define TCP_MD5SIG_FLAG_IFINDEX 0x2
+#define TCP_REPAIR_ON 1
+#define TCP_REPAIR_OFF 0
+#define TCP_REPAIR_OFF_NO_WP -1
+#endif
+
+#if defined(__SLATE_LIBC_GLIBC) && defined(__SLATE_ARCH_ARM)
+struct tcp_md5sig {
+  struct sockaddr_storage tcpm_addr;
+  uint8_t tcpm_flags;
+  uint8_t tcpm_prefixlen;
+  uint16_t tcpm_keylen;
+  int tcpm_ifindex;
+  uint8_t tcpm_key[80];
+};
+
+struct tcp_zerocopy_receive {
+  uint64_t address;
+  uint32_t length;
+  uint32_t recv_skip_hint;
+};
 #endif

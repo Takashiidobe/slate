@@ -63,6 +63,22 @@ struct icmphdr {
 
 #define ICMP_EXC_TTL      0
 #define ICMP_EXC_FRAGTIME 1
+#if defined(__SLATE_LIBC_GLIBC)
+#define ICMP_EXT_ECHO 42
+#define ICMP_EXT_ECHOREPLY 43
+#define ICMP_EXT_CODE_MAL_QUERY 1
+#define ICMP_EXT_CODE_NO_IF 2
+#define ICMP_EXT_CODE_NO_TABLE_ENT 3
+#define ICMP_EXT_CODE_MULT_IFS 4
+#define ICMP_EXT_ECHOREPLY_ACTIVE (1 << 2)
+#define ICMP_EXT_ECHOREPLY_IPV4 (1 << 1)
+#define ICMP_EXT_ECHOREPLY_IPV6 1
+#define ICMP_EXT_ECHO_CTYPE_NAME 1
+#define ICMP_EXT_ECHO_CTYPE_INDEX 2
+#define ICMP_EXT_ECHO_CTYPE_ADDR 3
+#define ICMP_AFI_IP 1
+#define ICMP_AFI_IP6 2
+#endif
 
 struct icmp_ra_addr {
   uint32_t ira_addr;

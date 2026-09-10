@@ -1,7 +1,9 @@
 #ifndef _NETINET_IP6_H
 #define _NETINET_IP6_H
 
+
 #include <netinet/in.h>
+#include <inttypes.h>
 #include <stdint.h>
 
 struct ip6_hdr {
@@ -24,6 +26,11 @@ struct ip6_hdr {
 #define ip6_nxt  ip6_ctlun.ip6_un1.ip6_un1_nxt
 #define ip6_hlim ip6_ctlun.ip6_un1.ip6_un1_hlim
 #define ip6_hops ip6_ctlun.ip6_un1.ip6_un1_hlim
+
+#define IPV6_FLOWINFO_MASK 0x0fffffff
+#define IPV6_FLOWLABEL_MASK 0x000fffff
+#define IPV6_VERSION 0x60000000
+#define IPV6_VERSION_MASK 0xf0000000
 
 struct ip6_ext {
   uint8_t ip6e_nxt;
