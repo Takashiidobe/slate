@@ -126,6 +126,27 @@ struct CfgPlan {
     configs: Vec<CfgConfig>,
 }
 
+pub struct MacroCfgBranch {
+    pub cfg: Cfg,
+    pub clang_args: Vec<String>,
+}
+
+pub fn single_chain_macro_branches(source: &str) -> Vec<MacroCfgBranch> {
+    let Ok(Some(plan)) = plan_configs(source) else {
+        return Vec::new();
+    };
+    if plan.pp.chains.len() != 1 {
+        return Vec::new();
+    }
+    plan.configs
+        .into_iter()
+        .map(|config| MacroCfgBranch {
+            cfg: config.rust_cfg,
+            clang_args: config.clang_args,
+        })
+        .collect()
+}
+
 pub fn translate_directives(path: &Path) -> Result<String, DirectiveError> {
     translate_directives_with_args(path, &[])
 }

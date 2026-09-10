@@ -15,6 +15,31 @@ pub struct Program {
     pub items: Vec<Item>,
 }
 
+impl Program {
+    pub fn cargo_features(&self, out: &mut BTreeSet<String>) {
+        for item in &self.items {
+            item.cargo_features(out);
+        }
+    }
+}
+
+impl Item {
+    fn cargo_features(&self, out: &mut BTreeSet<String>) {
+        match self {
+            Item::Cfg { cfg, item } => {
+                cfg.feature_names(out);
+                item.cargo_features(out);
+            }
+            Item::InlineMod { items, .. } => {
+                for item in items {
+                    item.cargo_features(out);
+                }
+            }
+            _ => {}
+        }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Item {
     Fn(FnDef),
@@ -88,6 +113,21 @@ pub enum Cfg {
 impl Cfg {
     pub fn render(&self) -> String {
         crate::backend::codegen::cfg_to_string(self)
+    }
+
+    pub fn feature_names(&self, out: &mut BTreeSet<String>) {
+        match self {
+            Cfg::Opt { key, value } if key == "feature" => {
+                out.insert(value.clone());
+            }
+            Cfg::Opt { .. } | Cfg::Flag(_) => {}
+            Cfg::Not(inner) => inner.feature_names(out),
+            Cfg::Any(items) | Cfg::All(items) => {
+                for item in items {
+                    item.feature_names(out);
+                }
+            }
+        }
     }
 }
 

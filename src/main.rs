@@ -373,6 +373,14 @@ impl ProjectModules {
         write_project_modules(self.paths, self.programs)
     }
 
+    fn cargo_features(&self) -> BTreeSet<String> {
+        let mut features = BTreeSet::new();
+        for program in &self.programs {
+            program.cargo_features(&mut features);
+        }
+        features
+    }
+
     fn drain_module_features(&mut self) -> BTreeSet<rust_ast::Feature> {
         let mut features = BTreeSet::new();
         for program in &mut self.programs {
@@ -534,6 +542,7 @@ fn crate_manifest(
     slate_support: bool,
     c_shims: bool,
     autobins: bool,
+    cargo_features: &BTreeSet<String>,
 ) -> String {
     let test_targets: String = tests
         .iter()
@@ -560,6 +569,15 @@ harness = false
     };
     let autobins_line = if autobins { "" } else { "autobins = false\n" };
     let bitfields_path = Path::new(env!("CARGO_MANIFEST_DIR")).join("vendor/bitfields");
+    let features_section: String = if cargo_features.is_empty() {
+        String::new()
+    } else {
+        let mut section = "\n[features]\n".to_string();
+        for feature in cargo_features {
+            section.push_str(&format!("{feature} = []\n"));
+        }
+        section
+    };
     format!(
         r#"[package]
 name = "{package}"
@@ -577,7 +595,7 @@ bitfields = {{ path = "{}" }}
 [profile.dev]
 overflow-checks = false
 codegen-units = 256
-{test_targets}"#,
+{test_targets}{features_section}"#,
         bitfields_path.display()
     )
 }
@@ -589,10 +607,18 @@ fn write_crate_manifest(
     slate_support: bool,
     c_shims: bool,
     autobins: bool,
+    cargo_features: &BTreeSet<String>,
 ) -> Result<(), String> {
     std::fs::write(
         crate_dir.join("Cargo.toml"),
-        crate_manifest(package, tests, slate_support, c_shims, autobins),
+        crate_manifest(
+            package,
+            tests,
+            slate_support,
+            c_shims,
+            autobins,
+            cargo_features,
+        ),
     )
     .map_err(|e| format!("write {}: {e}", crate_dir.join("Cargo.toml").display()))
 }
@@ -627,7 +653,15 @@ fn init_crate(crate_dir: &Path, wants_lib: bool) -> Result<(), String> {
         }
     }
 
-    write_crate_manifest(crate_dir, &package, &[], false, false, !wants_lib)?;
+    write_crate_manifest(
+        crate_dir,
+        &package,
+        &[],
+        false,
+        false,
+        !wants_lib,
+        &BTreeSet::new(),
+    )?;
     write_aligned_support(crate_dir)?;
     write_bitint_support(crate_dir)?;
     write_num_complex_support(crate_dir)?;
@@ -939,6 +973,46 @@ fn load_variants_parallel(
     results.into_iter().collect()
 }
 
+fn lower_macro_forked_program(
+    variant: &LoadedVariant,
+    command: &compile_commands::CompileCommand,
+    project_dir: &Path,
+    project: &frontend::ProjectInfo,
+    fixup_skip: &backend::SkipSet,
+) -> Result<Option<rust_ast::Program>, String> {
+    let (source, _raw) = preprocess::read_source(&variant.path)
+        .map_err(|error| format!("read {}: {error}", variant.path.display()))?;
+    let branches = directive_translate::single_chain_macro_branches(&source);
+    if branches.is_empty() {
+        return Ok(None);
+    }
+    let base_args = compile_command_args(command)?;
+    let mut branch_programs = Vec::with_capacity(branches.len());
+    for branch in branches {
+        let mut args = base_args.clone();
+        args.extend(branch.clang_args);
+        let module = cli_report(frontend::cir_input::emit_module(&variant.path, &args))?;
+        let unit = cli_result(c_ast::parse_file_with_project_records_and_args(
+            &variant.path,
+            project_dir,
+            &args,
+        ))?;
+        let mut ctx = ctx::Ctx::default();
+        let program = frontend::lower_with_project(&module, &unit, &mut ctx, project);
+        for d in &ctx.diagnostics.items {
+            eprintln!("{:?}: {}", d.severity, d.message);
+        }
+        if ctx.diagnostics.has_errors() {
+            return Err(format!(
+                "lowering failed for {} (feature branch)",
+                variant.path.display()
+            ));
+        }
+        branch_programs.push((branch.cfg, backend::apply_with(program, fixup_skip)));
+    }
+    Ok(Some(merge_target_programs(&branch_programs)))
+}
+
 fn translate_project_with_compile_commands(
     project_dir: &Path,
     crate_dir: &Path,
@@ -1228,7 +1302,14 @@ fn translate_project_with_compile_commands(
             if ctx.diagnostics.has_errors() {
                 return Err(format!("lowering failed for {}", variant.path.display()));
             }
-            programs.push((cfg.clone(), backend::apply_with(program, &fixup_skip)));
+            let program = backend::apply_with(program, &fixup_skip);
+            let command = command_map
+                .get(&(variant.path.clone(), variant.cfg.clone()))
+                .expect("loaded variant has a compile command");
+            let program =
+                lower_macro_forked_program(variant, command, project_dir, &project, &fixup_skip)?
+                    .unwrap_or(program);
+            programs.push((cfg.clone(), program));
         }
         let mut program = merge_target_programs(&programs);
         for shim in c_shim::collect_program_shims(&program) {
@@ -1251,6 +1332,7 @@ fn translate_project_with_compile_commands(
         project_modules.push(output, program);
     }
     project_modules.push_shared_types(&crate_src, shared_records, shared_enums, &mut shims);
+    let cargo_features = project_modules.cargo_features();
 
     if is_lib {
         let mut crate_features = crate_features;
@@ -1298,6 +1380,7 @@ fn translate_project_with_compile_commands(
             uses_slate_support,
             !shims.is_empty(),
             false,
+            &cargo_features,
         )?;
     } else {
         let module_features = project_modules.drain_module_features();
@@ -1321,6 +1404,7 @@ fn translate_project_with_compile_commands(
             false,
             has_shims,
             true,
+            &cargo_features,
         )?;
     }
 

@@ -406,6 +406,60 @@ fn library_project_creates_cargo_crate_without_main() {
 }
 
 #[test]
+fn project_declares_macro_derived_cfg_features_in_cargo_toml() {
+    let dir = fixture_dir("cfg_feature_macro");
+    let work = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("target/cross-tu")
+        .join("cfg-feature-macro-project");
+    let crate_dir = work.join("crate");
+    let _ = std::fs::remove_dir_all(&crate_dir);
+
+    let database = dir.join("compile_commands.json");
+    support::translate_project_from_database(&dir, &crate_dir, &database)
+        .expect("translate cfg_feature_macro fixture");
+
+    let main_rs = std::fs::read_to_string(crate_dir.join("src/main.rs")).expect("read main.rs");
+    assert!(
+        main_rs.contains(r#"#[cfg(feature = "my_feature")]"#),
+        "generated main.rs should fork on the macro-derived feature:\n{main_rs}"
+    );
+
+    let manifest = std::fs::read_to_string(crate_dir.join("Cargo.toml")).expect("read manifest");
+    assert!(
+        manifest.contains("[features]\nmy_feature = []\n"),
+        "manifest should declare the macro-derived feature:\n{manifest}"
+    );
+
+    let check_off = std::process::Command::new("cargo")
+        .args(["check", "--quiet", "--manifest-path"])
+        .arg(crate_dir.join("Cargo.toml"))
+        .output()
+        .expect("cargo check generated crate");
+    assert!(
+        check_off.status.success(),
+        "generated crate should type-check with the feature off:\n{}",
+        String::from_utf8_lossy(&check_off.stderr)
+    );
+
+    let check_on = std::process::Command::new("cargo")
+        .args([
+            "check",
+            "--quiet",
+            "--features",
+            "my_feature",
+            "--manifest-path",
+        ])
+        .arg(crate_dir.join("Cargo.toml"))
+        .output()
+        .expect("cargo check generated crate with feature enabled");
+    assert!(
+        check_on.status.success(),
+        "generated crate should type-check with the feature on:\n{}",
+        String::from_utf8_lossy(&check_on.stderr)
+    );
+}
+
+#[test]
 fn library_project_shares_anonymous_union_member_across_types_module() {
     let dir = Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("tests/fixtures.library")
