@@ -153,3 +153,9 @@ sys/fcntl.h
 sys/file.h
 sys/fsuid.h
 sys/gmon.h
+sys/gmon_out.h
+sys/inotify.h
+sys/io.h
+sys/ioctl.h
+sys/ipc.h
+sys/kd.h
