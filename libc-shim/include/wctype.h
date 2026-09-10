@@ -31,6 +31,9 @@
 
 #undef WEOF
 #define WEOF 0xffffffffU
+#if defined(__SLATE_LIBC_MUSL)
+#undef iswdigit
+#endif
 
 int       iswalnum(wint_t);
 int       iswalpha(wint_t);
@@ -50,6 +53,10 @@ wint_t    towlower(wint_t);
 wint_t    towupper(wint_t);
 wctrans_t wctrans(const char *);
 wctype_t  wctype(const char *);
+
+#if defined(__SLATE_LIBC_MUSL) && !defined(__cplusplus)
+#define iswdigit(a) (0 ? iswdigit(a) : ((unsigned)(a)-'0') < 10)
+#endif
 
 #if defined(_POSIX_SOURCE) || defined(_POSIX_C_SOURCE) ||                      \
     defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE) ||  \

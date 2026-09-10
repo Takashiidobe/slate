@@ -109,3 +109,9 @@ poll.h
 printf.h
 proc_service.h
 protocols/routed.h
+wordexp.h
+wctype.h
+wchar.h
+wait.h
+values.h
+utmpx.h

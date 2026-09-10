@@ -66,4 +66,12 @@ int  utmpxname(const char *);
 #define USER_PROCESS  7
 #define DEAD_PROCESS  8
 
+#if defined(__SLATE_LIBC_GLIBC)
+#define UTMPX_FILE _PATH_UTMPX
+#define UTMPX_FILENAME _PATH_UTMPX
+#define WTMPX_FILE _PATH_WTMPX
+#define WTMPX_FILENAME _PATH_WTMPX
+#define ACCOUNTING 9
+#endif
+
 #endif
