@@ -147,4 +147,23 @@ int shm_unlink(const char *);
 #define off64_t off_t
 #endif
 
+#if (defined(__SLATE_LIBC_GLIBC) && defined(__SLATE_ARCH_AARCH64))
+#define PKEY_DISABLE_EXECUTE 0x4
+#define PKEY_DISABLE_READ 0x8
+#endif
+#if defined(__SLATE_LIBC_GLIBC)
+#define MFD_NOEXEC_SEAL 8U
+#define MFD_EXEC 0x10U
+#define PKEY_UNRESTRICTED 0x0
+#define MAP_DROPPABLE 0x08
+#define PKEY_DISABLE_ACCESS 0x1
+#define PKEY_DISABLE_WRITE 0x2
+#define MADV_GUARD_INSTALL 102
+#define MADV_GUARD_REMOVE 103
+#endif
+#if defined(__SLATE_LIBC_GLIBC) && (defined(__SLATE_ARCH_X86) || defined(__SLATE_ARCH_X86_64))
+#define MAP_ABOVE4G 0x80
+#define SHADOW_STACK_SET_TOKEN 0x1
+#endif
+
 #endif

@@ -36,7 +36,11 @@
 
 #include <endian.h>
 #include <limits.h>
-#if !defined(__SLATE_LIBC_GLIBC)
+#if defined(__SLATE_LIBC_GLIBC)
+#include <sys/types.h>
+#include <unistd.h>
+#define NODEV ((dev_t)-1)
+#else
 #include <sys/resource.h>
 #endif
 
