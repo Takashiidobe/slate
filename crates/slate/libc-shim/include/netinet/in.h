@@ -3,6 +3,11 @@
 
 #include <features.h>
 #include <sys/socket.h>
+#if defined(__SLATE_LIBC_GLIBC)
+#include <sys/types.h>
+#else
+#include <inttypes.h>
+#endif
 
 #define __NEED_uint8_t
 #define __NEED_uint16_t
@@ -112,6 +117,12 @@ uint16_t ntohs(uint16_t);
 #define IPPROTO_NONE     59
 #define IPPROTO_DSTOPTS  60
 #define IPPROTO_MTP      92
+#define IPPROTO_L2TP     115
+#if defined(__SLATE_LIBC_GLIBC) &&                                             \
+    (defined(__SLATE_ARCH_X86_64) || defined(__SLATE_ARCH_X86))
+#define IPPROTO_AGGFRAG  144
+#endif
+#define IPPROTO_SMC      256
 #define IPPROTO_BEETPH   94
 #define IPPROTO_ENCAP    98
 #define IPPROTO_PIM      103
@@ -243,6 +254,12 @@ uint16_t ntohs(uint16_t);
 #define IP_PMTUDISC_PROBE     3
 #define IP_PMTUDISC_INTERFACE 4
 #define IP_PMTUDISC_OMIT      5
+#if defined(__SLATE_LIBC_GLIBC)
+#define IP_LOCAL_PORT_RANGE 51
+#define IP_PROTOCOL 52
+#define SCM_SRCRT IPV6_RXSRCRT
+#define IPV6_RECVERR_RFC4884 31
+#endif
 
 #define IP_DEFAULT_MULTICAST_TTL  1
 #define IP_DEFAULT_MULTICAST_LOOP 1

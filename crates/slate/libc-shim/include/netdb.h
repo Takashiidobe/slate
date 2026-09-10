@@ -2,6 +2,13 @@
 #define _SLATE_NETDB_H
 
 #include <features.h>
+#if defined(__SLATE_LIBC_MUSL)
+#include <inttypes.h>
+#endif
+#if defined(__SLATE_LIBC_GLIBC)
+#include <rpc/netdb.h>
+#include <sys/types.h>
+#endif
 #include <netinet/in.h>
 
 #if defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
@@ -132,6 +139,20 @@ int *__h_errno_location(void);
 #define TRY_AGAIN      2
 #define NO_RECOVERY    3
 #define NO_DATA        4
+#if defined(__SLATE_LIBC_GLIBC)
+#define NETDB_INTERNAL -1
+#define NETDB_SUCCESS 0
+#define SCOPE_DELIMITER '%'
+#define GAI_WAIT 0
+#define GAI_NOWAIT 1
+#define AI_IDN 0x0040
+#define AI_CANONIDN 0x0080
+#define AI_IDN_ALLOW_UNASSIGNED __glibc_macro_warning ("AI_IDN_ALLOW_UNASSIGNED is deprecated") 0x0100
+#define AI_IDN_USE_STD3_ASCII_RULES __glibc_macro_warning ("AI_IDN_USE_STD3_ASCII_RULES is deprecated") 0x0200
+#define NI_IDN 32
+#define NI_IDN_ALLOW_UNASSIGNED __glibc_macro_warning ("NI_IDN_ALLOW_UNASSIGNED is deprecated") 64
+#define NI_IDN_USE_STD3_ASCII_RULES __glibc_macro_warning ("NI_IDN_USE_STD3_ASCII_RULES is deprecated") 128
+#endif
 #define NO_ADDRESS     NO_DATA
 #endif
 
