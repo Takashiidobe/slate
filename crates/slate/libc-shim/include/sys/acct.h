@@ -3,6 +3,12 @@
 
 #include <features.h>
 
+#if defined(__SLATE_LIBC_GLIBC)
+#include <sys/types.h>
+#else
+#include <time.h>
+#endif
+
 #define __NEED_uint16_t
 #define __NEED_uint32_t
 #include <bits/types.h>

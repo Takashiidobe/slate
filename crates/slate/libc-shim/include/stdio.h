@@ -43,6 +43,13 @@
 #define SEEK_SET 0
 #define SEEK_CUR 1
 #define SEEK_END 2
+#if defined(__SLATE_LIBC_GLIBC)
+#define SEEK_DATA 3
+#define SEEK_HOLE 4
+#define AT_RENAME_NOREPLACE 0x0001
+#define AT_RENAME_EXCHANGE 0x0002
+#define AT_RENAME_WHITEOUT 0x0004
+#endif
 
 #define _IOFBF 0
 #define _IOLBF 1
@@ -111,6 +118,9 @@ extern FILE *const stderr;
 #define stdin  (stdin)
 #define stdout (stdout)
 #define stderr (stderr)
+#define RENAME_NOREPLACE (1 << 0)
+#define RENAME_EXCHANGE (1 << 1)
+#define RENAME_WHITEOUT (1 << 2)
 #endif
 
 #if defined(__SLATE_LIBC_DARWIN) && defined(_DARWIN_C_SOURCE)
