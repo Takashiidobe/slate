@@ -66,7 +66,11 @@ typedef int            __clockid_t;
 typedef void          *__timer_t;
 typedef long           __clock_t;
 typedef int            __key_t;
+#if defined(__SLATE_LIBC_MUSL)
+typedef unsigned int   __id_t;
+#else
 typedef int            __id_t;
+#endif
 typedef int            __daddr_t;
 typedef char          *__caddr_t;
 typedef unsigned short __sa_family_t;

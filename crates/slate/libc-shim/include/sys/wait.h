@@ -25,11 +25,15 @@ pid_t waitpid(pid_t, int *, int);
 #if defined(_POSIX_SOURCE) || defined(_POSIX_C_SOURCE) ||                      \
     defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
 #include <signal.h>
+#if defined(__SLATE_LIBC_MUSL)
+int waitid(idtype_t, unsigned int, siginfo_t *, int);
+#else
 int waitid(idtype_t, id_t, siginfo_t *, int);
+#endif
 #endif
 
 #if defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
-#include <sys/resource.h>
+struct rusage;
 pid_t wait3(int *, int, struct rusage *);
 pid_t wait4(pid_t, int *, int, struct rusage *);
 #endif

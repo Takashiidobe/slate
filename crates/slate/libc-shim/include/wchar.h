@@ -3,7 +3,13 @@
 
 #include <features.h>
 
+#if defined(__SLATE_LIBC_GLIBC) &&                                           \
+    (defined(__SLATE_ARCH_ARM) || defined(__SLATE_ARCH_AARCH64))
+#define __need___va_list
 #include <stdarg.h>
+#else
+#include <stdarg.h>
+#endif
 
 #if defined(__SLATE_LIBC_MSVC)
 
@@ -38,9 +44,18 @@
 #endif
 #include <bits/types.h>
 
+#if defined(__SLATE_LIBC_GLIBC) &&                                           \
+    (defined(__SLATE_ARCH_ARM) || defined(__SLATE_ARCH_AARCH64)) &&           \
+    !defined(__DEFINED_va_list)
+typedef struct __va_list va_list;
+#endif
+
 struct tm;
 
 #define WEOF ((wint_t) - 1)
+#if defined(__SLATE_LIBC_MUSL)
+#undef iswdigit
+#endif
 #if defined(__WCHAR_MAX__)
 #define WCHAR_MAX __WCHAR_MAX__
 #else
@@ -99,6 +114,9 @@ int           wcscoll(const wchar_t *, const wchar_t *);
 wchar_t      *wcscpy(wchar_t *, const wchar_t *);
 size_t        wcscspn(const wchar_t *, const wchar_t *);
 size_t        wcsftime(wchar_t *, size_t, const wchar_t *, const struct tm *);
+#if defined(__SLATE_LIBC_MUSL) && !defined(__cplusplus)
+#define iswdigit(a) (0 ? iswdigit(a) : ((unsigned)(a)-'0') < 10)
+#endif
 size_t        wcslen(const wchar_t *);
 wchar_t      *wcsncat(wchar_t *, const wchar_t *, size_t);
 int           wcsncmp(const wchar_t *, const wchar_t *, size_t);

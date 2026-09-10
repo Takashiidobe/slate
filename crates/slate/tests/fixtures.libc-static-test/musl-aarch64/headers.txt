@@ -72,3 +72,9 @@ netpacket/packet.h
 nl_types.h
 paths.h
 poll.h
+wordexp.h
+wctype.h
+wchar.h
+wait.h
+values.h
+utmpx.h
