@@ -314,7 +314,18 @@ fn summarize_evaluated_decl(decl: &ConcreteDecl) -> DeclSummary {
                     ) => {
                         panic!("clang return was not an integer")
                     }
-                    ConcreteStmt::Expr(_) => None,
+                    ConcreteStmt::Expr(_)
+                    | ConcreteStmt::If { .. }
+                    | ConcreteStmt::While { .. }
+                    | ConcreteStmt::DoWhile { .. }
+                    | ConcreteStmt::For { .. }
+                    | ConcreteStmt::Switch { .. }
+                    | ConcreteStmt::Case(_)
+                    | ConcreteStmt::Default
+                    | ConcreteStmt::Labeled(_)
+                    | ConcreteStmt::Goto(_)
+                    | ConcreteStmt::Break
+                    | ConcreteStmt::Continue => None,
                 })
                 .collect(),
             signature: None,

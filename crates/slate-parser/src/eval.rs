@@ -92,6 +92,48 @@ impl Stmt {
                 Some(body) => body.iter().flat_map(|stmt| stmt.eval(env)).collect(),
                 None => vec![],
             },
+            Self::If {
+                condition,
+                then_branch,
+                else_branch,
+            } => vec![ConcreteStmt::If {
+                condition: condition.clone(),
+                then_branch: Self::eval_all(then_branch, env),
+                else_branch: else_branch
+                    .as_ref()
+                    .map(|branch| Self::eval_all(branch, env)),
+            }],
+            Self::While { condition, body } => vec![ConcreteStmt::While {
+                condition: condition.clone(),
+                body: Self::eval_all(body, env),
+            }],
+            Self::DoWhile { body, condition } => vec![ConcreteStmt::DoWhile {
+                body: Self::eval_all(body, env),
+                condition: condition.clone(),
+            }],
+            Self::For {
+                init,
+                condition,
+                increment,
+                body,
+            } => vec![ConcreteStmt::For {
+                init: init
+                    .as_ref()
+                    .and_then(|init| init.eval(env).into_iter().next().map(Box::new)),
+                condition: condition.clone(),
+                increment: increment.clone(),
+                body: Self::eval_all(body, env),
+            }],
+            Self::Switch { discriminant, body } => vec![ConcreteStmt::Switch {
+                discriminant: discriminant.clone(),
+                body: Self::eval_all(body, env),
+            }],
+            Self::Case(value) => vec![ConcreteStmt::Case(value.clone())],
+            Self::Default => vec![ConcreteStmt::Default],
+            Self::Labeled(name) => vec![ConcreteStmt::Labeled(name.clone())],
+            Self::Goto(name) => vec![ConcreteStmt::Goto(name.clone())],
+            Self::Break => vec![ConcreteStmt::Break],
+            Self::Continue => vec![ConcreteStmt::Continue],
         }
     }
 }

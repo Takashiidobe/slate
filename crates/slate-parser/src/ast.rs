@@ -113,6 +113,35 @@ pub enum Stmt {
     Return(Expr),
     Expr(Expr),
     Conditional(Conditional<Vec<Stmt>>),
+    If {
+        condition: Expr,
+        then_branch: Vec<Stmt>,
+        else_branch: Option<Vec<Stmt>>,
+    },
+    While {
+        condition: Expr,
+        body: Vec<Stmt>,
+    },
+    DoWhile {
+        body: Vec<Stmt>,
+        condition: Expr,
+    },
+    For {
+        init: Option<Box<Stmt>>,
+        condition: Option<Expr>,
+        increment: Option<Expr>,
+        body: Vec<Stmt>,
+    },
+    Switch {
+        discriminant: Expr,
+        body: Vec<Stmt>,
+    },
+    Case(Expr),
+    Default,
+    Labeled(String),
+    Goto(String),
+    Break,
+    Continue,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -573,6 +602,35 @@ pub struct TranslationUnit {
 pub enum ConcreteStmt {
     Return(Expr),
     Expr(Expr),
+    If {
+        condition: Expr,
+        then_branch: Vec<ConcreteStmt>,
+        else_branch: Option<Vec<ConcreteStmt>>,
+    },
+    While {
+        condition: Expr,
+        body: Vec<ConcreteStmt>,
+    },
+    DoWhile {
+        body: Vec<ConcreteStmt>,
+        condition: Expr,
+    },
+    For {
+        init: Option<Box<ConcreteStmt>>,
+        condition: Option<Expr>,
+        increment: Option<Expr>,
+        body: Vec<ConcreteStmt>,
+    },
+    Switch {
+        discriminant: Expr,
+        body: Vec<ConcreteStmt>,
+    },
+    Case(Expr),
+    Default,
+    Labeled(String),
+    Goto(String),
+    Break,
+    Continue,
 }
 
 #[derive(CustomDebug, Clone, PartialEq)]

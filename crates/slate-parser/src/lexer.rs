@@ -40,6 +40,17 @@ pub enum Keyword {
     Saturated,
     Typeof,
     Imaginary,
+    If,
+    Else,
+    While,
+    Do,
+    For,
+    Switch,
+    Case,
+    Default,
+    Break,
+    Continue,
+    Goto,
 }
 
 impl From<Keyword> for &'static str {
@@ -85,6 +96,17 @@ impl From<Keyword> for &'static str {
             Keyword::Saturated => "_Sat",
             Keyword::Typeof => "typeof",
             Keyword::Imaginary => "_Imaginary",
+            Keyword::If => "if",
+            Keyword::Else => "else",
+            Keyword::While => "while",
+            Keyword::Do => "do",
+            Keyword::For => "for",
+            Keyword::Switch => "switch",
+            Keyword::Case => "case",
+            Keyword::Default => "default",
+            Keyword::Break => "break",
+            Keyword::Continue => "continue",
+            Keyword::Goto => "goto",
         }
     }
 }
@@ -333,6 +355,17 @@ pub fn lex(src: &str) -> Vec<Token> {
                 "_Sat" => Token::Keyword(Keyword::Saturated),
                 "typeof" | "__typeof__" => Token::Keyword(Keyword::Typeof),
                 "_Imaginary" => Token::Keyword(Keyword::Imaginary),
+                "if" => Token::Keyword(Keyword::If),
+                "else" => Token::Keyword(Keyword::Else),
+                "while" => Token::Keyword(Keyword::While),
+                "do" => Token::Keyword(Keyword::Do),
+                "for" => Token::Keyword(Keyword::For),
+                "switch" => Token::Keyword(Keyword::Switch),
+                "case" => Token::Keyword(Keyword::Case),
+                "default" => Token::Keyword(Keyword::Default),
+                "break" => Token::Keyword(Keyword::Break),
+                "continue" => Token::Keyword(Keyword::Continue),
+                "goto" => Token::Keyword(Keyword::Goto),
                 _ => Token::Ident(word),
             });
         } else if c == '.' && chars.get(i..i + 3) == Some(&['.', '.', '.'][..]) {
@@ -482,9 +515,9 @@ pub fn decode_char_literal(raw: &str) -> i64 {
     match codepoints.as_slice() {
         [] => 0,
         [single] => i64::from(*single),
-        multiple => multiple
-            .iter()
-            .fold(0i64, |acc, &codepoint| (acc << 8) | i64::from(codepoint as u8)),
+        multiple => multiple.iter().fold(0i64, |acc, &codepoint| {
+            (acc << 8) | i64::from(codepoint as u8)
+        }),
     }
 }
 

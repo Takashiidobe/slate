@@ -15,8 +15,8 @@ int main(void) {
 // GCC: Error:   × unexpected tokens after expression
 // GCC: ╰─▶ unexpected tokens after expression
 // GCC: ╭─[tests/fixtures/ported-slate-alias-global.c:1:1]
-// GCC: 1 │ int        real_global = 12;
-// GCC: · ────────────
-// GCC: 2 │ extern int alias_global __attribute__((alias("real_global")));
+// GCC: 1 │ ╭─▶ int        real_global = 12;
+// GCC: 2 │ ╰─▶ extern int alias_global __attribute__((alias("real_global")));
+// GCC: 3 │
 // GCC: ╰────
 // SLATE-FILECHECK-END GCC

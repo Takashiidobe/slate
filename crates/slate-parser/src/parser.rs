@@ -799,6 +799,36 @@ fn matching_brace(tokens: &[Token], open: usize) -> Option<usize> {
     None
 }
 
+fn matching_paren(tokens: &[Token], open: usize) -> Option<usize> {
+    let mut depth = 0i32;
+    for (offset, token) in tokens[open..].iter().enumerate() {
+        match token {
+            Token::LParen => depth += 1,
+            Token::RParen => {
+                depth -= 1;
+                if depth == 0 {
+                    return Some(open + offset);
+                }
+            }
+            _ => {}
+        }
+    }
+    None
+}
+
+fn top_level_semi(tokens: &[Token]) -> Option<usize> {
+    let mut depth = 0i32;
+    for (offset, token) in tokens.iter().enumerate() {
+        match token {
+            Token::LParen | Token::LBrace | Token::LBracket => depth += 1,
+            Token::RParen | Token::RBrace | Token::RBracket => depth -= 1,
+            Token::Semi if depth == 0 => return Some(offset),
+            _ => {}
+        }
+    }
+    None
+}
+
 trait AttributeName {
     fn is_attribute_name(&self) -> bool;
 }
@@ -1585,13 +1615,28 @@ impl Parser {
             ));
         }
 
-        let close_idx = nodes[1..]
-            .iter()
-            .position(|n| {
-                matches!(n, PPNode::Code { text, .. } if lex(text).first() == Some(&Token::RBrace))
-            })
-            .ok_or_else(|| self.error_at(code, code.len().saturating_sub(1), 1, "expected `}`"))?
-            + 1;
+        let mut depth = 1i32;
+        let mut close_idx = None;
+        for (offset, node) in nodes[1..].iter().enumerate() {
+            if let PPNode::Code { text, .. } = node {
+                for token in lex(text) {
+                    match token {
+                        Token::LBrace => depth += 1,
+                        Token::RBrace => depth -= 1,
+                        _ => {}
+                    }
+                    if depth == 0 {
+                        break;
+                    }
+                }
+            }
+            if depth == 0 {
+                close_idx = Some(offset + 1);
+                break;
+            }
+        }
+        let close_idx = close_idx
+            .ok_or_else(|| self.error_at(code, code.len().saturating_sub(1), 1, "expected `}`"))?;
 
         if let PPNode::Code { text, .. } = &nodes[close_idx] {
             let closing_tokens = lex(text);
@@ -1621,13 +1666,16 @@ impl Parser {
 
     fn parse_stmt_list(&self, nodes: &[PPNode]) -> Result<Vec<Stmt>, ParseError> {
         let mut stmts = Vec::new();
+        let mut run: Vec<&str> = Vec::new();
         for node in nodes {
             match node {
-                PPNode::Code { text, .. } if !lex(text).is_empty() => {
-                    stmts.extend(self.parse_stmts_from_code(text)?)
-                }
+                PPNode::Code { text, .. } if !lex(text).is_empty() => run.push(text),
                 PPNode::Code { .. } => {}
                 PPNode::Conditional(cond) => {
+                    if !run.is_empty() {
+                        stmts.extend(self.parse_stmts_from_code(&run.join(" "))?);
+                        run.clear();
+                    }
                     let branches = cond
                         .branches
                         .iter()
@@ -1636,6 +1684,9 @@ impl Parser {
                     stmts.push(Stmt::Conditional(Conditional { branches }));
                 }
             }
+        }
+        if !run.is_empty() {
+            stmts.extend(self.parse_stmts_from_code(&run.join(" "))?);
         }
         Ok(stmts)
     }
@@ -1653,84 +1704,273 @@ impl Parser {
         let mut stmts = Vec::new();
         let mut i = 0;
         while i < tokens.len() {
-            if tokens.get(i..i + 2) == Some(&[Token::LParen, Token::LBrace]) {
-                let mut depth = 1;
-                let mut end = i + 2;
-                while end < tokens.len() && depth != 0 {
-                    match tokens[end] {
-                        Token::LBrace => depth += 1,
-                        Token::RBrace => depth -= 1,
-                        _ => {}
-                    }
-                    end += 1;
-                }
-                if depth != 0 {
-                    return Err(self.error_at(code, 0, code.len(), "expected `}`"));
-                }
-                if tokens.get(end) != Some(&Token::RParen) {
-                    return Err(self.error_at(code, 0, code.len(), "expected `)`"));
-                }
-                stmts.push(Stmt::Expr(Expr::StatementExpression(
-                    self.parse_stmts_from_tokens(code, &tokens[i + 2..end - 1])?,
-                )));
-                i = end + 1;
-                if tokens.get(i) == Some(&Token::Semi) {
-                    i += 1;
-                }
-                continue;
-            }
-            if let Some(
-                [
-                    Token::LParen,
-                    Token::Ident(callee),
-                    Token::RParen,
-                    Token::LParen,
-                    Token::Ident(argument),
-                    Token::RParen,
-                    Token::Semi,
-                ],
-            ) = tokens.get(i..i.saturating_add(7))
-            {
-                let expression = if self.typedef_names.contains(callee) {
-                    Expr::Cast {
-                        ty: callee.clone(),
-                        expression: argument.clone(),
-                    }
-                } else {
-                    Expr::Call {
-                        callee: callee.clone(),
-                        argument: argument.clone(),
-                    }
-                };
-                stmts.push(Stmt::Expr(expression));
-                i += 7;
-                continue;
-            }
-            if tokens[i] == Token::Keyword(Keyword::Return) {
-                let end = tokens[i + 1..]
-                    .iter()
-                    .position(|token| *token == Token::Semi)
-                    .map_or(tokens.len(), |position| i + 1 + position);
-                if end == tokens.len() {
-                    return Err(self.error_at(code, 0, code.len(), "expected `;`"));
-                }
-                stmts.push(Stmt::Return(
-                    self.parse_expression(code, &tokens[i + 1..end])?,
-                ));
-                i = end + 1;
-                continue;
-            }
-            let end = tokens[i..]
-                .iter()
-                .position(|token| *token == Token::Semi)
-                .map_or(tokens.len(), |position| i + position);
-            if end == tokens.len() {
-                return Err(self.error_at(code, 0, code.len(), "expected `;`"));
-            }
-            stmts.push(Stmt::Expr(self.parse_expression(code, &tokens[i..end])?));
-            i = end + 1;
+            stmts.push(self.parse_one_stmt(code, tokens, &mut i)?);
         }
         Ok(stmts)
+    }
+
+    fn parse_body(
+        &self,
+        code: &str,
+        tokens: &[Token],
+        i: &mut usize,
+    ) -> Result<Vec<Stmt>, ParseError> {
+        if tokens.get(*i) == Some(&Token::LBrace) {
+            let close = matching_brace(tokens, *i)
+                .ok_or_else(|| self.error_at(code, 0, code.len(), "expected `}`"))?;
+            let body = self.parse_stmts_from_tokens(code, &tokens[*i + 1..close])?;
+            *i = close + 1;
+            Ok(body)
+        } else {
+            Ok(vec![self.parse_one_stmt(code, tokens, i)?])
+        }
+    }
+
+    fn parse_simple_keyword_stmt(
+        &self,
+        code: &str,
+        tokens: &[Token],
+        i: &mut usize,
+        stmt: Stmt,
+    ) -> Result<Stmt, ParseError> {
+        if tokens.get(*i + 1) != Some(&Token::Semi) {
+            return Err(self.error_at(code, 0, code.len(), "expected `;`"));
+        }
+        *i += 2;
+        Ok(stmt)
+    }
+
+    fn parse_one_stmt(
+        &self,
+        code: &str,
+        tokens: &[Token],
+        i: &mut usize,
+    ) -> Result<Stmt, ParseError> {
+        if tokens.get(*i..*i + 2) == Some(&[Token::LParen, Token::LBrace]) {
+            let close = matching_brace(tokens, *i + 1)
+                .ok_or_else(|| self.error_at(code, 0, code.len(), "expected `}`"))?;
+            if tokens.get(close + 1) != Some(&Token::RParen) {
+                return Err(self.error_at(code, 0, code.len(), "expected `)`"));
+            }
+            let body = self.parse_stmts_from_tokens(code, &tokens[*i + 2..close])?;
+            *i = close + 2;
+            if tokens.get(*i) == Some(&Token::Semi) {
+                *i += 1;
+            }
+            return Ok(Stmt::Expr(Expr::StatementExpression(body)));
+        }
+
+        if let Some(
+            [
+                Token::LParen,
+                Token::Ident(callee),
+                Token::RParen,
+                Token::LParen,
+                Token::Ident(argument),
+                Token::RParen,
+                Token::Semi,
+            ],
+        ) = tokens.get(*i..(*i).saturating_add(7))
+        {
+            let expression = if self.typedef_names.contains(callee) {
+                Expr::Cast {
+                    ty: callee.clone(),
+                    expression: argument.clone(),
+                }
+            } else {
+                Expr::Call {
+                    callee: callee.clone(),
+                    argument: argument.clone(),
+                }
+            };
+            *i += 7;
+            return Ok(Stmt::Expr(expression));
+        }
+
+        if let Some([Token::Ident(name), Token::Colon]) = tokens.get(*i..*i + 2) {
+            let name = name.clone();
+            *i += 2;
+            return Ok(Stmt::Labeled(name));
+        }
+
+        match tokens.get(*i) {
+            Some(Token::Keyword(Keyword::Return)) => {
+                let start = *i + 1;
+                let end = top_level_semi(&tokens[start..])
+                    .map(|position| start + position)
+                    .ok_or_else(|| self.error_at(code, 0, code.len(), "expected `;`"))?;
+                let expression = self.parse_expression(code, &tokens[start..end])?;
+                *i = end + 1;
+                Ok(Stmt::Return(expression))
+            }
+            Some(Token::Keyword(Keyword::Break)) => {
+                self.parse_simple_keyword_stmt(code, tokens, i, Stmt::Break)
+            }
+            Some(Token::Keyword(Keyword::Continue)) => {
+                self.parse_simple_keyword_stmt(code, tokens, i, Stmt::Continue)
+            }
+            Some(Token::Keyword(Keyword::Goto)) => {
+                let Some(Token::Ident(label)) = tokens.get(*i + 1) else {
+                    return Err(self.error_at(code, 0, code.len(), "expected label after `goto`"));
+                };
+                if tokens.get(*i + 2) != Some(&Token::Semi) {
+                    return Err(self.error_at(
+                        code,
+                        0,
+                        code.len(),
+                        "expected `;` after `goto` label",
+                    ));
+                }
+                let label = label.clone();
+                *i += 3;
+                Ok(Stmt::Goto(label))
+            }
+            Some(Token::Keyword(Keyword::Case)) => {
+                let start = *i + 1;
+                let colon = tokens[start..]
+                    .iter()
+                    .position(|token| *token == Token::Colon)
+                    .map(|position| start + position)
+                    .ok_or_else(|| {
+                        self.error_at(code, 0, code.len(), "expected `:` after `case`")
+                    })?;
+                let value = self.parse_expression(code, &tokens[start..colon])?;
+                *i = colon + 1;
+                Ok(Stmt::Case(value))
+            }
+            Some(Token::Keyword(Keyword::Default)) => {
+                if tokens.get(*i + 1) != Some(&Token::Colon) {
+                    return Err(self.error_at(code, 0, code.len(), "expected `:` after `default`"));
+                }
+                *i += 2;
+                Ok(Stmt::Default)
+            }
+            Some(Token::Keyword(Keyword::If)) => {
+                let open = *i + 1;
+                if tokens.get(open) != Some(&Token::LParen) {
+                    return Err(self.error_at(code, 0, code.len(), "expected `(` after `if`"));
+                }
+                let close = matching_paren(tokens, open)
+                    .ok_or_else(|| self.error_at(code, 0, code.len(), "expected `)`"))?;
+                let condition = self.parse_expression(code, &tokens[open + 1..close])?;
+                *i = close + 1;
+                let then_branch = self.parse_body(code, tokens, i)?;
+                let else_branch = if tokens.get(*i) == Some(&Token::Keyword(Keyword::Else)) {
+                    *i += 1;
+                    Some(self.parse_body(code, tokens, i)?)
+                } else {
+                    None
+                };
+                Ok(Stmt::If {
+                    condition,
+                    then_branch,
+                    else_branch,
+                })
+            }
+            Some(Token::Keyword(Keyword::While)) => {
+                let open = *i + 1;
+                if tokens.get(open) != Some(&Token::LParen) {
+                    return Err(self.error_at(code, 0, code.len(), "expected `(` after `while`"));
+                }
+                let close = matching_paren(tokens, open)
+                    .ok_or_else(|| self.error_at(code, 0, code.len(), "expected `)`"))?;
+                let condition = self.parse_expression(code, &tokens[open + 1..close])?;
+                *i = close + 1;
+                let body = self.parse_body(code, tokens, i)?;
+                Ok(Stmt::While { condition, body })
+            }
+            Some(Token::Keyword(Keyword::Do)) => {
+                *i += 1;
+                let body = self.parse_body(code, tokens, i)?;
+                if tokens.get(*i) != Some(&Token::Keyword(Keyword::While)) {
+                    return Err(self.error_at(
+                        code,
+                        0,
+                        code.len(),
+                        "expected `while` after `do` body",
+                    ));
+                }
+                let open = *i + 1;
+                if tokens.get(open) != Some(&Token::LParen) {
+                    return Err(self.error_at(code, 0, code.len(), "expected `(` after `while`"));
+                }
+                let close = matching_paren(tokens, open)
+                    .ok_or_else(|| self.error_at(code, 0, code.len(), "expected `)`"))?;
+                let condition = self.parse_expression(code, &tokens[open + 1..close])?;
+                if tokens.get(close + 1) != Some(&Token::Semi) {
+                    return Err(self.error_at(
+                        code,
+                        0,
+                        code.len(),
+                        "expected `;` after `do`-`while`",
+                    ));
+                }
+                *i = close + 2;
+                Ok(Stmt::DoWhile { body, condition })
+            }
+            Some(Token::Keyword(Keyword::For)) => {
+                let open = *i + 1;
+                if tokens.get(open) != Some(&Token::LParen) {
+                    return Err(self.error_at(code, 0, code.len(), "expected `(` after `for`"));
+                }
+                let close = matching_paren(tokens, open)
+                    .ok_or_else(|| self.error_at(code, 0, code.len(), "expected `)`"))?;
+                let clause = &tokens[open + 1..close];
+                let first_semi = top_level_semi(clause)
+                    .ok_or_else(|| self.error_at(code, 0, code.len(), "expected `;` in `for`"))?;
+                let init_tokens = &clause[..first_semi];
+                let rest = &clause[first_semi + 1..];
+                let second_semi = top_level_semi(rest)
+                    .ok_or_else(|| self.error_at(code, 0, code.len(), "expected `;` in `for`"))?;
+                let condition_tokens = &rest[..second_semi];
+                let increment_tokens = &rest[second_semi + 1..];
+                let init = if init_tokens.is_empty() {
+                    None
+                } else {
+                    Some(Box::new(Stmt::Expr(
+                        self.parse_expression(code, init_tokens)?,
+                    )))
+                };
+                let condition = if condition_tokens.is_empty() {
+                    None
+                } else {
+                    Some(self.parse_expression(code, condition_tokens)?)
+                };
+                let increment = if increment_tokens.is_empty() {
+                    None
+                } else {
+                    Some(self.parse_expression(code, increment_tokens)?)
+                };
+                *i = close + 1;
+                let body = self.parse_body(code, tokens, i)?;
+                Ok(Stmt::For {
+                    init,
+                    condition,
+                    increment,
+                    body,
+                })
+            }
+            Some(Token::Keyword(Keyword::Switch)) => {
+                let open = *i + 1;
+                if tokens.get(open) != Some(&Token::LParen) {
+                    return Err(self.error_at(code, 0, code.len(), "expected `(` after `switch`"));
+                }
+                let close = matching_paren(tokens, open)
+                    .ok_or_else(|| self.error_at(code, 0, code.len(), "expected `)`"))?;
+                let discriminant = self.parse_expression(code, &tokens[open + 1..close])?;
+                *i = close + 1;
+                let body = self.parse_body(code, tokens, i)?;
+                Ok(Stmt::Switch { discriminant, body })
+            }
+            _ => {
+                let end = top_level_semi(&tokens[*i..])
+                    .map(|position| *i + position)
+                    .ok_or_else(|| self.error_at(code, 0, code.len(), "expected `;`"))?;
+                let expression = self.parse_expression(code, &tokens[*i..end])?;
+                *i = end + 1;
+                Ok(Stmt::Expr(expression))
+            }
+        }
     }
 
     fn parse_expression(&self, code: &str, tokens: &[Token]) -> Result<Expr, ParseError> {
@@ -1777,7 +2017,7 @@ impl Parser {
                     .position(|token| *token == Token::Comma)
                     .map_or(close, |position| colon + 1 + position);
                 let type_name = match tokens[start] {
-                    Token::Ident(ref name) if name == "default" => None,
+                    Token::Keyword(Keyword::Default) => None,
                     _ => Some(
                         tokens[start..colon]
                             .iter()

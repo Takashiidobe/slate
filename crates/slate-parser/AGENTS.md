@@ -63,10 +63,44 @@ FileCheck expectations are generated. After changing a fixture or its
 renderer, run `python3 tools/update_filecheck.py --in-place <fixture>`;
 do not write `CHECK` lines by hand.
 
-Slate-Parser is a C parser that parses C like clang would and emits an
-AST that contains the preprocessed and AST output together. This allows
-for passing in the target specific macros that we need to "evaluate" the
-given PP + parsed AST to get a concrete AST.
+### Goal
+
+Slate-Parser is the C front end for Slate. It exists to let Slate ingest
+real-world C headers and sources and eventually convert them to Rust.
+The pipeline, end to end:
+
+1. **Preprocess + parse together, polyvariantly.** Slate-Parser parses C
+   like clang would, but instead of resolving `#ifdef`/macro branches
+   against one fixed configuration up front, it keeps the preprocessed
+   output and the parsed AST together as it goes. Conditional regions
+   are preserved as `Conditional<T>` nodes rather than eagerly resolved
+   (see `[[architecture_polyvariant_ast]]` in memory) so the same parse
+   can later be "evaluated" against different `-D` defines/target macro
+   sets without reparsing.
+2. **Apply `-D` defines to get a concrete AST.** Given a set of
+   command-line defines and target-specific builtin macros
+   (`compiler_args.rs`), the polyvariant PP+AST is evaluated down to a
+   single concrete AST for that configuration.
+3. **Semantic analysis.** `sema.rs` resolves types, scopes, and
+   declarations over the concrete AST, matching clang's semantics
+   closely enough that output can be diffed against clang as an oracle.
+4. **Lower to a Clang-IR-like bytecode.** The concrete, semantically
+   analyzed AST is lowered to a small bytecode/IR modeled loosely on
+   Clang IR (CIR). This is the layer where full type resolution is
+   finalized and the representation is normalized into a form that's
+   easy to mechanically translate.
+5. **Rust conversion.** The bytecode/IR is the intended handoff point
+   for Slate to generate Rust — it's deliberately kept close to Clang
+   IR's shape so lowering C semantics to it (and then to Rust) doesn't
+   require re-deriving type/control-flow information already resolved
+   in steps 2-4.
+
+Steps 4-5 are not fully implemented yet; `src/` currently covers
+preprocessing, parsing, the polyvariant AST, and sema. Check `bd ready`
+/ `bd list` for the current state of the bytecode-lowering and
+Rust-conversion work.
+
+### Testing
 
 Testing is done via filecheck and the evaluated AST is compared to
 clang-ast as an oracle.
