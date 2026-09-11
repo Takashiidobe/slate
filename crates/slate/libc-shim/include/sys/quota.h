@@ -2,6 +2,9 @@
 #define _SLATE_SYS_QUOTA_H
 
 #include <stdint.h>
+#if defined(__SLATE_LIBC_GLIBC)
+#include <sys/types.h>
+#endif
 
 #define _LINUX_QUOTA_VERSION 2
 

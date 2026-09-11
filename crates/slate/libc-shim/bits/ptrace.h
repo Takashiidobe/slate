@@ -8,6 +8,8 @@
 
 #if defined(__SLATE_ARCH_ARM)
 #include <bits/arm/ptrace.h>
+#elif defined(__SLATE_ARCH_AARCH64)
+#include <bits/aarch64/ptrace.h>
 #elif defined(__SLATE_ARCH_X86)
 #include <bits/x86/ptrace.h>
 #elif defined(__SLATE_ARCH_X86_64)
