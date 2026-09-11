@@ -58,10 +58,12 @@ impl Decl {
                 name,
                 ty,
                 provenance,
+                attributes,
             } => vec![ConcreteDecl::Typedef {
                 name: name.clone(),
                 ty: ty.clone(),
                 provenance: *provenance,
+                attributes: attributes.clone(),
             }],
             Self::Record(record) => vec![ConcreteDecl::Record(record.clone())],
             Self::Enum(enumeration) => vec![ConcreteDecl::Enum(enumeration.clone())],

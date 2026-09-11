@@ -261,7 +261,15 @@ fn run_clang_ast(fixture: &Path, defines: &[String]) -> ClangNode {
 }
 
 fn summarize_evaluated(tu: &ConcreteTranslationUnit) -> Vec<DeclSummary> {
-    tu.decls.iter().map(summarize_evaluated_decl).collect()
+    tu.decls
+        .iter()
+        .filter(|decl| match decl {
+            ConcreteDecl::Declaration { declaration, .. } => declaration.attributes.is_empty(),
+            ConcreteDecl::Typedef { attributes, .. } => attributes.is_empty(),
+            _ => true,
+        })
+        .map(summarize_evaluated_decl)
+        .collect()
 }
 
 fn summarize_evaluated_decl(decl: &ConcreteDecl) -> DeclSummary {

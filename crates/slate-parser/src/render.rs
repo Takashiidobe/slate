@@ -46,21 +46,33 @@ impl<W: Write> Renderer<W> {
                     Self::render_declarator(&declaration.declarator),
                     Self::initializer_suffix(declaration.initializer.as_ref())
                 ))?,
-                Decl::Typedef { name, ty, .. } => self.line(&format!(
-                    "{indent}{label}[{index}]: typedef name={name} type={}",
-                    Self::type_name(ty)
+                Decl::Typedef {
+                    name,
+                    ty,
+                    attributes,
+                    ..
+                } => self.line(&format!(
+                    "{indent}{label}[{index}]: typedef name={name} type={}{}",
+                    Self::type_name(ty),
+                    Self::attributes_suffix(attributes)
                 ))?,
                 Decl::Record(record) => {
+                    let name = format!(
+                        "{}{}",
+                        record.name.as_deref().unwrap_or("<anonymous>"),
+                        Self::attributes_suffix(&record.attributes)
+                    );
                     self.line(&format!(
                         "{indent}{label}[{index}]: {} name={}",
                         Self::tag_name(record.kind),
-                        record.name.as_deref().unwrap_or("<anonymous>")
+                        name
                     ))?;
                     for field in &record.fields {
                         self.line(&format!(
-                            "{indent}  field: type={} declarator={}",
+                            "{indent}  field: type={} declarator={}{}",
                             Self::type_name(&field.declaration.specifiers.ty),
-                            Self::render_declarator(&field.declaration.declarator)
+                            Self::render_declarator(&field.declaration.declarator),
+                            Self::attributes_suffix(&field.declaration.attributes)
                         ))?;
                     }
                 }
@@ -164,9 +176,15 @@ impl<W: Write> Renderer<W> {
                     Self::render_declarator(&declaration.declarator),
                     Self::initializer_suffix(declaration.initializer.as_ref())
                 ))?,
-                ConcreteDecl::Typedef { name, ty, .. } => self.line(&format!(
-                    "{indent}{label}[{index}]: typedef name={name} type={}",
-                    Self::type_name(ty)
+                ConcreteDecl::Typedef {
+                    name,
+                    ty,
+                    attributes,
+                    ..
+                } => self.line(&format!(
+                    "{indent}{label}[{index}]: typedef name={name} type={}{}",
+                    Self::type_name(ty),
+                    Self::attributes_suffix(attributes)
                 ))?,
                 ConcreteDecl::Record(record) => {
                     self.line(&format!(
@@ -186,6 +204,26 @@ impl<W: Write> Renderer<W> {
 
     fn line(&mut self, text: &str) -> io::Result<()> {
         writeln!(self.out, "{text}")
+    }
+
+    fn attributes_suffix(attributes: &[Attribute]) -> String {
+        if attributes.is_empty() {
+            String::new()
+        } else {
+            format!(
+                " [attributes={}]",
+                attributes
+                    .iter()
+                    .map(|attribute| match attribute {
+                        Attribute::Packed => "packed".into(),
+                        Attribute::Aligned(value) => format!("aligned({value})"),
+                        Attribute::VectorSize(value) => format!("vector_size({value})"),
+                        Attribute::Mode(value) => format!("mode({value})"),
+                    })
+                    .collect::<Vec<_>>()
+                    .join(",")
+            )
+        }
     }
 
     fn initializer_suffix(initializer: Option<&Initializer>) -> String {

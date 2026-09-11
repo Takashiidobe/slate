@@ -9,3 +9,4 @@ pub mod parser;
 pub mod pp;
 pub mod reachability;
 pub mod render;
+pub mod sema;

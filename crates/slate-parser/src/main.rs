@@ -3,6 +3,7 @@ use slate_parser::eval::Env;
 use slate_parser::files::SearchPaths;
 use slate_parser::parser::Parser;
 use slate_parser::render::Renderer;
+use slate_parser::sema;
 use std::env;
 use std::fs;
 use std::io;
@@ -22,9 +23,20 @@ fn main() -> miette::Result<()> {
     fs::metadata(Path::new(&path)).map_err(|error| miette::miette!(error))?;
     let mut parser = Parser::new(SearchPaths::default());
     let (ast, _) = parser.parse_file(Path::new(&path))?;
+    let defines = compiler_args.defines;
     let mut env = Env::new();
-    for define in compiler_args.defines {
-        env = env.define(define);
+    for define in &defines {
+        env = env.define(define.split_once('=').map_or_else(
+            || define.trim_start_matches("-D").to_string(),
+            |(name, _)| name.trim_start_matches("-D").to_string(),
+        ));
+    }
+    let semantic_errors = sema::analyze(&ast, &defines);
+    if !semantic_errors.is_empty() {
+        for error in semantic_errors {
+            eprintln!("Error: {error}");
+        }
+        return Err(miette::miette!("semantic analysis failed"));
     }
     let stdout = io::stdout();
     let mut renderer = Renderer::new(stdout.lock());

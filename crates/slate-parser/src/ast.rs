@@ -56,6 +56,14 @@ pub struct Provenance {
     pub kind: HeaderKind,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum Attribute {
+    Packed,
+    Aligned(i64),
+    VectorSize(i64),
+    Mode(String),
+}
+
 #[derive(Debug, Clone, PartialEq)]
 pub struct FunctionDecl {
     pub ret_type: Type,
@@ -216,6 +224,7 @@ pub struct Declaration {
     pub specifiers: DeclarationSpecifiers,
     pub declarator: Declarator,
     pub initializer: Option<Initializer>,
+    pub attributes: Vec<Attribute>,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -224,6 +233,7 @@ pub struct RecordDecl {
     pub name: Option<String>,
     pub fields: Vec<FieldDecl>,
     pub provenance: Provenance,
+    pub attributes: Vec<Attribute>,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -256,6 +266,7 @@ pub enum Decl {
         name: String,
         ty: CType,
         provenance: Provenance,
+        attributes: Vec<Attribute>,
     },
     Record(RecordDecl),
     Enum(EnumDecl),
@@ -319,6 +330,7 @@ pub enum ConcreteDecl {
         name: String,
         ty: CType,
         provenance: Provenance,
+        attributes: Vec<Attribute>,
     },
     Record(RecordDecl),
     Enum(EnumDecl),

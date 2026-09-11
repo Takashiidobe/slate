@@ -106,6 +106,11 @@ impl Parser {
             }
             parser.parse_declarator(false)
         };
+        let attributes = parse_attribute_groups(parser.tokens, parser.pos).map(|(attrs, pos)| {
+            parser.pos = pos;
+            attrs
+        });
+        let attributes = attributes.unwrap_or_default();
         let initializer = if parser.matches(Token::Equal) {
             Some(parser.parse_initializer())
         } else {
@@ -127,6 +132,7 @@ impl Parser {
             },
             declarator,
             initializer,
+            attributes,
         })
     }
 
@@ -204,12 +210,13 @@ impl Parser {
     fn parse_top_level_item(&self, nodes: &[PPNode]) -> Result<(Decl, usize), ParseError> {
         match &nodes[0] {
             PPNode::Code { text, provenance } if text.trim_start().starts_with("typedef") => {
-                let (name, ty) = self.parse_typedef_line(text)?;
+                let (name, ty, attributes) = self.parse_typedef_line(text)?;
                 Ok((
                     Decl::Typedef {
                         name,
                         ty,
                         provenance: *provenance,
+                        attributes,
                     },
                     1,
                 ))
@@ -221,13 +228,8 @@ impl Parser {
                     Some(Token::Keyword(
                         Keyword::Struct | Keyword::Union | Keyword::Enum
                     ))
-                ) && matches!(tokens.get(1), Some(Token::LBrace))
-                    || matches!(
-                        tokens.first(),
-                        Some(Token::Keyword(
-                            Keyword::Struct | Keyword::Union | Keyword::Enum
-                        ))
-                    ) && matches!(tokens.get(2), Some(Token::LBrace))
+                ) && tokens.contains(&Token::LBrace)
+                    && !tokens.contains(&Token::Equal)
                 {
                     return self.parse_tag_definition(nodes);
                 }
@@ -258,7 +260,8 @@ impl Parser {
             Some(Token::Keyword(Keyword::Enum)) => TagKind::Enum,
             _ => return Err(self.error_at(code, 0, code.len(), "expected record or enum")),
         };
-        let name = match tokens.get(1) {
+        let (mut attributes, name_index) = parse_record_attributes(&tokens);
+        let name = match tokens.get(name_index) {
             Some(Token::Ident(name)) => Some(name.clone()),
             Some(Token::LBrace) => None,
             _ => return Err(self.error_at(code, 0, code.len(), "expected tag name or `{`")),
@@ -268,6 +271,14 @@ impl Parser {
             .position(|node| matches!(node, PPNode::Code { text, .. } if lex(text).first() == Some(&Token::RBrace)))
             .ok_or_else(|| self.error_at(code, 0, code.len(), "expected `}`"))?
             + 1;
+        if let PPNode::Code { text, .. } = &nodes[close] {
+            let closing_tokens = lex(text);
+            if closing_tokens.first() == Some(&Token::RBrace) {
+                let (trailing, _) = parse_attribute_groups(&closing_tokens, 1)
+                    .unwrap_or_else(|error| panic!("{error}"));
+                attributes.extend(trailing);
+            }
+        }
         let consumed = close + 1;
         let provenance = self.node_provenance(&nodes[0]);
         if kind == TagKind::Enum {
@@ -333,6 +344,7 @@ impl Parser {
                     name,
                     fields,
                     provenance,
+                    attributes,
                 }),
                 consumed,
             ))
@@ -348,7 +360,10 @@ impl Parser {
         Ok(Decl::Conditional(Conditional { branches }))
     }
 
-    fn parse_typedef_line(&self, code: &str) -> Result<(String, CType), ParseError> {
+    fn parse_typedef_line(
+        &self,
+        code: &str,
+    ) -> Result<(String, CType, Vec<Attribute>), ParseError> {
         let declaration = self.parse_declaration(code)?;
         let name = declaration
             .declarator
@@ -362,7 +377,7 @@ impl Parser {
                 ty: Box::new(declaration.specifiers.ty),
             }
         };
-        Ok((name.to_string(), ty))
+        Ok((name.to_string(), ty, declaration.attributes))
     }
 
     fn error_at(
@@ -397,6 +412,64 @@ impl Parser {
             PPNode::Conditional(_) => panic!("conditional regions have no single provenance"),
         }
     }
+}
+
+fn parse_record_attributes(tokens: &[Token]) -> (Vec<Attribute>, usize) {
+    parse_attribute_groups(tokens, 1).unwrap_or_else(|error| panic!("{error}"))
+}
+
+fn parse_attribute_groups(
+    tokens: &[Token],
+    mut position: usize,
+) -> Result<(Vec<Attribute>, usize), String> {
+    let mut attributes = Vec::new();
+    while tokens.get(position) == Some(&Token::Ident("__attribute__".into())) {
+        position += 1;
+        if tokens.get(position) != Some(&Token::LParen)
+            || tokens.get(position + 1) != Some(&Token::LParen)
+        {
+            return Err("expected `((` after __attribute__".into());
+        }
+        position += 2;
+        loop {
+            let Some(Token::Ident(name)) = tokens.get(position) else {
+                return Err("expected attribute name".into());
+            };
+            let name = name.clone();
+            position += 1;
+            let value = if tokens.get(position) == Some(&Token::LParen) {
+                position += 1;
+                let value = tokens.get(position).cloned();
+                position += 1;
+                if tokens.get(position) != Some(&Token::RParen) {
+                    return Err("expected `)` after attribute argument".into());
+                }
+                position += 1;
+                Some(value)
+            } else {
+                None
+            };
+            attributes.push(match (name.as_str(), value) {
+                ("packed", None) => Attribute::Packed,
+                ("aligned", Some(Some(Token::IntLit(value)))) => Attribute::Aligned(value),
+                ("vector_size", Some(Some(Token::IntLit(value)))) => Attribute::VectorSize(value),
+                ("mode", Some(Some(Token::Ident(value)))) => Attribute::Mode(value),
+                (name, _) => return Err(format!("unsupported attribute `{name}`")),
+            });
+            if tokens.get(position) == Some(&Token::Comma) {
+                position += 1;
+                continue;
+            }
+            if tokens.get(position) != Some(&Token::RParen)
+                || tokens.get(position + 1) != Some(&Token::RParen)
+            {
+                return Err("expected `))` after attributes".into());
+            }
+            position += 2;
+            break;
+        }
+    }
+    Ok((attributes, position))
 }
 
 struct DeclaratorParser<'a> {
