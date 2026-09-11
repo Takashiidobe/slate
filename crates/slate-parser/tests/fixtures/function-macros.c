@@ -17,17 +17,253 @@ int prescanned() {
 
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: polyvariant:
-// DEFAULT-NEXT: decl[0]: declaration type=int declarator=name=added [attributes=slate_macro(1 + 2)]
-// DEFAULT-NEXT: decl[1]: declaration type=int declarator=name=stringified [attributes=slate_macro("hello world")]
-// DEFAULT-NEXT: decl[2]: declaration type=int declarator=name=joined [attributes=slate_macro(foobar)]
-// DEFAULT-NEXT: decl[3]: declaration type=int declarator=name=variadic [attributes=slate_macro(1 , 2)]
-// DEFAULT-NEXT: decl[4]: function name=prescanned return=int
-// DEFAULT-NEXT:   stmt[0]: return 7
+// DEFAULT-NEXT: decl[0]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Name(
+// DEFAULT-NEXT:               "added",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           attributes: [
+// DEFAULT-NEXT:               Unknown {
+// DEFAULT-NEXT:                   name: "slate_macro",
+// DEFAULT-NEXT:                   arguments: [
+// DEFAULT-NEXT:                       "1",
+// DEFAULT-NEXT:                       "+",
+// DEFAULT-NEXT:                       "2",
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               0,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 7,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[1]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Name(
+// DEFAULT-NEXT:               "stringified",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           attributes: [
+// DEFAULT-NEXT:               Unknown {
+// DEFAULT-NEXT:                   name: "slate_macro",
+// DEFAULT-NEXT:                   arguments: [
+// DEFAULT-NEXT:                       "\"hello world\"",
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               0,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 8,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[2]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Name(
+// DEFAULT-NEXT:               "joined",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           attributes: [
+// DEFAULT-NEXT:               Unknown {
+// DEFAULT-NEXT:                   name: "slate_macro",
+// DEFAULT-NEXT:                   arguments: [
+// DEFAULT-NEXT:                       "foobar",
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               0,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 9,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[3]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Name(
+// DEFAULT-NEXT:               "variadic",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           attributes: [
+// DEFAULT-NEXT:               Unknown {
+// DEFAULT-NEXT:                   name: "slate_macro",
+// DEFAULT-NEXT:                   arguments: [
+// DEFAULT-NEXT:                       "1",
+// DEFAULT-NEXT:                       ",",
+// DEFAULT-NEXT:                       "2",
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               0,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 10,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[4]: Function(
+// DEFAULT-NEXT:       FunctionDecl {
+// DEFAULT-NEXT:           ret_type: Int,
+// DEFAULT-NEXT:           name: "prescanned",
+// DEFAULT-NEXT:           body: [
+// DEFAULT-NEXT:               Return(
+// DEFAULT-NEXT:                   IntLit(
+// DEFAULT-NEXT:                       7,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           provenance: Provenance {
+// DEFAULT-NEXT:               file: FileId(
+// DEFAULT-NEXT:                   0,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               kind: User,
+// DEFAULT-NEXT:               line: 11,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   )
 // DEFAULT-NEXT: concrete:
-// DEFAULT-NEXT: decl[0]: declaration type=int declarator=name=added [attributes=slate_macro(1 + 2)]
-// DEFAULT-NEXT: decl[1]: declaration type=int declarator=name=stringified [attributes=slate_macro("hello world")]
-// DEFAULT-NEXT: decl[2]: declaration type=int declarator=name=joined [attributes=slate_macro(foobar)]
-// DEFAULT-NEXT: decl[3]: declaration type=int declarator=name=variadic [attributes=slate_macro(1 , 2)]
-// DEFAULT-NEXT: decl[4]: function name=prescanned return=int
-// DEFAULT-NEXT:   stmt[0]: return 7
+// DEFAULT-NEXT: decl[0]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Name(
+// DEFAULT-NEXT:               "added",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           attributes: [
+// DEFAULT-NEXT:               Unknown {
+// DEFAULT-NEXT:                   name: "slate_macro",
+// DEFAULT-NEXT:                   arguments: [
+// DEFAULT-NEXT:                       "1",
+// DEFAULT-NEXT:                       "+",
+// DEFAULT-NEXT:                       "2",
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               0,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 7,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[1]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Name(
+// DEFAULT-NEXT:               "stringified",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           attributes: [
+// DEFAULT-NEXT:               Unknown {
+// DEFAULT-NEXT:                   name: "slate_macro",
+// DEFAULT-NEXT:                   arguments: [
+// DEFAULT-NEXT:                       "\"hello world\"",
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               0,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 8,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[2]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Name(
+// DEFAULT-NEXT:               "joined",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           attributes: [
+// DEFAULT-NEXT:               Unknown {
+// DEFAULT-NEXT:                   name: "slate_macro",
+// DEFAULT-NEXT:                   arguments: [
+// DEFAULT-NEXT:                       "foobar",
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               0,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 9,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[3]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Name(
+// DEFAULT-NEXT:               "variadic",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           attributes: [
+// DEFAULT-NEXT:               Unknown {
+// DEFAULT-NEXT:                   name: "slate_macro",
+// DEFAULT-NEXT:                   arguments: [
+// DEFAULT-NEXT:                       "1",
+// DEFAULT-NEXT:                       ",",
+// DEFAULT-NEXT:                       "2",
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               0,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 10,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[4]: Function(
+// DEFAULT-NEXT:       ConcreteFunctionDecl {
+// DEFAULT-NEXT:           ret_type: Int,
+// DEFAULT-NEXT:           name: "prescanned",
+// DEFAULT-NEXT:           body: [
+// DEFAULT-NEXT:               Return(
+// DEFAULT-NEXT:                   IntLit(
+// DEFAULT-NEXT:                       7,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           provenance: Provenance {
+// DEFAULT-NEXT:               file: FileId(
+// DEFAULT-NEXT:                   0,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               kind: User,
+// DEFAULT-NEXT:               line: 11,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   )
 // SLATE-FILECHECK-END DEFAULT

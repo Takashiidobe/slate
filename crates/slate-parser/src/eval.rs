@@ -35,6 +35,8 @@ impl Decl {
             Self::Function(f) => vec![ConcreteDecl::Function(ConcreteFunctionDecl {
                 ret_type: f.ret_type.clone(),
                 name: f.name.clone(),
+                parameters: f.parameters.clone(),
+                variadic: f.variadic,
                 body: Stmt::eval_all(&f.body, env),
                 provenance: f.provenance,
                 qualifiers: f.qualifiers,

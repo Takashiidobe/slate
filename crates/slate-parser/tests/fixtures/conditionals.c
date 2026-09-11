@@ -19,41 +19,303 @@ typedef int Socket;
 
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: polyvariant:
-// DEFAULT-NEXT: decl[0]: function name=main return=int
-// DEFAULT-NEXT:   stmt[0]: conditional
-// DEFAULT-NEXT:     branch[0]: when=defined(_WIN32)
-// DEFAULT-NEXT:       stmt[0]: return 2
-// DEFAULT-NEXT:     branch[1]: when=not(defined(_WIN32))
-// DEFAULT-NEXT:       stmt[0]: return 3
-// DEFAULT-NEXT: decl[1]: typedef name=HANDLE type=int
-// DEFAULT-NEXT: decl[2]: conditional
-// DEFAULT-NEXT:   branch[0]: when=defined(_WIN32)
-// DEFAULT-NEXT:     decl[0]: typedef name=Socket type=HANDLE
-// DEFAULT-NEXT:   branch[1]: when=not(defined(_WIN32))
-// DEFAULT-NEXT:     decl[0]: typedef name=Socket type=int
+// DEFAULT-NEXT: decl[0]: Function(
+// DEFAULT-NEXT:       FunctionDecl {
+// DEFAULT-NEXT:           ret_type: Int,
+// DEFAULT-NEXT:           name: "main",
+// DEFAULT-NEXT:           body: [
+// DEFAULT-NEXT:               Conditional(
+// DEFAULT-NEXT:                   Conditional {
+// DEFAULT-NEXT:                       branches: [
+// DEFAULT-NEXT:                           (
+// DEFAULT-NEXT:                               Defined(
+// DEFAULT-NEXT:                                   "_WIN32",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               [
+// DEFAULT-NEXT:                                   Return(
+// DEFAULT-NEXT:                                       IntLit(
+// DEFAULT-NEXT:                                           2,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           (
+// DEFAULT-NEXT:                               Not(
+// DEFAULT-NEXT:                                   Defined(
+// DEFAULT-NEXT:                                       "_WIN32",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               [
+// DEFAULT-NEXT:                                   Return(
+// DEFAULT-NEXT:                                       IntLit(
+// DEFAULT-NEXT:                                           3,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           provenance: Provenance {
+// DEFAULT-NEXT:               file: FileId(
+// DEFAULT-NEXT:                   0,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               kind: User,
+// DEFAULT-NEXT:               line: 0,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[1]: Typedef {
+// DEFAULT-NEXT:       name: "HANDLE",
+// DEFAULT-NEXT:       ty: Int,
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               0,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 8,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[2]: Conditional(
+// DEFAULT-NEXT:       Conditional {
+// DEFAULT-NEXT:           branches: [
+// DEFAULT-NEXT:               (
+// DEFAULT-NEXT:                   Defined(
+// DEFAULT-NEXT:                       "_WIN32",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   [
+// DEFAULT-NEXT:                       Typedef {
+// DEFAULT-NEXT:                           name: "Socket",
+// DEFAULT-NEXT:                           ty: Named(
+// DEFAULT-NEXT:                               "HANDLE",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           provenance: Provenance {
+// DEFAULT-NEXT:                               file: FileId(
+// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               kind: User,
+// DEFAULT-NEXT:                               line: 11,
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               (
+// DEFAULT-NEXT:                   Not(
+// DEFAULT-NEXT:                       Defined(
+// DEFAULT-NEXT:                           "_WIN32",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   [
+// DEFAULT-NEXT:                       Typedef {
+// DEFAULT-NEXT:                           name: "Socket",
+// DEFAULT-NEXT:                           ty: Int,
+// DEFAULT-NEXT:                           provenance: Provenance {
+// DEFAULT-NEXT:                               file: FileId(
+// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               kind: User,
+// DEFAULT-NEXT:                               line: 13,
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   )
 // DEFAULT-NEXT: concrete:
-// DEFAULT-NEXT: decl[0]: function name=main return=int
-// DEFAULT-NEXT:   stmt[0]: return 3
-// DEFAULT-NEXT: decl[1]: typedef name=HANDLE type=int
-// DEFAULT-NEXT: decl[2]: typedef name=Socket type=int
+// DEFAULT-NEXT: decl[0]: Function(
+// DEFAULT-NEXT:       ConcreteFunctionDecl {
+// DEFAULT-NEXT:           ret_type: Int,
+// DEFAULT-NEXT:           name: "main",
+// DEFAULT-NEXT:           body: [
+// DEFAULT-NEXT:               Return(
+// DEFAULT-NEXT:                   IntLit(
+// DEFAULT-NEXT:                       3,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           provenance: Provenance {
+// DEFAULT-NEXT:               file: FileId(
+// DEFAULT-NEXT:                   0,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               kind: User,
+// DEFAULT-NEXT:               line: 0,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[1]: Typedef {
+// DEFAULT-NEXT:       name: "HANDLE",
+// DEFAULT-NEXT:       ty: Int,
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               0,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 8,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[2]: Typedef {
+// DEFAULT-NEXT:       name: "Socket",
+// DEFAULT-NEXT:       ty: Int,
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               0,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 13,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN WIN32
 // WIN32: polyvariant:
-// WIN32-NEXT: decl[0]: function name=main return=int
-// WIN32-NEXT:   stmt[0]: conditional
-// WIN32-NEXT:     branch[0]: when=defined(_WIN32)
-// WIN32-NEXT:       stmt[0]: return 2
-// WIN32-NEXT:     branch[1]: when=not(defined(_WIN32))
-// WIN32-NEXT:       stmt[0]: return 3
-// WIN32-NEXT: decl[1]: typedef name=HANDLE type=int
-// WIN32-NEXT: decl[2]: conditional
-// WIN32-NEXT:   branch[0]: when=defined(_WIN32)
-// WIN32-NEXT:     decl[0]: typedef name=Socket type=HANDLE
-// WIN32-NEXT:   branch[1]: when=not(defined(_WIN32))
-// WIN32-NEXT:     decl[0]: typedef name=Socket type=int
+// WIN32-NEXT: decl[0]: Function(
+// WIN32-NEXT:       FunctionDecl {
+// WIN32-NEXT:           ret_type: Int,
+// WIN32-NEXT:           name: "main",
+// WIN32-NEXT:           body: [
+// WIN32-NEXT:               Conditional(
+// WIN32-NEXT:                   Conditional {
+// WIN32-NEXT:                       branches: [
+// WIN32-NEXT:                           (
+// WIN32-NEXT:                               Defined(
+// WIN32-NEXT:                                   "_WIN32",
+// WIN32-NEXT:                               ),
+// WIN32-NEXT:                               [
+// WIN32-NEXT:                                   Return(
+// WIN32-NEXT:                                       IntLit(
+// WIN32-NEXT:                                           2,
+// WIN32-NEXT:                                       ),
+// WIN32-NEXT:                                   ),
+// WIN32-NEXT:                               ],
+// WIN32-NEXT:                           ),
+// WIN32-NEXT:                           (
+// WIN32-NEXT:                               Not(
+// WIN32-NEXT:                                   Defined(
+// WIN32-NEXT:                                       "_WIN32",
+// WIN32-NEXT:                                   ),
+// WIN32-NEXT:                               ),
+// WIN32-NEXT:                               [
+// WIN32-NEXT:                                   Return(
+// WIN32-NEXT:                                       IntLit(
+// WIN32-NEXT:                                           3,
+// WIN32-NEXT:                                       ),
+// WIN32-NEXT:                                   ),
+// WIN32-NEXT:                               ],
+// WIN32-NEXT:                           ),
+// WIN32-NEXT:                       ],
+// WIN32-NEXT:                   },
+// WIN32-NEXT:               ),
+// WIN32-NEXT:           ],
+// WIN32-NEXT:           provenance: Provenance {
+// WIN32-NEXT:               file: FileId(
+// WIN32-NEXT:                   0,
+// WIN32-NEXT:               ),
+// WIN32-NEXT:               kind: User,
+// WIN32-NEXT:               line: 0,
+// WIN32-NEXT:           },
+// WIN32-NEXT:       },
+// WIN32-NEXT:   )
+// WIN32-NEXT: decl[1]: Typedef {
+// WIN32-NEXT:       name: "HANDLE",
+// WIN32-NEXT:       ty: Int,
+// WIN32-NEXT:       provenance: Provenance {
+// WIN32-NEXT:           file: FileId(
+// WIN32-NEXT:               0,
+// WIN32-NEXT:           ),
+// WIN32-NEXT:           kind: User,
+// WIN32-NEXT:           line: 8,
+// WIN32-NEXT:       },
+// WIN32-NEXT:   }
+// WIN32-NEXT: decl[2]: Conditional(
+// WIN32-NEXT:       Conditional {
+// WIN32-NEXT:           branches: [
+// WIN32-NEXT:               (
+// WIN32-NEXT:                   Defined(
+// WIN32-NEXT:                       "_WIN32",
+// WIN32-NEXT:                   ),
+// WIN32-NEXT:                   [
+// WIN32-NEXT:                       Typedef {
+// WIN32-NEXT:                           name: "Socket",
+// WIN32-NEXT:                           ty: Named(
+// WIN32-NEXT:                               "HANDLE",
+// WIN32-NEXT:                           ),
+// WIN32-NEXT:                           provenance: Provenance {
+// WIN32-NEXT:                               file: FileId(
+// WIN32-NEXT:                                   0,
+// WIN32-NEXT:                               ),
+// WIN32-NEXT:                               kind: User,
+// WIN32-NEXT:                               line: 11,
+// WIN32-NEXT:                           },
+// WIN32-NEXT:                       },
+// WIN32-NEXT:                   ],
+// WIN32-NEXT:               ),
+// WIN32-NEXT:               (
+// WIN32-NEXT:                   Not(
+// WIN32-NEXT:                       Defined(
+// WIN32-NEXT:                           "_WIN32",
+// WIN32-NEXT:                       ),
+// WIN32-NEXT:                   ),
+// WIN32-NEXT:                   [
+// WIN32-NEXT:                       Typedef {
+// WIN32-NEXT:                           name: "Socket",
+// WIN32-NEXT:                           ty: Int,
+// WIN32-NEXT:                           provenance: Provenance {
+// WIN32-NEXT:                               file: FileId(
+// WIN32-NEXT:                                   0,
+// WIN32-NEXT:                               ),
+// WIN32-NEXT:                               kind: User,
+// WIN32-NEXT:                               line: 13,
+// WIN32-NEXT:                           },
+// WIN32-NEXT:                       },
+// WIN32-NEXT:                   ],
+// WIN32-NEXT:               ),
+// WIN32-NEXT:           ],
+// WIN32-NEXT:       },
+// WIN32-NEXT:   )
 // WIN32-NEXT: concrete:
-// WIN32-NEXT: decl[0]: function name=main return=int
-// WIN32-NEXT:   stmt[0]: return 2
-// WIN32-NEXT: decl[1]: typedef name=HANDLE type=int
-// WIN32-NEXT: decl[2]: typedef name=Socket type=HANDLE
+// WIN32-NEXT: decl[0]: Function(
+// WIN32-NEXT:       ConcreteFunctionDecl {
+// WIN32-NEXT:           ret_type: Int,
+// WIN32-NEXT:           name: "main",
+// WIN32-NEXT:           body: [
+// WIN32-NEXT:               Return(
+// WIN32-NEXT:                   IntLit(
+// WIN32-NEXT:                       2,
+// WIN32-NEXT:                   ),
+// WIN32-NEXT:               ),
+// WIN32-NEXT:           ],
+// WIN32-NEXT:           provenance: Provenance {
+// WIN32-NEXT:               file: FileId(
+// WIN32-NEXT:                   0,
+// WIN32-NEXT:               ),
+// WIN32-NEXT:               kind: User,
+// WIN32-NEXT:               line: 0,
+// WIN32-NEXT:           },
+// WIN32-NEXT:       },
+// WIN32-NEXT:   )
+// WIN32-NEXT: decl[1]: Typedef {
+// WIN32-NEXT:       name: "HANDLE",
+// WIN32-NEXT:       ty: Int,
+// WIN32-NEXT:       provenance: Provenance {
+// WIN32-NEXT:           file: FileId(
+// WIN32-NEXT:               0,
+// WIN32-NEXT:           ),
+// WIN32-NEXT:           kind: User,
+// WIN32-NEXT:           line: 8,
+// WIN32-NEXT:       },
+// WIN32-NEXT:   }
+// WIN32-NEXT: decl[2]: Typedef {
+// WIN32-NEXT:       name: "Socket",
+// WIN32-NEXT:       ty: Named(
+// WIN32-NEXT:           "HANDLE",
+// WIN32-NEXT:       ),
+// WIN32-NEXT:       provenance: Provenance {
+// WIN32-NEXT:           file: FileId(
+// WIN32-NEXT:               0,
+// WIN32-NEXT:           ),
+// WIN32-NEXT:           kind: User,
+// WIN32-NEXT:           line: 11,
+// WIN32-NEXT:       },
+// WIN32-NEXT:   }
 // SLATE-FILECHECK-END WIN32

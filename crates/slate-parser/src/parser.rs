@@ -1132,12 +1132,24 @@ impl Parser {
         if sig_tokens.get(index + 2) != Some(&Token::LParen) {
             return Err(self.error_at(code, code.len().saturating_sub(1), 1, "expected `(`"));
         }
-        if sig_tokens.get(index + 3) != Some(&Token::RParen) {
-            let offset = code.find('{').unwrap_or(code.len().saturating_sub(1));
-            return Err(self.error_at(code, offset, 1, "expected `)`"));
+        let Some(parameter_close) = sig_tokens[index + 3..]
+            .iter()
+            .position(|token| *token == Token::RParen)
+            .map(|position| index + 3 + position)
+        else {
+            return Err(self.error_at(code, code.find('{').unwrap_or(0), 1, "expected `)`"));
+        };
+        if sig_tokens[index + 3..parameter_close].contains(&Token::LBrace) {
+            return Err(self.error_at(code, code.find('{').unwrap_or(0), 1, "expected parameter"));
         }
-        let (signature_attributes, body_index) = parse_attribute_groups(&sig_tokens, index + 4)
-            .map_err(|error| self.error_at(code, 0, code.len(), error))?;
+        let mut declarator_parser = DeclaratorParser {
+            tokens: &sig_tokens,
+            pos: index + 2,
+        };
+        let (parameters, variadic) = declarator_parser.parse_parameters();
+        let (signature_attributes, body_index) =
+            parse_attribute_groups(&sig_tokens, declarator_parser.pos)
+                .map_err(|error| self.error_at(code, 0, code.len(), error))?;
         attributes.extend(signature_attributes);
         if sig_tokens.get(body_index) != Some(&Token::LBrace) {
             return Err(self.error_at(
@@ -1168,6 +1180,8 @@ impl Parser {
             FunctionDecl {
                 ret_type: Type::Int,
                 name,
+                parameters,
+                variadic,
                 body,
                 provenance,
                 qualifiers,

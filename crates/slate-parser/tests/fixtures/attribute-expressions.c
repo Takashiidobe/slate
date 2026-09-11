@@ -6,11 +6,147 @@ __attribute__((__const__, __may_alias__)) int aliased;
 
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: polyvariant:
-// DEFAULT-NEXT: decl[0]: typedef name=aligned_type type=int [attributes=aligned((8 + 8))]
-// DEFAULT-NEXT: decl[1]: typedef name=vector_type type=int [attributes=vector_size((sizeof(int) * 4))]
-// DEFAULT-NEXT: decl[2]: declaration type=int declarator=name=aliased [attributes=const,may_alias]
+// DEFAULT-NEXT: decl[0]: Typedef {
+// DEFAULT-NEXT:       name: "aligned_type",
+// DEFAULT-NEXT:       ty: Int,
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               0,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 0,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       attributes: [
+// DEFAULT-NEXT:           Aligned(
+// DEFAULT-NEXT:               Binary {
+// DEFAULT-NEXT:                   op: Add,
+// DEFAULT-NEXT:                   left: Integer(
+// DEFAULT-NEXT:                       8,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   right: Integer(
+// DEFAULT-NEXT:                       8,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       ],
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[1]: Typedef {
+// DEFAULT-NEXT:       name: "vector_type",
+// DEFAULT-NEXT:       ty: Int,
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               0,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 1,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       attributes: [
+// DEFAULT-NEXT:           VectorSize(
+// DEFAULT-NEXT:               Binary {
+// DEFAULT-NEXT:                   op: Mul,
+// DEFAULT-NEXT:                   left: SizeOf(
+// DEFAULT-NEXT:                       Identifier(
+// DEFAULT-NEXT:                           "int",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   right: Integer(
+// DEFAULT-NEXT:                       4,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       ],
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[2]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Name(
+// DEFAULT-NEXT:               "aliased",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           attributes: [
+// DEFAULT-NEXT:               Const,
+// DEFAULT-NEXT:               MayAlias,
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               0,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 2,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
 // DEFAULT-NEXT: concrete:
-// DEFAULT-NEXT: decl[0]: typedef name=aligned_type type=int [attributes=aligned((8 + 8))]
-// DEFAULT-NEXT: decl[1]: typedef name=vector_type type=int [attributes=vector_size((sizeof(int) * 4))]
-// DEFAULT-NEXT: decl[2]: declaration type=int declarator=name=aliased [attributes=const,may_alias]
+// DEFAULT-NEXT: decl[0]: Typedef {
+// DEFAULT-NEXT:       name: "aligned_type",
+// DEFAULT-NEXT:       ty: Int,
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               0,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 0,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       attributes: [
+// DEFAULT-NEXT:           Aligned(
+// DEFAULT-NEXT:               Binary {
+// DEFAULT-NEXT:                   op: Add,
+// DEFAULT-NEXT:                   left: Integer(
+// DEFAULT-NEXT:                       8,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   right: Integer(
+// DEFAULT-NEXT:                       8,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       ],
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[1]: Typedef {
+// DEFAULT-NEXT:       name: "vector_type",
+// DEFAULT-NEXT:       ty: Int,
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               0,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 1,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       attributes: [
+// DEFAULT-NEXT:           VectorSize(
+// DEFAULT-NEXT:               Binary {
+// DEFAULT-NEXT:                   op: Mul,
+// DEFAULT-NEXT:                   left: SizeOf(
+// DEFAULT-NEXT:                       Identifier(
+// DEFAULT-NEXT:                           "int",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   right: Integer(
+// DEFAULT-NEXT:                       4,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       ],
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[2]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Name(
+// DEFAULT-NEXT:               "aliased",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           attributes: [
+// DEFAULT-NEXT:               Const,
+// DEFAULT-NEXT:               MayAlias,
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               0,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 2,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
 // SLATE-FILECHECK-END DEFAULT

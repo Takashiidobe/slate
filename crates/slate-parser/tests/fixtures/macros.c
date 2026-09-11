@@ -21,29 +21,399 @@ int selected __attribute__((slate_literal(CHOICE)));
 
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: polyvariant:
-// DEFAULT-NEXT: decl[0]: declaration type=int declarator=name=ordinary initializer=expr(7)
-// DEFAULT-NEXT: decl[1]: declaration type=int declarator=name=recursive [attributes=slate_literal(SELF)]
-// DEFAULT-NEXT: decl[2]: conditional
-// DEFAULT-NEXT:   branch[0]: when=defined(SELECT)
-// DEFAULT-NEXT:     decl[0]: declaration type=int declarator=name=selected [attributes=slate_literal(1)]
-// DEFAULT-NEXT:   branch[1]: when=not(defined(SELECT))
-// DEFAULT-NEXT:     decl[0]: declaration type=int declarator=name=selected [attributes=slate_literal(2)]
+// DEFAULT-NEXT: decl[0]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Name(
+// DEFAULT-NEXT:               "ordinary",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           initializer: Some(
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   IntLit(
+// DEFAULT-NEXT:                       7,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               0,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 5,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[1]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Name(
+// DEFAULT-NEXT:               "recursive",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           attributes: [
+// DEFAULT-NEXT:               Unknown {
+// DEFAULT-NEXT:                   name: "slate_literal",
+// DEFAULT-NEXT:                   arguments: [
+// DEFAULT-NEXT:                       "SELF",
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               0,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 8,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[2]: Conditional(
+// DEFAULT-NEXT:       Conditional {
+// DEFAULT-NEXT:           branches: [
+// DEFAULT-NEXT:               (
+// DEFAULT-NEXT:                   Defined(
+// DEFAULT-NEXT:                       "SELECT",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   [
+// DEFAULT-NEXT:                       Declaration {
+// DEFAULT-NEXT:                           declaration: Declaration {
+// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                   ty: Int,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "selected",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               attributes: [
+// DEFAULT-NEXT:                                   Unknown {
+// DEFAULT-NEXT:                                       name: "slate_literal",
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           "1",
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           provenance: Provenance {
+// DEFAULT-NEXT:                               file: FileId(
+// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               kind: User,
+// DEFAULT-NEXT:                               line: 12,
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               (
+// DEFAULT-NEXT:                   Not(
+// DEFAULT-NEXT:                       Defined(
+// DEFAULT-NEXT:                           "SELECT",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   [
+// DEFAULT-NEXT:                       Declaration {
+// DEFAULT-NEXT:                           declaration: Declaration {
+// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                   ty: Int,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "selected",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               attributes: [
+// DEFAULT-NEXT:                                   Unknown {
+// DEFAULT-NEXT:                                       name: "slate_literal",
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           "2",
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           provenance: Provenance {
+// DEFAULT-NEXT:                               file: FileId(
+// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               kind: User,
+// DEFAULT-NEXT:                               line: 15,
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   )
 // DEFAULT-NEXT: concrete:
-// DEFAULT-NEXT: decl[0]: declaration type=int declarator=name=ordinary initializer=expr(7)
-// DEFAULT-NEXT: decl[1]: declaration type=int declarator=name=recursive [attributes=slate_literal(SELF)]
-// DEFAULT-NEXT: decl[2]: declaration type=int declarator=name=selected [attributes=slate_literal(2)]
+// DEFAULT-NEXT: decl[0]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Name(
+// DEFAULT-NEXT:               "ordinary",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           initializer: Some(
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   IntLit(
+// DEFAULT-NEXT:                       7,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               0,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 5,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[1]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Name(
+// DEFAULT-NEXT:               "recursive",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           attributes: [
+// DEFAULT-NEXT:               Unknown {
+// DEFAULT-NEXT:                   name: "slate_literal",
+// DEFAULT-NEXT:                   arguments: [
+// DEFAULT-NEXT:                       "SELF",
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               0,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 8,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[2]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Name(
+// DEFAULT-NEXT:               "selected",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           attributes: [
+// DEFAULT-NEXT:               Unknown {
+// DEFAULT-NEXT:                   name: "slate_literal",
+// DEFAULT-NEXT:                   arguments: [
+// DEFAULT-NEXT:                       "2",
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               0,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 15,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN SELECT
 // SELECT: polyvariant:
-// SELECT-NEXT: decl[0]: declaration type=int declarator=name=ordinary initializer=expr(7)
-// SELECT-NEXT: decl[1]: declaration type=int declarator=name=recursive [attributes=slate_literal(SELF)]
-// SELECT-NEXT: decl[2]: conditional
-// SELECT-NEXT:   branch[0]: when=defined(SELECT)
-// SELECT-NEXT:     decl[0]: declaration type=int declarator=name=selected [attributes=slate_literal(1)]
-// SELECT-NEXT:   branch[1]: when=not(defined(SELECT))
-// SELECT-NEXT:     decl[0]: declaration type=int declarator=name=selected [attributes=slate_literal(2)]
+// SELECT-NEXT: decl[0]: Declaration {
+// SELECT-NEXT:       declaration: Declaration {
+// SELECT-NEXT:           specifiers: DeclarationSpecifiers {
+// SELECT-NEXT:               ty: Int,
+// SELECT-NEXT:           },
+// SELECT-NEXT:           declarator: Name(
+// SELECT-NEXT:               "ordinary",
+// SELECT-NEXT:           ),
+// SELECT-NEXT:           initializer: Some(
+// SELECT-NEXT:               Expr(
+// SELECT-NEXT:                   IntLit(
+// SELECT-NEXT:                       7,
+// SELECT-NEXT:                   ),
+// SELECT-NEXT:               ),
+// SELECT-NEXT:           ),
+// SELECT-NEXT:       },
+// SELECT-NEXT:       provenance: Provenance {
+// SELECT-NEXT:           file: FileId(
+// SELECT-NEXT:               0,
+// SELECT-NEXT:           ),
+// SELECT-NEXT:           kind: User,
+// SELECT-NEXT:           line: 5,
+// SELECT-NEXT:       },
+// SELECT-NEXT:   }
+// SELECT-NEXT: decl[1]: Declaration {
+// SELECT-NEXT:       declaration: Declaration {
+// SELECT-NEXT:           specifiers: DeclarationSpecifiers {
+// SELECT-NEXT:               ty: Int,
+// SELECT-NEXT:           },
+// SELECT-NEXT:           declarator: Name(
+// SELECT-NEXT:               "recursive",
+// SELECT-NEXT:           ),
+// SELECT-NEXT:           attributes: [
+// SELECT-NEXT:               Unknown {
+// SELECT-NEXT:                   name: "slate_literal",
+// SELECT-NEXT:                   arguments: [
+// SELECT-NEXT:                       "SELF",
+// SELECT-NEXT:                   ],
+// SELECT-NEXT:               },
+// SELECT-NEXT:           ],
+// SELECT-NEXT:       },
+// SELECT-NEXT:       provenance: Provenance {
+// SELECT-NEXT:           file: FileId(
+// SELECT-NEXT:               0,
+// SELECT-NEXT:           ),
+// SELECT-NEXT:           kind: User,
+// SELECT-NEXT:           line: 8,
+// SELECT-NEXT:       },
+// SELECT-NEXT:   }
+// SELECT-NEXT: decl[2]: Conditional(
+// SELECT-NEXT:       Conditional {
+// SELECT-NEXT:           branches: [
+// SELECT-NEXT:               (
+// SELECT-NEXT:                   Defined(
+// SELECT-NEXT:                       "SELECT",
+// SELECT-NEXT:                   ),
+// SELECT-NEXT:                   [
+// SELECT-NEXT:                       Declaration {
+// SELECT-NEXT:                           declaration: Declaration {
+// SELECT-NEXT:                               specifiers: DeclarationSpecifiers {
+// SELECT-NEXT:                                   ty: Int,
+// SELECT-NEXT:                               },
+// SELECT-NEXT:                               declarator: Name(
+// SELECT-NEXT:                                   "selected",
+// SELECT-NEXT:                               ),
+// SELECT-NEXT:                               attributes: [
+// SELECT-NEXT:                                   Unknown {
+// SELECT-NEXT:                                       name: "slate_literal",
+// SELECT-NEXT:                                       arguments: [
+// SELECT-NEXT:                                           "1",
+// SELECT-NEXT:                                       ],
+// SELECT-NEXT:                                   },
+// SELECT-NEXT:                               ],
+// SELECT-NEXT:                           },
+// SELECT-NEXT:                           provenance: Provenance {
+// SELECT-NEXT:                               file: FileId(
+// SELECT-NEXT:                                   0,
+// SELECT-NEXT:                               ),
+// SELECT-NEXT:                               kind: User,
+// SELECT-NEXT:                               line: 12,
+// SELECT-NEXT:                           },
+// SELECT-NEXT:                       },
+// SELECT-NEXT:                   ],
+// SELECT-NEXT:               ),
+// SELECT-NEXT:               (
+// SELECT-NEXT:                   Not(
+// SELECT-NEXT:                       Defined(
+// SELECT-NEXT:                           "SELECT",
+// SELECT-NEXT:                       ),
+// SELECT-NEXT:                   ),
+// SELECT-NEXT:                   [
+// SELECT-NEXT:                       Declaration {
+// SELECT-NEXT:                           declaration: Declaration {
+// SELECT-NEXT:                               specifiers: DeclarationSpecifiers {
+// SELECT-NEXT:                                   ty: Int,
+// SELECT-NEXT:                               },
+// SELECT-NEXT:                               declarator: Name(
+// SELECT-NEXT:                                   "selected",
+// SELECT-NEXT:                               ),
+// SELECT-NEXT:                               attributes: [
+// SELECT-NEXT:                                   Unknown {
+// SELECT-NEXT:                                       name: "slate_literal",
+// SELECT-NEXT:                                       arguments: [
+// SELECT-NEXT:                                           "2",
+// SELECT-NEXT:                                       ],
+// SELECT-NEXT:                                   },
+// SELECT-NEXT:                               ],
+// SELECT-NEXT:                           },
+// SELECT-NEXT:                           provenance: Provenance {
+// SELECT-NEXT:                               file: FileId(
+// SELECT-NEXT:                                   0,
+// SELECT-NEXT:                               ),
+// SELECT-NEXT:                               kind: User,
+// SELECT-NEXT:                               line: 15,
+// SELECT-NEXT:                           },
+// SELECT-NEXT:                       },
+// SELECT-NEXT:                   ],
+// SELECT-NEXT:               ),
+// SELECT-NEXT:           ],
+// SELECT-NEXT:       },
+// SELECT-NEXT:   )
 // SELECT-NEXT: concrete:
-// SELECT-NEXT: decl[0]: declaration type=int declarator=name=ordinary initializer=expr(7)
-// SELECT-NEXT: decl[1]: declaration type=int declarator=name=recursive [attributes=slate_literal(SELF)]
-// SELECT-NEXT: decl[2]: declaration type=int declarator=name=selected [attributes=slate_literal(1)]
+// SELECT-NEXT: decl[0]: Declaration {
+// SELECT-NEXT:       declaration: Declaration {
+// SELECT-NEXT:           specifiers: DeclarationSpecifiers {
+// SELECT-NEXT:               ty: Int,
+// SELECT-NEXT:           },
+// SELECT-NEXT:           declarator: Name(
+// SELECT-NEXT:               "ordinary",
+// SELECT-NEXT:           ),
+// SELECT-NEXT:           initializer: Some(
+// SELECT-NEXT:               Expr(
+// SELECT-NEXT:                   IntLit(
+// SELECT-NEXT:                       7,
+// SELECT-NEXT:                   ),
+// SELECT-NEXT:               ),
+// SELECT-NEXT:           ),
+// SELECT-NEXT:       },
+// SELECT-NEXT:       provenance: Provenance {
+// SELECT-NEXT:           file: FileId(
+// SELECT-NEXT:               0,
+// SELECT-NEXT:           ),
+// SELECT-NEXT:           kind: User,
+// SELECT-NEXT:           line: 5,
+// SELECT-NEXT:       },
+// SELECT-NEXT:   }
+// SELECT-NEXT: decl[1]: Declaration {
+// SELECT-NEXT:       declaration: Declaration {
+// SELECT-NEXT:           specifiers: DeclarationSpecifiers {
+// SELECT-NEXT:               ty: Int,
+// SELECT-NEXT:           },
+// SELECT-NEXT:           declarator: Name(
+// SELECT-NEXT:               "recursive",
+// SELECT-NEXT:           ),
+// SELECT-NEXT:           attributes: [
+// SELECT-NEXT:               Unknown {
+// SELECT-NEXT:                   name: "slate_literal",
+// SELECT-NEXT:                   arguments: [
+// SELECT-NEXT:                       "SELF",
+// SELECT-NEXT:                   ],
+// SELECT-NEXT:               },
+// SELECT-NEXT:           ],
+// SELECT-NEXT:       },
+// SELECT-NEXT:       provenance: Provenance {
+// SELECT-NEXT:           file: FileId(
+// SELECT-NEXT:               0,
+// SELECT-NEXT:           ),
+// SELECT-NEXT:           kind: User,
+// SELECT-NEXT:           line: 8,
+// SELECT-NEXT:       },
+// SELECT-NEXT:   }
+// SELECT-NEXT: decl[2]: Declaration {
+// SELECT-NEXT:       declaration: Declaration {
+// SELECT-NEXT:           specifiers: DeclarationSpecifiers {
+// SELECT-NEXT:               ty: Int,
+// SELECT-NEXT:           },
+// SELECT-NEXT:           declarator: Name(
+// SELECT-NEXT:               "selected",
+// SELECT-NEXT:           ),
+// SELECT-NEXT:           attributes: [
+// SELECT-NEXT:               Unknown {
+// SELECT-NEXT:                   name: "slate_literal",
+// SELECT-NEXT:                   arguments: [
+// SELECT-NEXT:                       "1",
+// SELECT-NEXT:                   ],
+// SELECT-NEXT:               },
+// SELECT-NEXT:           ],
+// SELECT-NEXT:       },
+// SELECT-NEXT:       provenance: Provenance {
+// SELECT-NEXT:           file: FileId(
+// SELECT-NEXT:               0,
+// SELECT-NEXT:           ),
+// SELECT-NEXT:           kind: User,
+// SELECT-NEXT:           line: 12,
+// SELECT-NEXT:       },
+// SELECT-NEXT:   }
 // SLATE-FILECHECK-END SELECT

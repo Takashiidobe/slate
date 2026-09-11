@@ -11,15 +11,143 @@ int statement_value() {
 
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: polyvariant:
-// DEFAULT-NEXT: decl[0]: function name=generic_value return=int
-// DEFAULT-NEXT:   stmt[0]: return _Generic(1, 2 )
-// DEFAULT-NEXT: decl[1]: function name=statement_value return=int
-// DEFAULT-NEXT:   stmt[0]: expression=StatementExpression([Expr(IntLit(1))])
-// DEFAULT-NEXT:   stmt[1]: return 0
+// DEFAULT-NEXT: decl[0]: Function(
+// DEFAULT-NEXT:       FunctionDecl {
+// DEFAULT-NEXT:           ret_type: Int,
+// DEFAULT-NEXT:           name: "generic_value",
+// DEFAULT-NEXT:           body: [
+// DEFAULT-NEXT:               Return(
+// DEFAULT-NEXT:                   Generic {
+// DEFAULT-NEXT:                       controlling: IntLit(
+// DEFAULT-NEXT:                           1,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       associations: [
+// DEFAULT-NEXT:                           GenericAssociation {
+// DEFAULT-NEXT:                               type_name: Some(
+// DEFAULT-NEXT:                                   "int",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               expression: IntLit(
+// DEFAULT-NEXT:                                   1,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           GenericAssociation {
+// DEFAULT-NEXT:                               type_name: None,
+// DEFAULT-NEXT:                               expression: IntLit(
+// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           provenance: Provenance {
+// DEFAULT-NEXT:               file: FileId(
+// DEFAULT-NEXT:                   0,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               kind: User,
+// DEFAULT-NEXT:               line: 0,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[1]: Function(
+// DEFAULT-NEXT:       FunctionDecl {
+// DEFAULT-NEXT:           ret_type: Int,
+// DEFAULT-NEXT:           name: "statement_value",
+// DEFAULT-NEXT:           body: [
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   StatementExpression(
+// DEFAULT-NEXT:                       [
+// DEFAULT-NEXT:                           Expr(
+// DEFAULT-NEXT:                               IntLit(
+// DEFAULT-NEXT:                                   1,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Return(
+// DEFAULT-NEXT:                   IntLit(
+// DEFAULT-NEXT:                       0,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           provenance: Provenance {
+// DEFAULT-NEXT:               file: FileId(
+// DEFAULT-NEXT:                   0,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               kind: User,
+// DEFAULT-NEXT:               line: 4,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   )
 // DEFAULT-NEXT: concrete:
-// DEFAULT-NEXT: decl[0]: function name=generic_value return=int
-// DEFAULT-NEXT:   stmt[0]: return _Generic(1, 2 )
-// DEFAULT-NEXT: decl[1]: function name=statement_value return=int
-// DEFAULT-NEXT:   stmt[0]: expression=StatementExpression([Expr(IntLit(1))])
-// DEFAULT-NEXT:   stmt[1]: return 0
+// DEFAULT-NEXT: decl[0]: Function(
+// DEFAULT-NEXT:       ConcreteFunctionDecl {
+// DEFAULT-NEXT:           ret_type: Int,
+// DEFAULT-NEXT:           name: "generic_value",
+// DEFAULT-NEXT:           body: [
+// DEFAULT-NEXT:               Return(
+// DEFAULT-NEXT:                   Generic {
+// DEFAULT-NEXT:                       controlling: IntLit(
+// DEFAULT-NEXT:                           1,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       associations: [
+// DEFAULT-NEXT:                           GenericAssociation {
+// DEFAULT-NEXT:                               type_name: Some(
+// DEFAULT-NEXT:                                   "int",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               expression: IntLit(
+// DEFAULT-NEXT:                                   1,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           GenericAssociation {
+// DEFAULT-NEXT:                               type_name: None,
+// DEFAULT-NEXT:                               expression: IntLit(
+// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           provenance: Provenance {
+// DEFAULT-NEXT:               file: FileId(
+// DEFAULT-NEXT:                   0,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               kind: User,
+// DEFAULT-NEXT:               line: 0,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[1]: Function(
+// DEFAULT-NEXT:       ConcreteFunctionDecl {
+// DEFAULT-NEXT:           ret_type: Int,
+// DEFAULT-NEXT:           name: "statement_value",
+// DEFAULT-NEXT:           body: [
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   StatementExpression(
+// DEFAULT-NEXT:                       [
+// DEFAULT-NEXT:                           Expr(
+// DEFAULT-NEXT:                               IntLit(
+// DEFAULT-NEXT:                                   1,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Return(
+// DEFAULT-NEXT:                   IntLit(
+// DEFAULT-NEXT:                       0,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           provenance: Provenance {
+// DEFAULT-NEXT:               file: FileId(
+// DEFAULT-NEXT:                   0,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               kind: User,
+// DEFAULT-NEXT:               line: 4,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   )
 // SLATE-FILECHECK-END DEFAULT

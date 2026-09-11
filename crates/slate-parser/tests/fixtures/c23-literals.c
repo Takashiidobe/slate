@@ -15,29 +15,605 @@ int unicode_name __attribute__((slate_literal(\u03B1name)));
 
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: polyvariant:
-// DEFAULT-NEXT: decl[0]: declaration type=int declarator=name=decimal_separator [attributes=slate_literal(1000)]
-// DEFAULT-NEXT: decl[1]: declaration type=int declarator=name=binary_bitint [attributes=slate_literal(10)]
-// DEFAULT-NEXT: decl[2]: declaration type=int declarator=name=hexadecimal [attributes=slate_literal(42)]
-// DEFAULT-NEXT: decl[3]: declaration type=int declarator=name=decimal_float [attributes=slate_literal(1.25e+2f)]
-// DEFAULT-NEXT: decl[4]: declaration type=int declarator=name=hex_float [attributes=slate_literal(0x1.fp+2)]
-// DEFAULT-NEXT: decl[5]: declaration type=int declarator=name=character [attributes=slate_literal('a')]
-// DEFAULT-NEXT: decl[6]: declaration type=int declarator=name=escaped_string [attributes=slate_literal("\N{SNOWMAN}")]
-// DEFAULT-NEXT: decl[7]: declaration type=int declarator=name=utf8_string [attributes=slate_literal(u8"text")]
-// DEFAULT-NEXT: decl[8]: declaration type=int declarator=name=utf16_string [attributes=slate_literal(u"text")]
-// DEFAULT-NEXT: decl[9]: declaration type=int declarator=name=utf32_string [attributes=slate_literal(U"text")]
-// DEFAULT-NEXT: decl[10]: declaration type=int declarator=name=wide_string [attributes=slate_literal(L"text")]
-// DEFAULT-NEXT: decl[11]: declaration type=int declarator=name=unicode_name [attributes=slate_literal(\u03B1name)]
+// DEFAULT-NEXT: decl[0]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Name(
+// DEFAULT-NEXT:               "decimal_separator",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           attributes: [
+// DEFAULT-NEXT:               Unknown {
+// DEFAULT-NEXT:                   name: "slate_literal",
+// DEFAULT-NEXT:                   arguments: [
+// DEFAULT-NEXT:                       "1000",
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               0,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 0,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[1]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Name(
+// DEFAULT-NEXT:               "binary_bitint",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           attributes: [
+// DEFAULT-NEXT:               Unknown {
+// DEFAULT-NEXT:                   name: "slate_literal",
+// DEFAULT-NEXT:                   arguments: [
+// DEFAULT-NEXT:                       "10",
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               0,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 1,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[2]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Name(
+// DEFAULT-NEXT:               "hexadecimal",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           attributes: [
+// DEFAULT-NEXT:               Unknown {
+// DEFAULT-NEXT:                   name: "slate_literal",
+// DEFAULT-NEXT:                   arguments: [
+// DEFAULT-NEXT:                       "42",
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               0,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 2,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[3]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Name(
+// DEFAULT-NEXT:               "decimal_float",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           attributes: [
+// DEFAULT-NEXT:               Unknown {
+// DEFAULT-NEXT:                   name: "slate_literal",
+// DEFAULT-NEXT:                   arguments: [
+// DEFAULT-NEXT:                       "1.25e+2f",
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               0,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 3,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[4]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Name(
+// DEFAULT-NEXT:               "hex_float",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           attributes: [
+// DEFAULT-NEXT:               Unknown {
+// DEFAULT-NEXT:                   name: "slate_literal",
+// DEFAULT-NEXT:                   arguments: [
+// DEFAULT-NEXT:                       "0x1.fp+2",
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               0,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 4,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[5]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Name(
+// DEFAULT-NEXT:               "character",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           attributes: [
+// DEFAULT-NEXT:               Unknown {
+// DEFAULT-NEXT:                   name: "slate_literal",
+// DEFAULT-NEXT:                   arguments: [
+// DEFAULT-NEXT:                       "'a'",
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               0,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 5,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[6]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Name(
+// DEFAULT-NEXT:               "escaped_string",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           attributes: [
+// DEFAULT-NEXT:               Unknown {
+// DEFAULT-NEXT:                   name: "slate_literal",
+// DEFAULT-NEXT:                   arguments: [
+// DEFAULT-NEXT:                       "\"\\N{SNOWMAN}\"",
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               0,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 6,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[7]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Name(
+// DEFAULT-NEXT:               "utf8_string",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           attributes: [
+// DEFAULT-NEXT:               Unknown {
+// DEFAULT-NEXT:                   name: "slate_literal",
+// DEFAULT-NEXT:                   arguments: [
+// DEFAULT-NEXT:                       "u8\"text\"",
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               0,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 7,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[8]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Name(
+// DEFAULT-NEXT:               "utf16_string",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           attributes: [
+// DEFAULT-NEXT:               Unknown {
+// DEFAULT-NEXT:                   name: "slate_literal",
+// DEFAULT-NEXT:                   arguments: [
+// DEFAULT-NEXT:                       "u\"text\"",
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               0,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 8,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[9]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Name(
+// DEFAULT-NEXT:               "utf32_string",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           attributes: [
+// DEFAULT-NEXT:               Unknown {
+// DEFAULT-NEXT:                   name: "slate_literal",
+// DEFAULT-NEXT:                   arguments: [
+// DEFAULT-NEXT:                       "U\"text\"",
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               0,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 9,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[10]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Name(
+// DEFAULT-NEXT:               "wide_string",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           attributes: [
+// DEFAULT-NEXT:               Unknown {
+// DEFAULT-NEXT:                   name: "slate_literal",
+// DEFAULT-NEXT:                   arguments: [
+// DEFAULT-NEXT:                       "L\"text\"",
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               0,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 10,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[11]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Name(
+// DEFAULT-NEXT:               "unicode_name",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           attributes: [
+// DEFAULT-NEXT:               Unknown {
+// DEFAULT-NEXT:                   name: "slate_literal",
+// DEFAULT-NEXT:                   arguments: [
+// DEFAULT-NEXT:                       "\\u03B1name",
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               0,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 11,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
 // DEFAULT-NEXT: concrete:
-// DEFAULT-NEXT: decl[0]: declaration type=int declarator=name=decimal_separator [attributes=slate_literal(1000)]
-// DEFAULT-NEXT: decl[1]: declaration type=int declarator=name=binary_bitint [attributes=slate_literal(10)]
-// DEFAULT-NEXT: decl[2]: declaration type=int declarator=name=hexadecimal [attributes=slate_literal(42)]
-// DEFAULT-NEXT: decl[3]: declaration type=int declarator=name=decimal_float [attributes=slate_literal(1.25e+2f)]
-// DEFAULT-NEXT: decl[4]: declaration type=int declarator=name=hex_float [attributes=slate_literal(0x1.fp+2)]
-// DEFAULT-NEXT: decl[5]: declaration type=int declarator=name=character [attributes=slate_literal('a')]
-// DEFAULT-NEXT: decl[6]: declaration type=int declarator=name=escaped_string [attributes=slate_literal("\N{SNOWMAN}")]
-// DEFAULT-NEXT: decl[7]: declaration type=int declarator=name=utf8_string [attributes=slate_literal(u8"text")]
-// DEFAULT-NEXT: decl[8]: declaration type=int declarator=name=utf16_string [attributes=slate_literal(u"text")]
-// DEFAULT-NEXT: decl[9]: declaration type=int declarator=name=utf32_string [attributes=slate_literal(U"text")]
-// DEFAULT-NEXT: decl[10]: declaration type=int declarator=name=wide_string [attributes=slate_literal(L"text")]
-// DEFAULT-NEXT: decl[11]: declaration type=int declarator=name=unicode_name [attributes=slate_literal(\u03B1name)]
+// DEFAULT-NEXT: decl[0]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Name(
+// DEFAULT-NEXT:               "decimal_separator",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           attributes: [
+// DEFAULT-NEXT:               Unknown {
+// DEFAULT-NEXT:                   name: "slate_literal",
+// DEFAULT-NEXT:                   arguments: [
+// DEFAULT-NEXT:                       "1000",
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               0,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 0,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[1]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Name(
+// DEFAULT-NEXT:               "binary_bitint",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           attributes: [
+// DEFAULT-NEXT:               Unknown {
+// DEFAULT-NEXT:                   name: "slate_literal",
+// DEFAULT-NEXT:                   arguments: [
+// DEFAULT-NEXT:                       "10",
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               0,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 1,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[2]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Name(
+// DEFAULT-NEXT:               "hexadecimal",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           attributes: [
+// DEFAULT-NEXT:               Unknown {
+// DEFAULT-NEXT:                   name: "slate_literal",
+// DEFAULT-NEXT:                   arguments: [
+// DEFAULT-NEXT:                       "42",
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               0,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 2,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[3]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Name(
+// DEFAULT-NEXT:               "decimal_float",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           attributes: [
+// DEFAULT-NEXT:               Unknown {
+// DEFAULT-NEXT:                   name: "slate_literal",
+// DEFAULT-NEXT:                   arguments: [
+// DEFAULT-NEXT:                       "1.25e+2f",
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               0,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 3,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[4]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Name(
+// DEFAULT-NEXT:               "hex_float",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           attributes: [
+// DEFAULT-NEXT:               Unknown {
+// DEFAULT-NEXT:                   name: "slate_literal",
+// DEFAULT-NEXT:                   arguments: [
+// DEFAULT-NEXT:                       "0x1.fp+2",
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               0,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 4,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[5]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Name(
+// DEFAULT-NEXT:               "character",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           attributes: [
+// DEFAULT-NEXT:               Unknown {
+// DEFAULT-NEXT:                   name: "slate_literal",
+// DEFAULT-NEXT:                   arguments: [
+// DEFAULT-NEXT:                       "'a'",
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               0,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 5,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[6]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Name(
+// DEFAULT-NEXT:               "escaped_string",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           attributes: [
+// DEFAULT-NEXT:               Unknown {
+// DEFAULT-NEXT:                   name: "slate_literal",
+// DEFAULT-NEXT:                   arguments: [
+// DEFAULT-NEXT:                       "\"\\N{SNOWMAN}\"",
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               0,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 6,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[7]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Name(
+// DEFAULT-NEXT:               "utf8_string",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           attributes: [
+// DEFAULT-NEXT:               Unknown {
+// DEFAULT-NEXT:                   name: "slate_literal",
+// DEFAULT-NEXT:                   arguments: [
+// DEFAULT-NEXT:                       "u8\"text\"",
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               0,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 7,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[8]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Name(
+// DEFAULT-NEXT:               "utf16_string",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           attributes: [
+// DEFAULT-NEXT:               Unknown {
+// DEFAULT-NEXT:                   name: "slate_literal",
+// DEFAULT-NEXT:                   arguments: [
+// DEFAULT-NEXT:                       "u\"text\"",
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               0,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 8,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[9]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Name(
+// DEFAULT-NEXT:               "utf32_string",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           attributes: [
+// DEFAULT-NEXT:               Unknown {
+// DEFAULT-NEXT:                   name: "slate_literal",
+// DEFAULT-NEXT:                   arguments: [
+// DEFAULT-NEXT:                       "U\"text\"",
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               0,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 9,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[10]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Name(
+// DEFAULT-NEXT:               "wide_string",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           attributes: [
+// DEFAULT-NEXT:               Unknown {
+// DEFAULT-NEXT:                   name: "slate_literal",
+// DEFAULT-NEXT:                   arguments: [
+// DEFAULT-NEXT:                       "L\"text\"",
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               0,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 10,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[11]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Name(
+// DEFAULT-NEXT:               "unicode_name",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           attributes: [
+// DEFAULT-NEXT:               Unknown {
+// DEFAULT-NEXT:                   name: "slate_literal",
+// DEFAULT-NEXT:                   arguments: [
+// DEFAULT-NEXT:                       "\\u03B1name",
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               0,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 11,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
 // SLATE-FILECHECK-END DEFAULT

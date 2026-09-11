@@ -1,4 +1,9 @@
 use crate::const_expr::{BinaryOp, ConstExpr, UnaryOp};
+use custom_debug::Debug as CustomDebug;
+
+fn is_false(value: &bool) -> bool {
+    !*value
+}
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Condition {
@@ -202,19 +207,28 @@ pub enum Attribute {
     },
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(CustomDebug, Clone, PartialEq)]
 pub struct FunctionDecl {
     pub ret_type: Type,
     pub name: String,
+    #[debug(skip_if = Vec::is_empty)]
+    pub parameters: Vec<Parameter>,
+    #[debug(skip_if = is_false)]
+    pub variadic: bool,
+    #[debug(skip_if = Vec::is_empty)]
     pub body: Vec<Stmt>,
     pub provenance: Provenance,
+    #[debug(skip_if = Qualifiers::is_default)]
     pub qualifiers: Qualifiers,
+    #[debug(skip_if = StorageClass::is_none)]
     pub storage: StorageClass,
+    #[debug(skip_if = is_false)]
     pub is_inline: bool,
+    #[debug(skip_if = Vec::is_empty)]
     pub attributes: Vec<Attribute>,
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(CustomDebug, Clone, PartialEq)]
 pub enum CType {
     Void,
     Bool,
@@ -226,10 +240,12 @@ pub enum CType {
         name: Option<String>,
     },
     Qualified {
+        #[debug(skip_if = Qualifiers::is_default)]
         qualifiers: Qualifiers,
         ty: Box<CType>,
     },
     Pointer {
+        #[debug(skip_if = Qualifiers::is_default)]
         qualifiers: Qualifiers,
         pointee: Box<CType>,
     },
@@ -239,7 +255,9 @@ pub enum CType {
     },
     Function {
         return_type: Box<CType>,
+        #[debug(skip_if = Vec::is_empty)]
         parameters: Vec<Parameter>,
+        #[debug(skip_if = is_false)]
         variadic: bool,
     },
 }
@@ -253,12 +271,22 @@ pub enum TagKind {
     Enum,
 }
 
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+#[derive(CustomDebug, Clone, Copy, Default, PartialEq, Eq)]
 pub struct Qualifiers {
+    #[debug(skip_if = is_false)]
     pub is_const: bool,
+    #[debug(skip_if = is_false)]
     pub is_volatile: bool,
+    #[debug(skip_if = is_false)]
     pub is_restrict: bool,
+    #[debug(skip_if = is_false)]
     pub is_atomic: bool,
+}
+
+impl Qualifiers {
+    fn is_default(value: &Self) -> bool {
+        *value == Self::default()
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -274,6 +302,10 @@ pub enum StorageClass {
 impl StorageClass {
     pub fn as_str(self) -> &'static str {
         self.into()
+    }
+
+    fn is_none(value: &Self) -> bool {
+        *value == Self::None
     }
 }
 
@@ -311,7 +343,7 @@ pub enum ArraySize {
     Expression(Box<Expr>),
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(CustomDebug, Clone, PartialEq)]
 pub enum Declarator {
     Abstract,
     Name(String),
@@ -326,7 +358,9 @@ pub enum Declarator {
     },
     Function {
         inner: Box<Declarator>,
+        #[debug(skip_if = Vec::is_empty)]
         parameters: Vec<Parameter>,
+        #[debug(skip_if = is_false)]
         variadic: bool,
     },
 }
@@ -344,35 +378,44 @@ impl Declarator {
     }
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(CustomDebug, Clone, PartialEq)]
 pub struct Parameter {
     pub ty: CType,
+    #[debug(skip_if = Option::is_none)]
     pub declarator: Option<Declarator>,
+    #[debug(skip_if = Vec::is_empty)]
     pub attributes: Vec<Attribute>,
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(CustomDebug, Clone, PartialEq)]
 pub struct DeclarationSpecifiers {
     pub ty: CType,
+    #[debug(skip_if = Qualifiers::is_default)]
     pub qualifiers: Qualifiers,
+    #[debug(skip_if = StorageClass::is_none)]
     pub storage: StorageClass,
+    #[debug(skip_if = is_false)]
     pub is_inline: bool,
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(CustomDebug, Clone, PartialEq)]
 pub struct Declaration {
     pub specifiers: DeclarationSpecifiers,
     pub declarator: Declarator,
+    #[debug(skip_if = Option::is_none)]
     pub initializer: Option<Initializer>,
+    #[debug(skip_if = Vec::is_empty)]
     pub attributes: Vec<Attribute>,
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(CustomDebug, Clone, PartialEq)]
 pub struct RecordDecl {
     pub kind: TagKind,
     pub name: Option<String>,
+    #[debug(skip_if = Vec::is_empty)]
     pub fields: Vec<FieldDecl>,
     pub provenance: Provenance,
+    #[debug(skip_if = Vec::is_empty)]
     pub attributes: Vec<Attribute>,
 }
 
@@ -382,9 +425,10 @@ pub struct FieldDecl {
     pub provenance: Provenance,
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(CustomDebug, Clone, PartialEq)]
 pub struct EnumDecl {
     pub name: Option<String>,
+    #[debug(skip_if = Vec::is_empty)]
     pub enumerators: Vec<Enumerator>,
     pub provenance: Provenance,
 }
@@ -395,7 +439,7 @@ pub struct Enumerator {
     pub value: Option<Expr>,
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(CustomDebug, Clone, PartialEq)]
 pub enum Decl {
     Function(FunctionDecl),
     Declaration {
@@ -406,6 +450,7 @@ pub enum Decl {
         name: String,
         ty: CType,
         provenance: Provenance,
+        #[debug(skip_if = Vec::is_empty)]
         attributes: Vec<Attribute>,
     },
     Record(RecordDecl),
@@ -449,19 +494,28 @@ pub enum ConcreteStmt {
     Expr(Expr),
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(CustomDebug, Clone, PartialEq)]
 pub struct ConcreteFunctionDecl {
     pub ret_type: Type,
     pub name: String,
+    #[debug(skip_if = Vec::is_empty)]
+    pub parameters: Vec<Parameter>,
+    #[debug(skip_if = is_false)]
+    pub variadic: bool,
+    #[debug(skip_if = Vec::is_empty)]
     pub body: Vec<ConcreteStmt>,
     pub provenance: Provenance,
+    #[debug(skip_if = Qualifiers::is_default)]
     pub qualifiers: Qualifiers,
+    #[debug(skip_if = StorageClass::is_none)]
     pub storage: StorageClass,
+    #[debug(skip_if = is_false)]
     pub is_inline: bool,
+    #[debug(skip_if = Vec::is_empty)]
     pub attributes: Vec<Attribute>,
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(CustomDebug, Clone, PartialEq)]
 pub enum ConcreteDecl {
     Function(ConcreteFunctionDecl),
     Declaration {
@@ -472,6 +526,7 @@ pub enum ConcreteDecl {
         name: String,
         ty: CType,
         provenance: Provenance,
+        #[debug(skip_if = Vec::is_empty)]
         attributes: Vec<Attribute>,
     },
     Record(RecordDecl),

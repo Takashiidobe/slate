@@ -17,37 +17,259 @@ int main() {
 
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: polyvariant:
-// DEFAULT-NEXT: decl[0]: function name=main return=int
-// DEFAULT-NEXT:   stmt[0]: conditional
-// DEFAULT-NEXT:     branch[0]: when=constant(0)
-// DEFAULT-NEXT:       stmt[0]: return 0
-// DEFAULT-NEXT:     branch[1]: when=and(not(constant(0)), constant(1))
-// DEFAULT-NEXT:       stmt[0]: conditional
-// DEFAULT-NEXT:         branch[0]: when=defined(INNER)
-// DEFAULT-NEXT:           stmt[0]: return 1
-// DEFAULT-NEXT:         branch[1]: when=not(defined(INNER))
-// DEFAULT-NEXT:           stmt[0]: return 2
-// DEFAULT-NEXT:     branch[2]: when=not(or(constant(0), and(not(constant(0)), constant(1))))
-// DEFAULT-NEXT:       stmt[0]: return 3
+// DEFAULT-NEXT: decl[0]: Function(
+// DEFAULT-NEXT:       FunctionDecl {
+// DEFAULT-NEXT:           ret_type: Int,
+// DEFAULT-NEXT:           name: "main",
+// DEFAULT-NEXT:           body: [
+// DEFAULT-NEXT:               Conditional(
+// DEFAULT-NEXT:                   Conditional {
+// DEFAULT-NEXT:                       branches: [
+// DEFAULT-NEXT:                           (
+// DEFAULT-NEXT:                               Constant(
+// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               [
+// DEFAULT-NEXT:                                   Return(
+// DEFAULT-NEXT:                                       IntLit(
+// DEFAULT-NEXT:                                           0,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           (
+// DEFAULT-NEXT:                               And(
+// DEFAULT-NEXT:                                   Not(
+// DEFAULT-NEXT:                                       Constant(
+// DEFAULT-NEXT:                                           0,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Constant(
+// DEFAULT-NEXT:                                       1,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               [
+// DEFAULT-NEXT:                                   Conditional(
+// DEFAULT-NEXT:                                       Conditional {
+// DEFAULT-NEXT:                                           branches: [
+// DEFAULT-NEXT:                                               (
+// DEFAULT-NEXT:                                                   Defined(
+// DEFAULT-NEXT:                                                       "INNER",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   [
+// DEFAULT-NEXT:                                                       Return(
+// DEFAULT-NEXT:                                                           IntLit(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ],
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               (
+// DEFAULT-NEXT:                                                   Not(
+// DEFAULT-NEXT:                                                       Defined(
+// DEFAULT-NEXT:                                                           "INNER",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   [
+// DEFAULT-NEXT:                                                       Return(
+// DEFAULT-NEXT:                                                           IntLit(
+// DEFAULT-NEXT:                                                               2,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ],
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           (
+// DEFAULT-NEXT:                               Not(
+// DEFAULT-NEXT:                                   Or(
+// DEFAULT-NEXT:                                       Constant(
+// DEFAULT-NEXT:                                           0,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       And(
+// DEFAULT-NEXT:                                           Not(
+// DEFAULT-NEXT:                                               Constant(
+// DEFAULT-NEXT:                                                   0,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Constant(
+// DEFAULT-NEXT:                                               1,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               [
+// DEFAULT-NEXT:                                   Return(
+// DEFAULT-NEXT:                                       IntLit(
+// DEFAULT-NEXT:                                           3,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           provenance: Provenance {
+// DEFAULT-NEXT:               file: FileId(
+// DEFAULT-NEXT:                   0,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               kind: User,
+// DEFAULT-NEXT:               line: 0,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   )
 // DEFAULT-NEXT: concrete:
-// DEFAULT-NEXT: decl[0]: function name=main return=int
-// DEFAULT-NEXT:   stmt[0]: return 2
+// DEFAULT-NEXT: decl[0]: Function(
+// DEFAULT-NEXT:       ConcreteFunctionDecl {
+// DEFAULT-NEXT:           ret_type: Int,
+// DEFAULT-NEXT:           name: "main",
+// DEFAULT-NEXT:           body: [
+// DEFAULT-NEXT:               Return(
+// DEFAULT-NEXT:                   IntLit(
+// DEFAULT-NEXT:                       2,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           provenance: Provenance {
+// DEFAULT-NEXT:               file: FileId(
+// DEFAULT-NEXT:                   0,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               kind: User,
+// DEFAULT-NEXT:               line: 0,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   )
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN INNER
 // INNER: polyvariant:
-// INNER-NEXT: decl[0]: function name=main return=int
-// INNER-NEXT:   stmt[0]: conditional
-// INNER-NEXT:     branch[0]: when=constant(0)
-// INNER-NEXT:       stmt[0]: return 0
-// INNER-NEXT:     branch[1]: when=and(not(constant(0)), constant(1))
-// INNER-NEXT:       stmt[0]: conditional
-// INNER-NEXT:         branch[0]: when=defined(INNER)
-// INNER-NEXT:           stmt[0]: return 1
-// INNER-NEXT:         branch[1]: when=not(defined(INNER))
-// INNER-NEXT:           stmt[0]: return 2
-// INNER-NEXT:     branch[2]: when=not(or(constant(0), and(not(constant(0)), constant(1))))
-// INNER-NEXT:       stmt[0]: return 3
+// INNER-NEXT: decl[0]: Function(
+// INNER-NEXT:       FunctionDecl {
+// INNER-NEXT:           ret_type: Int,
+// INNER-NEXT:           name: "main",
+// INNER-NEXT:           body: [
+// INNER-NEXT:               Conditional(
+// INNER-NEXT:                   Conditional {
+// INNER-NEXT:                       branches: [
+// INNER-NEXT:                           (
+// INNER-NEXT:                               Constant(
+// INNER-NEXT:                                   0,
+// INNER-NEXT:                               ),
+// INNER-NEXT:                               [
+// INNER-NEXT:                                   Return(
+// INNER-NEXT:                                       IntLit(
+// INNER-NEXT:                                           0,
+// INNER-NEXT:                                       ),
+// INNER-NEXT:                                   ),
+// INNER-NEXT:                               ],
+// INNER-NEXT:                           ),
+// INNER-NEXT:                           (
+// INNER-NEXT:                               And(
+// INNER-NEXT:                                   Not(
+// INNER-NEXT:                                       Constant(
+// INNER-NEXT:                                           0,
+// INNER-NEXT:                                       ),
+// INNER-NEXT:                                   ),
+// INNER-NEXT:                                   Constant(
+// INNER-NEXT:                                       1,
+// INNER-NEXT:                                   ),
+// INNER-NEXT:                               ),
+// INNER-NEXT:                               [
+// INNER-NEXT:                                   Conditional(
+// INNER-NEXT:                                       Conditional {
+// INNER-NEXT:                                           branches: [
+// INNER-NEXT:                                               (
+// INNER-NEXT:                                                   Defined(
+// INNER-NEXT:                                                       "INNER",
+// INNER-NEXT:                                                   ),
+// INNER-NEXT:                                                   [
+// INNER-NEXT:                                                       Return(
+// INNER-NEXT:                                                           IntLit(
+// INNER-NEXT:                                                               1,
+// INNER-NEXT:                                                           ),
+// INNER-NEXT:                                                       ),
+// INNER-NEXT:                                                   ],
+// INNER-NEXT:                                               ),
+// INNER-NEXT:                                               (
+// INNER-NEXT:                                                   Not(
+// INNER-NEXT:                                                       Defined(
+// INNER-NEXT:                                                           "INNER",
+// INNER-NEXT:                                                       ),
+// INNER-NEXT:                                                   ),
+// INNER-NEXT:                                                   [
+// INNER-NEXT:                                                       Return(
+// INNER-NEXT:                                                           IntLit(
+// INNER-NEXT:                                                               2,
+// INNER-NEXT:                                                           ),
+// INNER-NEXT:                                                       ),
+// INNER-NEXT:                                                   ],
+// INNER-NEXT:                                               ),
+// INNER-NEXT:                                           ],
+// INNER-NEXT:                                       },
+// INNER-NEXT:                                   ),
+// INNER-NEXT:                               ],
+// INNER-NEXT:                           ),
+// INNER-NEXT:                           (
+// INNER-NEXT:                               Not(
+// INNER-NEXT:                                   Or(
+// INNER-NEXT:                                       Constant(
+// INNER-NEXT:                                           0,
+// INNER-NEXT:                                       ),
+// INNER-NEXT:                                       And(
+// INNER-NEXT:                                           Not(
+// INNER-NEXT:                                               Constant(
+// INNER-NEXT:                                                   0,
+// INNER-NEXT:                                               ),
+// INNER-NEXT:                                           ),
+// INNER-NEXT:                                           Constant(
+// INNER-NEXT:                                               1,
+// INNER-NEXT:                                           ),
+// INNER-NEXT:                                       ),
+// INNER-NEXT:                                   ),
+// INNER-NEXT:                               ),
+// INNER-NEXT:                               [
+// INNER-NEXT:                                   Return(
+// INNER-NEXT:                                       IntLit(
+// INNER-NEXT:                                           3,
+// INNER-NEXT:                                       ),
+// INNER-NEXT:                                   ),
+// INNER-NEXT:                               ],
+// INNER-NEXT:                           ),
+// INNER-NEXT:                       ],
+// INNER-NEXT:                   },
+// INNER-NEXT:               ),
+// INNER-NEXT:           ],
+// INNER-NEXT:           provenance: Provenance {
+// INNER-NEXT:               file: FileId(
+// INNER-NEXT:                   0,
+// INNER-NEXT:               ),
+// INNER-NEXT:               kind: User,
+// INNER-NEXT:               line: 0,
+// INNER-NEXT:           },
+// INNER-NEXT:       },
+// INNER-NEXT:   )
 // INNER-NEXT: concrete:
-// INNER-NEXT: decl[0]: function name=main return=int
-// INNER-NEXT:   stmt[0]: return 1
+// INNER-NEXT: decl[0]: Function(
+// INNER-NEXT:       ConcreteFunctionDecl {
+// INNER-NEXT:           ret_type: Int,
+// INNER-NEXT:           name: "main",
+// INNER-NEXT:           body: [
+// INNER-NEXT:               Return(
+// INNER-NEXT:                   IntLit(
+// INNER-NEXT:                       1,
+// INNER-NEXT:                   ),
+// INNER-NEXT:               ),
+// INNER-NEXT:           ],
+// INNER-NEXT:           provenance: Provenance {
+// INNER-NEXT:               file: FileId(
+// INNER-NEXT:                   0,
+// INNER-NEXT:               ),
+// INNER-NEXT:               kind: User,
+// INNER-NEXT:               line: 0,
+// INNER-NEXT:           },
+// INNER-NEXT:       },
+// INNER-NEXT:   )
 // SLATE-FILECHECK-END INNER
