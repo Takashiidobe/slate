@@ -237,7 +237,8 @@ fn is_integer_constant_expression(expression: &ConstExpr) -> bool {
         | ConstExpr::PreIncrement(_)
         | ConstExpr::PreDecrement(_)
         | ConstExpr::AddrOf(_)
-        | ConstExpr::Deref(_) => false,
+        | ConstExpr::Deref(_)
+        | ConstExpr::CompoundLiteral { .. } => false,
     }
 }
 

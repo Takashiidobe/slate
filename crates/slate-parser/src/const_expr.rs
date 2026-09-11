@@ -1,4 +1,4 @@
-use crate::ast::{CType, Declarator};
+use crate::ast::{CType, Declarator, Designator, Expr, Initializer, InitializerItem};
 use crate::lexer::{Keyword, Token};
 use crate::parser::DeclaratorParser;
 use miette::Diagnostic;
@@ -61,6 +61,11 @@ pub enum ConstExpr {
         declarator: Declarator,
         value: Box<Self>,
     },
+    CompoundLiteral {
+        ty: Box<CType>,
+        declarator: Declarator,
+        initializer: Vec<InitializerItem>,
+    },
 }
 
 impl std::fmt::Display for ConstExpr {
@@ -103,6 +108,7 @@ impl std::fmt::Display for ConstExpr {
             Self::AddrOf(value) => write!(formatter, "&{value}"),
             Self::Deref(value) => write!(formatter, "*{value}"),
             Self::Cast { value, .. } => write!(formatter, "(cast){value}"),
+            Self::CompoundLiteral { .. } => write!(formatter, "(compound literal)"),
         }
     }
 }
@@ -232,6 +238,10 @@ pub enum ConstExprError {
     ExpectedIdentifier,
     #[error("expected type name")]
     ExpectedTypeName,
+    #[error("expected `=`")]
+    ExpectedEqual,
+    #[error("expected `}}`")]
+    ExpectedRBrace,
     #[error("unexpected token `{0:?}`")]
     UnexpectedToken(Token),
     #[error("expected integer expression")]
@@ -356,6 +366,9 @@ impl Parser {
             ConstExpr::PreDecrement(_) => Err(ConstExprError::NotConstant("decrement")),
             ConstExpr::AddrOf(_) => Err(ConstExprError::NotConstant("address-of")),
             ConstExpr::Deref(_) => Err(ConstExprError::NotConstant("dereference")),
+            ConstExpr::CompoundLiteral { .. } => {
+                Err(ConstExprError::NotConstant("compound literal"))
+            }
         }
     }
 
@@ -459,6 +472,7 @@ impl Parser {
             && starts_type_name(next, &self.typedef_names)
             && let Some((ty, declarator, end)) = self.try_parse_type_name(self.position + 1)
             && self.tokens.get(end) == Some(&Token::RParen)
+            && self.tokens.get(end + 1) != Some(&Token::LBrace)
         {
             self.position = end + 1;
             let value = self.parse_cast()?;
@@ -469,6 +483,86 @@ impl Parser {
             });
         }
         self.parse_unary()
+    }
+
+    fn try_parse_compound_literal(&mut self) -> Option<Result<ConstExpr, ConstExprError>> {
+        if self.peek() != Some(&Token::LParen) {
+            return None;
+        }
+        let next = self.tokens.get(self.position + 1)?;
+        if !starts_type_name(next, &self.typedef_names) {
+            return None;
+        }
+        let (ty, declarator, end) = self.try_parse_type_name(self.position + 1)?;
+        if self.tokens.get(end) != Some(&Token::RParen)
+            || self.tokens.get(end + 1) != Some(&Token::LBrace)
+        {
+            return None;
+        }
+        self.position = end + 1;
+        Some(
+            self.parse_initializer_list()
+                .map(|initializer| ConstExpr::CompoundLiteral {
+                    ty,
+                    declarator,
+                    initializer,
+                }),
+        )
+    }
+
+    fn parse_initializer_list(&mut self) -> Result<Vec<InitializerItem>, ConstExprError> {
+        if self.take() != Some(Token::LBrace) {
+            return Err(ConstExprError::UnexpectedToken(
+                self.tokens[self.position - 1].clone(),
+            ));
+        }
+        let mut items = Vec::new();
+        while self.peek() != Some(&Token::RBrace) {
+            let mut designators = Vec::new();
+            loop {
+                if self.peek() == Some(&Token::LBracket) {
+                    self.take();
+                    let Some(Token::IntLit(index)) = self.take() else {
+                        return Err(ConstExprError::ExpectedIntegerExpression);
+                    };
+                    if self.take() != Some(Token::RBracket) {
+                        return Err(ConstExprError::ExpectedRBracket);
+                    }
+                    designators.push(Designator::Array(index));
+                } else if self.peek() == Some(&Token::Dot) {
+                    self.take();
+                    designators.push(Designator::Field(self.expect_field_name()?));
+                } else {
+                    break;
+                }
+            }
+            if !designators.is_empty() && self.take() != Some(Token::Equal) {
+                return Err(ConstExprError::ExpectedEqual);
+            }
+            let value = self.parse_initializer_value()?;
+            items.push(InitializerItem { designators, value });
+            if self.peek() == Some(&Token::Comma) {
+                self.take();
+            } else {
+                break;
+            }
+        }
+        if self.take() != Some(Token::RBrace) {
+            return Err(ConstExprError::ExpectedRBrace);
+        }
+        Ok(items)
+    }
+
+    fn parse_initializer_value(&mut self) -> Result<Initializer, ConstExprError> {
+        if self.peek() == Some(&Token::LBrace) {
+            Ok(Initializer::List(self.parse_initializer_list()?))
+        } else if let Some(Token::StringLit(value)) = self.peek().cloned() {
+            self.take();
+            Ok(Initializer::Expr(Expr::StringLit(value)))
+        } else {
+            let expression = self.parse_assignment()?;
+            Ok(Initializer::Expr(Expr::Const(Box::new(expression))))
+        }
     }
 
     fn try_parse_type_name(&self, start: usize) -> Option<(Box<CType>, Declarator, usize)> {
@@ -554,7 +648,10 @@ impl Parser {
     }
 
     fn parse_postfix(&mut self) -> Result<ConstExpr, ConstExprError> {
-        let mut expression = self.parse_primary()?;
+        let mut expression = match self.try_parse_compound_literal() {
+            Some(result) => result?,
+            None => self.parse_primary()?,
+        };
         loop {
             expression = match self.peek() {
                 Some(Token::LParen) => {
