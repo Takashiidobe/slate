@@ -1,0 +1,64 @@
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Keyword {
+    Int,
+    Return,
+    Typedef,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum Token {
+    Keyword(Keyword),
+    Ident(String),
+    IntLit(i64),
+    LParen,
+    RParen,
+    LBrace,
+    RBrace,
+    Semi,
+}
+
+pub fn lex(src: &str) -> Vec<Token> {
+    let chars: Vec<char> = src.chars().collect();
+    let mut tokens = Vec::new();
+    let mut i = 0;
+
+    while i < chars.len() {
+        let c = chars[i];
+
+        if c.is_whitespace() {
+            i += 1;
+        } else if c.is_ascii_digit() {
+            let start = i;
+            while i < chars.len() && chars[i].is_ascii_digit() {
+                i += 1;
+            }
+            let n: i64 = chars[start..i].iter().collect::<String>().parse().unwrap();
+            tokens.push(Token::IntLit(n));
+        } else if c.is_ascii_alphabetic() || c == '_' {
+            let start = i;
+            while i < chars.len() && (chars[i].is_ascii_alphanumeric() || chars[i] == '_') {
+                i += 1;
+            }
+            let word: String = chars[start..i].iter().collect();
+            tokens.push(match word.as_str() {
+                "int" => Token::Keyword(Keyword::Int),
+                "return" => Token::Keyword(Keyword::Return),
+                "typedef" => Token::Keyword(Keyword::Typedef),
+                _ => Token::Ident(word),
+            });
+        } else {
+            let tok = match c {
+                '(' => Token::LParen,
+                ')' => Token::RParen,
+                '{' => Token::LBrace,
+                '}' => Token::RBrace,
+                ';' => Token::Semi,
+                other => panic!("unexpected character in phase 0/1 lexer: {other:?}"),
+            };
+            tokens.push(tok);
+            i += 1;
+        }
+    }
+
+    tokens
+}
