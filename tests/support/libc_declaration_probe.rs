@@ -152,6 +152,14 @@ fn collect_functions(
 }
 
 fn declaration_file(node: &Value) -> Option<&str> {
+    if let Some(file) = node
+        .pointer("/loc/expansionLoc/file")
+        .or_else(|| node.pointer("/range/begin/expansionLoc/file"))
+        .and_then(Value::as_str)
+        .filter(|file| file.contains("/sdk/include/ucrt/") || file.contains("/crt/include/"))
+    {
+        return Some(file);
+    }
     [
         "/loc/file",
         "/loc/spellingLoc/file",
@@ -278,6 +286,12 @@ fn is_public_declaration_file(file: &str, config: &ProbeConfig) -> bool {
 
 fn header_relative_name(file: &str) -> String {
     let file = file.replace('\\', "/");
+    if let Some((_, relative)) = file.rsplit_once("/sdk/include/ucrt/") {
+        return relative.to_string();
+    }
+    if let Some((_, relative)) = file.rsplit_once("/crt/include/") {
+        return relative.to_string();
+    }
     if let Some((_, relative)) = file.rsplit_once("/include/") {
         return relative.to_string();
     }
@@ -512,7 +526,9 @@ fn canonicalize_type(type_spelling: &str, aliases: &BTreeMap<String, String>) ->
             identifier.push(character);
         } else {
             if !identifier.is_empty() {
-                if let Some(replacement) = aliases.get(&identifier).filter(|replacement| {
+                if identifier == "__size_t" {
+                    result.push_str("__SIZE_TYPE__");
+                } else if let Some(replacement) = aliases.get(&identifier).filter(|replacement| {
                     !replacement
                         .split(|character: char| {
                             !character.is_ascii_alphanumeric() && character != '_'
@@ -529,7 +545,9 @@ fn canonicalize_type(type_spelling: &str, aliases: &BTreeMap<String, String>) ->
         }
     }
     if !identifier.is_empty() {
-        if let Some(replacement) = aliases.get(&identifier).filter(|replacement| {
+        if identifier == "__size_t" {
+            result.push_str("__SIZE_TYPE__");
+        } else if let Some(replacement) = aliases.get(&identifier).filter(|replacement| {
             !replacement
                 .split(|character: char| !character.is_ascii_alphanumeric() && character != '_')
                 .any(|token| token == identifier.as_str())
@@ -547,7 +565,7 @@ fn header_ast(config: &ProbeConfig, header: &str, source: &Path) -> Result<Value
         .map_err(|error| format!("write {}: {error}", source.display()))?;
 
     let mut command = Command::new(&config.compiler);
-    command.args(&config.compiler_args);
+    command.args(&config.oracle_compiler_args);
     command.arg(format!("--target={}", config.target));
     command.arg(format!("--sysroot={}", config.sysroot.display()));
     command.args([
@@ -590,7 +608,7 @@ fn shim_header_ast(config: &ProbeConfig, header: &str, source: &Path) -> Result<
 
 fn record_layout_dump(config: &ProbeConfig, source: &Path) -> Result<String, String> {
     let mut command = Command::new(&config.compiler);
-    command.args(&config.compiler_args);
+    command.args(&config.oracle_compiler_args);
     command.arg(format!("--target={}", config.target));
     command.arg(format!("--sysroot={}", config.sysroot.display()));
     command.args([
@@ -698,7 +716,7 @@ fn header_preprocessor_output(
         .map_err(|error| format!("write {}: {error}", source.display()))?;
 
     let mut command = Command::new(&config.compiler);
-    command.args(&config.compiler_args);
+    command.args(&config.oracle_compiler_args);
     command.arg(format!("--target={}", config.target));
     command.arg(format!("--sysroot={}", config.sysroot.display()));
     command.args(["-std=gnu23", "-D_GNU_SOURCE", "-E", "-dD"]);
@@ -1002,7 +1020,7 @@ fn oracle_compiles_source(
     object: &Path,
 ) -> Result<bool, String> {
     let mut command = Command::new(&config.compiler);
-    command.args(&config.compiler_args);
+    command.args(&config.oracle_compiler_args);
     command.arg(format!("--target={}", config.target));
     command.arg(format!("--sysroot={}", config.sysroot.display()));
     command.args(["-std=gnu23", "-D_GNU_SOURCE"]);
@@ -1525,9 +1543,8 @@ fn probe_body(source: String, header: &str) -> String {
     source
         .strip_prefix(&prefix)
         .unwrap_or(&source)
-        .strip_suffix("\n\nint main(void) { return 0; }\n")
-        .unwrap_or(&source)
-        .to_string()
+        .split_once("\n\nint main(void)")
+        .map_or_else(|| source.clone(), |(body, _)| body.to_string())
 }
 
 pub fn write_header_matrix_probe(
@@ -1537,22 +1554,30 @@ pub fn write_header_matrix_probe(
     surface: &OracleTypeSurface,
     macros: &[OracleMacro],
     output_dir: &Path,
+    include_reserved_names: bool,
+    include_function_checks: bool,
 ) -> Result<GeneratedProbe, String> {
     let mut bodies = Vec::new();
     let public_functions: Vec<_> = functions
         .iter()
-        .filter(|function| !function.name.starts_with('_'))
+        .filter(|function| function.storage == FunctionStorage::External)
+        .filter(|function| include_reserved_names || !function.name.starts_with('_'))
         .filter(|function| !(function.header == "alloca.h" && function.name == "alloca"))
         .cloned()
         .collect();
-    if !public_functions.is_empty() {
-        bodies.push(probe_body(
-            render_header_shim_probe(&public_functions)?,
-            header,
-        ));
+    if include_function_checks {
+        for function in &public_functions {
+            let returns_function_pointer = function
+                .type_spelling
+                .split_once('(')
+                .is_some_and(|(_, parameters)| parameters.starts_with("*("));
+            if !returns_function_pointer && let Ok(source) = render_shim_probe(function) {
+                bodies.push(probe_body(source, header));
+            }
+        }
     }
     for object in objects {
-        if !object.name.starts_with('_')
+        if (include_reserved_names || !object.name.starts_with('_'))
             && let Ok(source) = render_object_probe(object)
         {
             bodies.push(probe_body(source, header));
@@ -1561,7 +1586,13 @@ pub fn write_header_matrix_probe(
     if let Ok(source) = render_type_surface_probe(header, surface) {
         bodies.push(probe_body(source, header));
     }
-    if let Ok(source) = render_header_macro_presence_probe(macros) {
+    let mut selected_macros = macros.to_vec();
+    if include_reserved_names {
+        for macro_definition in &mut selected_macros {
+            macro_definition.private = false;
+        }
+    }
+    if let Ok(source) = render_header_macro_presence_probe(&selected_macros) {
         bodies.push(probe_body(source, header));
     }
     std::fs::create_dir_all(output_dir)
@@ -1768,6 +1799,7 @@ pub fn compile_and_link_shim_probe(
     compile.args([
         "-std=gnu23",
         "-D_GNU_SOURCE",
+        "-fno-builtin",
         "-ferror-limit=0",
         "-Werror=implicit-function-declaration",
     ]);
@@ -1784,6 +1816,10 @@ pub fn compile_and_link_shim_probe(
         compile,
         &format!("compile shim declaration probe {}", probe.source.display()),
     )?;
+
+    if !config.can_link {
+        return Ok(());
+    }
 
     let mut link = Command::new(&config.linker);
     link.args(&config.linker_args);
@@ -1802,7 +1838,7 @@ pub fn compile_and_link_oracle_probe(
     probe: &GeneratedProbe,
 ) -> Result<(), String> {
     let mut compile = Command::new(&config.compiler);
-    compile.args(&config.compiler_args);
+    compile.args(&config.oracle_compiler_args);
     compile.arg(format!("--target={}", config.target));
     compile.arg(format!("--sysroot={}", config.sysroot.display()));
     compile.args([
@@ -1824,6 +1860,10 @@ pub fn compile_and_link_oracle_probe(
             probe.source.display()
         ),
     )?;
+
+    if !config.can_link {
+        return Ok(());
+    }
 
     let mut link = Command::new(&config.linker);
     link.args(&config.linker_args);

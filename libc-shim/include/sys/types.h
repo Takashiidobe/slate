@@ -7,6 +7,21 @@
 
 #include <bits/msvc/types.h>
 
+#ifndef _INO_T_DEFINED
+typedef _ino_t ino_t;
+#define _INO_T_DEFINED
+#endif
+
+#ifndef _DEV_T_DEFINED
+typedef _dev_t dev_t;
+#define _DEV_T_DEFINED
+#endif
+
+#ifndef _OFF_T_DEFINED
+typedef _off_t off_t;
+#define _OFF_T_DEFINED
+#endif
+
 #else
 
 #if defined(__SLATE_LIBC_MUSL)
