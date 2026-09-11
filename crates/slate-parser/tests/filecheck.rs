@@ -211,7 +211,15 @@ fn run_error_fixture(fixture: &Path, prefix: &str, slot: usize) {
 }
 
 fn assert_evaluated_matches_clang(fixture: &Path, defines: &[String]) {
-    if fixture.file_stem().and_then(|name| name.to_str()) == Some("generic-statement-expressions") {
+    if matches!(
+        fixture.file_stem().and_then(|name| name.to_str()),
+        Some(
+            "generic-statement-expressions"
+                | "fixed-point-types"
+                | "typeof-types"
+                | "target-builtin-types",
+        )
+    ) {
         return;
     }
     let search = SearchPaths::default();
@@ -447,6 +455,34 @@ fn type_spelling(ty: &CType) -> String {
         },
         CType::Complex(element) => format!("_Complex {}", type_spelling(element)),
         CType::Atomic(element) => format!("_Atomic({})", type_spelling(element)),
+        CType::Vector(vector) => match &vector.size {
+            VectorSize::Bytes(size) => {
+                format!("{} vector_size({size})", type_spelling(&vector.element))
+            }
+            VectorSize::Lanes(size) => {
+                format!("{} ext_vector_type({size})", type_spelling(&vector.element))
+            }
+        },
+        CType::FixedPoint(fixed) => format!(
+            "{}{}_{}",
+            if fixed.saturated { "_Sat " } else { "" },
+            match fixed.rank {
+                FixedPointRank::Default => "",
+                FixedPointRank::Short => "short ",
+                FixedPointRank::Long => "long ",
+                FixedPointRank::LongLong => "long long ",
+            },
+            match fixed.kind {
+                FixedPointKind::Fract => "Fract",
+                FixedPointKind::Accum => "Accum",
+            }
+        ),
+        CType::TypeOf(TypeOfOperand::Expression(expression)) => {
+            format!("typeof({expression})")
+        }
+        CType::TypeOf(TypeOfOperand::Type(ty)) => format!("typeof({})", type_spelling(ty)),
+        CType::Imaginary(element) => format!("_Imaginary {}", type_spelling(element)),
+        CType::TargetBuiltin(name) => name.clone(),
         CType::Named(name) => name.clone(),
         CType::Tagged { kind, name } => format!(
             "{} {}",

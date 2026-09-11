@@ -37,10 +37,27 @@ __attribute__((__const__, __may_alias__)) int aliased;
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[1]: Typedef {
 // DEFAULT-NEXT:       name: "vector_type",
-// DEFAULT-NEXT:       ty: Integer(
-// DEFAULT-NEXT:           Ranked {
-// DEFAULT-NEXT:               rank: Int,
-// DEFAULT-NEXT:               signed: true,
+// DEFAULT-NEXT:       ty: Vector(
+// DEFAULT-NEXT:           VectorType {
+// DEFAULT-NEXT:               element: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               size: Bytes(
+// DEFAULT-NEXT:                   Binary {
+// DEFAULT-NEXT:                       op: Mul,
+// DEFAULT-NEXT:                       left: SizeOf(
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "int",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       right: Integer(
+// DEFAULT-NEXT:                           4,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       provenance: Provenance {
@@ -124,10 +141,27 @@ __attribute__((__const__, __may_alias__)) int aliased;
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[1]: Typedef {
 // DEFAULT-NEXT:       name: "vector_type",
-// DEFAULT-NEXT:       ty: Integer(
-// DEFAULT-NEXT:           Ranked {
-// DEFAULT-NEXT:               rank: Int,
-// DEFAULT-NEXT:               signed: true,
+// DEFAULT-NEXT:       ty: Vector(
+// DEFAULT-NEXT:           VectorType {
+// DEFAULT-NEXT:               element: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               size: Bytes(
+// DEFAULT-NEXT:                   Binary {
+// DEFAULT-NEXT:                       op: Mul,
+// DEFAULT-NEXT:                       left: SizeOf(
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "int",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       right: Integer(
+// DEFAULT-NEXT:                           4,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       provenance: Provenance {

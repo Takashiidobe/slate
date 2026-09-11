@@ -238,6 +238,11 @@ fn check_type(
             check_type(ty, typedefs, tags, provenance, errors)
         }
         CType::Atomic(ty) => check_type(ty, typedefs, tags, provenance, errors),
+        CType::Vector(vector) => check_type(&vector.element, typedefs, tags, provenance, errors),
+        CType::TypeOf(TypeOfOperand::Type(ty)) => {
+            check_type(ty, typedefs, tags, provenance, errors)
+        }
+        CType::Imaginary(ty) => check_type(ty, typedefs, tags, provenance, errors),
         CType::Array { element, .. } => check_type(element, typedefs, tags, provenance, errors),
         CType::Function {
             return_type,
@@ -254,6 +259,9 @@ fn check_type(
         | CType::Integer(_)
         | CType::Floating(_)
         | CType::Complex(_)
+        | CType::FixedPoint(_)
+        | CType::TypeOf(TypeOfOperand::Expression(_))
+        | CType::TargetBuiltin(_)
         | CType::Named(_)
         | CType::Tagged { .. } => {}
     }

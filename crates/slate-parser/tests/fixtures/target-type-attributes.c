@@ -260,10 +260,19 @@ __attribute__((common, nocommon)) int common_value;
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[8]: Typedef {
 // DEFAULT-NEXT:       name: "vector_type",
-// DEFAULT-NEXT:       ty: Integer(
-// DEFAULT-NEXT:           Ranked {
-// DEFAULT-NEXT:               rank: Int,
-// DEFAULT-NEXT:               signed: true,
+// DEFAULT-NEXT:       ty: Vector(
+// DEFAULT-NEXT:           VectorType {
+// DEFAULT-NEXT:               element: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               size: Lanes(
+// DEFAULT-NEXT:                   Integer(
+// DEFAULT-NEXT:                       2,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       provenance: Provenance {
@@ -797,10 +806,19 @@ __attribute__((common, nocommon)) int common_value;
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[8]: Typedef {
 // DEFAULT-NEXT:       name: "vector_type",
-// DEFAULT-NEXT:       ty: Integer(
-// DEFAULT-NEXT:           Ranked {
-// DEFAULT-NEXT:               rank: Int,
-// DEFAULT-NEXT:               signed: true,
+// DEFAULT-NEXT:       ty: Vector(
+// DEFAULT-NEXT:           VectorType {
+// DEFAULT-NEXT:               element: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               size: Lanes(
+// DEFAULT-NEXT:                   Integer(
+// DEFAULT-NEXT:                       2,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       provenance: Provenance {

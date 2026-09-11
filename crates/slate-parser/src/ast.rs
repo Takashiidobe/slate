@@ -238,6 +238,11 @@ pub enum CType {
     Floating(FloatingType),
     Complex(Box<Self>),
     Atomic(Box<Self>),
+    Vector(VectorType),
+    FixedPoint(FixedPointType),
+    TypeOf(TypeOfOperand),
+    Imaginary(Box<Self>),
+    TargetBuiltin(String),
     Named(String),
     Tagged {
         kind: TagKind,
@@ -293,6 +298,45 @@ pub enum FloatingType {
     LongDouble,
     Float128,
     Float128Ext,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct VectorType {
+    pub element: Box<CType>,
+    pub size: VectorSize,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum VectorSize {
+    Bytes(ConstExpr),
+    Lanes(ConstExpr),
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum FixedPointKind {
+    Fract,
+    Accum,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum FixedPointRank {
+    Default,
+    Short,
+    Long,
+    LongLong,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct FixedPointType {
+    pub kind: FixedPointKind,
+    pub rank: FixedPointRank,
+    pub saturated: bool,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum TypeOfOperand {
+    Expression(Box<Expr>),
+    Type(Box<CType>),
 }
 
 pub type Type = CType;

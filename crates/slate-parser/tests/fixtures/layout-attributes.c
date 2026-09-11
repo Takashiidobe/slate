@@ -115,10 +115,19 @@ struct Trailing {
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[2]: Typedef {
 // DEFAULT-NEXT:       name: "vector_t",
-// DEFAULT-NEXT:       ty: Integer(
-// DEFAULT-NEXT:           Ranked {
-// DEFAULT-NEXT:               rank: Int,
-// DEFAULT-NEXT:               signed: true,
+// DEFAULT-NEXT:       ty: Vector(
+// DEFAULT-NEXT:           VectorType {
+// DEFAULT-NEXT:               element: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               size: Bytes(
+// DEFAULT-NEXT:                   Integer(
+// DEFAULT-NEXT:                       16,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       provenance: Provenance {
@@ -300,10 +309,19 @@ struct Trailing {
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[2]: Typedef {
 // DEFAULT-NEXT:       name: "vector_t",
-// DEFAULT-NEXT:       ty: Integer(
-// DEFAULT-NEXT:           Ranked {
-// DEFAULT-NEXT:               rank: Int,
-// DEFAULT-NEXT:               signed: true,
+// DEFAULT-NEXT:       ty: Vector(
+// DEFAULT-NEXT:           VectorType {
+// DEFAULT-NEXT:               element: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               size: Bytes(
+// DEFAULT-NEXT:                   Integer(
+// DEFAULT-NEXT:                       16,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       provenance: Provenance {

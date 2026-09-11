@@ -93,6 +93,9 @@ impl<'a> Reachability<'a> {
             }
             CType::Qualified { ty, .. } | CType::Pointer { pointee: ty, .. } => self.mark_type(ty),
             CType::Atomic(ty) => self.mark_type(ty),
+            CType::Vector(vector) => self.mark_type(&vector.element),
+            CType::TypeOf(TypeOfOperand::Type(ty)) => self.mark_type(ty),
+            CType::Imaginary(ty) => self.mark_type(ty),
             CType::Array { element, .. } => self.mark_type(element),
             CType::Function {
                 return_type,
@@ -109,6 +112,9 @@ impl<'a> Reachability<'a> {
             | CType::Integer(_)
             | CType::Floating(_)
             | CType::Complex(_) => {}
+            CType::FixedPoint(_) => {}
+            CType::TypeOf(TypeOfOperand::Expression(_)) => {}
+            CType::TargetBuiltin(_) => {}
         }
     }
 

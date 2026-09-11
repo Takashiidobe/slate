@@ -145,7 +145,7 @@ impl Parser {
         }
         Ok(Declaration {
             specifiers: DeclarationSpecifiers {
-                ty,
+                ty: apply_vector_attributes(ty, &attributes),
                 qualifiers,
                 storage,
                 is_inline,
@@ -743,6 +743,21 @@ fn parse_attribute(name: &str, arguments: &[Token]) -> Result<Attribute, String>
     }
 }
 
+fn apply_vector_attributes(mut ty: CType, attributes: &[Attribute]) -> CType {
+    for attribute in attributes {
+        let size = match attribute {
+            Attribute::VectorSize(size) => VectorSize::Bytes(size.clone()),
+            Attribute::ExtVectorType(size) => VectorSize::Lanes(size.clone()),
+            _ => continue,
+        };
+        ty = CType::Vector(VectorType {
+            element: Box::new(ty),
+            size,
+        });
+    }
+    ty
+}
+
 fn invalid_attribute(name: &str, arguments: &[Token]) -> Attribute {
     Attribute::Invalid {
         name: name.into(),
@@ -873,6 +888,8 @@ impl<'a> DeclaratorParser<'a> {
             Token::Keyword(Keyword::Double) => {
                 if self.matches(Token::Keyword(Keyword::Complex)) {
                     CType::Complex(Box::new(CType::Floating(FloatingType::Double)))
+                } else if self.matches(Token::Keyword(Keyword::Imaginary)) {
+                    CType::Imaginary(Box::new(CType::Floating(FloatingType::Double)))
                 } else {
                     CType::Floating(FloatingType::Double)
                 }
@@ -880,6 +897,8 @@ impl<'a> DeclaratorParser<'a> {
             Token::Keyword(Keyword::Float) => {
                 if self.matches(Token::Keyword(Keyword::Complex)) {
                     CType::Complex(Box::new(CType::Floating(FloatingType::Float)))
+                } else if self.matches(Token::Keyword(Keyword::Imaginary)) {
+                    CType::Imaginary(Box::new(CType::Floating(FloatingType::Float)))
                 } else {
                     CType::Floating(FloatingType::Float)
                 }
@@ -898,7 +917,19 @@ impl<'a> DeclaratorParser<'a> {
                 signed: true,
             }),
             Token::Keyword(Keyword::Long) => {
+                if matches!(
+                    self.peek(),
+                    Some(Token::Keyword(Keyword::Fract | Keyword::Accum))
+                ) {
+                    return self.parse_fixed_point(FixedPointRank::Long, false);
+                }
                 if self.matches(Token::Keyword(Keyword::Long)) {
+                    if matches!(
+                        self.peek(),
+                        Some(Token::Keyword(Keyword::Fract | Keyword::Accum))
+                    ) {
+                        return self.parse_fixed_point(FixedPointRank::LongLong, false);
+                    }
                     self.matches(Token::Keyword(Keyword::Int));
                     CType::Integer(IntegerType::Ranked {
                         rank: IntegerRank::LongLong,
@@ -907,6 +938,8 @@ impl<'a> DeclaratorParser<'a> {
                 } else if self.matches(Token::Keyword(Keyword::Double)) {
                     if self.matches(Token::Keyword(Keyword::Complex)) {
                         CType::Complex(Box::new(CType::Floating(FloatingType::LongDouble)))
+                    } else if self.matches(Token::Keyword(Keyword::Imaginary)) {
+                        CType::Imaginary(Box::new(CType::Floating(FloatingType::LongDouble)))
                     } else {
                         CType::Floating(FloatingType::LongDouble)
                     }
@@ -919,6 +952,12 @@ impl<'a> DeclaratorParser<'a> {
                 }
             }
             Token::Keyword(Keyword::Short) => {
+                if matches!(
+                    self.peek(),
+                    Some(Token::Keyword(Keyword::Fract | Keyword::Accum))
+                ) {
+                    return self.parse_fixed_point(FixedPointRank::Short, false);
+                }
                 self.matches(Token::Keyword(Keyword::Int));
                 CType::Integer(IntegerType::Ranked {
                     rank: IntegerRank::Short,
@@ -1032,6 +1071,20 @@ impl<'a> DeclaratorParser<'a> {
                 }),
             },
             Token::Keyword(Keyword::Void) => CType::Void,
+            Token::Keyword(Keyword::Saturated) => {
+                let rank = if self.matches(Token::Keyword(Keyword::Short)) {
+                    FixedPointRank::Short
+                } else if self.matches(Token::Keyword(Keyword::Long)) {
+                    if self.matches(Token::Keyword(Keyword::Long)) {
+                        FixedPointRank::LongLong
+                    } else {
+                        FixedPointRank::Long
+                    }
+                } else {
+                    FixedPointRank::Default
+                };
+                return self.parse_fixed_point(rank, true);
+            }
             Token::Keyword(Keyword::Atomic) => {
                 if !self.matches(Token::LParen) {
                     return Err("expected `(` after _Atomic".into());
@@ -1045,7 +1098,17 @@ impl<'a> DeclaratorParser<'a> {
             Token::Keyword(Keyword::Complex) => {
                 CType::Complex(Box::new(CType::Floating(FloatingType::Double)))
             }
+            Token::Keyword(Keyword::Imaginary) => {
+                CType::Imaginary(Box::new(CType::Floating(FloatingType::Double)))
+            }
             Token::Keyword(Keyword::BitInt) => self.parse_bit_int(false),
+            Token::Keyword(Keyword::Typeof) => self.parse_typeof()?,
+            Token::Keyword(Keyword::Fract) => {
+                self.fixed_point(FixedPointKind::Fract, false, FixedPointRank::Default)
+            }
+            Token::Keyword(Keyword::Accum) => {
+                self.fixed_point(FixedPointKind::Accum, false, FixedPointRank::Default)
+            }
             Token::Keyword(Keyword::Struct) => {
                 let name = match self.tokens.get(self.pos) {
                     Some(Token::Ident(name)) => name.clone(),
@@ -1079,8 +1142,31 @@ impl<'a> DeclaratorParser<'a> {
                     name: Some(name),
                 }
             }
+            Token::Ident(name) if is_target_builtin_name(&name) => CType::TargetBuiltin(name),
             Token::Ident(name) => CType::Named(name),
             other => return Err(format!("expected declaration type, found {other:?}")),
+        })
+    }
+
+    fn parse_fixed_point(
+        &mut self,
+        rank: FixedPointRank,
+        saturated: bool,
+    ) -> Result<CType, String> {
+        let kind = match self.peek() {
+            Some(Token::Keyword(Keyword::Fract)) => FixedPointKind::Fract,
+            Some(Token::Keyword(Keyword::Accum)) => FixedPointKind::Accum,
+            _ => return Err("expected `_Fract` or `_Accum`".into()),
+        };
+        self.pos += 1;
+        Ok(self.fixed_point(kind, saturated, rank))
+    }
+
+    fn fixed_point(&self, kind: FixedPointKind, saturated: bool, rank: FixedPointRank) -> CType {
+        CType::FixedPoint(FixedPointType {
+            kind,
+            rank,
+            saturated,
         })
     }
 
@@ -1098,6 +1184,78 @@ impl<'a> DeclaratorParser<'a> {
             width,
             signed: !is_unsigned,
         })
+    }
+
+    fn parse_typeof(&mut self) -> Result<CType, String> {
+        if !self.matches(Token::LParen) {
+            return Err("expected `(` after typeof".into());
+        }
+        if self.typeof_type_start() {
+            let ty = self.parse_base_type()?;
+            if !self.matches(Token::RParen) {
+                return Err("expected `)` after typeof type-name".into());
+            }
+            return Ok(CType::TypeOf(TypeOfOperand::Type(Box::new(ty))));
+        }
+        let start = self.pos;
+        let mut depth = 0;
+        while let Some(token) = self.peek() {
+            match token {
+                Token::LParen => depth += 1,
+                Token::RParen if depth == 0 => break,
+                Token::RParen => depth -= 1,
+                _ => {}
+            }
+            self.pos += 1;
+        }
+        if !self.matches(Token::RParen) {
+            return Err("expected `)` after typeof expression".into());
+        }
+        let tokens = &self.tokens[start..self.pos - 1];
+        let expression = match tokens {
+            [Token::Ident(name)] => Expr::Identifier(name.clone()),
+            [Token::IntLit(value)] => Expr::IntLit(*value),
+            [Token::StringLit(value)] => Expr::StringLit(value.clone()),
+            _ => return Err("unsupported typeof expression".into()),
+        };
+        Ok(CType::TypeOf(TypeOfOperand::Expression(Box::new(
+            expression,
+        ))))
+    }
+
+    fn typeof_type_start(&self) -> bool {
+        matches!(
+            self.peek(),
+            Some(Token::Keyword(
+                Keyword::Bool
+                    | Keyword::BFloat16
+                    | Keyword::Char
+                    | Keyword::Double
+                    | Keyword::Float
+                    | Keyword::Float16
+                    | Keyword::Fp16
+                    | Keyword::Float64x
+                    | Keyword::Float128
+                    | Keyword::Float128Ext
+                    | Keyword::Int
+                    | Keyword::Int128
+                    | Keyword::Long
+                    | Keyword::Short
+                    | Keyword::Signed
+                    | Keyword::Unsigned
+                    | Keyword::Void
+                    | Keyword::Complex
+                    | Keyword::Imaginary
+                    | Keyword::BitInt
+                    | Keyword::Atomic
+                    | Keyword::Struct
+                    | Keyword::Union
+                    | Keyword::Enum
+                    | Keyword::Fract
+                    | Keyword::Accum
+                    | Keyword::Saturated
+            ))
+        )
     }
 
     fn parse_initializer(&mut self) -> Initializer {
@@ -1279,7 +1437,7 @@ impl<'a> DeclaratorParser<'a> {
             let (attributes, position) = parse_attribute_groups(self.tokens, self.pos)?;
             self.pos = position;
             parameters.push(Parameter {
-                ty,
+                ty: apply_vector_attributes(ty, &attributes),
                 declarator,
                 attributes,
             });
@@ -1292,6 +1450,21 @@ impl<'a> DeclaratorParser<'a> {
         }
         Ok((parameters, variadic))
     }
+}
+
+fn is_target_builtin_name(name: &str) -> bool {
+    matches!(
+        name,
+        "__m128"
+            | "__m128d"
+            | "__m128i"
+            | "__m256"
+            | "__m256d"
+            | "__m256i"
+            | "__m512"
+            | "__m512d"
+            | "__m512i"
+    )
 }
 
 impl Parser {

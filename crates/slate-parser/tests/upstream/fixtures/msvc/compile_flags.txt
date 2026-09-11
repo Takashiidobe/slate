@@ -1,0 +1,12 @@
+--target=x86_64-pc-windows-msvc
+-nostdlibinc
+-isystem
+../../../libc-shim/include
+-D_SLATE_LIBC
+-D__SLATE_ARCH_X86_64
+-D__SLATE_VENDOR_PC
+-D__SLATE_KERNEL_WINDOWS
+-D__SLATE_LIBC_MSVC
+-D__SLATE_OBJ_COFF
+-D__SLATE_WORDSIZE_64
+-D__SLATE_ENDIAN_LITTLE

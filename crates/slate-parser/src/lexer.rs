@@ -35,6 +35,11 @@ pub enum Keyword {
     Noreturn,
     ThreadLocal,
     BitInt,
+    Accum,
+    Fract,
+    Saturated,
+    Typeof,
+    Imaginary,
 }
 
 impl From<Keyword> for &'static str {
@@ -75,6 +80,11 @@ impl From<Keyword> for &'static str {
             Keyword::Noreturn => "_Noreturn",
             Keyword::ThreadLocal => "_Thread_local",
             Keyword::BitInt => "_BitInt",
+            Keyword::Accum => "_Accum",
+            Keyword::Fract => "_Fract",
+            Keyword::Saturated => "_Sat",
+            Keyword::Typeof => "typeof",
+            Keyword::Imaginary => "_Imaginary",
         }
     }
 }
@@ -318,6 +328,11 @@ pub fn lex(src: &str) -> Vec<Token> {
                 "_Thread_local" | "__thread" => Token::Keyword(Keyword::ThreadLocal),
                 "__restrict" | "__restrict__" => Token::Keyword(Keyword::Restrict),
                 "_BitInt" => Token::Keyword(Keyword::BitInt),
+                "_Accum" => Token::Keyword(Keyword::Accum),
+                "_Fract" => Token::Keyword(Keyword::Fract),
+                "_Sat" => Token::Keyword(Keyword::Saturated),
+                "typeof" | "__typeof__" => Token::Keyword(Keyword::Typeof),
+                "_Imaginary" => Token::Keyword(Keyword::Imaginary),
                 _ => Token::Ident(word),
             });
         } else if c == '.' && chars.get(i..i + 3) == Some(&['.', '.', '.'][..]) {
