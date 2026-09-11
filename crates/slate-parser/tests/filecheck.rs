@@ -246,6 +246,9 @@ fn macro_name(define: &str) -> String {
 
 fn run_clang_ast(fixture: &Path, defines: &[String]) -> ClangNode {
     let mut command = Command::new("clang");
+    if fixture.file_stem().and_then(|name| name.to_str()) == Some("c23-literals") {
+        command.arg("-std=c2x");
+    }
     command.args(["-Xclang", "-ast-dump=json", "-fsyntax-only"]);
     for define in defines {
         command.arg(format!("-D{}", define.trim_start_matches("-D")));

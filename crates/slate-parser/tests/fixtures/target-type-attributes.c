@@ -32,7 +32,7 @@ __attribute__((common, nocommon)) int common_value;
 // DEFAULT-NEXT: decl[4]: declaration type=int declarator=name=imported [attributes=dllimport]
 // DEFAULT-NEXT: decl[5]: declaration type=int [storage=extern] declarator=name=weak_platform [attributes=weak_import]
 // DEFAULT-NEXT: decl[6]: declaration type=int declarator=function(name=calling_convention,params=,variadic=false) [attributes=stdcall,nomips16]
-// DEFAULT-NEXT: decl[7]: declaration type=int declarator=name=platform_api [attributes=availability(macos,introduced = 12 . 0)]
+// DEFAULT-NEXT: decl[7]: declaration type=int declarator=name=platform_api [attributes=availability(macos,introduced = 12.0)]
 // DEFAULT-NEXT: decl[8]: typedef name=vector_type type=int [attributes=ext_vector_type(2)]
 // DEFAULT-NEXT: decl[9]: declaration type=int declarator=name=ordered [attributes=scalar_storage_order("big-endian")]
 // DEFAULT-NEXT: decl[10]: union name=union_value [attributes=transparent_union]
@@ -52,7 +52,7 @@ __attribute__((common, nocommon)) int common_value;
 // DEFAULT-NEXT: decl[4]: declaration type=int declarator=name=imported [attributes=dllimport]
 // DEFAULT-NEXT: decl[5]: declaration type=int [storage=extern] declarator=name=weak_platform [attributes=weak_import]
 // DEFAULT-NEXT: decl[6]: declaration type=int declarator=function(name=calling_convention,params=,variadic=false) [attributes=stdcall,nomips16]
-// DEFAULT-NEXT: decl[7]: declaration type=int declarator=name=platform_api [attributes=availability(macos,introduced = 12 . 0)]
+// DEFAULT-NEXT: decl[7]: declaration type=int declarator=name=platform_api [attributes=availability(macos,introduced = 12.0)]
 // DEFAULT-NEXT: decl[8]: typedef name=vector_type type=int [attributes=ext_vector_type(2)]
 // DEFAULT-NEXT: decl[9]: declaration type=int declarator=name=ordered [attributes=scalar_storage_order("big-endian")]
 // DEFAULT-NEXT: decl[10]: union name=union_value
