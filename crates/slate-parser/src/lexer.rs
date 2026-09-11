@@ -1,8 +1,10 @@
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Keyword {
+    Char,
     Int,
     Return,
     Typedef,
+    Void,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -14,6 +16,11 @@ pub enum Token {
     RParen,
     LBrace,
     RBrace,
+    LBracket,
+    RBracket,
+    Comma,
+    Star,
+    Ellipsis,
     Semi,
 }
 
@@ -27,6 +34,16 @@ pub fn lex(src: &str) -> Vec<Token> {
 
         if c.is_whitespace() {
             i += 1;
+        } else if c == '/' && chars.get(i + 1) == Some(&'/') {
+            while i < chars.len() && chars[i] != '\n' {
+                i += 1;
+            }
+        } else if c == '/' && chars.get(i + 1) == Some(&'*') {
+            i += 2;
+            while i + 1 < chars.len() && !(chars[i] == '*' && chars[i + 1] == '/') {
+                i += 1;
+            }
+            i += 2;
         } else if c.is_ascii_digit() {
             let start = i;
             while i < chars.len() && chars[i].is_ascii_digit() {
@@ -41,17 +58,26 @@ pub fn lex(src: &str) -> Vec<Token> {
             }
             let word: String = chars[start..i].iter().collect();
             tokens.push(match word.as_str() {
+                "char" => Token::Keyword(Keyword::Char),
                 "int" => Token::Keyword(Keyword::Int),
                 "return" => Token::Keyword(Keyword::Return),
                 "typedef" => Token::Keyword(Keyword::Typedef),
+                "void" => Token::Keyword(Keyword::Void),
                 _ => Token::Ident(word),
             });
+        } else if c == '.' && chars.get(i..i + 3) == Some(&['.', '.', '.'][..]) {
+            tokens.push(Token::Ellipsis);
+            i += 3;
         } else {
             let tok = match c {
                 '(' => Token::LParen,
                 ')' => Token::RParen,
                 '{' => Token::LBrace,
                 '}' => Token::RBrace,
+                '[' => Token::LBracket,
+                ']' => Token::RBracket,
+                ',' => Token::Comma,
+                '*' => Token::Star,
                 ';' => Token::Semi,
                 other => panic!("unexpected character in phase 0/1 lexer: {other:?}"),
             };

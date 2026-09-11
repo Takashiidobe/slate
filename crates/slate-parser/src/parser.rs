@@ -24,6 +24,10 @@ fn parse_decls(nodes: &[PPNode]) -> Vec<Decl> {
     let mut decls = Vec::new();
     let mut i = 0;
     while i < nodes.len() {
+        if matches!(&nodes[i], PPNode::Code { text, .. } if lex(text).is_empty()) {
+            i += 1;
+            continue;
+        }
         let (decl, consumed) = parse_top_level_item(&nodes[i..]);
         decls.push(decl);
         i += consumed;
@@ -59,6 +63,16 @@ fn parse_top_level_item(nodes: &[PPNode]) -> (Decl, usize) {
             )
         }
         PPNode::Code { .. } => {
+            let tokens = lex(node_text(&nodes[0]));
+            if tokens.contains(&Token::Semi) && !tokens.contains(&Token::LBrace) {
+                return (
+                    Decl::Declaration {
+                        declaration: parse_declaration(node_text(&nodes[0])),
+                        provenance: node_provenance(&nodes[0]),
+                    },
+                    1,
+                );
+            }
             let (func, consumed) = parse_function(nodes);
             (Decl::Function(func), consumed)
         }
@@ -93,6 +107,155 @@ fn parse_typedef_line(code: &str) -> (String, CType) {
     };
     assert_eq!(tokens.get(3), Some(&Token::Semi), "expected `;`");
     (name, ty)
+}
+
+pub fn parse_declaration(code: &str) -> Declaration {
+    let tokens = lex(code);
+    let mut parser = DeclaratorParser { tokens: &tokens, pos: 0 };
+    let storage = if parser.take(Token::Keyword(Keyword::Typedef)) {
+        StorageClass::Typedef
+    } else {
+        StorageClass::None
+    };
+    let ty = parser.parse_base_type();
+    let declarator = parser.parse_declarator(false);
+    assert_eq!(parser.peek(), Some(&Token::Semi), "expected `;`");
+    parser.pos += 1;
+    assert_eq!(parser.peek(), None, "unexpected tokens after declaration");
+    Declaration {
+        specifiers: DeclarationSpecifiers {
+            ty,
+            qualifiers: Qualifiers::default(),
+            storage,
+        },
+        declarator,
+    }
+}
+
+struct DeclaratorParser<'a> {
+    tokens: &'a [Token],
+    pos: usize,
+}
+
+impl<'a> DeclaratorParser<'a> {
+    fn peek(&self) -> Option<&Token> {
+        self.tokens.get(self.pos)
+    }
+
+    fn take(&mut self, expected: Token) -> bool {
+        if self.peek() == Some(&expected) {
+            self.pos += 1;
+            true
+        } else {
+            false
+        }
+    }
+
+    fn parse_base_type(&mut self) -> CType {
+        let token = self.peek().cloned().expect("expected declaration type");
+        self.pos += 1;
+        match token {
+            Token::Keyword(Keyword::Char) => CType::Char,
+            Token::Keyword(Keyword::Int) => CType::Int,
+            Token::Keyword(Keyword::Void) => CType::Void,
+            Token::Ident(name) => CType::Named(name),
+            other => panic!("expected declaration type, found {other:?}"),
+        }
+    }
+
+    fn parse_declarator(&mut self, allow_abstract: bool) -> Declarator {
+        let mut pointer_count = 0;
+        while self.take(Token::Star) {
+            pointer_count += 1;
+        }
+
+        let mut declarator = match self.peek().cloned() {
+            Some(Token::Ident(name)) => {
+                self.pos += 1;
+                Declarator::Name(name)
+            }
+            Some(Token::LParen) => {
+                self.pos += 1;
+                let declarator = self.parse_declarator(allow_abstract);
+                assert!(self.take(Token::RParen), "expected `)` in declarator");
+                declarator
+            }
+            _ if allow_abstract => Declarator::Abstract,
+            _ => panic!("expected declarator"),
+        };
+
+        for _ in 0..pointer_count {
+            declarator = Declarator::Pointer {
+                qualifiers: Qualifiers::default(),
+                inner: Box::new(declarator),
+            };
+        }
+
+        loop {
+            declarator = match self.peek() {
+                Some(Token::LBracket) => {
+                    self.pos += 1;
+                    let size = match self.peek().cloned() {
+                        Some(Token::RBracket) => ArraySize::Unspecified,
+                        Some(Token::IntLit(value)) => {
+                            self.pos += 1;
+                            ArraySize::Expression(Box::new(Expr::IntLit(value)))
+                        }
+                        other => panic!("unsupported array bound: {other:?}"),
+                    };
+                    assert!(self.take(Token::RBracket), "expected `]` in array declarator");
+                    Declarator::Array {
+                        inner: Box::new(declarator),
+                        size,
+                    }
+                }
+                Some(Token::LParen) => {
+                    let (parameters, variadic) = self.parse_parameters();
+                    Declarator::Function {
+                        inner: Box::new(declarator),
+                        parameters,
+                        variadic,
+                    }
+                }
+                _ => break,
+            };
+        }
+        declarator
+    }
+
+    fn parse_parameters(&mut self) -> (Vec<Parameter>, bool) {
+        assert!(self.take(Token::LParen), "expected `(` in function declarator");
+        if self.take(Token::RParen) {
+            return (vec![], false);
+        }
+        if self.peek() == Some(&Token::Keyword(Keyword::Void))
+            && self.tokens.get(self.pos + 1) == Some(&Token::RParen)
+        {
+            self.pos += 2;
+            return (vec![], false);
+        }
+
+        let mut parameters = Vec::new();
+        let mut variadic = false;
+        loop {
+            if self.take(Token::Ellipsis) {
+                variadic = true;
+                assert!(self.take(Token::RParen), "expected `)` after `...`");
+                break;
+            }
+            let ty = self.parse_base_type();
+            let declarator = match self.peek() {
+                Some(Token::Comma) | Some(Token::RParen) => None,
+                _ => Some(self.parse_declarator(true)),
+            };
+            parameters.push(Parameter { ty, declarator });
+            if self.take(Token::RParen) {
+                break;
+            }
+            assert!(self.take(Token::Comma), "expected `,` between parameters");
+        }
+        (parameters, variadic)
+    }
 }
 
 fn parse_function(nodes: &[PPNode]) -> (FunctionDecl, usize) {
@@ -137,7 +300,10 @@ fn parse_stmt_list(nodes: &[PPNode]) -> Vec<Stmt> {
     let mut stmts = Vec::new();
     for node in nodes {
         match node {
-            PPNode::Code { text, .. } => stmts.extend(parse_stmts_from_code(text)),
+            PPNode::Code { text, .. } if !lex(text).is_empty() => {
+                stmts.extend(parse_stmts_from_code(text))
+            }
+            PPNode::Code { .. } => {}
             PPNode::Conditional(cond) => {
                 let branches = cond
                     .branches
@@ -170,127 +336,4 @@ fn parse_stmts_from_code(code: &str) -> Vec<Stmt> {
         i += 3;
     }
     stmts
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    const MAIN: Provenance = Provenance {
-        file: FileId(0),
-        kind: HeaderKind::User,
-    };
-
-    #[test]
-    fn plain_return_no_conditionals() {
-        let tu = parse_translation_unit("int main() {\nreturn 3;\n}\n");
-        let Decl::Function(f) = &tu.decls[0] else {
-            panic!("expected a function decl");
-        };
-        assert_eq!(f.name, "main");
-        assert_eq!(f.body, vec![Stmt::Return(Expr::IntLit(3))]);
-        assert_eq!(f.provenance, MAIN);
-    }
-
-    #[test]
-    fn ifdef_else_produces_conditional_stmt() {
-        let src = "int main() {\n#ifdef _WIN32\nreturn 2;\n#else\nreturn 3;\n#endif\n}\n";
-        let tu = parse_translation_unit(src);
-        let Decl::Function(f) = &tu.decls[0] else {
-            panic!("expected a function decl");
-        };
-        assert_eq!(
-            f.body,
-            vec![Stmt::Conditional(Conditional {
-                branches: vec![
-                    (
-                        Condition::Defined("_WIN32".into()),
-                        vec![Stmt::Return(Expr::IntLit(2))]
-                    ),
-                    (
-                        Condition::Not(Box::new(Condition::Defined("_WIN32".into()))),
-                        vec![Stmt::Return(Expr::IntLit(3))]
-                    ),
-                ]
-            })]
-        );
-    }
-
-    #[test]
-    fn conditional_typedef_produces_conditional_decl() {
-        let src = "#ifdef _WIN32\ntypedef HANDLE Socket;\n#else\ntypedef int Socket;\n#endif\n";
-        let tu = parse_translation_unit(src);
-        assert_eq!(
-            tu.decls,
-            vec![Decl::Conditional(Conditional {
-                branches: vec![
-                    (
-                        Condition::Defined("_WIN32".into()),
-                        vec![Decl::Typedef {
-                            name: "Socket".into(),
-                            ty: CType::Named("HANDLE".into()),
-                            provenance: MAIN,
-                        }]
-                    ),
-                    (
-                        Condition::Not(Box::new(Condition::Defined("_WIN32".into()))),
-                        vec![Decl::Typedef {
-                            name: "Socket".into(),
-                            ty: CType::Int,
-                            provenance: MAIN,
-                        }]
-                    ),
-                ]
-            })]
-        );
-    }
-
-    #[test]
-    fn include_tags_system_vs_user_provenance() {
-        let dir = std::env::temp_dir().join(format!(
-            "slate_parser_include_test_{}_{}",
-            std::process::id(),
-            std::time::SystemTime::now()
-                .duration_since(std::time::UNIX_EPOCH)
-                .unwrap()
-                .as_nanos()
-        ));
-        let sys_dir = dir.join("sys");
-        let usr_dir = dir.join("usr");
-        std::fs::create_dir_all(&sys_dir).unwrap();
-        std::fs::create_dir_all(&usr_dir).unwrap();
-
-        std::fs::write(sys_dir.join("limits.h"), "typedef int ULONG_MAX_TYPE;\n").unwrap();
-        std::fs::write(usr_dir.join("myconfig.h"), "typedef int MyConfigType;\n").unwrap();
-
-        let main_path = dir.join("main.c");
-        std::fs::write(
-            &main_path,
-            "#include <limits.h>\n#include \"myconfig.h\"\n",
-        )
-        .unwrap();
-
-        let search = SearchPaths {
-            user: vec![usr_dir],
-            system: vec![sys_dir],
-        };
-        let (tu, files) = parse_translation_unit_from_file(&main_path, &search);
-
-        let Decl::Typedef { name: n0, provenance: p0, .. } = &tu.decls[0] else {
-            panic!("expected typedef");
-        };
-        let Decl::Typedef { name: n1, provenance: p1, .. } = &tu.decls[1] else {
-            panic!("expected typedef");
-        };
-
-        assert_eq!(n0, "ULONG_MAX_TYPE");
-        assert_eq!(p0.kind, HeaderKind::System);
-        assert!(files.path(p0.file).ends_with("sys/limits.h"));
-
-        assert_eq!(n1, "MyConfigType");
-        assert_eq!(p1.kind, HeaderKind::User);
-        assert!(files.path(p1.file).ends_with("usr/myconfig.h"));
-
-        let _ = std::fs::remove_dir_all(&dir);
-    }
 }

@@ -1,27 +1,24 @@
-use slate_parser::{eval, parser};
+use slate_parser::render::render_path;
+use std::env;
+use std::fs;
+use std::path::Path;
 
 fn main() {
-    let return_src = "int main() {\n#ifdef _WIN32\nreturn 2;\n#else\nreturn 3;\n#endif\n}\n";
-    let return_ast = parser::parse_translation_unit(return_src);
-    println!("{return_ast:#?}");
-    println!(
-        "eval(_WIN32 defined)   = {:#?}",
-        eval::eval_translation_unit(&return_ast, &eval::Env::new().define("_WIN32"))
+    let mut args = env::args().skip(1);
+    assert_eq!(
+        args.next().as_deref(),
+        Some("filecheck"),
+        "usage: slate-parser filecheck <source.c> [-DNAME]"
     );
-    println!(
-        "eval(_WIN32 undefined) = {:#?}",
-        eval::eval_translation_unit(&return_ast, &eval::Env::new())
-    );
-
-    let typedef_src = "#ifdef _WIN32\ntypedef HANDLE Socket;\n#else\ntypedef int Socket;\n#endif\n";
-    let typedef_ast = parser::parse_translation_unit(typedef_src);
-    println!("{typedef_ast:#?}");
-    println!(
-        "eval(_WIN32 defined)   = {:#?}",
-        eval::eval_translation_unit(&typedef_ast, &eval::Env::new().define("_WIN32"))
-    );
-    println!(
-        "eval(_WIN32 undefined) = {:#?}",
-        eval::eval_translation_unit(&typedef_ast, &eval::Env::new())
-    );
+    let path = args.next().expect("missing source path");
+    let mut defines = Vec::new();
+    for arg in args {
+        if let Some(define) = arg.strip_prefix("-D") {
+            defines.push(define.to_string());
+        } else {
+            panic!("unsupported argument: {arg}");
+        }
+    }
+    let _ = fs::metadata(Path::new(&path)).expect("read source fixture");
+    print!("{}", render_path(Path::new(&path), &defines));
 }

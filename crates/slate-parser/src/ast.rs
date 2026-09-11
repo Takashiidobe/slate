@@ -20,11 +20,6 @@ pub enum Stmt {
     Conditional(Conditional<Vec<Stmt>>),
 }
 
-#[derive(Debug, Clone, PartialEq)]
-pub enum Type {
-    Int,
-}
-
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct FileId(pub u32);
 
@@ -50,13 +45,112 @@ pub struct FunctionDecl {
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum CType {
+    Void,
+    Bool,
+    Char,
     Int,
     Named(String),
+    Tagged {
+        kind: TagKind,
+        name: Option<String>,
+    },
+    Qualified {
+        qualifiers: Qualifiers,
+        ty: Box<CType>,
+    },
+    Pointer {
+        qualifiers: Qualifiers,
+        pointee: Box<CType>,
+    },
+    Array {
+        element: Box<CType>,
+        size: ArraySize,
+    },
+    Function {
+        return_type: Box<CType>,
+        parameters: Vec<Parameter>,
+        variadic: bool,
+    },
+}
+
+pub type Type = CType;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum TagKind {
+    Struct,
+    Union,
+    Enum,
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub struct Qualifiers {
+    pub is_const: bool,
+    pub is_volatile: bool,
+    pub is_restrict: bool,
+    pub is_atomic: bool,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum StorageClass {
+    None,
+    Typedef,
+    Extern,
+    Static,
+    Auto,
+    Register,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum ArraySize {
+    Unspecified,
+    Expression(Box<Expr>),
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum Declarator {
+    Abstract,
+    Name(String),
+    Pointer {
+        qualifiers: Qualifiers,
+        inner: Box<Declarator>,
+    },
+    Array {
+        inner: Box<Declarator>,
+        size: ArraySize,
+    },
+    Function {
+        inner: Box<Declarator>,
+        parameters: Vec<Parameter>,
+        variadic: bool,
+    },
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct Parameter {
+    pub ty: CType,
+    pub declarator: Option<Declarator>,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct DeclarationSpecifiers {
+    pub ty: CType,
+    pub qualifiers: Qualifiers,
+    pub storage: StorageClass,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct Declaration {
+    pub specifiers: DeclarationSpecifiers,
+    pub declarator: Declarator,
 }
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Decl {
     Function(FunctionDecl),
+    Declaration {
+        declaration: Declaration,
+        provenance: Provenance,
+    },
     Typedef {
         name: String,
         ty: CType,
@@ -86,6 +180,10 @@ pub struct ConcreteFunctionDecl {
 #[derive(Debug, Clone, PartialEq)]
 pub enum ConcreteDecl {
     Function(ConcreteFunctionDecl),
+    Declaration {
+        declaration: Declaration,
+        provenance: Provenance,
+    },
     Typedef {
         name: String,
         ty: CType,

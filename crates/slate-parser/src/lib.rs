@@ -4,3 +4,4 @@ pub mod files;
 pub mod lexer;
 pub mod parser;
 pub mod pp;
+pub mod render;
