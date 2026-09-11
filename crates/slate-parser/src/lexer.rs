@@ -8,6 +8,15 @@ pub enum Keyword {
     Struct,
     Union,
     Enum,
+    Const,
+    Volatile,
+    Restrict,
+    Atomic,
+    Extern,
+    Static,
+    Auto,
+    Register,
+    Inline,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -70,6 +79,15 @@ pub fn lex(src: &str) -> Vec<Token> {
                 "struct" => Token::Keyword(Keyword::Struct),
                 "union" => Token::Keyword(Keyword::Union),
                 "enum" => Token::Keyword(Keyword::Enum),
+                "const" => Token::Keyword(Keyword::Const),
+                "volatile" => Token::Keyword(Keyword::Volatile),
+                "restrict" => Token::Keyword(Keyword::Restrict),
+                "_Atomic" => Token::Keyword(Keyword::Atomic),
+                "extern" => Token::Keyword(Keyword::Extern),
+                "static" => Token::Keyword(Keyword::Static),
+                "auto" => Token::Keyword(Keyword::Auto),
+                "register" => Token::Keyword(Keyword::Register),
+                "inline" => Token::Keyword(Keyword::Inline),
                 _ => Token::Ident(word),
             });
         } else if c == '.' && chars.get(i..i + 3) == Some(&['.', '.', '.'][..]) {

@@ -28,15 +28,21 @@ impl<W: Write> Renderer<W> {
             match decl {
                 Decl::Function(function) => {
                     self.line(&format!(
-                        "{indent}{label}[{index}]: function name={} return={}",
+                        "{indent}{label}[{index}]: function name={} return={}{}",
                         function.name,
-                        Self::type_name(&function.ret_type)
+                        Self::type_name(&function.ret_type),
+                        Self::function_suffix(
+                            function.qualifiers,
+                            function.storage,
+                            function.is_inline
+                        ),
                     ))?;
                     self.render_stmts(&function.body, &format!("{indent}  "))?;
                 }
                 Decl::Declaration { declaration, .. } => self.line(&format!(
-                    "{indent}{label}[{index}]: declaration type={} declarator={}",
+                    "{indent}{label}[{index}]: declaration type={}{} declarator={}",
                     Self::type_name(&declaration.specifiers.ty),
+                    Self::specifier_suffix(&declaration.specifiers),
                     Self::render_declarator(&declaration.declarator)
                 ))?,
                 Decl::Typedef { name, ty, .. } => self.line(&format!(
@@ -127,9 +133,14 @@ impl<W: Write> Renderer<W> {
             match decl {
                 ConcreteDecl::Function(function) => {
                     self.line(&format!(
-                        "{indent}{label}[{index}]: function name={} return={}",
+                        "{indent}{label}[{index}]: function name={} return={}{}",
                         function.name,
-                        Self::type_name(&function.ret_type)
+                        Self::type_name(&function.ret_type),
+                        Self::function_suffix(
+                            function.qualifiers,
+                            function.storage,
+                            function.is_inline
+                        )
                     ))?;
                     for (stmt_index, stmt) in function.body.iter().enumerate() {
                         match stmt {
@@ -140,8 +151,9 @@ impl<W: Write> Renderer<W> {
                     }
                 }
                 ConcreteDecl::Declaration { declaration, .. } => self.line(&format!(
-                    "{indent}{label}[{index}]: declaration type={} declarator={}",
+                    "{indent}{label}[{index}]: declaration type={}{} declarator={}",
                     Self::type_name(&declaration.specifiers.ty),
+                    Self::specifier_suffix(&declaration.specifiers),
                     Self::render_declarator(&declaration.declarator)
                 ))?,
                 ConcreteDecl::Typedef { name, ty, .. } => self.line(&format!(
@@ -210,6 +222,59 @@ impl<W: Write> Renderer<W> {
         }
     }
 
+    fn specifier_suffix(specifiers: &DeclarationSpecifiers) -> String {
+        let mut parts = Vec::new();
+        let qualifiers = Self::qualifier_name(specifiers.qualifiers);
+        if !qualifiers.is_empty() {
+            parts.push(format!("qualifiers={qualifiers}"));
+        }
+        if specifiers.storage != StorageClass::None {
+            let storage: &'static str = specifiers.storage.into();
+            parts.push(format!("storage={storage}"));
+        }
+        if specifiers.is_inline {
+            parts.push("inline=true".into());
+        }
+        if parts.is_empty() {
+            String::new()
+        } else {
+            format!(" [{}]", parts.join(","))
+        }
+    }
+
+    fn function_suffix(qualifiers: Qualifiers, storage: StorageClass, is_inline: bool) -> String {
+        let mut parts = Vec::new();
+        let qualifier_name = Self::qualifier_name(qualifiers);
+        if !qualifier_name.is_empty() {
+            parts.push(format!("qualifiers={qualifier_name}"));
+        }
+        if storage != StorageClass::None {
+            let storage_name: &'static str = storage.into();
+            parts.push(format!("storage={storage_name}"));
+        }
+        if is_inline {
+            parts.push("inline=true".into());
+        }
+        if parts.is_empty() {
+            String::new()
+        } else {
+            format!(" [{}]", parts.join(","))
+        }
+    }
+
+    fn qualifier_name(qualifiers: Qualifiers) -> String {
+        [
+            (qualifiers.is_const, "const"),
+            (qualifiers.is_volatile, "volatile"),
+            (qualifiers.is_restrict, "restrict"),
+            (qualifiers.is_atomic, "_Atomic"),
+        ]
+        .into_iter()
+        .filter_map(|(enabled, name)| enabled.then_some(name))
+        .collect::<Vec<_>>()
+        .join(" ")
+    }
+
     fn tag_name(kind: TagKind) -> &'static str {
         match kind {
             TagKind::Struct => "struct",
@@ -239,8 +304,16 @@ impl<W: Write> Renderer<W> {
             Declarator::Abstract => "_".into(),
             Declarator::Name(name) => format!("name={name}"),
             Declarator::Grouped(inner) => format!("group({})", Self::render_declarator(inner)),
-            Declarator::Pointer { inner, .. } => {
-                format!("pointer({})", Self::render_declarator(inner))
+            Declarator::Pointer { qualifiers, inner } => {
+                let qualifier = Self::qualifier_name(*qualifiers);
+                if qualifier.is_empty() {
+                    format!("pointer({})", Self::render_declarator(inner))
+                } else {
+                    format!(
+                        "pointer(qualifiers={qualifier};{})",
+                        Self::render_declarator(inner)
+                    )
+                }
             }
             Declarator::Array { inner, size } => format!(
                 "array({},size={})",

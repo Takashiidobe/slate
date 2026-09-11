@@ -37,6 +37,9 @@ impl Decl {
                 name: f.name.clone(),
                 body: Stmt::eval_all(&f.body, env),
                 provenance: f.provenance,
+                qualifiers: f.qualifiers,
+                storage: f.storage,
+                is_inline: f.is_inline,
             })],
             Self::Declaration {
                 declaration,

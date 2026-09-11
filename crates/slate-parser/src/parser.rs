@@ -52,11 +52,42 @@ impl Parser {
             tokens: &tokens,
             pos: 0,
         };
-        let storage = if parser.take(Token::Keyword(Keyword::Typedef)) {
-            StorageClass::Typedef
-        } else {
-            StorageClass::None
-        };
+        let mut qualifiers = Qualifiers::default();
+        let mut storage = StorageClass::None;
+        let mut is_inline = false;
+        loop {
+            if let Some(qualifier) = parser.take_qualifier() {
+                match qualifier {
+                    Keyword::Const => qualifiers.is_const = true,
+                    Keyword::Volatile => qualifiers.is_volatile = true,
+                    Keyword::Restrict => qualifiers.is_restrict = true,
+                    Keyword::Atomic => qualifiers.is_atomic = true,
+                    _ => unreachable!(),
+                }
+                continue;
+            }
+            if parser.matches(Token::Keyword(Keyword::Inline)) {
+                is_inline = true;
+                continue;
+            }
+            if let Some(Token::Keyword(keyword)) = parser.peek() {
+                let next_storage = match *keyword {
+                    Keyword::Typedef => StorageClass::Typedef,
+                    Keyword::Extern => StorageClass::Extern,
+                    Keyword::Static => StorageClass::Static,
+                    Keyword::Auto => StorageClass::Auto,
+                    Keyword::Register => StorageClass::Register,
+                    _ => break,
+                };
+                if storage != StorageClass::None {
+                    return Err(self.error_at(code, 0, code.len(), "multiple storage classes"));
+                }
+                storage = next_storage;
+                parser.matches(Token::Keyword(*keyword));
+            } else {
+                break;
+            }
+        }
         let ty = parser.parse_base_type();
         let declarator = if parser.peek() == Some(&Token::Semi) {
             Declarator::Abstract
@@ -84,8 +115,9 @@ impl Parser {
         Ok(Declaration {
             specifiers: DeclarationSpecifiers {
                 ty,
-                qualifiers: Qualifiers::default(),
+                qualifiers,
                 storage,
+                is_inline,
             },
             declarator,
         })
@@ -262,7 +294,15 @@ impl Parser {
             .declarator
             .name()
             .ok_or_else(|| self.error_at(code, 0, code.len(), "expected typedef name"))?;
-        Ok((name.to_string(), declaration.specifiers.ty))
+        let ty = if declaration.specifiers.qualifiers == Qualifiers::default() {
+            declaration.specifiers.ty
+        } else {
+            CType::Qualified {
+                qualifiers: declaration.specifiers.qualifiers,
+                ty: Box::new(declaration.specifiers.ty),
+            }
+        };
+        Ok((name.to_string(), ty))
     }
 
     fn error_at(
@@ -309,7 +349,7 @@ impl<'a> DeclaratorParser<'a> {
         self.tokens.get(self.pos)
     }
 
-    fn take(&mut self, expected: Token) -> bool {
+    fn matches(&mut self, expected: Token) -> bool {
         if self.peek() == Some(&expected) {
             self.pos += 1;
             true
@@ -364,11 +404,10 @@ impl<'a> DeclaratorParser<'a> {
     }
 
     fn parse_declarator(&mut self, allow_abstract: bool) -> Declarator {
-        let mut pointer_count = 0;
-        while self.take(Token::Star) {
-            pointer_count += 1;
+        let mut pointer_qualifiers = Vec::new();
+        while self.matches(Token::Star) {
+            pointer_qualifiers.push(self.take_qualifiers());
         }
-
         let mut declarator = match self.peek().cloned() {
             Some(Token::Ident(name)) => {
                 self.pos += 1;
@@ -377,16 +416,16 @@ impl<'a> DeclaratorParser<'a> {
             Some(Token::LParen) => {
                 self.pos += 1;
                 let declarator = self.parse_declarator(allow_abstract);
-                assert!(self.take(Token::RParen), "expected `)` in declarator");
+                assert!(self.matches(Token::RParen), "expected `)` in declarator");
                 Declarator::Grouped(Box::new(declarator))
             }
             _ if allow_abstract => Declarator::Abstract,
             _ => panic!("expected declarator"),
         };
 
-        for _ in 0..pointer_count {
+        for qualifiers in pointer_qualifiers {
             declarator = Declarator::Pointer {
-                qualifiers: Qualifiers::default(),
+                qualifiers,
                 inner: Box::new(declarator),
             };
         }
@@ -404,7 +443,7 @@ impl<'a> DeclaratorParser<'a> {
                         other => panic!("unsupported array bound: {other:?}"),
                     };
                     assert!(
-                        self.take(Token::RBracket),
+                        self.matches(Token::RBracket),
                         "expected `]` in array declarator"
                     );
                     Declarator::Array {
@@ -426,12 +465,41 @@ impl<'a> DeclaratorParser<'a> {
         declarator
     }
 
+    fn take_qualifiers(&mut self) -> Qualifiers {
+        let mut qualifiers = Qualifiers::default();
+        while let Some(qualifier) = self.take_qualifier() {
+            match qualifier {
+                Keyword::Const => qualifiers.is_const = true,
+                Keyword::Volatile => qualifiers.is_volatile = true,
+                Keyword::Restrict => qualifiers.is_restrict = true,
+                Keyword::Atomic => qualifiers.is_atomic = true,
+                _ => unreachable!(),
+            }
+        }
+        qualifiers
+    }
+
+    fn take_qualifier(&mut self) -> Option<Keyword> {
+        let Some(Token::Keyword(keyword)) = self.peek() else {
+            return None;
+        };
+        if !matches!(
+            keyword,
+            Keyword::Const | Keyword::Volatile | Keyword::Restrict | Keyword::Atomic
+        ) {
+            return None;
+        }
+        let keyword = *keyword;
+        self.matches(Token::Keyword(keyword));
+        Some(keyword)
+    }
+
     fn parse_parameters(&mut self) -> (Vec<Parameter>, bool) {
         assert!(
-            self.take(Token::LParen),
+            self.matches(Token::LParen),
             "expected `(` in function declarator"
         );
-        if self.take(Token::RParen) {
+        if self.matches(Token::RParen) {
             return (vec![], false);
         }
         if self.peek() == Some(&Token::Keyword(Keyword::Void))
@@ -444,9 +512,9 @@ impl<'a> DeclaratorParser<'a> {
         let mut parameters = Vec::new();
         let mut variadic = false;
         loop {
-            if self.take(Token::Ellipsis) {
+            if self.matches(Token::Ellipsis) {
                 variadic = true;
-                assert!(self.take(Token::RParen), "expected `)` after `...`");
+                assert!(self.matches(Token::RParen), "expected `)` after `...`");
                 break;
             }
             let ty = self.parse_base_type();
@@ -455,10 +523,13 @@ impl<'a> DeclaratorParser<'a> {
                 _ => Some(self.parse_declarator(true)),
             };
             parameters.push(Parameter { ty, declarator });
-            if self.take(Token::RParen) {
+            if self.matches(Token::RParen) {
                 break;
             }
-            assert!(self.take(Token::Comma), "expected `,` between parameters");
+            assert!(
+                self.matches(Token::Comma),
+                "expected `,` between parameters"
+            );
         }
         (parameters, variadic)
     }
@@ -469,21 +540,47 @@ impl Parser {
         let provenance = self.node_provenance(&nodes[0]);
         let code = self.node_text(&nodes[0]);
         let sig_tokens = lex(code);
-        if sig_tokens.first() != Some(&Token::Keyword(Keyword::Int)) {
+        let mut index = 0;
+        let mut qualifiers = Qualifiers::default();
+        let mut storage = StorageClass::None;
+        let mut is_inline = false;
+        loop {
+            match sig_tokens.get(index) {
+                Some(Token::Keyword(Keyword::Const)) => qualifiers.is_const = true,
+                Some(Token::Keyword(Keyword::Volatile)) => qualifiers.is_volatile = true,
+                Some(Token::Keyword(Keyword::Restrict)) => qualifiers.is_restrict = true,
+                Some(Token::Keyword(Keyword::Atomic)) => qualifiers.is_atomic = true,
+                Some(Token::Keyword(Keyword::Inline)) => is_inline = true,
+                Some(Token::Keyword(keyword)) => {
+                    let next_storage = match keyword {
+                        Keyword::Extern => StorageClass::Extern,
+                        Keyword::Static => StorageClass::Static,
+                        _ => break,
+                    };
+                    if storage != StorageClass::None {
+                        return Err(self.error_at(code, 0, code.len(), "multiple storage classes"));
+                    }
+                    storage = next_storage;
+                }
+                _ => break,
+            }
+            index += 1;
+        }
+        if sig_tokens.get(index) != Some(&Token::Keyword(Keyword::Int)) {
             return Err(self.error_at(code, 0, code.len(), "expected function return type"));
         }
-        let name = match sig_tokens.get(1) {
+        let name = match sig_tokens.get(index + 1) {
             Some(Token::Ident(n)) => n.clone(),
             _ => return Err(self.error_at(code, 0, code.len(), "expected function name")),
         };
-        if sig_tokens.get(2) != Some(&Token::LParen) {
+        if sig_tokens.get(index + 2) != Some(&Token::LParen) {
             return Err(self.error_at(code, code.len().saturating_sub(1), 1, "expected `(`"));
         }
-        if sig_tokens.get(3) != Some(&Token::RParen) {
+        if sig_tokens.get(index + 3) != Some(&Token::RParen) {
             let offset = code.find('{').unwrap_or(code.len().saturating_sub(1));
             return Err(self.error_at(code, offset, 1, "expected `)`"));
         }
-        if sig_tokens.get(4) != Some(&Token::LBrace) {
+        if sig_tokens.get(index + 4) != Some(&Token::LBrace) {
             return Err(self.error_at(
                 code,
                 code.len().saturating_sub(1),
@@ -507,6 +604,9 @@ impl Parser {
                 name,
                 body,
                 provenance,
+                qualifiers,
+                storage,
+                is_inline,
             },
             close_idx + 1,
         ))

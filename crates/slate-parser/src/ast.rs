@@ -41,6 +41,9 @@ pub struct FunctionDecl {
     pub name: String,
     pub body: Vec<Stmt>,
     pub provenance: Provenance,
+    pub qualifiers: Qualifiers,
+    pub storage: StorageClass,
+    pub is_inline: bool,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -100,6 +103,40 @@ pub enum StorageClass {
     Register,
 }
 
+impl StorageClass {
+    pub fn as_str(self) -> &'static str {
+        self.into()
+    }
+}
+
+impl From<StorageClass> for &'static str {
+    fn from(storage: StorageClass) -> Self {
+        match storage {
+            StorageClass::None => "none",
+            StorageClass::Typedef => "typedef",
+            StorageClass::Extern => "extern",
+            StorageClass::Static => "static",
+            StorageClass::Auto => "auto",
+            StorageClass::Register => "register",
+        }
+    }
+}
+
+impl TryFrom<&str> for StorageClass {
+    type Error = ();
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        match value {
+            "typedef" => Ok(Self::Typedef),
+            "extern" => Ok(Self::Extern),
+            "static" => Ok(Self::Static),
+            "auto" => Ok(Self::Auto),
+            "register" => Ok(Self::Register),
+            _ => Err(()),
+        }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq)]
 pub enum ArraySize {
     Unspecified,
@@ -150,6 +187,7 @@ pub struct DeclarationSpecifiers {
     pub ty: CType,
     pub qualifiers: Qualifiers,
     pub storage: StorageClass,
+    pub is_inline: bool,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -243,6 +281,9 @@ pub struct ConcreteFunctionDecl {
     pub name: String,
     pub body: Vec<ConcreteStmt>,
     pub provenance: Provenance,
+    pub qualifiers: Qualifiers,
+    pub storage: StorageClass,
+    pub is_inline: bool,
 }
 
 #[derive(Debug, Clone, PartialEq)]

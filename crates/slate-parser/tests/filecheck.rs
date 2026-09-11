@@ -294,7 +294,7 @@ fn summarize_ours_decl(decl: &ConcreteDecl) -> DeclSummary {
             } else {
                 DeclSummary::Object {
                     name,
-                    type_facts: object_facts(&declaration.specifiers.ty, &declaration.declarator),
+                    type_facts: object_facts(&declaration.specifiers, &declaration.declarator),
                 }
             }
         }
@@ -388,7 +388,15 @@ fn type_spelling(ty: &CType) -> String {
             tag_name(*kind),
             name.as_deref().unwrap_or("<anonymous>")
         ),
-        CType::Qualified { ty, .. } => type_spelling(ty),
+        CType::Qualified { qualifiers, ty } => {
+            let name = type_spelling(ty);
+            let prefix = qualifier_spelling(*qualifiers);
+            if qualifiers.is_atomic {
+                format!("_Atomic({name})")
+            } else {
+                format!("{prefix}{name}")
+            }
+        }
         CType::Pointer { pointee, .. } => format!("{} *", type_spelling(pointee)),
         CType::Array { element, size } => {
             format!("{}[{}]", type_spelling(element), array_size(size))
@@ -429,7 +437,7 @@ fn parameter_fact(parameter: &Parameter) -> String {
     )
 }
 
-fn object_facts(base: &CType, declarator: &Declarator) -> String {
+fn object_facts(specifiers: &DeclarationSpecifiers, declarator: &Declarator) -> String {
     let mut dimensions = Vec::new();
     let mut current = declarator;
     while let Declarator::Array { inner, size } = current {
@@ -437,11 +445,37 @@ fn object_facts(base: &CType, declarator: &Declarator) -> String {
         current = inner;
     }
     dimensions.reverse();
+    let mut base = type_spelling(&specifiers.ty);
+    let qualifiers = qualifier_spelling(specifiers.qualifiers);
+    if specifiers.qualifiers.is_atomic {
+        base = format!("_Atomic({base})");
+    } else if !qualifiers.is_empty() {
+        base = format!("{qualifiers}{base}");
+    }
+    if let Declarator::Pointer { qualifiers, .. } = current {
+        let pointer_qualifiers = qualifier_spelling(*qualifiers);
+        if !pointer_qualifiers.is_empty() {
+            base.push_str(&format!("*{pointer_qualifiers}"));
+        } else {
+            base.push('*');
+        }
+    }
     format!(
         "base={};arrays=[{}]",
-        normalize_type(&type_spelling(base)),
+        normalize_type(&base),
         dimensions.join(",")
     )
+}
+
+fn qualifier_spelling(qualifiers: Qualifiers) -> String {
+    [
+        (qualifiers.is_const, "const"),
+        (qualifiers.is_volatile, "volatile"),
+        (qualifiers.is_restrict, "restrict"),
+    ]
+    .into_iter()
+    .filter_map(|(enabled, name)| enabled.then_some(name))
+    .collect()
 }
 
 fn clang_function_facts(qual_type: &str) -> String {
