@@ -318,6 +318,50 @@ impl<W: Write> Renderer<W> {
                             || "sentinel".into(),
                             |value| format!("sentinel({value})")
                         ),
+                        Attribute::Cold => "cold".into(),
+                        Attribute::Flatten => "flatten".into(),
+                        Attribute::Hot => "hot".into(),
+                        Attribute::Leaf => "leaf".into(),
+                        Attribute::NoIpa => "noipa".into(),
+                        Attribute::NoClone => "noclone".into(),
+                        Attribute::Optimize(values) => {
+                            format!("optimize({})", values.join(" "))
+                        }
+                        Attribute::Naked => "naked".into(),
+                        Attribute::Interrupt => "interrupt".into(),
+                        Attribute::NoSplitStack => "no_split_stack".into(),
+                        Attribute::ReturnsTwice => "returns_twice".into(),
+                        Attribute::CpuDispatch(values) => {
+                            format!("cpu_dispatch({})", values.join(","))
+                        }
+                        Attribute::CpuSpecific(values) => {
+                            format!("cpu_specific({})", values.join(","))
+                        }
+                        Attribute::TargetClones(values) => {
+                            format!("target_clones({})", values.join(","))
+                        }
+                        Attribute::Ifunc(value) => format!("ifunc(\"{value}\")"),
+                        Attribute::DllImport => "dllimport".into(),
+                        Attribute::WeakImport => "weak_import".into(),
+                        Attribute::TlsModel(value) => format!("tls_model(\"{value}\")"),
+                        Attribute::MsStruct => "ms_struct".into(),
+                        Attribute::Stdcall => "stdcall".into(),
+                        Attribute::NoMips16 => "nomips16".into(),
+                        Attribute::Availability(values) => {
+                            format!("availability({})", values.join(","))
+                        }
+                        Attribute::ExtVectorType(value) => format!("ext_vector_type({value})"),
+                        Attribute::ScalarStorageOrder(value) => {
+                            format!("scalar_storage_order(\"{value}\")")
+                        }
+                        Attribute::TransparentUnion => "transparent_union".into(),
+                        Attribute::Format(values) => format!("format({})", values.join(",")),
+                        Attribute::FormatArg(values) => {
+                            format!("format_arg({})", values.join(","))
+                        }
+                        Attribute::GccStruct => "gcc_struct".into(),
+                        Attribute::Common => "common".into(),
+                        Attribute::NoCommon => "nocommon".into(),
                         Attribute::Pure => "pure".into(),
                         Attribute::Const => "const".into(),
                         Attribute::MayAlias => "may_alias".into(),

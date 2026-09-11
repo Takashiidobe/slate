@@ -670,6 +670,47 @@ fn parse_attribute(name: &str, arguments: &[Token]) -> Result<Attribute, String>
         "sentinel" => Ok(single_int()
             .map(|value| Attribute::Sentinel(Some(value)))
             .unwrap_or_else(|| invalid_attribute(name, arguments))),
+        "cold" if arguments.is_empty() => Ok(Attribute::Cold),
+        "flatten" if arguments.is_empty() => Ok(Attribute::Flatten),
+        "hot" if arguments.is_empty() => Ok(Attribute::Hot),
+        "leaf" if arguments.is_empty() => Ok(Attribute::Leaf),
+        "noipa" if arguments.is_empty() => Ok(Attribute::NoIpa),
+        "noclone" if arguments.is_empty() => Ok(Attribute::NoClone),
+        "optimize" if !arguments.is_empty() => Ok(Attribute::Optimize(
+            arguments.iter().map(token_source).collect(),
+        )),
+        "naked" if arguments.is_empty() => Ok(Attribute::Naked),
+        "interrupt" if arguments.is_empty() => Ok(Attribute::Interrupt),
+        "no_split_stack" if arguments.is_empty() => Ok(Attribute::NoSplitStack),
+        "returns_twice" if arguments.is_empty() => Ok(Attribute::ReturnsTwice),
+        "cpu_dispatch" => Ok(Attribute::CpuDispatch(attribute_arguments(arguments))),
+        "cpu_specific" => Ok(Attribute::CpuSpecific(attribute_arguments(arguments))),
+        "target_clones" => Ok(Attribute::TargetClones(attribute_arguments(arguments))),
+        "ifunc" => Ok(single_string()
+            .map(Attribute::Ifunc)
+            .unwrap_or_else(|| invalid_attribute(name, arguments))),
+        "dllimport" if arguments.is_empty() => Ok(Attribute::DllImport),
+        "weak_import" if arguments.is_empty() => Ok(Attribute::WeakImport),
+        "tls_model" => Ok(single_string()
+            .map(Attribute::TlsModel)
+            .unwrap_or_else(|| invalid_attribute(name, arguments))),
+        "ms_struct" if arguments.is_empty() => Ok(Attribute::MsStruct),
+        "stdcall" if arguments.is_empty() => Ok(Attribute::Stdcall),
+        "nomips16" if arguments.is_empty() => Ok(Attribute::NoMips16),
+        "availability" => Ok(Attribute::Availability(attribute_arguments(arguments))),
+        "ext_vector_type" => Ok(match parse_attribute_expression(arguments) {
+            Ok(value) => Attribute::ExtVectorType(value),
+            Err(_) => invalid_attribute(name, arguments),
+        }),
+        "scalar_storage_order" => Ok(single_string()
+            .map(Attribute::ScalarStorageOrder)
+            .unwrap_or_else(|| invalid_attribute(name, arguments))),
+        "transparent_union" if arguments.is_empty() => Ok(Attribute::TransparentUnion),
+        "format" => Ok(Attribute::Format(attribute_arguments(arguments))),
+        "format_arg" => Ok(Attribute::FormatArg(attribute_arguments(arguments))),
+        "gcc_struct" if arguments.is_empty() => Ok(Attribute::GccStruct),
+        "common" if arguments.is_empty() => Ok(Attribute::Common),
+        "nocommon" if arguments.is_empty() => Ok(Attribute::NoCommon),
         "pure" if arguments.is_empty() => Ok(Attribute::Pure),
         "const" if arguments.is_empty() => Ok(Attribute::Const),
         "may_alias" if arguments.is_empty() => Ok(Attribute::MayAlias),
@@ -696,6 +737,19 @@ fn invalid_attribute(name: &str, arguments: &[Token]) -> Attribute {
         name: name.into(),
         arguments: arguments.iter().map(token_source).collect(),
     }
+}
+
+fn attribute_arguments(arguments: &[Token]) -> Vec<String> {
+    arguments
+        .split(|token| *token == Token::Comma)
+        .map(|tokens| {
+            tokens
+                .iter()
+                .map(token_source)
+                .collect::<Vec<_>>()
+                .join(" ")
+        })
+        .collect()
 }
 
 fn parse_attribute_expression(arguments: &[Token]) -> Result<const_expr::ConstExpr, String> {
@@ -736,6 +790,36 @@ impl AttributeName for str {
                 | "returns_nonnull"
                 | "warn_unused_result"
                 | "sentinel"
+                | "cold"
+                | "flatten"
+                | "hot"
+                | "leaf"
+                | "noipa"
+                | "noclone"
+                | "optimize"
+                | "naked"
+                | "interrupt"
+                | "no_split_stack"
+                | "returns_twice"
+                | "cpu_dispatch"
+                | "cpu_specific"
+                | "target_clones"
+                | "ifunc"
+                | "dllimport"
+                | "weak_import"
+                | "tls_model"
+                | "ms_struct"
+                | "stdcall"
+                | "nomips16"
+                | "availability"
+                | "ext_vector_type"
+                | "scalar_storage_order"
+                | "transparent_union"
+                | "format"
+                | "format_arg"
+                | "gcc_struct"
+                | "common"
+                | "nocommon"
                 | "pure"
                 | "const"
                 | "may_alias"
@@ -1011,7 +1095,10 @@ fn token_source(token: &Token) -> String {
         Token::Sizeof => "sizeof".into(),
         Token::Keyword(keyword) => <&str>::from(*keyword).into(),
         Token::IntLit(value) => value.to_string(),
+        Token::StringLit(value) => format!("\"{value}\""),
         Token::Ident(name) => name.clone(),
+        Token::LBracket => "[".into(),
+        Token::RBracket => "]".into(),
         Token::Star => "*".into(),
         Token::Plus => "+".into(),
         Token::Minus => "-".into(),
@@ -1020,6 +1107,9 @@ fn token_source(token: &Token) -> String {
         Token::LParen => "(".into(),
         Token::RParen => ")".into(),
         Token::Colon => ":".into(),
+        Token::Comma => ",".into(),
+        Token::Equal => "=".into(),
+        Token::Dot => ".".into(),
         Token::Less => "<".into(),
         Token::Greater => ">".into(),
         Token::LessEqual => "<=".into(),
