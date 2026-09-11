@@ -110,6 +110,25 @@ fn configurations(source: &str) -> Vec<(String, Vec<String>)> {
         .collect()
 }
 
+fn isystem_paths(source: &str) -> Vec<String> {
+    source
+        .lines()
+        .filter_map(|line| line.trim().strip_prefix("// SLATE-FILECHECK-ISYSTEM "))
+        .flat_map(str::split_whitespace)
+        .map(expand_home)
+        .collect()
+}
+
+fn expand_home(path: &str) -> String {
+    path.strip_prefix("~/").map_or_else(
+        || path.to_string(),
+        |rest| {
+            let home = std::env::var("HOME").expect("HOME must be set to expand ~ in path");
+            format!("{home}/{rest}")
+        },
+    )
+}
+
 fn error_configurations(source: &str) -> Vec<String> {
     source
         .lines()
@@ -121,7 +140,7 @@ fn error_configurations(source: &str) -> Vec<String> {
         .collect()
 }
 
-fn run_fixture(fixture: &Path, prefix: &str, defines: &[String], slot: usize) {
+fn run_fixture(fixture: &Path, prefix: &str, defines: &[String], isystem: &[String], slot: usize) {
     let mut command = Command::new(env!("CARGO_BIN_EXE_slate-parser"));
     command
         .arg("parse")
@@ -131,6 +150,9 @@ fn run_fixture(fixture: &Path, prefix: &str, defines: &[String], slot: usize) {
         .env("NO_COLOR", "1");
     for define in defines {
         command.arg(format!("-D{}", define.trim_start_matches("-D")));
+    }
+    for path in isystem {
+        command.arg(format!("-isystem{path}"));
     }
     let rendered = command
         .output()
@@ -171,7 +193,7 @@ fn run_fixture(fixture: &Path, prefix: &str, defines: &[String], slot: usize) {
     );
 
     if std::env::var_os("SLATE_CLANG_ORACLE").is_some() {
-        assert_evaluated_matches_clang(fixture, defines);
+        assert_evaluated_matches_clang(fixture, defines, isystem);
     }
 }
 
@@ -218,7 +240,7 @@ fn run_error_fixture(fixture: &Path, prefix: &str, slot: usize) {
     );
 }
 
-fn assert_evaluated_matches_clang(fixture: &Path, defines: &[String]) {
+fn assert_evaluated_matches_clang(fixture: &Path, defines: &[String], isystem: &[String]) {
     if matches!(
         fixture.file_stem().and_then(|name| name.to_str()),
         Some(
@@ -230,7 +252,10 @@ fn assert_evaluated_matches_clang(fixture: &Path, defines: &[String]) {
     ) {
         return;
     }
-    let search = SearchPaths::default();
+    let search = SearchPaths {
+        system: isystem.iter().map(std::path::PathBuf::from).collect(),
+        ..SearchPaths::default()
+    };
     let mut parser = Parser::new(search);
     let (ast, _) = parser.parse_file(fixture).expect("parse fixture");
     let mut env = Env::new();
@@ -239,7 +264,7 @@ fn assert_evaluated_matches_clang(fixture: &Path, defines: &[String]) {
     }
     let evaluated = ast.eval(&env);
     let ours = summarize_evaluated(&evaluated);
-    let theirs = summarize_clang(&run_clang_ast(fixture, defines));
+    let theirs = summarize_clang(&run_clang_ast(fixture, defines, isystem));
     for summary in &ours {
         if matches!(summary, DeclSummary::Object { name, .. } if name == "<abstract>") {
             continue;
@@ -262,7 +287,7 @@ fn macro_name(define: &str) -> String {
     )
 }
 
-fn run_clang_ast(fixture: &Path, defines: &[String]) -> ClangNode {
+fn run_clang_ast(fixture: &Path, defines: &[String], isystem: &[String]) -> ClangNode {
     let mut command = Command::new("clang");
     if fixture.file_stem().and_then(|name| name.to_str()) == Some("c23-literals") {
         command.arg("-std=c2x");
@@ -270,6 +295,9 @@ fn run_clang_ast(fixture: &Path, defines: &[String]) -> ClangNode {
     command.args(["-Xclang", "-ast-dump=json", "-fsyntax-only"]);
     for define in defines {
         command.arg(format!("-D{}", define.trim_start_matches("-D")));
+    }
+    for path in isystem {
+        command.arg("-isystem").arg(path);
     }
     let output = command
         .arg(fixture)
@@ -720,8 +748,9 @@ fn fixtures_are_filechecked() {
             "fixture has no FileCheck configurations: {}",
             fixture.display()
         );
+        let isystem = isystem_paths(&source);
         for (slot, (prefix, defines)) in configs.iter().enumerate() {
-            run_fixture(&fixture, prefix, defines, slot);
+            run_fixture(&fixture, prefix, defines, &isystem, slot);
             checked += 1;
         }
     }

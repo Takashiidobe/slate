@@ -19,6 +19,16 @@ DEFINE_RE = re.compile(r"^\s*//\s*SLATE-FILECHECK-DEFINES\s+([A-Za-z0-9_-]+)(?:\
 BEGIN_RE = re.compile(r"^// SLATE-FILECHECK-BEGIN ([A-Za-z0-9_-]+)$")
 CHECK_RE = re.compile(r"^// ([A-Za-z0-9_-]+)(?:-NEXT)?:")
 ERROR_RE = re.compile(r"^\s*//\s*SLATE-FILECHECK-ERROR\s+([A-Za-z0-9_-]+)$")
+ISYSTEM_RE = re.compile(r"^\s*//\s*SLATE-FILECHECK-ISYSTEM\s+(.*)$")
+
+
+def isystem_paths(source: str) -> list[str]:
+    paths = []
+    for line in source.splitlines():
+        match = ISYSTEM_RE.match(line)
+        if match:
+            paths.extend(os.path.expanduser(path) for path in match.group(1).split())
+    return paths
 
 
 def configurations(source: str) -> list[tuple[str, list[str]]]:
@@ -37,17 +47,19 @@ def error_configurations(source: str) -> list[str]:
     return [match.group(1) for line in source.splitlines() if (match := ERROR_RE.match(line))]
 
 
-def render(repo: Path, fixture: Path, defines: list[str]) -> str:
+def render(repo: Path, fixture: Path, defines: list[str], isystem: list[str]) -> str:
     command = ["cargo", "run", "--quiet", "--", "parse", str(fixture)]
     command.extend(f"-D{define.removeprefix('-D')}" for define in defines)
+    command.extend(f"-isystem{path}" for path in isystem)
     result = subprocess.run(command, cwd=repo, text=True, capture_output=True, env=_no_color_env())
     if result.returncode:
         raise RuntimeError(result.stderr or result.stdout)
     return result.stdout.rstrip("\n")
 
 
-def render_error(repo: Path, fixture: Path) -> list[str]:
+def render_error(repo: Path, fixture: Path, isystem: list[str]) -> list[str]:
     command = ["cargo", "run", "--quiet", "--", "parse", str(fixture)]
+    command.extend(f"-isystem{path}" for path in isystem)
     result = subprocess.run(command, cwd=repo, text=True, capture_output=True, env=_no_color_env())
     if result.returncode == 0:
         raise RuntimeError(f"expected {fixture} to fail parsing")
@@ -60,9 +72,10 @@ def render_error(repo: Path, fixture: Path) -> list[str]:
 
 
 def generated_blocks(repo: Path, fixture: Path, source: str) -> str:
+    isystem = isystem_paths(source)
     blocks = []
     for prefix in error_configurations(source):
-        output = render_error(repo, fixture)
+        output = render_error(repo, fixture, isystem)
         block = [f"// SLATE-FILECHECK-BEGIN {prefix}"]
         block.extend(f"// {prefix}: {line}" for line in output)
         block.append(f"// SLATE-FILECHECK-END {prefix}")
@@ -70,7 +83,7 @@ def generated_blocks(repo: Path, fixture: Path, source: str) -> str:
     if error_configurations(source):
         return "\n".join(blocks)
     for prefix, defines in configurations(source):
-        output = render(repo, fixture, defines)
+        output = render(repo, fixture, defines, isystem)
         lines = output.splitlines()
         block = [f"// SLATE-FILECHECK-BEGIN {prefix}"]
         for index, line in enumerate(lines):

@@ -337,7 +337,17 @@ impl Parser {
                         Ok(is_defined(macro_name) as i64)
                     }
                     (Some(_), ConstExpr::Identifier(name), [ConstExpr::Identifier(_)])
-                        if name == "__has_include" || name == "__has_include_next" =>
+                        if matches!(
+                            name.as_str(),
+                            "__has_include"
+                                | "__has_include_next"
+                                | "__has_feature"
+                                | "__has_extension"
+                                | "__has_builtin"
+                                | "__has_attribute"
+                                | "__has_cpp_attribute"
+                                | "__building_module"
+                        ) =>
                     {
                         Ok(0)
                     }
@@ -835,6 +845,7 @@ impl Parser {
                 match self.take() {
                     Some(Token::Greater) => break,
                     Some(Token::Ident(part)) => text.push_str(&part),
+                    Some(Token::Keyword(keyword)) => text.push_str(<&str>::from(keyword)),
                     Some(Token::Dot) => text.push('.'),
                     Some(Token::Slash) => text.push('/'),
                     Some(Token::Minus) => text.push('-'),

@@ -50,9 +50,26 @@ struct PPFailure {
 enum IncludeDirective {
     Angled(String),
     Quoted(String),
+    Next(String),
+}
+
+fn normalize_directive(raw: &str) -> String {
+    let trimmed = raw.trim();
+    match trimmed.strip_prefix('#') {
+        Some(rest) => format!("#{}", rest.trim_start()),
+        None => trimmed.to_string(),
+    }
 }
 
 fn parse_include_directive(trimmed: &str) -> Option<IncludeDirective> {
+    if let Some(rest) = trimmed.strip_prefix("#include_next") {
+        let rest = rest.trim();
+        let name = rest
+            .strip_prefix('<')
+            .and_then(|s| s.strip_suffix('>'))
+            .or_else(|| rest.strip_prefix('"').and_then(|s| s.strip_suffix('"')))?;
+        return Some(IncludeDirective::Next(name.to_string()));
+    }
     let rest = trimmed.strip_prefix("#include")?.trim();
     if let Some(inner) = rest.strip_prefix('<').and_then(|s| s.strip_suffix('>')) {
         Some(IncludeDirective::Angled(inner.to_string()))
@@ -138,7 +155,8 @@ impl<'a> Preprocessor<'a> {
 
         while *pos < lines.len() {
             let raw = lines[*pos];
-            let trimmed = raw.trim();
+            let trimmed = normalize_directive(raw);
+            let trimmed = trimmed.as_str();
 
             if let Some(condition) = self.parse_opening_condition(trimmed, *pos)? {
                 *pos += 1;
@@ -264,7 +282,7 @@ impl<'a> Preprocessor<'a> {
         let mut saw_else = false;
 
         loop {
-            let Some(directive) = lines.get(*pos).map(|line| line.trim()) else {
+            let Some(directive) = lines.get(*pos).map(|line| normalize_directive(line)) else {
                 return Err(self.error(*pos, "expected #endif"));
             };
             if directive == "#endif" {
@@ -533,6 +551,18 @@ impl<'a> Preprocessor<'a> {
                 .find(|candidate| candidate.is_file())
                 .map(|path| (path, HeaderKind::System))
                 .unwrap_or_else(|| panic!("system header not found in search path: <{name}>")),
+            IncludeDirective::Next(name) => {
+                let current_dir = self.files.path(from).parent();
+                let start = current_dir
+                    .and_then(|dir| self.search.system.iter().position(|candidate| candidate == dir))
+                    .map_or(0, |index| index + 1);
+                self.search.system[start..]
+                    .iter()
+                    .map(|dir| dir.join(name))
+                    .find(|candidate| candidate.is_file())
+                    .map(|path| (path, HeaderKind::System))
+                    .unwrap_or_else(|| panic!("system header not found via #include_next in search path: <{name}>"))
+            }
             IncludeDirective::Quoted(name) => {
                 let same_dir = self.files.path(from).parent().map(|dir| dir.join(name));
                 same_dir
@@ -646,7 +676,8 @@ fn is_statically_true(condition: &Condition) -> bool {
 fn skip_block(lines: &[&str], pos: &mut usize) {
     let mut depth = 0usize;
     while *pos < lines.len() {
-        let trimmed = lines[*pos].trim();
+        let trimmed = normalize_directive(lines[*pos]);
+        let trimmed = trimmed.as_str();
         if trimmed.starts_with("#if") {
             depth += 1;
             *pos += 1;
