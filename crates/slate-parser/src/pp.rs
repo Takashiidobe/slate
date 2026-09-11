@@ -161,8 +161,7 @@ impl<'a> Preprocessor<'a> {
             } else if trimmed.is_empty() {
                 *pos += 1;
             } else {
-                let expanded =
-                    self.expand_object_macros(&lex(trimmed), &mut HashSet::new(), active);
+                let expanded = self.expand_macros(&lex(trimmed), &mut HashSet::new(), active);
                 nodes.push(PPNode::Code {
                     text: tokens_source(&expanded),
                     provenance: Provenance {
@@ -341,16 +340,19 @@ impl<'a> Preprocessor<'a> {
         Ok(())
     }
 
-    fn expand_object_macros(
+    fn expand_macros(
         &self,
         tokens: &[Token],
         disabled: &mut HashSet<String>,
         active: &Condition,
     ) -> Vec<Token> {
         let mut expanded = Vec::new();
-        for token in tokens {
+        let mut i = 0;
+        while i < tokens.len() {
+            let token = &tokens[i];
             let Token::Ident(name) = token else {
                 expanded.push(token.clone());
+                i += 1;
                 continue;
             };
             let Some(macro_def) = self.macros.get(name).and_then(|conditional| {
@@ -362,14 +364,40 @@ impl<'a> Preprocessor<'a> {
                     .map(|(_, definition)| definition.clone())
             }) else {
                 expanded.push(token.clone());
+                i += 1;
                 continue;
             };
-            if macro_def.parameters.is_some() || !disabled.insert(name.clone()) {
+            if !disabled.insert(name.clone()) {
                 expanded.push(token.clone());
+                i += 1;
                 continue;
             }
-            expanded.extend(self.expand_object_macros(&macro_def.replacement, disabled, active));
+            let Some(parameters) = macro_def.parameters.as_ref() else {
+                expanded.extend(self.expand_macros(&macro_def.replacement, disabled, active));
+                disabled.remove(name);
+                i += 1;
+                continue;
+            };
+            let Some((arguments, end)) = invocation_arguments(tokens, i + 1) else {
+                disabled.remove(name);
+                expanded.push(token.clone());
+                i += 1;
+                continue;
+            };
+            if !macro_def.variadic && arguments.len() != parameters.len()
+                || macro_def.variadic && arguments.len() < parameters.len()
+            {
+                disabled.remove(name);
+                expanded.push(token.clone());
+                i += 1;
+                continue;
+            }
+            let replacement = substitute_function_macro(
+                &macro_def, parameters, &arguments, self, disabled, active,
+            );
+            expanded.extend(self.expand_macros(&replacement, disabled, active));
             disabled.remove(name);
+            i = end;
         }
         expanded
     }
@@ -448,6 +476,170 @@ impl<'a> Preprocessor<'a> {
 
 fn conjunction(active: &Condition, branch: &Condition) -> Condition {
     Condition::And(Box::new(active.clone()), Box::new(branch.clone()))
+}
+
+fn invocation_arguments(tokens: &[Token], start: usize) -> Option<(Vec<Vec<Token>>, usize)> {
+    if tokens.get(start) != Some(&Token::LParen) {
+        return None;
+    }
+    let mut arguments = Vec::new();
+    let mut current = Vec::new();
+    let mut depth = 0;
+    let mut i = start + 1;
+    while i < tokens.len() {
+        match &tokens[i] {
+            Token::LParen => {
+                depth += 1;
+                current.push(tokens[i].clone());
+            }
+            Token::RParen if depth == 0 => {
+                if !current.is_empty() || !arguments.is_empty() {
+                    arguments.push(current);
+                }
+                return Some((arguments, i + 1));
+            }
+            Token::RParen => {
+                depth -= 1;
+                current.push(tokens[i].clone());
+            }
+            Token::Comma if depth == 0 => {
+                arguments.push(std::mem::take(&mut current));
+            }
+            _ => current.push(tokens[i].clone()),
+        }
+        i += 1;
+    }
+    None
+}
+
+fn substitute_function_macro(
+    definition: &MacroDef,
+    parameters: &[String],
+    arguments: &[Vec<Token>],
+    preprocessor: &Preprocessor<'_>,
+    disabled: &mut HashSet<String>,
+    active: &Condition,
+) -> Vec<Token> {
+    let expanded_arguments = arguments
+        .iter()
+        .map(|argument| preprocessor.expand_macros(argument, disabled, active))
+        .collect::<Vec<_>>();
+    let mut output = Vec::new();
+    let mut i = 0;
+    while i < definition.replacement.len() {
+        let token = &definition.replacement[i];
+        if *token == Token::Hash
+            && i + 1 < definition.replacement.len()
+            && let Token::Ident(name) = &definition.replacement[i + 1]
+        {
+            let argument = if name == "__VA_ARGS__" {
+                Some(variadic_tokens(arguments, parameters.len()))
+            } else {
+                macro_argument(name, parameters, arguments).map(<[Token]>::to_vec)
+            };
+            if let Some(argument) = argument {
+                output.push(Token::StringLit(tokens_source(&argument)));
+                i += 2;
+                continue;
+            }
+        }
+        if *token == Token::HashHash && i + 1 < definition.replacement.len() {
+            let Some(left) = output.pop() else {
+                i += 1;
+                continue;
+            };
+            let right_tokens = replacement_tokens(
+                &definition.replacement[i + 1],
+                parameters,
+                arguments,
+                &expanded_arguments,
+                false,
+            );
+            if let Some(right) = right_tokens.first() {
+                let pasted = lex(&format!("{}{}", String::from(&left), String::from(right)));
+                if pasted.len() == 1 {
+                    output.push(pasted[0].clone());
+                    output.extend(right_tokens.into_iter().skip(1));
+                } else {
+                    output.push(left);
+                    output.extend(right_tokens);
+                }
+            } else {
+                output.push(left);
+            }
+            i += 2;
+            continue;
+        }
+        output.extend(replacement_tokens(
+            token,
+            parameters,
+            arguments,
+            &expanded_arguments,
+            i + 1 >= definition.replacement.len()
+                || definition.replacement[i + 1] != Token::HashHash,
+        ));
+        i += 1;
+    }
+    output
+}
+
+fn macro_argument<'a>(
+    name: &str,
+    parameters: &[String],
+    arguments: &'a [Vec<Token>],
+) -> Option<&'a [Token]> {
+    if name == "__VA_ARGS__" {
+        return None;
+    }
+    parameters
+        .iter()
+        .position(|parameter| parameter == name)
+        .and_then(|index| arguments.get(index).map(Vec::as_slice))
+}
+
+fn replacement_tokens(
+    token: &Token,
+    parameters: &[String],
+    arguments: &[Vec<Token>],
+    expanded_arguments: &[Vec<Token>],
+    prescan: bool,
+) -> Vec<Token> {
+    let Token::Ident(name) = token else {
+        return vec![token.clone()];
+    };
+    if name == "__VA_ARGS__" {
+        return variadic_tokens(
+            if prescan {
+                expanded_arguments
+            } else {
+                arguments
+            },
+            parameters.len(),
+        );
+    }
+    parameters
+        .iter()
+        .position(|parameter| parameter == name)
+        .and_then(|index| {
+            if prescan {
+                expanded_arguments.get(index).cloned()
+            } else {
+                arguments.get(index).cloned()
+            }
+        })
+        .unwrap_or_else(|| vec![token.clone()])
+}
+
+fn variadic_tokens(arguments: &[Vec<Token>], fixed: usize) -> Vec<Token> {
+    arguments
+        .iter()
+        .skip(fixed)
+        .enumerate()
+        .flat_map(|(index, argument)| {
+            let separator = (index != 0).then_some(Token::Comma);
+            separator.into_iter().chain(argument.iter().cloned())
+        })
+        .collect()
 }
 
 fn tokens_source(tokens: &[Token]) -> String {

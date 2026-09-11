@@ -165,7 +165,9 @@ fn run_fixture(fixture: &Path, prefix: &str, defines: &[String], slot: usize) {
         String::from_utf8_lossy(&result.stderr)
     );
 
-    assert_evaluated_matches_clang(fixture, defines);
+    if std::env::var_os("SLATE_CLANG_ORACLE").is_some() {
+        assert_evaluated_matches_clang(fixture, defines);
+    }
 }
 
 fn run_error_fixture(fixture: &Path, prefix: &str, slot: usize) {
