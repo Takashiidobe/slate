@@ -4,6 +4,7 @@ use std::iter::Peekable;
 pub struct CompilerArgs {
     pub defines: Vec<String>,
     pub standard: Option<String>,
+    pub isystem: Vec<String>,
 }
 
 pub struct CompilerArgParser;
@@ -22,6 +23,8 @@ impl CompilerArgParser {
                 parsed.standard = Some(standard.to_string());
             } else if arg == "-std" {
                 parsed.standard = Some(Self::next_value(&mut args, "-std")?);
+            } else if let Some(isystem) = arg.strip_prefix("-isystem") {
+                parsed.isystem.push(Self::value(isystem, &mut args, "-isystem")?);
             } else {
                 return Err(format!("unsupported argument: {arg}"));
             }

@@ -105,7 +105,9 @@ impl<'a> Preprocessor<'a> {
         file: FileId,
         active: Condition,
     ) -> Result<Vec<PPNode>, PPError> {
-        let lines: Vec<&str> = src.lines().collect();
+        let uncommented = strip_comments(src);
+        let spliced = splice_continuations(&uncommented);
+        let lines: Vec<&str> = spliced.lines().collect();
         let mut pos = 0;
         let nodes = self
             .parse_block(&lines, &mut pos, file, &active)
@@ -147,12 +149,17 @@ impl<'a> Preprocessor<'a> {
                 *pos += 1;
                 nodes.extend(
                     self.resolve_and_parse_include(&include, file, active)
-                        .map_err(|error| self.error(*pos, error.to_string()))?,
+                        .map_err(|error| {
+                            eprintln!("DEBUG nested: {error:?}");
+                            self.error(*pos, error.to_string())
+                        })?,
                 );
             } else if let Some(rest) = trimmed.strip_prefix("#define") {
                 self.record_define(rest.trim_start(), file, *pos, active)?;
                 *pos += 1;
             } else if trimmed.starts_with("#undef") {
+                *pos += 1;
+            } else if trimmed.starts_with("#error") {
                 *pos += 1;
             } else if trimmed == "#else" || trimmed.starts_with("#elif") || trimmed == "#endif" {
                 break;
@@ -203,8 +210,11 @@ impl<'a> Preprocessor<'a> {
         line: usize,
     ) -> Result<Option<Condition>, PPFailure> {
         if let Some(expression) = trimmed.strip_prefix("#if ") {
-            let value = const_expr::Parser::evaluate(&lex(expression.trim()))
-                .map_err(|error| self.error(line, format!("invalid #if expression: {error}")))?;
+            let value = const_expr::Parser::evaluate_with_defined(
+                &lex(expression.trim()),
+                &|name| self.macros.contains_key(name),
+            )
+            .map_err(|error| self.error(line, format!("invalid #if expression: {error}")))?;
             return Ok(Some(Condition::Constant(value)));
         }
         for (directive, negate) in [("#ifdef", false), ("#ifndef", true)] {
@@ -224,6 +234,20 @@ impl<'a> Preprocessor<'a> {
         Ok(None)
     }
 
+    fn parse_body_or_skip(
+        &mut self,
+        lines: &[&str],
+        pos: &mut usize,
+        file: FileId,
+        active: &Condition,
+    ) -> Result<Vec<PPNode>, PPFailure> {
+        if is_statically_false(active) {
+            skip_block(lines, pos);
+            return Ok(Vec::new());
+        }
+        self.parse_block(lines, pos, file, active)
+    }
+
     fn parse_conditional(
         &mut self,
         lines: &[&str],
@@ -235,7 +259,7 @@ impl<'a> Preprocessor<'a> {
         let mut branches = Vec::new();
         let mut prior = vec![first_condition.clone()];
         let first_active = conjunction(active, &first_condition);
-        let first_body = self.parse_block(lines, pos, file, &first_active)?;
+        let first_body = self.parse_body_or_skip(lines, pos, file, &first_active)?;
         branches.push((first_condition, first_body));
         let mut saw_else = false;
 
@@ -260,7 +284,7 @@ impl<'a> Preprocessor<'a> {
                     .expect("conditional has an initial branch");
                 let else_condition = Condition::Not(Box::new(excluded));
                 let else_active = conjunction(active, &else_condition);
-                let else_body = self.parse_block(lines, pos, file, &else_active)?;
+                let else_body = self.parse_body_or_skip(lines, pos, file, &else_active)?;
                 branches.push((else_condition, else_body));
                 continue;
             }
@@ -268,10 +292,11 @@ impl<'a> Preprocessor<'a> {
                 if saw_else {
                     return Err(self.error(*pos, "#elif after #else"));
                 }
-                let value =
-                    const_expr::Parser::evaluate(&lex(expression.trim())).map_err(|error| {
-                        self.error(*pos, format!("invalid #elif expression: {error}"))
-                    })?;
+                let value = const_expr::Parser::evaluate_with_defined(
+                    &lex(expression.trim()),
+                    &|name| self.macros.contains_key(name),
+                )
+                .map_err(|error| self.error(*pos, format!("invalid #elif expression: {error}")))?;
                 let condition = Condition::Constant(value);
                 let excluded = prior
                     .iter()
@@ -284,8 +309,8 @@ impl<'a> Preprocessor<'a> {
                 );
                 prior.push(branch_condition.clone());
                 *pos += 1;
-                let body =
-                    self.parse_block(lines, pos, file, &conjunction(active, &branch_condition))?;
+                let branch_active = conjunction(active, &branch_condition);
+                let body = self.parse_body_or_skip(lines, pos, file, &branch_active)?;
                 branches.push((branch_condition, body));
                 continue;
             }
@@ -531,6 +556,110 @@ impl<'a> Preprocessor<'a> {
                     })
                     .unwrap_or_else(|| panic!("header not found in search path: \"{name}\""))
             }
+        }
+    }
+}
+
+fn strip_comments(src: &str) -> String {
+    let mut out = String::with_capacity(src.len());
+    let mut chars = src.chars().peekable();
+    let mut in_string: Option<char> = None;
+    while let Some(c) = chars.next() {
+        if let Some(quote) = in_string {
+            out.push(c);
+            if c == '\\' {
+                if let Some(next) = chars.next() {
+                    out.push(next);
+                }
+            } else if c == quote {
+                in_string = None;
+            }
+            continue;
+        }
+        match c {
+            '"' | '\'' => {
+                in_string = Some(c);
+                out.push(c);
+            }
+            '/' if chars.peek() == Some(&'/') => {
+                chars.next();
+                for ch in chars.by_ref() {
+                    if ch == '\n' {
+                        out.push('\n');
+                        break;
+                    }
+                }
+            }
+            '/' if chars.peek() == Some(&'*') => {
+                chars.next();
+                let mut prev = '\0';
+                for ch in chars.by_ref() {
+                    if prev == '*' && ch == '/' {
+                        break;
+                    }
+                    if ch == '\n' {
+                        out.push('\n');
+                    }
+                    prev = ch;
+                }
+            }
+            _ => out.push(c),
+        }
+    }
+    out
+}
+
+fn splice_continuations(src: &str) -> String {
+    let mut logical: Vec<String> = src.lines().map(str::to_string).collect();
+    for i in 0..logical.len() {
+        let mut next_line = i + 1;
+        while logical[i].ends_with('\\') && next_line < logical.len() {
+            logical[i].pop();
+            let next = std::mem::take(&mut logical[next_line]);
+            logical[i].push_str(&next);
+            next_line += 1;
+        }
+    }
+    logical.join("\n")
+}
+
+fn is_statically_false(condition: &Condition) -> bool {
+    match condition {
+        Condition::Constant(0) => true,
+        Condition::And(left, right) => is_statically_false(left) || is_statically_false(right),
+        Condition::Or(left, right) => is_statically_false(left) && is_statically_false(right),
+        Condition::Not(inner) => is_statically_true(inner),
+        _ => false,
+    }
+}
+
+fn is_statically_true(condition: &Condition) -> bool {
+    match condition {
+        Condition::Constant(value) => *value != 0,
+        Condition::And(left, right) => is_statically_true(left) && is_statically_true(right),
+        Condition::Or(left, right) => is_statically_true(left) || is_statically_true(right),
+        Condition::Not(inner) => is_statically_false(inner),
+        _ => false,
+    }
+}
+
+fn skip_block(lines: &[&str], pos: &mut usize) {
+    let mut depth = 0usize;
+    while *pos < lines.len() {
+        let trimmed = lines[*pos].trim();
+        if trimmed.starts_with("#if") {
+            depth += 1;
+            *pos += 1;
+        } else if trimmed == "#endif" {
+            if depth == 0 {
+                return;
+            }
+            depth -= 1;
+            *pos += 1;
+        } else if depth == 0 && (trimmed == "#else" || trimmed.starts_with("#elif")) {
+            return;
+        } else {
+            *pos += 1;
         }
     }
 }

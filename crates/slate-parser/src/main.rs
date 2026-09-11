@@ -20,7 +20,11 @@ fn main() -> miette::Result<()> {
         .ok_or_else(|| miette::miette!("missing source path"))?;
     let compiler_args = CompilerArgParser::parse(args).map_err(|error| miette::miette!(error))?;
     fs::metadata(Path::new(&path)).map_err(|error| miette::miette!(error))?;
-    let mut parser = Parser::new(SearchPaths::default());
+    let search = SearchPaths {
+        system: compiler_args.isystem.iter().map(std::path::PathBuf::from).collect(),
+        ..SearchPaths::default()
+    };
+    let mut parser = Parser::new(search);
     let (ast, files) = parser.parse_file(Path::new(&path))?;
     let defines = compiler_args.defines;
     let mut env = Env::new();

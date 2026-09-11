@@ -14,7 +14,7 @@ pub struct SearchPaths {
     pub system: Vec<PathBuf>,
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone)]
 pub struct Files {
     entries: Vec<(PathBuf, HeaderKind)>,
 }
@@ -22,6 +22,10 @@ pub struct Files {
 impl Files {
     pub fn new() -> Self {
         Self::default()
+    }
+
+    pub fn paths(&self) -> impl Iterator<Item = &Path> {
+        self.entries.iter().map(|(path, _)| path.as_path())
     }
 
     pub fn intern(&mut self, path: PathBuf, kind: HeaderKind) -> FileId {

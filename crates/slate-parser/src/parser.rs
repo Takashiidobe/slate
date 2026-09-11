@@ -13,6 +13,7 @@ pub struct Parser {
     search: SearchPaths,
     source_name: String,
     source: String,
+    files: Files,
     typedef_names: HashSet<String>,
 }
 
@@ -22,6 +23,7 @@ impl Parser {
             search,
             source_name: "<source>".into(),
             source: String::new(),
+            files: Files::new(),
             typedef_names: HashSet::new(),
         }
     }
@@ -51,6 +53,7 @@ impl Parser {
         let search = self.search.clone();
         let mut pp = Preprocessor::new(&search);
         let nodes = pp.parse_file(path).map_err(FrontendError::PP)?;
+        self.files = pp.files.clone();
         let ast = self.parse_nodes(&nodes);
         ast.map(|ast| (ast, pp.files)).map_err(FrontendError::Parse)
     }
@@ -180,7 +183,7 @@ impl Parser {
                 i += 1;
                 continue;
             }
-            let (decl, consumed) = if let [
+            let (new_decls, consumed) = if let [
                 PPNode::Code { text, provenance },
                 PPNode::Conditional(cond),
                 ..,
@@ -188,14 +191,16 @@ impl Parser {
                 && text.trim_end().ends_with('=')
             {
                 (
-                    self.parse_conditional_initializer(text, *provenance, cond)?,
+                    vec![self.parse_conditional_initializer(text, *provenance, cond)?],
                     2,
                 )
             } else {
                 self.parse_top_level_item(&nodes[i..])?
             };
-            self.record_typedefs(&decl);
-            decls.push(decl);
+            for decl in new_decls {
+                self.record_typedefs(&decl);
+                decls.push(decl);
+            }
             i += consumed;
         }
         Ok(decls)
@@ -237,17 +242,30 @@ impl Parser {
         })
     }
 
-    fn parse_top_level_item(&mut self, nodes: &[PPNode]) -> Result<(Decl, usize), ParseError> {
+    fn parse_top_level_item(&mut self, nodes: &[PPNode]) -> Result<(Vec<Decl>, usize), ParseError> {
         match &nodes[0] {
             PPNode::Code { text, provenance } if text.trim_start().starts_with("typedef") => {
+                let tokens = lex(self.node_text(&nodes[0]));
+                let has_inline_body = matches!(
+                    tokens.iter().find(|token| !matches!(
+                        token,
+                        Token::Keyword(Keyword::Typedef)
+                    )),
+                    Some(Token::Keyword(
+                        Keyword::Struct | Keyword::Union | Keyword::Enum
+                    ))
+                ) && tokens.contains(&Token::LBrace);
+                if has_inline_body {
+                    return self.parse_tag_definition(nodes);
+                }
                 let (name, ty, attributes) = self.parse_typedef_line(text)?;
                 Ok((
-                    Decl::Typedef {
+                    vec![Decl::Typedef {
                         name,
                         ty,
                         provenance: *provenance,
                         attributes,
-                    },
+                    }],
                     1,
                 ))
             }
@@ -267,30 +285,32 @@ impl Parser {
                     && (!tokens.contains(&Token::LBrace) || tokens.contains(&Token::Equal))
                 {
                     return Ok((
-                        Decl::Declaration {
+                        vec![Decl::Declaration {
                             declaration: self.parse_declaration(self.node_text(&nodes[0]))?,
                             provenance: self.node_provenance(&nodes[0]),
-                        },
+                        }],
                         1,
                     ));
                 }
                 let (func, consumed) = self.parse_function(nodes)?;
-                Ok((Decl::Function(func), consumed))
+                Ok((vec![Decl::Function(func)], consumed))
             }
-            PPNode::Conditional(cond) => Ok((self.parse_top_level_conditional(cond)?, 1)),
+            PPNode::Conditional(cond) => Ok((vec![self.parse_top_level_conditional(cond)?], 1)),
         }
     }
 
-    fn parse_tag_definition(&self, nodes: &[PPNode]) -> Result<(Decl, usize), ParseError> {
+    fn parse_tag_definition(&self, nodes: &[PPNode]) -> Result<(Vec<Decl>, usize), ParseError> {
         let code = self.node_text(&nodes[0]);
         let tokens = lex(code);
+        let is_typedef = tokens.first() == Some(&Token::Keyword(Keyword::Typedef));
+        let tokens = if is_typedef { &tokens[1..] } else { &tokens[..] };
         let kind = match tokens.first() {
             Some(Token::Keyword(Keyword::Struct)) => TagKind::Struct,
             Some(Token::Keyword(Keyword::Union)) => TagKind::Union,
             Some(Token::Keyword(Keyword::Enum)) => TagKind::Enum,
             _ => return Err(self.error_at(code, 0, code.len(), "expected record or enum")),
         };
-        let (mut attributes, name_index) = parse_record_attributes(&tokens)
+        let (mut attributes, name_index) = parse_record_attributes(tokens)
             .map_err(|error| self.error_at(code, 0, code.len(), error))?;
         let name = match tokens.get(name_index) {
             Some(Token::Ident(name)) => Some(name.clone()),
@@ -302,17 +322,21 @@ impl Parser {
             .position(|node| matches!(node, PPNode::Code { text, .. } if lex(text).first() == Some(&Token::RBrace)))
             .ok_or_else(|| self.error_at(code, 0, code.len(), "expected `}`"))?
             + 1;
+        let mut trailing_name = None;
         if let PPNode::Code { text, .. } = &nodes[close] {
             let closing_tokens = lex(text);
             if closing_tokens.first() == Some(&Token::RBrace) {
-                let (trailing, _) = parse_attribute_groups(&closing_tokens, 1)
+                let (trailing, position) = parse_attribute_groups(&closing_tokens, 1)
                     .map_err(|error| self.error_at(text, 0, text.len(), error))?;
                 attributes.extend(trailing);
+                if let Some(Token::Ident(alias)) = closing_tokens.get(position) {
+                    trailing_name = Some(alias.clone());
+                }
             }
         }
         let consumed = close + 1;
         let provenance = self.node_provenance(&nodes[0]);
-        if kind == TagKind::Enum {
+        let tag_decl = if kind == TagKind::Enum {
             let mut enumerators = Vec::new();
             for node in &nodes[1..close] {
                 let text = self.node_text(node);
@@ -350,14 +374,11 @@ impl Parser {
                     value,
                 });
             }
-            Ok((
-                Decl::Enum(EnumDecl {
-                    name,
-                    enumerators,
-                    provenance,
-                }),
-                consumed,
-            ))
+            Decl::Enum(EnumDecl {
+                name: name.clone(),
+                enumerators,
+                provenance,
+            })
         } else {
             let mut fields = Vec::new();
             for node in &nodes[1..close] {
@@ -370,17 +391,43 @@ impl Parser {
                     provenance: self.node_provenance(node),
                 });
             }
-            Ok((
-                Decl::Record(RecordDecl {
-                    kind,
-                    name,
-                    fields,
+            Decl::Record(RecordDecl {
+                kind,
+                name: name.clone(),
+                fields,
+                provenance,
+                attributes,
+            })
+        };
+        let mut decls = vec![tag_decl];
+        if let Some(alias) = trailing_name {
+            let ty = CType::Tagged { kind, name };
+            decls.push(if is_typedef {
+                Decl::Typedef {
+                    name: alias,
+                    ty,
                     provenance,
-                    attributes,
-                }),
-                consumed,
-            ))
+                    attributes: Vec::new(),
+                }
+            } else {
+                Decl::Declaration {
+                    declaration: Declaration {
+                        specifiers: DeclarationSpecifiers {
+                            ty,
+                            qualifiers: Qualifiers::default(),
+                            storage: StorageClass::None,
+                            is_inline: false,
+                            is_noreturn: false,
+                        },
+                        declarator: Declarator::Name(alias),
+                        initializer: None,
+                        attributes: Vec::new(),
+                    },
+                    provenance,
+                }
+            });
         }
+        Ok((decls, consumed))
     }
 
     fn parse_top_level_conditional(&mut self, cond: &PPConditional) -> Result<Decl, ParseError> {
@@ -436,11 +483,33 @@ impl Parser {
         length: usize,
         message: impl Into<String>,
     ) -> ParseError {
-        let base = self.source.find(code).unwrap_or(0);
+        if let Some(base) = self.source.find(code) {
+            return ParseError::new(
+                self.source_name.clone(),
+                self.source.clone(),
+                base + offset,
+                length.max(1),
+                message,
+            );
+        }
+        for path in self.files.paths() {
+            let Ok(contents) = std::fs::read_to_string(path) else {
+                continue;
+            };
+            if let Some(base) = contents.find(code) {
+                return ParseError::new(
+                    display_path(path),
+                    contents,
+                    base + offset,
+                    length.max(1),
+                    message,
+                );
+            }
+        }
         ParseError::new(
             self.source_name.clone(),
             self.source.clone(),
-            base + offset,
+            offset,
             length.max(1),
             message,
         )
@@ -1493,7 +1562,23 @@ impl<'a> DeclaratorParser<'a> {
                 variadic = true;
                 break;
             }
-            let ty = self.parse_base_type()?;
+            let leading_qualifiers = self.take_qualifiers();
+            let base_ty = self.parse_base_type()?;
+            let trailing_qualifiers = self.take_qualifiers();
+            let qualifiers = Qualifiers {
+                is_const: leading_qualifiers.is_const || trailing_qualifiers.is_const,
+                is_volatile: leading_qualifiers.is_volatile || trailing_qualifiers.is_volatile,
+                is_restrict: leading_qualifiers.is_restrict || trailing_qualifiers.is_restrict,
+                is_atomic: leading_qualifiers.is_atomic || trailing_qualifiers.is_atomic,
+            };
+            let ty = if qualifiers == Qualifiers::default() {
+                base_ty
+            } else {
+                CType::Qualified {
+                    qualifiers,
+                    ty: Box::new(base_ty),
+                }
+            };
             let declarator = match self.peek() {
                 Some(Token::Comma) | Some(Token::RParen) => None,
                 _ => Some(self.parse_declarator(true)?),

@@ -291,21 +291,46 @@ impl Parser {
     }
 
     pub fn evaluate(tokens: &[Token]) -> Result<i64, ConstExprError> {
-        Self::evaluate_expr(&Self::parse(tokens)?)
+        Self::evaluate_expr(&Self::parse(tokens)?, None)
     }
 
-    fn evaluate_expr(expression: &ConstExpr) -> Result<i64, ConstExprError> {
+    pub fn evaluate_with_defined(
+        tokens: &[Token],
+        is_defined: &dyn Fn(&str) -> bool,
+    ) -> Result<i64, ConstExprError> {
+        Self::evaluate_expr(&Self::parse(tokens)?, Some(is_defined))
+    }
+
+    fn evaluate_expr(
+        expression: &ConstExpr,
+        is_defined: Option<&dyn Fn(&str) -> bool>,
+    ) -> Result<i64, ConstExprError> {
         match expression {
             ConstExpr::Integer(value) => Ok(*value),
-            ConstExpr::Identifier(name) => Err(ConstExprError::UnsupportedIdentifier(name.clone())),
+            ConstExpr::Identifier(name) => match is_defined {
+                Some(_) => Ok(0),
+                None => Err(ConstExprError::UnsupportedIdentifier(name.clone())),
+            },
             ConstExpr::SizeOf(_) => Err(ConstExprError::UnsupportedSizeOf),
             ConstExpr::AlignOf { .. } => Err(ConstExprError::UnsupportedAlignOf),
-            ConstExpr::Call { callee, .. } => {
-                Err(ConstExprError::UnsupportedCall(callee.to_string()))
+            ConstExpr::Call { callee, arguments } => {
+                match (is_defined, callee.as_ref(), arguments.as_slice()) {
+                    (Some(is_defined), ConstExpr::Identifier(name), [ConstExpr::Identifier(macro_name)])
+                        if name == "defined" =>
+                    {
+                        Ok(is_defined(macro_name) as i64)
+                    }
+                    (Some(_), ConstExpr::Identifier(name), [ConstExpr::Identifier(_)])
+                        if name == "__has_include" || name == "__has_include_next" =>
+                    {
+                        Ok(0)
+                    }
+                    _ => Err(ConstExprError::UnsupportedCall(callee.to_string())),
+                }
             }
-            ConstExpr::Cast { value, .. } => Self::evaluate_expr(value),
+            ConstExpr::Cast { value, .. } => Self::evaluate_expr(value, is_defined),
             ConstExpr::Unary { op, value } => {
-                let value = Self::evaluate_expr(value)?;
+                let value = Self::evaluate_expr(value, is_defined)?;
                 match op {
                     UnaryOp::Plus => Ok(value),
                     UnaryOp::Minus => value.checked_neg().ok_or(ConstExprError::IntegerOverflow),
@@ -314,11 +339,11 @@ impl Parser {
                 }
             }
             ConstExpr::Binary { op, left, right } => {
-                let left = Self::evaluate_expr(left)?;
+                let left = Self::evaluate_expr(left, is_defined)?;
                 if *op == BinaryOp::And && left == 0 || *op == BinaryOp::Or && left != 0 {
                     return Ok((*op == BinaryOp::Or) as i64);
                 }
-                let right = Self::evaluate_expr(right)?;
+                let right = Self::evaluate_expr(right, is_defined)?;
                 let value = match op {
                     BinaryOp::Add => left.checked_add(right),
                     BinaryOp::Sub => left.checked_sub(right),
@@ -346,15 +371,15 @@ impl Parser {
                 then_value,
                 else_value,
             } => {
-                if Self::evaluate_expr(condition)? != 0 {
-                    Self::evaluate_expr(then_value)
+                if Self::evaluate_expr(condition, is_defined)? != 0 {
+                    Self::evaluate_expr(then_value, is_defined)
                 } else {
-                    Self::evaluate_expr(else_value)
+                    Self::evaluate_expr(else_value, is_defined)
                 }
             }
             ConstExpr::Comma(left, right) => {
-                Self::evaluate_expr(left)?;
-                Self::evaluate_expr(right)
+                Self::evaluate_expr(left, is_defined)?;
+                Self::evaluate_expr(right, is_defined)
             }
             ConstExpr::Assign { .. } => Err(ConstExprError::NotConstant("assignment")),
             ConstExpr::Member { .. } => Err(ConstExprError::NotConstant("member access")),
@@ -738,6 +763,12 @@ impl Parser {
                 | Token::Utf32CharLit(raw)
                 | Token::WideCharLit(raw),
             ) => Ok(ConstExpr::Integer(crate::lexer::decode_char_literal(raw))),
+            Some(Token::Ident(value)) if value == "defined" => self.parse_defined(),
+            Some(Token::Ident(value))
+                if value == "__has_include" || value == "__has_include_next" =>
+            {
+                self.parse_has_include(value.clone())
+            }
             Some(Token::Ident(value)) => Ok(ConstExpr::Identifier(value.clone())),
             Some(Token::Keyword(keyword)) => {
                 Ok(ConstExpr::Identifier(<&str>::from(*keyword).into()))
@@ -745,6 +776,60 @@ impl Parser {
             Some(token) => Err(ConstExprError::UnexpectedToken(token.clone())),
             None => Err(ConstExprError::ExpectedIntegerExpression),
         }
+    }
+
+    fn parse_defined(&mut self) -> Result<ConstExpr, ConstExprError> {
+        let parenthesized = self.peek() == Some(&Token::LParen);
+        if parenthesized {
+            self.take();
+        }
+        let name = match self.take() {
+            Some(Token::Ident(value)) => value,
+            Some(token) => return Err(ConstExprError::UnexpectedToken(token)),
+            None => return Err(ConstExprError::ExpectedIntegerExpression),
+        };
+        if parenthesized && self.take() != Some(Token::RParen) {
+            return Err(ConstExprError::ExpectedRParen);
+        }
+        Ok(ConstExpr::Call {
+            callee: Box::new(ConstExpr::Identifier("defined".to_string())),
+            arguments: vec![ConstExpr::Identifier(name)],
+        })
+    }
+
+    fn parse_has_include(&mut self, name: String) -> Result<ConstExpr, ConstExprError> {
+        if self.take() != Some(Token::LParen) {
+            return Err(ConstExprError::ExpectedLParen);
+        }
+        let header = if self.peek() == Some(&Token::Less) {
+            self.take();
+            let mut text = String::new();
+            loop {
+                match self.take() {
+                    Some(Token::Greater) => break,
+                    Some(Token::Ident(part)) => text.push_str(&part),
+                    Some(Token::Dot) => text.push('.'),
+                    Some(Token::Slash) => text.push('/'),
+                    Some(Token::Minus) => text.push('-'),
+                    Some(token) => return Err(ConstExprError::UnexpectedToken(token)),
+                    None => return Err(ConstExprError::ExpectedRParen),
+                }
+            }
+            format!("<{text}>")
+        } else {
+            match self.take() {
+                Some(Token::StringLit(text)) => format!("\"{text}\""),
+                Some(token) => return Err(ConstExprError::UnexpectedToken(token)),
+                None => return Err(ConstExprError::ExpectedIntegerExpression),
+            }
+        };
+        if self.take() != Some(Token::RParen) {
+            return Err(ConstExprError::ExpectedRParen);
+        }
+        Ok(ConstExpr::Call {
+            callee: Box::new(ConstExpr::Identifier(name)),
+            arguments: vec![ConstExpr::Identifier(header)],
+        })
     }
 
     fn binary_operator(&self) -> Option<(BinaryOp, u8)> {
