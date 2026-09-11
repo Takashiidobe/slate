@@ -410,8 +410,10 @@ int main() {
 // DEFAULT-NEXT:           name: "main",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   IntLit(
-// DEFAULT-NEXT:                       0,
+// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                       Integer(
+// DEFAULT-NEXT:                           0,
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
@@ -789,8 +791,10 @@ int main() {
 // DEFAULT-NEXT:           name: "main",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   IntLit(
-// DEFAULT-NEXT:                       0,
+// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                       Integer(
+// DEFAULT-NEXT:                           0,
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
@@ -1193,8 +1197,10 @@ int main() {
 // ENABLED-NEXT:           name: "main",
 // ENABLED-NEXT:           body: [
 // ENABLED-NEXT:               Return(
-// ENABLED-NEXT:                   IntLit(
-// ENABLED-NEXT:                       0,
+// ENABLED-NEXT:                   Const(
+// ENABLED-NEXT:                       Integer(
+// ENABLED-NEXT:                           0,
+// ENABLED-NEXT:                       ),
 // ENABLED-NEXT:                   ),
 // ENABLED-NEXT:               ),
 // ENABLED-NEXT:           ],
@@ -1572,8 +1578,10 @@ int main() {
 // ENABLED-NEXT:           name: "main",
 // ENABLED-NEXT:           body: [
 // ENABLED-NEXT:               Return(
-// ENABLED-NEXT:                   IntLit(
-// ENABLED-NEXT:                       0,
+// ENABLED-NEXT:                   Const(
+// ENABLED-NEXT:                       Integer(
+// ENABLED-NEXT:                           0,
+// ENABLED-NEXT:                       ),
 // ENABLED-NEXT:                   ),
 // ENABLED-NEXT:               ),
 // ENABLED-NEXT:           ],

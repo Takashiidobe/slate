@@ -214,7 +214,7 @@ fn is_integer_constant_expression(expression: &ConstExpr) -> bool {
         ConstExpr::Binary { left, right, .. } => {
             is_integer_constant_expression(left) && is_integer_constant_expression(right)
         }
-        ConstExpr::Identifier(_) => false,
+        ConstExpr::Identifier(_) | ConstExpr::Call { .. } => false,
     }
 }
 

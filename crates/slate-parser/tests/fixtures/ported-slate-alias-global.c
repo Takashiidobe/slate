@@ -12,8 +12,8 @@ int main(void) {
 // SLATE-FILECHECK-ERROR GCC
 
 // SLATE-FILECHECK-BEGIN GCC
-// GCC: Error:   × unsupported expression
-// GCC: ╰─▶ unsupported expression
+// GCC: Error:   × unexpected tokens after expression
+// GCC: ╰─▶ unexpected tokens after expression
 // GCC: ╭─[tests/fixtures/ported-slate-alias-global.c:1:1]
 // GCC: 1 │ int        real_global = 12;
 // GCC: · ────────────

@@ -470,6 +470,71 @@ fn literal_end(chars: &[char], start: usize, delimiter: char) -> usize {
     i
 }
 
+pub fn decode_char_literal(raw: &str) -> i64 {
+    let chars: Vec<char> = raw.chars().collect();
+    let mut codepoints = Vec::new();
+    let mut i = 0;
+    while i < chars.len() {
+        let (codepoint, next) = decode_char_escape(&chars, i);
+        codepoints.push(codepoint);
+        i = next;
+    }
+    match codepoints.as_slice() {
+        [] => 0,
+        [single] => i64::from(*single),
+        multiple => multiple
+            .iter()
+            .fold(0i64, |acc, &codepoint| (acc << 8) | i64::from(codepoint as u8)),
+    }
+}
+
+fn decode_char_escape(chars: &[char], i: usize) -> (u32, usize) {
+    if chars[i] != '\\' {
+        return (chars[i] as u32, i + 1);
+    }
+    let j = i + 1;
+    match chars.get(j) {
+        Some('n') => (0x0A, j + 1),
+        Some('t') => (0x09, j + 1),
+        Some('r') => (0x0D, j + 1),
+        Some('a') => (0x07, j + 1),
+        Some('b') => (0x08, j + 1),
+        Some('f') => (0x0C, j + 1),
+        Some('v') => (0x0B, j + 1),
+        Some('e') => (0x1B, j + 1),
+        Some('\\') => (0x5C, j + 1),
+        Some('\'') => (0x27, j + 1),
+        Some('"') => (0x22, j + 1),
+        Some('?') => (0x3F, j + 1),
+        Some('x') => hex_char_escape(chars, j + 1, usize::MAX),
+        Some('u') => hex_char_escape(chars, j + 1, 4),
+        Some('U') => hex_char_escape(chars, j + 1, 8),
+        Some(digit) if digit.is_digit(8) => {
+            let mut end = j;
+            let mut value = 0u32;
+            let mut count = 0;
+            while count < 3 && chars.get(end).is_some_and(|c| c.is_digit(8)) {
+                value = value * 8 + chars[end].to_digit(8).unwrap();
+                end += 1;
+                count += 1;
+            }
+            (value, end)
+        }
+        Some(&other) => (other as u32, j + 1),
+        None => (0, j),
+    }
+}
+
+fn hex_char_escape(chars: &[char], start: usize, max_digits: usize) -> (u32, usize) {
+    let mut end = start;
+    let mut value = 0u32;
+    while end - start < max_digits && chars.get(end).is_some_and(char::is_ascii_hexdigit) {
+        value = value * 16 + chars[end].to_digit(16).unwrap();
+        end += 1;
+    }
+    (value, end)
+}
+
 fn universal_character_name_end(chars: &[char], i: usize) -> usize {
     match (chars.get(i + 1), chars.get(i + 2)) {
         (Some('u'), _) => (i + 6).min(chars.len()),

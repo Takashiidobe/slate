@@ -217,8 +217,10 @@ int picked(void) {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               [
 // DEFAULT-NEXT:                                   Return(
-// DEFAULT-NEXT:                                       IntLit(
-// DEFAULT-NEXT:                                           3,
+// DEFAULT-NEXT:                                       Const(
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               3,
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ],
@@ -236,8 +238,10 @@ int picked(void) {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               [
 // DEFAULT-NEXT:                                   Return(
-// DEFAULT-NEXT:                                       IntLit(
-// DEFAULT-NEXT:                                           4,
+// DEFAULT-NEXT:                                       Const(
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               4,
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ],
@@ -317,8 +321,10 @@ int picked(void) {
 // DEFAULT-NEXT:           name: "picked",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   IntLit(
-// DEFAULT-NEXT:                       4,
+// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                       Integer(
+// DEFAULT-NEXT:                           4,
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
@@ -523,8 +529,10 @@ int picked(void) {
 // SELECT-NEXT:                               ),
 // SELECT-NEXT:                               [
 // SELECT-NEXT:                                   Return(
-// SELECT-NEXT:                                       IntLit(
-// SELECT-NEXT:                                           3,
+// SELECT-NEXT:                                       Const(
+// SELECT-NEXT:                                           Integer(
+// SELECT-NEXT:                                               3,
+// SELECT-NEXT:                                           ),
 // SELECT-NEXT:                                       ),
 // SELECT-NEXT:                                   ),
 // SELECT-NEXT:                               ],
@@ -542,8 +550,10 @@ int picked(void) {
 // SELECT-NEXT:                               ),
 // SELECT-NEXT:                               [
 // SELECT-NEXT:                                   Return(
-// SELECT-NEXT:                                       IntLit(
-// SELECT-NEXT:                                           4,
+// SELECT-NEXT:                                       Const(
+// SELECT-NEXT:                                           Integer(
+// SELECT-NEXT:                                               4,
+// SELECT-NEXT:                                           ),
 // SELECT-NEXT:                                       ),
 // SELECT-NEXT:                                   ),
 // SELECT-NEXT:                               ],
@@ -624,8 +634,10 @@ int picked(void) {
 // SELECT-NEXT:           name: "picked",
 // SELECT-NEXT:           body: [
 // SELECT-NEXT:               Return(
-// SELECT-NEXT:                   IntLit(
-// SELECT-NEXT:                       3,
+// SELECT-NEXT:                   Const(
+// SELECT-NEXT:                       Integer(
+// SELECT-NEXT:                           3,
+// SELECT-NEXT:                       ),
 // SELECT-NEXT:                   ),
 // SELECT-NEXT:               ),
 // SELECT-NEXT:           ],

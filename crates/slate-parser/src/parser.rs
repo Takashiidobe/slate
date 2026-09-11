@@ -782,6 +782,23 @@ fn parse_attribute_expression(arguments: &[Token]) -> Result<const_expr::ConstEx
     const_expr::Parser::parse(arguments).map_err(|error| error.to_string())
 }
 
+fn matching_brace(tokens: &[Token], open: usize) -> Option<usize> {
+    let mut depth = 0i32;
+    for (offset, token) in tokens[open..].iter().enumerate() {
+        match token {
+            Token::LBrace => depth += 1,
+            Token::RBrace => {
+                depth -= 1;
+                if depth == 0 {
+                    return Some(open + offset);
+                }
+            }
+            _ => {}
+        }
+    }
+    None
+}
+
 trait AttributeName {
     fn is_attribute_name(&self) -> bool;
 }
@@ -1547,6 +1564,27 @@ impl Parser {
             ));
         }
 
+        if let Some(same_line_close) = matching_brace(&sig_tokens, body_index) {
+            let body =
+                self.parse_stmts_from_tokens(code, &sig_tokens[body_index + 1..same_line_close])?;
+            return Ok((
+                FunctionDecl {
+                    ret_type,
+                    name,
+                    parameters,
+                    variadic,
+                    body,
+                    provenance,
+                    qualifiers,
+                    storage,
+                    is_inline,
+                    is_noreturn,
+                    attributes,
+                },
+                1,
+            ));
+        }
+
         let close_idx = nodes[1..]
             .iter()
             .position(|n| {
@@ -1759,11 +1797,11 @@ impl Parser {
                 associations,
             });
         }
-        match tokens {
-            [Token::IntLit(value)] => Ok(Expr::IntLit(*value)),
-            [Token::StringLit(value)] => Ok(Expr::StringLit(value.clone())),
-            [Token::Ident(name)] => Ok(Expr::Identifier(name.clone())),
-            _ => Err(self.error_at(code, 0, code.len(), "unsupported expression")),
+        if let [Token::StringLit(value)] = tokens {
+            return Ok(Expr::StringLit(value.clone()));
         }
+        const_expr::Parser::parse(tokens)
+            .map(|expression| Expr::Const(Box::new(expression)))
+            .map_err(|error| self.error_at(code, 0, code.len(), error.to_string()))
     }
 }

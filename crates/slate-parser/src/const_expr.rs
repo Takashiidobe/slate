@@ -16,6 +16,10 @@ pub enum ConstExpr {
         left: Box<Self>,
         right: Box<Self>,
     },
+    Call {
+        callee: String,
+        arguments: Vec<Self>,
+    },
 }
 
 impl std::fmt::Display for ConstExpr {
@@ -27,6 +31,16 @@ impl std::fmt::Display for ConstExpr {
             Self::Unary { op, value } => write!(formatter, "{}{}", <&str>::from(*op), value),
             Self::Binary { op, left, right } => {
                 write!(formatter, "({left} {} {right})", <&str>::from(*op))
+            }
+            Self::Call { callee, arguments } => {
+                write!(formatter, "{callee}(")?;
+                for (index, argument) in arguments.iter().enumerate() {
+                    if index > 0 {
+                        write!(formatter, ", ")?;
+                    }
+                    write!(formatter, "{argument}")?;
+                }
+                write!(formatter, ")")
             }
         }
     }
@@ -116,6 +130,8 @@ pub enum ConstExprError {
     UnexpectedToken(Token),
     #[error("expected integer expression")]
     ExpectedIntegerExpression,
+    #[error("call to `{0}` is not a constant expression")]
+    UnsupportedCall(String),
 }
 
 pub struct Parser {
@@ -142,6 +158,7 @@ impl Parser {
             ConstExpr::Integer(value) => Ok(*value),
             ConstExpr::Identifier(name) => Err(ConstExprError::UnsupportedIdentifier(name.clone())),
             ConstExpr::SizeOf(_) => Err(ConstExprError::UnsupportedSizeOf),
+            ConstExpr::Call { callee, .. } => Err(ConstExprError::UnsupportedCall(callee.clone())),
             ConstExpr::Unary { op, value } => {
                 let value = Self::evaluate_expr(value)?;
                 match op {
@@ -242,6 +259,35 @@ impl Parser {
                 value: Box::new(self.parse_unary()?),
             });
         }
+        self.parse_postfix()
+    }
+
+    fn parse_postfix(&mut self) -> Result<ConstExpr, ConstExprError> {
+        let mut expression = self.parse_primary()?;
+        while self.peek() == Some(&Token::LParen) {
+            let ConstExpr::Identifier(callee) = expression else {
+                break;
+            };
+            self.take();
+            let mut arguments = Vec::new();
+            if self.peek() != Some(&Token::RParen) {
+                loop {
+                    arguments.push(self.parse_binary(0)?);
+                    if self.peek() != Some(&Token::Comma) {
+                        break;
+                    }
+                    self.take();
+                }
+            }
+            if self.take() != Some(Token::RParen) {
+                return Err(ConstExprError::ExpectedRParen);
+            }
+            expression = ConstExpr::Call { callee, arguments };
+        }
+        Ok(expression)
+    }
+
+    fn parse_primary(&mut self) -> Result<ConstExpr, ConstExprError> {
         if self.take() == Some(Token::LParen) {
             let expression = self.parse_binary(0)?;
             if self.take() != Some(Token::RParen) {
@@ -251,6 +297,13 @@ impl Parser {
         }
         match self.tokens.get(self.position.saturating_sub(1)) {
             Some(Token::IntLit(value)) => Ok(ConstExpr::Integer(*value)),
+            Some(
+                Token::CharLit(raw)
+                | Token::Utf8CharLit(raw)
+                | Token::Utf16CharLit(raw)
+                | Token::Utf32CharLit(raw)
+                | Token::WideCharLit(raw),
+            ) => Ok(ConstExpr::Integer(crate::lexer::decode_char_literal(raw))),
             Some(Token::Ident(value)) => Ok(ConstExpr::Identifier(value.clone())),
             Some(Token::Keyword(keyword)) => {
                 Ok(ConstExpr::Identifier(<&str>::from(*keyword).into()))

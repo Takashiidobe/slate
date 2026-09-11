@@ -152,8 +152,10 @@ int prescanned() {
 // DEFAULT-NEXT:           name: "prescanned",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   IntLit(
-// DEFAULT-NEXT:                       7,
+// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                       Integer(
+// DEFAULT-NEXT:                           7,
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
@@ -302,8 +304,10 @@ int prescanned() {
 // DEFAULT-NEXT:           name: "prescanned",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   IntLit(
-// DEFAULT-NEXT:                       7,
+// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                       Integer(
+// DEFAULT-NEXT:                           7,
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],

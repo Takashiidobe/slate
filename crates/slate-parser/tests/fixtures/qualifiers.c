@@ -202,8 +202,10 @@ static inline int helper() {
 // DEFAULT-NEXT:           name: "helper",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   IntLit(
-// DEFAULT-NEXT:                       1,
+// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                       Integer(
+// DEFAULT-NEXT:                           1,
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
@@ -408,8 +410,10 @@ static inline int helper() {
 // DEFAULT-NEXT:           name: "helper",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   IntLit(
-// DEFAULT-NEXT:                       1,
+// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                       Integer(
+// DEFAULT-NEXT:                           1,
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],

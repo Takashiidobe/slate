@@ -36,8 +36,10 @@ int main() {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               [
 // DEFAULT-NEXT:                                   Return(
-// DEFAULT-NEXT:                                       IntLit(
-// DEFAULT-NEXT:                                           0,
+// DEFAULT-NEXT:                                       Const(
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               0,
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ],
@@ -63,8 +65,10 @@ int main() {
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   [
 // DEFAULT-NEXT:                                                       Return(
-// DEFAULT-NEXT:                                                           IntLit(
-// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           Const(
+// DEFAULT-NEXT:                                                               Integer(
+// DEFAULT-NEXT:                                                                   1,
+// DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ],
@@ -77,8 +81,10 @@ int main() {
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   [
 // DEFAULT-NEXT:                                                       Return(
-// DEFAULT-NEXT:                                                           IntLit(
-// DEFAULT-NEXT:                                                               2,
+// DEFAULT-NEXT:                                                           Const(
+// DEFAULT-NEXT:                                                               Integer(
+// DEFAULT-NEXT:                                                                   2,
+// DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ],
@@ -108,8 +114,10 @@ int main() {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               [
 // DEFAULT-NEXT:                                   Return(
-// DEFAULT-NEXT:                                       IntLit(
-// DEFAULT-NEXT:                                           3,
+// DEFAULT-NEXT:                                       Const(
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               3,
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ],
@@ -139,8 +147,10 @@ int main() {
 // DEFAULT-NEXT:           name: "main",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   IntLit(
-// DEFAULT-NEXT:                       2,
+// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                       Integer(
+// DEFAULT-NEXT:                           2,
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
@@ -175,8 +185,10 @@ int main() {
 // INNER-NEXT:                               ),
 // INNER-NEXT:                               [
 // INNER-NEXT:                                   Return(
-// INNER-NEXT:                                       IntLit(
-// INNER-NEXT:                                           0,
+// INNER-NEXT:                                       Const(
+// INNER-NEXT:                                           Integer(
+// INNER-NEXT:                                               0,
+// INNER-NEXT:                                           ),
 // INNER-NEXT:                                       ),
 // INNER-NEXT:                                   ),
 // INNER-NEXT:                               ],
@@ -202,8 +214,10 @@ int main() {
 // INNER-NEXT:                                                   ),
 // INNER-NEXT:                                                   [
 // INNER-NEXT:                                                       Return(
-// INNER-NEXT:                                                           IntLit(
-// INNER-NEXT:                                                               1,
+// INNER-NEXT:                                                           Const(
+// INNER-NEXT:                                                               Integer(
+// INNER-NEXT:                                                                   1,
+// INNER-NEXT:                                                               ),
 // INNER-NEXT:                                                           ),
 // INNER-NEXT:                                                       ),
 // INNER-NEXT:                                                   ],
@@ -216,8 +230,10 @@ int main() {
 // INNER-NEXT:                                                   ),
 // INNER-NEXT:                                                   [
 // INNER-NEXT:                                                       Return(
-// INNER-NEXT:                                                           IntLit(
-// INNER-NEXT:                                                               2,
+// INNER-NEXT:                                                           Const(
+// INNER-NEXT:                                                               Integer(
+// INNER-NEXT:                                                                   2,
+// INNER-NEXT:                                                               ),
 // INNER-NEXT:                                                           ),
 // INNER-NEXT:                                                       ),
 // INNER-NEXT:                                                   ],
@@ -247,8 +263,10 @@ int main() {
 // INNER-NEXT:                               ),
 // INNER-NEXT:                               [
 // INNER-NEXT:                                   Return(
-// INNER-NEXT:                                       IntLit(
-// INNER-NEXT:                                           3,
+// INNER-NEXT:                                       Const(
+// INNER-NEXT:                                           Integer(
+// INNER-NEXT:                                               3,
+// INNER-NEXT:                                           ),
 // INNER-NEXT:                                       ),
 // INNER-NEXT:                                   ),
 // INNER-NEXT:                               ],
@@ -278,8 +296,10 @@ int main() {
 // INNER-NEXT:           name: "main",
 // INNER-NEXT:           body: [
 // INNER-NEXT:               Return(
-// INNER-NEXT:                   IntLit(
-// INNER-NEXT:                       1,
+// INNER-NEXT:                   Const(
+// INNER-NEXT:                       Integer(
+// INNER-NEXT:                           1,
+// INNER-NEXT:                       ),
 // INNER-NEXT:                   ),
 // INNER-NEXT:               ),
 // INNER-NEXT:           ],
