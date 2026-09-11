@@ -161,14 +161,35 @@ impl<'a> Preprocessor<'a> {
             } else if trimmed.is_empty() {
                 *pos += 1;
             } else {
-                let expanded = self.expand_macros(&lex(trimmed), &mut HashSet::new(), active);
-                nodes.push(PPNode::Code {
-                    text: tokens_source(&expanded),
-                    provenance: Provenance {
-                        line: *pos,
-                        ..provenance
-                    },
-                });
+                let tokens = lex(trimmed);
+                let provenance = Provenance {
+                    line: *pos,
+                    ..provenance
+                };
+                if let Some(conditions) = self.divergent_macro_conditions(&tokens, active) {
+                    nodes.push(PPNode::Conditional(PPConditional {
+                        branches: conditions
+                            .into_iter()
+                            .map(|condition| {
+                                let expanded =
+                                    self.expand_macros(&tokens, &mut HashSet::new(), &condition);
+                                (
+                                    condition,
+                                    vec![PPNode::Code {
+                                        text: tokens_source(&expanded),
+                                        provenance,
+                                    }],
+                                )
+                            })
+                            .collect(),
+                    }));
+                } else {
+                    let expanded = self.expand_macros(&tokens, &mut HashSet::new(), active);
+                    nodes.push(PPNode::Code {
+                        text: tokens_source(&expanded),
+                        provenance,
+                    });
+                }
                 *pos += 1;
             }
         }
@@ -400,6 +421,46 @@ impl<'a> Preprocessor<'a> {
             i = end;
         }
         expanded
+    }
+
+    fn divergent_macro_conditions(
+        &self,
+        tokens: &[Token],
+        active: &Condition,
+    ) -> Option<Vec<Condition>> {
+        for (index, token) in tokens.iter().enumerate() {
+            let Token::Ident(name) = token else {
+                continue;
+            };
+            let Some(conditional) = self.macros.get(name) else {
+                continue;
+            };
+            if conditional
+                .branches
+                .iter()
+                .any(|(condition, _)| condition == active)
+            {
+                continue;
+            }
+            if conditional
+                .branches
+                .iter()
+                .all(|(_, definition)| definition.parameters.is_some())
+                && tokens.get(index + 1) != Some(&Token::LParen)
+            {
+                continue;
+            }
+            let mut conditions = Vec::new();
+            for (condition, _) in &conditional.branches {
+                if !conditions.contains(condition) {
+                    conditions.push(condition.clone());
+                }
+            }
+            if conditions.len() > 1 {
+                return Some(conditions);
+            }
+        }
+        None
     }
 
     fn with_source(&self, error: PPFailure, name: &str, source: &str) -> PPError {
