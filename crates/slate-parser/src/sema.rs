@@ -209,7 +209,10 @@ fn check_attributes(attributes: &[Attribute], provenance: Provenance, errors: &m
 
 fn is_integer_constant_expression(expression: &ConstExpr) -> bool {
     match expression {
-        ConstExpr::Integer(_) | ConstExpr::SizeOf(_) | ConstExpr::AlignOf { .. } => true,
+        ConstExpr::Integer(_)
+        | ConstExpr::SizeOf(_)
+        | ConstExpr::SizeOfType { .. }
+        | ConstExpr::AlignOf { .. } => true,
         ConstExpr::Unary { value, .. } | ConstExpr::Cast { value, .. } => {
             is_integer_constant_expression(value)
         }

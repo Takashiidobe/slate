@@ -1,4 +1,7 @@
-use crate::ast::{CType, Declarator, Designator, Expr, Initializer, InitializerItem};
+use crate::ast::{
+    ArraySize, CType, Declarator, Designator, Expr, FloatingType, Initializer, InitializerItem,
+    IntegerRank, IntegerType,
+};
 use crate::lexer::{Keyword, Token};
 use crate::parser::DeclaratorParser;
 use miette::Diagnostic;
@@ -10,6 +13,10 @@ pub enum ConstExpr {
     Integer(i64),
     Identifier(String),
     SizeOf(Box<Self>),
+    SizeOfType {
+        ty: Box<CType>,
+        declarator: Declarator,
+    },
     AlignOf {
         ty: Box<CType>,
         declarator: Declarator,
@@ -74,6 +81,7 @@ impl std::fmt::Display for ConstExpr {
             Self::Integer(value) => write!(formatter, "{value}"),
             Self::Identifier(value) => formatter.write_str(value),
             Self::SizeOf(value) => write!(formatter, "sizeof({value})"),
+            Self::SizeOfType { .. } => write!(formatter, "sizeof(...)"),
             Self::AlignOf { .. } => write!(formatter, "_Alignof(...)"),
             Self::Unary { op, value } => write!(formatter, "{}{}", <&str>::from(*op), value),
             Self::Binary { op, left, right } => {
@@ -220,6 +228,8 @@ pub enum ConstExprError {
     UnsupportedIdentifier(String),
     #[error("sizeof is not supported here")]
     UnsupportedSizeOf,
+    #[error("cannot compute size of this type")]
+    UnsupportedTypeSize,
     #[error("_Alignof is not supported here")]
     UnsupportedAlignOf,
     #[error("integer overflow")]
@@ -312,6 +322,9 @@ impl Parser {
                 None => Err(ConstExprError::UnsupportedIdentifier(name.clone())),
             },
             ConstExpr::SizeOf(_) => Err(ConstExprError::UnsupportedSizeOf),
+            ConstExpr::SizeOfType { ty, declarator } => {
+                declarator_size(ty, declarator).map(|size| size as i64)
+            }
             ConstExpr::AlignOf { .. } => Err(ConstExprError::UnsupportedAlignOf),
             ConstExpr::Call { callee, arguments } => {
                 match (is_defined, callee.as_ref(), arguments.as_slice()) {
@@ -600,6 +613,16 @@ impl Parser {
     fn parse_unary(&mut self) -> Result<ConstExpr, ConstExprError> {
         if self.peek() == Some(&Token::Sizeof)
             && self.tokens.get(self.position + 1) == Some(&Token::LParen)
+            && let Some(next) = self.tokens.get(self.position + 2)
+            && starts_type_name(next, &self.typedef_names)
+            && let Some((ty, declarator, end)) = self.try_parse_type_name(self.position + 2)
+            && self.tokens.get(end) == Some(&Token::RParen)
+        {
+            self.position = end + 1;
+            return Ok(ConstExpr::SizeOfType { ty, declarator });
+        }
+        if self.peek() == Some(&Token::Sizeof)
+            && self.tokens.get(self.position + 1) == Some(&Token::LParen)
         {
             self.take();
             self.take();
@@ -854,6 +877,71 @@ impl Parser {
             Token::ShiftRight => (BinaryOp::ShiftRight, 4),
             _ => return None,
         })
+    }
+}
+
+fn declarator_size(ty: &CType, declarator: &Declarator) -> Result<u64, ConstExprError> {
+    match declarator {
+        Declarator::Abstract | Declarator::Name(_) => ctype_size(ty),
+        Declarator::Grouped(inner) => declarator_size(ty, inner),
+        Declarator::Pointer { .. } => Ok(8),
+        Declarator::Array { inner, size } => {
+            let element = declarator_size(ty, inner)?;
+            let count = match size {
+                ArraySize::Expression(expr) => match expr.as_ref() {
+                    Expr::IntLit(value) => *value as u64,
+                    _ => return Err(ConstExprError::UnsupportedTypeSize),
+                },
+                ArraySize::Unspecified => return Err(ConstExprError::UnsupportedTypeSize),
+            };
+            Ok(element * count)
+        }
+        Declarator::Function { .. } => Err(ConstExprError::UnsupportedTypeSize),
+    }
+}
+
+fn ctype_size(ty: &CType) -> Result<u64, ConstExprError> {
+    match ty {
+        CType::Void => Ok(1),
+        CType::Bool => Ok(1),
+        CType::Pointer { .. } => Ok(8),
+        CType::Integer(IntegerType::Char { .. }) => Ok(1),
+        CType::Integer(IntegerType::Ranked { rank, .. }) => Ok(match rank {
+            IntegerRank::Short => 2,
+            IntegerRank::Int => 4,
+            IntegerRank::Long => 8,
+            IntegerRank::LongLong => 8,
+            IntegerRank::Int128 => 16,
+        }),
+        CType::Integer(IntegerType::BitInt { .. }) => Err(ConstExprError::UnsupportedTypeSize),
+        CType::Floating(kind) => Ok(match kind {
+            FloatingType::BFloat16 | FloatingType::Float16 | FloatingType::Fp16 => 2,
+            FloatingType::Float => 4,
+            FloatingType::Double | FloatingType::Float64x => 8,
+            FloatingType::LongDouble | FloatingType::Float128 | FloatingType::Float128Ext => 16,
+        }),
+        CType::Complex(inner) => Ok(ctype_size(inner)? * 2),
+        CType::Imaginary(inner) => ctype_size(inner),
+        CType::Qualified { ty, .. } => ctype_size(ty),
+        CType::Atomic(inner) => ctype_size(inner),
+        CType::Array { element, size } => {
+            let element_size = ctype_size(element)?;
+            let count = match size {
+                ArraySize::Expression(expr) => match expr.as_ref() {
+                    Expr::IntLit(value) => *value as u64,
+                    _ => return Err(ConstExprError::UnsupportedTypeSize),
+                },
+                ArraySize::Unspecified => return Err(ConstExprError::UnsupportedTypeSize),
+            };
+            Ok(element_size * count)
+        }
+        CType::TypeOf(_)
+        | CType::TargetBuiltin(_)
+        | CType::Named(_)
+        | CType::Tagged { .. }
+        | CType::Function { .. }
+        | CType::Vector(_)
+        | CType::FixedPoint(_) => Err(ConstExprError::UnsupportedTypeSize),
     }
 }
 

@@ -48,11 +48,15 @@ __attribute__((__const__, __may_alias__)) int aliased;
 // DEFAULT-NEXT:               size: Bytes(
 // DEFAULT-NEXT:                   Binary {
 // DEFAULT-NEXT:                       op: Mul,
-// DEFAULT-NEXT:                       left: SizeOf(
-// DEFAULT-NEXT:                           Identifier(
-// DEFAULT-NEXT:                               "int",
+// DEFAULT-NEXT:                       left: SizeOfType {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           declarator: Abstract,
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       right: Integer(
 // DEFAULT-NEXT:                           4,
 // DEFAULT-NEXT:                       ),
@@ -71,11 +75,15 @@ __attribute__((__const__, __may_alias__)) int aliased;
 // DEFAULT-NEXT:           VectorSize(
 // DEFAULT-NEXT:               Binary {
 // DEFAULT-NEXT:                   op: Mul,
-// DEFAULT-NEXT:                   left: SizeOf(
-// DEFAULT-NEXT:                       Identifier(
-// DEFAULT-NEXT:                           "int",
+// DEFAULT-NEXT:                   left: SizeOfType {
+// DEFAULT-NEXT:                       ty: Integer(
+// DEFAULT-NEXT:                           Ranked {
+// DEFAULT-NEXT:                               rank: Int,
+// DEFAULT-NEXT:                               signed: true,
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       declarator: Abstract,
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   right: Integer(
 // DEFAULT-NEXT:                       4,
 // DEFAULT-NEXT:                   ),
@@ -152,11 +160,15 @@ __attribute__((__const__, __may_alias__)) int aliased;
 // DEFAULT-NEXT:               size: Bytes(
 // DEFAULT-NEXT:                   Binary {
 // DEFAULT-NEXT:                       op: Mul,
-// DEFAULT-NEXT:                       left: SizeOf(
-// DEFAULT-NEXT:                           Identifier(
-// DEFAULT-NEXT:                               "int",
+// DEFAULT-NEXT:                       left: SizeOfType {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           declarator: Abstract,
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       right: Integer(
 // DEFAULT-NEXT:                           4,
 // DEFAULT-NEXT:                       ),
@@ -175,11 +187,15 @@ __attribute__((__const__, __may_alias__)) int aliased;
 // DEFAULT-NEXT:           VectorSize(
 // DEFAULT-NEXT:               Binary {
 // DEFAULT-NEXT:                   op: Mul,
-// DEFAULT-NEXT:                   left: SizeOf(
-// DEFAULT-NEXT:                       Identifier(
-// DEFAULT-NEXT:                           "int",
+// DEFAULT-NEXT:                   left: SizeOfType {
+// DEFAULT-NEXT:                       ty: Integer(
+// DEFAULT-NEXT:                           Ranked {
+// DEFAULT-NEXT:                               rank: Int,
+// DEFAULT-NEXT:                               signed: true,
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       declarator: Abstract,
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   right: Integer(
 // DEFAULT-NEXT:                       4,
 // DEFAULT-NEXT:                   ),
