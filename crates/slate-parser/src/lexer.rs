@@ -24,6 +24,7 @@ pub enum Token {
     Keyword(Keyword),
     Ident(String),
     IntLit(i64),
+    StringLit(String),
     LParen,
     RParen,
     LBrace,
@@ -35,6 +36,7 @@ pub enum Token {
     Ellipsis,
     Semi,
     Equal,
+    Dot,
 }
 
 pub fn lex(src: &str) -> Vec<Token> {
@@ -64,6 +66,15 @@ pub fn lex(src: &str) -> Vec<Token> {
             }
             let n: i64 = chars[start..i].iter().collect::<String>().parse().unwrap();
             tokens.push(Token::IntLit(n));
+        } else if c == '"' {
+            i += 1;
+            let start = i;
+            while i < chars.len() && chars[i] != '"' {
+                i += 1;
+            }
+            assert!(i < chars.len(), "unterminated string literal");
+            tokens.push(Token::StringLit(chars[start..i].iter().collect()));
+            i += 1;
         } else if c.is_ascii_alphabetic() || c == '_' {
             let start = i;
             while i < chars.len() && (chars[i].is_ascii_alphanumeric() || chars[i] == '_') {
@@ -105,6 +116,7 @@ pub fn lex(src: &str) -> Vec<Token> {
                 '*' => Token::Star,
                 ';' => Token::Semi,
                 '=' => Token::Equal,
+                '.' => Token::Dot,
                 other => panic!("unexpected character in phase 0/1 lexer: {other:?}"),
             };
             tokens.push(tok);

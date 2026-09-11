@@ -12,6 +12,26 @@ pub struct Conditional<T> {
 #[derive(Debug, Clone, PartialEq)]
 pub enum Expr {
     IntLit(i64),
+    StringLit(String),
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum Designator {
+    Array(i64),
+    Field(String),
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct InitializerItem {
+    pub designators: Vec<Designator>,
+    pub value: Initializer,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum Initializer {
+    Expr(Expr),
+    List(Vec<InitializerItem>),
+    Conditional(Conditional<Box<Initializer>>),
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -194,6 +214,7 @@ pub struct DeclarationSpecifiers {
 pub struct Declaration {
     pub specifiers: DeclarationSpecifiers,
     pub declarator: Declarator,
+    pub initializer: Option<Initializer>,
 }
 
 #[derive(Debug, Clone, PartialEq)]

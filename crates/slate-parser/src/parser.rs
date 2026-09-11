@@ -105,6 +105,11 @@ impl Parser {
             }
             parser.parse_declarator(false)
         };
+        let initializer = if parser.matches(Token::Equal) {
+            Some(parser.parse_initializer())
+        } else {
+            None
+        };
         if parser.peek() != Some(&Token::Semi) {
             return Err(self.error_at(code, 0, code.len(), "expected `;`"));
         }
@@ -120,6 +125,7 @@ impl Parser {
                 is_inline,
             },
             declarator,
+            initializer,
         })
     }
 
@@ -141,11 +147,57 @@ impl Parser {
                 i += 1;
                 continue;
             }
-            let (decl, consumed) = self.parse_top_level_item(&nodes[i..])?;
+            let (decl, consumed) = if let [
+                PPNode::Code { text, provenance },
+                PPNode::Conditional(cond),
+                ..,
+            ] = &nodes[i..]
+                && text.trim_end().ends_with('=')
+            {
+                (
+                    self.parse_conditional_initializer(text, *provenance, cond)?,
+                    2,
+                )
+            } else {
+                self.parse_top_level_item(&nodes[i..])?
+            };
             decls.push(decl);
             i += consumed;
         }
         Ok(decls)
+    }
+
+    fn parse_conditional_initializer(
+        &self,
+        prefix: &str,
+        provenance: Provenance,
+        conditional: &PPConditional,
+    ) -> Result<Decl, ParseError> {
+        let declaration = self.parse_declaration(&format!("{prefix} 0;"))?;
+        let initializer = Initializer::Conditional(Conditional {
+            branches: conditional
+                .branches
+                .iter()
+                .map(|(condition, nodes)| {
+                    let Some(PPNode::Code { text, .. }) = nodes.first() else {
+                        panic!("conditional initializer branch is empty")
+                    };
+                    let expression = text.trim_end_matches(';').trim();
+                    let mut parser = DeclaratorParser {
+                        tokens: &lex(expression),
+                        pos: 0,
+                    };
+                    (condition.clone(), Box::new(parser.parse_initializer()))
+                })
+                .collect(),
+        });
+        Ok(Decl::Declaration {
+            declaration: Declaration {
+                initializer: Some(initializer),
+                ..declaration
+            },
+            provenance,
+        })
     }
 
     fn parse_top_level_item(&self, nodes: &[PPNode]) -> Result<(Decl, usize), ParseError> {
@@ -168,11 +220,19 @@ impl Parser {
                     Some(Token::Keyword(
                         Keyword::Struct | Keyword::Union | Keyword::Enum
                     ))
-                ) && tokens.contains(&Token::LBrace)
+                ) && matches!(tokens.get(1), Some(Token::LBrace))
+                    || matches!(
+                        tokens.first(),
+                        Some(Token::Keyword(
+                            Keyword::Struct | Keyword::Union | Keyword::Enum
+                        ))
+                    ) && matches!(tokens.get(2), Some(Token::LBrace))
                 {
                     return self.parse_tag_definition(nodes);
                 }
-                if tokens.contains(&Token::Semi) && !tokens.contains(&Token::LBrace) {
+                if tokens.contains(&Token::Semi)
+                    && (!tokens.contains(&Token::LBrace) || tokens.contains(&Token::Equal))
+                {
                     return Ok((
                         Decl::Declaration {
                             declaration: self.parse_declaration(self.node_text(&nodes[0]))?,
@@ -400,6 +460,55 @@ impl<'a> DeclaratorParser<'a> {
             }
             Token::Ident(name) => CType::Named(name),
             other => panic!("expected declaration type, found {other:?}"),
+        }
+    }
+
+    fn parse_initializer(&mut self) -> Initializer {
+        if self.matches(Token::LBrace) {
+            let mut items = Vec::new();
+            while !self.matches(Token::RBrace) {
+                let mut designators = Vec::new();
+                loop {
+                    if self.matches(Token::LBracket) {
+                        let Some(Token::IntLit(index)) = self.peek().cloned() else {
+                            panic!("array designator must be an integer literal")
+                        };
+                        self.pos += 1;
+                        assert!(self.matches(Token::RBracket), "expected `]` in designator");
+                        designators.push(Designator::Array(index));
+                    } else if self.matches(Token::Dot) {
+                        let Some(Token::Ident(name)) = self.peek().cloned() else {
+                            panic!("field designator must name a field")
+                        };
+                        self.pos += 1;
+                        designators.push(Designator::Field(name));
+                    } else {
+                        break;
+                    }
+                }
+                if !designators.is_empty() {
+                    assert!(self.matches(Token::Equal), "expected `=` after designator");
+                }
+                items.push(InitializerItem {
+                    designators,
+                    value: self.parse_initializer(),
+                });
+                if !self.matches(Token::Comma) {
+                    assert!(
+                        self.peek() == Some(&Token::RBrace),
+                        "expected `,` in initializer"
+                    );
+                }
+            }
+            Initializer::List(items)
+        } else {
+            let expr = match self.peek().cloned() {
+                Some(Token::IntLit(value)) => Expr::IntLit(value),
+                Some(Token::StringLit(value)) => Expr::StringLit(value),
+                other => panic!("unsupported initializer expression: {other:?}"),
+            };
+            self.pos += 1;
+            Initializer::Expr(expr)
         }
     }
 

@@ -280,10 +280,13 @@ Corpus generation, clang-version pinning, differential fuzzing loop
 per-configuration typed concrete AST against clang's oracle for that
 configuration).
 
-A first version of the oracle comparison is already implemented
-(`tests/clang_oracle.rs`), ahead of full fuzzing infrastructure, since
-both eval() and the typedef example needed *some* correctness check
-against real clang to be worth trusting. Design decision worth keeping:
+A first version of the oracle comparison is already implemented in the
+filecheck integration test, ahead of full fuzzing infrastructure, since
+eval() and the typedef example needed *some* correctness check against
+real clang to be worth trusting. The comparison is deliberately made
+only after eval: the polyvariant AST retains preprocessing branches and
+is checked by its own FileCheck expectations, while Clang's AST is
+already post-preprocessing and post-sema. Design decision worth keeping:
 this does **not** convert clang's AST JSON into our own `Decl`/`Stmt`
 types wholesale. A full importer would mean maintaining a
 clang-JSON-import rule for every node kind we ever add to our own AST,
@@ -297,8 +300,9 @@ Instead, both sides get projected down into a small canonical
 `DeclSummary` (defined only in the test) — "function X returns these
 integer literals in order", "typedef X aliases this type name" — and
 the two summaries are compared. This only needs to grow in step with
-what *our* AST currently claims to model, not with clang's entire
-schema. Parsing clang's JSON side uses the `clang-ast` crate (dtolnay):
+what *our evaluated, reachable* AST currently claims to model, not with
+clang's entire schema. Parsing clang's JSON side uses the `clang-ast`
+crate (dtolnay):
 you declare only the node-kind variants and fields you care about
 (`FunctionDecl`, `TypedefDecl`, `ReturnStmt`, `IntegerLiteral` so far)
 and an `Other` catch-all absorbs everything else, so adding coverage

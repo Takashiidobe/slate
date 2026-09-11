@@ -40,10 +40,11 @@ impl<W: Write> Renderer<W> {
                     self.render_stmts(&function.body, &format!("{indent}  "))?;
                 }
                 Decl::Declaration { declaration, .. } => self.line(&format!(
-                    "{indent}{label}[{index}]: declaration type={}{} declarator={}",
+                    "{indent}{label}[{index}]: declaration type={}{} declarator={}{}",
                     Self::type_name(&declaration.specifiers.ty),
                     Self::specifier_suffix(&declaration.specifiers),
-                    Self::render_declarator(&declaration.declarator)
+                    Self::render_declarator(&declaration.declarator),
+                    Self::initializer_suffix(declaration.initializer.as_ref())
                 ))?,
                 Decl::Typedef { name, ty, .. } => self.line(&format!(
                     "{indent}{label}[{index}]: typedef name={name} type={}",
@@ -106,6 +107,9 @@ impl<W: Write> Renderer<W> {
                 Stmt::Return(Expr::IntLit(value)) => {
                     self.line(&format!("{indent}stmt[{index}]: return {value}"))?;
                 }
+                Stmt::Return(Expr::StringLit(value)) => {
+                    self.line(&format!("{indent}stmt[{index}]: return string={value}"))?;
+                }
                 Stmt::Conditional(conditional) => {
                     self.line(&format!("{indent}stmt[{index}]: conditional"))?;
                     for (branch_index, (condition, branch)) in
@@ -147,14 +151,18 @@ impl<W: Write> Renderer<W> {
                             ConcreteStmt::Return(Expr::IntLit(value)) => {
                                 self.line(&format!("{indent}  stmt[{stmt_index}]: return {value}"))?
                             }
+                            ConcreteStmt::Return(Expr::StringLit(value)) => self.line(&format!(
+                                "{indent}  stmt[{stmt_index}]: return string={value}"
+                            ))?,
                         }
                     }
                 }
                 ConcreteDecl::Declaration { declaration, .. } => self.line(&format!(
-                    "{indent}{label}[{index}]: declaration type={}{} declarator={}",
+                    "{indent}{label}[{index}]: declaration type={}{} declarator={}{}",
                     Self::type_name(&declaration.specifiers.ty),
                     Self::specifier_suffix(&declaration.specifiers),
-                    Self::render_declarator(&declaration.declarator)
+                    Self::render_declarator(&declaration.declarator),
+                    Self::initializer_suffix(declaration.initializer.as_ref())
                 ))?,
                 ConcreteDecl::Typedef { name, ty, .. } => self.line(&format!(
                     "{indent}{label}[{index}]: typedef name={name} type={}",
@@ -178,6 +186,54 @@ impl<W: Write> Renderer<W> {
 
     fn line(&mut self, text: &str) -> io::Result<()> {
         writeln!(self.out, "{text}")
+    }
+
+    fn initializer_suffix(initializer: Option<&Initializer>) -> String {
+        initializer.map_or(String::new(), |value| {
+            format!(" initializer={}", Self::initializer_name(value))
+        })
+    }
+
+    fn initializer_name(initializer: &Initializer) -> String {
+        match initializer {
+            Initializer::Expr(Expr::IntLit(value)) => format!("expr({value})"),
+            Initializer::Expr(Expr::StringLit(value)) => format!("expr(string={value})"),
+            Initializer::List(items) => format!(
+                "list[{}]",
+                items
+                    .iter()
+                    .map(Self::initializer_item_name)
+                    .collect::<Vec<_>>()
+                    .join(",")
+            ),
+            Initializer::Conditional(conditional) => format!(
+                "conditional[{}]",
+                conditional
+                    .branches
+                    .iter()
+                    .map(|(condition, value)| {
+                        format!(
+                            "when={}=>{}",
+                            Self::condition_name(condition),
+                            Self::initializer_name(value)
+                        )
+                    })
+                    .collect::<Vec<_>>()
+                    .join(",")
+            ),
+        }
+    }
+
+    fn initializer_item_name(item: &InitializerItem) -> String {
+        let designators = item
+            .designators
+            .iter()
+            .map(|designator| match designator {
+                Designator::Array(index) => format!("array({index})="),
+                Designator::Field(name) => format!("field({name})="),
+            })
+            .collect::<String>();
+        format!("{designators}{}", Self::initializer_name(&item.value))
     }
 
     fn condition_name(condition: &Condition) -> String {
@@ -287,6 +343,7 @@ impl<W: Write> Renderer<W> {
         match value {
             None => "implicit".into(),
             Some(Expr::IntLit(value)) => value.to_string(),
+            Some(Expr::StringLit(value)) => format!("string={value}"),
         }
     }
 
@@ -295,6 +352,7 @@ impl<W: Write> Renderer<W> {
             ArraySize::Unspecified => "unspecified".into(),
             ArraySize::Expression(value) => match value.as_ref() {
                 Expr::IntLit(value) => value.to_string(),
+                Expr::StringLit(value) => format!("string={value}"),
             },
         }
     }

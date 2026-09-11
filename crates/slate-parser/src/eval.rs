@@ -45,7 +45,13 @@ impl Decl {
                 declaration,
                 provenance,
             } => vec![ConcreteDecl::Declaration {
-                declaration: declaration.clone(),
+                declaration: Declaration {
+                    initializer: declaration
+                        .initializer
+                        .as_ref()
+                        .and_then(|initializer| initializer.eval(env)),
+                    ..declaration.clone()
+                },
                 provenance: *provenance,
             }],
             Self::Typedef {
@@ -97,6 +103,28 @@ impl<T> Conditional<T> {
             }
         }
         selected
+    }
+}
+
+impl Initializer {
+    pub fn eval(&self, env: &Env) -> Option<Self> {
+        match self {
+            Self::Expr(_) => Some(self.clone()),
+            Self::List(items) => Some(Self::List(
+                items
+                    .iter()
+                    .filter_map(|item| {
+                        Some(InitializerItem {
+                            designators: item.designators.clone(),
+                            value: item.value.eval(env)?,
+                        })
+                    })
+                    .collect(),
+            )),
+            Self::Conditional(conditional) => conditional
+                .select_branch(env)
+                .and_then(|initializer| initializer.eval(env)),
+        }
     }
 }
 

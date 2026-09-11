@@ -165,7 +165,7 @@ fn run_fixture(fixture: &Path, prefix: &str, defines: &[String], slot: usize) {
         String::from_utf8_lossy(&result.stderr)
     );
 
-    assert_matches_clang(fixture, defines);
+    assert_evaluated_matches_clang(fixture, defines);
 }
 
 fn run_error_fixture(fixture: &Path, prefix: &str, slot: usize) {
@@ -208,7 +208,7 @@ fn run_error_fixture(fixture: &Path, prefix: &str, slot: usize) {
     );
 }
 
-fn assert_matches_clang(fixture: &Path, defines: &[String]) {
+fn assert_evaluated_matches_clang(fixture: &Path, defines: &[String]) {
     let search = SearchPaths::default();
     let mut parser = Parser::new(search);
     let (ast, _) = parser.parse_file(fixture).expect("parse fixture");
@@ -216,7 +216,8 @@ fn assert_matches_clang(fixture: &Path, defines: &[String]) {
     for define in defines {
         env = env.define(macro_name(define));
     }
-    let ours = summarize_ours(&ast.eval(&env));
+    let evaluated = ast.eval(&env);
+    let ours = summarize_evaluated(&evaluated);
     let theirs = summarize_clang(&run_clang_ast(fixture, defines));
     for summary in &ours {
         if matches!(summary, DeclSummary::Object { name, .. } if name == "<abstract>") {
@@ -227,7 +228,7 @@ fn assert_matches_clang(fixture: &Path, defines: &[String]) {
         }
         assert!(
             theirs.contains(summary),
-            "our reachable summary is absent from clang for {}:\nours: {summary:?}\nclang: {theirs:?}",
+            "our evaluated reachable summary is absent from clang for {}:\nours: {summary:?}\nclang: {theirs:?}",
             fixture.display()
         );
     }
@@ -259,11 +260,11 @@ fn run_clang_ast(fixture: &Path, defines: &[String]) -> ClangNode {
     serde_json::from_slice(&output.stdout).expect("clang emitted invalid AST JSON")
 }
 
-fn summarize_ours(tu: &ConcreteTranslationUnit) -> Vec<DeclSummary> {
-    tu.decls.iter().map(summarize_ours_decl).collect()
+fn summarize_evaluated(tu: &ConcreteTranslationUnit) -> Vec<DeclSummary> {
+    tu.decls.iter().map(summarize_evaluated_decl).collect()
 }
 
-fn summarize_ours_decl(decl: &ConcreteDecl) -> DeclSummary {
+fn summarize_evaluated_decl(decl: &ConcreteDecl) -> DeclSummary {
     match decl {
         ConcreteDecl::Function(function) => DeclSummary::Function {
             name: function.name.clone(),
@@ -272,6 +273,9 @@ fn summarize_ours_decl(decl: &ConcreteDecl) -> DeclSummary {
                 .iter()
                 .map(|stmt| match stmt {
                     ConcreteStmt::Return(Expr::IntLit(value)) => *value,
+                    ConcreteStmt::Return(Expr::StringLit(_)) => {
+                        panic!("clang return was not an integer")
+                    }
                 })
                 .collect(),
             signature: None,
@@ -551,6 +555,7 @@ fn array_size(size: &ArraySize) -> String {
         ArraySize::Unspecified => "".into(),
         ArraySize::Expression(expression) => match expression.as_ref() {
             Expr::IntLit(value) => value.to_string(),
+            Expr::StringLit(_) => panic!("array bound was not an integer"),
         },
     }
 }
