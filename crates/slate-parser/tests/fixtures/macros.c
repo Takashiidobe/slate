@@ -24,7 +24,12 @@ int selected __attribute__((slate_literal(CHOICE)));
 // DEFAULT-NEXT: decl[0]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "ordinary",
@@ -48,7 +53,12 @@ int selected __attribute__((slate_literal(CHOICE)));
 // DEFAULT-NEXT: decl[1]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "recursive",
@@ -81,7 +91,12 @@ int selected __attribute__((slate_literal(CHOICE)));
 // DEFAULT-NEXT:                       Declaration {
 // DEFAULT-NEXT:                           declaration: Declaration {
 // DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Int,
+// DEFAULT-NEXT:                                   ty: Integer(
+// DEFAULT-NEXT:                                       Ranked {
+// DEFAULT-NEXT:                                           rank: Int,
+// DEFAULT-NEXT:                                           signed: true,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               declarator: Name(
 // DEFAULT-NEXT:                                   "selected",
@@ -115,7 +130,12 @@ int selected __attribute__((slate_literal(CHOICE)));
 // DEFAULT-NEXT:                       Declaration {
 // DEFAULT-NEXT:                           declaration: Declaration {
 // DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Int,
+// DEFAULT-NEXT:                                   ty: Integer(
+// DEFAULT-NEXT:                                       Ranked {
+// DEFAULT-NEXT:                                           rank: Int,
+// DEFAULT-NEXT:                                           signed: true,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               declarator: Name(
 // DEFAULT-NEXT:                                   "selected",
@@ -146,7 +166,12 @@ int selected __attribute__((slate_literal(CHOICE)));
 // DEFAULT-NEXT: decl[0]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "ordinary",
@@ -170,7 +195,12 @@ int selected __attribute__((slate_literal(CHOICE)));
 // DEFAULT-NEXT: decl[1]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "recursive",
@@ -195,7 +225,12 @@ int selected __attribute__((slate_literal(CHOICE)));
 // DEFAULT-NEXT: decl[2]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "selected",
@@ -223,7 +258,12 @@ int selected __attribute__((slate_literal(CHOICE)));
 // SELECT-NEXT: decl[0]: Declaration {
 // SELECT-NEXT:       declaration: Declaration {
 // SELECT-NEXT:           specifiers: DeclarationSpecifiers {
-// SELECT-NEXT:               ty: Int,
+// SELECT-NEXT:               ty: Integer(
+// SELECT-NEXT:                   Ranked {
+// SELECT-NEXT:                       rank: Int,
+// SELECT-NEXT:                       signed: true,
+// SELECT-NEXT:                   },
+// SELECT-NEXT:               ),
 // SELECT-NEXT:           },
 // SELECT-NEXT:           declarator: Name(
 // SELECT-NEXT:               "ordinary",
@@ -247,7 +287,12 @@ int selected __attribute__((slate_literal(CHOICE)));
 // SELECT-NEXT: decl[1]: Declaration {
 // SELECT-NEXT:       declaration: Declaration {
 // SELECT-NEXT:           specifiers: DeclarationSpecifiers {
-// SELECT-NEXT:               ty: Int,
+// SELECT-NEXT:               ty: Integer(
+// SELECT-NEXT:                   Ranked {
+// SELECT-NEXT:                       rank: Int,
+// SELECT-NEXT:                       signed: true,
+// SELECT-NEXT:                   },
+// SELECT-NEXT:               ),
 // SELECT-NEXT:           },
 // SELECT-NEXT:           declarator: Name(
 // SELECT-NEXT:               "recursive",
@@ -280,7 +325,12 @@ int selected __attribute__((slate_literal(CHOICE)));
 // SELECT-NEXT:                       Declaration {
 // SELECT-NEXT:                           declaration: Declaration {
 // SELECT-NEXT:                               specifiers: DeclarationSpecifiers {
-// SELECT-NEXT:                                   ty: Int,
+// SELECT-NEXT:                                   ty: Integer(
+// SELECT-NEXT:                                       Ranked {
+// SELECT-NEXT:                                           rank: Int,
+// SELECT-NEXT:                                           signed: true,
+// SELECT-NEXT:                                       },
+// SELECT-NEXT:                                   ),
 // SELECT-NEXT:                               },
 // SELECT-NEXT:                               declarator: Name(
 // SELECT-NEXT:                                   "selected",
@@ -314,7 +364,12 @@ int selected __attribute__((slate_literal(CHOICE)));
 // SELECT-NEXT:                       Declaration {
 // SELECT-NEXT:                           declaration: Declaration {
 // SELECT-NEXT:                               specifiers: DeclarationSpecifiers {
-// SELECT-NEXT:                                   ty: Int,
+// SELECT-NEXT:                                   ty: Integer(
+// SELECT-NEXT:                                       Ranked {
+// SELECT-NEXT:                                           rank: Int,
+// SELECT-NEXT:                                           signed: true,
+// SELECT-NEXT:                                       },
+// SELECT-NEXT:                                   ),
 // SELECT-NEXT:                               },
 // SELECT-NEXT:                               declarator: Name(
 // SELECT-NEXT:                                   "selected",
@@ -345,7 +400,12 @@ int selected __attribute__((slate_literal(CHOICE)));
 // SELECT-NEXT: decl[0]: Declaration {
 // SELECT-NEXT:       declaration: Declaration {
 // SELECT-NEXT:           specifiers: DeclarationSpecifiers {
-// SELECT-NEXT:               ty: Int,
+// SELECT-NEXT:               ty: Integer(
+// SELECT-NEXT:                   Ranked {
+// SELECT-NEXT:                       rank: Int,
+// SELECT-NEXT:                       signed: true,
+// SELECT-NEXT:                   },
+// SELECT-NEXT:               ),
 // SELECT-NEXT:           },
 // SELECT-NEXT:           declarator: Name(
 // SELECT-NEXT:               "ordinary",
@@ -369,7 +429,12 @@ int selected __attribute__((slate_literal(CHOICE)));
 // SELECT-NEXT: decl[1]: Declaration {
 // SELECT-NEXT:       declaration: Declaration {
 // SELECT-NEXT:           specifiers: DeclarationSpecifiers {
-// SELECT-NEXT:               ty: Int,
+// SELECT-NEXT:               ty: Integer(
+// SELECT-NEXT:                   Ranked {
+// SELECT-NEXT:                       rank: Int,
+// SELECT-NEXT:                       signed: true,
+// SELECT-NEXT:                   },
+// SELECT-NEXT:               ),
 // SELECT-NEXT:           },
 // SELECT-NEXT:           declarator: Name(
 // SELECT-NEXT:               "recursive",
@@ -394,7 +459,12 @@ int selected __attribute__((slate_literal(CHOICE)));
 // SELECT-NEXT: decl[2]: Declaration {
 // SELECT-NEXT:       declaration: Declaration {
 // SELECT-NEXT:           specifiers: DeclarationSpecifiers {
-// SELECT-NEXT:               ty: Int,
+// SELECT-NEXT:               ty: Integer(
+// SELECT-NEXT:                   Ranked {
+// SELECT-NEXT:                       rank: Int,
+// SELECT-NEXT:                       signed: true,
+// SELECT-NEXT:                   },
+// SELECT-NEXT:               ),
 // SELECT-NEXT:           },
 // SELECT-NEXT:           declarator: Name(
 // SELECT-NEXT:               "selected",

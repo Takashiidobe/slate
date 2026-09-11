@@ -234,35 +234,9 @@ pub struct FunctionDecl {
 pub enum CType {
     Void,
     Bool,
-    BFloat16,
-    Char,
-    SignedChar,
-    UnsignedChar,
-    Short,
-    UnsignedShort,
-    Int,
-    UnsignedInt,
-    Long,
-    UnsignedLong,
-    LongLong,
-    UnsignedLongLong,
-    Float,
-    Float16,
-    Fp16,
-    Float64x,
-    Float128,
-    Float128Ext,
-    Double,
-    LongDouble,
-    Complex,
-    DoubleComplex,
-    LongDoubleComplex,
-    Int128,
-    UnsignedInt128,
-    BitInt {
-        width: ConstExpr,
-        is_unsigned: bool,
-    },
+    Integer(IntegerType),
+    Floating(FloatingType),
+    Complex(Box<Self>),
     Named(String),
     Tagged {
         kind: TagKind,
@@ -289,6 +263,35 @@ pub enum CType {
         #[debug(skip_if = is_false)]
         variadic: bool,
     },
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum IntegerType {
+    Char { signed: Option<bool> },
+    Ranked { rank: IntegerRank, signed: bool },
+    BitInt { width: ConstExpr, signed: bool },
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum IntegerRank {
+    Short,
+    Int,
+    Long,
+    LongLong,
+    Int128,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum FloatingType {
+    BFloat16,
+    Float,
+    Float16,
+    Fp16,
+    Float64x,
+    Double,
+    LongDouble,
+    Float128,
+    Float128Ext,
 }
 
 pub type Type = CType;

@@ -250,32 +250,9 @@ fn check_type(
         }
         CType::Void
         | CType::Bool
-        | CType::BFloat16
-        | CType::Char
-        | CType::SignedChar
-        | CType::UnsignedChar
-        | CType::Short
-        | CType::UnsignedShort
-        | CType::Int
-        | CType::UnsignedInt
-        | CType::Long
-        | CType::UnsignedLong
-        | CType::LongLong
-        | CType::UnsignedLongLong
-        | CType::Float
-        | CType::Float16
-        | CType::Fp16
-        | CType::Float64x
-        | CType::Float128
-        | CType::Float128Ext
-        | CType::Double
-        | CType::LongDouble
-        | CType::Complex
-        | CType::DoubleComplex
-        | CType::LongDoubleComplex
-        | CType::Int128
-        | CType::UnsignedInt128
-        | CType::BitInt { .. }
+        | CType::Integer(_)
+        | CType::Floating(_)
+        | CType::Complex(_)
         | CType::Named(_)
         | CType::Tagged { .. } => {}
     }

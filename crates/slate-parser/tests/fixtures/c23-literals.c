@@ -18,7 +18,12 @@ int unicode_name __attribute__((slate_literal(\u03B1name)));
 // DEFAULT-NEXT: decl[0]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "decimal_separator",
@@ -43,7 +48,12 @@ int unicode_name __attribute__((slate_literal(\u03B1name)));
 // DEFAULT-NEXT: decl[1]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "binary_bitint",
@@ -68,7 +78,12 @@ int unicode_name __attribute__((slate_literal(\u03B1name)));
 // DEFAULT-NEXT: decl[2]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "hexadecimal",
@@ -93,7 +108,12 @@ int unicode_name __attribute__((slate_literal(\u03B1name)));
 // DEFAULT-NEXT: decl[3]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "decimal_float",
@@ -118,7 +138,12 @@ int unicode_name __attribute__((slate_literal(\u03B1name)));
 // DEFAULT-NEXT: decl[4]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "hex_float",
@@ -143,7 +168,12 @@ int unicode_name __attribute__((slate_literal(\u03B1name)));
 // DEFAULT-NEXT: decl[5]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "character",
@@ -168,7 +198,12 @@ int unicode_name __attribute__((slate_literal(\u03B1name)));
 // DEFAULT-NEXT: decl[6]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "escaped_string",
@@ -193,7 +228,12 @@ int unicode_name __attribute__((slate_literal(\u03B1name)));
 // DEFAULT-NEXT: decl[7]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "utf8_string",
@@ -218,7 +258,12 @@ int unicode_name __attribute__((slate_literal(\u03B1name)));
 // DEFAULT-NEXT: decl[8]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "utf16_string",
@@ -243,7 +288,12 @@ int unicode_name __attribute__((slate_literal(\u03B1name)));
 // DEFAULT-NEXT: decl[9]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "utf32_string",
@@ -268,7 +318,12 @@ int unicode_name __attribute__((slate_literal(\u03B1name)));
 // DEFAULT-NEXT: decl[10]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "wide_string",
@@ -293,7 +348,12 @@ int unicode_name __attribute__((slate_literal(\u03B1name)));
 // DEFAULT-NEXT: decl[11]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "unicode_name",
@@ -319,7 +379,12 @@ int unicode_name __attribute__((slate_literal(\u03B1name)));
 // DEFAULT-NEXT: decl[0]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "decimal_separator",
@@ -344,7 +409,12 @@ int unicode_name __attribute__((slate_literal(\u03B1name)));
 // DEFAULT-NEXT: decl[1]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "binary_bitint",
@@ -369,7 +439,12 @@ int unicode_name __attribute__((slate_literal(\u03B1name)));
 // DEFAULT-NEXT: decl[2]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "hexadecimal",
@@ -394,7 +469,12 @@ int unicode_name __attribute__((slate_literal(\u03B1name)));
 // DEFAULT-NEXT: decl[3]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "decimal_float",
@@ -419,7 +499,12 @@ int unicode_name __attribute__((slate_literal(\u03B1name)));
 // DEFAULT-NEXT: decl[4]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "hex_float",
@@ -444,7 +529,12 @@ int unicode_name __attribute__((slate_literal(\u03B1name)));
 // DEFAULT-NEXT: decl[5]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "character",
@@ -469,7 +559,12 @@ int unicode_name __attribute__((slate_literal(\u03B1name)));
 // DEFAULT-NEXT: decl[6]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "escaped_string",
@@ -494,7 +589,12 @@ int unicode_name __attribute__((slate_literal(\u03B1name)));
 // DEFAULT-NEXT: decl[7]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "utf8_string",
@@ -519,7 +619,12 @@ int unicode_name __attribute__((slate_literal(\u03B1name)));
 // DEFAULT-NEXT: decl[8]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "utf16_string",
@@ -544,7 +649,12 @@ int unicode_name __attribute__((slate_literal(\u03B1name)));
 // DEFAULT-NEXT: decl[9]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "utf32_string",
@@ -569,7 +679,12 @@ int unicode_name __attribute__((slate_literal(\u03B1name)));
 // DEFAULT-NEXT: decl[10]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "wide_string",
@@ -594,7 +709,12 @@ int unicode_name __attribute__((slate_literal(\u03B1name)));
 // DEFAULT-NEXT: decl[11]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "unicode_name",

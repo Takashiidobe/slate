@@ -53,7 +53,12 @@ int main() {
 // DEFAULT-NEXT: decl[1]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Array {
 // DEFAULT-NEXT:               inner: Name(
@@ -77,7 +82,12 @@ int main() {
 // DEFAULT-NEXT: decl[2]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Array {
 // DEFAULT-NEXT:               inner: Name(
@@ -109,7 +119,12 @@ int main() {
 // DEFAULT-NEXT:                       Declaration {
 // DEFAULT-NEXT:                           declaration: Declaration {
 // DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Int,
+// DEFAULT-NEXT:                                   ty: Integer(
+// DEFAULT-NEXT:                                       Ranked {
+// DEFAULT-NEXT:                                           rank: Int,
+// DEFAULT-NEXT:                                           signed: true,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               declarator: Array {
 // DEFAULT-NEXT:                                   inner: Name(
@@ -142,7 +157,12 @@ int main() {
 // DEFAULT-NEXT:                       Declaration {
 // DEFAULT-NEXT:                           declaration: Declaration {
 // DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Int,
+// DEFAULT-NEXT:                                   ty: Integer(
+// DEFAULT-NEXT:                                       Ranked {
+// DEFAULT-NEXT:                                           rank: Int,
+// DEFAULT-NEXT:                                           signed: true,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               declarator: Array {
 // DEFAULT-NEXT:                                   inner: Name(
@@ -170,7 +190,12 @@ int main() {
 // DEFAULT-NEXT:   )
 // DEFAULT-NEXT: decl[4]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
-// DEFAULT-NEXT:           ret_type: Int,
+// DEFAULT-NEXT:           ret_type: Integer(
+// DEFAULT-NEXT:               Ranked {
+// DEFAULT-NEXT:                   rank: Int,
+// DEFAULT-NEXT:                   signed: true,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           name: "main",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
@@ -224,7 +249,12 @@ int main() {
 // DEFAULT-NEXT: decl[1]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Array {
 // DEFAULT-NEXT:               inner: Name(
@@ -248,7 +278,12 @@ int main() {
 // DEFAULT-NEXT: decl[2]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Array {
 // DEFAULT-NEXT:               inner: Name(
@@ -272,7 +307,12 @@ int main() {
 // DEFAULT-NEXT: decl[3]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Array {
 // DEFAULT-NEXT:               inner: Name(
@@ -295,7 +335,12 @@ int main() {
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[4]: Function(
 // DEFAULT-NEXT:       ConcreteFunctionDecl {
-// DEFAULT-NEXT:           ret_type: Int,
+// DEFAULT-NEXT:           ret_type: Integer(
+// DEFAULT-NEXT:               Ranked {
+// DEFAULT-NEXT:                   rank: Int,
+// DEFAULT-NEXT:                   signed: true,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           name: "main",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(

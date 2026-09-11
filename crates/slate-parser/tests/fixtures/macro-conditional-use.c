@@ -44,7 +44,12 @@ int picked(void) {
 // DEFAULT-NEXT:                       Declaration {
 // DEFAULT-NEXT:                           declaration: Declaration {
 // DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Int,
+// DEFAULT-NEXT:                                   ty: Integer(
+// DEFAULT-NEXT:                                       Ranked {
+// DEFAULT-NEXT:                                           rank: Int,
+// DEFAULT-NEXT:                                           signed: true,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               declarator: Name(
 // DEFAULT-NEXT:                                   "selected",
@@ -82,7 +87,12 @@ int picked(void) {
 // DEFAULT-NEXT:                       Declaration {
 // DEFAULT-NEXT:                           declaration: Declaration {
 // DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Int,
+// DEFAULT-NEXT:                                   ty: Integer(
+// DEFAULT-NEXT:                                       Ranked {
+// DEFAULT-NEXT:                                           rank: Int,
+// DEFAULT-NEXT:                                           signed: true,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               declarator: Name(
 // DEFAULT-NEXT:                                   "selected",
@@ -124,7 +134,12 @@ int picked(void) {
 // DEFAULT-NEXT:                       Declaration {
 // DEFAULT-NEXT:                           declaration: Declaration {
 // DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Int,
+// DEFAULT-NEXT:                                   ty: Integer(
+// DEFAULT-NEXT:                                       Ranked {
+// DEFAULT-NEXT:                                           rank: Int,
+// DEFAULT-NEXT:                                           signed: true,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               declarator: Name(
 // DEFAULT-NEXT:                                   "typed",
@@ -155,7 +170,11 @@ int picked(void) {
 // DEFAULT-NEXT:                       Declaration {
 // DEFAULT-NEXT:                           declaration: Declaration {
 // DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Char,
+// DEFAULT-NEXT:                                   ty: Integer(
+// DEFAULT-NEXT:                                       Char {
+// DEFAULT-NEXT:                                           signed: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               declarator: Name(
 // DEFAULT-NEXT:                                   "typed",
@@ -176,7 +195,12 @@ int picked(void) {
 // DEFAULT-NEXT:   )
 // DEFAULT-NEXT: decl[2]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
-// DEFAULT-NEXT:           ret_type: Int,
+// DEFAULT-NEXT:           ret_type: Integer(
+// DEFAULT-NEXT:               Ranked {
+// DEFAULT-NEXT:                   rank: Int,
+// DEFAULT-NEXT:                   signed: true,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           name: "picked",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Conditional(
@@ -235,7 +259,12 @@ int picked(void) {
 // DEFAULT-NEXT: decl[0]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "selected",
@@ -259,7 +288,11 @@ int picked(void) {
 // DEFAULT-NEXT: decl[1]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Char,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Char {
+// DEFAULT-NEXT:                       signed: None,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "typed",
@@ -275,7 +308,12 @@ int picked(void) {
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[2]: Function(
 // DEFAULT-NEXT:       ConcreteFunctionDecl {
-// DEFAULT-NEXT:           ret_type: Int,
+// DEFAULT-NEXT:           ret_type: Integer(
+// DEFAULT-NEXT:               Ranked {
+// DEFAULT-NEXT:                   rank: Int,
+// DEFAULT-NEXT:                   signed: true,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           name: "picked",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
@@ -312,7 +350,12 @@ int picked(void) {
 // SELECT-NEXT:                       Declaration {
 // SELECT-NEXT:                           declaration: Declaration {
 // SELECT-NEXT:                               specifiers: DeclarationSpecifiers {
-// SELECT-NEXT:                                   ty: Int,
+// SELECT-NEXT:                                   ty: Integer(
+// SELECT-NEXT:                                       Ranked {
+// SELECT-NEXT:                                           rank: Int,
+// SELECT-NEXT:                                           signed: true,
+// SELECT-NEXT:                                       },
+// SELECT-NEXT:                                   ),
 // SELECT-NEXT:                               },
 // SELECT-NEXT:                               declarator: Name(
 // SELECT-NEXT:                                   "selected",
@@ -350,7 +393,12 @@ int picked(void) {
 // SELECT-NEXT:                       Declaration {
 // SELECT-NEXT:                           declaration: Declaration {
 // SELECT-NEXT:                               specifiers: DeclarationSpecifiers {
-// SELECT-NEXT:                                   ty: Int,
+// SELECT-NEXT:                                   ty: Integer(
+// SELECT-NEXT:                                       Ranked {
+// SELECT-NEXT:                                           rank: Int,
+// SELECT-NEXT:                                           signed: true,
+// SELECT-NEXT:                                       },
+// SELECT-NEXT:                                   ),
 // SELECT-NEXT:                               },
 // SELECT-NEXT:                               declarator: Name(
 // SELECT-NEXT:                                   "selected",
@@ -392,7 +440,12 @@ int picked(void) {
 // SELECT-NEXT:                       Declaration {
 // SELECT-NEXT:                           declaration: Declaration {
 // SELECT-NEXT:                               specifiers: DeclarationSpecifiers {
-// SELECT-NEXT:                                   ty: Int,
+// SELECT-NEXT:                                   ty: Integer(
+// SELECT-NEXT:                                       Ranked {
+// SELECT-NEXT:                                           rank: Int,
+// SELECT-NEXT:                                           signed: true,
+// SELECT-NEXT:                                       },
+// SELECT-NEXT:                                   ),
 // SELECT-NEXT:                               },
 // SELECT-NEXT:                               declarator: Name(
 // SELECT-NEXT:                                   "typed",
@@ -423,7 +476,11 @@ int picked(void) {
 // SELECT-NEXT:                       Declaration {
 // SELECT-NEXT:                           declaration: Declaration {
 // SELECT-NEXT:                               specifiers: DeclarationSpecifiers {
-// SELECT-NEXT:                                   ty: Char,
+// SELECT-NEXT:                                   ty: Integer(
+// SELECT-NEXT:                                       Char {
+// SELECT-NEXT:                                           signed: None,
+// SELECT-NEXT:                                       },
+// SELECT-NEXT:                                   ),
 // SELECT-NEXT:                               },
 // SELECT-NEXT:                               declarator: Name(
 // SELECT-NEXT:                                   "typed",
@@ -444,7 +501,12 @@ int picked(void) {
 // SELECT-NEXT:   )
 // SELECT-NEXT: decl[2]: Function(
 // SELECT-NEXT:       FunctionDecl {
-// SELECT-NEXT:           ret_type: Int,
+// SELECT-NEXT:           ret_type: Integer(
+// SELECT-NEXT:               Ranked {
+// SELECT-NEXT:                   rank: Int,
+// SELECT-NEXT:                   signed: true,
+// SELECT-NEXT:               },
+// SELECT-NEXT:           ),
 // SELECT-NEXT:           name: "picked",
 // SELECT-NEXT:           body: [
 // SELECT-NEXT:               Conditional(
@@ -503,7 +565,12 @@ int picked(void) {
 // SELECT-NEXT: decl[0]: Declaration {
 // SELECT-NEXT:       declaration: Declaration {
 // SELECT-NEXT:           specifiers: DeclarationSpecifiers {
-// SELECT-NEXT:               ty: Int,
+// SELECT-NEXT:               ty: Integer(
+// SELECT-NEXT:                   Ranked {
+// SELECT-NEXT:                       rank: Int,
+// SELECT-NEXT:                       signed: true,
+// SELECT-NEXT:                   },
+// SELECT-NEXT:               ),
 // SELECT-NEXT:           },
 // SELECT-NEXT:           declarator: Name(
 // SELECT-NEXT:               "selected",
@@ -527,7 +594,12 @@ int picked(void) {
 // SELECT-NEXT: decl[1]: Declaration {
 // SELECT-NEXT:       declaration: Declaration {
 // SELECT-NEXT:           specifiers: DeclarationSpecifiers {
-// SELECT-NEXT:               ty: Int,
+// SELECT-NEXT:               ty: Integer(
+// SELECT-NEXT:                   Ranked {
+// SELECT-NEXT:                       rank: Int,
+// SELECT-NEXT:                       signed: true,
+// SELECT-NEXT:                   },
+// SELECT-NEXT:               ),
 // SELECT-NEXT:           },
 // SELECT-NEXT:           declarator: Name(
 // SELECT-NEXT:               "typed",
@@ -543,7 +615,12 @@ int picked(void) {
 // SELECT-NEXT:   }
 // SELECT-NEXT: decl[2]: Function(
 // SELECT-NEXT:       ConcreteFunctionDecl {
-// SELECT-NEXT:           ret_type: Int,
+// SELECT-NEXT:           ret_type: Integer(
+// SELECT-NEXT:               Ranked {
+// SELECT-NEXT:                   rank: Int,
+// SELECT-NEXT:                   signed: true,
+// SELECT-NEXT:               },
+// SELECT-NEXT:           ),
 // SELECT-NEXT:           name: "picked",
 // SELECT-NEXT:           body: [
 // SELECT-NEXT:               Return(

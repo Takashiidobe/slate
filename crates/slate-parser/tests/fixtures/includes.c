@@ -11,7 +11,12 @@ int main() {
 // DEFAULT: polyvariant:
 // DEFAULT-NEXT: decl[0]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
-// DEFAULT-NEXT:           ret_type: Int,
+// DEFAULT-NEXT:           ret_type: Integer(
+// DEFAULT-NEXT:               Ranked {
+// DEFAULT-NEXT:                   rank: Int,
+// DEFAULT-NEXT:                   signed: true,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           name: "main",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
@@ -32,7 +37,12 @@ int main() {
 // DEFAULT-NEXT: concrete:
 // DEFAULT-NEXT: decl[0]: Function(
 // DEFAULT-NEXT:       ConcreteFunctionDecl {
-// DEFAULT-NEXT:           ret_type: Int,
+// DEFAULT-NEXT:           ret_type: Integer(
+// DEFAULT-NEXT:               Ranked {
+// DEFAULT-NEXT:                   rank: Int,
+// DEFAULT-NEXT:                   signed: true,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           name: "main",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(

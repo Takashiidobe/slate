@@ -20,7 +20,12 @@ int prescanned() {
 // DEFAULT-NEXT: decl[0]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "added",
@@ -47,7 +52,12 @@ int prescanned() {
 // DEFAULT-NEXT: decl[1]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "stringified",
@@ -72,7 +82,12 @@ int prescanned() {
 // DEFAULT-NEXT: decl[2]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "joined",
@@ -97,7 +112,12 @@ int prescanned() {
 // DEFAULT-NEXT: decl[3]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "variadic",
@@ -123,7 +143,12 @@ int prescanned() {
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[4]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
-// DEFAULT-NEXT:           ret_type: Int,
+// DEFAULT-NEXT:           ret_type: Integer(
+// DEFAULT-NEXT:               Ranked {
+// DEFAULT-NEXT:                   rank: Int,
+// DEFAULT-NEXT:                   signed: true,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           name: "prescanned",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
@@ -145,7 +170,12 @@ int prescanned() {
 // DEFAULT-NEXT: decl[0]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "added",
@@ -172,7 +202,12 @@ int prescanned() {
 // DEFAULT-NEXT: decl[1]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "stringified",
@@ -197,7 +232,12 @@ int prescanned() {
 // DEFAULT-NEXT: decl[2]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "joined",
@@ -222,7 +262,12 @@ int prescanned() {
 // DEFAULT-NEXT: decl[3]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "variadic",
@@ -248,7 +293,12 @@ int prescanned() {
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[4]: Function(
 // DEFAULT-NEXT:       ConcreteFunctionDecl {
-// DEFAULT-NEXT:           ret_type: Int,
+// DEFAULT-NEXT:           ret_type: Integer(
+// DEFAULT-NEXT:               Ranked {
+// DEFAULT-NEXT:                   rank: Int,
+// DEFAULT-NEXT:                   signed: true,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           name: "prescanned",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(

@@ -15,7 +15,12 @@ __attribute__((noinline)) int definition() __attribute__((pure)) {
 // DEFAULT-NEXT: decl[0]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "hidden_data",
@@ -37,7 +42,12 @@ __attribute__((noinline)) int definition() __attribute__((pure)) {
 // DEFAULT-NEXT: decl[1]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               storage: Extern,
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
@@ -62,7 +72,12 @@ __attribute__((noinline)) int definition() __attribute__((pure)) {
 // DEFAULT-NEXT: decl[2]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Function {
 // DEFAULT-NEXT:               inner: Name(
@@ -70,7 +85,12 @@ __attribute__((noinline)) int definition() __attribute__((pure)) {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               parameters: [
 // DEFAULT-NEXT:                   Parameter {
-// DEFAULT-NEXT:                       ty: Int,
+// DEFAULT-NEXT:                       ty: Integer(
+// DEFAULT-NEXT:                           Ranked {
+// DEFAULT-NEXT:                               rank: Int,
+// DEFAULT-NEXT:                               signed: true,
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       declarator: Some(
 // DEFAULT-NEXT:                           Pointer {
 // DEFAULT-NEXT:                               qualifiers: Qualifiers,
@@ -102,7 +122,12 @@ __attribute__((noinline)) int definition() __attribute__((pure)) {
 // DEFAULT-NEXT: decl[3]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Function {
 // DEFAULT-NEXT:               inner: Name(
@@ -110,7 +135,12 @@ __attribute__((noinline)) int definition() __attribute__((pure)) {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               parameters: [
 // DEFAULT-NEXT:                   Parameter {
-// DEFAULT-NEXT:                       ty: Int,
+// DEFAULT-NEXT:                       ty: Integer(
+// DEFAULT-NEXT:                           Ranked {
+// DEFAULT-NEXT:                               rank: Int,
+// DEFAULT-NEXT:                               signed: true,
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       declarator: Some(
 // DEFAULT-NEXT:                           Name(
 // DEFAULT-NEXT:                               "p",
@@ -136,7 +166,12 @@ __attribute__((noinline)) int definition() __attribute__((pure)) {
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[4]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
-// DEFAULT-NEXT:           ret_type: Int,
+// DEFAULT-NEXT:           ret_type: Integer(
+// DEFAULT-NEXT:               Ranked {
+// DEFAULT-NEXT:                   rank: Int,
+// DEFAULT-NEXT:                   signed: true,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           name: "definition",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
@@ -162,7 +197,12 @@ __attribute__((noinline)) int definition() __attribute__((pure)) {
 // DEFAULT-NEXT: decl[0]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "hidden_data",
@@ -184,7 +224,12 @@ __attribute__((noinline)) int definition() __attribute__((pure)) {
 // DEFAULT-NEXT: decl[1]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               storage: Extern,
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
@@ -209,7 +254,12 @@ __attribute__((noinline)) int definition() __attribute__((pure)) {
 // DEFAULT-NEXT: decl[2]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Function {
 // DEFAULT-NEXT:               inner: Name(
@@ -217,7 +267,12 @@ __attribute__((noinline)) int definition() __attribute__((pure)) {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               parameters: [
 // DEFAULT-NEXT:                   Parameter {
-// DEFAULT-NEXT:                       ty: Int,
+// DEFAULT-NEXT:                       ty: Integer(
+// DEFAULT-NEXT:                           Ranked {
+// DEFAULT-NEXT:                               rank: Int,
+// DEFAULT-NEXT:                               signed: true,
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       declarator: Some(
 // DEFAULT-NEXT:                           Pointer {
 // DEFAULT-NEXT:                               qualifiers: Qualifiers,
@@ -249,7 +304,12 @@ __attribute__((noinline)) int definition() __attribute__((pure)) {
 // DEFAULT-NEXT: decl[3]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Function {
 // DEFAULT-NEXT:               inner: Name(
@@ -257,7 +317,12 @@ __attribute__((noinline)) int definition() __attribute__((pure)) {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               parameters: [
 // DEFAULT-NEXT:                   Parameter {
-// DEFAULT-NEXT:                       ty: Int,
+// DEFAULT-NEXT:                       ty: Integer(
+// DEFAULT-NEXT:                           Ranked {
+// DEFAULT-NEXT:                               rank: Int,
+// DEFAULT-NEXT:                               signed: true,
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       declarator: Some(
 // DEFAULT-NEXT:                           Name(
 // DEFAULT-NEXT:                               "p",
@@ -283,7 +348,12 @@ __attribute__((noinline)) int definition() __attribute__((pure)) {
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[4]: Function(
 // DEFAULT-NEXT:       ConcreteFunctionDecl {
-// DEFAULT-NEXT:           ret_type: Int,
+// DEFAULT-NEXT:           ret_type: Integer(
+// DEFAULT-NEXT:               Ranked {
+// DEFAULT-NEXT:                   rank: Int,
+// DEFAULT-NEXT:                   signed: true,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           name: "definition",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(

@@ -30,7 +30,12 @@ RightOnly right_value;
 // DEFAULT-NEXT:                   [
 // DEFAULT-NEXT:                       Typedef {
 // DEFAULT-NEXT:                           name: "Value",
-// DEFAULT-NEXT:                           ty: Int,
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           provenance: Provenance {
 // DEFAULT-NEXT:                               file: FileId(
 // DEFAULT-NEXT:                                   0,
@@ -50,7 +55,11 @@ RightOnly right_value;
 // DEFAULT-NEXT:                   [
 // DEFAULT-NEXT:                       Typedef {
 // DEFAULT-NEXT:                           name: "Value",
-// DEFAULT-NEXT:                           ty: Char,
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Char {
+// DEFAULT-NEXT:                                   signed: None,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           provenance: Provenance {
 // DEFAULT-NEXT:                               file: FileId(
 // DEFAULT-NEXT:                                   0,
@@ -93,7 +102,12 @@ RightOnly right_value;
 // DEFAULT-NEXT:                   [
 // DEFAULT-NEXT:                       Typedef {
 // DEFAULT-NEXT:                           name: "LeftOnly",
-// DEFAULT-NEXT:                           ty: Int,
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           provenance: Provenance {
 // DEFAULT-NEXT:                               file: FileId(
 // DEFAULT-NEXT:                                   0,
@@ -132,7 +146,12 @@ RightOnly right_value;
 // DEFAULT-NEXT:                   [
 // DEFAULT-NEXT:                       Typedef {
 // DEFAULT-NEXT:                           name: "RightOnly",
-// DEFAULT-NEXT:                           ty: Int,
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           provenance: Provenance {
 // DEFAULT-NEXT:                               file: FileId(
 // DEFAULT-NEXT:                                   0,
@@ -168,7 +187,11 @@ RightOnly right_value;
 // DEFAULT-NEXT: concrete:
 // DEFAULT-NEXT: decl[0]: Typedef {
 // DEFAULT-NEXT:       name: "Value",
-// DEFAULT-NEXT:       ty: Char,
+// DEFAULT-NEXT:       ty: Integer(
+// DEFAULT-NEXT:           Char {
+// DEFAULT-NEXT:               signed: None,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
 // DEFAULT-NEXT:               0,
@@ -198,7 +221,12 @@ RightOnly right_value;
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[2]: Typedef {
 // DEFAULT-NEXT:       name: "RightOnly",
-// DEFAULT-NEXT:       ty: Int,
+// DEFAULT-NEXT:       ty: Integer(
+// DEFAULT-NEXT:           Ranked {
+// DEFAULT-NEXT:               rank: Int,
+// DEFAULT-NEXT:               signed: true,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
 // DEFAULT-NEXT:               0,
@@ -239,7 +267,12 @@ RightOnly right_value;
 // INT-NEXT:                   [
 // INT-NEXT:                       Typedef {
 // INT-NEXT:                           name: "Value",
-// INT-NEXT:                           ty: Int,
+// INT-NEXT:                           ty: Integer(
+// INT-NEXT:                               Ranked {
+// INT-NEXT:                                   rank: Int,
+// INT-NEXT:                                   signed: true,
+// INT-NEXT:                               },
+// INT-NEXT:                           ),
 // INT-NEXT:                           provenance: Provenance {
 // INT-NEXT:                               file: FileId(
 // INT-NEXT:                                   0,
@@ -259,7 +292,11 @@ RightOnly right_value;
 // INT-NEXT:                   [
 // INT-NEXT:                       Typedef {
 // INT-NEXT:                           name: "Value",
-// INT-NEXT:                           ty: Char,
+// INT-NEXT:                           ty: Integer(
+// INT-NEXT:                               Char {
+// INT-NEXT:                                   signed: None,
+// INT-NEXT:                               },
+// INT-NEXT:                           ),
 // INT-NEXT:                           provenance: Provenance {
 // INT-NEXT:                               file: FileId(
 // INT-NEXT:                                   0,
@@ -302,7 +339,12 @@ RightOnly right_value;
 // INT-NEXT:                   [
 // INT-NEXT:                       Typedef {
 // INT-NEXT:                           name: "LeftOnly",
-// INT-NEXT:                           ty: Int,
+// INT-NEXT:                           ty: Integer(
+// INT-NEXT:                               Ranked {
+// INT-NEXT:                                   rank: Int,
+// INT-NEXT:                                   signed: true,
+// INT-NEXT:                               },
+// INT-NEXT:                           ),
 // INT-NEXT:                           provenance: Provenance {
 // INT-NEXT:                               file: FileId(
 // INT-NEXT:                                   0,
@@ -341,7 +383,12 @@ RightOnly right_value;
 // INT-NEXT:                   [
 // INT-NEXT:                       Typedef {
 // INT-NEXT:                           name: "RightOnly",
-// INT-NEXT:                           ty: Int,
+// INT-NEXT:                           ty: Integer(
+// INT-NEXT:                               Ranked {
+// INT-NEXT:                                   rank: Int,
+// INT-NEXT:                                   signed: true,
+// INT-NEXT:                               },
+// INT-NEXT:                           ),
 // INT-NEXT:                           provenance: Provenance {
 // INT-NEXT:                               file: FileId(
 // INT-NEXT:                                   0,
@@ -377,7 +424,12 @@ RightOnly right_value;
 // INT-NEXT: concrete:
 // INT-NEXT: decl[0]: Typedef {
 // INT-NEXT:       name: "Value",
-// INT-NEXT:       ty: Int,
+// INT-NEXT:       ty: Integer(
+// INT-NEXT:           Ranked {
+// INT-NEXT:               rank: Int,
+// INT-NEXT:               signed: true,
+// INT-NEXT:           },
+// INT-NEXT:       ),
 // INT-NEXT:       provenance: Provenance {
 // INT-NEXT:           file: FileId(
 // INT-NEXT:               0,
@@ -407,7 +459,12 @@ RightOnly right_value;
 // INT-NEXT:   }
 // INT-NEXT: decl[2]: Typedef {
 // INT-NEXT:       name: "RightOnly",
-// INT-NEXT:       ty: Int,
+// INT-NEXT:       ty: Integer(
+// INT-NEXT:           Ranked {
+// INT-NEXT:               rank: Int,
+// INT-NEXT:               signed: true,
+// INT-NEXT:           },
+// INT-NEXT:       ),
 // INT-NEXT:       provenance: Provenance {
 // INT-NEXT:           file: FileId(
 // INT-NEXT:               0,
@@ -448,7 +505,12 @@ RightOnly right_value;
 // LEFT-NEXT:                   [
 // LEFT-NEXT:                       Typedef {
 // LEFT-NEXT:                           name: "Value",
-// LEFT-NEXT:                           ty: Int,
+// LEFT-NEXT:                           ty: Integer(
+// LEFT-NEXT:                               Ranked {
+// LEFT-NEXT:                                   rank: Int,
+// LEFT-NEXT:                                   signed: true,
+// LEFT-NEXT:                               },
+// LEFT-NEXT:                           ),
 // LEFT-NEXT:                           provenance: Provenance {
 // LEFT-NEXT:                               file: FileId(
 // LEFT-NEXT:                                   0,
@@ -468,7 +530,11 @@ RightOnly right_value;
 // LEFT-NEXT:                   [
 // LEFT-NEXT:                       Typedef {
 // LEFT-NEXT:                           name: "Value",
-// LEFT-NEXT:                           ty: Char,
+// LEFT-NEXT:                           ty: Integer(
+// LEFT-NEXT:                               Char {
+// LEFT-NEXT:                                   signed: None,
+// LEFT-NEXT:                               },
+// LEFT-NEXT:                           ),
 // LEFT-NEXT:                           provenance: Provenance {
 // LEFT-NEXT:                               file: FileId(
 // LEFT-NEXT:                                   0,
@@ -511,7 +577,12 @@ RightOnly right_value;
 // LEFT-NEXT:                   [
 // LEFT-NEXT:                       Typedef {
 // LEFT-NEXT:                           name: "LeftOnly",
-// LEFT-NEXT:                           ty: Int,
+// LEFT-NEXT:                           ty: Integer(
+// LEFT-NEXT:                               Ranked {
+// LEFT-NEXT:                                   rank: Int,
+// LEFT-NEXT:                                   signed: true,
+// LEFT-NEXT:                               },
+// LEFT-NEXT:                           ),
 // LEFT-NEXT:                           provenance: Provenance {
 // LEFT-NEXT:                               file: FileId(
 // LEFT-NEXT:                                   0,
@@ -550,7 +621,12 @@ RightOnly right_value;
 // LEFT-NEXT:                   [
 // LEFT-NEXT:                       Typedef {
 // LEFT-NEXT:                           name: "RightOnly",
-// LEFT-NEXT:                           ty: Int,
+// LEFT-NEXT:                           ty: Integer(
+// LEFT-NEXT:                               Ranked {
+// LEFT-NEXT:                                   rank: Int,
+// LEFT-NEXT:                                   signed: true,
+// LEFT-NEXT:                               },
+// LEFT-NEXT:                           ),
 // LEFT-NEXT:                           provenance: Provenance {
 // LEFT-NEXT:                               file: FileId(
 // LEFT-NEXT:                                   0,
@@ -586,7 +662,11 @@ RightOnly right_value;
 // LEFT-NEXT: concrete:
 // LEFT-NEXT: decl[0]: Typedef {
 // LEFT-NEXT:       name: "Value",
-// LEFT-NEXT:       ty: Char,
+// LEFT-NEXT:       ty: Integer(
+// LEFT-NEXT:           Char {
+// LEFT-NEXT:               signed: None,
+// LEFT-NEXT:           },
+// LEFT-NEXT:       ),
 // LEFT-NEXT:       provenance: Provenance {
 // LEFT-NEXT:           file: FileId(
 // LEFT-NEXT:               0,
@@ -616,7 +696,12 @@ RightOnly right_value;
 // LEFT-NEXT:   }
 // LEFT-NEXT: decl[2]: Typedef {
 // LEFT-NEXT:       name: "LeftOnly",
-// LEFT-NEXT:       ty: Int,
+// LEFT-NEXT:       ty: Integer(
+// LEFT-NEXT:           Ranked {
+// LEFT-NEXT:               rank: Int,
+// LEFT-NEXT:               signed: true,
+// LEFT-NEXT:           },
+// LEFT-NEXT:       ),
 // LEFT-NEXT:       provenance: Provenance {
 // LEFT-NEXT:           file: FileId(
 // LEFT-NEXT:               0,

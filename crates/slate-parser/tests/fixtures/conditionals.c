@@ -21,7 +21,12 @@ typedef int Socket;
 // DEFAULT: polyvariant:
 // DEFAULT-NEXT: decl[0]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
-// DEFAULT-NEXT:           ret_type: Int,
+// DEFAULT-NEXT:           ret_type: Integer(
+// DEFAULT-NEXT:               Ranked {
+// DEFAULT-NEXT:                   rank: Int,
+// DEFAULT-NEXT:                   signed: true,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           name: "main",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Conditional(
@@ -68,7 +73,12 @@ typedef int Socket;
 // DEFAULT-NEXT:   )
 // DEFAULT-NEXT: decl[1]: Typedef {
 // DEFAULT-NEXT:       name: "HANDLE",
-// DEFAULT-NEXT:       ty: Int,
+// DEFAULT-NEXT:       ty: Integer(
+// DEFAULT-NEXT:           Ranked {
+// DEFAULT-NEXT:               rank: Int,
+// DEFAULT-NEXT:               signed: true,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
 // DEFAULT-NEXT:               0,
@@ -109,7 +119,12 @@ typedef int Socket;
 // DEFAULT-NEXT:                   [
 // DEFAULT-NEXT:                       Typedef {
 // DEFAULT-NEXT:                           name: "Socket",
-// DEFAULT-NEXT:                           ty: Int,
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           provenance: Provenance {
 // DEFAULT-NEXT:                               file: FileId(
 // DEFAULT-NEXT:                                   0,
@@ -126,7 +141,12 @@ typedef int Socket;
 // DEFAULT-NEXT: concrete:
 // DEFAULT-NEXT: decl[0]: Function(
 // DEFAULT-NEXT:       ConcreteFunctionDecl {
-// DEFAULT-NEXT:           ret_type: Int,
+// DEFAULT-NEXT:           ret_type: Integer(
+// DEFAULT-NEXT:               Ranked {
+// DEFAULT-NEXT:                   rank: Int,
+// DEFAULT-NEXT:                   signed: true,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           name: "main",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
@@ -146,7 +166,12 @@ typedef int Socket;
 // DEFAULT-NEXT:   )
 // DEFAULT-NEXT: decl[1]: Typedef {
 // DEFAULT-NEXT:       name: "HANDLE",
-// DEFAULT-NEXT:       ty: Int,
+// DEFAULT-NEXT:       ty: Integer(
+// DEFAULT-NEXT:           Ranked {
+// DEFAULT-NEXT:               rank: Int,
+// DEFAULT-NEXT:               signed: true,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
 // DEFAULT-NEXT:               0,
@@ -157,7 +182,12 @@ typedef int Socket;
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[2]: Typedef {
 // DEFAULT-NEXT:       name: "Socket",
-// DEFAULT-NEXT:       ty: Int,
+// DEFAULT-NEXT:       ty: Integer(
+// DEFAULT-NEXT:           Ranked {
+// DEFAULT-NEXT:               rank: Int,
+// DEFAULT-NEXT:               signed: true,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
 // DEFAULT-NEXT:               0,
@@ -171,7 +201,12 @@ typedef int Socket;
 // WIN32: polyvariant:
 // WIN32-NEXT: decl[0]: Function(
 // WIN32-NEXT:       FunctionDecl {
-// WIN32-NEXT:           ret_type: Int,
+// WIN32-NEXT:           ret_type: Integer(
+// WIN32-NEXT:               Ranked {
+// WIN32-NEXT:                   rank: Int,
+// WIN32-NEXT:                   signed: true,
+// WIN32-NEXT:               },
+// WIN32-NEXT:           ),
 // WIN32-NEXT:           name: "main",
 // WIN32-NEXT:           body: [
 // WIN32-NEXT:               Conditional(
@@ -218,7 +253,12 @@ typedef int Socket;
 // WIN32-NEXT:   )
 // WIN32-NEXT: decl[1]: Typedef {
 // WIN32-NEXT:       name: "HANDLE",
-// WIN32-NEXT:       ty: Int,
+// WIN32-NEXT:       ty: Integer(
+// WIN32-NEXT:           Ranked {
+// WIN32-NEXT:               rank: Int,
+// WIN32-NEXT:               signed: true,
+// WIN32-NEXT:           },
+// WIN32-NEXT:       ),
 // WIN32-NEXT:       provenance: Provenance {
 // WIN32-NEXT:           file: FileId(
 // WIN32-NEXT:               0,
@@ -259,7 +299,12 @@ typedef int Socket;
 // WIN32-NEXT:                   [
 // WIN32-NEXT:                       Typedef {
 // WIN32-NEXT:                           name: "Socket",
-// WIN32-NEXT:                           ty: Int,
+// WIN32-NEXT:                           ty: Integer(
+// WIN32-NEXT:                               Ranked {
+// WIN32-NEXT:                                   rank: Int,
+// WIN32-NEXT:                                   signed: true,
+// WIN32-NEXT:                               },
+// WIN32-NEXT:                           ),
 // WIN32-NEXT:                           provenance: Provenance {
 // WIN32-NEXT:                               file: FileId(
 // WIN32-NEXT:                                   0,
@@ -276,7 +321,12 @@ typedef int Socket;
 // WIN32-NEXT: concrete:
 // WIN32-NEXT: decl[0]: Function(
 // WIN32-NEXT:       ConcreteFunctionDecl {
-// WIN32-NEXT:           ret_type: Int,
+// WIN32-NEXT:           ret_type: Integer(
+// WIN32-NEXT:               Ranked {
+// WIN32-NEXT:                   rank: Int,
+// WIN32-NEXT:                   signed: true,
+// WIN32-NEXT:               },
+// WIN32-NEXT:           ),
 // WIN32-NEXT:           name: "main",
 // WIN32-NEXT:           body: [
 // WIN32-NEXT:               Return(
@@ -296,7 +346,12 @@ typedef int Socket;
 // WIN32-NEXT:   )
 // WIN32-NEXT: decl[1]: Typedef {
 // WIN32-NEXT:       name: "HANDLE",
-// WIN32-NEXT:       ty: Int,
+// WIN32-NEXT:       ty: Integer(
+// WIN32-NEXT:           Ranked {
+// WIN32-NEXT:               rank: Int,
+// WIN32-NEXT:               signed: true,
+// WIN32-NEXT:           },
+// WIN32-NEXT:       ),
 // WIN32-NEXT:       provenance: Provenance {
 // WIN32-NEXT:           file: FileId(
 // WIN32-NEXT:               0,

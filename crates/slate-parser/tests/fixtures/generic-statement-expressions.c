@@ -13,7 +13,12 @@ int statement_value() {
 // DEFAULT: polyvariant:
 // DEFAULT-NEXT: decl[0]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
-// DEFAULT-NEXT:           ret_type: Int,
+// DEFAULT-NEXT:           ret_type: Integer(
+// DEFAULT-NEXT:               Ranked {
+// DEFAULT-NEXT:                   rank: Int,
+// DEFAULT-NEXT:                   signed: true,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           name: "generic_value",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
@@ -51,7 +56,12 @@ int statement_value() {
 // DEFAULT-NEXT:   )
 // DEFAULT-NEXT: decl[1]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
-// DEFAULT-NEXT:           ret_type: Int,
+// DEFAULT-NEXT:           ret_type: Integer(
+// DEFAULT-NEXT:               Ranked {
+// DEFAULT-NEXT:                   rank: Int,
+// DEFAULT-NEXT:                   signed: true,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           name: "statement_value",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Expr(
@@ -83,7 +93,12 @@ int statement_value() {
 // DEFAULT-NEXT: concrete:
 // DEFAULT-NEXT: decl[0]: Function(
 // DEFAULT-NEXT:       ConcreteFunctionDecl {
-// DEFAULT-NEXT:           ret_type: Int,
+// DEFAULT-NEXT:           ret_type: Integer(
+// DEFAULT-NEXT:               Ranked {
+// DEFAULT-NEXT:                   rank: Int,
+// DEFAULT-NEXT:                   signed: true,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           name: "generic_value",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
@@ -121,7 +136,12 @@ int statement_value() {
 // DEFAULT-NEXT:   )
 // DEFAULT-NEXT: decl[1]: Function(
 // DEFAULT-NEXT:       ConcreteFunctionDecl {
-// DEFAULT-NEXT:           ret_type: Int,
+// DEFAULT-NEXT:           ret_type: Integer(
+// DEFAULT-NEXT:               Ranked {
+// DEFAULT-NEXT:                   rank: Int,
+// DEFAULT-NEXT:                   signed: true,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           name: "statement_value",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Expr(

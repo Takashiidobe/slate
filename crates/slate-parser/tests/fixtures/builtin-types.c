@@ -57,7 +57,9 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[1]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: BFloat16,
+// DEFAULT-NEXT:               ty: Floating(
+// DEFAULT-NEXT:                   BFloat16,
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "bfloat16_value",
@@ -74,7 +76,11 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[2]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Char,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Char {
+// DEFAULT-NEXT:                       signed: None,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "char_value",
@@ -91,7 +97,13 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[3]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: SignedChar,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Char {
+// DEFAULT-NEXT:                       signed: Some(
+// DEFAULT-NEXT:                           true,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "signed_char_value",
@@ -108,7 +120,13 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[4]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: UnsignedChar,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Char {
+// DEFAULT-NEXT:                       signed: Some(
+// DEFAULT-NEXT:                           false,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "unsigned_char_value",
@@ -125,7 +143,12 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[5]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Short,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Short,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "short_value",
@@ -142,7 +165,12 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[6]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: UnsignedShort,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Short,
+// DEFAULT-NEXT:                       signed: false,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "unsigned_short_value",
@@ -159,7 +187,12 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[7]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "signed_value",
@@ -176,7 +209,12 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[8]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "int_value",
@@ -193,7 +231,12 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[9]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: UnsignedInt,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: false,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "unsigned_value",
@@ -210,7 +253,12 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[10]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: UnsignedInt,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: false,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "unsigned_int_value",
@@ -227,7 +275,12 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[11]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Long,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Long,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "long_value",
@@ -244,7 +297,12 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[12]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Long,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Long,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "long_int_value",
@@ -261,7 +319,12 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[13]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: UnsignedLong,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Long,
+// DEFAULT-NEXT:                       signed: false,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "unsigned_long_value",
@@ -278,7 +341,12 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[14]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: LongLong,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: LongLong,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "long_long_value",
@@ -295,7 +363,12 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[15]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: LongLong,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: LongLong,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "long_long_int_value",
@@ -312,7 +385,12 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[16]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Long,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Long,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "signed_long_value",
@@ -329,7 +407,12 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[17]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: LongLong,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: LongLong,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "signed_long_long_value",
@@ -346,7 +429,12 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[18]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: UnsignedLongLong,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: LongLong,
+// DEFAULT-NEXT:                       signed: false,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "unsigned_long_long_value",
@@ -363,7 +451,12 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[19]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: UnsignedLongLong,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: LongLong,
+// DEFAULT-NEXT:                       signed: false,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "unsigned_long_long_int_value",
@@ -380,7 +473,12 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[20]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: UnsignedLong,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Long,
+// DEFAULT-NEXT:                       signed: false,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "unsigned_long_int_value",
@@ -397,7 +495,9 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[21]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Float,
+// DEFAULT-NEXT:               ty: Floating(
+// DEFAULT-NEXT:                   Float,
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "float_value",
@@ -414,7 +514,9 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[22]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Float16,
+// DEFAULT-NEXT:               ty: Floating(
+// DEFAULT-NEXT:                   Float16,
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "float16_value",
@@ -431,7 +533,9 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[23]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Fp16,
+// DEFAULT-NEXT:               ty: Floating(
+// DEFAULT-NEXT:                   Fp16,
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "fp16_value",
@@ -448,7 +552,9 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[24]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Double,
+// DEFAULT-NEXT:               ty: Floating(
+// DEFAULT-NEXT:                   Double,
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "double_value",
@@ -465,7 +571,9 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[25]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: LongDouble,
+// DEFAULT-NEXT:               ty: Floating(
+// DEFAULT-NEXT:                   LongDouble,
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "long_double_value",
@@ -482,7 +590,11 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[26]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Complex,
+// DEFAULT-NEXT:               ty: Complex(
+// DEFAULT-NEXT:                   Floating(
+// DEFAULT-NEXT:                       Float,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "float_complex_value",
@@ -499,7 +611,11 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[27]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: DoubleComplex,
+// DEFAULT-NEXT:               ty: Complex(
+// DEFAULT-NEXT:                   Floating(
+// DEFAULT-NEXT:                       Double,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "double_complex_value",
@@ -516,7 +632,11 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[28]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: LongDoubleComplex,
+// DEFAULT-NEXT:               ty: Complex(
+// DEFAULT-NEXT:                   Floating(
+// DEFAULT-NEXT:                       LongDouble,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "long_double_complex_value",
@@ -533,7 +653,12 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[29]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int128,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int128,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "int128_value",
@@ -550,7 +675,12 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[30]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: UnsignedInt128,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int128,
+// DEFAULT-NEXT:                       signed: false,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "unsigned_int128_value",
@@ -567,7 +697,9 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[31]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Float128Ext,
+// DEFAULT-NEXT:               ty: Floating(
+// DEFAULT-NEXT:                   Float128Ext,
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "float128_extension_value",
@@ -584,12 +716,14 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[32]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: BitInt {
-// DEFAULT-NEXT:                   width: Integer(
-// DEFAULT-NEXT:                       17,
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   is_unsigned: false,
-// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   BitInt {
+// DEFAULT-NEXT:                       width: Integer(
+// DEFAULT-NEXT:                           17,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "bit_int_value",
@@ -606,12 +740,14 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[33]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: BitInt {
-// DEFAULT-NEXT:                   width: Integer(
-// DEFAULT-NEXT:                       33,
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   is_unsigned: true,
-// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   BitInt {
+// DEFAULT-NEXT:                       width: Integer(
+// DEFAULT-NEXT:                           33,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       signed: false,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "unsigned_bit_int_value",
@@ -646,7 +782,9 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[1]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: BFloat16,
+// DEFAULT-NEXT:               ty: Floating(
+// DEFAULT-NEXT:                   BFloat16,
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "bfloat16_value",
@@ -663,7 +801,11 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[2]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Char,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Char {
+// DEFAULT-NEXT:                       signed: None,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "char_value",
@@ -680,7 +822,13 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[3]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: SignedChar,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Char {
+// DEFAULT-NEXT:                       signed: Some(
+// DEFAULT-NEXT:                           true,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "signed_char_value",
@@ -697,7 +845,13 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[4]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: UnsignedChar,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Char {
+// DEFAULT-NEXT:                       signed: Some(
+// DEFAULT-NEXT:                           false,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "unsigned_char_value",
@@ -714,7 +868,12 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[5]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Short,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Short,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "short_value",
@@ -731,7 +890,12 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[6]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: UnsignedShort,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Short,
+// DEFAULT-NEXT:                       signed: false,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "unsigned_short_value",
@@ -748,7 +912,12 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[7]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "signed_value",
@@ -765,7 +934,12 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[8]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "int_value",
@@ -782,7 +956,12 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[9]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: UnsignedInt,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: false,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "unsigned_value",
@@ -799,7 +978,12 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[10]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: UnsignedInt,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: false,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "unsigned_int_value",
@@ -816,7 +1000,12 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[11]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Long,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Long,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "long_value",
@@ -833,7 +1022,12 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[12]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Long,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Long,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "long_int_value",
@@ -850,7 +1044,12 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[13]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: UnsignedLong,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Long,
+// DEFAULT-NEXT:                       signed: false,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "unsigned_long_value",
@@ -867,7 +1066,12 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[14]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: LongLong,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: LongLong,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "long_long_value",
@@ -884,7 +1088,12 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[15]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: LongLong,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: LongLong,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "long_long_int_value",
@@ -901,7 +1110,12 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[16]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Long,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Long,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "signed_long_value",
@@ -918,7 +1132,12 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[17]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: LongLong,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: LongLong,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "signed_long_long_value",
@@ -935,7 +1154,12 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[18]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: UnsignedLongLong,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: LongLong,
+// DEFAULT-NEXT:                       signed: false,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "unsigned_long_long_value",
@@ -952,7 +1176,12 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[19]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: UnsignedLongLong,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: LongLong,
+// DEFAULT-NEXT:                       signed: false,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "unsigned_long_long_int_value",
@@ -969,7 +1198,12 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[20]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: UnsignedLong,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Long,
+// DEFAULT-NEXT:                       signed: false,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "unsigned_long_int_value",
@@ -986,7 +1220,9 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[21]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Float,
+// DEFAULT-NEXT:               ty: Floating(
+// DEFAULT-NEXT:                   Float,
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "float_value",
@@ -1003,7 +1239,9 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[22]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Float16,
+// DEFAULT-NEXT:               ty: Floating(
+// DEFAULT-NEXT:                   Float16,
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "float16_value",
@@ -1020,7 +1258,9 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[23]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Fp16,
+// DEFAULT-NEXT:               ty: Floating(
+// DEFAULT-NEXT:                   Fp16,
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "fp16_value",
@@ -1037,7 +1277,9 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[24]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Double,
+// DEFAULT-NEXT:               ty: Floating(
+// DEFAULT-NEXT:                   Double,
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "double_value",
@@ -1054,7 +1296,9 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[25]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: LongDouble,
+// DEFAULT-NEXT:               ty: Floating(
+// DEFAULT-NEXT:                   LongDouble,
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "long_double_value",
@@ -1071,7 +1315,11 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[26]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Complex,
+// DEFAULT-NEXT:               ty: Complex(
+// DEFAULT-NEXT:                   Floating(
+// DEFAULT-NEXT:                       Float,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "float_complex_value",
@@ -1088,7 +1336,11 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[27]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: DoubleComplex,
+// DEFAULT-NEXT:               ty: Complex(
+// DEFAULT-NEXT:                   Floating(
+// DEFAULT-NEXT:                       Double,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "double_complex_value",
@@ -1105,7 +1357,11 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[28]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: LongDoubleComplex,
+// DEFAULT-NEXT:               ty: Complex(
+// DEFAULT-NEXT:                   Floating(
+// DEFAULT-NEXT:                       LongDouble,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "long_double_complex_value",
@@ -1122,7 +1378,12 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[29]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int128,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int128,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "int128_value",
@@ -1139,7 +1400,12 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[30]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: UnsignedInt128,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int128,
+// DEFAULT-NEXT:                       signed: false,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "unsigned_int128_value",
@@ -1156,7 +1422,9 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[31]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Float128Ext,
+// DEFAULT-NEXT:               ty: Floating(
+// DEFAULT-NEXT:                   Float128Ext,
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "float128_extension_value",
@@ -1173,12 +1441,14 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[32]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: BitInt {
-// DEFAULT-NEXT:                   width: Integer(
-// DEFAULT-NEXT:                       17,
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   is_unsigned: false,
-// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   BitInt {
+// DEFAULT-NEXT:                       width: Integer(
+// DEFAULT-NEXT:                           17,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "bit_int_value",
@@ -1195,12 +1465,14 @@ unsigned _BitInt(33) unsigned_bit_int_value;
 // DEFAULT-NEXT: decl[33]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: BitInt {
-// DEFAULT-NEXT:                   width: Integer(
-// DEFAULT-NEXT:                       33,
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   is_unsigned: true,
-// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   BitInt {
+// DEFAULT-NEXT:                       width: Integer(
+// DEFAULT-NEXT:                           33,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       signed: false,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "unsigned_bit_int_value",

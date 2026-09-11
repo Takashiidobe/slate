@@ -28,7 +28,12 @@ __attribute__((common, nocommon)) int common_value;
 // DEFAULT-NEXT: decl[0]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Function {
 // DEFAULT-NEXT:               inner: Name(
@@ -55,7 +60,12 @@ __attribute__((common, nocommon)) int common_value;
 // DEFAULT-NEXT: decl[1]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Function {
 // DEFAULT-NEXT:               inner: Name(
@@ -81,7 +91,12 @@ __attribute__((common, nocommon)) int common_value;
 // DEFAULT-NEXT: decl[2]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Function {
 // DEFAULT-NEXT:               inner: Name(
@@ -108,7 +123,12 @@ __attribute__((common, nocommon)) int common_value;
 // DEFAULT-NEXT: decl[3]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Function {
 // DEFAULT-NEXT:               inner: Name(
@@ -132,7 +152,12 @@ __attribute__((common, nocommon)) int common_value;
 // DEFAULT-NEXT: decl[4]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "imported",
@@ -152,7 +177,12 @@ __attribute__((common, nocommon)) int common_value;
 // DEFAULT-NEXT: decl[5]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               storage: Extern,
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
@@ -173,7 +203,12 @@ __attribute__((common, nocommon)) int common_value;
 // DEFAULT-NEXT: decl[6]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Function {
 // DEFAULT-NEXT:               inner: Name(
@@ -196,7 +231,12 @@ __attribute__((common, nocommon)) int common_value;
 // DEFAULT-NEXT: decl[7]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "platform_api",
@@ -220,7 +260,12 @@ __attribute__((common, nocommon)) int common_value;
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[8]: Typedef {
 // DEFAULT-NEXT:       name: "vector_type",
-// DEFAULT-NEXT:       ty: Int,
+// DEFAULT-NEXT:       ty: Integer(
+// DEFAULT-NEXT:           Ranked {
+// DEFAULT-NEXT:               rank: Int,
+// DEFAULT-NEXT:               signed: true,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
 // DEFAULT-NEXT:               0,
@@ -239,7 +284,12 @@ __attribute__((common, nocommon)) int common_value;
 // DEFAULT-NEXT: decl[9]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "ordered",
@@ -268,7 +318,12 @@ __attribute__((common, nocommon)) int common_value;
 // DEFAULT-NEXT:               FieldDecl {
 // DEFAULT-NEXT:                   declaration: Declaration {
 // DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                           ty: Int,
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       declarator: Name(
 // DEFAULT-NEXT:                           "value",
@@ -305,7 +360,12 @@ __attribute__((common, nocommon)) int common_value;
 // DEFAULT-NEXT:               FieldDecl {
 // DEFAULT-NEXT:                   declaration: Declaration {
 // DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                           ty: Int,
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       declarator: Name(
 // DEFAULT-NEXT:                           "value",
@@ -342,7 +402,12 @@ __attribute__((common, nocommon)) int common_value;
 // DEFAULT-NEXT:               FieldDecl {
 // DEFAULT-NEXT:                   declaration: Declaration {
 // DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                           ty: Int,
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       declarator: Name(
 // DEFAULT-NEXT:                           "value",
@@ -372,7 +437,12 @@ __attribute__((common, nocommon)) int common_value;
 // DEFAULT-NEXT: decl[13]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Function {
 // DEFAULT-NEXT:               inner: Name(
@@ -380,7 +450,11 @@ __attribute__((common, nocommon)) int common_value;
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               parameters: [
 // DEFAULT-NEXT:                   Parameter {
-// DEFAULT-NEXT:                       ty: Char,
+// DEFAULT-NEXT:                       ty: Integer(
+// DEFAULT-NEXT:                           Char {
+// DEFAULT-NEXT:                               signed: None,
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       declarator: Some(
 // DEFAULT-NEXT:                           Pointer {
 // DEFAULT-NEXT:                               qualifiers: Qualifiers,
@@ -414,7 +488,11 @@ __attribute__((common, nocommon)) int common_value;
 // DEFAULT-NEXT: decl[14]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Char,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Char {
+// DEFAULT-NEXT:                       signed: None,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Function {
 // DEFAULT-NEXT:               inner: Pointer {
@@ -425,7 +503,11 @@ __attribute__((common, nocommon)) int common_value;
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               parameters: [
 // DEFAULT-NEXT:                   Parameter {
-// DEFAULT-NEXT:                       ty: Char,
+// DEFAULT-NEXT:                       ty: Integer(
+// DEFAULT-NEXT:                           Char {
+// DEFAULT-NEXT:                               signed: None,
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       declarator: Some(
 // DEFAULT-NEXT:                           Pointer {
 // DEFAULT-NEXT:                               qualifiers: Qualifiers,
@@ -456,7 +538,12 @@ __attribute__((common, nocommon)) int common_value;
 // DEFAULT-NEXT: decl[15]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "common_value",
@@ -478,7 +565,12 @@ __attribute__((common, nocommon)) int common_value;
 // DEFAULT-NEXT: decl[0]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Function {
 // DEFAULT-NEXT:               inner: Name(
@@ -505,7 +597,12 @@ __attribute__((common, nocommon)) int common_value;
 // DEFAULT-NEXT: decl[1]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Function {
 // DEFAULT-NEXT:               inner: Name(
@@ -531,7 +628,12 @@ __attribute__((common, nocommon)) int common_value;
 // DEFAULT-NEXT: decl[2]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Function {
 // DEFAULT-NEXT:               inner: Name(
@@ -558,7 +660,12 @@ __attribute__((common, nocommon)) int common_value;
 // DEFAULT-NEXT: decl[3]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Function {
 // DEFAULT-NEXT:               inner: Name(
@@ -582,7 +689,12 @@ __attribute__((common, nocommon)) int common_value;
 // DEFAULT-NEXT: decl[4]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "imported",
@@ -602,7 +714,12 @@ __attribute__((common, nocommon)) int common_value;
 // DEFAULT-NEXT: decl[5]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               storage: Extern,
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
@@ -623,7 +740,12 @@ __attribute__((common, nocommon)) int common_value;
 // DEFAULT-NEXT: decl[6]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Function {
 // DEFAULT-NEXT:               inner: Name(
@@ -646,7 +768,12 @@ __attribute__((common, nocommon)) int common_value;
 // DEFAULT-NEXT: decl[7]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "platform_api",
@@ -670,7 +797,12 @@ __attribute__((common, nocommon)) int common_value;
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[8]: Typedef {
 // DEFAULT-NEXT:       name: "vector_type",
-// DEFAULT-NEXT:       ty: Int,
+// DEFAULT-NEXT:       ty: Integer(
+// DEFAULT-NEXT:           Ranked {
+// DEFAULT-NEXT:               rank: Int,
+// DEFAULT-NEXT:               signed: true,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
 // DEFAULT-NEXT:               0,
@@ -689,7 +821,12 @@ __attribute__((common, nocommon)) int common_value;
 // DEFAULT-NEXT: decl[9]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "ordered",
@@ -718,7 +855,12 @@ __attribute__((common, nocommon)) int common_value;
 // DEFAULT-NEXT:               FieldDecl {
 // DEFAULT-NEXT:                   declaration: Declaration {
 // DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                           ty: Int,
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       declarator: Name(
 // DEFAULT-NEXT:                           "value",
@@ -755,7 +897,12 @@ __attribute__((common, nocommon)) int common_value;
 // DEFAULT-NEXT:               FieldDecl {
 // DEFAULT-NEXT:                   declaration: Declaration {
 // DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                           ty: Int,
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       declarator: Name(
 // DEFAULT-NEXT:                           "value",
@@ -792,7 +939,12 @@ __attribute__((common, nocommon)) int common_value;
 // DEFAULT-NEXT:               FieldDecl {
 // DEFAULT-NEXT:                   declaration: Declaration {
 // DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                           ty: Int,
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       declarator: Name(
 // DEFAULT-NEXT:                           "value",
@@ -822,7 +974,12 @@ __attribute__((common, nocommon)) int common_value;
 // DEFAULT-NEXT: decl[13]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Function {
 // DEFAULT-NEXT:               inner: Name(
@@ -830,7 +987,11 @@ __attribute__((common, nocommon)) int common_value;
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               parameters: [
 // DEFAULT-NEXT:                   Parameter {
-// DEFAULT-NEXT:                       ty: Char,
+// DEFAULT-NEXT:                       ty: Integer(
+// DEFAULT-NEXT:                           Char {
+// DEFAULT-NEXT:                               signed: None,
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       declarator: Some(
 // DEFAULT-NEXT:                           Pointer {
 // DEFAULT-NEXT:                               qualifiers: Qualifiers,
@@ -864,7 +1025,11 @@ __attribute__((common, nocommon)) int common_value;
 // DEFAULT-NEXT: decl[14]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Char,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Char {
+// DEFAULT-NEXT:                       signed: None,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Function {
 // DEFAULT-NEXT:               inner: Pointer {
@@ -875,7 +1040,11 @@ __attribute__((common, nocommon)) int common_value;
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               parameters: [
 // DEFAULT-NEXT:                   Parameter {
-// DEFAULT-NEXT:                       ty: Char,
+// DEFAULT-NEXT:                       ty: Integer(
+// DEFAULT-NEXT:                           Char {
+// DEFAULT-NEXT:                               signed: None,
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       declarator: Some(
 // DEFAULT-NEXT:                           Pointer {
 // DEFAULT-NEXT:                               qualifiers: Qualifiers,
@@ -906,7 +1075,12 @@ __attribute__((common, nocommon)) int common_value;
 // DEFAULT-NEXT: decl[15]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "common_value",

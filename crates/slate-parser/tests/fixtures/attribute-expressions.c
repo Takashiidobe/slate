@@ -8,7 +8,12 @@ __attribute__((__const__, __may_alias__)) int aliased;
 // DEFAULT: polyvariant:
 // DEFAULT-NEXT: decl[0]: Typedef {
 // DEFAULT-NEXT:       name: "aligned_type",
-// DEFAULT-NEXT:       ty: Int,
+// DEFAULT-NEXT:       ty: Integer(
+// DEFAULT-NEXT:           Ranked {
+// DEFAULT-NEXT:               rank: Int,
+// DEFAULT-NEXT:               signed: true,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
 // DEFAULT-NEXT:               0,
@@ -32,7 +37,12 @@ __attribute__((__const__, __may_alias__)) int aliased;
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[1]: Typedef {
 // DEFAULT-NEXT:       name: "vector_type",
-// DEFAULT-NEXT:       ty: Int,
+// DEFAULT-NEXT:       ty: Integer(
+// DEFAULT-NEXT:           Ranked {
+// DEFAULT-NEXT:               rank: Int,
+// DEFAULT-NEXT:               signed: true,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
 // DEFAULT-NEXT:               0,
@@ -59,7 +69,12 @@ __attribute__((__const__, __may_alias__)) int aliased;
 // DEFAULT-NEXT: decl[2]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "aliased",
@@ -80,7 +95,12 @@ __attribute__((__const__, __may_alias__)) int aliased;
 // DEFAULT-NEXT: concrete:
 // DEFAULT-NEXT: decl[0]: Typedef {
 // DEFAULT-NEXT:       name: "aligned_type",
-// DEFAULT-NEXT:       ty: Int,
+// DEFAULT-NEXT:       ty: Integer(
+// DEFAULT-NEXT:           Ranked {
+// DEFAULT-NEXT:               rank: Int,
+// DEFAULT-NEXT:               signed: true,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
 // DEFAULT-NEXT:               0,
@@ -104,7 +124,12 @@ __attribute__((__const__, __may_alias__)) int aliased;
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[1]: Typedef {
 // DEFAULT-NEXT:       name: "vector_type",
-// DEFAULT-NEXT:       ty: Int,
+// DEFAULT-NEXT:       ty: Integer(
+// DEFAULT-NEXT:           Ranked {
+// DEFAULT-NEXT:               rank: Int,
+// DEFAULT-NEXT:               signed: true,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
 // DEFAULT-NEXT:               0,
@@ -131,7 +156,12 @@ __attribute__((__const__, __may_alias__)) int aliased;
 // DEFAULT-NEXT: decl[2]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "aliased",

@@ -21,7 +21,12 @@ int call_main() {
 // DEFAULT-NEXT: decl[0]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "B",
@@ -45,7 +50,12 @@ int call_main() {
 // DEFAULT-NEXT:                   [
 // DEFAULT-NEXT:                       Typedef {
 // DEFAULT-NEXT:                           name: "A",
-// DEFAULT-NEXT:                           ty: Int,
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           provenance: Provenance {
 // DEFAULT-NEXT:                               file: FileId(
 // DEFAULT-NEXT:                                   0,
@@ -56,7 +66,12 @@ int call_main() {
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       Function(
 // DEFAULT-NEXT:                           FunctionDecl {
-// DEFAULT-NEXT:                               ret_type: Int,
+// DEFAULT-NEXT:                               ret_type: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               name: "cast_main",
 // DEFAULT-NEXT:                               body: [
 // DEFAULT-NEXT:                                   Expr(
@@ -92,7 +107,12 @@ int call_main() {
 // DEFAULT-NEXT:                       Declaration {
 // DEFAULT-NEXT:                           declaration: Declaration {
 // DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Int,
+// DEFAULT-NEXT:                                   ty: Integer(
+// DEFAULT-NEXT:                                       Ranked {
+// DEFAULT-NEXT:                                           rank: Int,
+// DEFAULT-NEXT:                                           signed: true,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               declarator: Function {
 // DEFAULT-NEXT:                                   inner: Name(
@@ -100,7 +120,12 @@ int call_main() {
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   parameters: [
 // DEFAULT-NEXT:                                       Parameter {
-// DEFAULT-NEXT:                                           ty: Int,
+// DEFAULT-NEXT:                                           ty: Integer(
+// DEFAULT-NEXT:                                               Ranked {
+// DEFAULT-NEXT:                                                   rank: Int,
+// DEFAULT-NEXT:                                                   signed: true,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           declarator: Some(
 // DEFAULT-NEXT:                                               Name(
 // DEFAULT-NEXT:                                                   "value",
@@ -120,7 +145,12 @@ int call_main() {
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       Function(
 // DEFAULT-NEXT:                           FunctionDecl {
-// DEFAULT-NEXT:                               ret_type: Int,
+// DEFAULT-NEXT:                               ret_type: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               name: "call_main",
 // DEFAULT-NEXT:                               body: [
 // DEFAULT-NEXT:                                   Expr(
@@ -153,7 +183,12 @@ int call_main() {
 // DEFAULT-NEXT: decl[0]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "B",
@@ -170,7 +205,12 @@ int call_main() {
 // DEFAULT-NEXT: decl[1]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Function {
 // DEFAULT-NEXT:               inner: Name(
@@ -178,7 +218,12 @@ int call_main() {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               parameters: [
 // DEFAULT-NEXT:                   Parameter {
-// DEFAULT-NEXT:                       ty: Int,
+// DEFAULT-NEXT:                       ty: Integer(
+// DEFAULT-NEXT:                           Ranked {
+// DEFAULT-NEXT:                               rank: Int,
+// DEFAULT-NEXT:                               signed: true,
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       declarator: Some(
 // DEFAULT-NEXT:                           Name(
 // DEFAULT-NEXT:                               "value",
@@ -198,7 +243,12 @@ int call_main() {
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[2]: Function(
 // DEFAULT-NEXT:       ConcreteFunctionDecl {
-// DEFAULT-NEXT:           ret_type: Int,
+// DEFAULT-NEXT:           ret_type: Integer(
+// DEFAULT-NEXT:               Ranked {
+// DEFAULT-NEXT:                   rank: Int,
+// DEFAULT-NEXT:                   signed: true,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           name: "call_main",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Expr(
@@ -228,7 +278,12 @@ int call_main() {
 // CAST-NEXT: decl[0]: Declaration {
 // CAST-NEXT:       declaration: Declaration {
 // CAST-NEXT:           specifiers: DeclarationSpecifiers {
-// CAST-NEXT:               ty: Int,
+// CAST-NEXT:               ty: Integer(
+// CAST-NEXT:                   Ranked {
+// CAST-NEXT:                       rank: Int,
+// CAST-NEXT:                       signed: true,
+// CAST-NEXT:                   },
+// CAST-NEXT:               ),
 // CAST-NEXT:           },
 // CAST-NEXT:           declarator: Name(
 // CAST-NEXT:               "B",
@@ -252,7 +307,12 @@ int call_main() {
 // CAST-NEXT:                   [
 // CAST-NEXT:                       Typedef {
 // CAST-NEXT:                           name: "A",
-// CAST-NEXT:                           ty: Int,
+// CAST-NEXT:                           ty: Integer(
+// CAST-NEXT:                               Ranked {
+// CAST-NEXT:                                   rank: Int,
+// CAST-NEXT:                                   signed: true,
+// CAST-NEXT:                               },
+// CAST-NEXT:                           ),
 // CAST-NEXT:                           provenance: Provenance {
 // CAST-NEXT:                               file: FileId(
 // CAST-NEXT:                                   0,
@@ -263,7 +323,12 @@ int call_main() {
 // CAST-NEXT:                       },
 // CAST-NEXT:                       Function(
 // CAST-NEXT:                           FunctionDecl {
-// CAST-NEXT:                               ret_type: Int,
+// CAST-NEXT:                               ret_type: Integer(
+// CAST-NEXT:                                   Ranked {
+// CAST-NEXT:                                       rank: Int,
+// CAST-NEXT:                                       signed: true,
+// CAST-NEXT:                                   },
+// CAST-NEXT:                               ),
 // CAST-NEXT:                               name: "cast_main",
 // CAST-NEXT:                               body: [
 // CAST-NEXT:                                   Expr(
@@ -299,7 +364,12 @@ int call_main() {
 // CAST-NEXT:                       Declaration {
 // CAST-NEXT:                           declaration: Declaration {
 // CAST-NEXT:                               specifiers: DeclarationSpecifiers {
-// CAST-NEXT:                                   ty: Int,
+// CAST-NEXT:                                   ty: Integer(
+// CAST-NEXT:                                       Ranked {
+// CAST-NEXT:                                           rank: Int,
+// CAST-NEXT:                                           signed: true,
+// CAST-NEXT:                                       },
+// CAST-NEXT:                                   ),
 // CAST-NEXT:                               },
 // CAST-NEXT:                               declarator: Function {
 // CAST-NEXT:                                   inner: Name(
@@ -307,7 +377,12 @@ int call_main() {
 // CAST-NEXT:                                   ),
 // CAST-NEXT:                                   parameters: [
 // CAST-NEXT:                                       Parameter {
-// CAST-NEXT:                                           ty: Int,
+// CAST-NEXT:                                           ty: Integer(
+// CAST-NEXT:                                               Ranked {
+// CAST-NEXT:                                                   rank: Int,
+// CAST-NEXT:                                                   signed: true,
+// CAST-NEXT:                                               },
+// CAST-NEXT:                                           ),
 // CAST-NEXT:                                           declarator: Some(
 // CAST-NEXT:                                               Name(
 // CAST-NEXT:                                                   "value",
@@ -327,7 +402,12 @@ int call_main() {
 // CAST-NEXT:                       },
 // CAST-NEXT:                       Function(
 // CAST-NEXT:                           FunctionDecl {
-// CAST-NEXT:                               ret_type: Int,
+// CAST-NEXT:                               ret_type: Integer(
+// CAST-NEXT:                                   Ranked {
+// CAST-NEXT:                                       rank: Int,
+// CAST-NEXT:                                       signed: true,
+// CAST-NEXT:                                   },
+// CAST-NEXT:                               ),
 // CAST-NEXT:                               name: "call_main",
 // CAST-NEXT:                               body: [
 // CAST-NEXT:                                   Expr(
@@ -360,7 +440,12 @@ int call_main() {
 // CAST-NEXT: decl[0]: Declaration {
 // CAST-NEXT:       declaration: Declaration {
 // CAST-NEXT:           specifiers: DeclarationSpecifiers {
-// CAST-NEXT:               ty: Int,
+// CAST-NEXT:               ty: Integer(
+// CAST-NEXT:                   Ranked {
+// CAST-NEXT:                       rank: Int,
+// CAST-NEXT:                       signed: true,
+// CAST-NEXT:                   },
+// CAST-NEXT:               ),
 // CAST-NEXT:           },
 // CAST-NEXT:           declarator: Name(
 // CAST-NEXT:               "B",
@@ -376,7 +461,12 @@ int call_main() {
 // CAST-NEXT:   }
 // CAST-NEXT: decl[1]: Typedef {
 // CAST-NEXT:       name: "A",
-// CAST-NEXT:       ty: Int,
+// CAST-NEXT:       ty: Integer(
+// CAST-NEXT:           Ranked {
+// CAST-NEXT:               rank: Int,
+// CAST-NEXT:               signed: true,
+// CAST-NEXT:           },
+// CAST-NEXT:       ),
 // CAST-NEXT:       provenance: Provenance {
 // CAST-NEXT:           file: FileId(
 // CAST-NEXT:               0,
@@ -387,7 +477,12 @@ int call_main() {
 // CAST-NEXT:   }
 // CAST-NEXT: decl[2]: Function(
 // CAST-NEXT:       ConcreteFunctionDecl {
-// CAST-NEXT:           ret_type: Int,
+// CAST-NEXT:           ret_type: Integer(
+// CAST-NEXT:               Ranked {
+// CAST-NEXT:                   rank: Int,
+// CAST-NEXT:                   signed: true,
+// CAST-NEXT:               },
+// CAST-NEXT:           ),
 // CAST-NEXT:           name: "cast_main",
 // CAST-NEXT:           body: [
 // CAST-NEXT:               Expr(

@@ -24,7 +24,12 @@ int variadic_parameters(int value, ...) {
 // DEFAULT: polyvariant:
 // DEFAULT-NEXT: decl[0]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
-// DEFAULT-NEXT:           ret_type: Int,
+// DEFAULT-NEXT:           ret_type: Integer(
+// DEFAULT-NEXT:               Ranked {
+// DEFAULT-NEXT:                   rank: Int,
+// DEFAULT-NEXT:                   signed: true,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           name: "no_parameters",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
@@ -44,7 +49,12 @@ int variadic_parameters(int value, ...) {
 // DEFAULT-NEXT:   )
 // DEFAULT-NEXT: decl[1]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
-// DEFAULT-NEXT:           ret_type: Int,
+// DEFAULT-NEXT:           ret_type: Integer(
+// DEFAULT-NEXT:               Ranked {
+// DEFAULT-NEXT:                   rank: Int,
+// DEFAULT-NEXT:                   signed: true,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           name: "void_parameter",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
@@ -64,11 +74,21 @@ int variadic_parameters(int value, ...) {
 // DEFAULT-NEXT:   )
 // DEFAULT-NEXT: decl[2]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
-// DEFAULT-NEXT:           ret_type: Int,
+// DEFAULT-NEXT:           ret_type: Integer(
+// DEFAULT-NEXT:               Ranked {
+// DEFAULT-NEXT:                   rank: Int,
+// DEFAULT-NEXT:                   signed: true,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           name: "typed_parameter",
 // DEFAULT-NEXT:           parameters: [
 // DEFAULT-NEXT:               Parameter {
-// DEFAULT-NEXT:                   ty: Int,
+// DEFAULT-NEXT:                   ty: Integer(
+// DEFAULT-NEXT:                       Ranked {
+// DEFAULT-NEXT:                           rank: Int,
+// DEFAULT-NEXT:                           signed: true,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   declarator: Some(
 // DEFAULT-NEXT:                       Name(
 // DEFAULT-NEXT:                           "value",
@@ -94,11 +114,20 @@ int variadic_parameters(int value, ...) {
 // DEFAULT-NEXT:   )
 // DEFAULT-NEXT: decl[3]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
-// DEFAULT-NEXT:           ret_type: Int,
+// DEFAULT-NEXT:           ret_type: Integer(
+// DEFAULT-NEXT:               Ranked {
+// DEFAULT-NEXT:                   rank: Int,
+// DEFAULT-NEXT:                   signed: true,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           name: "pointer_parameter",
 // DEFAULT-NEXT:           parameters: [
 // DEFAULT-NEXT:               Parameter {
-// DEFAULT-NEXT:                   ty: Char,
+// DEFAULT-NEXT:                   ty: Integer(
+// DEFAULT-NEXT:                       Char {
+// DEFAULT-NEXT:                           signed: None,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   declarator: Some(
 // DEFAULT-NEXT:                       Pointer {
 // DEFAULT-NEXT:                           qualifiers: Qualifiers,
@@ -127,11 +156,21 @@ int variadic_parameters(int value, ...) {
 // DEFAULT-NEXT:   )
 // DEFAULT-NEXT: decl[4]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
-// DEFAULT-NEXT:           ret_type: Int,
+// DEFAULT-NEXT:           ret_type: Integer(
+// DEFAULT-NEXT:               Ranked {
+// DEFAULT-NEXT:                   rank: Int,
+// DEFAULT-NEXT:                   signed: true,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           name: "variadic_parameters",
 // DEFAULT-NEXT:           parameters: [
 // DEFAULT-NEXT:               Parameter {
-// DEFAULT-NEXT:                   ty: Int,
+// DEFAULT-NEXT:                   ty: Integer(
+// DEFAULT-NEXT:                       Ranked {
+// DEFAULT-NEXT:                           rank: Int,
+// DEFAULT-NEXT:                           signed: true,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   declarator: Some(
 // DEFAULT-NEXT:                       Name(
 // DEFAULT-NEXT:                           "value",
@@ -159,7 +198,12 @@ int variadic_parameters(int value, ...) {
 // DEFAULT-NEXT: concrete:
 // DEFAULT-NEXT: decl[0]: Function(
 // DEFAULT-NEXT:       ConcreteFunctionDecl {
-// DEFAULT-NEXT:           ret_type: Int,
+// DEFAULT-NEXT:           ret_type: Integer(
+// DEFAULT-NEXT:               Ranked {
+// DEFAULT-NEXT:                   rank: Int,
+// DEFAULT-NEXT:                   signed: true,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           name: "no_parameters",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
@@ -179,7 +223,12 @@ int variadic_parameters(int value, ...) {
 // DEFAULT-NEXT:   )
 // DEFAULT-NEXT: decl[1]: Function(
 // DEFAULT-NEXT:       ConcreteFunctionDecl {
-// DEFAULT-NEXT:           ret_type: Int,
+// DEFAULT-NEXT:           ret_type: Integer(
+// DEFAULT-NEXT:               Ranked {
+// DEFAULT-NEXT:                   rank: Int,
+// DEFAULT-NEXT:                   signed: true,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           name: "void_parameter",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
@@ -199,11 +248,21 @@ int variadic_parameters(int value, ...) {
 // DEFAULT-NEXT:   )
 // DEFAULT-NEXT: decl[2]: Function(
 // DEFAULT-NEXT:       ConcreteFunctionDecl {
-// DEFAULT-NEXT:           ret_type: Int,
+// DEFAULT-NEXT:           ret_type: Integer(
+// DEFAULT-NEXT:               Ranked {
+// DEFAULT-NEXT:                   rank: Int,
+// DEFAULT-NEXT:                   signed: true,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           name: "typed_parameter",
 // DEFAULT-NEXT:           parameters: [
 // DEFAULT-NEXT:               Parameter {
-// DEFAULT-NEXT:                   ty: Int,
+// DEFAULT-NEXT:                   ty: Integer(
+// DEFAULT-NEXT:                       Ranked {
+// DEFAULT-NEXT:                           rank: Int,
+// DEFAULT-NEXT:                           signed: true,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   declarator: Some(
 // DEFAULT-NEXT:                       Name(
 // DEFAULT-NEXT:                           "value",
@@ -229,11 +288,20 @@ int variadic_parameters(int value, ...) {
 // DEFAULT-NEXT:   )
 // DEFAULT-NEXT: decl[3]: Function(
 // DEFAULT-NEXT:       ConcreteFunctionDecl {
-// DEFAULT-NEXT:           ret_type: Int,
+// DEFAULT-NEXT:           ret_type: Integer(
+// DEFAULT-NEXT:               Ranked {
+// DEFAULT-NEXT:                   rank: Int,
+// DEFAULT-NEXT:                   signed: true,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           name: "pointer_parameter",
 // DEFAULT-NEXT:           parameters: [
 // DEFAULT-NEXT:               Parameter {
-// DEFAULT-NEXT:                   ty: Char,
+// DEFAULT-NEXT:                   ty: Integer(
+// DEFAULT-NEXT:                       Char {
+// DEFAULT-NEXT:                           signed: None,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   declarator: Some(
 // DEFAULT-NEXT:                       Pointer {
 // DEFAULT-NEXT:                           qualifiers: Qualifiers,
@@ -262,11 +330,21 @@ int variadic_parameters(int value, ...) {
 // DEFAULT-NEXT:   )
 // DEFAULT-NEXT: decl[4]: Function(
 // DEFAULT-NEXT:       ConcreteFunctionDecl {
-// DEFAULT-NEXT:           ret_type: Int,
+// DEFAULT-NEXT:           ret_type: Integer(
+// DEFAULT-NEXT:               Ranked {
+// DEFAULT-NEXT:                   rank: Int,
+// DEFAULT-NEXT:                   signed: true,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           name: "variadic_parameters",
 // DEFAULT-NEXT:           parameters: [
 // DEFAULT-NEXT:               Parameter {
-// DEFAULT-NEXT:                   ty: Int,
+// DEFAULT-NEXT:                   ty: Integer(
+// DEFAULT-NEXT:                       Ranked {
+// DEFAULT-NEXT:                           rank: Int,
+// DEFAULT-NEXT:                           signed: true,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   declarator: Some(
 // DEFAULT-NEXT:                       Name(
 // DEFAULT-NEXT:                           "value",

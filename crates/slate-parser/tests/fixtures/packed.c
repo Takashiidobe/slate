@@ -22,7 +22,11 @@ union __attribute__((packed)) Pair {
 // DEFAULT-NEXT:               FieldDecl {
 // DEFAULT-NEXT:                   declaration: Declaration {
 // DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                           ty: Char,
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Char {
+// DEFAULT-NEXT:                                   signed: None,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       declarator: Name(
 // DEFAULT-NEXT:                           "tag",
@@ -39,7 +43,12 @@ union __attribute__((packed)) Pair {
 // DEFAULT-NEXT:               FieldDecl {
 // DEFAULT-NEXT:                   declaration: Declaration {
 // DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                           ty: Int,
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       declarator: Name(
 // DEFAULT-NEXT:                           "value",
@@ -76,7 +85,12 @@ union __attribute__((packed)) Pair {
 // DEFAULT-NEXT:               FieldDecl {
 // DEFAULT-NEXT:                   declaration: Declaration {
 // DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                           ty: Int,
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       declarator: Name(
 // DEFAULT-NEXT:                           "left",
@@ -93,7 +107,11 @@ union __attribute__((packed)) Pair {
 // DEFAULT-NEXT:               FieldDecl {
 // DEFAULT-NEXT:                   declaration: Declaration {
 // DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                           ty: Char,
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Char {
+// DEFAULT-NEXT:                                   signed: None,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       declarator: Name(
 // DEFAULT-NEXT:                           "right",
@@ -131,7 +149,11 @@ union __attribute__((packed)) Pair {
 // DEFAULT-NEXT:               FieldDecl {
 // DEFAULT-NEXT:                   declaration: Declaration {
 // DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                           ty: Char,
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Char {
+// DEFAULT-NEXT:                                   signed: None,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       declarator: Name(
 // DEFAULT-NEXT:                           "tag",
@@ -148,7 +170,12 @@ union __attribute__((packed)) Pair {
 // DEFAULT-NEXT:               FieldDecl {
 // DEFAULT-NEXT:                   declaration: Declaration {
 // DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                           ty: Int,
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       declarator: Name(
 // DEFAULT-NEXT:                           "value",
@@ -185,7 +212,12 @@ union __attribute__((packed)) Pair {
 // DEFAULT-NEXT:               FieldDecl {
 // DEFAULT-NEXT:                   declaration: Declaration {
 // DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                           ty: Int,
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       declarator: Name(
 // DEFAULT-NEXT:                           "left",
@@ -202,7 +234,11 @@ union __attribute__((packed)) Pair {
 // DEFAULT-NEXT:               FieldDecl {
 // DEFAULT-NEXT:                   declaration: Declaration {
 // DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                           ty: Char,
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Char {
+// DEFAULT-NEXT:                                   signed: None,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       declarator: Name(
 // DEFAULT-NEXT:                           "right",

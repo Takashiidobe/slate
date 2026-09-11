@@ -862,71 +862,98 @@ impl<'a> DeclaratorParser<'a> {
         self.pos += 1;
         match token {
             Token::Keyword(Keyword::Bool) => CType::Bool,
-            Token::Keyword(Keyword::BFloat16) => CType::BFloat16,
-            Token::Keyword(Keyword::Char) => CType::Char,
+            Token::Keyword(Keyword::BFloat16) => CType::Floating(FloatingType::BFloat16),
+            Token::Keyword(Keyword::Char) => CType::Integer(IntegerType::Char { signed: None }),
             Token::Keyword(Keyword::Double) => {
                 if self.matches(Token::Keyword(Keyword::Complex)) {
-                    CType::DoubleComplex
+                    CType::Complex(Box::new(CType::Floating(FloatingType::Double)))
                 } else {
-                    CType::Double
+                    CType::Floating(FloatingType::Double)
                 }
             }
             Token::Keyword(Keyword::Float) => {
                 if self.matches(Token::Keyword(Keyword::Complex)) {
-                    CType::Complex
+                    CType::Complex(Box::new(CType::Floating(FloatingType::Float)))
                 } else {
-                    CType::Float
+                    CType::Floating(FloatingType::Float)
                 }
             }
-            Token::Keyword(Keyword::Float16) => CType::Float16,
-            Token::Keyword(Keyword::Fp16) => CType::Fp16,
-            Token::Keyword(Keyword::Float64x) => CType::Float64x,
-            Token::Keyword(Keyword::Float128) => CType::Float128,
-            Token::Keyword(Keyword::Float128Ext) => CType::Float128Ext,
-            Token::Keyword(Keyword::Int) => CType::Int,
-            Token::Keyword(Keyword::Int128) => CType::Int128,
+            Token::Keyword(Keyword::Float16) => CType::Floating(FloatingType::Float16),
+            Token::Keyword(Keyword::Fp16) => CType::Floating(FloatingType::Fp16),
+            Token::Keyword(Keyword::Float64x) => CType::Floating(FloatingType::Float64x),
+            Token::Keyword(Keyword::Float128) => CType::Floating(FloatingType::Float128),
+            Token::Keyword(Keyword::Float128Ext) => CType::Floating(FloatingType::Float128Ext),
+            Token::Keyword(Keyword::Int) => CType::Integer(IntegerType::Ranked {
+                rank: IntegerRank::Int,
+                signed: true,
+            }),
+            Token::Keyword(Keyword::Int128) => CType::Integer(IntegerType::Ranked {
+                rank: IntegerRank::Int128,
+                signed: true,
+            }),
             Token::Keyword(Keyword::Long) => {
                 if self.matches(Token::Keyword(Keyword::Long)) {
                     self.matches(Token::Keyword(Keyword::Int));
-                    CType::LongLong
+                    CType::Integer(IntegerType::Ranked {
+                        rank: IntegerRank::LongLong,
+                        signed: true,
+                    })
                 } else if self.matches(Token::Keyword(Keyword::Double)) {
                     if self.matches(Token::Keyword(Keyword::Complex)) {
-                        CType::LongDoubleComplex
+                        CType::Complex(Box::new(CType::Floating(FloatingType::LongDouble)))
                     } else {
-                        CType::LongDouble
+                        CType::Floating(FloatingType::LongDouble)
                     }
                 } else {
                     self.matches(Token::Keyword(Keyword::Int));
-                    CType::Long
+                    CType::Integer(IntegerType::Ranked {
+                        rank: IntegerRank::Long,
+                        signed: true,
+                    })
                 }
             }
             Token::Keyword(Keyword::Short) => {
                 self.matches(Token::Keyword(Keyword::Int));
-                CType::Short
+                CType::Integer(IntegerType::Ranked {
+                    rank: IntegerRank::Short,
+                    signed: true,
+                })
             }
             Token::Keyword(Keyword::Signed) => match self.peek() {
                 Some(Token::Keyword(Keyword::Char)) => {
                     self.pos += 1;
-                    CType::SignedChar
+                    CType::Integer(IntegerType::Char { signed: Some(true) })
                 }
                 Some(Token::Keyword(Keyword::Short)) => {
                     self.pos += 1;
                     self.matches(Token::Keyword(Keyword::Int));
-                    CType::Short
+                    CType::Integer(IntegerType::Ranked {
+                        rank: IntegerRank::Short,
+                        signed: true,
+                    })
                 }
                 Some(Token::Keyword(Keyword::Long)) => {
                     self.pos += 1;
                     if self.matches(Token::Keyword(Keyword::Long)) {
                         self.matches(Token::Keyword(Keyword::Int));
-                        CType::LongLong
+                        CType::Integer(IntegerType::Ranked {
+                            rank: IntegerRank::LongLong,
+                            signed: true,
+                        })
                     } else {
                         self.matches(Token::Keyword(Keyword::Int));
-                        CType::Long
+                        CType::Integer(IntegerType::Ranked {
+                            rank: IntegerRank::Long,
+                            signed: true,
+                        })
                     }
                 }
                 Some(Token::Keyword(Keyword::Int128)) => {
                     self.pos += 1;
-                    CType::Int128
+                    CType::Integer(IntegerType::Ranked {
+                        rank: IntegerRank::Int128,
+                        signed: true,
+                    })
                 }
                 Some(Token::Keyword(Keyword::BitInt)) => {
                     self.pos += 1;
@@ -934,33 +961,53 @@ impl<'a> DeclaratorParser<'a> {
                 }
                 Some(Token::Keyword(Keyword::Int)) => {
                     self.pos += 1;
-                    CType::Int
+                    CType::Integer(IntegerType::Ranked {
+                        rank: IntegerRank::Int,
+                        signed: true,
+                    })
                 }
-                _ => CType::Int,
+                _ => CType::Integer(IntegerType::Ranked {
+                    rank: IntegerRank::Int,
+                    signed: true,
+                }),
             },
             Token::Keyword(Keyword::Unsigned) => match self.peek() {
                 Some(Token::Keyword(Keyword::Char)) => {
                     self.pos += 1;
-                    CType::UnsignedChar
+                    CType::Integer(IntegerType::Char {
+                        signed: Some(false),
+                    })
                 }
                 Some(Token::Keyword(Keyword::Short)) => {
                     self.pos += 1;
                     self.matches(Token::Keyword(Keyword::Int));
-                    CType::UnsignedShort
+                    CType::Integer(IntegerType::Ranked {
+                        rank: IntegerRank::Short,
+                        signed: false,
+                    })
                 }
                 Some(Token::Keyword(Keyword::Long)) => {
                     self.pos += 1;
                     if self.matches(Token::Keyword(Keyword::Long)) {
                         self.matches(Token::Keyword(Keyword::Int));
-                        CType::UnsignedLongLong
+                        CType::Integer(IntegerType::Ranked {
+                            rank: IntegerRank::LongLong,
+                            signed: false,
+                        })
                     } else {
                         self.matches(Token::Keyword(Keyword::Int));
-                        CType::UnsignedLong
+                        CType::Integer(IntegerType::Ranked {
+                            rank: IntegerRank::Long,
+                            signed: false,
+                        })
                     }
                 }
                 Some(Token::Keyword(Keyword::Int128)) => {
                     self.pos += 1;
-                    CType::UnsignedInt128
+                    CType::Integer(IntegerType::Ranked {
+                        rank: IntegerRank::Int128,
+                        signed: false,
+                    })
                 }
                 Some(Token::Keyword(Keyword::BitInt)) => {
                     self.pos += 1;
@@ -968,12 +1015,20 @@ impl<'a> DeclaratorParser<'a> {
                 }
                 Some(Token::Keyword(Keyword::Int)) => {
                     self.pos += 1;
-                    CType::UnsignedInt
+                    CType::Integer(IntegerType::Ranked {
+                        rank: IntegerRank::Int,
+                        signed: false,
+                    })
                 }
-                _ => CType::UnsignedInt,
+                _ => CType::Integer(IntegerType::Ranked {
+                    rank: IntegerRank::Int,
+                    signed: false,
+                }),
             },
             Token::Keyword(Keyword::Void) => CType::Void,
-            Token::Keyword(Keyword::Complex) => CType::Complex,
+            Token::Keyword(Keyword::Complex) => {
+                CType::Complex(Box::new(CType::Floating(FloatingType::Double)))
+            }
             Token::Keyword(Keyword::BitInt) => self.parse_bit_int(false),
             Token::Keyword(Keyword::Struct) => {
                 let name = match self.tokens.get(self.pos) {
@@ -1023,7 +1078,10 @@ impl<'a> DeclaratorParser<'a> {
         let width = const_expr::Parser::parse(&self.tokens[start..self.pos])
             .expect("invalid _BitInt width expression");
         self.pos += 1;
-        CType::BitInt { width, is_unsigned }
+        CType::Integer(IntegerType::BitInt {
+            width,
+            signed: !is_unsigned,
+        })
     }
 
     fn parse_initializer(&mut self) -> Initializer {

@@ -16,7 +16,12 @@ static inline int helper() {
 // DEFAULT-NEXT: decl[0]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               qualifiers: Qualifiers {
 // DEFAULT-NEXT:                   is_const: true,
 // DEFAULT-NEXT:                   is_volatile: true,
@@ -37,7 +42,12 @@ static inline int helper() {
 // DEFAULT-NEXT: decl[1]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               qualifiers: Qualifiers {
 // DEFAULT-NEXT:                   is_const: true,
 // DEFAULT-NEXT:               },
@@ -58,7 +68,12 @@ static inline int helper() {
 // DEFAULT-NEXT: decl[2]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               storage: Extern,
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
@@ -76,7 +91,12 @@ static inline int helper() {
 // DEFAULT-NEXT: decl[3]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               qualifiers: Qualifiers {
 // DEFAULT-NEXT:                   is_atomic: true,
 // DEFAULT-NEXT:               },
@@ -99,7 +119,12 @@ static inline int helper() {
 // DEFAULT-NEXT:           qualifiers: Qualifiers {
 // DEFAULT-NEXT:               is_const: true,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           ty: Int,
+// DEFAULT-NEXT:           ty: Integer(
+// DEFAULT-NEXT:               Ranked {
+// DEFAULT-NEXT:                   rank: Int,
+// DEFAULT-NEXT:                   signed: true,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -112,7 +137,12 @@ static inline int helper() {
 // DEFAULT-NEXT: decl[5]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Pointer {
 // DEFAULT-NEXT:               qualifiers: Qualifiers {
@@ -134,7 +164,12 @@ static inline int helper() {
 // DEFAULT-NEXT: decl[6]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               qualifiers: Qualifiers {
 // DEFAULT-NEXT:                   is_const: true,
 // DEFAULT-NEXT:               },
@@ -158,7 +193,12 @@ static inline int helper() {
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[7]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
-// DEFAULT-NEXT:           ret_type: Int,
+// DEFAULT-NEXT:           ret_type: Integer(
+// DEFAULT-NEXT:               Ranked {
+// DEFAULT-NEXT:                   rank: Int,
+// DEFAULT-NEXT:                   signed: true,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           name: "helper",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
@@ -182,7 +222,12 @@ static inline int helper() {
 // DEFAULT-NEXT: decl[0]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               qualifiers: Qualifiers {
 // DEFAULT-NEXT:                   is_const: true,
 // DEFAULT-NEXT:                   is_volatile: true,
@@ -203,7 +248,12 @@ static inline int helper() {
 // DEFAULT-NEXT: decl[1]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               qualifiers: Qualifiers {
 // DEFAULT-NEXT:                   is_const: true,
 // DEFAULT-NEXT:               },
@@ -224,7 +274,12 @@ static inline int helper() {
 // DEFAULT-NEXT: decl[2]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               storage: Extern,
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
@@ -242,7 +297,12 @@ static inline int helper() {
 // DEFAULT-NEXT: decl[3]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               qualifiers: Qualifiers {
 // DEFAULT-NEXT:                   is_atomic: true,
 // DEFAULT-NEXT:               },
@@ -265,7 +325,12 @@ static inline int helper() {
 // DEFAULT-NEXT:           qualifiers: Qualifiers {
 // DEFAULT-NEXT:               is_const: true,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           ty: Int,
+// DEFAULT-NEXT:           ty: Integer(
+// DEFAULT-NEXT:               Ranked {
+// DEFAULT-NEXT:                   rank: Int,
+// DEFAULT-NEXT:                   signed: true,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -278,7 +343,12 @@ static inline int helper() {
 // DEFAULT-NEXT: decl[5]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Pointer {
 // DEFAULT-NEXT:               qualifiers: Qualifiers {
@@ -300,7 +370,12 @@ static inline int helper() {
 // DEFAULT-NEXT: decl[6]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Int,
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               qualifiers: Qualifiers {
 // DEFAULT-NEXT:                   is_const: true,
 // DEFAULT-NEXT:               },
@@ -324,7 +399,12 @@ static inline int helper() {
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[7]: Function(
 // DEFAULT-NEXT:       ConcreteFunctionDecl {
-// DEFAULT-NEXT:           ret_type: Int,
+// DEFAULT-NEXT:           ret_type: Integer(
+// DEFAULT-NEXT:               Ranked {
+// DEFAULT-NEXT:                   rank: Int,
+// DEFAULT-NEXT:                   signed: true,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           name: "helper",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(

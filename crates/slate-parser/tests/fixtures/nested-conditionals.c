@@ -19,7 +19,12 @@ int main() {
 // DEFAULT: polyvariant:
 // DEFAULT-NEXT: decl[0]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
-// DEFAULT-NEXT:           ret_type: Int,
+// DEFAULT-NEXT:           ret_type: Integer(
+// DEFAULT-NEXT:               Ranked {
+// DEFAULT-NEXT:                   rank: Int,
+// DEFAULT-NEXT:                   signed: true,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           name: "main",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Conditional(
@@ -125,7 +130,12 @@ int main() {
 // DEFAULT-NEXT: concrete:
 // DEFAULT-NEXT: decl[0]: Function(
 // DEFAULT-NEXT:       ConcreteFunctionDecl {
-// DEFAULT-NEXT:           ret_type: Int,
+// DEFAULT-NEXT:           ret_type: Integer(
+// DEFAULT-NEXT:               Ranked {
+// DEFAULT-NEXT:                   rank: Int,
+// DEFAULT-NEXT:                   signed: true,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           name: "main",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
@@ -148,7 +158,12 @@ int main() {
 // INNER: polyvariant:
 // INNER-NEXT: decl[0]: Function(
 // INNER-NEXT:       FunctionDecl {
-// INNER-NEXT:           ret_type: Int,
+// INNER-NEXT:           ret_type: Integer(
+// INNER-NEXT:               Ranked {
+// INNER-NEXT:                   rank: Int,
+// INNER-NEXT:                   signed: true,
+// INNER-NEXT:               },
+// INNER-NEXT:           ),
 // INNER-NEXT:           name: "main",
 // INNER-NEXT:           body: [
 // INNER-NEXT:               Conditional(
@@ -254,7 +269,12 @@ int main() {
 // INNER-NEXT: concrete:
 // INNER-NEXT: decl[0]: Function(
 // INNER-NEXT:       ConcreteFunctionDecl {
-// INNER-NEXT:           ret_type: Int,
+// INNER-NEXT:           ret_type: Integer(
+// INNER-NEXT:               Ranked {
+// INNER-NEXT:                   rank: Int,
+// INNER-NEXT:                   signed: true,
+// INNER-NEXT:               },
+// INNER-NEXT:           ),
 // INNER-NEXT:           name: "main",
 // INNER-NEXT:           body: [
 // INNER-NEXT:               Return(
