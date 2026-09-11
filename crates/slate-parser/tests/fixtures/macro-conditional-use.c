@@ -32,13 +32,8 @@ int picked(void) {
 // DEFAULT-NEXT:       Conditional {
 // DEFAULT-NEXT:           branches: [
 // DEFAULT-NEXT:               (
-// DEFAULT-NEXT:                   And(
-// DEFAULT-NEXT:                       Constant(
-// DEFAULT-NEXT:                           1,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Defined(
-// DEFAULT-NEXT:                           "SELECT",
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   Defined(
+// DEFAULT-NEXT:                       "SELECT",
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   [
 // DEFAULT-NEXT:                       Declaration {
@@ -75,14 +70,9 @@ int picked(void) {
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               (
-// DEFAULT-NEXT:                   And(
-// DEFAULT-NEXT:                       Constant(
-// DEFAULT-NEXT:                           1,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Not(
-// DEFAULT-NEXT:                           Defined(
-// DEFAULT-NEXT:                               "SELECT",
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                   Not(
+// DEFAULT-NEXT:                       Defined(
+// DEFAULT-NEXT:                           "SELECT",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   [
@@ -126,13 +116,8 @@ int picked(void) {
 // DEFAULT-NEXT:       Conditional {
 // DEFAULT-NEXT:           branches: [
 // DEFAULT-NEXT:               (
-// DEFAULT-NEXT:                   And(
-// DEFAULT-NEXT:                       Constant(
-// DEFAULT-NEXT:                           1,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Defined(
-// DEFAULT-NEXT:                           "SELECT",
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   Defined(
+// DEFAULT-NEXT:                       "SELECT",
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   [
 // DEFAULT-NEXT:                       Declaration {
@@ -160,14 +145,9 @@ int picked(void) {
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               (
-// DEFAULT-NEXT:                   And(
-// DEFAULT-NEXT:                       Constant(
-// DEFAULT-NEXT:                           1,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Not(
-// DEFAULT-NEXT:                           Defined(
-// DEFAULT-NEXT:                               "SELECT",
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                   Not(
+// DEFAULT-NEXT:                       Defined(
+// DEFAULT-NEXT:                           "SELECT",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   [
@@ -211,13 +191,8 @@ int picked(void) {
 // DEFAULT-NEXT:                   Conditional {
 // DEFAULT-NEXT:                       branches: [
 // DEFAULT-NEXT:                           (
-// DEFAULT-NEXT:                               And(
-// DEFAULT-NEXT:                                   Constant(
-// DEFAULT-NEXT:                                       1,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   Defined(
-// DEFAULT-NEXT:                                       "SELECT",
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               Defined(
+// DEFAULT-NEXT:                                   "SELECT",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               [
 // DEFAULT-NEXT:                                   Return(
@@ -230,14 +205,9 @@ int picked(void) {
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           (
-// DEFAULT-NEXT:                               And(
-// DEFAULT-NEXT:                                   Constant(
-// DEFAULT-NEXT:                                       1,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   Not(
-// DEFAULT-NEXT:                                       Defined(
-// DEFAULT-NEXT:                                           "SELECT",
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                               Not(
+// DEFAULT-NEXT:                                   Defined(
+// DEFAULT-NEXT:                                       "SELECT",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               [
@@ -350,13 +320,8 @@ int picked(void) {
 // SELECT-NEXT:       Conditional {
 // SELECT-NEXT:           branches: [
 // SELECT-NEXT:               (
-// SELECT-NEXT:                   And(
-// SELECT-NEXT:                       Constant(
-// SELECT-NEXT:                           1,
-// SELECT-NEXT:                       ),
-// SELECT-NEXT:                       Defined(
-// SELECT-NEXT:                           "SELECT",
-// SELECT-NEXT:                       ),
+// SELECT-NEXT:                   Defined(
+// SELECT-NEXT:                       "SELECT",
 // SELECT-NEXT:                   ),
 // SELECT-NEXT:                   [
 // SELECT-NEXT:                       Declaration {
@@ -393,14 +358,9 @@ int picked(void) {
 // SELECT-NEXT:                   ],
 // SELECT-NEXT:               ),
 // SELECT-NEXT:               (
-// SELECT-NEXT:                   And(
-// SELECT-NEXT:                       Constant(
-// SELECT-NEXT:                           1,
-// SELECT-NEXT:                       ),
-// SELECT-NEXT:                       Not(
-// SELECT-NEXT:                           Defined(
-// SELECT-NEXT:                               "SELECT",
-// SELECT-NEXT:                           ),
+// SELECT-NEXT:                   Not(
+// SELECT-NEXT:                       Defined(
+// SELECT-NEXT:                           "SELECT",
 // SELECT-NEXT:                       ),
 // SELECT-NEXT:                   ),
 // SELECT-NEXT:                   [
@@ -444,13 +404,8 @@ int picked(void) {
 // SELECT-NEXT:       Conditional {
 // SELECT-NEXT:           branches: [
 // SELECT-NEXT:               (
-// SELECT-NEXT:                   And(
-// SELECT-NEXT:                       Constant(
-// SELECT-NEXT:                           1,
-// SELECT-NEXT:                       ),
-// SELECT-NEXT:                       Defined(
-// SELECT-NEXT:                           "SELECT",
-// SELECT-NEXT:                       ),
+// SELECT-NEXT:                   Defined(
+// SELECT-NEXT:                       "SELECT",
 // SELECT-NEXT:                   ),
 // SELECT-NEXT:                   [
 // SELECT-NEXT:                       Declaration {
@@ -478,14 +433,9 @@ int picked(void) {
 // SELECT-NEXT:                   ],
 // SELECT-NEXT:               ),
 // SELECT-NEXT:               (
-// SELECT-NEXT:                   And(
-// SELECT-NEXT:                       Constant(
-// SELECT-NEXT:                           1,
-// SELECT-NEXT:                       ),
-// SELECT-NEXT:                       Not(
-// SELECT-NEXT:                           Defined(
-// SELECT-NEXT:                               "SELECT",
-// SELECT-NEXT:                           ),
+// SELECT-NEXT:                   Not(
+// SELECT-NEXT:                       Defined(
+// SELECT-NEXT:                           "SELECT",
 // SELECT-NEXT:                       ),
 // SELECT-NEXT:                   ),
 // SELECT-NEXT:                   [
@@ -529,13 +479,8 @@ int picked(void) {
 // SELECT-NEXT:                   Conditional {
 // SELECT-NEXT:                       branches: [
 // SELECT-NEXT:                           (
-// SELECT-NEXT:                               And(
-// SELECT-NEXT:                                   Constant(
-// SELECT-NEXT:                                       1,
-// SELECT-NEXT:                                   ),
-// SELECT-NEXT:                                   Defined(
-// SELECT-NEXT:                                       "SELECT",
-// SELECT-NEXT:                                   ),
+// SELECT-NEXT:                               Defined(
+// SELECT-NEXT:                                   "SELECT",
 // SELECT-NEXT:                               ),
 // SELECT-NEXT:                               [
 // SELECT-NEXT:                                   Return(
@@ -548,14 +493,9 @@ int picked(void) {
 // SELECT-NEXT:                               ],
 // SELECT-NEXT:                           ),
 // SELECT-NEXT:                           (
-// SELECT-NEXT:                               And(
-// SELECT-NEXT:                                   Constant(
-// SELECT-NEXT:                                       1,
-// SELECT-NEXT:                                   ),
-// SELECT-NEXT:                                   Not(
-// SELECT-NEXT:                                       Defined(
-// SELECT-NEXT:                                           "SELECT",
-// SELECT-NEXT:                                       ),
+// SELECT-NEXT:                               Not(
+// SELECT-NEXT:                                   Defined(
+// SELECT-NEXT:                                       "SELECT",
 // SELECT-NEXT:                                   ),
 // SELECT-NEXT:                               ),
 // SELECT-NEXT:                               [

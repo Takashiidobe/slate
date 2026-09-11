@@ -277,7 +277,9 @@ impl<'a> Preprocessor<'a> {
         let mut branches = Vec::new();
         let mut prior = vec![first_condition.clone()];
         let first_active = conjunction(active, &first_condition);
+        let order_before = self.macro_order;
         let first_body = self.parse_body_or_skip(lines, pos, file, &first_active)?;
+        self.concretize_guard(&first_condition, active, &first_active, order_before);
         branches.push((first_condition, first_body));
         let mut saw_else = false;
 
@@ -302,7 +304,9 @@ impl<'a> Preprocessor<'a> {
                     .expect("conditional has an initial branch");
                 let else_condition = Condition::Not(Box::new(excluded));
                 let else_active = conjunction(active, &else_condition);
+                let order_before = self.macro_order;
                 let else_body = self.parse_body_or_skip(lines, pos, file, &else_active)?;
+                self.concretize_guard(&else_condition, active, &else_active, order_before);
                 branches.push((else_condition, else_body));
                 continue;
             }
@@ -328,11 +332,39 @@ impl<'a> Preprocessor<'a> {
                 prior.push(branch_condition.clone());
                 *pos += 1;
                 let branch_active = conjunction(active, &branch_condition);
+                let order_before = self.macro_order;
                 let body = self.parse_body_or_skip(lines, pos, file, &branch_active)?;
+                self.concretize_guard(&branch_condition, active, &branch_active, order_before);
                 branches.push((branch_condition, body));
                 continue;
             }
             return Err(self.error(*pos, "expected #elif, #else, or #endif"));
+        }
+    }
+
+    fn concretize_guard(
+        &mut self,
+        branch_condition: &Condition,
+        outer_active: &Condition,
+        branch_active: &Condition,
+        order_from: usize,
+    ) {
+        let Condition::Not(inner) = branch_condition else {
+            return;
+        };
+        let Condition::Defined(name) = inner.as_ref() else {
+            return;
+        };
+        if !self.macros.contains_key(name) {
+            return;
+        }
+        let concrete = simplify_condition(outer_active);
+        for conditional in self.macros.values_mut() {
+            for (condition, definition) in conditional.branches.iter_mut() {
+                if definition.order >= order_from && condition == branch_active {
+                    *condition = concrete.clone();
+                }
+            }
         }
     }
 
@@ -696,7 +728,41 @@ fn skip_block(lines: &[&str], pos: &mut usize) {
 }
 
 fn conjunction(active: &Condition, branch: &Condition) -> Condition {
-    Condition::And(Box::new(active.clone()), Box::new(branch.clone()))
+    simplify_condition(&Condition::And(
+        Box::new(active.clone()),
+        Box::new(branch.clone()),
+    ))
+}
+
+fn simplify_condition(condition: &Condition) -> Condition {
+    match condition {
+        Condition::And(left, right) => {
+            let left = simplify_condition(left);
+            let right = simplify_condition(right);
+            match (&left, &right) {
+                (Condition::Constant(0), _) | (_, Condition::Constant(0)) => Condition::Constant(0),
+                (Condition::Constant(v), _) if *v != 0 => right,
+                (_, Condition::Constant(v)) if *v != 0 => left,
+                _ => Condition::And(Box::new(left), Box::new(right)),
+            }
+        }
+        Condition::Or(left, right) => {
+            let left = simplify_condition(left);
+            let right = simplify_condition(right);
+            match (&left, &right) {
+                (Condition::Constant(v), _) if *v != 0 => Condition::Constant(1),
+                (_, Condition::Constant(v)) if *v != 0 => Condition::Constant(1),
+                (Condition::Constant(0), _) => right,
+                (_, Condition::Constant(0)) => left,
+                _ => Condition::Or(Box::new(left), Box::new(right)),
+            }
+        }
+        Condition::Not(inner) => match simplify_condition(inner) {
+            Condition::Constant(v) => Condition::Constant(if v != 0 { 0 } else { 1 }),
+            other => Condition::Not(Box::new(other)),
+        },
+        Condition::Defined(_) | Condition::Constant(_) => condition.clone(),
+    }
 }
 
 fn invocation_arguments(tokens: &[Token], start: usize) -> Option<(Vec<Vec<Token>>, usize)> {
