@@ -260,6 +260,18 @@ fn unistd_environ_object_matches_glibc_oracle() {
 }
 
 #[test]
+fn msvc_timeb_declarations_are_collected_from_ucrt_oracle() {
+    let config =
+        resolve(Architecture::X86_64, LibcVariant::Msvc).expect("resolve MSVC x86_64 oracle");
+    let output =
+        Path::new(env!("CARGO_MANIFEST_DIR")).join("target/libc-declaration-probe/msvc-timeb");
+    let functions = extract_oracle_header_functions(&config, "sys/timeb.h", &output)
+        .expect("extract MSVC sys/timeb.h declarations");
+
+    assert!(functions.iter().any(|function| function.name == "_ftime64"));
+}
+
+#[test]
 #[ignore = "manual oracle type surface shim probe"]
 fn verify_oracle_header_type_surface() {
     let (libc, config) = selected_config();

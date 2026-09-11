@@ -43,3 +43,24 @@ rm -rf target/msvc-tools target/msvc-xwin-cache target/msvc-sysroot
 Removing only `target/msvc-sysroot` preserves the pinned xwin installation and
 download cache for the next run. None of these paths are committed because the
 repository ignores all of `target/`.
+
+## Header declaration matrix
+
+Generate the checked-in probe for every header in the MSVC manifest:
+
+```bash
+SLATE_LIBC_DECL_TARGET=msvc-x86_64 cargo nextest r --release --profile libc \
+  --test libc_declaration_matrix_suite \
+  -E 'test(generate_declaration_matrix_fixtures)' \
+  --run-ignored ignored-only --nocapture
+```
+
+Check the headers one by one against the pinned CRT and UCRT oracle:
+
+```bash
+SLATE_LIBC_DECL_TARGET=msvc-x86_64 cargo nextest r --release --profile libc \
+  --test libc_declaration_matrix_suite -E 'test(declaration_matrices)' --nocapture
+```
+
+MSVC stays opt-in because an incomplete shim is expected to make this matrix
+fail. The ordinary `libc` profile continues to run the hostable matrices.

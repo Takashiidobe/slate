@@ -27,6 +27,15 @@ struct DeclarationMatrixDescriptor {
 
 const DESCRIPTORS: &[DeclarationMatrixDescriptor] = &[
     DeclarationMatrixDescriptor {
+        name: "msvc-x86_64",
+        architecture: Architecture::X86_64,
+        libc: LibcVariant::Msvc,
+        feature_profile: "default",
+        fixture_root: "tests/fixtures.libc-static-test/msvc-x86_64",
+        manifest: "headers.txt",
+        oracle_root: "target/libc-declaration-oracle/msvc-x86_64",
+    },
+    DeclarationMatrixDescriptor {
         name: "glibc-x86_64",
         architecture: Architecture::X86_64,
         libc: LibcVariant::Glibc,
@@ -193,14 +202,21 @@ fn selected_descriptor() -> &'static DeclarationMatrixDescriptor {
                         .join(", ")
                 )
             }),
-        Err(_) => &DESCRIPTORS[0],
+        Err(_) => DESCRIPTORS
+            .iter()
+            .find(|descriptor| descriptor.libc != LibcVariant::Msvc)
+            .expect("at least one default declaration matrix descriptor"),
     }
 }
 
 fn enabled_descriptors() -> impl Iterator<Item = &'static DeclarationMatrixDescriptor> {
     match std::env::var("SLATE_LIBC_DECL_TARGET") {
         Ok(_) => vec![selected_descriptor()].into_iter(),
-        Err(_) => DESCRIPTORS.iter().collect::<Vec<_>>().into_iter(),
+        Err(_) => DESCRIPTORS
+            .iter()
+            .filter(|descriptor| descriptor.libc != LibcVariant::Msvc)
+            .collect::<Vec<_>>()
+            .into_iter(),
     }
 }
 
@@ -233,6 +249,8 @@ fn generate_declaration_matrix_fixtures() {
             &surface,
             &macros,
             &fixture_output,
+            matches!(descriptor.libc, LibcVariant::Darwin | LibcVariant::Msvc),
+            true,
         );
         if let Err(error) = result {
             if error == format!("{header} has no matrix probe strategy") {
@@ -275,10 +293,12 @@ fn declaration_matrices() {
                             &header,
                             &output.join("shim-files"),
                         )?;
-                        if let Some(failure) =
-                            header_visibility_failure(&header, &oracle_files, &shim_files)
-                        {
-                            return Err(failure);
+                        if descriptor.libc != LibcVariant::Msvc {
+                            if let Some(failure) =
+                                header_visibility_failure(&header, &oracle_files, &shim_files)
+                            {
+                                return Err(failure);
+                            }
                         }
                         compile_and_link_shim_probe(
                             &config,

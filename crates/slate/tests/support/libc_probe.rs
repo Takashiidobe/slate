@@ -307,6 +307,7 @@ pub struct ProbeConfig {
     pub label: String,
     pub compiler: PathBuf,
     pub compiler_args: Vec<String>,
+    pub oracle_compiler_args: Vec<String>,
     pub target: String,
     pub sysroot: PathBuf,
     pub linker: PathBuf,
@@ -315,6 +316,7 @@ pub struct ProbeConfig {
     pub runner: Option<PathBuf>,
     pub runner_args: Vec<String>,
     pub defines: Vec<String>,
+    pub can_link: bool,
     pub can_execute: bool,
 }
 
@@ -546,19 +548,18 @@ pub fn resolve(arch: Architecture, libc: LibcVariant) -> Result<ProbeConfig, Str
                 .target()
                 .expect("MSVC target triple is defined for x86_64")
                 .to_string();
-            let linker_args = vec![
+            let compiler_args = vec![
                 "-isystem".to_string(),
                 crt_include.to_string_lossy().into_owned(),
                 "-isystem".to_string(),
                 ucrt_include.to_string_lossy().into_owned(),
-                format!("--target={target_triple}"),
             ];
             (
                 target_triple,
                 sysroot,
                 slate_clang.clone(),
                 slate_clang.clone(),
-                linker_args,
+                compiler_args,
                 Vec::new(),
             )
         }
@@ -573,10 +574,23 @@ pub fn resolve(arch: Architecture, libc: LibcVariant) -> Result<ProbeConfig, Str
         .map(|_| vec!["-L".to_string(), sysroot.to_string_lossy().into_owned()])
         .unwrap_or_default();
 
+    let oracle_compiler_args = if libc == LibcVariant::Msvc {
+        linker_args.clone()
+    } else {
+        extra_compiler_args(arch)
+    };
+    let compiler_args = extra_compiler_args(arch);
+    let linker_args = if libc == LibcVariant::Msvc {
+        Vec::new()
+    } else {
+        linker_args
+    };
+
     Ok(ProbeConfig {
         label: format!("{}/{}", libc.name(), arch_key(arch)),
         compiler,
-        compiler_args: extra_compiler_args(arch),
+        compiler_args,
+        oracle_compiler_args,
         target,
         sysroot,
         linker,
@@ -585,7 +599,11 @@ pub fn resolve(arch: Architecture, libc: LibcVariant) -> Result<ProbeConfig, Str
         runner,
         runner_args,
         defines,
-        can_execute: libc != LibcVariant::FreeBsd,
+        can_link: !matches!(libc, LibcVariant::Darwin | LibcVariant::Msvc),
+        can_execute: !matches!(
+            libc,
+            LibcVariant::Darwin | LibcVariant::FreeBsd | LibcVariant::Msvc
+        ),
     })
 }
 
@@ -653,7 +671,11 @@ pub fn compile_and_link_probe(config: &ProbeConfig, shim: bool) -> Result<PathBu
     let executable = work_dir.join("probe");
 
     let mut compile = Command::new(&config.compiler);
-    compile.args(&config.compiler_args);
+    if shim {
+        compile.args(&config.compiler_args);
+    } else {
+        compile.args(&config.oracle_compiler_args);
+    }
     compile.arg(format!("--target={}", config.target));
     compile.arg(format!("--sysroot={}", config.sysroot.display()));
     compile.args(["-std=gnu23", "-O0"]);

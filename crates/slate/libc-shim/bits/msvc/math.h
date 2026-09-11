@@ -32,6 +32,20 @@ struct _complex {
 
 extern const double _HUGE;
 
+typedef union _float_const {
+  unsigned short _Word[4];
+  float          _Float;
+  double         _Double;
+  long double    _Long_double;
+} _float_const;
+
+extern const _float_const _Denorm_C, _Inf_C, _Nan_C, _Snan_C, _Hugeval_C;
+extern const _float_const _FDenorm_C, _FInf_C, _FNan_C, _FSnan_C;
+extern const _float_const _LDenorm_C, _LInf_C, _LNan_C, _LSnan_C;
+extern const _float_const _Eps_C, _Rteps_C;
+extern const _float_const _FEps_C, _FRteps_C;
+extern const _float_const _LEps_C, _LRteps_C;
+
 #define _HUGE_ENUF 1e+300
 #define INFINITY   ((float)(_HUGE_ENUF * _HUGE_ENUF))
 #define HUGE_VAL   ((double)INFINITY)
