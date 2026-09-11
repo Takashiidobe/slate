@@ -1,4 +1,5 @@
 use crate::ast::{Condition, FileId, HeaderKind, Provenance};
+use crate::const_expr;
 use crate::files::{Files, SearchPaths};
 use std::path::{Path, PathBuf};
 
@@ -80,7 +81,29 @@ impl<'a> Preprocessor<'a> {
             let raw = lines[*pos];
             let trimmed = raw.trim();
 
-            if trimmed.starts_with("#ifdef") || trimmed.starts_with("#ifndef") {
+            if trimmed.starts_with("#if ") {
+                let expression = trimmed.strip_prefix("#if ").unwrap().trim();
+                let value = const_expr::evaluate(expression)
+                    .unwrap_or_else(|error| panic!("invalid #if expression: {}", error.0));
+                *pos += 1;
+                let then_body = self.parse_block(lines, pos, file);
+                let mut branches = vec![(Condition::Constant(value), then_body)];
+                if *pos < lines.len() && lines[*pos].trim() == "#else" {
+                    *pos += 1;
+                    let else_body = self.parse_block(lines, pos, file);
+                    branches.push((
+                        Condition::Not(Box::new(Condition::Constant(value))),
+                        else_body,
+                    ));
+                }
+                assert_eq!(
+                    lines.get(*pos).map(|l| l.trim()),
+                    Some("#endif"),
+                    "expected #endif"
+                );
+                *pos += 1;
+                nodes.push(PPNode::Conditional(PPConditional { branches }));
+            } else if trimmed.starts_with("#ifdef") || trimmed.starts_with("#ifndef") {
                 let negate = trimmed.starts_with("#ifndef");
                 let name = trimmed
                     .split_whitespace()

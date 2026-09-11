@@ -239,6 +239,7 @@ impl<W: Write> Renderer<W> {
     fn condition_name(condition: &Condition) -> String {
         match condition {
             Condition::Defined(name) => format!("defined({name})"),
+            Condition::Constant(value) => format!("constant({value})"),
             Condition::Not(inner) => format!("not({})", Self::condition_name(inner)),
         }
     }

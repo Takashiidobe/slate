@@ -1,4 +1,5 @@
 use crate::ast::*;
+use crate::const_expr;
 use crate::error::ParseError;
 use crate::files::{Files, SearchPaths};
 use crate::lexer::{Keyword, Token, lex};
@@ -282,17 +283,16 @@ impl Parser {
                 };
                 let value = match tokens.get(1) {
                     Some(Token::Comma) | None => None,
-                    Some(Token::Equal) => match tokens.get(2) {
-                        Some(Token::IntLit(value)) => Some(Expr::IntLit(*value)),
-                        _ => {
-                            return Err(self.error_at(
-                                text,
-                                0,
-                                text.len(),
-                                "expected enumerator value",
-                            ));
-                        }
-                    },
+                    Some(Token::Equal) => {
+                        let end = tokens
+                            .iter()
+                            .position(|token| token == &Token::Comma)
+                            .unwrap_or(tokens.len());
+                        let source = tokens_source(&tokens[2..end]);
+                        let value = const_expr::evaluate(&source)
+                            .map_err(|error| self.error_at(text, 0, text.len(), error.0))?;
+                        Some(Expr::IntLit(value))
+                    }
                     _ => {
                         return Err(self.error_at(
                             text,
@@ -543,13 +543,18 @@ impl<'a> DeclaratorParser<'a> {
             declarator = match self.peek() {
                 Some(Token::LBracket) => {
                     self.pos += 1;
-                    let size = match self.peek().cloned() {
-                        Some(Token::RBracket) => ArraySize::Unspecified,
-                        Some(Token::IntLit(value)) => {
+                    let size = if self.peek() == Some(&Token::RBracket) {
+                        ArraySize::Unspecified
+                    } else {
+                        let start = self.pos;
+                        while self.peek() != Some(&Token::RBracket) {
+                            assert!(self.peek().is_some(), "expected `]` in array declarator");
                             self.pos += 1;
-                            ArraySize::Expression(Box::new(Expr::IntLit(value)))
                         }
-                        other => panic!("unsupported array bound: {other:?}"),
+                        let source = tokens_source(&self.tokens[start..self.pos]);
+                        let value = const_expr::evaluate(&source)
+                            .unwrap_or_else(|error| panic!("invalid array bound: {}", error.0));
+                        ArraySize::Expression(Box::new(Expr::IntLit(value)))
                     };
                     assert!(
                         self.matches(Token::RBracket),
@@ -641,6 +646,44 @@ impl<'a> DeclaratorParser<'a> {
             );
         }
         (parameters, variadic)
+    }
+}
+
+fn tokens_source(tokens: &[Token]) -> String {
+    tokens
+        .iter()
+        .map(token_source)
+        .collect::<Vec<_>>()
+        .join(" ")
+}
+
+fn token_source(token: &Token) -> String {
+    match token {
+        Token::IntLit(value) => value.to_string(),
+        Token::Ident(name) => name.clone(),
+        Token::Star => "*".into(),
+        Token::Plus => "+".into(),
+        Token::Minus => "-".into(),
+        Token::Slash => "/".into(),
+        Token::Percent => "%".into(),
+        Token::LParen => "(".into(),
+        Token::RParen => ")".into(),
+        Token::Less => "<".into(),
+        Token::Greater => ">".into(),
+        Token::LessEqual => "<=".into(),
+        Token::GreaterEqual => ">=".into(),
+        Token::EqualEqual => "==".into(),
+        Token::NotEqual => "!=".into(),
+        Token::Amp => "&".into(),
+        Token::Caret => "^".into(),
+        Token::Pipe => "|".into(),
+        Token::AndAnd => "&&".into(),
+        Token::OrOr => "||".into(),
+        Token::ShiftLeft => "<<".into(),
+        Token::ShiftRight => ">>".into(),
+        Token::Bang => "!".into(),
+        Token::Tilde => "~".into(),
+        other => panic!("unsupported token in constant expression: {other:?}"),
     }
 }
 

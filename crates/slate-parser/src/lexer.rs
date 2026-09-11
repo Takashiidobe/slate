@@ -37,6 +37,25 @@ pub enum Token {
     Semi,
     Equal,
     Dot,
+    Plus,
+    Minus,
+    Slash,
+    Percent,
+    Bang,
+    Tilde,
+    Less,
+    Greater,
+    LessEqual,
+    GreaterEqual,
+    EqualEqual,
+    NotEqual,
+    Amp,
+    Caret,
+    Pipe,
+    AndAnd,
+    OrOr,
+    ShiftLeft,
+    ShiftRight,
 }
 
 pub fn lex(src: &str) -> Vec<Token> {
@@ -104,6 +123,32 @@ pub fn lex(src: &str) -> Vec<Token> {
         } else if c == '.' && chars.get(i..i + 3) == Some(&['.', '.', '.'][..]) {
             tokens.push(Token::Ellipsis);
             i += 3;
+        } else if i + 1 < chars.len()
+            && matches!(
+                (c, chars[i + 1]),
+                ('<', '=')
+                    | ('>', '=')
+                    | ('=', '=')
+                    | ('!', '=')
+                    | ('&', '&')
+                    | ('|', '|')
+                    | ('<', '<')
+                    | ('>', '>')
+            )
+        {
+            let tok = match (c, chars[i + 1]) {
+                ('<', '=') => Token::LessEqual,
+                ('>', '=') => Token::GreaterEqual,
+                ('=', '=') => Token::EqualEqual,
+                ('!', '=') => Token::NotEqual,
+                ('&', '&') => Token::AndAnd,
+                ('|', '|') => Token::OrOr,
+                ('<', '<') => Token::ShiftLeft,
+                ('>', '>') => Token::ShiftRight,
+                _ => unreachable!(),
+            };
+            tokens.push(tok);
+            i += 2;
         } else {
             let tok = match c {
                 '(' => Token::LParen,
@@ -117,6 +162,17 @@ pub fn lex(src: &str) -> Vec<Token> {
                 ';' => Token::Semi,
                 '=' => Token::Equal,
                 '.' => Token::Dot,
+                '+' => Token::Plus,
+                '-' => Token::Minus,
+                '/' => Token::Slash,
+                '%' => Token::Percent,
+                '!' => Token::Bang,
+                '~' => Token::Tilde,
+                '<' => Token::Less,
+                '>' => Token::Greater,
+                '&' => Token::Amp,
+                '^' => Token::Caret,
+                '|' => Token::Pipe,
                 other => panic!("unexpected character in phase 0/1 lexer: {other:?}"),
             };
             tokens.push(tok);

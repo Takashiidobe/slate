@@ -132,6 +132,7 @@ impl Condition {
     fn eval(&self, env: &Env) -> bool {
         match self {
             Self::Defined(name) => env.is_defined(name),
+            Self::Constant(value) => *value != 0,
             Self::Not(inner) => !inner.eval(env),
         }
     }

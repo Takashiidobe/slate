@@ -1,6 +1,7 @@
 #[derive(Debug, Clone, PartialEq)]
 pub enum Condition {
     Defined(String),
+    Constant(i64),
     Not(Box<Condition>),
 }
 
