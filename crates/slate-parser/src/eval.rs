@@ -1,4 +1,5 @@
 use crate::ast::*;
+use crate::reachability::mark_unreachable;
 use std::collections::HashSet;
 
 #[derive(Debug, Clone, Default)]
@@ -37,7 +38,7 @@ impl Decl {
                 name: f.name.clone(),
                 parameters: f.parameters.clone(),
                 variadic: f.variadic,
-                body: Stmt::eval_all(&f.body, env),
+                body: mark_unreachable(Stmt::eval_all(&f.body, env)),
                 provenance: f.provenance,
                 qualifiers: f.qualifiers,
                 storage: f.storage,

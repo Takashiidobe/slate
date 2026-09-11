@@ -333,7 +333,8 @@ fn summarize_evaluated_decl(decl: &ConcreteDecl) -> DeclSummary {
                     | ConcreteStmt::Labeled(_)
                     | ConcreteStmt::Goto(_)
                     | ConcreteStmt::Break
-                    | ConcreteStmt::Continue => None,
+                    | ConcreteStmt::Continue
+                    | ConcreteStmt::Unreachable(_) => None,
                 })
                 .collect(),
             signature: None,

@@ -1,6 +1,91 @@
 use crate::ast::*;
 use std::collections::{HashMap, HashSet};
 
+pub fn mark_unreachable(body: Vec<ConcreteStmt>) -> Vec<ConcreteStmt> {
+    let mut result = Vec::with_capacity(body.len());
+    let mut terminated = false;
+    for stmt in body {
+        if is_jump_target(&stmt) {
+            terminated = false;
+        }
+        let stmt = mark_unreachable_in(stmt);
+        if terminated {
+            result.push(ConcreteStmt::Unreachable(Box::new(stmt)));
+        } else {
+            terminated = always_terminates(&stmt);
+            result.push(stmt);
+        }
+    }
+    result
+}
+
+fn is_jump_target(stmt: &ConcreteStmt) -> bool {
+    matches!(
+        stmt,
+        ConcreteStmt::Labeled(_) | ConcreteStmt::Case(_) | ConcreteStmt::Default
+    )
+}
+
+fn mark_unreachable_in(stmt: ConcreteStmt) -> ConcreteStmt {
+    match stmt {
+        ConcreteStmt::Block(body) => ConcreteStmt::Block(mark_unreachable(body)),
+        ConcreteStmt::If {
+            condition,
+            then_branch,
+            else_branch,
+        } => ConcreteStmt::If {
+            condition,
+            then_branch: mark_unreachable(then_branch),
+            else_branch: else_branch.map(mark_unreachable),
+        },
+        ConcreteStmt::While { condition, body } => ConcreteStmt::While {
+            condition,
+            body: mark_unreachable(body),
+        },
+        ConcreteStmt::DoWhile { body, condition } => ConcreteStmt::DoWhile {
+            body: mark_unreachable(body),
+            condition,
+        },
+        ConcreteStmt::For {
+            init,
+            condition,
+            increment,
+            body,
+        } => ConcreteStmt::For {
+            init: init.map(|stmt| Box::new(mark_unreachable_in(*stmt))),
+            condition,
+            increment,
+            body: mark_unreachable(body),
+        },
+        ConcreteStmt::Switch { discriminant, body } => ConcreteStmt::Switch {
+            discriminant,
+            body: mark_unreachable(body),
+        },
+        other => other,
+    }
+}
+
+fn always_terminates(stmt: &ConcreteStmt) -> bool {
+    match stmt {
+        ConcreteStmt::Return(_)
+        | ConcreteStmt::Break
+        | ConcreteStmt::Continue
+        | ConcreteStmt::Goto(_) => true,
+        ConcreteStmt::Block(body) => block_terminates(body),
+        ConcreteStmt::If {
+            then_branch,
+            else_branch: Some(else_branch),
+            ..
+        } => block_terminates(then_branch) && block_terminates(else_branch),
+        ConcreteStmt::Unreachable(inner) => always_terminates(inner),
+        _ => false,
+    }
+}
+
+fn block_terminates(body: &[ConcreteStmt]) -> bool {
+    body.iter().any(always_terminates)
+}
+
 pub fn filter_translation_unit(tu: &TranslationUnit, root_file: FileId) -> TranslationUnit {
     let mut reachability = Reachability::new(tu);
     reachability.mark_roots(root_file);

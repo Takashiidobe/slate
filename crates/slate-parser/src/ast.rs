@@ -625,6 +625,7 @@ pub enum ConcreteStmt {
     Goto(String),
     Break,
     Continue,
+    Unreachable(Box<ConcreteStmt>),
 }
 
 #[derive(CustomDebug, Clone, PartialEq)]
