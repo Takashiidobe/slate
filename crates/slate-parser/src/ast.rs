@@ -14,7 +14,7 @@ pub struct Conditional<T> {
     pub branches: Vec<(Condition, T)>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum Expr {
     Const(Box<ConstExpr>),
     IntLit(i64),
@@ -30,6 +30,11 @@ pub enum Expr {
         right: Box<Expr>,
     },
     SizeOf(Box<Expr>),
+    Generic {
+        controlling: Box<Expr>,
+        associations: Vec<GenericAssociation>,
+    },
+    StatementExpression(Vec<Stmt>),
     Call {
         callee: String,
         argument: String,
@@ -52,10 +57,31 @@ impl std::fmt::Display for Expr {
                 write!(formatter, "({left} {} {right})", <&str>::from(*op))
             }
             Self::SizeOf(value) => write!(formatter, "sizeof({value})"),
+            Self::Generic {
+                controlling,
+                associations,
+            } => write!(
+                formatter,
+                "_Generic({controlling}, {} )",
+                associations.len()
+            ),
+            Self::StatementExpression(statements) => {
+                write!(
+                    formatter,
+                    "statement_expression({} statements)",
+                    statements.len()
+                )
+            }
             Self::Call { callee, argument } => write!(formatter, "{callee}({argument})"),
             Self::Cast { ty, expression } => write!(formatter, "({ty}){expression}"),
         }
     }
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct GenericAssociation {
+    pub type_name: Option<String>,
+    pub expression: Expr,
 }
 
 #[derive(Debug, Clone, PartialEq)]

@@ -1110,6 +1110,7 @@ fn token_source(token: &Token) -> String {
         Token::Comma => ",".into(),
         Token::Equal => "=".into(),
         Token::Dot => ".".into(),
+        Token::Semi => ";".into(),
         Token::Less => "<".into(),
         Token::Greater => ">".into(),
         Token::LessEqual => "<=".into(),
@@ -1202,7 +1203,7 @@ impl Parser {
             attributes.extend(trailing_attributes);
         }
 
-        let body = self.parse_stmt_list(&nodes[1..close_idx]);
+        let body = self.parse_stmt_list(&nodes[1..close_idx])?;
         Ok((
             FunctionDecl {
                 ret_type: Type::Int,
@@ -1218,32 +1219,66 @@ impl Parser {
         ))
     }
 
-    fn parse_stmt_list(&self, nodes: &[PPNode]) -> Vec<Stmt> {
+    fn parse_stmt_list(&self, nodes: &[PPNode]) -> Result<Vec<Stmt>, ParseError> {
         let mut stmts = Vec::new();
         for node in nodes {
             match node {
                 PPNode::Code { text, .. } if !lex(text).is_empty() => {
-                    stmts.extend(self.parse_stmts_from_code(text))
+                    stmts.extend(self.parse_stmts_from_code(text)?)
                 }
                 PPNode::Code { .. } => {}
                 PPNode::Conditional(cond) => {
                     let branches = cond
                         .branches
                         .iter()
-                        .map(|(c, body)| (c.clone(), self.parse_stmt_list(body)))
-                        .collect();
+                        .map(|(c, body)| self.parse_stmt_list(body).map(|body| (c.clone(), body)))
+                        .collect::<Result<_, _>>()?;
                     stmts.push(Stmt::Conditional(Conditional { branches }));
                 }
             }
         }
-        stmts
+        Ok(stmts)
     }
 
-    fn parse_stmts_from_code(&self, code: &str) -> Vec<Stmt> {
+    fn parse_stmts_from_code(&self, code: &str) -> Result<Vec<Stmt>, ParseError> {
         let tokens = lex(code);
+        self.parse_stmts_from_tokens(code, &tokens)
+    }
+
+    fn parse_stmts_from_tokens(
+        &self,
+        code: &str,
+        tokens: &[Token],
+    ) -> Result<Vec<Stmt>, ParseError> {
         let mut stmts = Vec::new();
         let mut i = 0;
         while i < tokens.len() {
+            if tokens.get(i..i + 2) == Some(&[Token::LParen, Token::LBrace]) {
+                let mut depth = 1;
+                let mut end = i + 2;
+                while end < tokens.len() && depth != 0 {
+                    match tokens[end] {
+                        Token::LBrace => depth += 1,
+                        Token::RBrace => depth -= 1,
+                        _ => {}
+                    }
+                    end += 1;
+                }
+                if depth != 0 {
+                    return Err(self.error_at(code, 0, code.len(), "expected `}`"));
+                }
+                if tokens.get(end) != Some(&Token::RParen) {
+                    return Err(self.error_at(code, 0, code.len(), "expected `)`"));
+                }
+                stmts.push(Stmt::Expr(Expr::StatementExpression(
+                    self.parse_stmts_from_tokens(code, &tokens[i + 2..end - 1])?,
+                )));
+                i = end + 1;
+                if tokens.get(i) == Some(&Token::Semi) {
+                    i += 1;
+                }
+                continue;
+            }
             if let Some(
                 [
                     Token::LParen,
@@ -1271,19 +1306,102 @@ impl Parser {
                 i += 7;
                 continue;
             }
-            assert_eq!(
-                tokens[i],
-                Token::Keyword(Keyword::Return),
-                "phase 0/1 only supports `return <int>;` statements"
-            );
-            let value = match tokens.get(i + 1) {
-                Some(Token::IntLit(n)) => *n,
-                _ => panic!("expected integer literal after `return`"),
-            };
-            assert_eq!(tokens.get(i + 2), Some(&Token::Semi), "expected `;`");
-            stmts.push(Stmt::Return(Expr::IntLit(value)));
-            i += 3;
+            if tokens[i] == Token::Keyword(Keyword::Return) {
+                let end = tokens[i + 1..]
+                    .iter()
+                    .position(|token| *token == Token::Semi)
+                    .map_or(tokens.len(), |position| i + 1 + position);
+                if end == tokens.len() {
+                    return Err(self.error_at(code, 0, code.len(), "expected `;`"));
+                }
+                stmts.push(Stmt::Return(
+                    self.parse_expression(code, &tokens[i + 1..end])?,
+                ));
+                i = end + 1;
+                continue;
+            }
+            let end = tokens[i..]
+                .iter()
+                .position(|token| *token == Token::Semi)
+                .map_or(tokens.len(), |position| i + position);
+            if end == tokens.len() {
+                return Err(self.error_at(code, 0, code.len(), "expected `;`"));
+            }
+            stmts.push(Stmt::Expr(self.parse_expression(code, &tokens[i..end])?));
+            i = end + 1;
         }
-        stmts
+        Ok(stmts)
+    }
+
+    fn parse_expression(&self, code: &str, tokens: &[Token]) -> Result<Expr, ParseError> {
+        if tokens.is_empty() {
+            return Err(self.error_at(code, 0, code.len(), "expected expression"));
+        }
+        if let Some(Token::Ident(name)) = tokens.first()
+            && name == "_Generic"
+        {
+            if tokens.get(1) != Some(&Token::LParen) {
+                return Err(self.error_at(code, 0, code.len(), "expected `(` after `_Generic`"));
+            }
+            let Some(close) = tokens.len().checked_sub(1) else {
+                return Err(self.error_at(code, 0, code.len(), "expected `)` after `_Generic`"));
+            };
+            if tokens.get(close) != Some(&Token::RParen) {
+                return Err(self.error_at(code, 0, code.len(), "expected `)` after `_Generic`"));
+            }
+            let Some(comma) = tokens[2..close]
+                .iter()
+                .position(|token| *token == Token::Comma)
+                .map(|position| position + 2)
+            else {
+                return Err(self.error_at(code, 0, code.len(), "expected `,` in `_Generic`"));
+            };
+            let controlling = self.parse_expression(code, &tokens[2..comma])?;
+            let mut associations = Vec::new();
+            let mut start = comma + 1;
+            while start < close {
+                let Some(colon) = tokens[start..close]
+                    .iter()
+                    .position(|token| *token == Token::Colon)
+                    .map(|position| start + position)
+                else {
+                    return Err(self.error_at(
+                        code,
+                        0,
+                        code.len(),
+                        "expected `:` in `_Generic` association",
+                    ));
+                };
+                let expression_end = tokens[colon + 1..close]
+                    .iter()
+                    .position(|token| *token == Token::Comma)
+                    .map_or(close, |position| colon + 1 + position);
+                let type_name = match tokens[start] {
+                    Token::Ident(ref name) if name == "default" => None,
+                    _ => Some(
+                        tokens[start..colon]
+                            .iter()
+                            .map(token_source)
+                            .collect::<Vec<_>>()
+                            .join(" "),
+                    ),
+                };
+                associations.push(GenericAssociation {
+                    type_name,
+                    expression: self.parse_expression(code, &tokens[colon + 1..expression_end])?,
+                });
+                start = expression_end + 1;
+            }
+            return Ok(Expr::Generic {
+                controlling: Box::new(controlling),
+                associations,
+            });
+        }
+        match tokens {
+            [Token::IntLit(value)] => Ok(Expr::IntLit(*value)),
+            [Token::StringLit(value)] => Ok(Expr::StringLit(value.clone())),
+            [Token::Ident(name)] => Ok(Expr::Identifier(name.clone())),
+            _ => Err(self.error_at(code, 0, code.len(), "unsupported expression")),
+        }
     }
 }
