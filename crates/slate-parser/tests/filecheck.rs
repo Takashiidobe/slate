@@ -123,7 +123,12 @@ fn error_configurations(source: &str) -> Vec<String> {
 
 fn run_fixture(fixture: &Path, prefix: &str, defines: &[String], slot: usize) {
     let mut command = Command::new(env!("CARGO_BIN_EXE_slate-parser"));
-    command.arg("parse").arg(fixture);
+    command
+        .arg("parse")
+        .arg(fixture)
+        .env_remove("FORCE_COLOR")
+        .env_remove("CLICOLOR_FORCE")
+        .env("NO_COLOR", "1");
     for define in defines {
         command.arg(format!("-D{}", define.trim_start_matches("-D")));
     }
@@ -174,6 +179,9 @@ fn run_error_fixture(fixture: &Path, prefix: &str, slot: usize) {
     let output = Command::new(env!("CARGO_BIN_EXE_slate-parser"))
         .arg("parse")
         .arg(fixture)
+        .env_remove("FORCE_COLOR")
+        .env_remove("CLICOLOR_FORCE")
+        .env("NO_COLOR", "1")
         .output()
         .expect("run slate-parser failing fixture");
     assert!(
@@ -304,9 +312,7 @@ fn summarize_evaluated_decl(decl: &ConcreteDecl) -> DeclSummary {
                         None
                     }
                     ConcreteStmt::Return(
-                        Expr::Call { .. }
-                        | Expr::Cast { .. }
-                        | Expr::Identifier(_)
+                        Expr::Identifier(_)
                         | Expr::Const(_)
                         | Expr::Unary { .. }
                         | Expr::Binary { .. }
@@ -664,9 +670,7 @@ fn array_size(size: &ArraySize) -> String {
         ArraySize::Expression(expression) => match expression.as_ref() {
             Expr::IntLit(value) => value.to_string(),
             Expr::StringLit(_) => panic!("array bound was not an integer"),
-            Expr::Call { .. }
-            | Expr::Cast { .. }
-            | Expr::Identifier(_)
+            Expr::Identifier(_)
             | Expr::Const(_)
             | Expr::Unary { .. }
             | Expr::Binary { .. }

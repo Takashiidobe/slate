@@ -115,6 +115,7 @@ impl From<Keyword> for &'static str {
 pub enum Token {
     Keyword(Keyword),
     Sizeof,
+    Alignof,
     Ident(String),
     IntLit(i64),
     FloatLit(String),
@@ -162,12 +163,27 @@ pub enum Token {
     OrOr,
     ShiftLeft,
     ShiftRight,
+    Question,
+    Arrow,
+    PlusPlus,
+    MinusMinus,
+    PlusEqual,
+    MinusEqual,
+    StarEqual,
+    SlashEqual,
+    PercentEqual,
+    AmpEqual,
+    PipeEqual,
+    CaretEqual,
+    ShiftLeftEqual,
+    ShiftRightEqual,
 }
 
 impl From<&Token> for String {
     fn from(token: &Token) -> Self {
         match token {
             Token::Sizeof => "sizeof".into(),
+            Token::Alignof => "_Alignof".into(),
             Token::Keyword(keyword) => <&str>::from(*keyword).into(),
             Token::Ident(name) => name.clone(),
             Token::IntLit(value) => value.to_string(),
@@ -216,6 +232,20 @@ impl From<&Token> for String {
             Token::OrOr => "||".into(),
             Token::ShiftLeft => "<<".into(),
             Token::ShiftRight => ">>".into(),
+            Token::Question => "?".into(),
+            Token::Arrow => "->".into(),
+            Token::PlusPlus => "++".into(),
+            Token::MinusMinus => "--".into(),
+            Token::PlusEqual => "+=".into(),
+            Token::MinusEqual => "-=".into(),
+            Token::StarEqual => "*=".into(),
+            Token::SlashEqual => "/=".into(),
+            Token::PercentEqual => "%=".into(),
+            Token::AmpEqual => "&=".into(),
+            Token::PipeEqual => "|=".into(),
+            Token::CaretEqual => "^=".into(),
+            Token::ShiftLeftEqual => "<<=".into(),
+            Token::ShiftRightEqual => ">>=".into(),
         }
     }
 }
@@ -311,6 +341,7 @@ pub fn lex(src: &str) -> Vec<Token> {
             let word: String = chars[start..i].iter().collect();
             tokens.push(match word.as_str() {
                 "sizeof" => Token::Sizeof,
+                "_Alignof" | "__alignof" | "__alignof__" => Token::Alignof,
                 "_Bool" => Token::Keyword(Keyword::Bool),
                 "__bf16" => Token::Keyword(Keyword::BFloat16),
                 "char" => Token::Keyword(Keyword::Char),
@@ -371,6 +402,19 @@ pub fn lex(src: &str) -> Vec<Token> {
         } else if c == '.' && chars.get(i..i + 3) == Some(&['.', '.', '.'][..]) {
             tokens.push(Token::Ellipsis);
             i += 3;
+        } else if i + 2 < chars.len()
+            && matches!(
+                (c, chars[i + 1], chars[i + 2]),
+                ('<', '<', '=') | ('>', '>', '=')
+            )
+        {
+            let tok = match c {
+                '<' => Token::ShiftLeftEqual,
+                '>' => Token::ShiftRightEqual,
+                _ => unreachable!(),
+            };
+            tokens.push(tok);
+            i += 3;
         } else if i + 1 < chars.len()
             && matches!(
                 (c, chars[i + 1]),
@@ -382,6 +426,17 @@ pub fn lex(src: &str) -> Vec<Token> {
                     | ('|', '|')
                     | ('<', '<')
                     | ('>', '>')
+                    | ('-', '>')
+                    | ('+', '+')
+                    | ('-', '-')
+                    | ('+', '=')
+                    | ('-', '=')
+                    | ('*', '=')
+                    | ('/', '=')
+                    | ('%', '=')
+                    | ('&', '=')
+                    | ('|', '=')
+                    | ('^', '=')
             )
         {
             let tok = match (c, chars[i + 1]) {
@@ -393,6 +448,17 @@ pub fn lex(src: &str) -> Vec<Token> {
                 ('|', '|') => Token::OrOr,
                 ('<', '<') => Token::ShiftLeft,
                 ('>', '>') => Token::ShiftRight,
+                ('-', '>') => Token::Arrow,
+                ('+', '+') => Token::PlusPlus,
+                ('-', '-') => Token::MinusMinus,
+                ('+', '=') => Token::PlusEqual,
+                ('-', '=') => Token::MinusEqual,
+                ('*', '=') => Token::StarEqual,
+                ('/', '=') => Token::SlashEqual,
+                ('%', '=') => Token::PercentEqual,
+                ('&', '=') => Token::AmpEqual,
+                ('|', '=') => Token::PipeEqual,
+                ('^', '=') => Token::CaretEqual,
                 _ => unreachable!(),
             };
             tokens.push(tok);
@@ -428,6 +494,7 @@ pub fn lex(src: &str) -> Vec<Token> {
                 '&' => Token::Amp,
                 '^' => Token::Caret,
                 '|' => Token::Pipe,
+                '?' => Token::Question,
                 other => Token::Ident(other.to_string()),
             };
             tokens.push(tok);

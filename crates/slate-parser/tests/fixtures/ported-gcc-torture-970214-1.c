@@ -49,7 +49,9 @@ int main(void) { exit(L'1' != L'1'); }
 // GCC-NEXT:               Expr(
 // GCC-NEXT:                   Const(
 // GCC-NEXT:                       Call {
-// GCC-NEXT:                           callee: "exit",
+// GCC-NEXT:                           callee: Identifier(
+// GCC-NEXT:                               "exit",
+// GCC-NEXT:                           ),
 // GCC-NEXT:                           arguments: [
 // GCC-NEXT:                               Binary {
 // GCC-NEXT:                                   op: NotEqual,
@@ -117,7 +119,9 @@ int main(void) { exit(L'1' != L'1'); }
 // GCC-NEXT:               Expr(
 // GCC-NEXT:                   Const(
 // GCC-NEXT:                       Call {
-// GCC-NEXT:                           callee: "exit",
+// GCC-NEXT:                           callee: Identifier(
+// GCC-NEXT:                               "exit",
+// GCC-NEXT:                           ),
 // GCC-NEXT:                           arguments: [
 // GCC-NEXT:                               Binary {
 // GCC-NEXT:                                   op: NotEqual,

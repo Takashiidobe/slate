@@ -40,14 +40,6 @@ pub enum Expr {
         associations: Vec<GenericAssociation>,
     },
     StatementExpression(Vec<Stmt>),
-    Call {
-        callee: String,
-        argument: String,
-    },
-    Cast {
-        ty: String,
-        expression: String,
-    },
 }
 
 impl std::fmt::Display for Expr {
@@ -77,8 +69,6 @@ impl std::fmt::Display for Expr {
                     statements.len()
                 )
             }
-            Self::Call { callee, argument } => write!(formatter, "{callee}({argument})"),
-            Self::Cast { ty, expression } => write!(formatter, "({ty}){expression}"),
         }
     }
 }
@@ -160,7 +150,7 @@ pub struct Provenance {
     pub line: usize,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum Attribute {
     Packed,
     Aligned(ConstExpr),

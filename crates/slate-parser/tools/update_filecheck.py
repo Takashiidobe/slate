@@ -1,9 +1,18 @@
 #!/usr/bin/env python3
 import argparse
 import difflib
+import os
 import re
 import subprocess
 from pathlib import Path
+
+
+def _no_color_env() -> dict:
+    env = os.environ.copy()
+    env.pop("FORCE_COLOR", None)
+    env.pop("CLICOLOR_FORCE", None)
+    env["NO_COLOR"] = "1"
+    return env
 
 
 DEFINE_RE = re.compile(r"^\s*//\s*SLATE-FILECHECK-DEFINES\s+([A-Za-z0-9_-]+)(?:\s+(.*))?$")
@@ -31,7 +40,7 @@ def error_configurations(source: str) -> list[str]:
 def render(repo: Path, fixture: Path, defines: list[str]) -> str:
     command = ["cargo", "run", "--quiet", "--", "parse", str(fixture)]
     command.extend(f"-D{define.removeprefix('-D')}" for define in defines)
-    result = subprocess.run(command, cwd=repo, text=True, capture_output=True)
+    result = subprocess.run(command, cwd=repo, text=True, capture_output=True, env=_no_color_env())
     if result.returncode:
         raise RuntimeError(result.stderr or result.stdout)
     return result.stdout.rstrip("\n")
@@ -39,7 +48,7 @@ def render(repo: Path, fixture: Path, defines: list[str]) -> str:
 
 def render_error(repo: Path, fixture: Path) -> list[str]:
     command = ["cargo", "run", "--quiet", "--", "parse", str(fixture)]
-    result = subprocess.run(command, cwd=repo, text=True, capture_output=True)
+    result = subprocess.run(command, cwd=repo, text=True, capture_output=True, env=_no_color_env())
     if result.returncode == 0:
         raise RuntimeError(f"expected {fixture} to fail parsing")
     return [

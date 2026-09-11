@@ -904,12 +904,20 @@ impl AttributeName for str {
     }
 }
 
-struct DeclaratorParser<'a> {
+pub(crate) struct DeclaratorParser<'a> {
     tokens: &'a [Token],
     pos: usize,
 }
 
 impl<'a> DeclaratorParser<'a> {
+    pub(crate) fn new(tokens: &'a [Token], pos: usize) -> Self {
+        Self { tokens, pos }
+    }
+
+    pub(crate) fn position(&self) -> usize {
+        self.pos
+    }
+
     fn peek(&self) -> Option<&Token> {
         self.tokens.get(self.pos)
     }
@@ -923,7 +931,7 @@ impl<'a> DeclaratorParser<'a> {
         }
     }
 
-    fn parse_base_type(&mut self) -> Result<CType, String> {
+    pub(crate) fn parse_base_type(&mut self) -> Result<CType, String> {
         let Some(token) = self.peek().cloned() else {
             return Err("expected declaration type".into());
         };
@@ -1354,7 +1362,7 @@ impl<'a> DeclaratorParser<'a> {
         }
     }
 
-    fn parse_declarator(&mut self, allow_abstract: bool) -> Result<Declarator, String> {
+    pub(crate) fn parse_declarator(&mut self, allow_abstract: bool) -> Result<Declarator, String> {
         let mut pointer_qualifiers = Vec::new();
         while self.matches(Token::Star) {
             pointer_qualifiers.push(self.take_qualifiers());
@@ -1760,33 +1768,6 @@ impl Parser {
             return Ok(Stmt::Expr(Expr::StatementExpression(body)));
         }
 
-        if let Some(
-            [
-                Token::LParen,
-                Token::Ident(callee),
-                Token::RParen,
-                Token::LParen,
-                Token::Ident(argument),
-                Token::RParen,
-                Token::Semi,
-            ],
-        ) = tokens.get(*i..(*i).saturating_add(7))
-        {
-            let expression = if self.typedef_names.contains(callee) {
-                Expr::Cast {
-                    ty: callee.clone(),
-                    expression: argument.clone(),
-                }
-            } else {
-                Expr::Call {
-                    callee: callee.clone(),
-                    argument: argument.clone(),
-                }
-            };
-            *i += 7;
-            return Ok(Stmt::Expr(expression));
-        }
-
         if let Some([Token::Ident(name), Token::Colon]) = tokens.get(*i..*i + 2) {
             let name = name.clone();
             *i += 2;
@@ -2040,7 +2021,7 @@ impl Parser {
         if let [Token::StringLit(value)] = tokens {
             return Ok(Expr::StringLit(value.clone()));
         }
-        const_expr::Parser::parse(tokens)
+        const_expr::Parser::parse_expression(tokens, &self.typedef_names)
             .map(|expression| Expr::Const(Box::new(expression)))
             .map_err(|error| self.error_at(code, 0, code.len(), error.to_string()))
     }

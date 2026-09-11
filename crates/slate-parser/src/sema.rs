@@ -209,12 +209,35 @@ fn check_attributes(attributes: &[Attribute], provenance: Provenance, errors: &m
 
 fn is_integer_constant_expression(expression: &ConstExpr) -> bool {
     match expression {
-        ConstExpr::Integer(_) | ConstExpr::SizeOf(_) => true,
-        ConstExpr::Unary { value, .. } => is_integer_constant_expression(value),
+        ConstExpr::Integer(_) | ConstExpr::SizeOf(_) | ConstExpr::AlignOf { .. } => true,
+        ConstExpr::Unary { value, .. } | ConstExpr::Cast { value, .. } => {
+            is_integer_constant_expression(value)
+        }
         ConstExpr::Binary { left, right, .. } => {
             is_integer_constant_expression(left) && is_integer_constant_expression(right)
         }
-        ConstExpr::Identifier(_) | ConstExpr::Call { .. } => false,
+        ConstExpr::Ternary {
+            condition,
+            then_value,
+            else_value,
+        } => {
+            is_integer_constant_expression(condition)
+                && is_integer_constant_expression(then_value)
+                && is_integer_constant_expression(else_value)
+        }
+        ConstExpr::Identifier(_)
+        | ConstExpr::Call { .. }
+        | ConstExpr::Assign { .. }
+        | ConstExpr::Comma(..)
+        | ConstExpr::Member { .. }
+        | ConstExpr::Arrow { .. }
+        | ConstExpr::Index { .. }
+        | ConstExpr::PostIncrement(_)
+        | ConstExpr::PostDecrement(_)
+        | ConstExpr::PreIncrement(_)
+        | ConstExpr::PreDecrement(_)
+        | ConstExpr::AddrOf(_)
+        | ConstExpr::Deref(_) => false,
     }
 }
 

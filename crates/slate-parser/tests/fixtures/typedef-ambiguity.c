@@ -75,10 +75,17 @@ int call_main() {
 // DEFAULT-NEXT:                               name: "cast_main",
 // DEFAULT-NEXT:                               body: [
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Cast {
-// DEFAULT-NEXT:                                           ty: "A",
-// DEFAULT-NEXT:                                           expression: "B",
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       Const(
+// DEFAULT-NEXT:                                           Cast {
+// DEFAULT-NEXT:                                               ty: Named(
+// DEFAULT-NEXT:                                                   "A",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               declarator: Abstract,
+// DEFAULT-NEXT:                                               value: Identifier(
+// DEFAULT-NEXT:                                                   "B",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   Return(
 // DEFAULT-NEXT:                                       Const(
@@ -156,10 +163,18 @@ int call_main() {
 // DEFAULT-NEXT:                               name: "call_main",
 // DEFAULT-NEXT:                               body: [
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Call {
-// DEFAULT-NEXT:                                           callee: "A",
-// DEFAULT-NEXT:                                           argument: "B",
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       Const(
+// DEFAULT-NEXT:                                           Call {
+// DEFAULT-NEXT:                                               callee: Identifier(
+// DEFAULT-NEXT:                                                   "A",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               arguments: [
+// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                                       "B",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   Return(
 // DEFAULT-NEXT:                                       Const(
@@ -256,10 +271,18 @@ int call_main() {
 // DEFAULT-NEXT:           name: "call_main",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Call {
-// DEFAULT-NEXT:                       callee: "A",
-// DEFAULT-NEXT:                       argument: "B",
-// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                       Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "A",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Identifier(
+// DEFAULT-NEXT:                                   "B",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
 // DEFAULT-NEXT:                   Const(
@@ -338,10 +361,17 @@ int call_main() {
 // CAST-NEXT:                               name: "cast_main",
 // CAST-NEXT:                               body: [
 // CAST-NEXT:                                   Expr(
-// CAST-NEXT:                                       Cast {
-// CAST-NEXT:                                           ty: "A",
-// CAST-NEXT:                                           expression: "B",
-// CAST-NEXT:                                       },
+// CAST-NEXT:                                       Const(
+// CAST-NEXT:                                           Cast {
+// CAST-NEXT:                                               ty: Named(
+// CAST-NEXT:                                                   "A",
+// CAST-NEXT:                                               ),
+// CAST-NEXT:                                               declarator: Abstract,
+// CAST-NEXT:                                               value: Identifier(
+// CAST-NEXT:                                                   "B",
+// CAST-NEXT:                                               ),
+// CAST-NEXT:                                           },
+// CAST-NEXT:                                       ),
 // CAST-NEXT:                                   ),
 // CAST-NEXT:                                   Return(
 // CAST-NEXT:                                       Const(
@@ -419,10 +449,18 @@ int call_main() {
 // CAST-NEXT:                               name: "call_main",
 // CAST-NEXT:                               body: [
 // CAST-NEXT:                                   Expr(
-// CAST-NEXT:                                       Call {
-// CAST-NEXT:                                           callee: "A",
-// CAST-NEXT:                                           argument: "B",
-// CAST-NEXT:                                       },
+// CAST-NEXT:                                       Const(
+// CAST-NEXT:                                           Call {
+// CAST-NEXT:                                               callee: Identifier(
+// CAST-NEXT:                                                   "A",
+// CAST-NEXT:                                               ),
+// CAST-NEXT:                                               arguments: [
+// CAST-NEXT:                                                   Identifier(
+// CAST-NEXT:                                                       "B",
+// CAST-NEXT:                                                   ),
+// CAST-NEXT:                                               ],
+// CAST-NEXT:                                           },
+// CAST-NEXT:                                       ),
 // CAST-NEXT:                                   ),
 // CAST-NEXT:                                   Return(
 // CAST-NEXT:                                       Const(
@@ -496,10 +534,17 @@ int call_main() {
 // CAST-NEXT:           name: "cast_main",
 // CAST-NEXT:           body: [
 // CAST-NEXT:               Expr(
-// CAST-NEXT:                   Cast {
-// CAST-NEXT:                       ty: "A",
-// CAST-NEXT:                       expression: "B",
-// CAST-NEXT:                   },
+// CAST-NEXT:                   Const(
+// CAST-NEXT:                       Cast {
+// CAST-NEXT:                           ty: Named(
+// CAST-NEXT:                               "A",
+// CAST-NEXT:                           ),
+// CAST-NEXT:                           declarator: Abstract,
+// CAST-NEXT:                           value: Identifier(
+// CAST-NEXT:                               "B",
+// CAST-NEXT:                           ),
+// CAST-NEXT:                       },
+// CAST-NEXT:                   ),
 // CAST-NEXT:               ),
 // CAST-NEXT:               Return(
 // CAST-NEXT:                   Const(
