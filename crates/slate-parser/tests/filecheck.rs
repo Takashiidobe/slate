@@ -446,6 +446,7 @@ fn type_spelling(ty: &CType) -> String {
             FloatingType::Float128Ext => "__float128".into(),
         },
         CType::Complex(element) => format!("_Complex {}", type_spelling(element)),
+        CType::Atomic(element) => format!("_Atomic({})", type_spelling(element)),
         CType::Named(name) => name.clone(),
         CType::Tagged { kind, name } => format!(
             "{} {}",

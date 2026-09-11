@@ -237,6 +237,7 @@ fn check_type(
         CType::Qualified { ty, .. } | CType::Pointer { pointee: ty, .. } => {
             check_type(ty, typedefs, tags, provenance, errors)
         }
+        CType::Atomic(ty) => check_type(ty, typedefs, tags, provenance, errors),
         CType::Array { element, .. } => check_type(element, typedefs, tags, provenance, errors),
         CType::Function {
             return_type,

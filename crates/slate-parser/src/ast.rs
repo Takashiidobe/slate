@@ -237,6 +237,7 @@ pub enum CType {
     Integer(IntegerType),
     Floating(FloatingType),
     Complex(Box<Self>),
+    Atomic(Box<Self>),
     Named(String),
     Tagged {
         kind: TagKind,

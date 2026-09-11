@@ -106,7 +106,9 @@ impl Parser {
                 break;
             }
         }
-        let ty = parser.parse_base_type();
+        let ty = parser
+            .parse_base_type()
+            .map_err(|error| self.error_at(code, 0, code.len(), error))?;
         let declarator = if parser.peek() == Some(&Token::Semi) {
             Declarator::Abstract
         } else {
@@ -121,7 +123,9 @@ impl Parser {
                     "expected declarator",
                 ));
             }
-            parser.parse_declarator(false)
+            parser
+                .parse_declarator(false)
+                .map_err(|error| self.error_at(code, 0, code.len(), error))?
         };
         let (trailing_attributes, position) = parse_attribute_groups(parser.tokens, parser.pos)
             .map_err(|error| self.error_at(code, 0, code.len(), error))?;
@@ -857,10 +861,12 @@ impl<'a> DeclaratorParser<'a> {
         }
     }
 
-    fn parse_base_type(&mut self) -> CType {
-        let token = self.peek().cloned().expect("expected declaration type");
+    fn parse_base_type(&mut self) -> Result<CType, String> {
+        let Some(token) = self.peek().cloned() else {
+            return Err("expected declaration type".into());
+        };
         self.pos += 1;
-        match token {
+        Ok(match token {
             Token::Keyword(Keyword::Bool) => CType::Bool,
             Token::Keyword(Keyword::BFloat16) => CType::Floating(FloatingType::BFloat16),
             Token::Keyword(Keyword::Char) => CType::Integer(IntegerType::Char { signed: None }),
@@ -1026,6 +1032,16 @@ impl<'a> DeclaratorParser<'a> {
                 }),
             },
             Token::Keyword(Keyword::Void) => CType::Void,
+            Token::Keyword(Keyword::Atomic) => {
+                if !self.matches(Token::LParen) {
+                    return Err("expected `(` after _Atomic".into());
+                }
+                let ty = self.parse_base_type()?;
+                if !self.matches(Token::RParen) {
+                    return Err("expected `)` after _Atomic type".into());
+                }
+                CType::Atomic(Box::new(ty))
+            }
             Token::Keyword(Keyword::Complex) => {
                 CType::Complex(Box::new(CType::Floating(FloatingType::Double)))
             }
@@ -1064,8 +1080,8 @@ impl<'a> DeclaratorParser<'a> {
                 }
             }
             Token::Ident(name) => CType::Named(name),
-            other => panic!("expected declaration type, found {other:?}"),
-        }
+            other => return Err(format!("expected declaration type, found {other:?}")),
+        })
     }
 
     fn parse_bit_int(&mut self, is_unsigned: bool) -> CType {
@@ -1133,7 +1149,7 @@ impl<'a> DeclaratorParser<'a> {
         }
     }
 
-    fn parse_declarator(&mut self, allow_abstract: bool) -> Declarator {
+    fn parse_declarator(&mut self, allow_abstract: bool) -> Result<Declarator, String> {
         let mut pointer_qualifiers = Vec::new();
         while self.matches(Token::Star) {
             pointer_qualifiers.push(self.take_qualifiers());
@@ -1145,12 +1161,12 @@ impl<'a> DeclaratorParser<'a> {
             }
             Some(Token::LParen) => {
                 self.pos += 1;
-                let declarator = self.parse_declarator(allow_abstract);
+                let declarator = self.parse_declarator(allow_abstract)?;
                 assert!(self.matches(Token::RParen), "expected `)` in declarator");
                 Declarator::Grouped(Box::new(declarator))
             }
             _ if allow_abstract => Declarator::Abstract,
-            _ => panic!("expected declarator"),
+            _ => return Err("expected declarator".into()),
         };
 
         for qualifiers in pointer_qualifiers {
@@ -1186,7 +1202,7 @@ impl<'a> DeclaratorParser<'a> {
                     }
                 }
                 Some(Token::LParen) => {
-                    let (parameters, variadic) = self.parse_parameters();
+                    let (parameters, variadic) = self.parse_parameters()?;
                     Declarator::Function {
                         inner: Box::new(declarator),
                         parameters,
@@ -1196,7 +1212,7 @@ impl<'a> DeclaratorParser<'a> {
                 _ => break,
             };
         }
-        declarator
+        Ok(declarator)
     }
 
     fn take_qualifiers(&mut self) -> Qualifiers {
@@ -1217,6 +1233,9 @@ impl<'a> DeclaratorParser<'a> {
         let Some(Token::Keyword(keyword)) = self.peek() else {
             return None;
         };
+        if *keyword == Keyword::Atomic && self.tokens.get(self.pos + 1) == Some(&Token::LParen) {
+            return None;
+        }
         if !matches!(
             keyword,
             Keyword::Const | Keyword::Volatile | Keyword::Restrict | Keyword::Atomic
@@ -1228,40 +1247,37 @@ impl<'a> DeclaratorParser<'a> {
         Some(keyword)
     }
 
-    fn parse_parameters(&mut self) -> (Vec<Parameter>, bool) {
-        assert!(
-            self.matches(Token::LParen),
-            "expected `(` in function declarator"
-        );
+    fn parse_parameters(&mut self) -> Result<(Vec<Parameter>, bool), String> {
+        if !self.matches(Token::LParen) {
+            return Err("expected `(` in function declarator".into());
+        }
         if self.matches(Token::RParen) {
-            return (vec![], false);
+            return Ok((vec![], false));
         }
         if self.peek() == Some(&Token::Keyword(Keyword::Void))
             && self.tokens.get(self.pos + 1) == Some(&Token::RParen)
         {
             self.pos += 2;
-            return (vec![], false);
+            return Ok((vec![], false));
         }
 
         let mut parameters = Vec::new();
         let mut variadic = false;
         loop {
             if self.matches(Token::Ellipsis) {
+                if !self.matches(Token::RParen) {
+                    return Err("expected `)` after `...`".into());
+                }
                 variadic = true;
-                assert!(self.matches(Token::RParen), "expected `)` after `...`");
                 break;
             }
-            let ty = self.parse_base_type();
+            let ty = self.parse_base_type()?;
             let declarator = match self.peek() {
                 Some(Token::Comma) | Some(Token::RParen) => None,
-                _ => Some(self.parse_declarator(true)),
+                _ => Some(self.parse_declarator(true)?),
             };
-            let attributes = parse_attribute_groups(self.tokens, self.pos)
-                .map(|(attributes, position)| {
-                    self.pos = position;
-                    attributes
-                })
-                .unwrap_or_else(|error| panic!("{error}"));
+            let (attributes, position) = parse_attribute_groups(self.tokens, self.pos)?;
+            self.pos = position;
             parameters.push(Parameter {
                 ty,
                 declarator,
@@ -1270,12 +1286,11 @@ impl<'a> DeclaratorParser<'a> {
             if self.matches(Token::RParen) {
                 break;
             }
-            assert!(
-                self.matches(Token::Comma),
-                "expected `,` between parameters"
-            );
+            if !self.matches(Token::Comma) {
+                return Err("expected `,` between parameters".into());
+            }
         }
-        (parameters, variadic)
+        Ok((parameters, variadic))
     }
 }
 
@@ -1318,7 +1333,9 @@ impl Parser {
             tokens: &sig_tokens,
             pos: index,
         };
-        let ret_type = return_type_parser.parse_base_type();
+        let ret_type = return_type_parser
+            .parse_base_type()
+            .map_err(|error| self.error_at(code, 0, code.len(), error))?;
         let name_index = return_type_parser.pos;
         let name = match sig_tokens.get(name_index) {
             Some(Token::Ident(n)) => n.clone(),
@@ -1341,7 +1358,9 @@ impl Parser {
             tokens: &sig_tokens,
             pos: name_index + 1,
         };
-        let (parameters, variadic) = declarator_parser.parse_parameters();
+        let (parameters, variadic) = declarator_parser
+            .parse_parameters()
+            .map_err(|error| self.error_at(code, 0, code.len(), error))?;
         let (signature_attributes, body_index) =
             parse_attribute_groups(&sig_tokens, declarator_parser.pos)
                 .map_err(|error| self.error_at(code, 0, code.len(), error))?;

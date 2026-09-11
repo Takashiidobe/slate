@@ -92,6 +92,7 @@ impl<'a> Reachability<'a> {
                 }
             }
             CType::Qualified { ty, .. } | CType::Pointer { pointee: ty, .. } => self.mark_type(ty),
+            CType::Atomic(ty) => self.mark_type(ty),
             CType::Array { element, .. } => self.mark_type(element),
             CType::Function {
                 return_type,
