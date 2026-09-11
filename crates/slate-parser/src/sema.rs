@@ -1,6 +1,6 @@
 use crate::ast::*;
 use crate::eval::Env;
-use crate::files::Files;
+use crate::files::{Files, display_path};
 use miette::{Diagnostic, NamedSource, SourceSpan};
 use std::collections::HashSet;
 use thiserror::Error;
@@ -146,7 +146,7 @@ impl SemaError {
             .take(provenance.line)
             .map(|line| line.len() + 1)
             .sum();
-        self.source_code = NamedSource::new(path.display().to_string(), source).with_language("C");
+        self.source_code = NamedSource::new(display_path(path), source).with_language("C");
         self.span = SourceSpan::new(offset.into(), 1);
         self
     }
@@ -189,6 +189,25 @@ fn check_attributes(attributes: &[Attribute], provenance: Provenance, errors: &m
                 format!("invalid arguments for attribute `{name}`"),
             ));
         }
+        if let Attribute::Aligned(expression) | Attribute::VectorSize(expression) = attribute
+            && !is_integer_constant_expression(expression)
+        {
+            errors.push(error(
+                provenance,
+                "layout attribute requires an integer constant expression",
+            ));
+        }
+    }
+}
+
+fn is_integer_constant_expression(expression: &Expr) -> bool {
+    match expression {
+        Expr::IntLit(_) | Expr::SizeOf(_) => true,
+        Expr::Unary { value, .. } => is_integer_constant_expression(value),
+        Expr::Binary { left, right, .. } => {
+            is_integer_constant_expression(left) && is_integer_constant_expression(right)
+        }
+        Expr::Identifier(_) | Expr::StringLit(_) | Expr::Call { .. } | Expr::Cast { .. } => false,
     }
 }
 

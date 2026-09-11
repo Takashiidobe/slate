@@ -12,12 +12,46 @@ pub struct Conditional<T> {
     pub branches: Vec<(Condition, T)>,
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Expr {
     IntLit(i64),
     StringLit(String),
-    Call { callee: String, argument: String },
-    Cast { ty: String, expression: String },
+    Identifier(String),
+    Unary {
+        op: crate::const_expr::UnaryOp,
+        value: Box<Expr>,
+    },
+    Binary {
+        op: crate::const_expr::BinaryOp,
+        left: Box<Expr>,
+        right: Box<Expr>,
+    },
+    SizeOf(Box<Expr>),
+    Call {
+        callee: String,
+        argument: String,
+    },
+    Cast {
+        ty: String,
+        expression: String,
+    },
+}
+
+impl std::fmt::Display for Expr {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::IntLit(value) => write!(formatter, "{value}"),
+            Self::StringLit(value) => write!(formatter, "\"{value}\""),
+            Self::Identifier(value) => formatter.write_str(value),
+            Self::Unary { op, value } => write!(formatter, "{}{}", <&str>::from(*op), value),
+            Self::Binary { op, left, right } => {
+                write!(formatter, "({left} {} {right})", <&str>::from(*op))
+            }
+            Self::SizeOf(value) => write!(formatter, "sizeof({value})"),
+            Self::Call { callee, argument } => write!(formatter, "{callee}({argument})"),
+            Self::Cast { ty, expression } => write!(formatter, "({ty}){expression}"),
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -65,8 +99,8 @@ pub struct Provenance {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Attribute {
     Packed,
-    Aligned(i64),
-    VectorSize(i64),
+    Aligned(Expr),
+    VectorSize(Expr),
     Mode(String),
     Visibility(String),
     Section(String),
@@ -85,6 +119,16 @@ pub enum Attribute {
     WeakRef(String),
     Malloc,
     Pure,
+    Const,
+    MayAlias,
+    Deprecated(Option<String>),
+    NoDiscard(Option<String>),
+    MaybeUnused,
+    Fallthrough,
+    Unknown {
+        name: String,
+        arguments: Vec<String>,
+    },
     Invalid {
         name: String,
         arguments: Vec<String>,

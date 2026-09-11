@@ -6,7 +6,7 @@ int broken __attribute__((visibility(1)));
 // SEMANTIC: Error:   × semantic analysis failed
 // SEMANTIC: Error:
 // SEMANTIC: × invalid arguments for attribute `visibility`
-// SEMANTIC: ╭─[/home/takashi/Projects/slate-parser/tests/fixtures/malformed-attributes.c:1:1]
+// SEMANTIC: ╭─[tests/fixtures/malformed-attributes.c:1:1]
 // SEMANTIC: 1 │ int broken __attribute__((visibility(1)));
 // SEMANTIC: · ─
 // SEMANTIC: 2 │

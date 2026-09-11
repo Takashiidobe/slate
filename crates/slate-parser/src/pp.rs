@@ -1,6 +1,6 @@
 use crate::ast::{Condition, FileId, HeaderKind, Provenance};
 use crate::const_expr;
-use crate::files::{Files, SearchPaths};
+use crate::files::{Files, SearchPaths, display_path};
 use miette::{Diagnostic, NamedSource, SourceSpan};
 use std::path::{Path, PathBuf};
 use thiserror::Error;
@@ -72,7 +72,7 @@ impl<'a> Preprocessor<'a> {
             .unwrap_or_else(|e| panic!("failed to read {}: {e}", canon.display()));
         let file = self.files.intern(canon.clone(), HeaderKind::User);
         self.open_stack.push(canon.clone());
-        let nodes = self.parse_source(&canon.display().to_string(), &src, file)?;
+        let nodes = self.parse_source(&display_path(&canon), &src, file)?;
         self.open_stack.pop();
         Ok(nodes)
     }
@@ -279,7 +279,7 @@ impl<'a> Preprocessor<'a> {
             .unwrap_or_else(|e| panic!("failed to read {}: {e}", resolved.display()));
         let file = self.files.intern(resolved.clone(), kind);
         self.open_stack.push(resolved.clone());
-        let nodes = self.parse_source(&resolved.display().to_string(), &src, file)?;
+        let nodes = self.parse_source(&display_path(&resolved), &src, file)?;
         self.open_stack.pop();
         Ok(nodes)
     }

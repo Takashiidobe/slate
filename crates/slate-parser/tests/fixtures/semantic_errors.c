@@ -7,14 +7,14 @@ MissingType missing;
 // SEMANTIC: Error:   × semantic analysis failed
 // SEMANTIC: Error:
 // SEMANTIC: × object cannot have type void
-// SEMANTIC: ╭─[/home/takashi/Projects/slate-parser/tests/fixtures/semantic_errors.c:1:1]
+// SEMANTIC: ╭─[tests/fixtures/semantic_errors.c:1:1]
 // SEMANTIC: 1 │ void invalid_object;
 // SEMANTIC: · ─
 // SEMANTIC: 2 │ MissingType missing;
 // SEMANTIC: ╰────
 // SEMANTIC: Error:
 // SEMANTIC: × unknown type name `MissingType`
-// SEMANTIC: ╭─[/home/takashi/Projects/slate-parser/tests/fixtures/semantic_errors.c:2:1]
+// SEMANTIC: ╭─[tests/fixtures/semantic_errors.c:2:1]
 // SEMANTIC: 1 │ void invalid_object;
 // SEMANTIC: 2 │ MissingType missing;
 // SEMANTIC: · ─

@@ -284,7 +284,14 @@ fn summarize_evaluated_decl(decl: &ConcreteDecl) -> DeclSummary {
                     ConcreteStmt::Return(Expr::StringLit(_)) => {
                         panic!("clang return was not an integer")
                     }
-                    ConcreteStmt::Return(Expr::Call { .. } | Expr::Cast { .. }) => {
+                    ConcreteStmt::Return(
+                        Expr::Call { .. }
+                        | Expr::Cast { .. }
+                        | Expr::Identifier(_)
+                        | Expr::Unary { .. }
+                        | Expr::Binary { .. }
+                        | Expr::SizeOf(_),
+                    ) => {
                         panic!("clang return was not an integer")
                     }
                     ConcreteStmt::Expression(_) => None,
@@ -568,7 +575,12 @@ fn array_size(size: &ArraySize) -> String {
         ArraySize::Expression(expression) => match expression.as_ref() {
             Expr::IntLit(value) => value.to_string(),
             Expr::StringLit(_) => panic!("array bound was not an integer"),
-            Expr::Call { .. } | Expr::Cast { .. } => panic!("array bound was not an integer"),
+            Expr::Call { .. }
+            | Expr::Cast { .. }
+            | Expr::Identifier(_)
+            | Expr::Unary { .. }
+            | Expr::Binary { .. }
+            | Expr::SizeOf(_) => panic!("array bound was not an integer"),
         },
     }
 }

@@ -1,6 +1,8 @@
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum ConstExpr {
     Integer(i64),
+    Identifier(String),
+    SizeOf(Box<Self>),
     Unary {
         op: UnaryOp,
         value: Box<Self>,
@@ -18,6 +20,17 @@ pub enum UnaryOp {
     Minus,
     BitNot,
     Not,
+}
+
+impl From<UnaryOp> for &'static str {
+    fn from(op: UnaryOp) -> Self {
+        match op {
+            UnaryOp::Plus => "+",
+            UnaryOp::Minus => "-",
+            UnaryOp::BitNot => "~",
+            UnaryOp::Not => "!",
+        }
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -42,6 +55,31 @@ pub enum BinaryOp {
     ShiftRight,
 }
 
+impl From<BinaryOp> for &'static str {
+    fn from(op: BinaryOp) -> Self {
+        match op {
+            BinaryOp::Add => "+",
+            BinaryOp::Sub => "-",
+            BinaryOp::Mul => "*",
+            BinaryOp::Div => "/",
+            BinaryOp::Rem => "%",
+            BinaryOp::Less => "<",
+            BinaryOp::LessEqual => "<=",
+            BinaryOp::Greater => ">",
+            BinaryOp::GreaterEqual => ">=",
+            BinaryOp::Equal => "==",
+            BinaryOp::NotEqual => "!=",
+            BinaryOp::BitAnd => "&",
+            BinaryOp::BitXor => "^",
+            BinaryOp::BitOr => "|",
+            BinaryOp::And => "&&",
+            BinaryOp::Or => "||",
+            BinaryOp::ShiftLeft => "<<",
+            BinaryOp::ShiftRight => ">>",
+        }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ConstExprError(pub String);
 
@@ -61,6 +99,10 @@ pub fn evaluate(source: &str) -> Result<i64, ConstExprError> {
 pub fn evaluate_expr(expression: &ConstExpr) -> Result<i64, ConstExprError> {
     match expression {
         ConstExpr::Integer(value) => Ok(*value),
+        ConstExpr::Identifier(name) => {
+            Err(ConstExprError(format!("unsupported identifier `{name}`")))
+        }
+        ConstExpr::SizeOf(_) => Err(ConstExprError("sizeof is not supported here".into())),
         ConstExpr::Unary { op, value } => {
             let value = evaluate_expr(value)?;
             match op {
@@ -189,6 +231,17 @@ impl Parser {
     }
 
     fn parse_unary(&mut self) -> Result<ConstExpr, ConstExprError> {
+        if self.peek() == Some("sizeof")
+            && self.tokens.get(self.position + 1).map(String::as_str) == Some("(")
+        {
+            self.take();
+            self.take();
+            let value = self.parse_binary(0)?;
+            if self.take().as_deref() != Some(")") {
+                return Err(ConstExprError("expected `)`".into()));
+            }
+            return Ok(ConstExpr::SizeOf(Box::new(value)));
+        }
         let op = match self.peek() {
             Some("+") => Some(UnaryOp::Plus),
             Some("-") => Some(UnaryOp::Minus),
@@ -211,10 +264,10 @@ impl Parser {
             return Ok(expression);
         }
         match self.tokens.get(self.position.saturating_sub(1)) {
-            Some(value) => value
+            Some(value) => Ok(value
                 .parse()
                 .map(ConstExpr::Integer)
-                .map_err(|_| ConstExprError(format!("unsupported identifier `{value}`"))),
+                .unwrap_or_else(|_| ConstExpr::Identifier(value.clone()))),
             None => Err(ConstExprError("expected integer expression".into())),
         }
     }

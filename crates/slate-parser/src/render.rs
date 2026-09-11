@@ -134,6 +134,9 @@ impl<W: Write> Renderer<W> {
                         "{indent}stmt[{index}]: return cast={ty}({expression})"
                     ))?;
                 }
+                Stmt::Return(expression) => {
+                    self.line(&format!("{indent}stmt[{index}]: return {expression}"))?;
+                }
                 Stmt::Expression(Expr::Call { callee, argument }) => {
                     self.line(&format!(
                         "{indent}stmt[{index}]: call callee={callee} argument={argument}"
@@ -208,6 +211,9 @@ impl<W: Write> Renderer<W> {
                                 .line(&format!(
                                     "{indent}  stmt[{stmt_index}]: return cast={ty}({expression})"
                                 ))?,
+                            ConcreteStmt::Return(expression) => self.line(&format!(
+                                "{indent}  stmt[{stmt_index}]: return {expression}"
+                            ))?,
                             ConcreteStmt::Expression(expression) => self.line(&format!(
                                 "{indent}  stmt[{stmt_index}]: expression={expression:?}"
                             ))?,
@@ -289,6 +295,25 @@ impl<W: Write> Renderer<W> {
                         Attribute::WeakRef(value) => format!("weakref(\"{value}\")"),
                         Attribute::Malloc => "malloc".into(),
                         Attribute::Pure => "pure".into(),
+                        Attribute::Const => "const".into(),
+                        Attribute::MayAlias => "may_alias".into(),
+                        Attribute::Deprecated(value) => value.as_ref().map_or_else(
+                            || "deprecated".into(),
+                            |value| { format!("deprecated(\"{value}\")") }
+                        ),
+                        Attribute::NoDiscard(value) => value.as_ref().map_or_else(
+                            || "nodiscard".into(),
+                            |value| { format!("nodiscard(\"{value}\")") }
+                        ),
+                        Attribute::MaybeUnused => "maybe_unused".into(),
+                        Attribute::Fallthrough => "fallthrough".into(),
+                        Attribute::Unknown { name, arguments } => {
+                            if arguments.is_empty() {
+                                name.clone()
+                            } else {
+                                format!("{name}({})", arguments.join(" "))
+                            }
+                        }
                         Attribute::Invalid { name, arguments } => {
                             format!("{name}({})", arguments.join(" "))
                         }
@@ -315,6 +340,7 @@ impl<W: Write> Renderer<W> {
             Initializer::Expr(Expr::Cast { ty, expression }) => {
                 format!("expr(cast={ty}({expression}))")
             }
+            Initializer::Expr(expression) => format!("expr({expression})"),
             Initializer::List(items) => format!(
                 "list[{}]",
                 items
@@ -487,6 +513,7 @@ impl<W: Write> Renderer<W> {
             Some(Expr::StringLit(value)) => format!("string={value}"),
             Some(Expr::Call { callee, argument }) => format!("call={callee}({argument})"),
             Some(Expr::Cast { ty, expression }) => format!("cast={ty}({expression})"),
+            Some(expression) => expression.to_string(),
         }
     }
 
@@ -498,6 +525,7 @@ impl<W: Write> Renderer<W> {
                 Expr::StringLit(value) => format!("string={value}"),
                 Expr::Call { callee, argument } => format!("call={callee}({argument})"),
                 Expr::Cast { ty, expression } => format!("cast={ty}({expression})"),
+                expression => expression.to_string(),
             },
         }
     }

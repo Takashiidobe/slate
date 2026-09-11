@@ -19,9 +19,34 @@ pub enum Keyword {
     Inline,
 }
 
+impl From<Keyword> for &'static str {
+    fn from(keyword: Keyword) -> Self {
+        match keyword {
+            Keyword::Char => "char",
+            Keyword::Int => "int",
+            Keyword::Return => "return",
+            Keyword::Typedef => "typedef",
+            Keyword::Void => "void",
+            Keyword::Struct => "struct",
+            Keyword::Union => "union",
+            Keyword::Enum => "enum",
+            Keyword::Const => "const",
+            Keyword::Volatile => "volatile",
+            Keyword::Restrict => "restrict",
+            Keyword::Atomic => "_Atomic",
+            Keyword::Extern => "extern",
+            Keyword::Static => "static",
+            Keyword::Auto => "auto",
+            Keyword::Register => "register",
+            Keyword::Inline => "inline",
+        }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq)]
 pub enum Token {
     Keyword(Keyword),
+    Sizeof,
     Ident(String),
     IntLit(i64),
     StringLit(String),
@@ -31,6 +56,7 @@ pub enum Token {
     RBrace,
     LBracket,
     RBracket,
+    Colon,
     Comma,
     Star,
     Ellipsis,
@@ -101,6 +127,7 @@ pub fn lex(src: &str) -> Vec<Token> {
             }
             let word: String = chars[start..i].iter().collect();
             tokens.push(match word.as_str() {
+                "sizeof" => Token::Sizeof,
                 "char" => Token::Keyword(Keyword::Char),
                 "int" => Token::Keyword(Keyword::Int),
                 "return" => Token::Keyword(Keyword::Return),
@@ -157,6 +184,7 @@ pub fn lex(src: &str) -> Vec<Token> {
                 '}' => Token::RBrace,
                 '[' => Token::LBracket,
                 ']' => Token::RBracket,
+                ':' => Token::Colon,
                 ',' => Token::Comma,
                 '*' => Token::Star,
                 ';' => Token::Semi,
