@@ -153,7 +153,9 @@ impl<'a> Reachability<'a> {
             Decl::Typedef { ty, .. } => self.mark_type(ty),
             Decl::Record(record) => {
                 for field in &record.fields {
-                    self.mark_type(&field.declaration.specifiers.ty);
+                    if let FieldItem::Field(field) = field {
+                        self.mark_type(&field.declaration.specifiers.ty);
+                    }
                 }
             }
             Decl::Enum(_) => {}

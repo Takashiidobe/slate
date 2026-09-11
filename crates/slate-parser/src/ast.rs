@@ -152,6 +152,16 @@ pub struct Provenance {
     pub line: usize,
 }
 
+impl Default for Provenance {
+    fn default() -> Self {
+        Self {
+            file: FileId(0),
+            kind: HeaderKind::System,
+            line: 0,
+        }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq)]
 pub enum Attribute {
     Packed,
@@ -268,6 +278,8 @@ pub enum CType {
     Tagged {
         kind: TagKind,
         name: Option<String>,
+        #[debug(skip_if = Option::is_none)]
+        body: Option<TagBody>,
     },
     Qualified {
         #[debug(skip_if = Qualifiers::is_default)]
@@ -367,6 +379,12 @@ pub enum TagKind {
     Struct,
     Union,
     Enum,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum TagBody {
+    Fields(Vec<FieldDecl>),
+    Enumerators(Vec<Enumerator>),
 }
 
 #[derive(CustomDebug, Clone, Copy, Default, PartialEq, Eq)]
@@ -515,10 +533,16 @@ pub struct RecordDecl {
     pub kind: TagKind,
     pub name: Option<String>,
     #[debug(skip_if = Vec::is_empty)]
-    pub fields: Vec<FieldDecl>,
+    pub fields: Vec<FieldItem>,
     pub provenance: Provenance,
     #[debug(skip_if = Vec::is_empty)]
     pub attributes: Vec<Attribute>,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum FieldItem {
+    Field(FieldDecl),
+    Conditional(Conditional<Vec<FieldItem>>),
 }
 
 #[derive(Debug, Clone, PartialEq)]

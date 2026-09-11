@@ -317,11 +317,30 @@ impl Parser {
             Some(Token::LBrace) => None,
             _ => return Err(self.error_at(code, 0, code.len(), "expected tag name or `{`")),
         };
-        let close = nodes[1..]
-            .iter()
-            .position(|node| matches!(node, PPNode::Code { text, .. } if lex(text).first() == Some(&Token::RBrace)))
-            .ok_or_else(|| self.error_at(code, 0, code.len(), "expected `}`"))?
-            + 1;
+        let mut depth = 1i32;
+        let mut close = None;
+        for (offset, node) in nodes[1..].iter().enumerate() {
+            let PPNode::Code { text, .. } = node else {
+                continue;
+            };
+            for token in lex(text) {
+                match token {
+                    Token::LBrace => depth += 1,
+                    Token::RBrace => {
+                        depth -= 1;
+                        if depth == 0 {
+                            close = Some(offset + 1);
+                            break;
+                        }
+                    }
+                    _ => {}
+                }
+            }
+            if close.is_some() {
+                break;
+            }
+        }
+        let close = close.ok_or_else(|| self.error_at(code, 0, code.len(), "expected `}`"))?;
         let mut trailing_name = None;
         if let PPNode::Code { text, .. } = &nodes[close] {
             let closing_tokens = lex(text);
@@ -380,17 +399,7 @@ impl Parser {
                 provenance,
             })
         } else {
-            let mut fields = Vec::new();
-            for node in &nodes[1..close] {
-                let text = self.node_text(node);
-                if lex(text).is_empty() {
-                    continue;
-                }
-                fields.push(FieldDecl {
-                    declaration: self.parse_declaration(text)?,
-                    provenance: self.node_provenance(node),
-                });
-            }
+            let fields = self.parse_field_items(&nodes[1..close])?;
             Decl::Record(RecordDecl {
                 kind,
                 name: name.clone(),
@@ -401,7 +410,7 @@ impl Parser {
         };
         let mut decls = vec![tag_decl];
         if let Some(alias) = trailing_name {
-            let ty = CType::Tagged { kind, name };
+            let ty = CType::Tagged { kind, name, body: None };
             decls.push(if is_typedef {
                 Decl::Typedef {
                     name: alias,
@@ -428,6 +437,62 @@ impl Parser {
             });
         }
         Ok((decls, consumed))
+    }
+
+    fn parse_field_items(&self, nodes: &[PPNode]) -> Result<Vec<FieldItem>, ParseError> {
+        let mut fields = Vec::new();
+        let mut index = 0;
+        while index < nodes.len() {
+            match &nodes[index] {
+                PPNode::Conditional(cond) => {
+                    let branches = cond
+                        .branches
+                        .iter()
+                        .map(|(condition, body)| {
+                            Ok((condition.clone(), self.parse_field_items(body)?))
+                        })
+                        .collect::<Result<Vec<_>, ParseError>>()?;
+                    fields.push(FieldItem::Conditional(Conditional { branches }));
+                    index += 1;
+                }
+                PPNode::Code { .. } => {
+                    if lex(self.node_text(&nodes[index])).is_empty() {
+                        index += 1;
+                        continue;
+                    }
+                    let start = index;
+                    let mut depth: i32 = 0;
+                    let mut joined = String::new();
+                    loop {
+                        let text = self.node_text(&nodes[index]);
+                        if !joined.is_empty() {
+                            joined.push('\n');
+                        }
+                        joined.push_str(text);
+                        for token in lex(text) {
+                            match token {
+                                Token::LBrace => depth += 1,
+                                Token::RBrace => depth -= 1,
+                                _ => {}
+                            }
+                        }
+                        index += 1;
+                        if (depth <= 0 && joined.trim_end().ends_with(';')) || index >= nodes.len()
+                        {
+                            break;
+                        }
+                        if matches!(nodes.get(index), Some(PPNode::Conditional(_))) {
+                            break;
+                        }
+                    }
+                    fields.push(FieldItem::Field(FieldDecl {
+                        declaration: self.parse_declaration(&joined)?,
+                        provenance: self.node_provenance(&nodes[start]),
+                    }));
+                }
+            }
+        }
+        Ok(fields)
     }
 
     fn parse_top_level_conditional(&mut self, cond: &PPConditional) -> Result<Decl, ParseError> {
@@ -1241,43 +1306,133 @@ impl<'a> DeclaratorParser<'a> {
             Token::Keyword(Keyword::Accum) => {
                 self.fixed_point(FixedPointKind::Accum, false, FixedPointRank::Default)
             }
-            Token::Keyword(Keyword::Struct) => {
-                let name = match self.tokens.get(self.pos) {
-                    Some(Token::Ident(name)) => name.clone(),
-                    _ => panic!("expected struct tag name"),
-                };
-                self.pos += 1;
-                CType::Tagged {
-                    kind: TagKind::Struct,
-                    name: Some(name),
-                }
-            }
-            Token::Keyword(Keyword::Union) => {
-                let name = match self.tokens.get(self.pos) {
-                    Some(Token::Ident(name)) => name.clone(),
-                    _ => panic!("expected union tag name"),
-                };
-                self.pos += 1;
-                CType::Tagged {
-                    kind: TagKind::Union,
-                    name: Some(name),
-                }
-            }
-            Token::Keyword(Keyword::Enum) => {
-                let name = match self.tokens.get(self.pos) {
-                    Some(Token::Ident(name)) => name.clone(),
-                    _ => panic!("expected enum tag name"),
-                };
-                self.pos += 1;
-                CType::Tagged {
-                    kind: TagKind::Enum,
-                    name: Some(name),
-                }
-            }
+            Token::Keyword(Keyword::Struct) => self.parse_record_type(TagKind::Struct)?,
+            Token::Keyword(Keyword::Union) => self.parse_record_type(TagKind::Union)?,
+            Token::Keyword(Keyword::Enum) => self.parse_enum_type()?,
             Token::Ident(name) if is_target_builtin_name(&name) => CType::TargetBuiltin(name),
             Token::Ident(name) => CType::Named(name),
             other => return Err(format!("expected declaration type, found {other:?}")),
         })
+    }
+
+    fn parse_record_type(&mut self, kind: TagKind) -> Result<CType, String> {
+        let name = match self.peek() {
+            Some(Token::Ident(name)) => {
+                let name = name.clone();
+                self.pos += 1;
+                Some(name)
+            }
+            _ => None,
+        };
+        let body = if self.peek() == Some(&Token::LBrace) {
+            Some(TagBody::Fields(self.parse_field_list()?))
+        } else {
+            None
+        };
+        if name.is_none() && body.is_none() {
+            return Err("expected tag name or `{`".into());
+        }
+        Ok(CType::Tagged { kind, name, body })
+    }
+
+    fn parse_enum_type(&mut self) -> Result<CType, String> {
+        let name = match self.peek() {
+            Some(Token::Ident(name)) => {
+                let name = name.clone();
+                self.pos += 1;
+                Some(name)
+            }
+            _ => None,
+        };
+        let body = if self.peek() == Some(&Token::LBrace) {
+            Some(TagBody::Enumerators(self.parse_enumerator_list()?))
+        } else {
+            None
+        };
+        if name.is_none() && body.is_none() {
+            return Err("expected tag name or `{`".into());
+        }
+        Ok(CType::Tagged {
+            kind: TagKind::Enum,
+            name,
+            body,
+        })
+    }
+
+    fn parse_field_list(&mut self) -> Result<Vec<FieldDecl>, String> {
+        self.pos += 1;
+        let mut fields = Vec::new();
+        while self.peek() != Some(&Token::RBrace) {
+            if self.peek().is_none() {
+                return Err("expected `}` in struct/union body".into());
+            }
+            let qualifiers = self.take_qualifiers();
+            let ty = self.parse_base_type()?;
+            let declarator = if matches!(self.peek(), Some(&Token::Semi) | Some(&Token::Colon)) {
+                Declarator::Abstract
+            } else {
+                self.parse_declarator(true)?
+            };
+            if self.matches(Token::Colon) {
+                while !matches!(self.peek(), Some(&Token::Semi) | None) {
+                    self.pos += 1;
+                }
+            }
+            if !self.matches(Token::Semi) {
+                return Err("expected `;` in struct/union field".into());
+            }
+            fields.push(FieldDecl {
+                declaration: Declaration {
+                    specifiers: DeclarationSpecifiers {
+                        ty,
+                        qualifiers,
+                        storage: StorageClass::None,
+                        is_inline: false,
+                        is_noreturn: false,
+                    },
+                    declarator,
+                    initializer: None,
+                    attributes: Vec::new(),
+                },
+                provenance: Provenance::default(),
+            });
+        }
+        self.pos += 1;
+        Ok(fields)
+    }
+
+    fn parse_enumerator_list(&mut self) -> Result<Vec<Enumerator>, String> {
+        self.pos += 1;
+        let mut enumerators = Vec::new();
+        loop {
+            if self.matches(Token::RBrace) {
+                break;
+            }
+            let Some(Token::Ident(name)) = self.peek().cloned() else {
+                return Err("expected enumerator".into());
+            };
+            self.pos += 1;
+            let value = if self.matches(Token::Equal) {
+                let start = self.pos;
+                while !matches!(self.peek(), Some(&Token::Comma) | Some(&Token::RBrace) | None) {
+                    self.pos += 1;
+                }
+                let value = const_expr::Parser::evaluate(&self.tokens[start..self.pos])
+                    .map_err(|error| error.to_string())?;
+                Some(Expr::IntLit(value))
+            } else {
+                None
+            };
+            enumerators.push(Enumerator { name, value });
+            if self.matches(Token::Comma) {
+                continue;
+            }
+            if self.matches(Token::RBrace) {
+                break;
+            }
+            return Err("expected `,` or `}` in enum body".into());
+        }
+        Ok(enumerators)
     }
 
     fn parse_fixed_point(

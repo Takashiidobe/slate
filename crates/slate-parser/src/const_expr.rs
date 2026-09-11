@@ -12,6 +12,7 @@ use thiserror::Error;
 pub enum ConstExpr {
     Integer(i64),
     Identifier(String),
+    StringLit(String),
     SizeOf(Box<Self>),
     SizeOfType {
         ty: Box<CType>,
@@ -80,6 +81,7 @@ impl std::fmt::Display for ConstExpr {
         match self {
             Self::Integer(value) => write!(formatter, "{value}"),
             Self::Identifier(value) => formatter.write_str(value),
+            Self::StringLit(value) => write!(formatter, "\"{value}\""),
             Self::SizeOf(value) => write!(formatter, "sizeof({value})"),
             Self::SizeOfType { .. } => write!(formatter, "sizeof(...)"),
             Self::AlignOf { .. } => write!(formatter, "_Alignof(...)"),
@@ -317,6 +319,7 @@ impl Parser {
     ) -> Result<i64, ConstExprError> {
         match expression {
             ConstExpr::Integer(value) => Ok(*value),
+            ConstExpr::StringLit(_) => Err(ConstExprError::NotConstant("string literal")),
             ConstExpr::Identifier(name) => match is_defined {
                 Some(_) => Ok(0),
                 None => Err(ConstExprError::UnsupportedIdentifier(name.clone())),
@@ -779,6 +782,7 @@ impl Parser {
         }
         match self.tokens.get(self.position.saturating_sub(1)) {
             Some(Token::IntLit(value)) => Ok(ConstExpr::Integer(*value)),
+            Some(Token::StringLit(value)) => Ok(ConstExpr::StringLit(value.clone())),
             Some(
                 Token::CharLit(raw)
                 | Token::Utf8CharLit(raw)

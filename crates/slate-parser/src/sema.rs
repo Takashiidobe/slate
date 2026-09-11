@@ -107,6 +107,9 @@ impl TranslationUnit {
                 ConcreteDecl::Record(record) => {
                     check_attributes(&record.attributes, record.provenance, &mut errors);
                     for field in &record.fields {
+                        let FieldItem::Field(field) = field else {
+                            continue;
+                        };
                         check_type(
                             &field.declaration.specifiers.ty,
                             &typedefs,
@@ -229,6 +232,7 @@ fn is_integer_constant_expression(expression: &ConstExpr) -> bool {
                 && is_integer_constant_expression(else_value)
         }
         ConstExpr::Identifier(_)
+        | ConstExpr::StringLit(_)
         | ConstExpr::Call { .. }
         | ConstExpr::Assign { .. }
         | ConstExpr::Comma(..)

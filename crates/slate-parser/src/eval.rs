@@ -70,7 +70,7 @@ impl Decl {
                 provenance: *provenance,
                 attributes: attributes.clone(),
             }],
-            Self::Record(record) => vec![ConcreteDecl::Record(record.clone())],
+            Self::Record(record) => vec![ConcreteDecl::Record(record.eval(env))],
             Self::Enum(enumeration) => vec![ConcreteDecl::Enum(enumeration.clone())],
             Self::Conditional(cond) => match cond.select_branch(env) {
                 Some(body) => body.iter().flat_map(|decl| decl.eval(env)).collect(),
@@ -161,6 +161,32 @@ impl<T> Conditional<T> {
             }
         }
         selected
+    }
+}
+
+impl RecordDecl {
+    fn eval(&self, env: &Env) -> Self {
+        Self {
+            fields: self
+                .fields
+                .iter()
+                .flat_map(|item| item.eval(env))
+                .map(FieldItem::Field)
+                .collect(),
+            ..self.clone()
+        }
+    }
+}
+
+impl FieldItem {
+    fn eval(&self, env: &Env) -> Vec<FieldDecl> {
+        match self {
+            Self::Field(field) => vec![field.clone()],
+            Self::Conditional(cond) => match cond.select_branch(env) {
+                Some(items) => items.iter().flat_map(|item| item.eval(env)).collect(),
+                None => vec![],
+            },
+        }
     }
 }
 

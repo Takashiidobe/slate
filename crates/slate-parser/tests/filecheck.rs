@@ -504,7 +504,7 @@ fn type_spelling(ty: &CType) -> String {
         CType::Imaginary(element) => format!("_Imaginary {}", type_spelling(element)),
         CType::TargetBuiltin(name) => name.clone(),
         CType::Named(name) => name.clone(),
-        CType::Tagged { kind, name } => format!(
+        CType::Tagged { kind, name, .. } => format!(
             "{} {}",
             tag_name(*kind),
             name.as_deref().unwrap_or("<anonymous>")
