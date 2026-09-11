@@ -119,3 +119,7 @@ sys/param.h
 sys/personality.h
 sys/poll.h
 sys/prctl.h
+sys/procfs.h
+sys/ptrace.h
+sys/quota.h
+sys/random.h

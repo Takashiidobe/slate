@@ -168,3 +168,9 @@ sys/personality.h
 sys/pidfd.h
 sys/poll.h
 sys/prctl.h
+sys/procfs.h
+sys/profil.h
+sys/ptrace.h
+sys/queue.h
+sys/quota.h
+sys/random.h

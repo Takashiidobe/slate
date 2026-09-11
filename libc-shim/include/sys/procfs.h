@@ -4,6 +4,9 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <sys/user.h>
+#if defined(__SLATE_LIBC_MUSL)
+#include <unistd.h>
+#endif
 
 struct elf_siginfo {
   int si_signo;
@@ -53,5 +56,9 @@ typedef elf_fpregset_t      prfpregset_t;
 typedef pid_t               lwpid_t;
 typedef struct elf_prstatus prstatus_t;
 typedef struct elf_prpsinfo prpsinfo_t;
+
+#if defined(__SLATE_LIBC_GLIBC) && defined(__SLATE_ARCH_AARCH64)
+#define ELF_NGREG (sizeof (struct user_regs_struct) / sizeof (elf_greg_t))
+#endif
 
 #endif
