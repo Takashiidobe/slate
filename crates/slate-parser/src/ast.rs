@@ -3,6 +3,8 @@ pub enum Condition {
     Defined(String),
     Constant(i64),
     Not(Box<Condition>),
+    And(Box<Condition>, Box<Condition>),
+    Or(Box<Condition>, Box<Condition>),
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -14,6 +16,8 @@ pub struct Conditional<T> {
 pub enum Expr {
     IntLit(i64),
     StringLit(String),
+    Call { callee: String, argument: String },
+    Cast { ty: String, expression: String },
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -38,6 +42,7 @@ pub enum Initializer {
 #[derive(Debug, Clone, PartialEq)]
 pub enum Stmt {
     Return(Expr),
+    Expression(Expr),
     Conditional(Conditional<Vec<Stmt>>),
 }
 
@@ -306,6 +311,7 @@ pub struct TranslationUnit {
 #[derive(Debug, Clone, PartialEq)]
 pub enum ConcreteStmt {
     Return(Expr),
+    Expression(Expr),
 }
 
 #[derive(Debug, Clone, PartialEq)]

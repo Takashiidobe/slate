@@ -3,7 +3,6 @@ use slate_parser::eval::Env;
 use slate_parser::files::SearchPaths;
 use slate_parser::parser::Parser;
 use slate_parser::render::Renderer;
-use slate_parser::sema;
 use std::env;
 use std::fs;
 use std::io;
@@ -31,7 +30,7 @@ fn main() -> miette::Result<()> {
             |(name, _)| name.trim_start_matches("-D").to_string(),
         ));
     }
-    let semantic_errors = sema::analyze(&ast, &defines);
+    let semantic_errors = ast.analyze(&defines);
     if !semantic_errors.is_empty() {
         for error in semantic_errors {
             eprintln!("Error: {error}");

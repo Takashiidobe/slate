@@ -122,6 +122,29 @@ impl<W: Write> Renderer<W> {
                 Stmt::Return(Expr::StringLit(value)) => {
                     self.line(&format!("{indent}stmt[{index}]: return string={value}"))?;
                 }
+                Stmt::Return(Expr::Call { callee, argument }) => {
+                    self.line(&format!(
+                        "{indent}stmt[{index}]: return call={callee}({argument})"
+                    ))?;
+                }
+                Stmt::Return(Expr::Cast { ty, expression }) => {
+                    self.line(&format!(
+                        "{indent}stmt[{index}]: return cast={ty}({expression})"
+                    ))?;
+                }
+                Stmt::Expression(Expr::Call { callee, argument }) => {
+                    self.line(&format!(
+                        "{indent}stmt[{index}]: call callee={callee} argument={argument}"
+                    ))?;
+                }
+                Stmt::Expression(Expr::Cast { ty, expression }) => {
+                    self.line(&format!(
+                        "{indent}stmt[{index}]: cast type={ty} expression={expression}"
+                    ))?;
+                }
+                Stmt::Expression(expression) => {
+                    self.line(&format!("{indent}stmt[{index}]: expression={expression:?}"))?;
+                }
                 Stmt::Conditional(conditional) => {
                     self.line(&format!("{indent}stmt[{index}]: conditional"))?;
                     for (branch_index, (condition, branch)) in
@@ -165,6 +188,25 @@ impl<W: Write> Renderer<W> {
                             }
                             ConcreteStmt::Return(Expr::StringLit(value)) => self.line(&format!(
                                 "{indent}  stmt[{stmt_index}]: return string={value}"
+                            ))?,
+                            ConcreteStmt::Expression(Expr::Call { callee, argument }) => self
+                                .line(&format!(
+                                    "{indent}  stmt[{stmt_index}]: call callee={callee} argument={argument}"
+                                ))?,
+                            ConcreteStmt::Expression(Expr::Cast { ty, expression }) => self
+                                .line(&format!(
+                                    "{indent}  stmt[{stmt_index}]: cast type={ty} expression={expression}"
+                                ))?,
+                            ConcreteStmt::Return(Expr::Call { callee, argument }) => self
+                                .line(&format!(
+                                    "{indent}  stmt[{stmt_index}]: return call={callee}({argument})"
+                                ))?,
+                            ConcreteStmt::Return(Expr::Cast { ty, expression }) => self
+                                .line(&format!(
+                                    "{indent}  stmt[{stmt_index}]: return cast={ty}({expression})"
+                                ))?,
+                            ConcreteStmt::Expression(expression) => self.line(&format!(
+                                "{indent}  stmt[{stmt_index}]: expression={expression:?}"
                             ))?,
                         }
                     }
@@ -236,6 +278,12 @@ impl<W: Write> Renderer<W> {
         match initializer {
             Initializer::Expr(Expr::IntLit(value)) => format!("expr({value})"),
             Initializer::Expr(Expr::StringLit(value)) => format!("expr(string={value})"),
+            Initializer::Expr(Expr::Call { callee, argument }) => {
+                format!("expr(call={callee}({argument}))")
+            }
+            Initializer::Expr(Expr::Cast { ty, expression }) => {
+                format!("expr(cast={ty}({expression}))")
+            }
             Initializer::List(items) => format!(
                 "list[{}]",
                 items
@@ -279,6 +327,16 @@ impl<W: Write> Renderer<W> {
             Condition::Defined(name) => format!("defined({name})"),
             Condition::Constant(value) => format!("constant({value})"),
             Condition::Not(inner) => format!("not({})", Self::condition_name(inner)),
+            Condition::And(left, right) => format!(
+                "and({}, {})",
+                Self::condition_name(left),
+                Self::condition_name(right)
+            ),
+            Condition::Or(left, right) => format!(
+                "or({}, {})",
+                Self::condition_name(left),
+                Self::condition_name(right)
+            ),
         }
     }
 
@@ -383,6 +441,8 @@ impl<W: Write> Renderer<W> {
             None => "implicit".into(),
             Some(Expr::IntLit(value)) => value.to_string(),
             Some(Expr::StringLit(value)) => format!("string={value}"),
+            Some(Expr::Call { callee, argument }) => format!("call={callee}({argument})"),
+            Some(Expr::Cast { ty, expression }) => format!("cast={ty}({expression})"),
         }
     }
 
@@ -392,6 +452,8 @@ impl<W: Write> Renderer<W> {
             ArraySize::Expression(value) => match value.as_ref() {
                 Expr::IntLit(value) => value.to_string(),
                 Expr::StringLit(value) => format!("string={value}"),
+                Expr::Call { callee, argument } => format!("call={callee}({argument})"),
+                Expr::Cast { ty, expression } => format!("cast={ty}({expression})"),
             },
         }
     }

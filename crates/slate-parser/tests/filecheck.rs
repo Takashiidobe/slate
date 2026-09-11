@@ -279,11 +279,15 @@ fn summarize_evaluated_decl(decl: &ConcreteDecl) -> DeclSummary {
             returns: function
                 .body
                 .iter()
-                .map(|stmt| match stmt {
-                    ConcreteStmt::Return(Expr::IntLit(value)) => *value,
+                .filter_map(|stmt| match stmt {
+                    ConcreteStmt::Return(Expr::IntLit(value)) => Some(*value),
                     ConcreteStmt::Return(Expr::StringLit(_)) => {
                         panic!("clang return was not an integer")
                     }
+                    ConcreteStmt::Return(Expr::Call { .. } | Expr::Cast { .. }) => {
+                        panic!("clang return was not an integer")
+                    }
+                    ConcreteStmt::Expression(_) => None,
                 })
                 .collect(),
             signature: None,
@@ -564,6 +568,7 @@ fn array_size(size: &ArraySize) -> String {
         ArraySize::Expression(expression) => match expression.as_ref() {
             Expr::IntLit(value) => value.to_string(),
             Expr::StringLit(_) => panic!("array bound was not an integer"),
+            Expr::Call { .. } | Expr::Cast { .. } => panic!("array bound was not an integer"),
         },
     }
 }

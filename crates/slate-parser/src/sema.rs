@@ -15,91 +15,93 @@ impl fmt::Display for SemanticError {
     }
 }
 
-pub fn analyze(ast: &TranslationUnit, defines: &[String]) -> Vec<SemanticError> {
-    let mut env = Env::new();
-    for define in defines {
-        env = env.define(define.trim_start_matches("-D").split_once('=').map_or_else(
-            || define.trim_start_matches("-D").to_string(),
-            |(name, _)| name.to_string(),
-        ));
-    }
-    let concrete = ast.eval(&env);
-    let typedefs = concrete
-        .decls
-        .iter()
-        .filter_map(|decl| match decl {
-            ConcreteDecl::Typedef { name, .. } => Some(name.clone()),
-            _ => None,
-        })
-        .collect::<HashSet<_>>();
-    let tags = concrete
-        .decls
-        .iter()
-        .filter_map(|decl| match decl {
-            ConcreteDecl::Record(record) => record.name.clone(),
-            ConcreteDecl::Enum(enumeration) => enumeration.name.clone(),
-            ConcreteDecl::Declaration { declaration, .. } => match &declaration.specifiers.ty {
-                CType::Tagged { name, .. } => name.clone(),
+impl TranslationUnit {
+    pub fn analyze(&self, defines: &[String]) -> Vec<SemanticError> {
+        let mut env = Env::new();
+        for define in defines {
+            env = env.define(define.trim_start_matches("-D").split_once('=').map_or_else(
+                || define.trim_start_matches("-D").to_string(),
+                |(name, _)| name.to_string(),
+            ));
+        }
+        let concrete = self.eval(&env);
+        let typedefs = concrete
+            .decls
+            .iter()
+            .filter_map(|decl| match decl {
+                ConcreteDecl::Typedef { name, .. } => Some(name.clone()),
                 _ => None,
-            },
-            _ => None,
-        })
-        .collect::<HashSet<_>>();
+            })
+            .collect::<HashSet<_>>();
+        let tags = concrete
+            .decls
+            .iter()
+            .filter_map(|decl| match decl {
+                ConcreteDecl::Record(record) => record.name.clone(),
+                ConcreteDecl::Enum(enumeration) => enumeration.name.clone(),
+                ConcreteDecl::Declaration { declaration, .. } => match &declaration.specifiers.ty {
+                    CType::Tagged { name, .. } => name.clone(),
+                    _ => None,
+                },
+                _ => None,
+            })
+            .collect::<HashSet<_>>();
 
-    let mut errors = Vec::new();
-    for decl in &concrete.decls {
-        match decl {
-            ConcreteDecl::Function(function) => {
-                check_type(
-                    &function.ret_type,
-                    &typedefs,
-                    &tags,
-                    function.provenance,
-                    &mut errors,
-                );
-            }
-            ConcreteDecl::Declaration {
-                declaration,
-                provenance,
-            } => {
-                if matches!(declaration.specifiers.ty, CType::Void)
-                    && declaration.declarator.name().is_some()
-                {
-                    errors.push(error(*provenance, "object cannot have type void"));
-                }
-                check_type(
-                    &declaration.specifiers.ty,
-                    &typedefs,
-                    &tags,
-                    *provenance,
-                    &mut errors,
-                );
-                check_declarator(
-                    &declaration.declarator,
-                    &typedefs,
-                    &tags,
-                    *provenance,
-                    &mut errors,
-                );
-            }
-            ConcreteDecl::Typedef { ty, provenance, .. } => {
-                check_type(ty, &typedefs, &tags, *provenance, &mut errors);
-            }
-            ConcreteDecl::Record(record) => {
-                for field in &record.fields {
+        let mut errors = Vec::new();
+        for decl in &concrete.decls {
+            match decl {
+                ConcreteDecl::Function(function) => {
                     check_type(
-                        &field.declaration.specifiers.ty,
+                        &function.ret_type,
                         &typedefs,
                         &tags,
-                        field.provenance,
+                        function.provenance,
                         &mut errors,
                     );
                 }
+                ConcreteDecl::Declaration {
+                    declaration,
+                    provenance,
+                } => {
+                    if matches!(declaration.specifiers.ty, CType::Void)
+                        && declaration.declarator.name().is_some()
+                    {
+                        errors.push(error(*provenance, "object cannot have type void"));
+                    }
+                    check_type(
+                        &declaration.specifiers.ty,
+                        &typedefs,
+                        &tags,
+                        *provenance,
+                        &mut errors,
+                    );
+                    check_declarator(
+                        &declaration.declarator,
+                        &typedefs,
+                        &tags,
+                        *provenance,
+                        &mut errors,
+                    );
+                }
+                ConcreteDecl::Typedef { ty, provenance, .. } => {
+                    check_type(ty, &typedefs, &tags, *provenance, &mut errors);
+                }
+                ConcreteDecl::Record(record) => {
+                    for field in &record.fields {
+                        check_type(
+                            &field.declaration.specifiers.ty,
+                            &typedefs,
+                            &tags,
+                            field.provenance,
+                            &mut errors,
+                        );
+                    }
+                }
+                ConcreteDecl::Enum(_) => {}
             }
-            ConcreteDecl::Enum(_) => {}
         }
+        errors
     }
-    errors
 }
 
 fn check_declarator(

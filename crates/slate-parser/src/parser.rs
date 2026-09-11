@@ -5,12 +5,15 @@ use crate::files::{Files, SearchPaths};
 use crate::lexer::{Keyword, Token, lex};
 use crate::pp::{PPConditional, PPNode, Preprocessor};
 use crate::reachability::filter_translation_unit;
+use std::collections::HashSet;
 use std::path::Path;
 
+#[derive(Clone)]
 pub struct Parser {
     search: SearchPaths,
     source_name: String,
     source: String,
+    typedef_names: HashSet<String>,
 }
 
 impl Parser {
@@ -19,14 +22,18 @@ impl Parser {
             search,
             source_name: "<source>".into(),
             source: String::new(),
+            typedef_names: HashSet::new(),
         }
     }
 
     pub fn parse_source(&mut self, src: &str) -> Result<TranslationUnit, ParseError> {
         self.source_name = "<main>".into();
         self.source = src.into();
-        let mut pp = Preprocessor::new(&self.search);
-        let nodes = pp.parse_str("<main>", src);
+        let search = self.search.clone();
+        let mut pp = Preprocessor::new(&search);
+        let nodes = pp
+            .parse_str("<main>", src)
+            .map_err(|error| self.error_at_line(error.line, error.message))?;
         self.parse_nodes(&nodes)
     }
 
@@ -41,8 +48,11 @@ impl Parser {
                 format!("failed to read source: {error}"),
             )
         })?;
-        let mut pp = Preprocessor::new(&self.search);
-        let nodes = pp.parse_file(path);
+        let search = self.search.clone();
+        let mut pp = Preprocessor::new(&search);
+        let nodes = pp
+            .parse_file(path)
+            .map_err(|error| self.error_at_line(error.line, error.message))?;
         let ast = self.parse_nodes(&nodes);
         ast.map(|ast| (ast, pp.files))
     }
@@ -136,7 +146,7 @@ impl Parser {
         })
     }
 
-    fn parse_nodes(&self, nodes: &[PPNode]) -> Result<TranslationUnit, ParseError> {
+    fn parse_nodes(&mut self, nodes: &[PPNode]) -> Result<TranslationUnit, ParseError> {
         let ast = filter_translation_unit(
             &TranslationUnit {
                 decls: self.parse_decls(nodes)?,
@@ -146,7 +156,7 @@ impl Parser {
         Ok(ast)
     }
 
-    fn parse_decls(&self, nodes: &[PPNode]) -> Result<Vec<Decl>, ParseError> {
+    fn parse_decls(&mut self, nodes: &[PPNode]) -> Result<Vec<Decl>, ParseError> {
         let mut decls = Vec::new();
         let mut i = 0;
         while i < nodes.len() {
@@ -168,6 +178,7 @@ impl Parser {
             } else {
                 self.parse_top_level_item(&nodes[i..])?
             };
+            self.record_typedefs(&decl);
             decls.push(decl);
             i += consumed;
         }
@@ -207,7 +218,7 @@ impl Parser {
         })
     }
 
-    fn parse_top_level_item(&self, nodes: &[PPNode]) -> Result<(Decl, usize), ParseError> {
+    fn parse_top_level_item(&mut self, nodes: &[PPNode]) -> Result<(Decl, usize), ParseError> {
         match &nodes[0] {
             PPNode::Code { text, provenance } if text.trim_start().starts_with("typedef") => {
                 let (name, ty, attributes) = self.parse_typedef_line(text)?;
@@ -351,13 +362,30 @@ impl Parser {
         }
     }
 
-    fn parse_top_level_conditional(&self, cond: &PPConditional) -> Result<Decl, ParseError> {
-        let branches = cond
-            .branches
-            .iter()
-            .map(|(c, body)| Ok((c.clone(), self.parse_decls(body)?)))
-            .collect::<Result<Vec<_>, ParseError>>()?;
+    fn parse_top_level_conditional(&mut self, cond: &PPConditional) -> Result<Decl, ParseError> {
+        let base_typedefs = self.typedef_names.clone();
+        let mut branch_typedefs = Vec::new();
+        let mut branches = Vec::new();
+        for (condition, body) in &cond.branches {
+            let mut branch_parser = self.clone();
+            branch_parser.typedef_names = base_typedefs.clone();
+            let decls = branch_parser.parse_decls(body)?;
+            branch_typedefs.push(branch_parser.typedef_names);
+            branches.push((condition.clone(), decls));
+        }
+        if let Some(common) = branch_typedefs.into_iter().reduce(|mut common, names| {
+            common.retain(|name| names.contains(name));
+            common
+        }) {
+            self.typedef_names = common;
+        }
         Ok(Decl::Conditional(Conditional { branches }))
+    }
+
+    fn record_typedefs(&mut self, decl: &Decl) {
+        if let Decl::Typedef { name, .. } = decl {
+            self.typedef_names.insert(name.clone());
+        }
     }
 
     fn parse_typedef_line(
@@ -393,6 +421,22 @@ impl Parser {
             self.source.clone(),
             base + offset,
             length.max(1),
+            message,
+        )
+    }
+
+    fn error_at_line(&self, line: usize, message: impl Into<String>) -> ParseError {
+        let offset = self
+            .source
+            .lines()
+            .take(line)
+            .map(|source| source.len() + 1)
+            .sum();
+        ParseError::new(
+            self.source_name.clone(),
+            self.source.clone(),
+            offset,
+            1,
             message,
         )
     }
@@ -863,6 +907,33 @@ impl Parser {
         let mut stmts = Vec::new();
         let mut i = 0;
         while i < tokens.len() {
+            if let Some(
+                [
+                    Token::LParen,
+                    Token::Ident(callee),
+                    Token::RParen,
+                    Token::LParen,
+                    Token::Ident(argument),
+                    Token::RParen,
+                    Token::Semi,
+                ],
+            ) = tokens.get(i..i.saturating_add(7))
+            {
+                let expression = if self.typedef_names.contains(callee) {
+                    Expr::Cast {
+                        ty: callee.clone(),
+                        expression: argument.clone(),
+                    }
+                } else {
+                    Expr::Call {
+                        callee: callee.clone(),
+                        argument: argument.clone(),
+                    }
+                };
+                stmts.push(Stmt::Expression(expression));
+                i += 7;
+                continue;
+            }
             assert_eq!(
                 tokens[i],
                 Token::Keyword(Keyword::Return),
