@@ -224,6 +224,8 @@ pub struct FunctionDecl {
     pub storage: StorageClass,
     #[debug(skip_if = is_false)]
     pub is_inline: bool,
+    #[debug(skip_if = is_false)]
+    pub is_noreturn: bool,
     #[debug(skip_if = Vec::is_empty)]
     pub attributes: Vec<Attribute>,
 }
@@ -232,8 +234,35 @@ pub struct FunctionDecl {
 pub enum CType {
     Void,
     Bool,
+    BFloat16,
     Char,
+    SignedChar,
+    UnsignedChar,
+    Short,
+    UnsignedShort,
     Int,
+    UnsignedInt,
+    Long,
+    UnsignedLong,
+    LongLong,
+    UnsignedLongLong,
+    Float,
+    Float16,
+    Fp16,
+    Float64x,
+    Float128,
+    Float128Ext,
+    Double,
+    LongDouble,
+    Complex,
+    DoubleComplex,
+    LongDoubleComplex,
+    Int128,
+    UnsignedInt128,
+    BitInt {
+        width: ConstExpr,
+        is_unsigned: bool,
+    },
     Named(String),
     Tagged {
         kind: TagKind,
@@ -297,6 +326,7 @@ pub enum StorageClass {
     Static,
     Auto,
     Register,
+    ThreadLocal,
 }
 
 impl StorageClass {
@@ -318,6 +348,7 @@ impl From<StorageClass> for &'static str {
             StorageClass::Static => "static",
             StorageClass::Auto => "auto",
             StorageClass::Register => "register",
+            StorageClass::ThreadLocal => "_Thread_local",
         }
     }
 }
@@ -396,6 +427,8 @@ pub struct DeclarationSpecifiers {
     pub storage: StorageClass,
     #[debug(skip_if = is_false)]
     pub is_inline: bool,
+    #[debug(skip_if = is_false)]
+    pub is_noreturn: bool,
 }
 
 #[derive(CustomDebug, Clone, PartialEq)]
@@ -511,6 +544,8 @@ pub struct ConcreteFunctionDecl {
     pub storage: StorageClass,
     #[debug(skip_if = is_false)]
     pub is_inline: bool,
+    #[debug(skip_if = is_false)]
+    pub is_noreturn: bool,
     #[debug(skip_if = Vec::is_empty)]
     pub attributes: Vec<Attribute>,
 }

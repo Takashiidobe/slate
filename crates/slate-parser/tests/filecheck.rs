@@ -413,10 +413,37 @@ fn collect_returns_into(node: &ClangNode, returns: &mut Vec<i64>) {
 
 fn type_spelling(ty: &CType) -> String {
     match ty {
+        CType::Bool => "_Bool".into(),
+        CType::BFloat16 => "__bf16".into(),
+        CType::SignedChar => "signed char".into(),
+        CType::UnsignedChar => "unsigned char".into(),
+        CType::Short => "short".into(),
+        CType::UnsignedShort => "unsigned short".into(),
         CType::Int => "int".into(),
+        CType::UnsignedInt => "unsigned int".into(),
+        CType::Long => "long".into(),
+        CType::UnsignedLong => "unsigned long".into(),
+        CType::LongLong => "long long".into(),
+        CType::UnsignedLongLong => "unsigned long long".into(),
         CType::Char => "char".into(),
         CType::Void => "void".into(),
-        CType::Bool => "bool".into(),
+        CType::Float => "float".into(),
+        CType::Float16 => "_Float16".into(),
+        CType::Fp16 => "__fp16".into(),
+        CType::Float64x => "_Float64x".into(),
+        CType::Float128 => "_Float128".into(),
+        CType::Float128Ext => "__float128".into(),
+        CType::Double => "double".into(),
+        CType::LongDouble => "long double".into(),
+        CType::Complex => "_Complex float".into(),
+        CType::DoubleComplex => "_Complex double".into(),
+        CType::LongDoubleComplex => "_Complex long double".into(),
+        CType::Int128 => "__int128".into(),
+        CType::UnsignedInt128 => "unsigned __int128".into(),
+        CType::BitInt { width, is_unsigned } => format!(
+            "{} _BitInt({width})",
+            if *is_unsigned { "unsigned" } else { "" }
+        ),
         CType::Named(name) => name.clone(),
         CType::Tagged { kind, name } => format!(
             "{} {}",

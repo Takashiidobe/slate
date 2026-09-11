@@ -67,6 +67,7 @@ impl Parser {
         let mut qualifiers = Qualifiers::default();
         let mut storage = StorageClass::None;
         let mut is_inline = false;
+        let mut is_noreturn = false;
         loop {
             if let Some(qualifier) = parser.take_qualifier() {
                 match qualifier {
@@ -82,6 +83,10 @@ impl Parser {
                 is_inline = true;
                 continue;
             }
+            if parser.matches(Token::Keyword(Keyword::Noreturn)) {
+                is_noreturn = true;
+                continue;
+            }
             if let Some(Token::Keyword(keyword)) = parser.peek() {
                 let next_storage = match *keyword {
                     Keyword::Typedef => StorageClass::Typedef,
@@ -89,6 +94,7 @@ impl Parser {
                     Keyword::Static => StorageClass::Static,
                     Keyword::Auto => StorageClass::Auto,
                     Keyword::Register => StorageClass::Register,
+                    Keyword::ThreadLocal => StorageClass::ThreadLocal,
                     _ => break,
                 };
                 if storage != StorageClass::None {
@@ -139,6 +145,7 @@ impl Parser {
                 qualifiers,
                 storage,
                 is_inline,
+                is_noreturn,
             },
             declarator,
             initializer,
@@ -854,9 +861,120 @@ impl<'a> DeclaratorParser<'a> {
         let token = self.peek().cloned().expect("expected declaration type");
         self.pos += 1;
         match token {
+            Token::Keyword(Keyword::Bool) => CType::Bool,
+            Token::Keyword(Keyword::BFloat16) => CType::BFloat16,
             Token::Keyword(Keyword::Char) => CType::Char,
+            Token::Keyword(Keyword::Double) => {
+                if self.matches(Token::Keyword(Keyword::Complex)) {
+                    CType::DoubleComplex
+                } else {
+                    CType::Double
+                }
+            }
+            Token::Keyword(Keyword::Float) => {
+                if self.matches(Token::Keyword(Keyword::Complex)) {
+                    CType::Complex
+                } else {
+                    CType::Float
+                }
+            }
+            Token::Keyword(Keyword::Float16) => CType::Float16,
+            Token::Keyword(Keyword::Fp16) => CType::Fp16,
+            Token::Keyword(Keyword::Float64x) => CType::Float64x,
+            Token::Keyword(Keyword::Float128) => CType::Float128,
+            Token::Keyword(Keyword::Float128Ext) => CType::Float128Ext,
             Token::Keyword(Keyword::Int) => CType::Int,
+            Token::Keyword(Keyword::Int128) => CType::Int128,
+            Token::Keyword(Keyword::Long) => {
+                if self.matches(Token::Keyword(Keyword::Long)) {
+                    self.matches(Token::Keyword(Keyword::Int));
+                    CType::LongLong
+                } else if self.matches(Token::Keyword(Keyword::Double)) {
+                    if self.matches(Token::Keyword(Keyword::Complex)) {
+                        CType::LongDoubleComplex
+                    } else {
+                        CType::LongDouble
+                    }
+                } else {
+                    self.matches(Token::Keyword(Keyword::Int));
+                    CType::Long
+                }
+            }
+            Token::Keyword(Keyword::Short) => {
+                self.matches(Token::Keyword(Keyword::Int));
+                CType::Short
+            }
+            Token::Keyword(Keyword::Signed) => match self.peek() {
+                Some(Token::Keyword(Keyword::Char)) => {
+                    self.pos += 1;
+                    CType::SignedChar
+                }
+                Some(Token::Keyword(Keyword::Short)) => {
+                    self.pos += 1;
+                    self.matches(Token::Keyword(Keyword::Int));
+                    CType::Short
+                }
+                Some(Token::Keyword(Keyword::Long)) => {
+                    self.pos += 1;
+                    if self.matches(Token::Keyword(Keyword::Long)) {
+                        self.matches(Token::Keyword(Keyword::Int));
+                        CType::LongLong
+                    } else {
+                        self.matches(Token::Keyword(Keyword::Int));
+                        CType::Long
+                    }
+                }
+                Some(Token::Keyword(Keyword::Int128)) => {
+                    self.pos += 1;
+                    CType::Int128
+                }
+                Some(Token::Keyword(Keyword::BitInt)) => {
+                    self.pos += 1;
+                    self.parse_bit_int(false)
+                }
+                Some(Token::Keyword(Keyword::Int)) => {
+                    self.pos += 1;
+                    CType::Int
+                }
+                _ => CType::Int,
+            },
+            Token::Keyword(Keyword::Unsigned) => match self.peek() {
+                Some(Token::Keyword(Keyword::Char)) => {
+                    self.pos += 1;
+                    CType::UnsignedChar
+                }
+                Some(Token::Keyword(Keyword::Short)) => {
+                    self.pos += 1;
+                    self.matches(Token::Keyword(Keyword::Int));
+                    CType::UnsignedShort
+                }
+                Some(Token::Keyword(Keyword::Long)) => {
+                    self.pos += 1;
+                    if self.matches(Token::Keyword(Keyword::Long)) {
+                        self.matches(Token::Keyword(Keyword::Int));
+                        CType::UnsignedLongLong
+                    } else {
+                        self.matches(Token::Keyword(Keyword::Int));
+                        CType::UnsignedLong
+                    }
+                }
+                Some(Token::Keyword(Keyword::Int128)) => {
+                    self.pos += 1;
+                    CType::UnsignedInt128
+                }
+                Some(Token::Keyword(Keyword::BitInt)) => {
+                    self.pos += 1;
+                    self.parse_bit_int(true)
+                }
+                Some(Token::Keyword(Keyword::Int)) => {
+                    self.pos += 1;
+                    CType::UnsignedInt
+                }
+                _ => CType::UnsignedInt,
+            },
             Token::Keyword(Keyword::Void) => CType::Void,
+            Token::Keyword(Keyword::Complex) => CType::Complex,
+            Token::Keyword(Keyword::BitInt) => self.parse_bit_int(false),
             Token::Keyword(Keyword::Struct) => {
                 let name = match self.tokens.get(self.pos) {
                     Some(Token::Ident(name)) => name.clone(),
@@ -893,6 +1011,19 @@ impl<'a> DeclaratorParser<'a> {
             Token::Ident(name) => CType::Named(name),
             other => panic!("expected declaration type, found {other:?}"),
         }
+    }
+
+    fn parse_bit_int(&mut self, is_unsigned: bool) -> CType {
+        assert!(self.matches(Token::LParen), "expected `(` after _BitInt");
+        let start = self.pos;
+        while self.peek() != Some(&Token::RParen) {
+            assert!(self.peek().is_some(), "expected `)` after _BitInt width");
+            self.pos += 1;
+        }
+        let width = const_expr::Parser::parse(&self.tokens[start..self.pos])
+            .expect("invalid _BitInt width expression");
+        self.pos += 1;
+        CType::BitInt { width, is_unsigned }
     }
 
     fn parse_initializer(&mut self) -> Initializer {
@@ -1100,6 +1231,7 @@ impl Parser {
         let mut qualifiers = Qualifiers::default();
         let mut storage = StorageClass::None;
         let mut is_inline = false;
+        let mut is_noreturn = false;
         loop {
             match sig_tokens.get(index) {
                 Some(Token::Keyword(Keyword::Const)) => qualifiers.is_const = true,
@@ -1107,10 +1239,12 @@ impl Parser {
                 Some(Token::Keyword(Keyword::Restrict)) => qualifiers.is_restrict = true,
                 Some(Token::Keyword(Keyword::Atomic)) => qualifiers.is_atomic = true,
                 Some(Token::Keyword(Keyword::Inline)) => is_inline = true,
+                Some(Token::Keyword(Keyword::Noreturn)) => is_noreturn = true,
                 Some(Token::Keyword(keyword)) => {
                     let next_storage = match keyword {
                         Keyword::Extern => StorageClass::Extern,
                         Keyword::Static => StorageClass::Static,
+                        Keyword::ThreadLocal => StorageClass::ThreadLocal,
                         _ => break,
                     };
                     if storage != StorageClass::None {
@@ -1122,29 +1256,32 @@ impl Parser {
             }
             index += 1;
         }
-        if sig_tokens.get(index) != Some(&Token::Keyword(Keyword::Int)) {
-            return Err(self.error_at(code, 0, code.len(), "expected function return type"));
-        }
-        let name = match sig_tokens.get(index + 1) {
+        let mut return_type_parser = DeclaratorParser {
+            tokens: &sig_tokens,
+            pos: index,
+        };
+        let ret_type = return_type_parser.parse_base_type();
+        let name_index = return_type_parser.pos;
+        let name = match sig_tokens.get(name_index) {
             Some(Token::Ident(n)) => n.clone(),
             _ => return Err(self.error_at(code, 0, code.len(), "expected function name")),
         };
-        if sig_tokens.get(index + 2) != Some(&Token::LParen) {
+        if sig_tokens.get(name_index + 1) != Some(&Token::LParen) {
             return Err(self.error_at(code, code.len().saturating_sub(1), 1, "expected `(`"));
         }
-        let Some(parameter_close) = sig_tokens[index + 3..]
+        let Some(parameter_close) = sig_tokens[name_index + 2..]
             .iter()
             .position(|token| *token == Token::RParen)
-            .map(|position| index + 3 + position)
+            .map(|position| name_index + 2 + position)
         else {
             return Err(self.error_at(code, code.find('{').unwrap_or(0), 1, "expected `)`"));
         };
-        if sig_tokens[index + 3..parameter_close].contains(&Token::LBrace) {
+        if sig_tokens[name_index + 2..parameter_close].contains(&Token::LBrace) {
             return Err(self.error_at(code, code.find('{').unwrap_or(0), 1, "expected parameter"));
         }
         let mut declarator_parser = DeclaratorParser {
             tokens: &sig_tokens,
-            pos: index + 2,
+            pos: name_index + 1,
         };
         let (parameters, variadic) = declarator_parser.parse_parameters();
         let (signature_attributes, body_index) =
@@ -1178,7 +1315,7 @@ impl Parser {
         let body = self.parse_stmt_list(&nodes[1..close_idx])?;
         Ok((
             FunctionDecl {
-                ret_type: Type::Int,
+                ret_type,
                 name,
                 parameters,
                 variadic,
@@ -1187,6 +1324,7 @@ impl Parser {
                 qualifiers,
                 storage,
                 is_inline,
+                is_noreturn,
                 attributes,
             },
             close_idx + 1,

@@ -42,6 +42,7 @@ impl Decl {
                 qualifiers: f.qualifiers,
                 storage: f.storage,
                 is_inline: f.is_inline,
+                is_noreturn: f.is_noreturn,
                 attributes: f.attributes.clone(),
             })],
             Self::Declaration {
