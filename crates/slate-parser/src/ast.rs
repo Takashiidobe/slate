@@ -102,6 +102,8 @@ pub enum Initializer {
 pub enum Stmt {
     Return(Expr),
     Expr(Expr),
+    Decl(Declaration),
+    Block(Vec<Stmt>),
     Conditional(Conditional<Vec<Stmt>>),
     If {
         condition: Expr,
@@ -592,6 +594,8 @@ pub struct TranslationUnit {
 pub enum ConcreteStmt {
     Return(Expr),
     Expr(Expr),
+    Decl(Declaration),
+    Block(Vec<ConcreteStmt>),
     If {
         condition: Expr,
         then_branch: Vec<ConcreteStmt>,

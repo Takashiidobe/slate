@@ -88,6 +88,14 @@ impl Stmt {
         match self {
             Self::Return(e) => vec![ConcreteStmt::Return(e.clone())],
             Self::Expr(e) => vec![ConcreteStmt::Expr(e.clone())],
+            Self::Decl(declaration) => vec![ConcreteStmt::Decl(Declaration {
+                initializer: declaration
+                    .initializer
+                    .as_ref()
+                    .and_then(|initializer| initializer.eval(env)),
+                ..declaration.clone()
+            })],
+            Self::Block(body) => vec![ConcreteStmt::Block(Self::eval_all(body, env))],
             Self::Conditional(cond) => match cond.select_branch(env) {
                 Some(body) => body.iter().flat_map(|stmt| stmt.eval(env)).collect(),
                 None => vec![],

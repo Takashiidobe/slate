@@ -321,6 +321,8 @@ fn summarize_evaluated_decl(decl: &ConcreteDecl) -> DeclSummary {
                         panic!("clang return was not an integer")
                     }
                     ConcreteStmt::Expr(_)
+                    | ConcreteStmt::Decl(_)
+                    | ConcreteStmt::Block(_)
                     | ConcreteStmt::If { .. }
                     | ConcreteStmt::While { .. }
                     | ConcreteStmt::DoWhile { .. }

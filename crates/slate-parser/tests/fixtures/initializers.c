@@ -38,8 +38,10 @@ int main() {
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           initializer: Some(
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   IntLit(
-// DEFAULT-NEXT:                       7,
+// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                       Integer(
+// DEFAULT-NEXT:                           7,
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ),
@@ -124,16 +126,20 @@ int main() {
 // DEFAULT-NEXT:                                   InitializerItem {
 // DEFAULT-NEXT:                                       designators: [],
 // DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           IntLit(
-// DEFAULT-NEXT:                                               1,
+// DEFAULT-NEXT:                                           Const(
+// DEFAULT-NEXT:                                               Integer(
+// DEFAULT-NEXT:                                                   1,
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                                   InitializerItem {
 // DEFAULT-NEXT:                                       designators: [],
 // DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           IntLit(
-// DEFAULT-NEXT:                                               2,
+// DEFAULT-NEXT:                                           Const(
+// DEFAULT-NEXT:                                               Integer(
+// DEFAULT-NEXT:                                                   2,
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
@@ -147,16 +153,20 @@ int main() {
 // DEFAULT-NEXT:                                   InitializerItem {
 // DEFAULT-NEXT:                                       designators: [],
 // DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           IntLit(
-// DEFAULT-NEXT:                                               3,
+// DEFAULT-NEXT:                                           Const(
+// DEFAULT-NEXT:                                               Integer(
+// DEFAULT-NEXT:                                                   3,
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                                   InitializerItem {
 // DEFAULT-NEXT:                                       designators: [],
 // DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           IntLit(
-// DEFAULT-NEXT:                                               4,
+// DEFAULT-NEXT:                                           Const(
+// DEFAULT-NEXT:                                               Integer(
+// DEFAULT-NEXT:                                                   4,
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
@@ -259,8 +269,10 @@ int main() {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                           value: Expr(
-// DEFAULT-NEXT:                               IntLit(
-// DEFAULT-NEXT:                                   9,
+// DEFAULT-NEXT:                               Const(
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       9,
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
@@ -271,8 +283,10 @@ int main() {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                           value: Expr(
-// DEFAULT-NEXT:                               IntLit(
-// DEFAULT-NEXT:                                   4,
+// DEFAULT-NEXT:                               Const(
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       4,
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
@@ -318,8 +332,10 @@ int main() {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                           value: Expr(
-// DEFAULT-NEXT:                               IntLit(
-// DEFAULT-NEXT:                                   8,
+// DEFAULT-NEXT:                               Const(
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       8,
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
@@ -330,8 +346,10 @@ int main() {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                           value: Expr(
-// DEFAULT-NEXT:                               IntLit(
-// DEFAULT-NEXT:                                   1,
+// DEFAULT-NEXT:                               Const(
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       1,
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
@@ -369,8 +387,10 @@ int main() {
 // DEFAULT-NEXT:                                   "ENABLED",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Expr(
-// DEFAULT-NEXT:                                   IntLit(
-// DEFAULT-NEXT:                                       11,
+// DEFAULT-NEXT:                                   Const(
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           11,
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
@@ -381,8 +401,10 @@ int main() {
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Expr(
-// DEFAULT-NEXT:                                   IntLit(
-// DEFAULT-NEXT:                                       22,
+// DEFAULT-NEXT:                                   Const(
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           22,
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
@@ -442,8 +464,10 @@ int main() {
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           initializer: Some(
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   IntLit(
-// DEFAULT-NEXT:                       7,
+// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                       Integer(
+// DEFAULT-NEXT:                           7,
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ),
@@ -528,16 +552,20 @@ int main() {
 // DEFAULT-NEXT:                                   InitializerItem {
 // DEFAULT-NEXT:                                       designators: [],
 // DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           IntLit(
-// DEFAULT-NEXT:                                               1,
+// DEFAULT-NEXT:                                           Const(
+// DEFAULT-NEXT:                                               Integer(
+// DEFAULT-NEXT:                                                   1,
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                                   InitializerItem {
 // DEFAULT-NEXT:                                       designators: [],
 // DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           IntLit(
-// DEFAULT-NEXT:                                               2,
+// DEFAULT-NEXT:                                           Const(
+// DEFAULT-NEXT:                                               Integer(
+// DEFAULT-NEXT:                                                   2,
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
@@ -551,16 +579,20 @@ int main() {
 // DEFAULT-NEXT:                                   InitializerItem {
 // DEFAULT-NEXT:                                       designators: [],
 // DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           IntLit(
-// DEFAULT-NEXT:                                               3,
+// DEFAULT-NEXT:                                           Const(
+// DEFAULT-NEXT:                                               Integer(
+// DEFAULT-NEXT:                                                   3,
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                                   InitializerItem {
 // DEFAULT-NEXT:                                       designators: [],
 // DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           IntLit(
-// DEFAULT-NEXT:                                               4,
+// DEFAULT-NEXT:                                           Const(
+// DEFAULT-NEXT:                                               Integer(
+// DEFAULT-NEXT:                                                   4,
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
@@ -663,8 +695,10 @@ int main() {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                           value: Expr(
-// DEFAULT-NEXT:                               IntLit(
-// DEFAULT-NEXT:                                   9,
+// DEFAULT-NEXT:                               Const(
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       9,
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
@@ -675,8 +709,10 @@ int main() {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                           value: Expr(
-// DEFAULT-NEXT:                               IntLit(
-// DEFAULT-NEXT:                                   4,
+// DEFAULT-NEXT:                               Const(
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       4,
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
@@ -722,8 +758,10 @@ int main() {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                           value: Expr(
-// DEFAULT-NEXT:                               IntLit(
-// DEFAULT-NEXT:                                   8,
+// DEFAULT-NEXT:                               Const(
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       8,
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
@@ -734,8 +772,10 @@ int main() {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                           value: Expr(
-// DEFAULT-NEXT:                               IntLit(
-// DEFAULT-NEXT:                                   1,
+// DEFAULT-NEXT:                               Const(
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       1,
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
@@ -766,8 +806,10 @@ int main() {
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           initializer: Some(
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   IntLit(
-// DEFAULT-NEXT:                       22,
+// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                       Integer(
+// DEFAULT-NEXT:                           22,
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ),
@@ -825,8 +867,10 @@ int main() {
 // ENABLED-NEXT:           ),
 // ENABLED-NEXT:           initializer: Some(
 // ENABLED-NEXT:               Expr(
-// ENABLED-NEXT:                   IntLit(
-// ENABLED-NEXT:                       7,
+// ENABLED-NEXT:                   Const(
+// ENABLED-NEXT:                       Integer(
+// ENABLED-NEXT:                           7,
+// ENABLED-NEXT:                       ),
 // ENABLED-NEXT:                   ),
 // ENABLED-NEXT:               ),
 // ENABLED-NEXT:           ),
@@ -911,16 +955,20 @@ int main() {
 // ENABLED-NEXT:                                   InitializerItem {
 // ENABLED-NEXT:                                       designators: [],
 // ENABLED-NEXT:                                       value: Expr(
-// ENABLED-NEXT:                                           IntLit(
-// ENABLED-NEXT:                                               1,
+// ENABLED-NEXT:                                           Const(
+// ENABLED-NEXT:                                               Integer(
+// ENABLED-NEXT:                                                   1,
+// ENABLED-NEXT:                                               ),
 // ENABLED-NEXT:                                           ),
 // ENABLED-NEXT:                                       ),
 // ENABLED-NEXT:                                   },
 // ENABLED-NEXT:                                   InitializerItem {
 // ENABLED-NEXT:                                       designators: [],
 // ENABLED-NEXT:                                       value: Expr(
-// ENABLED-NEXT:                                           IntLit(
-// ENABLED-NEXT:                                               2,
+// ENABLED-NEXT:                                           Const(
+// ENABLED-NEXT:                                               Integer(
+// ENABLED-NEXT:                                                   2,
+// ENABLED-NEXT:                                               ),
 // ENABLED-NEXT:                                           ),
 // ENABLED-NEXT:                                       ),
 // ENABLED-NEXT:                                   },
@@ -934,16 +982,20 @@ int main() {
 // ENABLED-NEXT:                                   InitializerItem {
 // ENABLED-NEXT:                                       designators: [],
 // ENABLED-NEXT:                                       value: Expr(
-// ENABLED-NEXT:                                           IntLit(
-// ENABLED-NEXT:                                               3,
+// ENABLED-NEXT:                                           Const(
+// ENABLED-NEXT:                                               Integer(
+// ENABLED-NEXT:                                                   3,
+// ENABLED-NEXT:                                               ),
 // ENABLED-NEXT:                                           ),
 // ENABLED-NEXT:                                       ),
 // ENABLED-NEXT:                                   },
 // ENABLED-NEXT:                                   InitializerItem {
 // ENABLED-NEXT:                                       designators: [],
 // ENABLED-NEXT:                                       value: Expr(
-// ENABLED-NEXT:                                           IntLit(
-// ENABLED-NEXT:                                               4,
+// ENABLED-NEXT:                                           Const(
+// ENABLED-NEXT:                                               Integer(
+// ENABLED-NEXT:                                                   4,
+// ENABLED-NEXT:                                               ),
 // ENABLED-NEXT:                                           ),
 // ENABLED-NEXT:                                       ),
 // ENABLED-NEXT:                                   },
@@ -1046,8 +1098,10 @@ int main() {
 // ENABLED-NEXT:                               ),
 // ENABLED-NEXT:                           ],
 // ENABLED-NEXT:                           value: Expr(
-// ENABLED-NEXT:                               IntLit(
-// ENABLED-NEXT:                                   9,
+// ENABLED-NEXT:                               Const(
+// ENABLED-NEXT:                                   Integer(
+// ENABLED-NEXT:                                       9,
+// ENABLED-NEXT:                                   ),
 // ENABLED-NEXT:                               ),
 // ENABLED-NEXT:                           ),
 // ENABLED-NEXT:                       },
@@ -1058,8 +1112,10 @@ int main() {
 // ENABLED-NEXT:                               ),
 // ENABLED-NEXT:                           ],
 // ENABLED-NEXT:                           value: Expr(
-// ENABLED-NEXT:                               IntLit(
-// ENABLED-NEXT:                                   4,
+// ENABLED-NEXT:                               Const(
+// ENABLED-NEXT:                                   Integer(
+// ENABLED-NEXT:                                       4,
+// ENABLED-NEXT:                                   ),
 // ENABLED-NEXT:                               ),
 // ENABLED-NEXT:                           ),
 // ENABLED-NEXT:                       },
@@ -1105,8 +1161,10 @@ int main() {
 // ENABLED-NEXT:                               ),
 // ENABLED-NEXT:                           ],
 // ENABLED-NEXT:                           value: Expr(
-// ENABLED-NEXT:                               IntLit(
-// ENABLED-NEXT:                                   8,
+// ENABLED-NEXT:                               Const(
+// ENABLED-NEXT:                                   Integer(
+// ENABLED-NEXT:                                       8,
+// ENABLED-NEXT:                                   ),
 // ENABLED-NEXT:                               ),
 // ENABLED-NEXT:                           ),
 // ENABLED-NEXT:                       },
@@ -1117,8 +1175,10 @@ int main() {
 // ENABLED-NEXT:                               ),
 // ENABLED-NEXT:                           ],
 // ENABLED-NEXT:                           value: Expr(
-// ENABLED-NEXT:                               IntLit(
-// ENABLED-NEXT:                                   1,
+// ENABLED-NEXT:                               Const(
+// ENABLED-NEXT:                                   Integer(
+// ENABLED-NEXT:                                       1,
+// ENABLED-NEXT:                                   ),
 // ENABLED-NEXT:                               ),
 // ENABLED-NEXT:                           ),
 // ENABLED-NEXT:                       },
@@ -1156,8 +1216,10 @@ int main() {
 // ENABLED-NEXT:                                   "ENABLED",
 // ENABLED-NEXT:                               ),
 // ENABLED-NEXT:                               Expr(
-// ENABLED-NEXT:                                   IntLit(
-// ENABLED-NEXT:                                       11,
+// ENABLED-NEXT:                                   Const(
+// ENABLED-NEXT:                                       Integer(
+// ENABLED-NEXT:                                           11,
+// ENABLED-NEXT:                                       ),
 // ENABLED-NEXT:                                   ),
 // ENABLED-NEXT:                               ),
 // ENABLED-NEXT:                           ),
@@ -1168,8 +1230,10 @@ int main() {
 // ENABLED-NEXT:                                   ),
 // ENABLED-NEXT:                               ),
 // ENABLED-NEXT:                               Expr(
-// ENABLED-NEXT:                                   IntLit(
-// ENABLED-NEXT:                                       22,
+// ENABLED-NEXT:                                   Const(
+// ENABLED-NEXT:                                       Integer(
+// ENABLED-NEXT:                                           22,
+// ENABLED-NEXT:                                       ),
 // ENABLED-NEXT:                                   ),
 // ENABLED-NEXT:                               ),
 // ENABLED-NEXT:                           ),
@@ -1229,8 +1293,10 @@ int main() {
 // ENABLED-NEXT:           ),
 // ENABLED-NEXT:           initializer: Some(
 // ENABLED-NEXT:               Expr(
-// ENABLED-NEXT:                   IntLit(
-// ENABLED-NEXT:                       7,
+// ENABLED-NEXT:                   Const(
+// ENABLED-NEXT:                       Integer(
+// ENABLED-NEXT:                           7,
+// ENABLED-NEXT:                       ),
 // ENABLED-NEXT:                   ),
 // ENABLED-NEXT:               ),
 // ENABLED-NEXT:           ),
@@ -1315,16 +1381,20 @@ int main() {
 // ENABLED-NEXT:                                   InitializerItem {
 // ENABLED-NEXT:                                       designators: [],
 // ENABLED-NEXT:                                       value: Expr(
-// ENABLED-NEXT:                                           IntLit(
-// ENABLED-NEXT:                                               1,
+// ENABLED-NEXT:                                           Const(
+// ENABLED-NEXT:                                               Integer(
+// ENABLED-NEXT:                                                   1,
+// ENABLED-NEXT:                                               ),
 // ENABLED-NEXT:                                           ),
 // ENABLED-NEXT:                                       ),
 // ENABLED-NEXT:                                   },
 // ENABLED-NEXT:                                   InitializerItem {
 // ENABLED-NEXT:                                       designators: [],
 // ENABLED-NEXT:                                       value: Expr(
-// ENABLED-NEXT:                                           IntLit(
-// ENABLED-NEXT:                                               2,
+// ENABLED-NEXT:                                           Const(
+// ENABLED-NEXT:                                               Integer(
+// ENABLED-NEXT:                                                   2,
+// ENABLED-NEXT:                                               ),
 // ENABLED-NEXT:                                           ),
 // ENABLED-NEXT:                                       ),
 // ENABLED-NEXT:                                   },
@@ -1338,16 +1408,20 @@ int main() {
 // ENABLED-NEXT:                                   InitializerItem {
 // ENABLED-NEXT:                                       designators: [],
 // ENABLED-NEXT:                                       value: Expr(
-// ENABLED-NEXT:                                           IntLit(
-// ENABLED-NEXT:                                               3,
+// ENABLED-NEXT:                                           Const(
+// ENABLED-NEXT:                                               Integer(
+// ENABLED-NEXT:                                                   3,
+// ENABLED-NEXT:                                               ),
 // ENABLED-NEXT:                                           ),
 // ENABLED-NEXT:                                       ),
 // ENABLED-NEXT:                                   },
 // ENABLED-NEXT:                                   InitializerItem {
 // ENABLED-NEXT:                                       designators: [],
 // ENABLED-NEXT:                                       value: Expr(
-// ENABLED-NEXT:                                           IntLit(
-// ENABLED-NEXT:                                               4,
+// ENABLED-NEXT:                                           Const(
+// ENABLED-NEXT:                                               Integer(
+// ENABLED-NEXT:                                                   4,
+// ENABLED-NEXT:                                               ),
 // ENABLED-NEXT:                                           ),
 // ENABLED-NEXT:                                       ),
 // ENABLED-NEXT:                                   },
@@ -1450,8 +1524,10 @@ int main() {
 // ENABLED-NEXT:                               ),
 // ENABLED-NEXT:                           ],
 // ENABLED-NEXT:                           value: Expr(
-// ENABLED-NEXT:                               IntLit(
-// ENABLED-NEXT:                                   9,
+// ENABLED-NEXT:                               Const(
+// ENABLED-NEXT:                                   Integer(
+// ENABLED-NEXT:                                       9,
+// ENABLED-NEXT:                                   ),
 // ENABLED-NEXT:                               ),
 // ENABLED-NEXT:                           ),
 // ENABLED-NEXT:                       },
@@ -1462,8 +1538,10 @@ int main() {
 // ENABLED-NEXT:                               ),
 // ENABLED-NEXT:                           ],
 // ENABLED-NEXT:                           value: Expr(
-// ENABLED-NEXT:                               IntLit(
-// ENABLED-NEXT:                                   4,
+// ENABLED-NEXT:                               Const(
+// ENABLED-NEXT:                                   Integer(
+// ENABLED-NEXT:                                       4,
+// ENABLED-NEXT:                                   ),
 // ENABLED-NEXT:                               ),
 // ENABLED-NEXT:                           ),
 // ENABLED-NEXT:                       },
@@ -1509,8 +1587,10 @@ int main() {
 // ENABLED-NEXT:                               ),
 // ENABLED-NEXT:                           ],
 // ENABLED-NEXT:                           value: Expr(
-// ENABLED-NEXT:                               IntLit(
-// ENABLED-NEXT:                                   8,
+// ENABLED-NEXT:                               Const(
+// ENABLED-NEXT:                                   Integer(
+// ENABLED-NEXT:                                       8,
+// ENABLED-NEXT:                                   ),
 // ENABLED-NEXT:                               ),
 // ENABLED-NEXT:                           ),
 // ENABLED-NEXT:                       },
@@ -1521,8 +1601,10 @@ int main() {
 // ENABLED-NEXT:                               ),
 // ENABLED-NEXT:                           ],
 // ENABLED-NEXT:                           value: Expr(
-// ENABLED-NEXT:                               IntLit(
-// ENABLED-NEXT:                                   1,
+// ENABLED-NEXT:                               Const(
+// ENABLED-NEXT:                                   Integer(
+// ENABLED-NEXT:                                       1,
+// ENABLED-NEXT:                                   ),
 // ENABLED-NEXT:                               ),
 // ENABLED-NEXT:                           ),
 // ENABLED-NEXT:                       },
@@ -1553,8 +1635,10 @@ int main() {
 // ENABLED-NEXT:           ),
 // ENABLED-NEXT:           initializer: Some(
 // ENABLED-NEXT:               Expr(
-// ENABLED-NEXT:                   IntLit(
-// ENABLED-NEXT:                       11,
+// ENABLED-NEXT:                   Const(
+// ENABLED-NEXT:                       Integer(
+// ENABLED-NEXT:                           11,
+// ENABLED-NEXT:                       ),
 // ENABLED-NEXT:                   ),
 // ENABLED-NEXT:               ),
 // ENABLED-NEXT:           ),

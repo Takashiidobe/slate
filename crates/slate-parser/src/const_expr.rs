@@ -270,6 +270,16 @@ impl Parser {
         Ok(expression)
     }
 
+    pub(crate) fn parse_one(
+        tokens: &[Token],
+        start: usize,
+        typedef_names: &HashSet<String>,
+    ) -> Result<(ConstExpr, usize), ConstExprError> {
+        let mut parser = Self::new(&tokens[start..], typedef_names);
+        let expression = parser.parse_assignment()?;
+        Ok((expression, start + parser.position))
+    }
+
     pub fn evaluate(tokens: &[Token]) -> Result<i64, ConstExprError> {
         Self::evaluate_expr(&Self::parse(tokens)?)
     }
@@ -665,7 +675,7 @@ impl Parser {
     }
 }
 
-fn starts_type_name(token: &Token, typedef_names: &HashSet<String>) -> bool {
+pub(crate) fn starts_type_name(token: &Token, typedef_names: &HashSet<String>) -> bool {
     match token {
         Token::Keyword(keyword) => matches!(
             keyword,

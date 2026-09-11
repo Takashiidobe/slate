@@ -57,10 +57,15 @@ impl Parser {
 
     pub fn parse_declaration(&self, code: &str) -> Result<Declaration, ParseError> {
         let tokens = lex(code);
-        let mut parser = DeclaratorParser {
-            tokens: &tokens,
-            pos: 0,
-        };
+        self.parse_declaration_tokens(code, &tokens)
+    }
+
+    fn parse_declaration_tokens(
+        &self,
+        code: &str,
+        tokens: &[Token],
+    ) -> Result<Declaration, ParseError> {
+        let mut parser = DeclaratorParser { tokens, pos: 0 };
         let (mut attributes, position) = parse_attribute_groups(parser.tokens, parser.pos)
             .map_err(|error| self.error_at(code, 0, code.len(), error))?;
         parser.pos = position;
@@ -132,7 +137,7 @@ impl Parser {
         parser.pos = position;
         attributes.extend(trailing_attributes);
         let initializer = if parser.matches(Token::Equal) {
-            Some(parser.parse_initializer())
+            Some(parser.parse_initializer(&self.typedef_names))
         } else {
             None
         };
@@ -216,7 +221,10 @@ impl Parser {
                         tokens: &lex(expression),
                         pos: 0,
                     };
-                    (condition.clone(), Box::new(parser.parse_initializer()))
+                    (
+                        condition.clone(),
+                        Box::new(parser.parse_initializer(&self.typedef_names)),
+                    )
                 })
                 .collect(),
         });
@@ -1313,7 +1321,7 @@ impl<'a> DeclaratorParser<'a> {
         )
     }
 
-    fn parse_initializer(&mut self) -> Initializer {
+    fn parse_initializer(&mut self, typedef_names: &HashSet<String>) -> Initializer {
         if self.matches(Token::LBrace) {
             let mut items = Vec::new();
             while !self.matches(Token::RBrace) {
@@ -1341,7 +1349,7 @@ impl<'a> DeclaratorParser<'a> {
                 }
                 items.push(InitializerItem {
                     designators,
-                    value: self.parse_initializer(),
+                    value: self.parse_initializer(typedef_names),
                 });
                 if !self.matches(Token::Comma) {
                     assert!(
@@ -1351,14 +1359,15 @@ impl<'a> DeclaratorParser<'a> {
                 }
             }
             Initializer::List(items)
-        } else {
-            let expr = match self.peek().cloned() {
-                Some(Token::IntLit(value)) => Expr::IntLit(value),
-                Some(Token::StringLit(value)) => Expr::StringLit(value),
-                other => panic!("unsupported initializer expression: {other:?}"),
-            };
+        } else if let Some(Token::StringLit(value)) = self.peek().cloned() {
             self.pos += 1;
-            Initializer::Expr(expr)
+            Initializer::Expr(Expr::StringLit(value))
+        } else {
+            let (expression, end) =
+                const_expr::Parser::parse_one(self.tokens, self.pos, typedef_names)
+                    .unwrap_or_else(|error| panic!("unsupported initializer expression: {error}"));
+            self.pos = end;
+            Initializer::Expr(Expr::Const(Box::new(expression)))
         }
     }
 
@@ -1748,6 +1757,14 @@ impl Parser {
         Ok(stmt)
     }
 
+    fn starts_declaration(&self, tokens: &[Token], pos: usize) -> bool {
+        match tokens.get(pos) {
+            Some(Token::Keyword(keyword)) if keyword.is_storage_class_or_specifier() => true,
+            Some(token) => const_expr::starts_type_name(token, &self.typedef_names),
+            None => false,
+        }
+    }
+
     fn parse_one_stmt(
         &self,
         code: &str,
@@ -1772,6 +1789,23 @@ impl Parser {
             let name = name.clone();
             *i += 2;
             return Ok(Stmt::Labeled(name));
+        }
+
+        if tokens.get(*i) == Some(&Token::LBrace) {
+            let close = matching_brace(tokens, *i)
+                .ok_or_else(|| self.error_at(code, 0, code.len(), "expected `}`"))?;
+            let body = self.parse_stmts_from_tokens(code, &tokens[*i + 1..close])?;
+            *i = close + 1;
+            return Ok(Stmt::Block(body));
+        }
+
+        if self.starts_declaration(tokens, *i) {
+            let end = top_level_semi(&tokens[*i..])
+                .map(|position| *i + position)
+                .ok_or_else(|| self.error_at(code, 0, code.len(), "expected `;`"))?;
+            let declaration = self.parse_declaration_tokens(code, &tokens[*i..=end])?;
+            *i = end + 1;
+            return Ok(Stmt::Decl(declaration));
         }
 
         match tokens.get(*i) {
@@ -1907,6 +1941,12 @@ impl Parser {
                 let increment_tokens = &rest[second_semi + 1..];
                 let init = if init_tokens.is_empty() {
                     None
+                } else if self.starts_declaration(init_tokens, 0) {
+                    let mut decl_tokens = init_tokens.to_vec();
+                    decl_tokens.push(Token::Semi);
+                    Some(Box::new(Stmt::Decl(
+                        self.parse_declaration_tokens(code, &decl_tokens)?,
+                    )))
                 } else {
                     Some(Box::new(Stmt::Expr(
                         self.parse_expression(code, init_tokens)?,

@@ -56,8 +56,10 @@ int picked(void) {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       IntLit(
-// DEFAULT-NEXT:                                           1,
+// DEFAULT-NEXT:                                       Const(
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               1,
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
@@ -99,8 +101,10 @@ int picked(void) {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       IntLit(
-// DEFAULT-NEXT:                                           2,
+// DEFAULT-NEXT:                                       Const(
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               2,
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
@@ -275,8 +279,10 @@ int picked(void) {
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           initializer: Some(
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   IntLit(
-// DEFAULT-NEXT:                       2,
+// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                       Integer(
+// DEFAULT-NEXT:                           2,
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ),
@@ -368,8 +374,10 @@ int picked(void) {
 // SELECT-NEXT:                               ),
 // SELECT-NEXT:                               initializer: Some(
 // SELECT-NEXT:                                   Expr(
-// SELECT-NEXT:                                       IntLit(
-// SELECT-NEXT:                                           1,
+// SELECT-NEXT:                                       Const(
+// SELECT-NEXT:                                           Integer(
+// SELECT-NEXT:                                               1,
+// SELECT-NEXT:                                           ),
 // SELECT-NEXT:                                       ),
 // SELECT-NEXT:                                   ),
 // SELECT-NEXT:                               ),
@@ -411,8 +419,10 @@ int picked(void) {
 // SELECT-NEXT:                               ),
 // SELECT-NEXT:                               initializer: Some(
 // SELECT-NEXT:                                   Expr(
-// SELECT-NEXT:                                       IntLit(
-// SELECT-NEXT:                                           2,
+// SELECT-NEXT:                                       Const(
+// SELECT-NEXT:                                           Integer(
+// SELECT-NEXT:                                               2,
+// SELECT-NEXT:                                           ),
 // SELECT-NEXT:                                       ),
 // SELECT-NEXT:                                   ),
 // SELECT-NEXT:                               ),
@@ -587,8 +597,10 @@ int picked(void) {
 // SELECT-NEXT:           ),
 // SELECT-NEXT:           initializer: Some(
 // SELECT-NEXT:               Expr(
-// SELECT-NEXT:                   IntLit(
-// SELECT-NEXT:                       1,
+// SELECT-NEXT:                   Const(
+// SELECT-NEXT:                       Integer(
+// SELECT-NEXT:                           1,
+// SELECT-NEXT:                       ),
 // SELECT-NEXT:                   ),
 // SELECT-NEXT:               ),
 // SELECT-NEXT:           ),

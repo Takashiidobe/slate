@@ -36,8 +36,10 @@ int selected __attribute__((slate_literal(CHOICE)));
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           initializer: Some(
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   IntLit(
-// DEFAULT-NEXT:                       7,
+// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                       Integer(
+// DEFAULT-NEXT:                           7,
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ),
@@ -178,8 +180,10 @@ int selected __attribute__((slate_literal(CHOICE)));
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           initializer: Some(
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   IntLit(
-// DEFAULT-NEXT:                       7,
+// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                       Integer(
+// DEFAULT-NEXT:                           7,
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ),
@@ -270,8 +274,10 @@ int selected __attribute__((slate_literal(CHOICE)));
 // SELECT-NEXT:           ),
 // SELECT-NEXT:           initializer: Some(
 // SELECT-NEXT:               Expr(
-// SELECT-NEXT:                   IntLit(
-// SELECT-NEXT:                       7,
+// SELECT-NEXT:                   Const(
+// SELECT-NEXT:                       Integer(
+// SELECT-NEXT:                           7,
+// SELECT-NEXT:                       ),
 // SELECT-NEXT:                   ),
 // SELECT-NEXT:               ),
 // SELECT-NEXT:           ),
@@ -412,8 +418,10 @@ int selected __attribute__((slate_literal(CHOICE)));
 // SELECT-NEXT:           ),
 // SELECT-NEXT:           initializer: Some(
 // SELECT-NEXT:               Expr(
-// SELECT-NEXT:                   IntLit(
-// SELECT-NEXT:                       7,
+// SELECT-NEXT:                   Const(
+// SELECT-NEXT:                       Integer(
+// SELECT-NEXT:                           7,
+// SELECT-NEXT:                       ),
 // SELECT-NEXT:                   ),
 // SELECT-NEXT:               ),
 // SELECT-NEXT:           ),

@@ -53,6 +53,22 @@ pub enum Keyword {
     Goto,
 }
 
+impl Keyword {
+    pub fn is_storage_class_or_specifier(self) -> bool {
+        matches!(
+            self,
+            Keyword::Typedef
+                | Keyword::Extern
+                | Keyword::Static
+                | Keyword::Auto
+                | Keyword::Register
+                | Keyword::ThreadLocal
+                | Keyword::Inline
+                | Keyword::Noreturn
+        )
+    }
+}
+
 impl From<Keyword> for &'static str {
     fn from(keyword: Keyword) -> Self {
         match keyword {
