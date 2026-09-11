@@ -110,6 +110,7 @@ pub enum ArraySize {
 pub enum Declarator {
     Abstract,
     Name(String),
+    Grouped(Box<Declarator>),
     Pointer {
         qualifiers: Qualifiers,
         inner: Box<Declarator>,
@@ -123,6 +124,19 @@ pub enum Declarator {
         parameters: Vec<Parameter>,
         variadic: bool,
     },
+}
+
+impl Declarator {
+    pub fn name(&self) -> Option<&str> {
+        match self {
+            Self::Name(name) => Some(name),
+            Self::Abstract => None,
+            Self::Grouped(inner)
+            | Self::Pointer { inner, .. }
+            | Self::Array { inner, .. }
+            | Self::Function { inner, .. } => inner.name(),
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -157,6 +171,27 @@ pub enum Decl {
         provenance: Provenance,
     },
     Conditional(Conditional<Vec<Decl>>),
+}
+
+impl Decl {
+    pub fn name(&self) -> Option<&str> {
+        match self {
+            Self::Function(function) => Some(&function.name),
+            Self::Declaration { declaration, .. } => declaration.declarator.name(),
+            Self::Typedef { name, .. } => Some(name),
+            Self::Conditional(_) => None,
+        }
+    }
+
+    pub fn provenance(&self) -> Option<FileId> {
+        match self {
+            Self::Function(function) => Some(function.provenance.file),
+            Self::Declaration { provenance, .. } | Self::Typedef { provenance, .. } => {
+                Some(provenance.file)
+            }
+            Self::Conditional(_) => None,
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq)]

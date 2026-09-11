@@ -1,24 +1,35 @@
-use slate_parser::render::render_path;
+use slate_parser::compiler_args::CompilerArgParser;
+use slate_parser::eval::Env;
+use slate_parser::files::SearchPaths;
+use slate_parser::parser::Parser;
+use slate_parser::render::Renderer;
 use std::env;
 use std::fs;
+use std::io;
 use std::path::Path;
 
-fn main() {
+fn main() -> miette::Result<()> {
     let mut args = env::args().skip(1);
-    assert_eq!(
-        args.next().as_deref(),
-        Some("filecheck"),
-        "usage: slate-parser filecheck <source.c> [-DNAME]"
-    );
-    let path = args.next().expect("missing source path");
-    let mut defines = Vec::new();
-    for arg in args {
-        if let Some(define) = arg.strip_prefix("-D") {
-            defines.push(define.to_string());
-        } else {
-            panic!("unsupported argument: {arg}");
-        }
+    if args.next().as_deref() != Some("parse") {
+        return Err(miette::miette!(
+            "usage: slate-parser parse <source.c> [-DNAME]"
+        ));
     }
-    let _ = fs::metadata(Path::new(&path)).expect("read source fixture");
-    print!("{}", render_path(Path::new(&path), &defines));
+    let path = args
+        .next()
+        .ok_or_else(|| miette::miette!("missing source path"))?;
+    let compiler_args = CompilerArgParser::parse(args).map_err(|error| miette::miette!(error))?;
+    fs::metadata(Path::new(&path)).map_err(|error| miette::miette!(error))?;
+    let mut parser = Parser::new(SearchPaths::default());
+    let (ast, _) = parser.parse_file(Path::new(&path))?;
+    let mut env = Env::new();
+    for define in compiler_args.defines {
+        env = env.define(define);
+    }
+    let stdout = io::stdout();
+    let mut renderer = Renderer::new(stdout.lock());
+    renderer
+        .render(&ast, &env)
+        .map_err(|error| miette::miette!(error))?;
+    Ok(())
 }

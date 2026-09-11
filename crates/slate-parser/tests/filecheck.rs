@@ -1,5 +1,73 @@
+use clang_ast::Node;
+use serde::Deserialize;
+use slate_parser::ast::*;
+use slate_parser::eval::Env;
+use slate_parser::files::SearchPaths;
+use slate_parser::parser::Parser;
 use std::path::{Path, PathBuf};
 use std::process::Command;
+
+type ClangNode = Node<ClangKind>;
+
+#[derive(Debug, Deserialize)]
+enum ClangKind {
+    FunctionDecl(ClangFunctionDecl),
+    TypedefDecl(ClangTypedefDecl),
+    VarDecl(ClangTypedDecl),
+    ReturnStmt,
+    IntegerLiteral(ClangIntegerLiteral),
+    Other,
+}
+
+#[derive(Debug, Deserialize)]
+struct ClangFunctionDecl {
+    name: Option<String>,
+    #[serde(rename = "isImplicit", default)]
+    is_implicit: bool,
+    r#type: ClangQualType,
+}
+
+#[derive(Debug, Deserialize)]
+struct ClangTypedefDecl {
+    name: String,
+    #[serde(rename = "isImplicit", default)]
+    is_implicit: bool,
+    r#type: ClangQualType,
+}
+
+#[derive(Debug, Deserialize)]
+struct ClangTypedDecl {
+    name: String,
+    r#type: ClangQualType,
+}
+
+#[derive(Debug, Deserialize)]
+struct ClangQualType {
+    #[serde(rename = "qualType")]
+    qual_type: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct ClangIntegerLiteral {
+    value: String,
+}
+
+#[derive(Debug, PartialEq, Eq)]
+enum DeclSummary {
+    Function {
+        name: String,
+        returns: Vec<i64>,
+        signature: Option<String>,
+    },
+    Typedef {
+        name: String,
+        type_name: String,
+    },
+    Object {
+        name: String,
+        type_facts: String,
+    },
+}
 
 fn fixtures_dir() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures")
@@ -17,6 +85,17 @@ fn configurations(source: &str) -> Vec<(String, Vec<String>)> {
             let mut fields = rest.split_whitespace();
             let prefix = fields.next()?;
             Some((prefix.to_string(), fields.map(str::to_string).collect()))
+        })
+        .collect()
+}
+
+fn error_configurations(source: &str) -> Vec<String> {
+    source
+        .lines()
+        .filter_map(|line| {
+            line.trim()
+                .strip_prefix("// SLATE-FILECHECK-ERROR ")
+                .map(str::to_string)
         })
         .collect()
 }
@@ -64,6 +143,345 @@ fn run_fixture(fixture: &Path, prefix: &str, defines: &[String], slot: usize) {
         String::from_utf8_lossy(&result.stdout),
         String::from_utf8_lossy(&result.stderr)
     );
+
+    assert_matches_clang(fixture, defines);
+}
+
+fn run_error_fixture(fixture: &Path, prefix: &str, slot: usize) {
+    let output = Command::new(env!("CARGO_BIN_EXE_slate-parser"))
+        .arg("filecheck")
+        .arg(fixture)
+        .output()
+        .expect("run slate-parser failing fixture");
+    assert!(
+        !output.status.success(),
+        "fixture unexpectedly parsed: {}",
+        fixture.display()
+    );
+
+    let work = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("target/filecheck")
+        .join(format!(
+            "{}.{}.{}",
+            fixture.file_stem().unwrap().to_string_lossy(),
+            std::process::id(),
+            slot
+        ));
+    std::fs::create_dir_all(&work).expect("create FileCheck work directory");
+    let input = work.join("diagnostic.txt");
+    std::fs::write(&input, output.stderr).expect("write diagnostic");
+    let result = Command::new(filecheck())
+        .arg(fixture)
+        .arg(format!("--check-prefix={prefix}"))
+        .arg("--input-file")
+        .arg(&input)
+        .arg("--dump-input=fail")
+        .output()
+        .expect("run FileCheck");
+    assert!(
+        result.status.success(),
+        "diagnostic FileCheck failed for {} ({prefix}):\n{}{}",
+        fixture.display(),
+        String::from_utf8_lossy(&result.stdout),
+        String::from_utf8_lossy(&result.stderr)
+    );
+}
+
+fn assert_matches_clang(fixture: &Path, defines: &[String]) {
+    let search = SearchPaths::default();
+    let mut parser = Parser::new(search);
+    let (ast, _) = parser.parse_file(fixture).expect("parse fixture");
+    let mut env = Env::new();
+    for define in defines {
+        env = env.define(macro_name(define));
+    }
+    let ours = summarize_ours(&ast.eval(&env));
+    let theirs = summarize_clang(&run_clang_ast(fixture, defines));
+    for summary in &ours {
+        assert!(
+            theirs.contains(summary),
+            "our reachable summary is absent from clang for {}:\nours: {summary:?}\nclang: {theirs:?}",
+            fixture.display()
+        );
+    }
+}
+
+fn macro_name(define: &str) -> String {
+    define.trim_start_matches("-D").split_once('=').map_or_else(
+        || define.trim_start_matches("-D").to_string(),
+        |(name, _)| name.to_string(),
+    )
+}
+
+fn run_clang_ast(fixture: &Path, defines: &[String]) -> ClangNode {
+    let mut command = Command::new("clang");
+    command.args(["-Xclang", "-ast-dump=json", "-fsyntax-only"]);
+    for define in defines {
+        command.arg(format!("-D{}", define.trim_start_matches("-D")));
+    }
+    let output = command
+        .arg(fixture)
+        .output()
+        .expect("invoke clang AST oracle");
+    assert!(
+        output.status.success(),
+        "clang rejected {}:\n{}",
+        fixture.display(),
+        String::from_utf8_lossy(&output.stderr)
+    );
+    serde_json::from_slice(&output.stdout).expect("clang emitted invalid AST JSON")
+}
+
+fn summarize_ours(tu: &ConcreteTranslationUnit) -> Vec<DeclSummary> {
+    tu.decls.iter().map(summarize_ours_decl).collect()
+}
+
+fn summarize_ours_decl(decl: &ConcreteDecl) -> DeclSummary {
+    match decl {
+        ConcreteDecl::Function(function) => DeclSummary::Function {
+            name: function.name.clone(),
+            returns: function
+                .body
+                .iter()
+                .map(|stmt| match stmt {
+                    ConcreteStmt::Return(Expr::IntLit(value)) => *value,
+                })
+                .collect(),
+            signature: None,
+        },
+        ConcreteDecl::Typedef { name, ty, .. } => DeclSummary::Typedef {
+            name: name.clone(),
+            type_name: normalize_type(&type_spelling(ty)),
+        },
+        ConcreteDecl::Declaration { declaration, .. } => {
+            let name = declarator_identifier(&declaration.declarator);
+            if matches!(declaration.declarator, Declarator::Function { .. }) {
+                DeclSummary::Function {
+                    name,
+                    returns: vec![],
+                    signature: Some(function_facts(
+                        &declaration.specifiers.ty,
+                        &declaration.declarator,
+                    )),
+                }
+            } else {
+                DeclSummary::Object {
+                    name,
+                    type_facts: object_facts(&declaration.specifiers.ty, &declaration.declarator),
+                }
+            }
+        }
+    }
+}
+
+fn summarize_clang(root: &ClangNode) -> Vec<DeclSummary> {
+    root.inner.iter().filter_map(summarize_clang_decl).collect()
+}
+
+fn summarize_clang_decl(node: &ClangNode) -> Option<DeclSummary> {
+    match &node.kind {
+        ClangKind::FunctionDecl(function) if !function.is_implicit => Some(DeclSummary::Function {
+            name: function.name.clone().expect("unnamed clang function"),
+            returns: collect_returns(node),
+            signature: if collect_returns(node).is_empty() {
+                Some(clang_function_facts(&function.r#type.qual_type))
+            } else {
+                None
+            },
+        }),
+        ClangKind::TypedefDecl(typedef) if !typedef.is_implicit => Some(DeclSummary::Typedef {
+            name: typedef.name.clone(),
+            type_name: normalize_type(&typedef.r#type.qual_type),
+        }),
+        ClangKind::VarDecl(declaration) if declaration.r#type.qual_type.contains(")(") => {
+            Some(DeclSummary::Function {
+                name: declaration.name.clone(),
+                returns: vec![],
+                signature: Some(clang_function_facts(&declaration.r#type.qual_type)),
+            })
+        }
+        ClangKind::VarDecl(declaration) => Some(DeclSummary::Object {
+            name: declaration.name.clone(),
+            type_facts: clang_object_facts(&declaration.r#type.qual_type),
+        }),
+        _ => None,
+    }
+}
+
+fn collect_returns(node: &ClangNode) -> Vec<i64> {
+    let mut returns = Vec::new();
+    collect_returns_into(node, &mut returns);
+    returns
+}
+
+fn collect_returns_into(node: &ClangNode, returns: &mut Vec<i64>) {
+    if let ClangKind::ReturnStmt = &node.kind
+        && let Some(child) = node.inner.first()
+        && let ClangKind::IntegerLiteral(literal) = &child.kind
+    {
+        returns.push(
+            literal
+                .value
+                .parse()
+                .expect("clang return was not an integer"),
+        );
+    }
+    for child in &node.inner {
+        collect_returns_into(child, returns);
+    }
+}
+
+fn type_spelling(ty: &CType) -> String {
+    match ty {
+        CType::Int => "int".into(),
+        CType::Char => "char".into(),
+        CType::Void => "void".into(),
+        CType::Bool => "bool".into(),
+        CType::Named(name) => name.clone(),
+        CType::Tagged { kind, name } => format!(
+            "{} {}",
+            tag_name(*kind),
+            name.as_deref().unwrap_or("<anonymous>")
+        ),
+        CType::Qualified { ty, .. } => type_spelling(ty),
+        CType::Pointer { pointee, .. } => format!("{} *", type_spelling(pointee)),
+        CType::Array { element, size } => {
+            format!("{}[{}]", type_spelling(element), array_size(size))
+        }
+        CType::Function { return_type, .. } => format!("{} ()", type_spelling(return_type)),
+    }
+}
+
+fn function_facts(base: &CType, declarator: &Declarator) -> String {
+    let Declarator::Function {
+        inner,
+        parameters,
+        variadic,
+    } = declarator
+    else {
+        panic!("expected function declarator")
+    };
+    let pointer_to_function = matches!(inner.as_ref(), Declarator::Grouped(_));
+    let return_pointer =
+        !pointer_to_function && matches!(inner.as_ref(), Declarator::Pointer { .. });
+    let params = parameters
+        .iter()
+        .map(parameter_fact)
+        .collect::<Vec<_>>()
+        .join(",");
+    format!(
+        "return={};return_pointer={return_pointer};pointer_to_function={pointer_to_function};params={params};variadic={variadic}",
+        normalize_type(&type_spelling(base))
+    )
+}
+
+fn parameter_fact(parameter: &Parameter) -> String {
+    let pointer = matches!(parameter.declarator, Some(Declarator::Pointer { .. }));
+    format!(
+        "{}{}",
+        normalize_type(&type_spelling(&parameter.ty)),
+        if pointer { "*" } else { "" }
+    )
+}
+
+fn object_facts(base: &CType, declarator: &Declarator) -> String {
+    let mut dimensions = Vec::new();
+    let mut current = declarator;
+    while let Declarator::Array { inner, size } = current {
+        dimensions.push(array_size(size));
+        current = inner;
+    }
+    dimensions.reverse();
+    format!(
+        "base={};arrays=[{}]",
+        normalize_type(&type_spelling(base)),
+        dimensions.join(",")
+    )
+}
+
+fn clang_function_facts(qual_type: &str) -> String {
+    let pointer_to_function = qual_type.contains("(*)");
+    let (prefix, args_start) = if pointer_to_function {
+        let marker = qual_type
+            .find("(*)")
+            .expect("clang function pointer marker");
+        let args = qual_type
+            .find(")(")
+            .expect("clang function pointer parameters");
+        (&qual_type[..marker], args + 2)
+    } else {
+        let open = qual_type
+            .find('(')
+            .expect("clang function type missing `(`");
+        (&qual_type[..open], open + 1)
+    };
+    let prefix = prefix.trim();
+    let args = qual_type[args_start..qual_type.len() - 1].trim();
+    let return_pointer = !pointer_to_function && prefix.ends_with('*');
+    let return_type = prefix.trim_end_matches('*').trim();
+    let params = if args.is_empty() || args == "void" {
+        String::new()
+    } else {
+        args.split(',')
+            .filter(|param| param.trim() != "...")
+            .map(normalize_type)
+            .collect::<Vec<_>>()
+            .join(",")
+    };
+    let variadic = args.split(',').any(|param| param.trim() == "...");
+    format!(
+        "return={return_type};return_pointer={return_pointer};pointer_to_function={pointer_to_function};params={params};variadic={variadic}",
+        return_type = normalize_type(return_type)
+    )
+}
+
+fn clang_object_facts(qual_type: &str) -> String {
+    let first_array = qual_type.find('[');
+    let (base, suffix) = first_array.map_or((qual_type, ""), |index| {
+        (&qual_type[..index], &qual_type[index..])
+    });
+    let dimensions = suffix
+        .split('[')
+        .skip(1)
+        .map(|dimension| dimension.trim_end_matches(']').trim())
+        .collect::<Vec<_>>();
+    format!(
+        "base={};arrays=[{}]",
+        normalize_type(base),
+        dimensions.join(",")
+    )
+}
+
+fn normalize_type(ty: &str) -> String {
+    ty.split_whitespace().collect::<String>()
+}
+
+fn declarator_identifier(declarator: &Declarator) -> String {
+    match declarator {
+        Declarator::Name(name) => name.clone(),
+        Declarator::Abstract => "<abstract>".into(),
+        Declarator::Grouped(inner)
+        | Declarator::Pointer { inner, .. }
+        | Declarator::Array { inner, .. }
+        | Declarator::Function { inner, .. } => declarator_identifier(inner),
+    }
+}
+
+fn array_size(size: &ArraySize) -> String {
+    match size {
+        ArraySize::Unspecified => "".into(),
+        ArraySize::Expression(expression) => match expression.as_ref() {
+            Expr::IntLit(value) => value.to_string(),
+        },
+    }
+}
+
+fn tag_name(kind: TagKind) -> &'static str {
+    match kind {
+        TagKind::Struct => "struct",
+        TagKind::Union => "union",
+        TagKind::Enum => "enum",
+    }
 }
 
 #[test]
@@ -79,6 +497,14 @@ fn fixtures_are_filechecked() {
     let mut checked = 0;
     for fixture in fixtures {
         let source = std::fs::read_to_string(&fixture).expect("read fixture");
+        let errors = error_configurations(&source);
+        if !errors.is_empty() {
+            for (slot, prefix) in errors.iter().enumerate() {
+                run_error_fixture(&fixture, prefix, slot);
+                checked += 1;
+            }
+            continue;
+        }
         let configs = configurations(&source);
         assert!(
             !configs.is_empty(),

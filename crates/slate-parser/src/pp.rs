@@ -4,7 +4,10 @@ use std::path::{Path, PathBuf};
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum PPNode {
-    Code { text: String, provenance: Provenance },
+    Code {
+        text: String,
+        provenance: Provenance,
+    },
     Conditional(PPConditional),
 }
 
@@ -132,7 +135,11 @@ impl<'a> Preprocessor<'a> {
         nodes
     }
 
-    fn resolve_and_parse_include(&mut self, include: &IncludeDirective, from: FileId) -> Vec<PPNode> {
+    fn resolve_and_parse_include(
+        &mut self,
+        include: &IncludeDirective,
+        from: FileId,
+    ) -> Vec<PPNode> {
         let (resolved, kind) = self.resolve_include(include, from);
         assert!(
             !self.open_stack.contains(&resolved),

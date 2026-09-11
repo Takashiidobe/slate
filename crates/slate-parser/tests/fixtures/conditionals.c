@@ -6,6 +6,8 @@ int main() {
 #endif
 }
 
+typedef int HANDLE;
+
 #ifdef _WIN32
 typedef HANDLE Socket;
 #else
@@ -23,7 +25,8 @@ typedef int Socket;
 // DEFAULT-NEXT:       stmt[0]: return 2
 // DEFAULT-NEXT:     branch[1]: when=not(defined(_WIN32))
 // DEFAULT-NEXT:       stmt[0]: return 3
-// DEFAULT-NEXT: decl[1]: conditional
+// DEFAULT-NEXT: decl[1]: typedef name=HANDLE type=int
+// DEFAULT-NEXT: decl[2]: conditional
 // DEFAULT-NEXT:   branch[0]: when=defined(_WIN32)
 // DEFAULT-NEXT:     decl[0]: typedef name=Socket type=HANDLE
 // DEFAULT-NEXT:   branch[1]: when=not(defined(_WIN32))
@@ -31,7 +34,8 @@ typedef int Socket;
 // DEFAULT-NEXT: concrete:
 // DEFAULT-NEXT: decl[0]: function name=main return=int
 // DEFAULT-NEXT:   stmt[0]: return 3
-// DEFAULT-NEXT: decl[1]: typedef name=Socket type=int
+// DEFAULT-NEXT: decl[1]: typedef name=HANDLE type=int
+// DEFAULT-NEXT: decl[2]: typedef name=Socket type=int
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN WIN32
 // WIN32: polyvariant:
@@ -41,7 +45,8 @@ typedef int Socket;
 // WIN32-NEXT:       stmt[0]: return 2
 // WIN32-NEXT:     branch[1]: when=not(defined(_WIN32))
 // WIN32-NEXT:       stmt[0]: return 3
-// WIN32-NEXT: decl[1]: conditional
+// WIN32-NEXT: decl[1]: typedef name=HANDLE type=int
+// WIN32-NEXT: decl[2]: conditional
 // WIN32-NEXT:   branch[0]: when=defined(_WIN32)
 // WIN32-NEXT:     decl[0]: typedef name=Socket type=HANDLE
 // WIN32-NEXT:   branch[1]: when=not(defined(_WIN32))
@@ -49,5 +54,6 @@ typedef int Socket;
 // WIN32-NEXT: concrete:
 // WIN32-NEXT: decl[0]: function name=main return=int
 // WIN32-NEXT:   stmt[0]: return 2
-// WIN32-NEXT: decl[1]: typedef name=Socket type=HANDLE
+// WIN32-NEXT: decl[1]: typedef name=HANDLE type=int
+// WIN32-NEXT: decl[2]: typedef name=Socket type=HANDLE
 // SLATE-FILECHECK-END WIN32

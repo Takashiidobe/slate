@@ -9,6 +9,7 @@ from pathlib import Path
 DEFINE_RE = re.compile(r"^\s*//\s*SLATE-FILECHECK-DEFINES\s+([A-Za-z0-9_-]+)(?:\s+(.*))?$")
 BEGIN_RE = re.compile(r"^// SLATE-FILECHECK-BEGIN ([A-Za-z0-9_-]+)$")
 CHECK_RE = re.compile(r"^// ([A-Za-z0-9_-]+)(?:-NEXT)?:")
+ERROR_RE = re.compile(r"^\s*//\s*SLATE-FILECHECK-ERROR\s+([A-Za-z0-9_-]+)$")
 
 
 def configurations(source: str) -> list[tuple[str, list[str]]]:
@@ -23,6 +24,10 @@ def configurations(source: str) -> list[tuple[str, list[str]]]:
     return found
 
 
+def error_configurations(source: str) -> list[str]:
+    return [match.group(1) for line in source.splitlines() if (match := ERROR_RE.match(line))]
+
+
 def render(repo: Path, fixture: Path, defines: list[str]) -> str:
     command = ["cargo", "run", "--quiet", "--", "filecheck", str(fixture)]
     command.extend(f"-D{define.removeprefix('-D')}" for define in defines)
@@ -32,8 +37,28 @@ def render(repo: Path, fixture: Path, defines: list[str]) -> str:
     return result.stdout.rstrip("\n")
 
 
+def render_error(repo: Path, fixture: Path) -> list[str]:
+    command = ["cargo", "run", "--quiet", "--", "filecheck", str(fixture)]
+    result = subprocess.run(command, cwd=repo, text=True, capture_output=True)
+    if result.returncode == 0:
+        raise RuntimeError(f"expected {fixture} to fail parsing")
+    return [
+        line.strip()
+        for line in result.stderr.splitlines()
+        if line.startswith("Error:") or re.match(r"^\s*\d+ │", line)
+    ]
+
+
 def generated_blocks(repo: Path, fixture: Path, source: str) -> str:
     blocks = []
+    for prefix in error_configurations(source):
+        output = render_error(repo, fixture)
+        block = [f"// SLATE-FILECHECK-BEGIN {prefix}"]
+        block.extend(f"// {prefix}: {line}" for line in output)
+        block.append(f"// SLATE-FILECHECK-END {prefix}")
+        blocks.extend(block)
+    if error_configurations(source):
+        return "\n".join(blocks)
     for prefix, defines in configurations(source):
         output = render(repo, fixture, defines)
         lines = output.splitlines()
