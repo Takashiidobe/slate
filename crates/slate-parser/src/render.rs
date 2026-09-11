@@ -43,6 +43,33 @@ impl<W: Write> Renderer<W> {
                     "{indent}{label}[{index}]: typedef name={name} type={}",
                     Self::type_name(ty)
                 ))?,
+                Decl::Record(record) => {
+                    self.line(&format!(
+                        "{indent}{label}[{index}]: {} name={}",
+                        Self::tag_name(record.kind),
+                        record.name.as_deref().unwrap_or("<anonymous>")
+                    ))?;
+                    for field in &record.fields {
+                        self.line(&format!(
+                            "{indent}  field: type={} declarator={}",
+                            Self::type_name(&field.declaration.specifiers.ty),
+                            Self::render_declarator(&field.declaration.declarator)
+                        ))?;
+                    }
+                }
+                Decl::Enum(enumeration) => {
+                    self.line(&format!(
+                        "{indent}{label}[{index}]: enum name={}",
+                        enumeration.name.as_deref().unwrap_or("<anonymous>")
+                    ))?;
+                    for enumerator in &enumeration.enumerators {
+                        self.line(&format!(
+                            "{indent}  enumerator: name={} value={}",
+                            enumerator.name,
+                            Self::enumerator_value(enumerator.value.as_ref())
+                        ))?;
+                    }
+                }
                 Decl::Conditional(conditional) => {
                     self.line(&format!("{indent}{label}[{index}]: conditional"))?;
                     self.render_conditional_decls(conditional, &format!("{indent}  "))?;
@@ -121,6 +148,17 @@ impl<W: Write> Renderer<W> {
                     "{indent}{label}[{index}]: typedef name={name} type={}",
                     Self::type_name(ty)
                 ))?,
+                ConcreteDecl::Record(record) => {
+                    self.line(&format!(
+                        "{indent}{label}[{index}]: {} name={}",
+                        Self::tag_name(record.kind),
+                        record.name.as_deref().unwrap_or("<anonymous>")
+                    ))?;
+                }
+                ConcreteDecl::Enum(enumeration) => self.line(&format!(
+                    "{indent}{label}[{index}]: enum name={}",
+                    enumeration.name.as_deref().unwrap_or("<anonymous>")
+                ))?,
             }
         }
         Ok(())
@@ -177,6 +215,13 @@ impl<W: Write> Renderer<W> {
             TagKind::Struct => "struct",
             TagKind::Union => "union",
             TagKind::Enum => "enum",
+        }
+    }
+
+    fn enumerator_value(value: Option<&Expr>) -> String {
+        match value {
+            None => "implicit".into(),
+            Some(Expr::IntLit(value)) => value.to_string(),
         }
     }
 

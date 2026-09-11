@@ -14,6 +14,8 @@ enum ClangKind {
     FunctionDecl(ClangFunctionDecl),
     TypedefDecl(ClangTypedefDecl),
     VarDecl(ClangTypedDecl),
+    RecordDecl(ClangRecordDecl),
+    EnumDecl(ClangEnumDecl),
     ReturnStmt,
     IntegerLiteral(ClangIntegerLiteral),
     Other,
@@ -42,6 +44,18 @@ struct ClangTypedDecl {
 }
 
 #[derive(Debug, Deserialize)]
+struct ClangRecordDecl {
+    name: Option<String>,
+    #[serde(rename = "tagUsed", default)]
+    tag_used: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
+struct ClangEnumDecl {
+    name: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
 struct ClangQualType {
     #[serde(rename = "qualType")]
     qual_type: String,
@@ -66,6 +80,13 @@ enum DeclSummary {
     Object {
         name: String,
         type_facts: String,
+    },
+    Record {
+        kind: String,
+        name: String,
+    },
+    Enum {
+        name: String,
     },
 }
 
@@ -102,7 +123,7 @@ fn error_configurations(source: &str) -> Vec<String> {
 
 fn run_fixture(fixture: &Path, prefix: &str, defines: &[String], slot: usize) {
     let mut command = Command::new(env!("CARGO_BIN_EXE_slate-parser"));
-    command.arg("filecheck").arg(fixture);
+    command.arg("parse").arg(fixture);
     for define in defines {
         command.arg(format!("-D{}", define.trim_start_matches("-D")));
     }
@@ -149,7 +170,7 @@ fn run_fixture(fixture: &Path, prefix: &str, defines: &[String], slot: usize) {
 
 fn run_error_fixture(fixture: &Path, prefix: &str, slot: usize) {
     let output = Command::new(env!("CARGO_BIN_EXE_slate-parser"))
-        .arg("filecheck")
+        .arg("parse")
         .arg(fixture)
         .output()
         .expect("run slate-parser failing fixture");
@@ -198,6 +219,12 @@ fn assert_matches_clang(fixture: &Path, defines: &[String]) {
     let ours = summarize_ours(&ast.eval(&env));
     let theirs = summarize_clang(&run_clang_ast(fixture, defines));
     for summary in &ours {
+        if matches!(summary, DeclSummary::Object { name, .. } if name == "<abstract>") {
+            continue;
+        }
+        if matches!(summary, DeclSummary::Record { name, .. } if name == "<anonymous>") {
+            continue;
+        }
         assert!(
             theirs.contains(summary),
             "our reachable summary is absent from clang for {}:\nours: {summary:?}\nclang: {theirs:?}",
@@ -271,6 +298,16 @@ fn summarize_ours_decl(decl: &ConcreteDecl) -> DeclSummary {
                 }
             }
         }
+        ConcreteDecl::Record(record) => DeclSummary::Record {
+            kind: tag_name(record.kind).into(),
+            name: record.name.clone().unwrap_or_else(|| "<anonymous>".into()),
+        },
+        ConcreteDecl::Enum(enumeration) => DeclSummary::Enum {
+            name: enumeration
+                .name
+                .clone()
+                .unwrap_or_else(|| "<anonymous>".into()),
+        },
     }
 }
 
@@ -304,6 +341,14 @@ fn summarize_clang_decl(node: &ClangNode) -> Option<DeclSummary> {
             name: declaration.name.clone(),
             type_facts: clang_object_facts(&declaration.r#type.qual_type),
         }),
+        ClangKind::RecordDecl(record) => record.name.clone().map(|name| DeclSummary::Record {
+            kind: record.tag_used.clone().unwrap_or_else(|| "struct".into()),
+            name,
+        }),
+        ClangKind::EnumDecl(enumeration) => enumeration
+            .name
+            .clone()
+            .map(|name| DeclSummary::Enum { name }),
         _ => None,
     }
 }

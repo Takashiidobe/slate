@@ -29,7 +29,7 @@ def error_configurations(source: str) -> list[str]:
 
 
 def render(repo: Path, fixture: Path, defines: list[str]) -> str:
-    command = ["cargo", "run", "--quiet", "--", "filecheck", str(fixture)]
+    command = ["cargo", "run", "--quiet", "--", "parse", str(fixture)]
     command.extend(f"-D{define.removeprefix('-D')}" for define in defines)
     result = subprocess.run(command, cwd=repo, text=True, capture_output=True)
     if result.returncode:
@@ -38,7 +38,7 @@ def render(repo: Path, fixture: Path, defines: list[str]) -> str:
 
 
 def render_error(repo: Path, fixture: Path) -> list[str]:
-    command = ["cargo", "run", "--quiet", "--", "filecheck", str(fixture)]
+    command = ["cargo", "run", "--quiet", "--", "parse", str(fixture)]
     result = subprocess.run(command, cwd=repo, text=True, capture_output=True)
     if result.returncode == 0:
         raise RuntimeError(f"expected {fixture} to fail parsing")

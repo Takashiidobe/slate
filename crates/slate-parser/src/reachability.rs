@@ -66,6 +66,12 @@ impl<'a> Reachability<'a> {
                 self.mark_declarator(&declaration.declarator);
             }
             Decl::Typedef { ty, .. } => self.mark_type(ty),
+            Decl::Record(record) => {
+                for field in &record.fields {
+                    self.mark_type(&field.declaration.specifiers.ty);
+                }
+            }
+            Decl::Enum(_) => {}
             Decl::Conditional(_) => {}
         }
     }

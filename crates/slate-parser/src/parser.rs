@@ -58,18 +58,22 @@ impl Parser {
             StorageClass::None
         };
         let ty = parser.parse_base_type();
-        if !matches!(
-            parser.peek(),
-            Some(&Token::Ident(_)) | Some(&Token::LParen) | Some(&Token::Star)
-        ) {
-            return Err(self.error_at(
-                code,
-                code.len().saturating_sub(1),
-                1,
-                "expected declarator",
-            ));
-        }
-        let declarator = parser.parse_declarator(false);
+        let declarator = if parser.peek() == Some(&Token::Semi) {
+            Declarator::Abstract
+        } else {
+            if !matches!(
+                parser.peek(),
+                Some(&Token::Ident(_)) | Some(&Token::LParen) | Some(&Token::Star)
+            ) {
+                return Err(self.error_at(
+                    code,
+                    code.len().saturating_sub(1),
+                    1,
+                    "expected declarator",
+                ));
+            }
+            parser.parse_declarator(false)
+        };
         if parser.peek() != Some(&Token::Semi) {
             return Err(self.error_at(code, 0, code.len(), "expected `;`"));
         }
@@ -127,6 +131,15 @@ impl Parser {
             }
             PPNode::Code { .. } => {
                 let tokens = lex(self.node_text(&nodes[0]));
+                if matches!(
+                    tokens.first(),
+                    Some(Token::Keyword(
+                        Keyword::Struct | Keyword::Union | Keyword::Enum
+                    ))
+                ) && tokens.contains(&Token::LBrace)
+                {
+                    return self.parse_tag_definition(nodes);
+                }
                 if tokens.contains(&Token::Semi) && !tokens.contains(&Token::LBrace) {
                     return Ok((
                         Decl::Declaration {
@@ -143,6 +156,97 @@ impl Parser {
         }
     }
 
+    fn parse_tag_definition(&self, nodes: &[PPNode]) -> Result<(Decl, usize), ParseError> {
+        let code = self.node_text(&nodes[0]);
+        let tokens = lex(code);
+        let kind = match tokens.first() {
+            Some(Token::Keyword(Keyword::Struct)) => TagKind::Struct,
+            Some(Token::Keyword(Keyword::Union)) => TagKind::Union,
+            Some(Token::Keyword(Keyword::Enum)) => TagKind::Enum,
+            _ => return Err(self.error_at(code, 0, code.len(), "expected record or enum")),
+        };
+        let name = match tokens.get(1) {
+            Some(Token::Ident(name)) => Some(name.clone()),
+            Some(Token::LBrace) => None,
+            _ => return Err(self.error_at(code, 0, code.len(), "expected tag name or `{`")),
+        };
+        let close = nodes[1..]
+            .iter()
+            .position(|node| matches!(node, PPNode::Code { text, .. } if lex(text).first() == Some(&Token::RBrace)))
+            .ok_or_else(|| self.error_at(code, 0, code.len(), "expected `}`"))?
+            + 1;
+        let consumed = close + 1;
+        let provenance = self.node_provenance(&nodes[0]);
+        if kind == TagKind::Enum {
+            let mut enumerators = Vec::new();
+            for node in &nodes[1..close] {
+                let text = self.node_text(node);
+                let tokens = lex(text);
+                if tokens.is_empty() {
+                    continue;
+                }
+                let Some(Token::Ident(name)) = tokens.first() else {
+                    return Err(self.error_at(text, 0, text.len(), "expected enumerator"));
+                };
+                let value = match tokens.get(1) {
+                    Some(Token::Comma) | None => None,
+                    Some(Token::Equal) => match tokens.get(2) {
+                        Some(Token::IntLit(value)) => Some(Expr::IntLit(*value)),
+                        _ => {
+                            return Err(self.error_at(
+                                text,
+                                0,
+                                text.len(),
+                                "expected enumerator value",
+                            ));
+                        }
+                    },
+                    _ => {
+                        return Err(self.error_at(
+                            text,
+                            0,
+                            text.len(),
+                            "expected enumerator value",
+                        ));
+                    }
+                };
+                enumerators.push(Enumerator {
+                    name: name.clone(),
+                    value,
+                });
+            }
+            Ok((
+                Decl::Enum(EnumDecl {
+                    name,
+                    enumerators,
+                    provenance,
+                }),
+                consumed,
+            ))
+        } else {
+            let mut fields = Vec::new();
+            for node in &nodes[1..close] {
+                let text = self.node_text(node);
+                if lex(text).is_empty() {
+                    continue;
+                }
+                fields.push(FieldDecl {
+                    declaration: self.parse_declaration(text)?,
+                    provenance: self.node_provenance(node),
+                });
+            }
+            Ok((
+                Decl::Record(RecordDecl {
+                    kind,
+                    name,
+                    fields,
+                    provenance,
+                }),
+                consumed,
+            ))
+        }
+    }
+
     fn parse_top_level_conditional(&self, cond: &PPConditional) -> Result<Decl, ParseError> {
         let branches = cond
             .branches
@@ -153,23 +257,12 @@ impl Parser {
     }
 
     fn parse_typedef_line(&self, code: &str) -> Result<(String, CType), ParseError> {
-        let tokens = lex(code);
-        if tokens.first() != Some(&Token::Keyword(Keyword::Typedef)) {
-            return Err(self.error_at(code, 0, code.len(), "expected `typedef`"));
-        }
-        let ty = match tokens.get(1) {
-            Some(Token::Keyword(Keyword::Int)) => CType::Int,
-            Some(Token::Ident(n)) => CType::Named(n.clone()),
-            _ => return Err(self.error_at(code, 0, code.len(), "expected typedef type")),
-        };
-        let name = match tokens.get(2) {
-            Some(Token::Ident(n)) => n.clone(),
-            _ => return Err(self.error_at(code, 0, code.len(), "expected typedef name")),
-        };
-        if tokens.get(3) != Some(&Token::Semi) {
-            return Err(self.error_at(code, 0, code.len(), "expected `;`"));
-        }
-        Ok((name, ty))
+        let declaration = self.parse_declaration(code)?;
+        let name = declaration
+            .declarator
+            .name()
+            .ok_or_else(|| self.error_at(code, 0, code.len(), "expected typedef name"))?;
+        Ok((name.to_string(), declaration.specifiers.ty))
     }
 
     fn error_at(
@@ -232,6 +325,39 @@ impl<'a> DeclaratorParser<'a> {
             Token::Keyword(Keyword::Char) => CType::Char,
             Token::Keyword(Keyword::Int) => CType::Int,
             Token::Keyword(Keyword::Void) => CType::Void,
+            Token::Keyword(Keyword::Struct) => {
+                let name = match self.tokens.get(self.pos) {
+                    Some(Token::Ident(name)) => name.clone(),
+                    _ => panic!("expected struct tag name"),
+                };
+                self.pos += 1;
+                CType::Tagged {
+                    kind: TagKind::Struct,
+                    name: Some(name),
+                }
+            }
+            Token::Keyword(Keyword::Union) => {
+                let name = match self.tokens.get(self.pos) {
+                    Some(Token::Ident(name)) => name.clone(),
+                    _ => panic!("expected union tag name"),
+                };
+                self.pos += 1;
+                CType::Tagged {
+                    kind: TagKind::Union,
+                    name: Some(name),
+                }
+            }
+            Token::Keyword(Keyword::Enum) => {
+                let name = match self.tokens.get(self.pos) {
+                    Some(Token::Ident(name)) => name.clone(),
+                    _ => panic!("expected enum tag name"),
+                };
+                self.pos += 1;
+                CType::Tagged {
+                    kind: TagKind::Enum,
+                    name: Some(name),
+                }
+            }
             Token::Ident(name) => CType::Named(name),
             other => panic!("expected declaration type, found {other:?}"),
         }

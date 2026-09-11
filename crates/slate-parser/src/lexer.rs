@@ -5,6 +5,9 @@ pub enum Keyword {
     Return,
     Typedef,
     Void,
+    Struct,
+    Union,
+    Enum,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -22,6 +25,7 @@ pub enum Token {
     Star,
     Ellipsis,
     Semi,
+    Equal,
 }
 
 pub fn lex(src: &str) -> Vec<Token> {
@@ -63,6 +67,9 @@ pub fn lex(src: &str) -> Vec<Token> {
                 "return" => Token::Keyword(Keyword::Return),
                 "typedef" => Token::Keyword(Keyword::Typedef),
                 "void" => Token::Keyword(Keyword::Void),
+                "struct" => Token::Keyword(Keyword::Struct),
+                "union" => Token::Keyword(Keyword::Union),
+                "enum" => Token::Keyword(Keyword::Enum),
                 _ => Token::Ident(word),
             });
         } else if c == '.' && chars.get(i..i + 3) == Some(&['.', '.', '.'][..]) {
@@ -79,6 +86,7 @@ pub fn lex(src: &str) -> Vec<Token> {
                 ',' => Token::Comma,
                 '*' => Token::Star,
                 ';' => Token::Semi,
+                '=' => Token::Equal,
                 other => panic!("unexpected character in phase 0/1 lexer: {other:?}"),
             };
             tokens.push(tok);

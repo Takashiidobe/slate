@@ -159,6 +159,33 @@ pub struct Declaration {
 }
 
 #[derive(Debug, Clone, PartialEq)]
+pub struct RecordDecl {
+    pub kind: TagKind,
+    pub name: Option<String>,
+    pub fields: Vec<FieldDecl>,
+    pub provenance: Provenance,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct FieldDecl {
+    pub declaration: Declaration,
+    pub provenance: Provenance,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct EnumDecl {
+    pub name: Option<String>,
+    pub enumerators: Vec<Enumerator>,
+    pub provenance: Provenance,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct Enumerator {
+    pub name: String,
+    pub value: Option<Expr>,
+}
+
+#[derive(Debug, Clone, PartialEq)]
 pub enum Decl {
     Function(FunctionDecl),
     Declaration {
@@ -170,6 +197,8 @@ pub enum Decl {
         ty: CType,
         provenance: Provenance,
     },
+    Record(RecordDecl),
+    Enum(EnumDecl),
     Conditional(Conditional<Vec<Decl>>),
 }
 
@@ -179,6 +208,8 @@ impl Decl {
             Self::Function(function) => Some(&function.name),
             Self::Declaration { declaration, .. } => declaration.declarator.name(),
             Self::Typedef { name, .. } => Some(name),
+            Self::Record(record) => record.name.as_deref(),
+            Self::Enum(enumeration) => enumeration.name.as_deref(),
             Self::Conditional(_) => None,
         }
     }
@@ -189,6 +220,8 @@ impl Decl {
             Self::Declaration { provenance, .. } | Self::Typedef { provenance, .. } => {
                 Some(provenance.file)
             }
+            Self::Record(record) => Some(record.provenance.file),
+            Self::Enum(enumeration) => Some(enumeration.provenance.file),
             Self::Conditional(_) => None,
         }
     }
@@ -224,6 +257,8 @@ pub enum ConcreteDecl {
         ty: CType,
         provenance: Provenance,
     },
+    Record(RecordDecl),
+    Enum(EnumDecl),
 }
 
 #[derive(Debug, Clone, PartialEq)]

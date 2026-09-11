@@ -54,6 +54,8 @@ impl Decl {
                 ty: ty.clone(),
                 provenance: *provenance,
             }],
+            Self::Record(record) => vec![ConcreteDecl::Record(record.clone())],
+            Self::Enum(enumeration) => vec![ConcreteDecl::Enum(enumeration.clone())],
             Self::Conditional(cond) => match cond.select_branch(env) {
                 Some(body) => body.iter().flat_map(|decl| decl.eval(env)).collect(),
                 None => vec![],
