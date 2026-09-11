@@ -279,7 +279,7 @@ impl<'a> Preprocessor<'a> {
         let first_active = conjunction(active, &first_condition);
         let order_before = self.macro_order;
         let first_body = self.parse_body_or_skip(lines, pos, file, &first_active)?;
-        self.concretize_guard(&first_condition, active, &first_active, order_before);
+        self.concretize_guard(&first_condition, order_before);
         branches.push((first_condition, first_body));
         let mut saw_else = false;
 
@@ -306,7 +306,7 @@ impl<'a> Preprocessor<'a> {
                 let else_active = conjunction(active, &else_condition);
                 let order_before = self.macro_order;
                 let else_body = self.parse_body_or_skip(lines, pos, file, &else_active)?;
-                self.concretize_guard(&else_condition, active, &else_active, order_before);
+                self.concretize_guard(&else_condition, order_before);
                 branches.push((else_condition, else_body));
                 continue;
             }
@@ -334,7 +334,7 @@ impl<'a> Preprocessor<'a> {
                 let branch_active = conjunction(active, &branch_condition);
                 let order_before = self.macro_order;
                 let body = self.parse_body_or_skip(lines, pos, file, &branch_active)?;
-                self.concretize_guard(&branch_condition, active, &branch_active, order_before);
+                self.concretize_guard(&branch_condition, order_before);
                 branches.push((branch_condition, body));
                 continue;
             }
@@ -342,27 +342,30 @@ impl<'a> Preprocessor<'a> {
         }
     }
 
-    fn concretize_guard(
-        &mut self,
-        branch_condition: &Condition,
-        outer_active: &Condition,
-        branch_active: &Condition,
-        order_from: usize,
-    ) {
+    fn concretize_guard(&mut self, branch_condition: &Condition, order_from: usize) {
         let Condition::Not(inner) = branch_condition else {
             return;
         };
         let Condition::Defined(name) = inner.as_ref() else {
             return;
         };
-        if !self.macros.contains_key(name) {
+        let Some(conditional) = self.macros.get(name) else {
+            return;
+        };
+        let Some(guard_order) = conditional.branches.iter().map(|(_, def)| def.order).min() else {
+            return;
+        };
+        if guard_order < order_from {
             return;
         }
-        let concrete = simplify_condition(outer_active);
         for conditional in self.macros.values_mut() {
             for (condition, definition) in conditional.branches.iter_mut() {
-                if definition.order >= order_from && condition == branch_active {
-                    *condition = concrete.clone();
+                if definition.order > guard_order {
+                    let rewritten =
+                        simplify_condition(&replace_subterm(condition, branch_condition, &Condition::Constant(1)));
+                    if &rewritten != condition {
+                        *condition = rewritten;
+                    }
                 }
             }
         }
@@ -761,6 +764,24 @@ fn simplify_condition(condition: &Condition) -> Condition {
             Condition::Constant(v) => Condition::Constant(if v != 0 { 0 } else { 1 }),
             other => Condition::Not(Box::new(other)),
         },
+        Condition::Defined(_) | Condition::Constant(_) => condition.clone(),
+    }
+}
+
+fn replace_subterm(condition: &Condition, target: &Condition, replacement: &Condition) -> Condition {
+    if condition == target {
+        return replacement.clone();
+    }
+    match condition {
+        Condition::Not(inner) => Condition::Not(Box::new(replace_subterm(inner, target, replacement))),
+        Condition::And(left, right) => Condition::And(
+            Box::new(replace_subterm(left, target, replacement)),
+            Box::new(replace_subterm(right, target, replacement)),
+        ),
+        Condition::Or(left, right) => Condition::Or(
+            Box::new(replace_subterm(left, target, replacement)),
+            Box::new(replace_subterm(right, target, replacement)),
+        ),
         Condition::Defined(_) | Condition::Constant(_) => condition.clone(),
     }
 }
