@@ -271,6 +271,9 @@ impl Parser {
             }
             PPNode::Code { .. } => {
                 let tokens = lex(self.node_text(&nodes[0]));
+                if matches!(tokens.as_slice(), [Token::Keyword(Keyword::Extern), Token::StringLit(_), Token::LBrace]) {
+                    return self.parse_linkage_spec_block(nodes);
+                }
                 if matches!(
                     tokens.first(),
                     Some(Token::Keyword(
@@ -437,6 +440,36 @@ impl Parser {
             });
         }
         Ok((decls, consumed))
+    }
+
+    fn parse_linkage_spec_block(&mut self, nodes: &[PPNode]) -> Result<(Vec<Decl>, usize), ParseError> {
+        let code = self.node_text(&nodes[0]);
+        let mut depth = 1i32;
+        let mut close = None;
+        for (offset, node) in nodes[1..].iter().enumerate() {
+            let PPNode::Code { text, .. } = node else {
+                continue;
+            };
+            for token in lex(text) {
+                match token {
+                    Token::LBrace => depth += 1,
+                    Token::RBrace => {
+                        depth -= 1;
+                        if depth == 0 {
+                            close = Some(offset + 1);
+                            break;
+                        }
+                    }
+                    _ => {}
+                }
+            }
+            if close.is_some() {
+                break;
+            }
+        }
+        let close = close.ok_or_else(|| self.error_at(code, 0, code.len(), "expected `}`"))?;
+        let decls = self.parse_decls(&nodes[1..close])?;
+        Ok((decls, close + 1))
     }
 
     fn parse_field_items(&self, nodes: &[PPNode]) -> Result<Vec<FieldItem>, ParseError> {
