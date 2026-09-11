@@ -1,4 +1,5 @@
 use crate::ast::*;
+use crate::const_expr::ConstExpr;
 use crate::eval::Env;
 use crate::files::{Files, display_path};
 use miette::{Diagnostic, NamedSource, SourceSpan};
@@ -197,17 +198,22 @@ fn check_attributes(attributes: &[Attribute], provenance: Provenance, errors: &m
                 "layout attribute requires an integer constant expression",
             ));
         }
+        if let Attribute::AllocSize(expressions) = attribute
+            && !(1..=2).contains(&expressions.len())
+        {
+            errors.push(error(provenance, "alloc_size expects one or two arguments"));
+        }
     }
 }
 
-fn is_integer_constant_expression(expression: &Expr) -> bool {
+fn is_integer_constant_expression(expression: &ConstExpr) -> bool {
     match expression {
-        Expr::IntLit(_) | Expr::SizeOf(_) => true,
-        Expr::Unary { value, .. } => is_integer_constant_expression(value),
-        Expr::Binary { left, right, .. } => {
+        ConstExpr::Integer(_) | ConstExpr::SizeOf(_) => true,
+        ConstExpr::Unary { value, .. } => is_integer_constant_expression(value),
+        ConstExpr::Binary { left, right, .. } => {
             is_integer_constant_expression(left) && is_integer_constant_expression(right)
         }
-        Expr::Identifier(_) | Expr::StringLit(_) | Expr::Call { .. } | Expr::Cast { .. } => false,
+        ConstExpr::Identifier(_) => false,
     }
 }
 

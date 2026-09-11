@@ -1,6 +1,7 @@
 use crate::ast::{Condition, FileId, HeaderKind, Provenance};
 use crate::const_expr;
 use crate::files::{Files, SearchPaths, display_path};
+use crate::lexer::lex;
 use miette::{Diagnostic, NamedSource, SourceSpan};
 use std::path::{Path, PathBuf};
 use thiserror::Error;
@@ -158,9 +159,8 @@ impl<'a> Preprocessor<'a> {
         line: usize,
     ) -> Result<Option<Condition>, PPFailure> {
         if let Some(expression) = trimmed.strip_prefix("#if ") {
-            let value = const_expr::evaluate(expression.trim()).map_err(|error| {
-                self.error(line, format!("invalid #if expression: {}", error.0))
-            })?;
+            let value = const_expr::Parser::evaluate(&lex(expression.trim()))
+                .map_err(|error| self.error(line, format!("invalid #if expression: {error}")))?;
             return Ok(Some(Condition::Constant(value)));
         }
         for (directive, negate) in [("#ifdef", false), ("#ifndef", true)] {
@@ -220,9 +220,10 @@ impl<'a> Preprocessor<'a> {
                 if saw_else {
                     return Err(self.error(*pos, "#elif after #else"));
                 }
-                let value = const_expr::evaluate(expression.trim()).map_err(|error| {
-                    self.error(*pos, format!("invalid #elif expression: {}", error.0))
-                })?;
+                let value =
+                    const_expr::Parser::evaluate(&lex(expression.trim())).map_err(|error| {
+                        self.error(*pos, format!("invalid #elif expression: {error}"))
+                    })?;
                 let condition = Condition::Constant(value);
                 let excluded = prior
                     .iter()

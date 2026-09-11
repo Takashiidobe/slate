@@ -43,7 +43,7 @@ impl From<Keyword> for &'static str {
     }
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Token {
     Keyword(Keyword),
     Sizeof,

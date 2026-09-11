@@ -84,7 +84,7 @@ impl Stmt {
     fn eval(&self, env: &Env) -> Vec<ConcreteStmt> {
         match self {
             Self::Return(e) => vec![ConcreteStmt::Return(e.clone())],
-            Self::Expression(e) => vec![ConcreteStmt::Expression(e.clone())],
+            Self::Expr(e) => vec![ConcreteStmt::Expr(e.clone())],
             Self::Conditional(cond) => match cond.select_branch(env) {
                 Some(body) => body.iter().flat_map(|stmt| stmt.eval(env)).collect(),
                 None => vec![],

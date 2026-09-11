@@ -137,17 +137,17 @@ impl<W: Write> Renderer<W> {
                 Stmt::Return(expression) => {
                     self.line(&format!("{indent}stmt[{index}]: return {expression}"))?;
                 }
-                Stmt::Expression(Expr::Call { callee, argument }) => {
+                Stmt::Expr(Expr::Call { callee, argument }) => {
                     self.line(&format!(
                         "{indent}stmt[{index}]: call callee={callee} argument={argument}"
                     ))?;
                 }
-                Stmt::Expression(Expr::Cast { ty, expression }) => {
+                Stmt::Expr(Expr::Cast { ty, expression }) => {
                     self.line(&format!(
                         "{indent}stmt[{index}]: cast type={ty} expression={expression}"
                     ))?;
                 }
-                Stmt::Expression(expression) => {
+                Stmt::Expr(expression) => {
                     self.line(&format!("{indent}stmt[{index}]: expression={expression:?}"))?;
                 }
                 Stmt::Conditional(conditional) => {
@@ -195,11 +195,11 @@ impl<W: Write> Renderer<W> {
                             ConcreteStmt::Return(Expr::StringLit(value)) => self.line(&format!(
                                 "{indent}  stmt[{stmt_index}]: return string={value}"
                             ))?,
-                            ConcreteStmt::Expression(Expr::Call { callee, argument }) => self
+                            ConcreteStmt::Expr(Expr::Call { callee, argument }) => self
                                 .line(&format!(
                                     "{indent}  stmt[{stmt_index}]: call callee={callee} argument={argument}"
                                 ))?,
-                            ConcreteStmt::Expression(Expr::Cast { ty, expression }) => self
+                            ConcreteStmt::Expr(Expr::Cast { ty, expression }) => self
                                 .line(&format!(
                                     "{indent}  stmt[{stmt_index}]: cast type={ty} expression={expression}"
                                 ))?,
@@ -214,7 +214,7 @@ impl<W: Write> Renderer<W> {
                             ConcreteStmt::Return(expression) => self.line(&format!(
                                 "{indent}  stmt[{stmt_index}]: return {expression}"
                             ))?,
-                            ConcreteStmt::Expression(expression) => self.line(&format!(
+                            ConcreteStmt::Expr(expression) => self.line(&format!(
                                 "{indent}  stmt[{stmt_index}]: expression={expression:?}"
                             ))?,
                         }
@@ -294,6 +294,30 @@ impl<W: Write> Renderer<W> {
                         Attribute::Alias(value) => format!("alias(\"{value}\")"),
                         Attribute::WeakRef(value) => format!("weakref(\"{value}\")"),
                         Attribute::Malloc => "malloc".into(),
+                        Attribute::AssumeAligned(values) => format!(
+                            "assume_aligned({})",
+                            values
+                                .iter()
+                                .map(ToString::to_string)
+                                .collect::<Vec<_>>()
+                                .join(",")
+                        ),
+                        Attribute::AllocSize(values) => format!(
+                            "alloc_size({})",
+                            values
+                                .iter()
+                                .map(ToString::to_string)
+                                .collect::<Vec<_>>()
+                                .join(",")
+                        ),
+                        Attribute::AllocAlign(value) => format!("alloc_align({value})"),
+                        Attribute::Cleanup(value) => format!("cleanup({value})"),
+                        Attribute::ReturnsNonNull => "returns_nonnull".into(),
+                        Attribute::WarnUnusedResult => "warn_unused_result".into(),
+                        Attribute::Sentinel(value) => value.map_or_else(
+                            || "sentinel".into(),
+                            |value| format!("sentinel({value})")
+                        ),
                         Attribute::Pure => "pure".into(),
                         Attribute::Const => "const".into(),
                         Attribute::MayAlias => "may_alias".into(),

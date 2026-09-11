@@ -1,3 +1,5 @@
+use crate::const_expr::{BinaryOp, ConstExpr, UnaryOp};
+
 #[derive(Debug, Clone, PartialEq)]
 pub enum Condition {
     Defined(String),
@@ -14,15 +16,16 @@ pub struct Conditional<T> {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Expr {
+    Const(Box<ConstExpr>),
     IntLit(i64),
     StringLit(String),
     Identifier(String),
     Unary {
-        op: crate::const_expr::UnaryOp,
+        op: UnaryOp,
         value: Box<Expr>,
     },
     Binary {
-        op: crate::const_expr::BinaryOp,
+        op: BinaryOp,
         left: Box<Expr>,
         right: Box<Expr>,
     },
@@ -40,6 +43,7 @@ pub enum Expr {
 impl std::fmt::Display for Expr {
     fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
+            Self::Const(value) => write!(formatter, "{value}"),
             Self::IntLit(value) => write!(formatter, "{value}"),
             Self::StringLit(value) => write!(formatter, "\"{value}\""),
             Self::Identifier(value) => formatter.write_str(value),
@@ -76,7 +80,7 @@ pub enum Initializer {
 #[derive(Debug, Clone, PartialEq)]
 pub enum Stmt {
     Return(Expr),
-    Expression(Expr),
+    Expr(Expr),
     Conditional(Conditional<Vec<Stmt>>),
 }
 
@@ -99,8 +103,8 @@ pub struct Provenance {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Attribute {
     Packed,
-    Aligned(Expr),
-    VectorSize(Expr),
+    Aligned(ConstExpr),
+    VectorSize(ConstExpr),
     Mode(String),
     Visibility(String),
     Section(String),
@@ -118,6 +122,13 @@ pub enum Attribute {
     Alias(String),
     WeakRef(String),
     Malloc,
+    AssumeAligned(Vec<ConstExpr>),
+    AllocSize(Vec<ConstExpr>),
+    AllocAlign(ConstExpr),
+    Cleanup(String),
+    ReturnsNonNull,
+    WarnUnusedResult,
+    Sentinel(Option<i64>),
     Pure,
     Const,
     MayAlias,
@@ -379,7 +390,7 @@ pub struct TranslationUnit {
 #[derive(Debug, Clone, PartialEq)]
 pub enum ConcreteStmt {
     Return(Expr),
-    Expression(Expr),
+    Expr(Expr),
 }
 
 #[derive(Debug, Clone, PartialEq)]

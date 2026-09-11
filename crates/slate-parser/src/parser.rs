@@ -311,9 +311,10 @@ impl Parser {
                             .iter()
                             .position(|token| token == &Token::Comma)
                             .unwrap_or(tokens.len());
-                        let source = tokens_source(&tokens[2..end]);
-                        let value = const_expr::evaluate(&source)
-                            .map_err(|error| self.error_at(text, 0, text.len(), error.0))?;
+                        let value =
+                            const_expr::Parser::evaluate(&tokens[2..end]).map_err(|error| {
+                                self.error_at(text, 0, text.len(), error.to_string())
+                            })?;
                         Some(Expr::IntLit(value))
                     }
                     _ => {
@@ -590,14 +591,14 @@ fn parse_attribute(name: &str, arguments: &[Token]) -> Result<Attribute, String>
     match canonical_name {
         "packed" if arguments.is_empty() => Ok(Attribute::Packed),
         "aligned" => Ok(match single_int() {
-            Some(value) => Attribute::Aligned(Expr::IntLit(value)),
+            Some(value) => Attribute::Aligned(const_expr::ConstExpr::Integer(value)),
             None if !arguments.is_empty() => {
                 Attribute::Aligned(parse_attribute_expression(arguments)?)
             }
             None => invalid_attribute(name, arguments),
         }),
         "vector_size" => Ok(match single_int() {
-            Some(value) => Attribute::VectorSize(Expr::IntLit(value)),
+            Some(value) => Attribute::VectorSize(const_expr::ConstExpr::Integer(value)),
             None if !arguments.is_empty() => {
                 Attribute::VectorSize(parse_attribute_expression(arguments)?)
             }
@@ -627,6 +628,33 @@ fn parse_attribute(name: &str, arguments: &[Token]) -> Result<Attribute, String>
         "nonnull" => Ok(integers()
             .map(Attribute::NonNull)
             .unwrap_or_else(|| invalid_attribute(name, arguments))),
+        "assume_aligned" => Ok(
+            match arguments
+                .split(|token| *token == Token::Comma)
+                .map(parse_attribute_expression)
+                .collect::<Result<Vec<_>, _>>()
+            {
+                Ok(values) if !values.is_empty() => Attribute::AssumeAligned(values),
+                _ => invalid_attribute(name, arguments),
+            },
+        ),
+        "alloc_size" => Ok(
+            match arguments
+                .split(|token| *token == Token::Comma)
+                .map(parse_attribute_expression)
+                .collect::<Result<Vec<_>, _>>()
+            {
+                Ok(values) if !values.is_empty() => Attribute::AllocSize(values),
+                _ => invalid_attribute(name, arguments),
+            },
+        ),
+        "alloc_align" => Ok(match parse_attribute_expression(arguments) {
+            Ok(value) if !arguments.is_empty() => Attribute::AllocAlign(value),
+            _ => invalid_attribute(name, arguments),
+        }),
+        "cleanup" => Ok(single_ident()
+            .map(Attribute::Cleanup)
+            .unwrap_or_else(|| invalid_attribute(name, arguments))),
         "weak" if arguments.is_empty() => Ok(Attribute::Weak),
         "used" if arguments.is_empty() => Ok(Attribute::Used),
         "retain" if arguments.is_empty() => Ok(Attribute::Retain),
@@ -636,6 +664,12 @@ fn parse_attribute(name: &str, arguments: &[Token]) -> Result<Attribute, String>
         "constructor" if arguments.is_empty() => Ok(Attribute::Constructor),
         "destructor" if arguments.is_empty() => Ok(Attribute::Destructor),
         "malloc" if arguments.is_empty() => Ok(Attribute::Malloc),
+        "returns_nonnull" if arguments.is_empty() => Ok(Attribute::ReturnsNonNull),
+        "warn_unused_result" if arguments.is_empty() => Ok(Attribute::WarnUnusedResult),
+        "sentinel" if arguments.is_empty() => Ok(Attribute::Sentinel(None)),
+        "sentinel" => Ok(single_int()
+            .map(|value| Attribute::Sentinel(Some(value)))
+            .unwrap_or_else(|| invalid_attribute(name, arguments))),
         "pure" if arguments.is_empty() => Ok(Attribute::Pure),
         "const" if arguments.is_empty() => Ok(Attribute::Const),
         "may_alias" if arguments.is_empty() => Ok(Attribute::MayAlias),
@@ -664,26 +698,8 @@ fn invalid_attribute(name: &str, arguments: &[Token]) -> Attribute {
     }
 }
 
-fn parse_attribute_expression(arguments: &[Token]) -> Result<Expr, String> {
-    let expression = const_expr::parse(&tokens_source(arguments)).map_err(|error| error.0)?;
-    Ok(convert_const_expr(expression))
-}
-
-fn convert_const_expr(expression: const_expr::ConstExpr) -> Expr {
-    match expression {
-        const_expr::ConstExpr::Integer(value) => Expr::IntLit(value),
-        const_expr::ConstExpr::Identifier(name) => Expr::Identifier(name),
-        const_expr::ConstExpr::SizeOf(value) => Expr::SizeOf(Box::new(convert_const_expr(*value))),
-        const_expr::ConstExpr::Unary { op, value } => Expr::Unary {
-            op,
-            value: Box::new(convert_const_expr(*value)),
-        },
-        const_expr::ConstExpr::Binary { op, left, right } => Expr::Binary {
-            op,
-            left: Box::new(convert_const_expr(*left)),
-            right: Box::new(convert_const_expr(*right)),
-        },
-    }
+fn parse_attribute_expression(arguments: &[Token]) -> Result<const_expr::ConstExpr, String> {
+    const_expr::Parser::parse(arguments).map_err(|error| error.to_string())
 }
 
 trait AttributeName {
@@ -713,6 +729,13 @@ impl AttributeName for str {
                 | "constructor"
                 | "destructor"
                 | "malloc"
+                | "assume_aligned"
+                | "alloc_size"
+                | "alloc_align"
+                | "cleanup"
+                | "returns_nonnull"
+                | "warn_unused_result"
+                | "sentinel"
                 | "pure"
                 | "const"
                 | "may_alias"
@@ -876,9 +899,8 @@ impl<'a> DeclaratorParser<'a> {
                             assert!(self.peek().is_some(), "expected `]` in array declarator");
                             self.pos += 1;
                         }
-                        let source = tokens_source(&self.tokens[start..self.pos]);
-                        let value = const_expr::evaluate(&source)
-                            .unwrap_or_else(|error| panic!("invalid array bound: {}", error.0));
+                        let value = const_expr::Parser::evaluate(&self.tokens[start..self.pos])
+                            .unwrap_or_else(|error| panic!("invalid array bound: {error}"));
                         ArraySize::Expression(Box::new(Expr::IntLit(value)))
                     };
                     assert!(
@@ -982,14 +1004,6 @@ impl<'a> DeclaratorParser<'a> {
         }
         (parameters, variadic)
     }
-}
-
-fn tokens_source(tokens: &[Token]) -> String {
-    tokens
-        .iter()
-        .map(token_source)
-        .collect::<Vec<_>>()
-        .join(" ")
 }
 
 fn token_source(token: &Token) -> String {
@@ -1163,7 +1177,7 @@ impl Parser {
                         argument: argument.clone(),
                     }
                 };
-                stmts.push(Stmt::Expression(expression));
+                stmts.push(Stmt::Expr(expression));
                 i += 7;
                 continue;
             }

@@ -288,13 +288,14 @@ fn summarize_evaluated_decl(decl: &ConcreteDecl) -> DeclSummary {
                         Expr::Call { .. }
                         | Expr::Cast { .. }
                         | Expr::Identifier(_)
+                        | Expr::Const(_)
                         | Expr::Unary { .. }
                         | Expr::Binary { .. }
                         | Expr::SizeOf(_),
                     ) => {
                         panic!("clang return was not an integer")
                     }
-                    ConcreteStmt::Expression(_) => None,
+                    ConcreteStmt::Expr(_) => None,
                 })
                 .collect(),
             signature: None,
@@ -578,6 +579,7 @@ fn array_size(size: &ArraySize) -> String {
             Expr::Call { .. }
             | Expr::Cast { .. }
             | Expr::Identifier(_)
+            | Expr::Const(_)
             | Expr::Unary { .. }
             | Expr::Binary { .. }
             | Expr::SizeOf(_) => panic!("array bound was not an integer"),
