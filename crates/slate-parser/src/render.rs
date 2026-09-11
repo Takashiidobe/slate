@@ -34,17 +34,19 @@ impl<W: Write> Renderer<W> {
                         Self::function_suffix(
                             function.qualifiers,
                             function.storage,
-                            function.is_inline
+                            function.is_inline,
+                            &function.attributes
                         ),
                     ))?;
                     self.render_stmts(&function.body, &format!("{indent}  "))?;
                 }
                 Decl::Declaration { declaration, .. } => self.line(&format!(
-                    "{indent}{label}[{index}]: declaration type={}{} declarator={}{}",
+                    "{indent}{label}[{index}]: declaration type={}{} declarator={}{}{}",
                     Self::type_name(&declaration.specifiers.ty),
                     Self::specifier_suffix(&declaration.specifiers),
                     Self::render_declarator(&declaration.declarator),
-                    Self::initializer_suffix(declaration.initializer.as_ref())
+                    Self::initializer_suffix(declaration.initializer.as_ref()),
+                    Self::attributes_suffix(&declaration.attributes)
                 ))?,
                 Decl::Typedef {
                     name,
@@ -178,7 +180,8 @@ impl<W: Write> Renderer<W> {
                         Self::function_suffix(
                             function.qualifiers,
                             function.storage,
-                            function.is_inline
+                            function.is_inline,
+                            &function.attributes
                         )
                     ))?;
                     for (stmt_index, stmt) in function.body.iter().enumerate() {
@@ -212,11 +215,12 @@ impl<W: Write> Renderer<W> {
                     }
                 }
                 ConcreteDecl::Declaration { declaration, .. } => self.line(&format!(
-                    "{indent}{label}[{index}]: declaration type={}{} declarator={}{}",
+                    "{indent}{label}[{index}]: declaration type={}{} declarator={}{}{}",
                     Self::type_name(&declaration.specifiers.ty),
                     Self::specifier_suffix(&declaration.specifiers),
                     Self::render_declarator(&declaration.declarator),
-                    Self::initializer_suffix(declaration.initializer.as_ref())
+                    Self::initializer_suffix(declaration.initializer.as_ref()),
+                    Self::attributes_suffix(&declaration.attributes)
                 ))?,
                 ConcreteDecl::Typedef {
                     name,
@@ -261,6 +265,33 @@ impl<W: Write> Renderer<W> {
                         Attribute::Aligned(value) => format!("aligned({value})"),
                         Attribute::VectorSize(value) => format!("vector_size({value})"),
                         Attribute::Mode(value) => format!("mode({value})"),
+                        Attribute::Visibility(value) => format!("visibility(\"{value}\")"),
+                        Attribute::Section(value) => format!("section(\"{value}\")"),
+                        Attribute::Weak => "weak".into(),
+                        Attribute::Used => "used".into(),
+                        Attribute::Retain => "retain".into(),
+                        Attribute::NoInline => "noinline".into(),
+                        Attribute::AlwaysInline => "always_inline".into(),
+                        Attribute::NoReturn => "noreturn".into(),
+                        Attribute::Constructor => "constructor".into(),
+                        Attribute::Destructor => "destructor".into(),
+                        Attribute::NonNull(values) => format!(
+                            "nonnull({})",
+                            values
+                                .iter()
+                                .map(ToString::to_string)
+                                .collect::<Vec<_>>()
+                                .join(",")
+                        ),
+                        Attribute::Annotate(value) => format!("annotate(\"{value}\")"),
+                        Attribute::Target(value) => format!("target(\"{value}\")"),
+                        Attribute::Alias(value) => format!("alias(\"{value}\")"),
+                        Attribute::WeakRef(value) => format!("weakref(\"{value}\")"),
+                        Attribute::Malloc => "malloc".into(),
+                        Attribute::Pure => "pure".into(),
+                        Attribute::Invalid { name, arguments } => {
+                            format!("{name}({})", arguments.join(" "))
+                        }
                     })
                     .collect::<Vec<_>>()
                     .join(",")
@@ -395,7 +426,12 @@ impl<W: Write> Renderer<W> {
         }
     }
 
-    fn function_suffix(qualifiers: Qualifiers, storage: StorageClass, is_inline: bool) -> String {
+    fn function_suffix(
+        qualifiers: Qualifiers,
+        storage: StorageClass,
+        is_inline: bool,
+        attributes: &[Attribute],
+    ) -> String {
         let mut parts = Vec::new();
         let qualifier_name = Self::qualifier_name(qualifiers);
         if !qualifier_name.is_empty() {
@@ -407,6 +443,14 @@ impl<W: Write> Renderer<W> {
         }
         if is_inline {
             parts.push("inline=true".into());
+        }
+        if !attributes.is_empty() {
+            parts.push(
+                Self::attributes_suffix(attributes)
+                    .trim_start_matches(" [")
+                    .trim_end_matches(']')
+                    .to_string(),
+            );
         }
         if parts.is_empty() {
             String::new()
@@ -496,10 +540,15 @@ impl<W: Write> Renderer<W> {
     }
 
     fn parameter_name(parameter: &Parameter) -> String {
-        match &parameter.declarator {
+        let name = match &parameter.declarator {
             None => Self::type_name(&parameter.ty),
             Some(Declarator::Name(name)) => format!("{} {name}", Self::type_name(&parameter.ty)),
             Some(declarator) => Self::parameter_declarator_name(&parameter.ty, declarator),
+        };
+        if parameter.attributes.is_empty() {
+            name
+        } else {
+            format!("{name}{}", Self::attributes_suffix(&parameter.attributes))
         }
     }
 

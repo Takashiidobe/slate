@@ -40,6 +40,7 @@ impl Decl {
                 qualifiers: f.qualifiers,
                 storage: f.storage,
                 is_inline: f.is_inline,
+                attributes: f.attributes.clone(),
             })],
             Self::Declaration {
                 declaration,

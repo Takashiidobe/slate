@@ -1,7 +1,9 @@
 use crate::ast::{Condition, FileId, HeaderKind, Provenance};
 use crate::const_expr;
 use crate::files::{Files, SearchPaths};
+use miette::{Diagnostic, NamedSource, SourceSpan};
 use std::path::{Path, PathBuf};
+use thiserror::Error;
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum PPNode {
@@ -17,10 +19,20 @@ pub struct PPConditional {
     pub branches: Vec<(Condition, Vec<PPNode>)>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Error, Diagnostic, Clone)]
+#[error("{message}")]
 pub struct PPError {
-    pub line: usize,
     pub message: String,
+    #[source_code]
+    pub source_code: NamedSource<String>,
+    #[label]
+    pub span: SourceSpan,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct PPFailure {
+    line: usize,
+    message: String,
 }
 
 enum IncludeDirective {
@@ -59,23 +71,34 @@ impl<'a> Preprocessor<'a> {
         let src = std::fs::read_to_string(&canon)
             .unwrap_or_else(|e| panic!("failed to read {}: {e}", canon.display()));
         let file = self.files.intern(canon.clone(), HeaderKind::User);
-        self.open_stack.push(canon);
-        let nodes = self.parse_source(&src, file)?;
+        self.open_stack.push(canon.clone());
+        let nodes = self.parse_source(&canon.display().to_string(), &src, file)?;
         self.open_stack.pop();
         Ok(nodes)
     }
 
     pub fn parse_str(&mut self, name: &str, src: &str) -> Result<Vec<PPNode>, PPError> {
         let file = self.files.intern(PathBuf::from(name), HeaderKind::User);
-        self.parse_source(src, file)
+        self.parse_source(name, src, file)
     }
 
-    fn parse_source(&mut self, src: &str, file: FileId) -> Result<Vec<PPNode>, PPError> {
+    fn parse_source(
+        &mut self,
+        name: &str,
+        src: &str,
+        file: FileId,
+    ) -> Result<Vec<PPNode>, PPError> {
         let lines: Vec<&str> = src.lines().collect();
         let mut pos = 0;
-        let nodes = self.parse_block(&lines, &mut pos, file)?;
+        let nodes = self
+            .parse_block(&lines, &mut pos, file)
+            .map_err(|error| self.with_source(error, name, src))?;
         if pos < lines.len() {
-            return Err(self.error(pos, "unexpected conditional directive"));
+            return Err(self.with_source(
+                self.error(pos, "unexpected conditional directive"),
+                name,
+                src,
+            ));
         }
         Ok(nodes)
     }
@@ -85,11 +108,12 @@ impl<'a> Preprocessor<'a> {
         lines: &[&str],
         pos: &mut usize,
         file: FileId,
-    ) -> Result<Vec<PPNode>, PPError> {
+    ) -> Result<Vec<PPNode>, PPFailure> {
         let mut nodes = Vec::new();
         let provenance = Provenance {
             file,
             kind: self.files.kind(file),
+            line: 0,
         };
 
         while *pos < lines.len() {
@@ -103,7 +127,10 @@ impl<'a> Preprocessor<'a> {
                 ));
             } else if let Some(include) = parse_include_directive(trimmed) {
                 *pos += 1;
-                nodes.extend(self.resolve_and_parse_include(&include, file)?);
+                nodes.extend(
+                    self.resolve_and_parse_include(&include, file)
+                        .map_err(|error| self.error(*pos, error.to_string()))?,
+                );
             } else if trimmed == "#else" || trimmed.starts_with("#elif") || trimmed == "#endif" {
                 break;
             } else if trimmed.starts_with('#') {
@@ -113,7 +140,10 @@ impl<'a> Preprocessor<'a> {
             } else {
                 nodes.push(PPNode::Code {
                     text: trimmed.to_string(),
-                    provenance,
+                    provenance: Provenance {
+                        line: *pos,
+                        ..provenance
+                    },
                 });
                 *pos += 1;
             }
@@ -126,7 +156,7 @@ impl<'a> Preprocessor<'a> {
         &self,
         trimmed: &str,
         line: usize,
-    ) -> Result<Option<Condition>, PPError> {
+    ) -> Result<Option<Condition>, PPFailure> {
         if let Some(expression) = trimmed.strip_prefix("#if ") {
             let value = const_expr::evaluate(expression.trim()).map_err(|error| {
                 self.error(line, format!("invalid #if expression: {}", error.0))
@@ -156,7 +186,7 @@ impl<'a> Preprocessor<'a> {
         pos: &mut usize,
         file: FileId,
         first_condition: Condition,
-    ) -> Result<PPConditional, PPError> {
+    ) -> Result<PPConditional, PPFailure> {
         let mut branches = Vec::new();
         let mut prior = vec![first_condition.clone()];
         let first_body = self.parse_block(lines, pos, file)?;
@@ -213,10 +243,23 @@ impl<'a> Preprocessor<'a> {
         }
     }
 
-    fn error(&self, line: usize, message: impl Into<String>) -> PPError {
-        PPError {
+    fn error(&self, line: usize, message: impl Into<String>) -> PPFailure {
+        PPFailure {
             line,
             message: message.into(),
+        }
+    }
+
+    fn with_source(&self, error: PPFailure, name: &str, source: &str) -> PPError {
+        let offset: usize = source
+            .lines()
+            .take(error.line)
+            .map(|line| line.len() + 1)
+            .sum();
+        PPError {
+            message: error.message,
+            source_code: NamedSource::new(name, source.to_string()).with_language("C"),
+            span: SourceSpan::new(offset.into(), 1),
         }
     }
 
@@ -235,8 +278,8 @@ impl<'a> Preprocessor<'a> {
         let src = std::fs::read_to_string(&resolved)
             .unwrap_or_else(|e| panic!("failed to read {}: {e}", resolved.display()));
         let file = self.files.intern(resolved.clone(), kind);
-        self.open_stack.push(resolved);
-        let nodes = self.parse_source(&src, file)?;
+        self.open_stack.push(resolved.clone());
+        let nodes = self.parse_source(&resolved.display().to_string(), &src, file)?;
         self.open_stack.pop();
         Ok(nodes)
     }

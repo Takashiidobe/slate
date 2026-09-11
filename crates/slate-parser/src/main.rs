@@ -21,7 +21,7 @@ fn main() -> miette::Result<()> {
     let compiler_args = CompilerArgParser::parse(args).map_err(|error| miette::miette!(error))?;
     fs::metadata(Path::new(&path)).map_err(|error| miette::miette!(error))?;
     let mut parser = Parser::new(SearchPaths::default());
-    let (ast, _) = parser.parse_file(Path::new(&path))?;
+    let (ast, files) = parser.parse_file(Path::new(&path))?;
     let defines = compiler_args.defines;
     let mut env = Env::new();
     for define in &defines {
@@ -30,13 +30,7 @@ fn main() -> miette::Result<()> {
             |(name, _)| name.trim_start_matches("-D").to_string(),
         ));
     }
-    let semantic_errors = ast.analyze(&defines);
-    if !semantic_errors.is_empty() {
-        for error in semantic_errors {
-            eprintln!("Error: {error}");
-        }
-        return Err(miette::miette!("semantic analysis failed"));
-    }
+    ast.analyze(&defines, &files)?;
     let stdout = io::stdout();
     let mut renderer = Renderer::new(stdout.lock());
     renderer

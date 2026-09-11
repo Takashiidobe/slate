@@ -59,6 +59,7 @@ pub enum HeaderKind {
 pub struct Provenance {
     pub file: FileId,
     pub kind: HeaderKind,
+    pub line: usize,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -67,6 +68,27 @@ pub enum Attribute {
     Aligned(i64),
     VectorSize(i64),
     Mode(String),
+    Visibility(String),
+    Section(String),
+    Weak,
+    Used,
+    Retain,
+    NoInline,
+    AlwaysInline,
+    NoReturn,
+    Constructor,
+    Destructor,
+    NonNull(Vec<i64>),
+    Annotate(String),
+    Target(String),
+    Alias(String),
+    WeakRef(String),
+    Malloc,
+    Pure,
+    Invalid {
+        name: String,
+        arguments: Vec<String>,
+    },
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -78,6 +100,7 @@ pub struct FunctionDecl {
     pub qualifiers: Qualifiers,
     pub storage: StorageClass,
     pub is_inline: bool,
+    pub attributes: Vec<Attribute>,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -214,6 +237,7 @@ impl Declarator {
 pub struct Parameter {
     pub ty: CType,
     pub declarator: Option<Declarator>,
+    pub attributes: Vec<Attribute>,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -323,6 +347,7 @@ pub struct ConcreteFunctionDecl {
     pub qualifiers: Qualifiers,
     pub storage: StorageClass,
     pub is_inline: bool,
+    pub attributes: Vec<Attribute>,
 }
 
 #[derive(Debug, Clone, PartialEq)]

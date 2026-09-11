@@ -1,6 +1,6 @@
 use crate::ast::*;
 use crate::const_expr;
-use crate::error::ParseError;
+use crate::error::{FrontendError, ParseError};
 use crate::files::{Files, SearchPaths};
 use crate::lexer::{Keyword, Token, lex};
 use crate::pp::{PPConditional, PPNode, Preprocessor};
@@ -26,35 +26,33 @@ impl Parser {
         }
     }
 
-    pub fn parse_source(&mut self, src: &str) -> Result<TranslationUnit, ParseError> {
+    pub fn parse_source(&mut self, src: &str) -> Result<TranslationUnit, FrontendError> {
         self.source_name = "<main>".into();
         self.source = src.into();
         let search = self.search.clone();
         let mut pp = Preprocessor::new(&search);
-        let nodes = pp
-            .parse_str("<main>", src)
-            .map_err(|error| self.error_at_line(error.line, error.message))?;
-        self.parse_nodes(&nodes)
+        let nodes = pp.parse_str("<main>", src).map_err(FrontendError::PP)?;
+        self.parse_nodes(&nodes).map_err(FrontendError::Parse)
     }
 
-    pub fn parse_file(&mut self, path: &Path) -> Result<(TranslationUnit, Files), ParseError> {
+    pub fn parse_file(&mut self, path: &Path) -> Result<(TranslationUnit, Files), FrontendError> {
         self.source_name = path.display().to_string();
-        self.source = std::fs::read_to_string(path).map_err(|error| {
-            ParseError::new(
-                self.source_name.clone(),
-                "",
-                0,
-                0,
-                format!("failed to read source: {error}"),
-            )
-        })?;
+        self.source = std::fs::read_to_string(path)
+            .map_err(|error| {
+                ParseError::new(
+                    self.source_name.clone(),
+                    "",
+                    0,
+                    0,
+                    format!("failed to read source: {error}"),
+                )
+            })
+            .map_err(FrontendError::Parse)?;
         let search = self.search.clone();
         let mut pp = Preprocessor::new(&search);
-        let nodes = pp
-            .parse_file(path)
-            .map_err(|error| self.error_at_line(error.line, error.message))?;
+        let nodes = pp.parse_file(path).map_err(FrontendError::PP)?;
         let ast = self.parse_nodes(&nodes);
-        ast.map(|ast| (ast, pp.files))
+        ast.map(|ast| (ast, pp.files)).map_err(FrontendError::Parse)
     }
 
     pub fn parse_declaration(&self, code: &str) -> Result<Declaration, ParseError> {
@@ -63,6 +61,9 @@ impl Parser {
             tokens: &tokens,
             pos: 0,
         };
+        let (mut attributes, position) = parse_attribute_groups(parser.tokens, parser.pos)
+            .map_err(|error| self.error_at(code, 0, code.len(), error))?;
+        parser.pos = position;
         let mut qualifiers = Qualifiers::default();
         let mut storage = StorageClass::None;
         let mut is_inline = false;
@@ -116,11 +117,10 @@ impl Parser {
             }
             parser.parse_declarator(false)
         };
-        let attributes = parse_attribute_groups(parser.tokens, parser.pos).map(|(attrs, pos)| {
-            parser.pos = pos;
-            attrs
-        });
-        let attributes = attributes.unwrap_or_default();
+        let (trailing_attributes, position) = parse_attribute_groups(parser.tokens, parser.pos)
+            .map_err(|error| self.error_at(code, 0, code.len(), error))?;
+        parser.pos = position;
+        attributes.extend(trailing_attributes);
         let initializer = if parser.matches(Token::Equal) {
             Some(parser.parse_initializer())
         } else {
@@ -425,22 +425,6 @@ impl Parser {
         )
     }
 
-    fn error_at_line(&self, line: usize, message: impl Into<String>) -> ParseError {
-        let offset = self
-            .source
-            .lines()
-            .take(line)
-            .map(|source| source.len() + 1)
-            .sum();
-        ParseError::new(
-            self.source_name.clone(),
-            self.source.clone(),
-            offset,
-            1,
-            message,
-        )
-    }
-
     fn node_text<'a>(&self, node: &'a PPNode) -> &'a str {
         match node {
             PPNode::Code { text, .. } => text,
@@ -481,25 +465,29 @@ fn parse_attribute_groups(
             };
             let name = name.clone();
             position += 1;
-            let value = if tokens.get(position) == Some(&Token::LParen) {
+            let arguments = if tokens.get(position) == Some(&Token::LParen) {
                 position += 1;
-                let value = tokens.get(position).cloned();
-                position += 1;
-                if tokens.get(position) != Some(&Token::RParen) {
-                    return Err("expected `)` after attribute argument".into());
+                let start = position;
+                let mut depth = 0;
+                while let Some(token) = tokens.get(position) {
+                    match token {
+                        Token::LParen => depth += 1,
+                        Token::RParen if depth == 0 => break,
+                        Token::RParen => depth -= 1,
+                        _ => {}
+                    }
+                    position += 1;
                 }
+                if tokens.get(position) != Some(&Token::RParen) {
+                    return Err("expected `)` after attribute arguments".into());
+                }
+                let arguments = tokens[start..position].to_vec();
                 position += 1;
-                Some(value)
+                arguments
             } else {
-                None
+                Vec::new()
             };
-            attributes.push(match (name.as_str(), value) {
-                ("packed", None) => Attribute::Packed,
-                ("aligned", Some(Some(Token::IntLit(value)))) => Attribute::Aligned(value),
-                ("vector_size", Some(Some(Token::IntLit(value)))) => Attribute::VectorSize(value),
-                ("mode", Some(Some(Token::Ident(value)))) => Attribute::Mode(value),
-                (name, _) => return Err(format!("unsupported attribute `{name}`")),
-            });
+            attributes.push(parse_attribute(&name, &arguments)?);
             if tokens.get(position) == Some(&Token::Comma) {
                 position += 1;
                 continue;
@@ -514,6 +502,118 @@ fn parse_attribute_groups(
         }
     }
     Ok((attributes, position))
+}
+
+fn parse_attribute(name: &str, arguments: &[Token]) -> Result<Attribute, String> {
+    let single_string = || match arguments {
+        [Token::StringLit(value)] => Some(value.clone()),
+        _ => None,
+    };
+    let single_ident = || match arguments {
+        [Token::Ident(value)] => Some(value.clone()),
+        _ => None,
+    };
+    let single_int = || match arguments {
+        [Token::IntLit(value)] => Some(*value),
+        _ => None,
+    };
+    let integers = || {
+        arguments
+            .split(|token| *token == Token::Comma)
+            .map(|tokens| match tokens {
+                [Token::IntLit(value)] => Ok(*value),
+                _ => Err(()),
+            })
+            .collect::<Result<Vec<_>, _>>()
+            .ok()
+    };
+    match name {
+        "packed" if arguments.is_empty() => Ok(Attribute::Packed),
+        "aligned" => Ok(single_int()
+            .map(Attribute::Aligned)
+            .unwrap_or_else(|| invalid_attribute(name, arguments))),
+        "vector_size" => Ok(single_int()
+            .map(Attribute::VectorSize)
+            .unwrap_or_else(|| invalid_attribute(name, arguments))),
+        "mode" => Ok(single_ident()
+            .map(Attribute::Mode)
+            .unwrap_or_else(|| invalid_attribute(name, arguments))),
+        "visibility" => Ok(single_string()
+            .map(Attribute::Visibility)
+            .unwrap_or_else(|| invalid_attribute(name, arguments))),
+        "section" => Ok(single_string()
+            .map(Attribute::Section)
+            .unwrap_or_else(|| invalid_attribute(name, arguments))),
+        "annotate" => Ok(single_string()
+            .map(Attribute::Annotate)
+            .unwrap_or_else(|| invalid_attribute(name, arguments))),
+        "target" => Ok(single_string()
+            .map(Attribute::Target)
+            .unwrap_or_else(|| invalid_attribute(name, arguments))),
+        "alias" => Ok(single_string()
+            .map(Attribute::Alias)
+            .unwrap_or_else(|| invalid_attribute(name, arguments))),
+        "weakref" => Ok(single_string()
+            .map(Attribute::WeakRef)
+            .unwrap_or_else(|| invalid_attribute(name, arguments))),
+        "nonnull" => Ok(integers()
+            .map(Attribute::NonNull)
+            .unwrap_or_else(|| invalid_attribute(name, arguments))),
+        "weak" if arguments.is_empty() => Ok(Attribute::Weak),
+        "used" if arguments.is_empty() => Ok(Attribute::Used),
+        "retain" if arguments.is_empty() => Ok(Attribute::Retain),
+        "noinline" if arguments.is_empty() => Ok(Attribute::NoInline),
+        "always_inline" if arguments.is_empty() => Ok(Attribute::AlwaysInline),
+        "noreturn" if arguments.is_empty() => Ok(Attribute::NoReturn),
+        "constructor" if arguments.is_empty() => Ok(Attribute::Constructor),
+        "destructor" if arguments.is_empty() => Ok(Attribute::Destructor),
+        "malloc" if arguments.is_empty() => Ok(Attribute::Malloc),
+        "pure" if arguments.is_empty() => Ok(Attribute::Pure),
+        name if name.is_attribute_name() => Ok(Attribute::Invalid {
+            name: name.into(),
+            arguments: arguments.iter().map(token_source).collect(),
+        }),
+        _ => Err(format!("unsupported or malformed attribute `{name}`")),
+    }
+}
+
+fn invalid_attribute(name: &str, arguments: &[Token]) -> Attribute {
+    Attribute::Invalid {
+        name: name.into(),
+        arguments: arguments.iter().map(token_source).collect(),
+    }
+}
+
+trait AttributeName {
+    fn is_attribute_name(&self) -> bool;
+}
+
+impl AttributeName for str {
+    fn is_attribute_name(&self) -> bool {
+        matches!(
+            self,
+            "aligned"
+                | "vector_size"
+                | "mode"
+                | "visibility"
+                | "section"
+                | "annotate"
+                | "target"
+                | "alias"
+                | "weakref"
+                | "nonnull"
+                | "weak"
+                | "used"
+                | "retain"
+                | "noinline"
+                | "always_inline"
+                | "noreturn"
+                | "constructor"
+                | "destructor"
+                | "malloc"
+                | "pure"
+        )
+    }
 }
 
 struct DeclaratorParser<'a> {
@@ -753,7 +853,17 @@ impl<'a> DeclaratorParser<'a> {
                 Some(Token::Comma) | Some(Token::RParen) => None,
                 _ => Some(self.parse_declarator(true)),
             };
-            parameters.push(Parameter { ty, declarator });
+            let attributes = parse_attribute_groups(self.tokens, self.pos)
+                .map(|(attributes, position)| {
+                    self.pos = position;
+                    attributes
+                })
+                .unwrap_or_else(|error| panic!("{error}"));
+            parameters.push(Parameter {
+                ty,
+                declarator,
+                attributes,
+            });
             if self.matches(Token::RParen) {
                 break;
             }
@@ -809,7 +919,8 @@ impl Parser {
         let provenance = self.node_provenance(&nodes[0]);
         let code = self.node_text(&nodes[0]);
         let sig_tokens = lex(code);
-        let mut index = 0;
+        let (mut attributes, mut index) =
+            parse_attribute_groups(&sig_tokens, 0).unwrap_or_else(|error| panic!("{error}"));
         let mut qualifiers = Qualifiers::default();
         let mut storage = StorageClass::None;
         let mut is_inline = false;
@@ -849,7 +960,10 @@ impl Parser {
             let offset = code.find('{').unwrap_or(code.len().saturating_sub(1));
             return Err(self.error_at(code, offset, 1, "expected `)`"));
         }
-        if sig_tokens.get(index + 4) != Some(&Token::LBrace) {
+        let (signature_attributes, body_index) = parse_attribute_groups(&sig_tokens, index + 4)
+            .unwrap_or_else(|error| panic!("{error}"));
+        attributes.extend(signature_attributes);
+        if sig_tokens.get(body_index) != Some(&Token::LBrace) {
             return Err(self.error_at(
                 code,
                 code.len().saturating_sub(1),
@@ -860,11 +974,18 @@ impl Parser {
 
         let close_idx = nodes[1..]
             .iter()
-            .position(
-                |n| matches!(n, PPNode::Code { text, .. } if lex(text) == vec![Token::RBrace]),
-            )
+            .position(|n| {
+                matches!(n, PPNode::Code { text, .. } if lex(text).first() == Some(&Token::RBrace))
+            })
             .ok_or_else(|| self.error_at(code, code.len().saturating_sub(1), 1, "expected `}`"))?
             + 1;
+
+        if let PPNode::Code { text, .. } = &nodes[close_idx] {
+            let closing_tokens = lex(text);
+            let (trailing_attributes, _) = parse_attribute_groups(&closing_tokens, 1)
+                .unwrap_or_else(|error| panic!("{error}"));
+            attributes.extend(trailing_attributes);
+        }
 
         let body = self.parse_stmt_list(&nodes[1..close_idx]);
         Ok((
@@ -876,6 +997,7 @@ impl Parser {
                 qualifiers,
                 storage,
                 is_inline,
+                attributes,
             },
             close_idx + 1,
         ))

@@ -1,22 +1,30 @@
 use crate::ast::*;
 use crate::eval::Env;
+use crate::files::Files;
+use miette::{Diagnostic, NamedSource, SourceSpan};
 use std::collections::HashSet;
-use std::fmt;
+use thiserror::Error;
 
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct SemanticError {
+#[derive(Debug, Error, Diagnostic, Clone)]
+#[error("{message}")]
+pub struct SemaError {
     pub message: String,
     pub provenance: Option<Provenance>,
+    #[source_code]
+    pub source_code: NamedSource<String>,
+    #[label]
+    pub span: SourceSpan,
 }
 
-impl fmt::Display for SemanticError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.message)
-    }
+#[derive(Debug, Error, Diagnostic)]
+#[error("semantic analysis failed")]
+pub struct SemaErrors {
+    #[related]
+    pub errors: Vec<SemaError>,
 }
 
 impl TranslationUnit {
-    pub fn analyze(&self, defines: &[String]) -> Vec<SemanticError> {
+    pub fn analyze(&self, defines: &[String], files: &Files) -> Result<(), SemaErrors> {
         let mut env = Env::new();
         for define in defines {
             env = env.define(define.trim_start_matches("-D").split_once('=').map_or_else(
@@ -51,6 +59,7 @@ impl TranslationUnit {
         for decl in &concrete.decls {
             match decl {
                 ConcreteDecl::Function(function) => {
+                    check_attributes(&function.attributes, function.provenance, &mut errors);
                     check_type(
                         &function.ret_type,
                         &typedefs,
@@ -82,11 +91,19 @@ impl TranslationUnit {
                         *provenance,
                         &mut errors,
                     );
+                    check_attributes(&declaration.attributes, *provenance, &mut errors);
                 }
-                ConcreteDecl::Typedef { ty, provenance, .. } => {
+                ConcreteDecl::Typedef {
+                    ty,
+                    provenance,
+                    attributes,
+                    ..
+                } => {
                     check_type(ty, &typedefs, &tags, *provenance, &mut errors);
+                    check_attributes(attributes, *provenance, &mut errors);
                 }
                 ConcreteDecl::Record(record) => {
+                    check_attributes(&record.attributes, record.provenance, &mut errors);
                     for field in &record.fields {
                         check_type(
                             &field.declaration.specifiers.ty,
@@ -95,12 +112,43 @@ impl TranslationUnit {
                             field.provenance,
                             &mut errors,
                         );
+                        check_attributes(
+                            &field.declaration.attributes,
+                            field.provenance,
+                            &mut errors,
+                        );
                     }
                 }
                 ConcreteDecl::Enum(_) => {}
             }
         }
-        errors
+        let errors: Vec<SemaError> = errors
+            .into_iter()
+            .map(|error| error.with_source(files))
+            .collect();
+        if errors.is_empty() {
+            Ok(())
+        } else {
+            Err(SemaErrors { errors })
+        }
+    }
+}
+
+impl SemaError {
+    fn with_source(mut self, files: &Files) -> Self {
+        let Some(provenance) = self.provenance else {
+            return self;
+        };
+        let path = files.path(provenance.file);
+        let source = std::fs::read_to_string(path).unwrap_or_default();
+        let offset: usize = source
+            .lines()
+            .take(provenance.line)
+            .map(|line| line.len() + 1)
+            .sum();
+        self.source_code = NamedSource::new(path.display().to_string(), source).with_language("C");
+        self.span = SourceSpan::new(offset.into(), 1);
+        self
     }
 }
 
@@ -109,7 +157,7 @@ fn check_declarator(
     typedefs: &HashSet<String>,
     tags: &HashSet<String>,
     provenance: Provenance,
-    errors: &mut Vec<SemanticError>,
+    errors: &mut Vec<SemaError>,
 ) {
     match declarator {
         Declarator::Function {
@@ -118,6 +166,7 @@ fn check_declarator(
             check_declarator(inner, typedefs, tags, provenance, errors);
             for parameter in parameters {
                 check_type(&parameter.ty, typedefs, tags, provenance, errors);
+                check_attributes(&parameter.attributes, provenance, errors);
                 if let Some(declarator) = &parameter.declarator {
                     check_declarator(declarator, typedefs, tags, provenance, errors);
                 }
@@ -132,12 +181,23 @@ fn check_declarator(
     }
 }
 
+fn check_attributes(attributes: &[Attribute], provenance: Provenance, errors: &mut Vec<SemaError>) {
+    for attribute in attributes {
+        if let Attribute::Invalid { name, .. } = attribute {
+            errors.push(error(
+                provenance,
+                format!("invalid arguments for attribute `{name}`"),
+            ));
+        }
+    }
+}
+
 fn check_type(
     ty: &CType,
     typedefs: &HashSet<String>,
     tags: &HashSet<String>,
     provenance: Provenance,
-    errors: &mut Vec<SemanticError>,
+    errors: &mut Vec<SemaError>,
 ) {
     match ty {
         CType::Named(name) if !typedefs.contains(name) => {
@@ -171,9 +231,11 @@ fn check_type(
     }
 }
 
-fn error(provenance: Provenance, message: impl Into<String>) -> SemanticError {
-    SemanticError {
+fn error(provenance: Provenance, message: impl Into<String>) -> SemaError {
+    SemaError {
         message: message.into(),
         provenance: Some(provenance),
+        source_code: NamedSource::new("<unknown>", String::new()),
+        span: SourceSpan::new(0.into(), 0),
     }
 }

@@ -1,3 +1,5 @@
+use crate::pp::PPError;
+use crate::sema::SemaErrors;
 use miette::{Diagnostic, NamedSource, SourceSpan};
 use thiserror::Error;
 
@@ -9,6 +11,19 @@ pub struct ParseError {
     pub source_code: NamedSource<String>,
     #[label]
     pub span: SourceSpan,
+}
+
+#[derive(Debug, Error, Diagnostic)]
+pub enum FrontendError {
+    #[error("{0}")]
+    #[diagnostic(transparent)]
+    PP(#[source] PPError),
+    #[error("{0}")]
+    #[diagnostic(transparent)]
+    Parse(#[source] ParseError),
+    #[error("{0}")]
+    #[diagnostic(transparent)]
+    Sema(#[source] SemaErrors),
 }
 
 impl ParseError {

@@ -45,7 +45,8 @@ def render_error(repo: Path, fixture: Path) -> list[str]:
     return [
         line.strip()
         for line in result.stderr.splitlines()
-        if line.startswith("Error:") or re.match(r"^\s*\d+ │", line)
+        if line.startswith("Error:")
+        or re.match(r"^\s*(?:\d+ │|×|╭─|·|╰─)", line)
     ]
 
 
