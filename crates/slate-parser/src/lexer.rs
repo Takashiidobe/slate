@@ -68,6 +68,8 @@ pub enum Token {
     RBracket,
     Colon,
     Comma,
+    Hash,
+    HashHash,
     Star,
     Ellipsis,
     Semi,
@@ -92,6 +94,62 @@ pub enum Token {
     OrOr,
     ShiftLeft,
     ShiftRight,
+}
+
+impl From<&Token> for String {
+    fn from(token: &Token) -> Self {
+        match token {
+            Token::Sizeof => "sizeof".into(),
+            Token::Keyword(keyword) => <&str>::from(*keyword).into(),
+            Token::Ident(name) => name.clone(),
+            Token::IntLit(value) => value.to_string(),
+            Token::FloatLit(value) => value.clone(),
+            Token::CharLit(value) => format!("'{value}'"),
+            Token::Utf8CharLit(value) => format!("u8'{value}'"),
+            Token::Utf16CharLit(value) => format!("u'{value}'"),
+            Token::Utf32CharLit(value) => format!("U'{value}'"),
+            Token::WideCharLit(value) => format!("L'{value}'"),
+            Token::StringLit(value) => format!("\"{value}\""),
+            Token::Utf8StringLit(value) => format!("u8\"{value}\""),
+            Token::Utf16StringLit(value) => format!("u\"{value}\""),
+            Token::Utf32StringLit(value) => format!("U\"{value}\""),
+            Token::WideStringLit(value) => format!("L\"{value}\""),
+            Token::LParen => "(".into(),
+            Token::RParen => ")".into(),
+            Token::LBrace => "{".into(),
+            Token::RBrace => "}".into(),
+            Token::LBracket => "[".into(),
+            Token::RBracket => "]".into(),
+            Token::Colon => ":".into(),
+            Token::Comma => ",".into(),
+            Token::Hash => "#".into(),
+            Token::HashHash => "##".into(),
+            Token::Star => "*".into(),
+            Token::Ellipsis => "...".into(),
+            Token::Semi => ";".into(),
+            Token::Equal => "=".into(),
+            Token::Dot => ".".into(),
+            Token::Plus => "+".into(),
+            Token::Minus => "-".into(),
+            Token::Slash => "/".into(),
+            Token::Percent => "%".into(),
+            Token::Bang => "!".into(),
+            Token::Tilde => "~".into(),
+            Token::Less => "<".into(),
+            Token::Greater => ">".into(),
+            Token::LessEqual => "<=".into(),
+            Token::GreaterEqual => ">=".into(),
+            Token::EqualEqual => "==".into(),
+            Token::NotEqual => "!=".into(),
+            Token::Amp => "&".into(),
+            Token::Caret => "^".into(),
+            Token::Pipe => "|".into(),
+            Token::AndAnd => "&&".into(),
+            Token::OrOr => "||".into(),
+            Token::ShiftLeft => "<<".into(),
+            Token::ShiftRight => ">>".into(),
+        }
+    }
 }
 
 pub fn lex(src: &str) -> Vec<Token> {
@@ -234,6 +292,11 @@ pub fn lex(src: &str) -> Vec<Token> {
             tokens.push(tok);
             i += 2;
         } else {
+            if c == '#' && chars.get(i + 1) == Some(&'#') {
+                tokens.push(Token::HashHash);
+                i += 2;
+                continue;
+            }
             let tok = match c {
                 '(' => Token::LParen,
                 ')' => Token::RParen,
@@ -243,6 +306,7 @@ pub fn lex(src: &str) -> Vec<Token> {
                 ']' => Token::RBracket,
                 ':' => Token::Colon,
                 ',' => Token::Comma,
+                '#' => Token::Hash,
                 '*' => Token::Star,
                 ';' => Token::Semi,
                 '=' => Token::Equal,

@@ -677,7 +677,7 @@ fn parse_attribute(name: &str, arguments: &[Token]) -> Result<Attribute, String>
         "noipa" if arguments.is_empty() => Ok(Attribute::NoIpa),
         "noclone" if arguments.is_empty() => Ok(Attribute::NoClone),
         "optimize" if !arguments.is_empty() => Ok(Attribute::Optimize(
-            arguments.iter().map(token_source).collect(),
+            arguments.iter().map(String::from).collect(),
         )),
         "naked" if arguments.is_empty() => Ok(Attribute::Naked),
         "interrupt" if arguments.is_empty() => Ok(Attribute::Interrupt),
@@ -727,7 +727,7 @@ fn parse_attribute(name: &str, arguments: &[Token]) -> Result<Attribute, String>
         _ if canonical_name.is_attribute_name() => Ok(invalid_attribute(name, arguments)),
         _ => Ok(Attribute::Unknown {
             name: name.into(),
-            arguments: arguments.iter().map(token_source).collect(),
+            arguments: arguments.iter().map(String::from).collect(),
         }),
     }
 }
@@ -735,7 +735,7 @@ fn parse_attribute(name: &str, arguments: &[Token]) -> Result<Attribute, String>
 fn invalid_attribute(name: &str, arguments: &[Token]) -> Attribute {
     Attribute::Invalid {
         name: name.into(),
-        arguments: arguments.iter().map(token_source).collect(),
+        arguments: arguments.iter().map(String::from).collect(),
     }
 }
 
@@ -745,7 +745,7 @@ fn attribute_arguments(arguments: &[Token]) -> Vec<String> {
         .map(|tokens| {
             tokens
                 .iter()
-                .map(token_source)
+                .map(String::from)
                 .collect::<Vec<_>>()
                 .join(" ")
         })
@@ -1090,56 +1090,6 @@ impl<'a> DeclaratorParser<'a> {
     }
 }
 
-fn token_source(token: &Token) -> String {
-    match token {
-        Token::Sizeof => "sizeof".into(),
-        Token::Keyword(keyword) => <&str>::from(*keyword).into(),
-        Token::IntLit(value) => value.to_string(),
-        Token::FloatLit(value) => value.clone(),
-        Token::CharLit(value) => format!("'{value}'"),
-        Token::Utf8CharLit(value) => format!("u8'{value}'"),
-        Token::Utf16CharLit(value) => format!("u'{value}'"),
-        Token::Utf32CharLit(value) => format!("U'{value}'"),
-        Token::WideCharLit(value) => format!("L'{value}'"),
-        Token::StringLit(value) => format!("\"{value}\""),
-        Token::Utf8StringLit(value) => format!("u8\"{value}\""),
-        Token::Utf16StringLit(value) => format!("u\"{value}\""),
-        Token::Utf32StringLit(value) => format!("U\"{value}\""),
-        Token::WideStringLit(value) => format!("L\"{value}\""),
-        Token::Ident(name) => name.clone(),
-        Token::LBracket => "[".into(),
-        Token::RBracket => "]".into(),
-        Token::Star => "*".into(),
-        Token::Plus => "+".into(),
-        Token::Minus => "-".into(),
-        Token::Slash => "/".into(),
-        Token::Percent => "%".into(),
-        Token::LParen => "(".into(),
-        Token::RParen => ")".into(),
-        Token::Colon => ":".into(),
-        Token::Comma => ",".into(),
-        Token::Equal => "=".into(),
-        Token::Dot => ".".into(),
-        Token::Semi => ";".into(),
-        Token::Less => "<".into(),
-        Token::Greater => ">".into(),
-        Token::LessEqual => "<=".into(),
-        Token::GreaterEqual => ">=".into(),
-        Token::EqualEqual => "==".into(),
-        Token::NotEqual => "!=".into(),
-        Token::Amp => "&".into(),
-        Token::Caret => "^".into(),
-        Token::Pipe => "|".into(),
-        Token::AndAnd => "&&".into(),
-        Token::OrOr => "||".into(),
-        Token::ShiftLeft => "<<".into(),
-        Token::ShiftRight => ">>".into(),
-        Token::Bang => "!".into(),
-        Token::Tilde => "~".into(),
-        other => panic!("unsupported token in constant expression: {other:?}"),
-    }
-}
-
 impl Parser {
     fn parse_function(&self, nodes: &[PPNode]) -> Result<(FunctionDecl, usize), ParseError> {
         let provenance = self.node_provenance(&nodes[0]);
@@ -1391,7 +1341,7 @@ impl Parser {
                     _ => Some(
                         tokens[start..colon]
                             .iter()
-                            .map(token_source)
+                            .map(String::from)
                             .collect::<Vec<_>>()
                             .join(" "),
                     ),

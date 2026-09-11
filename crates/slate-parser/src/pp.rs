@@ -1,8 +1,10 @@
-use crate::ast::{Condition, FileId, HeaderKind, Provenance};
+use crate::ast::{Condition, Conditional, FileId, HeaderKind, Provenance};
 use crate::const_expr;
 use crate::files::{Files, SearchPaths, display_path};
+use crate::lexer::Token;
 use crate::lexer::lex;
 use miette::{Diagnostic, NamedSource, SourceSpan};
+use std::collections::HashSet;
 use std::path::{Path, PathBuf};
 use thiserror::Error;
 
@@ -18,6 +20,15 @@ pub enum PPNode {
 #[derive(Debug, Clone, PartialEq)]
 pub struct PPConditional {
     pub branches: Vec<(Condition, Vec<PPNode>)>,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct MacroDef {
+    pub parameters: Option<Vec<String>>,
+    pub variadic: bool,
+    pub replacement: Vec<Token>,
+    pub provenance: Provenance,
+    pub order: usize,
 }
 
 #[derive(Debug, Error, Diagnostic, Clone)]
@@ -54,16 +65,20 @@ fn parse_include_directive(trimmed: &str) -> Option<IncludeDirective> {
 
 pub struct Preprocessor<'a> {
     pub files: Files,
+    pub macros: std::collections::HashMap<String, Conditional<MacroDef>>,
     search: &'a SearchPaths,
     open_stack: Vec<PathBuf>,
+    macro_order: usize,
 }
 
 impl<'a> Preprocessor<'a> {
     pub fn new(search: &'a SearchPaths) -> Self {
         Preprocessor {
             files: Files::new(),
+            macros: std::collections::HashMap::new(),
             search,
             open_stack: Vec::new(),
+            macro_order: 0,
         }
     }
 
@@ -73,14 +88,14 @@ impl<'a> Preprocessor<'a> {
             .unwrap_or_else(|e| panic!("failed to read {}: {e}", canon.display()));
         let file = self.files.intern(canon.clone(), HeaderKind::User);
         self.open_stack.push(canon.clone());
-        let nodes = self.parse_source(&display_path(&canon), &src, file)?;
+        let nodes = self.parse_source(&display_path(&canon), &src, file, Condition::Constant(1))?;
         self.open_stack.pop();
         Ok(nodes)
     }
 
     pub fn parse_str(&mut self, name: &str, src: &str) -> Result<Vec<PPNode>, PPError> {
         let file = self.files.intern(PathBuf::from(name), HeaderKind::User);
-        self.parse_source(name, src, file)
+        self.parse_source(name, src, file, Condition::Constant(1))
     }
 
     fn parse_source(
@@ -88,11 +103,12 @@ impl<'a> Preprocessor<'a> {
         name: &str,
         src: &str,
         file: FileId,
+        active: Condition,
     ) -> Result<Vec<PPNode>, PPError> {
         let lines: Vec<&str> = src.lines().collect();
         let mut pos = 0;
         let nodes = self
-            .parse_block(&lines, &mut pos, file)
+            .parse_block(&lines, &mut pos, file, &active)
             .map_err(|error| self.with_source(error, name, src))?;
         if pos < lines.len() {
             return Err(self.with_source(
@@ -109,6 +125,7 @@ impl<'a> Preprocessor<'a> {
         lines: &[&str],
         pos: &mut usize,
         file: FileId,
+        active: &Condition,
     ) -> Result<Vec<PPNode>, PPFailure> {
         let mut nodes = Vec::new();
         let provenance = Provenance {
@@ -124,14 +141,19 @@ impl<'a> Preprocessor<'a> {
             if let Some(condition) = self.parse_opening_condition(trimmed, *pos)? {
                 *pos += 1;
                 nodes.push(PPNode::Conditional(
-                    self.parse_conditional(lines, pos, file, condition)?,
+                    self.parse_conditional(lines, pos, file, condition, active)?,
                 ));
             } else if let Some(include) = parse_include_directive(trimmed) {
                 *pos += 1;
                 nodes.extend(
-                    self.resolve_and_parse_include(&include, file)
+                    self.resolve_and_parse_include(&include, file, active)
                         .map_err(|error| self.error(*pos, error.to_string()))?,
                 );
+            } else if let Some(rest) = trimmed.strip_prefix("#define") {
+                self.record_define(rest.trim_start(), file, *pos, active)?;
+                *pos += 1;
+            } else if trimmed.starts_with("#undef") {
+                *pos += 1;
             } else if trimmed == "#else" || trimmed.starts_with("#elif") || trimmed == "#endif" {
                 break;
             } else if trimmed.starts_with('#') {
@@ -139,8 +161,10 @@ impl<'a> Preprocessor<'a> {
             } else if trimmed.is_empty() {
                 *pos += 1;
             } else {
+                let expanded =
+                    self.expand_object_macros(&lex(trimmed), &mut HashSet::new(), active);
                 nodes.push(PPNode::Code {
-                    text: trimmed.to_string(),
+                    text: tokens_source(&expanded),
                     provenance: Provenance {
                         line: *pos,
                         ..provenance
@@ -186,10 +210,12 @@ impl<'a> Preprocessor<'a> {
         pos: &mut usize,
         file: FileId,
         first_condition: Condition,
+        active: &Condition,
     ) -> Result<PPConditional, PPFailure> {
         let mut branches = Vec::new();
         let mut prior = vec![first_condition.clone()];
-        let first_body = self.parse_block(lines, pos, file)?;
+        let first_active = conjunction(active, &first_condition);
+        let first_body = self.parse_block(lines, pos, file, &first_active)?;
         branches.push((first_condition, first_body));
         let mut saw_else = false;
 
@@ -207,13 +233,15 @@ impl<'a> Preprocessor<'a> {
                 }
                 saw_else = true;
                 *pos += 1;
-                let else_body = self.parse_block(lines, pos, file)?;
                 let excluded = prior
                     .clone()
                     .into_iter()
                     .reduce(|left, right| Condition::Or(Box::new(left), Box::new(right)))
                     .expect("conditional has an initial branch");
-                branches.push((Condition::Not(Box::new(excluded)), else_body));
+                let else_condition = Condition::Not(Box::new(excluded));
+                let else_active = conjunction(active, &else_condition);
+                let else_body = self.parse_block(lines, pos, file, &else_active)?;
+                branches.push((else_condition, else_body));
                 continue;
             }
             if let Some(expression) = directive.strip_prefix("#elif ") {
@@ -236,7 +264,8 @@ impl<'a> Preprocessor<'a> {
                 );
                 prior.push(branch_condition.clone());
                 *pos += 1;
-                let body = self.parse_block(lines, pos, file)?;
+                let body =
+                    self.parse_block(lines, pos, file, &conjunction(active, &branch_condition))?;
                 branches.push((branch_condition, body));
                 continue;
             }
@@ -249,6 +278,100 @@ impl<'a> Preprocessor<'a> {
             line,
             message: message.into(),
         }
+    }
+
+    fn record_define(
+        &mut self,
+        rest: &str,
+        file: FileId,
+        line: usize,
+        condition: &Condition,
+    ) -> Result<(), PPFailure> {
+        let name_end = rest
+            .find(|character: char| !character.is_ascii_alphanumeric() && character != '_')
+            .unwrap_or(rest.len());
+        if name_end == 0 {
+            return Err(self.error(line, "expected macro name after #define"));
+        }
+        let name = rest[..name_end].to_string();
+        let after_name = &rest[name_end..];
+        let (parameters, variadic, replacement_text) = if after_name.starts_with('(') {
+            let Some(close) = after_name.find(')') else {
+                return Err(self.error(line, "expected `)` after macro parameters"));
+            };
+            let parameter_text = &after_name[1..close];
+            let mut parameters = Vec::new();
+            let mut variadic = false;
+            for parameter in parameter_text
+                .split(',')
+                .map(str::trim)
+                .filter(|p| !p.is_empty())
+            {
+                if parameter == "..." {
+                    variadic = true;
+                } else {
+                    parameters.push(parameter.to_string());
+                }
+            }
+            (Some(parameters), variadic, &after_name[close + 1..])
+        } else {
+            (None, false, after_name)
+        };
+        self.macros
+            .entry(name)
+            .or_insert_with(|| Conditional {
+                branches: Vec::new(),
+            })
+            .branches
+            .push((
+                condition.clone(),
+                MacroDef {
+                    parameters,
+                    variadic,
+                    replacement: lex(replacement_text.trim()),
+                    provenance: Provenance {
+                        file,
+                        kind: self.files.kind(file),
+                        line,
+                    },
+                    order: self.macro_order,
+                },
+            ));
+        self.macro_order += 1;
+        Ok(())
+    }
+
+    fn expand_object_macros(
+        &self,
+        tokens: &[Token],
+        disabled: &mut HashSet<String>,
+        active: &Condition,
+    ) -> Vec<Token> {
+        let mut expanded = Vec::new();
+        for token in tokens {
+            let Token::Ident(name) = token else {
+                expanded.push(token.clone());
+                continue;
+            };
+            let Some(macro_def) = self.macros.get(name).and_then(|conditional| {
+                conditional
+                    .branches
+                    .iter()
+                    .rev()
+                    .find(|(condition, _)| condition == active)
+                    .map(|(_, definition)| definition.clone())
+            }) else {
+                expanded.push(token.clone());
+                continue;
+            };
+            if macro_def.parameters.is_some() || !disabled.insert(name.clone()) {
+                expanded.push(token.clone());
+                continue;
+            }
+            expanded.extend(self.expand_object_macros(&macro_def.replacement, disabled, active));
+            disabled.remove(name);
+        }
+        expanded
     }
 
     fn with_source(&self, error: PPFailure, name: &str, source: &str) -> PPError {
@@ -268,6 +391,7 @@ impl<'a> Preprocessor<'a> {
         &mut self,
         include: &IncludeDirective,
         from: FileId,
+        active: &Condition,
     ) -> Result<Vec<PPNode>, PPError> {
         let (resolved, kind) = self.resolve_include(include, from);
         assert!(
@@ -280,7 +404,7 @@ impl<'a> Preprocessor<'a> {
             .unwrap_or_else(|e| panic!("failed to read {}: {e}", resolved.display()));
         let file = self.files.intern(resolved.clone(), kind);
         self.open_stack.push(resolved.clone());
-        let nodes = self.parse_source(&display_path(&resolved), &src, file)?;
+        let nodes = self.parse_source(&display_path(&resolved), &src, file, active.clone())?;
         self.open_stack.pop();
         Ok(nodes)
     }
@@ -320,4 +444,16 @@ impl<'a> Preprocessor<'a> {
             }
         }
     }
+}
+
+fn conjunction(active: &Condition, branch: &Condition) -> Condition {
+    Condition::And(Box::new(active.clone()), Box::new(branch.clone()))
+}
+
+fn tokens_source(tokens: &[Token]) -> String {
+    tokens
+        .iter()
+        .map(String::from)
+        .collect::<Vec<_>>()
+        .join(" ")
 }
