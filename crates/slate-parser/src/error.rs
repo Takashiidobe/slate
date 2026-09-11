@@ -22,7 +22,7 @@ impl ParseError {
         let name = name.into();
         Self {
             message: message.into(),
-            source_code: NamedSource::new(name, source.into()),
+            source_code: NamedSource::new(name, source.into()).with_language("C"),
             span: (offset, length).into(),
         }
     }
