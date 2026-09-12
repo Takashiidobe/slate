@@ -3147,10 +3147,30 @@ impl Parser {
         {
             return Ok(single.clone().with_value(expression));
         }
-        const_expr::Parser::parse_expression(tokens, &self.typedef_names)
-            .map(|expression| span_tokens(Expr::Const(Box::new(expression)), tokens))
+        let tokens = coalesce_string_literals(tokens);
+        const_expr::Parser::parse_expression(&tokens, &self.typedef_names)
+            .map(|expression| span_tokens(Expr::Const(Box::new(expression)), &tokens))
             .map_err(|error| self.error_at(Loc::whole(code), error.to_string()))
     }
+}
+
+fn coalesce_string_literals(tokens: &[Span<Token>]) -> Vec<Span<Token>> {
+    let mut result = Vec::with_capacity(tokens.len());
+    for token in tokens {
+        let Some(previous) = result.last_mut() else {
+            result.push(token.clone());
+            continue;
+        };
+        match (&mut previous.value, &token.value) {
+            (Token::StringLit(left), Token::StringLit(right)) => {
+                left.push_str(right);
+                previous.spelling = previous.spelling.through(token.spelling);
+                previous.expansion = previous.expansion.through(token.expansion);
+            }
+            _ => result.push(token.clone()),
+        }
+    }
+    result
 }
 
 fn span_tokens<T>(value: T, tokens: &[Span<Token>]) -> Span<T> {
