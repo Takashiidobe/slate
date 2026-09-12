@@ -29,7 +29,7 @@ int main(void) {
 // DEFAULT-NEXT:               Decl(
 // DEFAULT-NEXT:                   Declaration {
 // DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                           ty: Named(
+// DEFAULT-NEXT:                           ty: TargetBuiltin(
 // DEFAULT-NEXT:                               "nullptr_t",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           qualifiers: Qualifiers {

@@ -266,9 +266,14 @@ impl Parser {
                 break;
             }
         }
-        let ty = parser
-            .parse_base_type()
-            .map_err(|error| self.error_at_tokens(tokens, parser.pos, error.to_string()))?;
+        let ty = if storage == StorageClass::Auto && matches!(parser.peek(), Some(Token::Ident(_)))
+        {
+            CType::TargetBuiltin("__auto_type".into())
+        } else {
+            parser
+                .parse_base_type()
+                .map_err(|error| self.error_at_tokens(tokens, parser.pos, error.to_string()))?
+        };
         let declarator = if parser.peek() == Some(&Token::Semi) {
             Declarator::Abstract
         } else {
@@ -991,6 +996,11 @@ impl<'a> AttrCursor<'a> {
                 self.pos += 1;
                 Ok(name)
             }
+            Some(Token::Keyword(keyword)) => {
+                let name = <&str>::from(*keyword).to_string();
+                self.pos += 1;
+                Ok(name)
+            }
             _ => Err(message.into()),
         }
     }
@@ -1023,7 +1033,9 @@ fn parse_attribute_groups(
     let mut cursor = AttrCursor::new(tokens, position);
     let mut attributes = Vec::new();
     loop {
-        if cursor.consume(&Token::Ident("_Alignas".into())) {
+        if cursor.consume(&Token::Ident("_Alignas".into()))
+            || cursor.consume(&Token::Ident("alignas".into()))
+        {
             let arguments =
                 cursor.parse_parenthesized_arguments("expected `)` after `_Alignas` argument")?;
             if arguments.is_empty() {
@@ -2445,6 +2457,7 @@ fn is_target_builtin_name(name: &str) -> bool {
             | "__m512i"
             | "char8_t"
             | "atomic_char8_t"
+            | "nullptr_t"
     )
 }
 
@@ -2804,7 +2817,7 @@ impl Parser {
     fn starts_declaration(&self, tokens: &[Span<Token>], pos: usize) -> bool {
         match tokens.value_at(pos) {
             Some(Token::Keyword(keyword)) if keyword.is_storage_class_or_specifier() => true,
-            Some(Token::Ident(name)) if name == "_Alignas" => true,
+            Some(Token::Ident(name)) if name == "_Alignas" || name == "alignas" => true,
             Some(token) => const_expr::starts_type_name(token, &self.typedef_names),
             None => false,
         }
@@ -2849,6 +2862,16 @@ impl Parser {
             let name = name.clone();
             fragment.pos += 2;
             return Ok(Stmt::Labeled(name));
+        }
+
+        if tokens.value_at(fragment.pos) == Some(&Token::LBracket)
+            && tokens.value_at(fragment.pos + 1) == Some(&Token::LBracket)
+        {
+            let (_, position) = parse_attribute_groups(tokens, fragment.pos)
+                .map_err(|error| fragment.error(error))?;
+            fragment.pos = position;
+            fragment.expect(Token::Semi, "expected `;` after attributes")?;
+            return self.parse_one_stmt(fragment);
         }
 
         if tokens.value_at(fragment.pos) == Some(&Token::LBrace) {

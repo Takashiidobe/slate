@@ -494,6 +494,7 @@ impl Parser {
                                 | "__has_extension"
                                 | "__has_builtin"
                                 | "__has_attribute"
+                                | "__has_c_attribute"
                                 | "__has_cpp_attribute"
                                 | "__building_module"
                         ) =>
@@ -1030,7 +1031,14 @@ impl Parser {
 
     fn parse_generic(&mut self) -> Result<ConstExpr, ConstExprError> {
         self.expect(Token::LParen)?;
-        let controlling = self.parse_assignment()?;
+        let controlling = if let Some((_, _, end)) = self.try_parse_type_name(self.position)
+            && self.token_at(end) == Some(&Token::Comma)
+        {
+            self.position = end;
+            ConstExpr::Identifier("<type-name>".into())
+        } else {
+            self.parse_assignment()?
+        };
         self.expect(Token::Comma)?;
         let mut associations = Vec::new();
         loop {
@@ -1316,7 +1324,8 @@ pub(crate) fn starts_type_name(token: &Token, typedef_names: &HashSet<String>) -
                 | Keyword::Constexpr
         ),
         Token::Ident(name) => {
-            typedef_names.contains(name) || matches!(name.as_str(), "char8_t" | "atomic_char8_t")
+            typedef_names.contains(name)
+                || matches!(name.as_str(), "char8_t" | "atomic_char8_t" | "nullptr_t")
         }
         _ => false,
     }

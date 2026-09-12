@@ -255,7 +255,7 @@ impl<'a> Preprocessor<'a> {
                     PPErrorKind::HeaderNotFound(include.to_string()),
                 )
             })?;
-        let bytes = std::fs::read(&path).map_err(|error| {
+        let mut bytes = std::fs::read(&path).map_err(|error| {
             PPFailure::at(
                 arguments[0].spelling,
                 PPErrorKind::ReadFailed {
@@ -267,6 +267,7 @@ impl<'a> Preprocessor<'a> {
         let mut prefix = Vec::new();
         let mut suffix = Vec::new();
         let mut if_empty = Vec::new();
+        let mut limit = None;
         let mut index = 1;
         while index < arguments.len() {
             let Some(parameter) = identifier(self.source(directive.loc.file), &arguments[index])
@@ -304,6 +305,27 @@ impl<'a> Preprocessor<'a> {
                 "prefix" => prefix = replacement,
                 "suffix" => suffix = replacement,
                 "if_empty" => if_empty = replacement,
+                "limit" => {
+                    let [
+                        Span {
+                            value: Token::IntLit(value),
+                            ..
+                        },
+                    ] = replacement.as_slice()
+                    else {
+                        return Err(PPFailure::at(
+                            arguments[start - 2].spelling,
+                            PPErrorKind::InvalidEmbedParameter,
+                        ));
+                    };
+                    limit = usize::try_from(*value).ok();
+                    if limit.is_none() {
+                        return Err(PPFailure::at(
+                            arguments[start - 2].spelling,
+                            PPErrorKind::InvalidEmbedParameter,
+                        ));
+                    }
+                }
                 _ => {
                     return Err(PPFailure::at(
                         arguments[start - 2].spelling,
@@ -311,6 +333,9 @@ impl<'a> Preprocessor<'a> {
                     ));
                 }
             }
+        }
+        if let Some(limit) = limit {
+            bytes.truncate(limit);
         }
         let loc = directive.loc;
         let is_empty = bytes.is_empty();
@@ -365,7 +390,10 @@ impl<'a> Preprocessor<'a> {
         directive: &Directive,
         name: &'static str,
     ) -> Result<bool, PPFailure> {
-        let expanded = self.expand_condition(&directive.arguments);
+        let expanded = self.expand_has_embed(
+            &self.expand_condition(&directive.arguments),
+            directive.loc.file,
+        );
         const_expr::Parser::evaluate_with_defined(&expanded, &|macro_name| {
             self.macros.contains_key(macro_name)
         })
@@ -385,6 +413,32 @@ impl<'a> Preprocessor<'a> {
                 },
             )
         })
+    }
+
+    fn expand_has_embed(&self, tokens: &[Span<Token>], from: FileId) -> Vec<Span<Token>> {
+        let mut expanded = Vec::with_capacity(tokens.len());
+        let mut index = 0;
+        while index < tokens.len() {
+            if tokens.value_at(index) == Some(&Token::Ident("__has_embed".to_string()))
+                && tokens.value_at(index + 1) == Some(&Token::LParen)
+                && let Some(Token::StringLit(name)) = tokens.value_at(index + 2)
+                && tokens.value_at(index + 3) == Some(&Token::RParen)
+            {
+                let found = self
+                    .resolve_include(&include::IncludeDirective::Quoted(name.clone()), from)
+                    .is_some();
+                expanded.push(
+                    tokens[index]
+                        .clone()
+                        .with_value(Token::IntLit(found as i64)),
+                );
+                index += 4;
+            } else {
+                expanded.push(tokens[index].clone());
+                index += 1;
+            }
+        }
+        expanded
     }
 
     fn record_directive_diagnostic(&mut self, directive: &Directive, severity: Severity) {

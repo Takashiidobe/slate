@@ -191,6 +191,23 @@ fn substitute_function_macro(
     let mut i = 0;
     while i < definition.replacement.len() {
         let token = &definition.replacement[i];
+        if token.value == Token::Ident("__VA_OPT__".to_string())
+            && let Some((optional, end)) = invocation_arguments(&definition.replacement, i + 1)
+        {
+            if arguments.len() > parameters.len() {
+                for optional_token in optional.into_iter().flatten() {
+                    output.extend(replacement_tokens(
+                        &optional_token,
+                        parameters,
+                        arguments,
+                        &expanded_arguments,
+                        true,
+                    ));
+                }
+            }
+            i = end;
+            continue;
+        }
         if token.value == Token::Hash
             && i + 1 < definition.replacement.len()
             && let Token::Ident(name) = &definition.replacement[i + 1].value

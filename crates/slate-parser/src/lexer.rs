@@ -586,7 +586,7 @@ impl Lexer {
             let token = match word.as_str() {
                 "sizeof" => Token::Sizeof,
                 "_Alignof" | "__alignof" | "__alignof__" => Token::Alignof,
-                "_Bool" => Token::Keyword(Keyword::Bool),
+                "_Bool" | "bool" => Token::Keyword(Keyword::Bool),
                 "__bf16" => Token::Keyword(Keyword::BFloat16),
                 "char" => Token::Keyword(Keyword::Char),
                 "double" => Token::Keyword(Keyword::Double),
@@ -622,7 +622,9 @@ impl Lexer {
                 "inline" | "__inline" | "__inline__" => Token::Keyword(Keyword::Inline),
                 "__int128" => Token::Keyword(Keyword::Int128),
                 "_Noreturn" => Token::Keyword(Keyword::Noreturn),
-                "_Thread_local" | "__thread" => Token::Keyword(Keyword::ThreadLocal),
+                "_Thread_local" | "thread_local" | "__thread" => {
+                    Token::Keyword(Keyword::ThreadLocal)
+                }
                 "__restrict" | "__restrict__" => Token::Keyword(Keyword::Restrict),
                 "_BitInt" => Token::Keyword(Keyword::BitInt),
                 "_Accum" => Token::Keyword(Keyword::Accum),
