@@ -142,6 +142,40 @@ pub enum Stmt {
 pub struct FileId(pub u32);
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Loc {
+    pub file: FileId,
+    pub offset: usize,
+    pub length: usize,
+}
+
+impl Loc {
+    pub fn new(file: FileId, offset: usize, length: usize) -> Self {
+        Self {
+            file,
+            offset,
+            length,
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Span<T> {
+    pub value: T,
+    pub spelling: Loc,
+    pub expansion: Loc,
+}
+
+impl<T> Span<T> {
+    pub fn new(value: T, spelling: Loc, expansion: Loc) -> Self {
+        Self {
+            value,
+            spelling,
+            expansion,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum HeaderKind {
     System,
     User,

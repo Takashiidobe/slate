@@ -1,8 +1,8 @@
 use crate::ast::{
     ArraySize, CType, Declarator, Designator, Expr, FloatingType, Initializer, InitializerItem,
-    IntegerRank, IntegerType,
+    IntegerRank, IntegerType, Span,
 };
-use crate::lexer::{Keyword, Token};
+use crate::lexer::{Keyword, Token, TokenSpanExt};
 use crate::parser::DeclaratorParser;
 use miette::Diagnostic;
 use std::collections::HashSet;
@@ -246,24 +246,15 @@ pub enum ConstExprError {
     IntegerOverflow,
     #[error("invalid integer constant expression")]
     InvalidIntegerConstant,
-    #[error("expected `)`")]
-    ExpectedRParen,
-    #[error("expected `]`")]
-    ExpectedRBracket,
-    #[error("expected `:`")]
-    ExpectedColon,
-    #[error("expected `(`")]
-    ExpectedLParen,
-    #[error("expected `,`")]
-    ExpectedComma,
+    #[error("expected `{expected}`, found {}", found.as_ref().map(|span| format!("`{}`", span.value)).unwrap_or_else(|| "end of input".to_string()))]
+    Expected {
+        expected: Token,
+        found: Option<Span<Token>>,
+    },
     #[error("expected identifier")]
     ExpectedIdentifier,
     #[error("expected type name")]
     ExpectedTypeName,
-    #[error("expected `=`")]
-    ExpectedEqual,
-    #[error("expected `}}`")]
-    ExpectedRBrace,
     #[error("unexpected token `{0:?}`")]
     UnexpectedToken(Token),
     #[error("expected integer expression")]
@@ -275,13 +266,13 @@ pub enum ConstExprError {
 }
 
 pub struct Parser {
-    tokens: Vec<Token>,
+    tokens: Vec<Span<Token>>,
     position: usize,
     typedef_names: HashSet<String>,
 }
 
 impl Parser {
-    pub fn parse(tokens: &[Token]) -> Result<ConstExpr, ConstExprError> {
+    pub fn parse(tokens: &[Span<Token>]) -> Result<ConstExpr, ConstExprError> {
         let mut parser = Self::new(tokens, &HashSet::new());
         let expression = parser.parse_conditional()?;
         if parser.peek().is_some() {
@@ -291,7 +282,7 @@ impl Parser {
     }
 
     pub fn parse_expression(
-        tokens: &[Token],
+        tokens: &[Span<Token>],
         typedef_names: &HashSet<String>,
     ) -> Result<ConstExpr, ConstExprError> {
         let mut parser = Self::new(tokens, typedef_names);
@@ -303,7 +294,7 @@ impl Parser {
     }
 
     pub(crate) fn parse_one(
-        tokens: &[Token],
+        tokens: &[Span<Token>],
         start: usize,
         typedef_names: &HashSet<String>,
     ) -> Result<(ConstExpr, usize), ConstExprError> {
@@ -312,12 +303,12 @@ impl Parser {
         Ok((expression, start + parser.position))
     }
 
-    pub fn evaluate(tokens: &[Token]) -> Result<i64, ConstExprError> {
+    pub fn evaluate(tokens: &[Span<Token>]) -> Result<i64, ConstExprError> {
         Self::evaluate_expr(&Self::parse(tokens)?, None)
     }
 
     pub fn evaluate_with_defined(
-        tokens: &[Token],
+        tokens: &[Span<Token>],
         is_defined: &dyn Fn(&str) -> bool,
     ) -> Result<i64, ConstExprError> {
         Self::evaluate_expr(&Self::parse(tokens)?, Some(is_defined))
@@ -435,7 +426,7 @@ impl Parser {
         }
     }
 
-    fn new(tokens: &[Token], typedef_names: &HashSet<String>) -> Self {
+    fn new(tokens: &[Span<Token>], typedef_names: &HashSet<String>) -> Self {
         Self {
             tokens: tokens.to_vec(),
             position: 0,
@@ -444,11 +435,39 @@ impl Parser {
     }
 
     fn peek(&self) -> Option<&Token> {
-        self.tokens.get(self.position)
+        self.tokens.value_at(self.position)
+    }
+
+    fn peek_at(&self, offset: usize) -> Option<&Token> {
+        self.tokens.value_at(self.position + offset)
+    }
+
+    fn token_at(&self, index: usize) -> Option<&Token> {
+        self.tokens.value_at(index)
+    }
+
+    fn consume(&mut self, token: &Token) -> bool {
+        if self.peek() == Some(token) {
+            self.position += 1;
+            true
+        } else {
+            false
+        }
+    }
+
+    fn expect(&mut self, token: Token) -> Result<(), ConstExprError> {
+        if self.consume(&token) {
+            Ok(())
+        } else {
+            Err(ConstExprError::Expected {
+                expected: token,
+                found: self.tokens.get(self.position).cloned(),
+            })
+        }
     }
 
     fn take(&mut self) -> Option<Token> {
-        let token = self.tokens.get(self.position).cloned();
+        let token = self.tokens.value_owned(self.position);
         self.position += token.is_some() as usize;
         token
     }
@@ -499,9 +518,7 @@ impl Parser {
         if self.peek() == Some(&Token::Question) {
             self.take();
             let then_value = self.parse_comma()?;
-            if self.take() != Some(Token::Colon) {
-                return Err(ConstExprError::ExpectedColon);
-            }
+            self.expect(Token::Colon)?;
             let else_value = self.parse_conditional()?;
             return Ok(ConstExpr::Ternary {
                 condition: Box::new(condition),
@@ -531,11 +548,11 @@ impl Parser {
 
     fn parse_cast(&mut self) -> Result<ConstExpr, ConstExprError> {
         if self.peek() == Some(&Token::LParen)
-            && let Some(next) = self.tokens.get(self.position + 1)
+            && let Some(next) = self.peek_at(1)
             && starts_type_name(next, &self.typedef_names)
             && let Some((ty, declarator, end)) = self.try_parse_type_name(self.position + 1)
-            && self.tokens.get(end) == Some(&Token::RParen)
-            && self.tokens.get(end + 1) != Some(&Token::LBrace)
+            && self.token_at(end) == Some(&Token::RParen)
+            && self.token_at(end + 1) != Some(&Token::LBrace)
         {
             self.position = end + 1;
             let value = self.parse_cast()?;
@@ -548,36 +565,36 @@ impl Parser {
         self.parse_unary()
     }
 
-    fn try_parse_compound_literal(&mut self) -> Option<Result<ConstExpr, ConstExprError>> {
+    fn try_parse_compound_literal(&mut self) -> Result<Option<ConstExpr>, ConstExprError> {
         if self.peek() != Some(&Token::LParen) {
-            return None;
+            return Ok(None);
         }
-        let next = self.tokens.get(self.position + 1)?;
+        let Some(next) = self.peek_at(1) else {
+            return Ok(None);
+        };
         if !starts_type_name(next, &self.typedef_names) {
-            return None;
+            return Ok(None);
         }
-        let (ty, declarator, end) = self.try_parse_type_name(self.position + 1)?;
-        if self.tokens.get(end) != Some(&Token::RParen)
-            || self.tokens.get(end + 1) != Some(&Token::LBrace)
+        let Some((ty, declarator, end)) = self.try_parse_type_name(self.position + 1) else {
+            return Ok(None);
+        };
+        if self.token_at(end) != Some(&Token::RParen) || self.token_at(end + 1) != Some(&Token::LBrace)
         {
-            return None;
+            return Ok(None);
         }
         self.position = end + 1;
-        Some(
-            self.parse_initializer_list()
-                .map(|initializer| ConstExpr::CompoundLiteral {
-                    ty,
-                    declarator,
-                    initializer,
-                }),
-        )
+        let initializer = self.parse_initializer_list()?;
+        Ok(Some(ConstExpr::CompoundLiteral {
+            ty,
+            declarator,
+            initializer,
+        }))
     }
 
     fn parse_initializer_list(&mut self) -> Result<Vec<InitializerItem>, ConstExprError> {
-        if self.take() != Some(Token::LBrace) {
-            return Err(ConstExprError::UnexpectedToken(
-                self.tokens[self.position - 1].clone(),
-            ));
+        let opening = self.take();
+        if opening != Some(Token::LBrace) {
+            return Err(ConstExprError::UnexpectedToken(opening.unwrap()));
         }
         let mut items = Vec::new();
         while self.peek() != Some(&Token::RBrace) {
@@ -588,9 +605,7 @@ impl Parser {
                     let Some(Token::IntLit(index)) = self.take() else {
                         return Err(ConstExprError::ExpectedIntegerExpression);
                     };
-                    if self.take() != Some(Token::RBracket) {
-                        return Err(ConstExprError::ExpectedRBracket);
-                    }
+                    self.expect(Token::RBracket)?;
                     designators.push(Designator::Array(index));
                 } else if self.peek() == Some(&Token::Dot) {
                     self.take();
@@ -599,20 +614,16 @@ impl Parser {
                     break;
                 }
             }
-            if !designators.is_empty() && self.take() != Some(Token::Equal) {
-                return Err(ConstExprError::ExpectedEqual);
+            if !designators.is_empty() {
+                self.expect(Token::Equal)?;
             }
             let value = self.parse_initializer_value()?;
             items.push(InitializerItem { designators, value });
-            if self.peek() == Some(&Token::Comma) {
-                self.take();
-            } else {
+            if !self.consume(&Token::Comma) {
                 break;
             }
         }
-        if self.take() != Some(Token::RBrace) {
-            return Err(ConstExprError::ExpectedRBrace);
-        }
+        self.expect(Token::RBrace)?;
         Ok(items)
     }
 
@@ -637,36 +648,33 @@ impl Parser {
 
     fn parse_unary(&mut self) -> Result<ConstExpr, ConstExprError> {
         if self.peek() == Some(&Token::Sizeof)
-            && self.tokens.get(self.position + 1) == Some(&Token::LParen)
-            && let Some(next) = self.tokens.get(self.position + 2)
+            && self.peek_at(1) == Some(&Token::LParen)
+            && let Some(next) = self.peek_at(2)
             && starts_type_name(next, &self.typedef_names)
             && let Some((ty, declarator, end)) = self.try_parse_type_name(self.position + 2)
-            && self.tokens.get(end) == Some(&Token::RParen)
+            && self.token_at(end) == Some(&Token::RParen)
         {
             self.position = end + 1;
             return Ok(ConstExpr::SizeOfType { ty, declarator });
         }
-        if self.peek() == Some(&Token::Sizeof)
-            && self.tokens.get(self.position + 1) == Some(&Token::LParen)
-        {
+        if self.peek() == Some(&Token::Sizeof) && self.peek_at(1) == Some(&Token::LParen) {
             self.take();
             self.take();
             let value = self.parse_comma()?;
-            if self.take() != Some(Token::RParen) {
-                return Err(ConstExprError::ExpectedRParen);
-            }
+            self.expect(Token::RParen)?;
             return Ok(ConstExpr::SizeOf(Box::new(value)));
         }
         if self.peek() == Some(&Token::Alignof) {
             self.take();
-            if self.take() != Some(Token::LParen) {
-                return Err(ConstExprError::ExpectedLParen);
-            }
+            self.expect(Token::LParen)?;
             let (ty, declarator, end) = self
                 .try_parse_type_name(self.position)
                 .ok_or(ConstExprError::ExpectedTypeName)?;
-            if self.tokens.get(end) != Some(&Token::RParen) {
-                return Err(ConstExprError::ExpectedRParen);
+            if self.token_at(end) != Some(&Token::RParen) {
+                return Err(ConstExprError::Expected {
+                    expected: Token::RParen,
+                    found: self.tokens.get(end).cloned(),
+                });
             }
             self.position = end + 1;
             return Ok(ConstExpr::AlignOf { ty, declarator });
@@ -729,8 +737,8 @@ impl Parser {
     }
 
     fn parse_postfix(&mut self) -> Result<ConstExpr, ConstExprError> {
-        let mut expression = match self.try_parse_compound_literal() {
-            Some(result) => result?,
+        let mut expression = match self.try_parse_compound_literal()? {
+            Some(result) => result,
             None => self.parse_primary()?,
         };
         loop {
@@ -747,9 +755,7 @@ impl Parser {
                             self.take();
                         }
                     }
-                    if self.take() != Some(Token::RParen) {
-                        return Err(ConstExprError::ExpectedRParen);
-                    }
+                    self.expect(Token::RParen)?;
                     ConstExpr::Call {
                         callee: Box::new(expression),
                         arguments,
@@ -772,9 +778,7 @@ impl Parser {
                 Some(Token::LBracket) => {
                     self.take();
                     let index = self.parse_comma()?;
-                    if self.take() != Some(Token::RBracket) {
-                        return Err(ConstExprError::ExpectedRBracket);
-                    }
+                    self.expect(Token::RBracket)?;
                     ConstExpr::Index {
                         base: Box::new(expression),
                         index: Box::new(index),
@@ -803,23 +807,21 @@ impl Parser {
     }
 
     fn parse_primary(&mut self) -> Result<ConstExpr, ConstExprError> {
-        if self.take() == Some(Token::LParen) {
+        if self.consume(&Token::LParen) {
             let expression = self.parse_comma()?;
-            if self.take() != Some(Token::RParen) {
-                return Err(ConstExprError::ExpectedRParen);
-            }
+            self.expect(Token::RParen)?;
             return Ok(expression);
         }
-        match self.tokens.get(self.position.saturating_sub(1)) {
+        match self.tokens.value_at(self.position.saturating_sub(1)) {
             Some(Token::IntLit(value)) => Ok(ConstExpr::Integer(*value)),
             Some(Token::StringLit(value)) => Ok(ConstExpr::StringLit(value.clone())),
             Some(
-                Token::CharLit(raw)
-                | Token::Utf8CharLit(raw)
-                | Token::Utf16CharLit(raw)
-                | Token::Utf32CharLit(raw)
-                | Token::WideCharLit(raw),
-            ) => Ok(ConstExpr::Integer(crate::lexer::decode_char_literal(raw))),
+                Token::CharLit(_, value)
+                | Token::Utf8CharLit(_, value)
+                | Token::Utf16CharLit(_, value)
+                | Token::Utf32CharLit(_, value)
+                | Token::WideCharLit(_, value),
+            ) => Ok(ConstExpr::Integer(*value)),
             Some(Token::Ident(value)) if value == "defined" => self.parse_defined(),
             Some(Token::Ident(value))
                 if value == "__has_include" || value == "__has_include_next" =>
@@ -837,17 +839,14 @@ impl Parser {
     }
 
     fn parse_defined(&mut self) -> Result<ConstExpr, ConstExprError> {
-        let parenthesized = self.peek() == Some(&Token::LParen);
-        if parenthesized {
-            self.take();
-        }
+        let parenthesized = self.consume(&Token::LParen);
         let name = match self.take() {
             Some(Token::Ident(value)) => value,
             Some(token) => return Err(ConstExprError::UnexpectedToken(token)),
             None => return Err(ConstExprError::ExpectedIntegerExpression),
         };
-        if parenthesized && self.take() != Some(Token::RParen) {
-            return Err(ConstExprError::ExpectedRParen);
+        if parenthesized {
+            self.expect(Token::RParen)?;
         }
         Ok(ConstExpr::Call {
             callee: Box::new(ConstExpr::Identifier("defined".to_string())),
@@ -856,9 +855,7 @@ impl Parser {
     }
 
     fn parse_has_include(&mut self, name: String) -> Result<ConstExpr, ConstExprError> {
-        if self.take() != Some(Token::LParen) {
-            return Err(ConstExprError::ExpectedLParen);
-        }
+        self.expect(Token::LParen)?;
         let header = if self.peek() == Some(&Token::Less) {
             self.take();
             let mut text = String::new();
@@ -871,7 +868,12 @@ impl Parser {
                     Some(Token::Slash) => text.push('/'),
                     Some(Token::Minus) => text.push('-'),
                     Some(token) => return Err(ConstExprError::UnexpectedToken(token)),
-                    None => return Err(ConstExprError::ExpectedRParen),
+                    None => {
+                        return Err(ConstExprError::Expected {
+                            expected: Token::Greater,
+                            found: None,
+                        });
+                    }
                 }
             }
             format!("<{text}>")
@@ -882,9 +884,7 @@ impl Parser {
                 None => return Err(ConstExprError::ExpectedIntegerExpression),
             }
         };
-        if self.take() != Some(Token::RParen) {
-            return Err(ConstExprError::ExpectedRParen);
-        }
+        self.expect(Token::RParen)?;
         Ok(ConstExpr::Call {
             callee: Box::new(ConstExpr::Identifier(name)),
             arguments: vec![ConstExpr::Identifier(header)],
@@ -892,16 +892,12 @@ impl Parser {
     }
 
     fn parse_offsetof(&mut self) -> Result<ConstExpr, ConstExprError> {
-        if self.take() != Some(Token::LParen) {
-            return Err(ConstExprError::ExpectedLParen);
-        }
+        self.expect(Token::LParen)?;
         let (ty, declarator, end) = self
             .try_parse_type_name(self.position)
             .ok_or(ConstExprError::ExpectedTypeName)?;
         self.position = end;
-        if self.take() != Some(Token::Comma) {
-            return Err(ConstExprError::ExpectedComma);
-        }
+        self.expect(Token::Comma)?;
         let mut member = ConstExpr::Identifier(self.expect_field_name()?);
         loop {
             member = match self.peek() {
@@ -915,9 +911,7 @@ impl Parser {
                 Some(Token::LBracket) => {
                     self.take();
                     let index = self.parse_comma()?;
-                    if self.take() != Some(Token::RBracket) {
-                        return Err(ConstExprError::ExpectedRBracket);
-                    }
+                    self.expect(Token::RBracket)?;
                     ConstExpr::Index {
                         base: Box::new(member),
                         index: Box::new(index),
@@ -926,9 +920,7 @@ impl Parser {
                 _ => break,
             };
         }
-        if self.take() != Some(Token::RParen) {
-            return Err(ConstExprError::ExpectedRParen);
-        }
+        self.expect(Token::RParen)?;
         Ok(ConstExpr::OffsetOf {
             ty,
             declarator,

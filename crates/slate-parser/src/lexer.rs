@@ -1,3 +1,5 @@
+use crate::ast::{FileId, Loc, Span};
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Keyword {
     Bool,
@@ -135,16 +137,17 @@ pub enum Token {
     Ident(String),
     IntLit(i64),
     FloatLit(String),
-    CharLit(String),
-    Utf8CharLit(String),
-    Utf16CharLit(String),
-    Utf32CharLit(String),
-    WideCharLit(String),
+    CharLit(String, i64),
+    Utf8CharLit(String, i64),
+    Utf16CharLit(String, i64),
+    Utf32CharLit(String, i64),
+    WideCharLit(String, i64),
     StringLit(String),
     Utf8StringLit(String),
     Utf16StringLit(String),
     Utf32StringLit(String),
     WideStringLit(String),
+    Comment(String),
     LParen,
     RParen,
     LBrace,
@@ -195,6 +198,12 @@ pub enum Token {
     ShiftRightEqual,
 }
 
+impl std::fmt::Display for Token {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        formatter.write_str(&String::from(self))
+    }
+}
+
 impl From<&Token> for String {
     fn from(token: &Token) -> Self {
         match token {
@@ -204,16 +213,17 @@ impl From<&Token> for String {
             Token::Ident(name) => name.clone(),
             Token::IntLit(value) => value.to_string(),
             Token::FloatLit(value) => value.clone(),
-            Token::CharLit(value) => format!("'{value}'"),
-            Token::Utf8CharLit(value) => format!("u8'{value}'"),
-            Token::Utf16CharLit(value) => format!("u'{value}'"),
-            Token::Utf32CharLit(value) => format!("U'{value}'"),
-            Token::WideCharLit(value) => format!("L'{value}'"),
+            Token::CharLit(value, _) => format!("'{value}'"),
+            Token::Utf8CharLit(value, _) => format!("u8'{value}'"),
+            Token::Utf16CharLit(value, _) => format!("u'{value}'"),
+            Token::Utf32CharLit(value, _) => format!("U'{value}'"),
+            Token::WideCharLit(value, _) => format!("L'{value}'"),
             Token::StringLit(value) => format!("\"{value}\""),
             Token::Utf8StringLit(value) => format!("u8\"{value}\""),
             Token::Utf16StringLit(value) => format!("u\"{value}\""),
             Token::Utf32StringLit(value) => format!("U\"{value}\""),
             Token::WideStringLit(value) => format!("L\"{value}\""),
+            Token::Comment(text) => text.clone(),
             Token::LParen => "(".into(),
             Token::RParen => ")".into(),
             Token::LBrace => "{".into(),
@@ -266,34 +276,189 @@ impl From<&Token> for String {
     }
 }
 
-pub fn lex(src: &str) -> Vec<Token> {
-    let chars: Vec<char> = src.chars().collect();
-    let mut tokens = Vec::new();
-    let mut i = 0;
+const MULTI_CHAR_OPS: &[(&str, Token)] = &[
+    ("<<=", Token::ShiftLeftEqual),
+    (">>=", Token::ShiftRightEqual),
+    ("...", Token::Ellipsis),
+    ("<=", Token::LessEqual),
+    (">=", Token::GreaterEqual),
+    ("==", Token::EqualEqual),
+    ("!=", Token::NotEqual),
+    ("&&", Token::AndAnd),
+    ("||", Token::OrOr),
+    ("<<", Token::ShiftLeft),
+    (">>", Token::ShiftRight),
+    ("->", Token::Arrow),
+    ("++", Token::PlusPlus),
+    ("--", Token::MinusMinus),
+    ("+=", Token::PlusEqual),
+    ("-=", Token::MinusEqual),
+    ("*=", Token::StarEqual),
+    ("/=", Token::SlashEqual),
+    ("%=", Token::PercentEqual),
+    ("&=", Token::AmpEqual),
+    ("|=", Token::PipeEqual),
+    ("^=", Token::CaretEqual),
+    ("##", Token::HashHash),
+];
 
-    while i < chars.len() {
-        let c = chars[i];
+const SINGLE_CHAR_OPS: &[(char, Token)] = &[
+    ('(', Token::LParen),
+    (')', Token::RParen),
+    ('{', Token::LBrace),
+    ('}', Token::RBrace),
+    ('[', Token::LBracket),
+    (']', Token::RBracket),
+    (':', Token::Colon),
+    (',', Token::Comma),
+    ('#', Token::Hash),
+    ('*', Token::Star),
+    (';', Token::Semi),
+    ('=', Token::Equal),
+    ('.', Token::Dot),
+    ('+', Token::Plus),
+    ('-', Token::Minus),
+    ('/', Token::Slash),
+    ('%', Token::Percent),
+    ('!', Token::Bang),
+    ('~', Token::Tilde),
+    ('<', Token::Less),
+    ('>', Token::Greater),
+    ('&', Token::Amp),
+    ('^', Token::Caret),
+    ('|', Token::Pipe),
+    ('?', Token::Question),
+];
+
+pub trait TokenSpanExt {
+    fn value_at(&self, index: usize) -> Option<&Token>;
+    fn value_owned(&self, index: usize) -> Option<Token> {
+        self.value_at(index).cloned()
+    }
+    fn values(&self) -> impl Iterator<Item = &Token>;
+}
+
+impl TokenSpanExt for [Span<Token>] {
+    fn value_at(&self, index: usize) -> Option<&Token> {
+        self.get(index).map(|span| &span.value)
+    }
+
+    fn values(&self) -> impl Iterator<Item = &Token> {
+        self.iter().map(|span| &span.value)
+    }
+}
+
+pub struct Lexer {
+    file: FileId,
+    chars: Vec<char>,
+    byte_offsets: Vec<usize>,
+    pos: usize,
+    mark: usize,
+    tokens: Vec<Span<Token>>,
+}
+
+impl Lexer {
+    pub fn new(file: FileId, src: &str) -> Self {
+        let chars: Vec<char> = src.chars().collect();
+        let mut byte_offsets: Vec<usize> = src.char_indices().map(|(b, _)| b).collect();
+        byte_offsets.push(src.len());
+        Self {
+            file,
+            chars,
+            byte_offsets,
+            pos: 0,
+            mark: 0,
+            tokens: Vec::new(),
+        }
+    }
+
+    fn byte_of(&self, char_index: usize) -> usize {
+        self.byte_offsets[char_index]
+    }
+
+    fn char_at(&self, index: usize) -> Option<char> {
+        self.chars.get(index).copied()
+    }
+
+    fn peek(&self) -> Option<char> {
+        self.peek_at(0)
+    }
+
+    fn peek_at(&self, offset: usize) -> Option<char> {
+        self.char_at(self.pos + offset)
+    }
+
+    fn peek_str(&self, s: &str) -> bool {
+        s.chars()
+            .enumerate()
+            .all(|(offset, c)| self.peek_at(offset) == Some(c))
+    }
+
+    fn try_consume(&mut self, s: &str) -> bool {
+        if self.peek_str(s) {
+            self.pos += s.chars().count();
+            true
+        } else {
+            false
+        }
+    }
+
+    fn try_consume_op(&mut self) -> Option<Token> {
+        for (op, token) in MULTI_CHAR_OPS {
+            if self.try_consume(op) {
+                return Some(token.clone());
+            }
+        }
+        None
+    }
+
+    fn current_loc(&self) -> Loc {
+        Loc::new(
+            self.file,
+            self.byte_of(self.mark),
+            self.byte_of(self.pos) - self.byte_of(self.mark),
+        )
+    }
+
+    fn emit(&mut self, token: Token) {
+        let loc = self.current_loc();
+        self.tokens.push(Span::new(token, loc, loc));
+    }
+
+    pub fn tokenize(mut self) -> Vec<Span<Token>> {
+        while self.pos < self.chars.len() {
+            self.mark = self.pos;
+            self.scan_one();
+        }
+        self.tokens
+    }
+
+    fn scan_one(&mut self) {
+        let i = self.pos;
+        let c = self.chars[i];
 
         if c.is_whitespace() {
-            i += 1;
-        } else if c == '/' && chars.get(i + 1) == Some(&'/') {
-            while i < chars.len() && chars[i] != '\n' {
-                i += 1;
+            self.pos += 1;
+        } else if self.try_consume("//") {
+            while self.peek().is_some_and(|c| c != '\n') {
+                self.pos += 1;
             }
-        } else if c == '/' && chars.get(i + 1) == Some(&'*') {
-            i += 2;
-            while i + 1 < chars.len() && !(chars[i] == '*' && chars[i + 1] == '/') {
-                i += 1;
+            let text: String = self.chars[i..self.pos].iter().collect();
+            self.emit(Token::Comment(text));
+        } else if self.try_consume("/*") {
+            while self.pos < self.chars.len() && !self.peek_str("*/") {
+                self.pos += 1;
             }
-            i += 2;
+            self.pos = (self.pos + 2).min(self.chars.len());
+            let text: String = self.chars[i..self.pos].iter().collect();
+            self.emit(Token::Comment(text));
         } else if c.is_ascii_digit() {
-            let start = i;
-            i = numeric_end(&chars, i);
-            let spelling: String = chars[start..i].iter().collect();
+            self.pos = self.numeric_end(self.pos);
+            let spelling: String = self.chars[i..self.pos].iter().collect();
             if spelling.contains('.') || spelling.contains('e') || spelling.contains('E') {
-                tokens.push(Token::FloatLit(spelling));
+                self.emit(Token::FloatLit(spelling));
             } else {
-                let digits = integer_digits(&spelling).replace('\'', "");
+                let digits = Self::integer_digits(&spelling).replace('\'', "");
                 let (radix, digits) = if digits.starts_with("0x") || digits.starts_with("0X") {
                     (16, &digits[2..])
                 } else if digits.starts_with("0b") || digits.starts_with("0B") {
@@ -303,365 +468,283 @@ pub fn lex(src: &str) -> Vec<Token> {
                 } else {
                     (10, digits.as_str())
                 };
-                tokens.push(u64::from_str_radix(digits, radix).map_or_else(
-                    |_| Token::FloatLit(spelling),
+                let token = u64::from_str_radix(digits, radix).map_or_else(
+                    |_| Token::FloatLit(spelling.clone()),
                     |value| Token::IntLit(value.min(i64::MAX as u64) as i64),
-                ));
+                );
+                self.emit(token);
             }
-        } else if let Some(prefix_len) = string_prefix_len(&chars, i) {
-            let prefix = chars[i];
+        } else if let Some(prefix_len) = self.string_prefix_len() {
             let start = i + prefix_len;
-            i = literal_end(&chars, start, '"');
-            let value: String = chars[start + 1..i.min(chars.len())].iter().collect();
-            tokens.push(match prefix_len {
+            self.pos = self.literal_end(start, '"');
+            let value: String = self.chars[start + 1..self.pos.min(self.chars.len())]
+                .iter()
+                .collect();
+            self.pos = self.pos.saturating_add(1).min(self.chars.len());
+            let token = match prefix_len {
                 0 => Token::StringLit(value),
-                1 if prefix == 'u' => Token::Utf16StringLit(value),
-                1 if prefix == 'U' => Token::Utf32StringLit(value),
+                1 if c == 'u' => Token::Utf16StringLit(value),
+                1 if c == 'U' => Token::Utf32StringLit(value),
                 1 => Token::WideStringLit(value),
                 _ => Token::Utf8StringLit(value),
-            });
-            i = i.saturating_add(1).min(chars.len());
-        } else if let Some(prefix_len) = char_prefix_len(&chars, i) {
+            };
+            self.emit(token);
+        } else if let Some(prefix_len) = self.char_prefix_len() {
             let start = i + prefix_len;
-            let end = literal_end(&chars, start, '\'');
-            let value: String = chars[start + 1..end.min(chars.len())].iter().collect();
-            tokens.push(match prefix_len {
-                0 => Token::CharLit(value),
-                1 if chars[i] == 'u' => Token::Utf16CharLit(value),
-                1 if chars[i] == 'U' => Token::Utf32CharLit(value),
-                1 => Token::WideCharLit(value),
-                _ => Token::Utf8CharLit(value),
-            });
-            i = end.saturating_add(1).min(chars.len());
+            let literal_close = self.literal_end(start, '\'').min(self.chars.len());
+            let value: String = self.chars[start + 1..literal_close].iter().collect();
+            let decoded = self.decode_char_literal(start + 1, literal_close);
+            let token = match prefix_len {
+                0 => Token::CharLit(value, decoded),
+                1 if c == 'u' => Token::Utf16CharLit(value, decoded),
+                1 if c == 'U' => Token::Utf32CharLit(value, decoded),
+                1 => Token::WideCharLit(value, decoded),
+                _ => Token::Utf8CharLit(value, decoded),
+            };
+            self.pos = literal_close.saturating_add(1).min(self.chars.len());
+            self.emit(token);
         } else if c == '\'' {
-            let end = literal_end(&chars, i, '\'');
-            let value: String = chars[i + 1..end.min(chars.len())].iter().collect();
-            tokens.push(Token::CharLit(value));
-            i = end.saturating_add(1).min(chars.len());
+            let literal_close = self.literal_end(i, '\'').min(self.chars.len());
+            let value: String = self.chars[i + 1..literal_close].iter().collect();
+            let decoded = self.decode_char_literal(i + 1, literal_close);
+            self.pos = literal_close.saturating_add(1).min(self.chars.len());
+            self.emit(Token::CharLit(value, decoded));
         } else if c == '"' {
-            let end = literal_end(&chars, i, '"');
-            let value: String = chars[i + 1..end.min(chars.len())].iter().collect();
-            tokens.push(Token::StringLit(value));
-            i = end.saturating_add(1).min(chars.len());
+            let literal_close = self.literal_end(i, '"');
+            let value: String = self.chars[i + 1..literal_close.min(self.chars.len())]
+                .iter()
+                .collect();
+            self.pos = literal_close.saturating_add(1).min(self.chars.len());
+            self.emit(Token::StringLit(value));
         } else if c.is_ascii_alphabetic() || c == '_' || c == '\\' {
-            let start = i;
-            while i < chars.len()
-                && (chars[i].is_ascii_alphanumeric() || chars[i] == '_' || chars[i] == '\\')
+            while self.pos < self.chars.len()
+                && (self.chars[self.pos].is_ascii_alphanumeric()
+                    || self.chars[self.pos] == '_'
+                    || self.chars[self.pos] == '\\')
             {
-                if chars[i] == '\\' {
-                    i = universal_character_name_end(&chars, i);
+                if self.chars[self.pos] == '\\' {
+                    self.pos = self.universal_character_name_end(self.pos);
                 } else {
-                    i += 1;
+                    self.pos += 1;
                 }
             }
-            let word: String = chars[start..i].iter().collect();
-            tokens.push(match word.as_str() {
-                "sizeof" => Token::Sizeof,
-                "_Alignof" | "__alignof" | "__alignof__" => Token::Alignof,
-                "_Bool" => Token::Keyword(Keyword::Bool),
-                "__bf16" => Token::Keyword(Keyword::BFloat16),
-                "char" => Token::Keyword(Keyword::Char),
-                "double" => Token::Keyword(Keyword::Double),
-                "float" => Token::Keyword(Keyword::Float),
-                "_Float16" => Token::Keyword(Keyword::Float16),
-                "__fp16" => Token::Keyword(Keyword::Fp16),
-                "_Float32" => Token::Keyword(Keyword::Float),
-                "_Float64" => Token::Keyword(Keyword::Double),
-                "_Float32x" => Token::Keyword(Keyword::Double),
-                "_Float64x" => Token::Keyword(Keyword::Float64x),
-                "_Float128" | "_Float128x" => Token::Keyword(Keyword::Float128),
-                "__float128" => Token::Keyword(Keyword::Float128Ext),
-                "int" => Token::Keyword(Keyword::Int),
-                "long" => Token::Keyword(Keyword::Long),
-                "return" => Token::Keyword(Keyword::Return),
-                "short" => Token::Keyword(Keyword::Short),
-                "signed" => Token::Keyword(Keyword::Signed),
-                "typedef" => Token::Keyword(Keyword::Typedef),
-                "unsigned" => Token::Keyword(Keyword::Unsigned),
-                "void" => Token::Keyword(Keyword::Void),
-                "_Complex" => Token::Keyword(Keyword::Complex),
-                "struct" => Token::Keyword(Keyword::Struct),
-                "union" => Token::Keyword(Keyword::Union),
-                "enum" => Token::Keyword(Keyword::Enum),
-                "const" => Token::Keyword(Keyword::Const),
-                "volatile" => Token::Keyword(Keyword::Volatile),
-                "restrict" => Token::Keyword(Keyword::Restrict),
-                "_Atomic" => Token::Keyword(Keyword::Atomic),
-                "extern" => Token::Keyword(Keyword::Extern),
-                "static" => Token::Keyword(Keyword::Static),
-                "auto" => Token::Keyword(Keyword::Auto),
-                "register" => Token::Keyword(Keyword::Register),
-                "inline" | "__inline" | "__inline__" => Token::Keyword(Keyword::Inline),
-                "__int128" => Token::Keyword(Keyword::Int128),
-                "_Noreturn" => Token::Keyword(Keyword::Noreturn),
-                "_Thread_local" | "__thread" => Token::Keyword(Keyword::ThreadLocal),
-                "__restrict" | "__restrict__" => Token::Keyword(Keyword::Restrict),
-                "_BitInt" => Token::Keyword(Keyword::BitInt),
-                "_Accum" => Token::Keyword(Keyword::Accum),
-                "_Fract" => Token::Keyword(Keyword::Fract),
-                "_Sat" => Token::Keyword(Keyword::Saturated),
-                "typeof" | "__typeof__" => Token::Keyword(Keyword::Typeof),
-                "_Imaginary" => Token::Keyword(Keyword::Imaginary),
-                "if" => Token::Keyword(Keyword::If),
-                "else" => Token::Keyword(Keyword::Else),
-                "while" => Token::Keyword(Keyword::While),
-                "do" => Token::Keyword(Keyword::Do),
-                "for" => Token::Keyword(Keyword::For),
-                "switch" => Token::Keyword(Keyword::Switch),
-                "case" => Token::Keyword(Keyword::Case),
-                "default" => Token::Keyword(Keyword::Default),
-                "break" => Token::Keyword(Keyword::Break),
-                "continue" => Token::Keyword(Keyword::Continue),
+            let word: String = self.chars[i..self.pos].iter().collect();
+            let token = match word.as_str() {
+                    "sizeof" => Token::Sizeof,
+                    "_Alignof" | "__alignof" | "__alignof__" => Token::Alignof,
+                    "_Bool" => Token::Keyword(Keyword::Bool),
+                    "__bf16" => Token::Keyword(Keyword::BFloat16),
+                    "char" => Token::Keyword(Keyword::Char),
+                    "double" => Token::Keyword(Keyword::Double),
+                    "float" => Token::Keyword(Keyword::Float),
+                    "_Float16" => Token::Keyword(Keyword::Float16),
+                    "__fp16" => Token::Keyword(Keyword::Fp16),
+                    "_Float32" => Token::Keyword(Keyword::Float),
+                    "_Float64" => Token::Keyword(Keyword::Double),
+                    "_Float32x" => Token::Keyword(Keyword::Double),
+                    "_Float64x" => Token::Keyword(Keyword::Float64x),
+                    "_Float128" | "_Float128x" => Token::Keyword(Keyword::Float128),
+                    "__float128" => Token::Keyword(Keyword::Float128Ext),
+                    "int" => Token::Keyword(Keyword::Int),
+                    "long" => Token::Keyword(Keyword::Long),
+                    "return" => Token::Keyword(Keyword::Return),
+                    "short" => Token::Keyword(Keyword::Short),
+                    "signed" => Token::Keyword(Keyword::Signed),
+                    "typedef" => Token::Keyword(Keyword::Typedef),
+                    "unsigned" => Token::Keyword(Keyword::Unsigned),
+                    "void" => Token::Keyword(Keyword::Void),
+                    "_Complex" => Token::Keyword(Keyword::Complex),
+                    "struct" => Token::Keyword(Keyword::Struct),
+                    "union" => Token::Keyword(Keyword::Union),
+                    "enum" => Token::Keyword(Keyword::Enum),
+                    "const" => Token::Keyword(Keyword::Const),
+                    "volatile" => Token::Keyword(Keyword::Volatile),
+                    "restrict" => Token::Keyword(Keyword::Restrict),
+                    "_Atomic" => Token::Keyword(Keyword::Atomic),
+                    "extern" => Token::Keyword(Keyword::Extern),
+                    "static" => Token::Keyword(Keyword::Static),
+                    "auto" => Token::Keyword(Keyword::Auto),
+                    "register" => Token::Keyword(Keyword::Register),
+                    "inline" | "__inline" | "__inline__" => Token::Keyword(Keyword::Inline),
+                    "__int128" => Token::Keyword(Keyword::Int128),
+                    "_Noreturn" => Token::Keyword(Keyword::Noreturn),
+                    "_Thread_local" | "__thread" => Token::Keyword(Keyword::ThreadLocal),
+                    "__restrict" | "__restrict__" => Token::Keyword(Keyword::Restrict),
+                    "_BitInt" => Token::Keyword(Keyword::BitInt),
+                    "_Accum" => Token::Keyword(Keyword::Accum),
+                    "_Fract" => Token::Keyword(Keyword::Fract),
+                    "_Sat" => Token::Keyword(Keyword::Saturated),
+                    "typeof" | "__typeof__" => Token::Keyword(Keyword::Typeof),
+                    "_Imaginary" => Token::Keyword(Keyword::Imaginary),
+                    "if" => Token::Keyword(Keyword::If),
+                    "else" => Token::Keyword(Keyword::Else),
+                    "while" => Token::Keyword(Keyword::While),
+                    "do" => Token::Keyword(Keyword::Do),
+                    "for" => Token::Keyword(Keyword::For),
+                    "switch" => Token::Keyword(Keyword::Switch),
+                    "case" => Token::Keyword(Keyword::Case),
+                    "default" => Token::Keyword(Keyword::Default),
+                    "break" => Token::Keyword(Keyword::Break),
+                    "continue" => Token::Keyword(Keyword::Continue),
                 "goto" => Token::Keyword(Keyword::Goto),
                 _ => Token::Ident(word),
-            });
-        } else if c == '.' && chars.get(i..i + 3) == Some(&['.', '.', '.'][..]) {
-            tokens.push(Token::Ellipsis);
-            i += 3;
-        } else if i + 2 < chars.len()
-            && matches!(
-                (c, chars[i + 1], chars[i + 2]),
-                ('<', '<', '=') | ('>', '>', '=')
-            )
-        {
-            let tok = match c {
-                '<' => Token::ShiftLeftEqual,
-                '>' => Token::ShiftRightEqual,
-                _ => unreachable!(),
             };
-            tokens.push(tok);
-            i += 3;
-        } else if i + 1 < chars.len()
-            && matches!(
-                (c, chars[i + 1]),
-                ('<', '=')
-                    | ('>', '=')
-                    | ('=', '=')
-                    | ('!', '=')
-                    | ('&', '&')
-                    | ('|', '|')
-                    | ('<', '<')
-                    | ('>', '>')
-                    | ('-', '>')
-                    | ('+', '+')
-                    | ('-', '-')
-                    | ('+', '=')
-                    | ('-', '=')
-                    | ('*', '=')
-                    | ('/', '=')
-                    | ('%', '=')
-                    | ('&', '=')
-                    | ('|', '=')
-                    | ('^', '=')
-            )
-        {
-            let tok = match (c, chars[i + 1]) {
-                ('<', '=') => Token::LessEqual,
-                ('>', '=') => Token::GreaterEqual,
-                ('=', '=') => Token::EqualEqual,
-                ('!', '=') => Token::NotEqual,
-                ('&', '&') => Token::AndAnd,
-                ('|', '|') => Token::OrOr,
-                ('<', '<') => Token::ShiftLeft,
-                ('>', '>') => Token::ShiftRight,
-                ('-', '>') => Token::Arrow,
-                ('+', '+') => Token::PlusPlus,
-                ('-', '-') => Token::MinusMinus,
-                ('+', '=') => Token::PlusEqual,
-                ('-', '=') => Token::MinusEqual,
-                ('*', '=') => Token::StarEqual,
-                ('/', '=') => Token::SlashEqual,
-                ('%', '=') => Token::PercentEqual,
-                ('&', '=') => Token::AmpEqual,
-                ('|', '=') => Token::PipeEqual,
-                ('^', '=') => Token::CaretEqual,
-                _ => unreachable!(),
-            };
-            tokens.push(tok);
-            i += 2;
+            self.emit(token);
+        } else if let Some(token) = self.try_consume_op() {
+            self.emit(token);
         } else {
-            if c == '#' && chars.get(i + 1) == Some(&'#') {
-                tokens.push(Token::HashHash);
-                i += 2;
-                continue;
-            }
-            let tok = match c {
-                '(' => Token::LParen,
-                ')' => Token::RParen,
-                '{' => Token::LBrace,
-                '}' => Token::RBrace,
-                '[' => Token::LBracket,
-                ']' => Token::RBracket,
-                ':' => Token::Colon,
-                ',' => Token::Comma,
-                '#' => Token::Hash,
-                '*' => Token::Star,
-                ';' => Token::Semi,
-                '=' => Token::Equal,
-                '.' => Token::Dot,
-                '+' => Token::Plus,
-                '-' => Token::Minus,
-                '/' => Token::Slash,
-                '%' => Token::Percent,
-                '!' => Token::Bang,
-                '~' => Token::Tilde,
-                '<' => Token::Less,
-                '>' => Token::Greater,
-                '&' => Token::Amp,
-                '^' => Token::Caret,
-                '|' => Token::Pipe,
-                '?' => Token::Question,
-                other => Token::Ident(other.to_string()),
-            };
-            tokens.push(tok);
+            let token = SINGLE_CHAR_OPS
+                .iter()
+                .find(|(ch, _)| *ch == c)
+                .map(|(_, token)| token.clone())
+                .unwrap_or_else(|| Token::Ident(c.to_string()));
+            self.pos += 1;
+            self.emit(token);
+        }
+    }
+
+    fn numeric_end(&self, start: usize) -> usize {
+        let mut i = start;
+        while i < self.chars.len()
+            && (self.chars[i].is_ascii_alphanumeric()
+                || matches!(self.chars[i], '\'' | '.')
+                || (self.chars[i] == '+' || self.chars[i] == '-')
+                    && i > 0
+                    && matches!(self.chars[i - 1], 'e' | 'E' | 'p' | 'P'))
+        {
             i += 1;
         }
+        i
     }
 
-    tokens
-}
+    fn string_prefix_len(&self) -> Option<usize> {
+        self.literal_prefix_len('"')
+    }
 
-fn numeric_end(chars: &[char], mut i: usize) -> usize {
-    while i < chars.len()
-        && (chars[i].is_ascii_alphanumeric()
-            || matches!(chars[i], '\'' | '.')
-            || (chars[i] == '+' || chars[i] == '-')
-                && i > 0
-                && matches!(chars[i - 1], 'e' | 'E' | 'p' | 'P'))
-    {
-        i += 1;
+    fn char_prefix_len(&self) -> Option<usize> {
+        self.literal_prefix_len('\'')
     }
-    i
-}
 
-fn integer_digits(spelling: &str) -> String {
-    let mut end = spelling.len();
-    let bytes = spelling.as_bytes();
-    if end >= 2 && matches!(&bytes[end - 2..], b"wb" | b"WB") {
-        end -= 2;
-    }
-    while end > 0 && matches!(bytes[end - 1], b'u' | b'U' | b'l' | b'L' | b'w' | b'W') {
-        end -= 1;
-    }
-    spelling[..end].to_string()
-}
-
-fn string_prefix_len(chars: &[char], i: usize) -> Option<usize> {
-    if chars.get(i) == Some(&'"') {
-        return Some(0);
-    }
-    if chars.get(i) == Some(&'u') && chars.get(i + 1) == Some(&'8') {
-        return (chars.get(i + 2) == Some(&'"')).then_some(2);
-    }
-    if matches!(chars.get(i), Some('u' | 'U' | 'L')) {
-        return (chars.get(i + 1) == Some(&'"')).then_some(1);
-    }
-    None
-}
-
-fn char_prefix_len(chars: &[char], i: usize) -> Option<usize> {
-    if chars.get(i) == Some(&'\'') {
-        return Some(0);
-    }
-    if chars.get(i) == Some(&'u') && chars.get(i + 1) == Some(&'8') {
-        return (chars.get(i + 2) == Some(&'\'')).then_some(2);
-    }
-    if matches!(chars.get(i), Some('u' | 'U' | 'L')) {
-        return (chars.get(i + 1) == Some(&'\'')).then_some(1);
-    }
-    None
-}
-
-fn literal_end(chars: &[char], start: usize, delimiter: char) -> usize {
-    let mut i = start + 1;
-    while i < chars.len() {
-        if chars[i] == '\\' {
-            i = universal_character_name_end(chars, i).max(i + 2);
-        } else if chars[i] == delimiter {
-            break;
-        } else {
-            i += 1;
+    fn literal_prefix_len(&self, quote: char) -> Option<usize> {
+        if self.peek() == Some(quote) {
+            return Some(0);
         }
+        if self.peek_str("u8") {
+            return (self.peek_at(2) == Some(quote)).then_some(2);
+        }
+        if matches!(self.peek(), Some('u' | 'U' | 'L')) {
+            return (self.peek_at(1) == Some(quote)).then_some(1);
+        }
+        None
     }
-    i
-}
 
-pub fn decode_char_literal(raw: &str) -> i64 {
-    let chars: Vec<char> = raw.chars().collect();
-    let mut codepoints = Vec::new();
-    let mut i = 0;
-    while i < chars.len() {
-        let (codepoint, next) = decode_char_escape(&chars, i);
-        codepoints.push(codepoint);
-        i = next;
-    }
-    match codepoints.as_slice() {
-        [] => 0,
-        [single] => i64::from(*single),
-        multiple => multiple.iter().fold(0i64, |acc, &codepoint| {
-            (acc << 8) | i64::from(codepoint as u8)
-        }),
-    }
-}
-
-fn decode_char_escape(chars: &[char], i: usize) -> (u32, usize) {
-    if chars[i] != '\\' {
-        return (chars[i] as u32, i + 1);
-    }
-    let j = i + 1;
-    match chars.get(j) {
-        Some('n') => (0x0A, j + 1),
-        Some('t') => (0x09, j + 1),
-        Some('r') => (0x0D, j + 1),
-        Some('a') => (0x07, j + 1),
-        Some('b') => (0x08, j + 1),
-        Some('f') => (0x0C, j + 1),
-        Some('v') => (0x0B, j + 1),
-        Some('e') => (0x1B, j + 1),
-        Some('\\') => (0x5C, j + 1),
-        Some('\'') => (0x27, j + 1),
-        Some('"') => (0x22, j + 1),
-        Some('?') => (0x3F, j + 1),
-        Some('x') => hex_char_escape(chars, j + 1, usize::MAX),
-        Some('u') => hex_char_escape(chars, j + 1, 4),
-        Some('U') => hex_char_escape(chars, j + 1, 8),
-        Some(digit) if digit.is_digit(8) => {
-            let mut end = j;
-            let mut value = 0u32;
-            let mut count = 0;
-            while count < 3 && chars.get(end).is_some_and(|c| c.is_digit(8)) {
-                value = value * 8 + chars[end].to_digit(8).unwrap();
-                end += 1;
-                count += 1;
+    fn literal_end(&self, start: usize, delimiter: char) -> usize {
+        let mut i = start + 1;
+        while i < self.chars.len() {
+            if self.chars[i] == '\\' {
+                i = self.universal_character_name_end(i).max(i + 2);
+            } else if self.chars[i] == delimiter {
+                break;
+            } else {
+                i += 1;
             }
-            (value, end)
         }
-        Some(&other) => (other as u32, j + 1),
-        None => (0, j),
+        i
     }
-}
 
-fn hex_char_escape(chars: &[char], start: usize, max_digits: usize) -> (u32, usize) {
-    let mut end = start;
-    let mut value = 0u32;
-    while end - start < max_digits && chars.get(end).is_some_and(char::is_ascii_hexdigit) {
-        value = value * 16 + chars[end].to_digit(16).unwrap();
-        end += 1;
-    }
-    (value, end)
-}
-
-fn universal_character_name_end(chars: &[char], i: usize) -> usize {
-    match (chars.get(i + 1), chars.get(i + 2)) {
-        (Some('u'), _) => (i + 6).min(chars.len()),
-        (Some('U'), _) => (i + 10).min(chars.len()),
-        (Some('N'), Some('{')) => {
-            let mut end = i + 3;
-            while end < chars.len() && chars[end] != '}' {
-                end += 1;
+    fn universal_character_name_end(&self, at: usize) -> usize {
+        let len = self.chars.len();
+        match (self.char_at(at + 1), self.char_at(at + 2)) {
+            (Some('u'), _) => (at + 6).min(len),
+            (Some('U'), _) => (at + 10).min(len),
+            (Some('N'), Some('{')) => {
+                let mut end = at + 3;
+                while self.char_at(end).is_some_and(|c| c != '}') {
+                    end += 1;
+                }
+                end.saturating_add(1).min(len)
             }
-            end.saturating_add(1).min(chars.len())
+            _ => (at + 2).min(len),
         }
-        _ => (i + 2).min(chars.len()),
+    }
+
+    fn integer_digits(spelling: &str) -> String {
+        let mut end = spelling.len();
+        let bytes = spelling.as_bytes();
+        if end >= 2 && matches!(&bytes[end - 2..], b"wb" | b"WB") {
+            end -= 2;
+        }
+        while end > 0 && matches!(bytes[end - 1], b'u' | b'U' | b'l' | b'L' | b'w' | b'W') {
+            end -= 1;
+        }
+        spelling[..end].to_string()
+    }
+
+    fn decode_char_literal(&self, start: usize, end: usize) -> i64 {
+        let mut codepoints = Vec::new();
+        let mut i = start;
+        while i < end {
+            let (codepoint, next) = self.decode_char_escape(i, end);
+            codepoints.push(codepoint);
+            i = next;
+        }
+        match codepoints.as_slice() {
+            [] => 0,
+            [single] => i64::from(*single),
+            multiple => multiple.iter().fold(0i64, |acc, &codepoint| {
+                (acc << 8) | i64::from(codepoint as u8)
+            }),
+        }
+    }
+
+    fn char_in(&self, i: usize, end: usize) -> Option<char> {
+        (i < end).then(|| self.chars[i])
+    }
+
+    fn decode_char_escape(&self, i: usize, end: usize) -> (u32, usize) {
+        if self.chars[i] != '\\' {
+            return (self.chars[i] as u32, i + 1);
+        }
+        let j = i + 1;
+        match self.char_in(j, end) {
+            Some('n') => (0x0A, j + 1),
+            Some('t') => (0x09, j + 1),
+            Some('r') => (0x0D, j + 1),
+            Some('a') => (0x07, j + 1),
+            Some('b') => (0x08, j + 1),
+            Some('f') => (0x0C, j + 1),
+            Some('v') => (0x0B, j + 1),
+            Some('e') => (0x1B, j + 1),
+            Some('\\') => (0x5C, j + 1),
+            Some('\'') => (0x27, j + 1),
+            Some('"') => (0x22, j + 1),
+            Some('?') => (0x3F, j + 1),
+            Some('x') => self.hex_char_escape(j + 1, end, usize::MAX),
+            Some('u') => self.hex_char_escape(j + 1, end, 4),
+            Some('U') => self.hex_char_escape(j + 1, end, 8),
+            Some(digit) if digit.is_digit(8) => {
+                let mut e = j;
+                let mut value = 0u32;
+                let mut count = 0;
+                while count < 3 && self.char_in(e, end).is_some_and(|c| c.is_digit(8)) {
+                    value = value * 8 + self.chars[e].to_digit(8).unwrap();
+                    e += 1;
+                    count += 1;
+                }
+                (value, e)
+            }
+            Some(other) => (other as u32, j + 1),
+            None => (0, j),
+        }
+    }
+
+    fn hex_char_escape(&self, start: usize, end: usize, max_digits: usize) -> (u32, usize) {
+        let mut e = start;
+        let mut value = 0u32;
+        while e - start < max_digits && self.char_in(e, end).is_some_and(|c| c.is_ascii_hexdigit()) {
+            value = value * 16 + self.chars[e].to_digit(16).unwrap();
+            e += 1;
+        }
+        (value, e)
     }
 }

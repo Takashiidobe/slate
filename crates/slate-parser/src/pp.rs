@@ -1,8 +1,7 @@
 use crate::ast::{Condition, Conditional, FileId, HeaderKind, Provenance};
 use crate::const_expr;
 use crate::files::{Files, SearchPaths, display_path};
-use crate::lexer::Token;
-use crate::lexer::lex;
+use crate::lexer::{Lexer, Token};
 use miette::{Diagnostic, NamedSource, SourceSpan};
 use std::collections::HashSet;
 use std::path::{Path, PathBuf};
@@ -1006,4 +1005,12 @@ fn tokens_source(tokens: &[Token]) -> String {
         .map(String::from)
         .collect::<Vec<_>>()
         .join(" ")
+}
+
+fn lex(src: &str) -> Vec<Token> {
+    Lexer::new(FileId(0), src)
+        .tokenize()
+        .into_iter()
+        .map(|span| span.value)
+        .collect()
 }

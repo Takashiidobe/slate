@@ -2,7 +2,7 @@ use crate::ast::*;
 use crate::const_expr;
 use crate::error::{FrontendError, ParseError};
 use crate::files::{Files, SearchPaths, display_path};
-use crate::lexer::{Keyword, Token, lex};
+use crate::lexer::{Keyword, Lexer, Token};
 use crate::pp::{PPConditional, PPNode, Preprocessor};
 use crate::reachability::filter_translation_unit;
 use miette::Diagnostic;
@@ -37,11 +37,15 @@ impl<'a> Loc<'a> {
 trait Cursor {
     type Error;
 
-    fn tokens(&self) -> &[Token];
+    fn tokens(&self) -> &[Span<Token>];
     fn pos(&self) -> usize;
     fn set_pos(&mut self, pos: usize);
 
     fn peek(&self) -> Option<&Token> {
+        self.tokens().get(self.pos()).map(|span| &span.value)
+    }
+
+    fn peek_span(&self) -> Option<&Span<Token>> {
         self.tokens().get(self.pos())
     }
 
@@ -58,12 +62,12 @@ trait Cursor {
 struct Fragment<'p, 'a> {
     parser: &'p Parser,
     code: &'a str,
-    tokens: &'a [Token],
+    tokens: &'a [Span<Token>],
     pos: usize,
 }
 
 impl<'p, 'a> Fragment<'p, 'a> {
-    fn new(parser: &'p Parser, code: &'a str, tokens: &'a [Token], pos: usize) -> Self {
+    fn new(parser: &'p Parser, code: &'a str, tokens: &'a [Span<Token>], pos: usize) -> Self {
         Self {
             parser,
             code,
@@ -88,7 +92,7 @@ impl<'p, 'a> Fragment<'p, 'a> {
 impl<'p, 'a> Cursor for Fragment<'p, 'a> {
     type Error = ParseError;
 
-    fn tokens(&self) -> &[Token] {
+    fn tokens(&self) -> &[Span<Token>] {
         self.tokens
     }
 
@@ -1371,12 +1375,12 @@ impl From<String> for DeclaratorError {
 }
 
 pub(crate) struct DeclaratorParser<'a> {
-    tokens: &'a [Token],
+    tokens: &'a [Span<Token>],
     pos: usize,
 }
 
 impl<'a> DeclaratorParser<'a> {
-    pub(crate) fn new(tokens: &'a [Token], pos: usize) -> Self {
+    pub(crate) fn new(tokens: &'a [Span<Token>], pos: usize) -> Self {
         Self { tokens, pos }
     }
 
@@ -1385,7 +1389,7 @@ impl<'a> DeclaratorParser<'a> {
     }
 
     fn peek(&self) -> Option<&Token> {
-        self.tokens.get(self.pos)
+        self.tokens.get(self.pos).map(|span| &span.value)
     }
 
     fn matches(&mut self, expected: Token) -> bool {
@@ -2128,7 +2132,7 @@ impl<'a> DeclaratorParser<'a> {
 impl<'a> Cursor for DeclaratorParser<'a> {
     type Error = DeclaratorError;
 
-    fn tokens(&self) -> &[Token] {
+    fn tokens(&self) -> &[Span<Token>] {
         self.tokens
     }
 
