@@ -49,6 +49,18 @@ FileCheck expectations are generated. After changing a fixture or its
 renderer, run `python3 tools/update_filecheck.py --in-place <fixture>`;
 do not write `CHECK` lines by hand.
 
+### Wiki
+
+Non-obvious project context lives in `wiki/` (see `llog`). Check it before
+re-deriving something from scratch:
+
+- `wiki/concepts/ast-enum-touchpoints.md` — before adding a variant to
+  `Stmt`, `Expr`, `ConstExpr`, or `ArraySize`: every file that matches it
+  exhaustively, so you don't have to grep the whole crate to find out
+  where a new variant needs handling.
+- `wiki/index.md` and `wiki/log/` — chronological log of past changes and
+  decisions; `llog search <keyword>` to query it.
+
 ### Goal
 
 Slate-Parser is the C front end for Slate. It exists to let Slate ingest
@@ -88,5 +100,18 @@ Rust-conversion work.
 
 ### Testing
 
-Testing is done via filecheck and the evaluated AST is compared to
-clang-ast as an oracle.
+Testing is done via filecheck. Standard gate:
+
+```
+cargo nextest
+```
+
+The evaluated AST can additionally be checked against clang-ast as an
+oracle by setting `SLATE_CLANG_ORACLE=1`:
+
+```
+SLATE_CLANG_ORACLE=1 cargo test
+```
+
+This is a debugging aid, not part of the standard gate; there is no need
+for it to pass.
