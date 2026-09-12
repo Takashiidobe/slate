@@ -5,26 +5,10 @@ fn is_false(value: &bool) -> bool {
     !*value
 }
 
-#[derive(Debug, Clone, PartialEq)]
-pub enum Condition {
-    Defined(String),
-    Constant(i64),
-    Not(Box<Condition>),
-    And(Box<Condition>, Box<Condition>),
-    Or(Box<Condition>, Box<Condition>),
-}
-
-#[derive(Debug, Clone, PartialEq)]
-pub struct Conditional<T> {
-    pub branches: Vec<(Condition, T)>,
-}
-
 pub type SpannedExpr = Span<Expr>;
 pub type SpannedStmt = Span<Stmt>;
 pub type SpannedFieldItem = Span<FieldItem>;
 pub type SpannedDecl = Span<Decl>;
-pub type SpannedConcreteStmt = Span<ConcreteStmt>;
-pub type SpannedConcreteDecl = Span<ConcreteDecl>;
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Expr {
@@ -102,7 +86,6 @@ pub struct InitializerItem {
 pub enum Initializer {
     Expr(SpannedExpr),
     List(Vec<InitializerItem>),
-    Conditional(Conditional<Box<Initializer>>),
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -116,7 +99,6 @@ pub enum Stmt {
     Expr(SpannedExpr),
     Decl(Declaration),
     Block(Vec<SpannedStmt>),
-    Conditional(Conditional<Vec<SpannedStmt>>),
     If {
         condition: SpannedExpr,
         then_branch: Vec<SpannedStmt>,
@@ -148,6 +130,7 @@ pub enum Stmt {
     NestedFunction(Box<FunctionDecl>),
     Break,
     Continue,
+    Unreachable(Box<SpannedStmt>),
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -647,7 +630,6 @@ pub enum FieldItem {
         provenance: Provenance,
     },
     Field(FieldDecl),
-    Conditional(Conditional<Vec<SpannedFieldItem>>),
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -691,7 +673,6 @@ pub enum Decl {
     },
     Record(RecordDecl),
     Enum(EnumDecl),
-    Conditional(Conditional<Vec<SpannedDecl>>),
 }
 
 impl Decl {
@@ -703,20 +684,18 @@ impl Decl {
             Self::Typedef { name, .. } => Some(name),
             Self::Record(record) => record.name.as_deref(),
             Self::Enum(enumeration) => enumeration.name.as_deref(),
-            Self::Conditional(_) => None,
         }
     }
 
-    pub fn provenance(&self) -> Option<FileId> {
+    pub fn provenance(&self) -> FileId {
         match self {
-            Self::Comment { provenance, .. } => Some(provenance.file),
-            Self::Function(function) => Some(function.provenance.file),
+            Self::Comment { provenance, .. } => provenance.file,
+            Self::Function(function) => function.provenance.file,
             Self::Declaration { provenance, .. } | Self::Typedef { provenance, .. } => {
-                Some(provenance.file)
+                provenance.file
             }
-            Self::Record(record) => Some(record.provenance.file),
-            Self::Enum(enumeration) => Some(enumeration.provenance.file),
-            Self::Conditional(_) => None,
+            Self::Record(record) => record.provenance.file,
+            Self::Enum(enumeration) => enumeration.provenance.file,
         }
     }
 }
@@ -724,100 +703,4 @@ impl Decl {
 #[derive(Debug, Clone, PartialEq)]
 pub struct TranslationUnit {
     pub decls: Vec<SpannedDecl>,
-}
-
-#[derive(Debug, Clone, PartialEq)]
-pub enum ConcreteStmt {
-    Comment {
-        text: String,
-        loc: Loc,
-        provenance: Provenance,
-    },
-    Return(SpannedExpr),
-    Expr(SpannedExpr),
-    Decl(Declaration),
-    Block(Vec<SpannedConcreteStmt>),
-    If {
-        condition: SpannedExpr,
-        then_branch: Vec<SpannedConcreteStmt>,
-        else_branch: Option<Vec<SpannedConcreteStmt>>,
-    },
-    While {
-        condition: SpannedExpr,
-        body: Vec<SpannedConcreteStmt>,
-    },
-    DoWhile {
-        body: Vec<SpannedConcreteStmt>,
-        condition: SpannedExpr,
-    },
-    For {
-        init: Option<Box<SpannedConcreteStmt>>,
-        condition: Option<SpannedExpr>,
-        increment: Option<SpannedExpr>,
-        body: Vec<SpannedConcreteStmt>,
-    },
-    Switch {
-        discriminant: SpannedExpr,
-        body: Vec<SpannedConcreteStmt>,
-    },
-    Case(SpannedExpr),
-    Default,
-    Labeled(String),
-    Goto(String),
-    ComputedGoto(SpannedExpr),
-    NestedFunction(Box<ConcreteFunctionDecl>),
-    Break,
-    Continue,
-    Unreachable(Box<SpannedConcreteStmt>),
-}
-
-#[derive(CustomDebug, Clone, PartialEq)]
-pub struct ConcreteFunctionDecl {
-    pub ret_type: Type,
-    pub name: String,
-    #[debug(skip_if = Vec::is_empty)]
-    pub parameters: Vec<Parameter>,
-    #[debug(skip_if = is_false)]
-    pub variadic: bool,
-    #[debug(skip_if = Vec::is_empty)]
-    pub body: Vec<SpannedConcreteStmt>,
-    pub provenance: Provenance,
-    #[debug(skip_if = Qualifiers::is_default)]
-    pub qualifiers: Qualifiers,
-    #[debug(skip_if = StorageClass::is_none)]
-    pub storage: StorageClass,
-    #[debug(skip_if = is_false)]
-    pub is_inline: bool,
-    #[debug(skip_if = is_false)]
-    pub is_noreturn: bool,
-    #[debug(skip_if = Vec::is_empty)]
-    pub attributes: Vec<Attribute>,
-}
-
-#[derive(CustomDebug, Clone, PartialEq)]
-pub enum ConcreteDecl {
-    Comment {
-        text: String,
-        loc: Loc,
-        provenance: Provenance,
-    },
-    Function(ConcreteFunctionDecl),
-    Declaration {
-        declaration: Declaration,
-        provenance: Provenance,
-    },
-    Typedef {
-        name: String,
-        ty: CType,
-        provenance: Provenance,
-        #[debug(skip_if = Vec::is_empty)]
-        attributes: Vec<Attribute>,
-    },
-    Record(RecordDecl),
-    Enum(EnumDecl),
-}
-
-#[derive(Debug, Clone, PartialEq)]
-pub struct ConcreteTranslationUnit {
-    pub decls: Vec<SpannedConcreteDecl>,
 }

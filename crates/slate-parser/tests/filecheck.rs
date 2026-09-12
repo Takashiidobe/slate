@@ -1,7 +1,6 @@
 use clang_ast::Node;
 use serde::Deserialize;
 use slate_parser::ast::*;
-use slate_parser::eval::Env;
 use slate_parser::files::SearchPaths;
 use slate_parser::parser::Parser;
 use std::path::{Path, PathBuf};
@@ -129,20 +128,6 @@ fn expand_home(path: &str) -> String {
     )
 }
 
-fn configuration_names(fixture: &Path) -> Vec<String> {
-    let source = std::fs::read_to_string(fixture).expect("read fixture");
-    let mut names: Vec<String> = Vec::new();
-    for (_, defines) in configurations(&source) {
-        for define in defines {
-            let name = macro_name(&define);
-            if !names.contains(&name) {
-                names.push(name);
-            }
-        }
-    }
-    names
-}
-
 fn error_configurations(source: &str) -> Vec<String> {
     source
         .lines()
@@ -175,9 +160,6 @@ fn run_fixture(fixture: &Path, prefix: &str, defines: &[String], isystem: &[Stri
     }
     for path in isystem {
         command.arg(format!("-isystem{path}"));
-    }
-    for name in configuration_names(fixture) {
-        command.arg(format!("-fslate-config={name}"));
     }
     let rendered = command
         .output()
@@ -251,11 +233,6 @@ fn run_error_fixture(fixture: &Path, prefix: &str, defines: &[String], slot: usi
                 .iter()
                 .map(|define| format!("-D{}", define.trim_start_matches("-D"))),
         )
-        .args(
-            configuration_names(fixture)
-                .into_iter()
-                .map(|name| format!("-fslate-config={name}")),
-        )
         .env_remove("FORCE_COLOR")
         .env_remove("CLICOLOR_FORCE")
         .env("NO_COLOR", "1")
@@ -311,18 +288,13 @@ fn assert_evaluated_matches_clang(fixture: &Path, defines: &[String], isystem: &
         system: isystem.iter().map(std::path::PathBuf::from).collect(),
         ..SearchPaths::default()
     };
-    let mut parser = Parser::new(search)
-        .with_configuration_names(defines.iter().map(|define| macro_name(define)));
+    let mut parser = Parser::new(search).with_defines(
+        defines
+            .iter()
+            .map(|define| define.trim_start_matches("-D").to_string()),
+    );
     let (ast, _) = parser.parse_file(fixture).expect("parse fixture");
-    let mut env = parser
-        .predefined_macros()
-        .iter()
-        .fold(Env::new(), |env, name| env.define(name.as_str()));
-    for define in defines {
-        env = env.define(macro_name(define));
-    }
-    let evaluated = ast.eval(&env);
-    let ours = summarize_evaluated(&evaluated);
+    let ours = summarize_evaluated(&ast);
     let theirs = summarize_clang(&run_clang_ast(fixture, defines, isystem));
     for summary in &ours {
         if matches!(summary, DeclSummary::Object { name, .. } if name == "<abstract>") {
@@ -337,13 +309,6 @@ fn assert_evaluated_matches_clang(fixture: &Path, defines: &[String], isystem: &
             fixture.display()
         );
     }
-}
-
-fn macro_name(define: &str) -> String {
-    define.trim_start_matches("-D").split_once('=').map_or_else(
-        || define.trim_start_matches("-D").to_string(),
-        |(name, _)| name.to_string(),
-    )
 }
 
 fn run_clang_ast(fixture: &Path, defines: &[String], isystem: &[String]) -> ClangNode {
@@ -371,29 +336,29 @@ fn run_clang_ast(fixture: &Path, defines: &[String], isystem: &[String]) -> Clan
     serde_json::from_slice(&output.stdout).expect("clang emitted invalid AST JSON")
 }
 
-fn summarize_evaluated(tu: &ConcreteTranslationUnit) -> Vec<DeclSummary> {
+fn summarize_evaluated(tu: &TranslationUnit) -> Vec<DeclSummary> {
     tu.decls
         .iter()
         .filter(|decl| match &decl.value {
-            ConcreteDecl::Comment { .. } => false,
-            ConcreteDecl::Declaration { declaration, .. } => declaration.attributes.is_empty(),
-            ConcreteDecl::Typedef { attributes, .. } => attributes.is_empty(),
+            Decl::Comment { .. } => false,
+            Decl::Declaration { declaration, .. } => declaration.attributes.is_empty(),
+            Decl::Typedef { attributes, .. } => attributes.is_empty(),
             _ => true,
         })
         .map(|decl| summarize_evaluated_decl(&decl.value))
         .collect()
 }
 
-fn summarize_evaluated_decl(decl: &ConcreteDecl) -> DeclSummary {
+fn summarize_evaluated_decl(decl: &Decl) -> DeclSummary {
     match decl {
-        ConcreteDecl::Comment { .. } => unreachable!("comments are filtered before summarizing"),
-        ConcreteDecl::Function(function) => DeclSummary::Function {
+        Decl::Comment { .. } => unreachable!("comments are filtered before summarizing"),
+        Decl::Function(function) => DeclSummary::Function {
             name: function.name.clone(),
             returns: function
                 .body
                 .iter()
                 .filter_map(|stmt| match &stmt.value {
-                    ConcreteStmt::Return(expression) => match &expression.value {
+                    Stmt::Return(expression) => match &expression.value {
                         Expr::IntLit(value) => Some(*value),
                         Expr::StringLit(_) => {
                             panic!("clang return was not an integer")
@@ -407,33 +372,33 @@ fn summarize_evaluated_decl(decl: &ConcreteDecl) -> DeclSummary {
                             panic!("clang return was not an integer")
                         }
                     },
-                    ConcreteStmt::Comment { .. }
-                    | ConcreteStmt::Expr(_)
-                    | ConcreteStmt::Decl(_)
-                    | ConcreteStmt::Block(_)
-                    | ConcreteStmt::If { .. }
-                    | ConcreteStmt::While { .. }
-                    | ConcreteStmt::DoWhile { .. }
-                    | ConcreteStmt::For { .. }
-                    | ConcreteStmt::Switch { .. }
-                    | ConcreteStmt::Case(_)
-                    | ConcreteStmt::Default
-                    | ConcreteStmt::Labeled(_)
-                    | ConcreteStmt::Goto(_)
-                    | ConcreteStmt::ComputedGoto(_)
-                    | ConcreteStmt::NestedFunction(_)
-                    | ConcreteStmt::Break
-                    | ConcreteStmt::Continue
-                    | ConcreteStmt::Unreachable(_) => None,
+                    Stmt::Comment { .. }
+                    | Stmt::Expr(_)
+                    | Stmt::Decl(_)
+                    | Stmt::Block(_)
+                    | Stmt::If { .. }
+                    | Stmt::While { .. }
+                    | Stmt::DoWhile { .. }
+                    | Stmt::For { .. }
+                    | Stmt::Switch { .. }
+                    | Stmt::Case(_)
+                    | Stmt::Default
+                    | Stmt::Labeled(_)
+                    | Stmt::Goto(_)
+                    | Stmt::ComputedGoto(_)
+                    | Stmt::NestedFunction(_)
+                    | Stmt::Break
+                    | Stmt::Continue
+                    | Stmt::Unreachable(_) => None,
                 })
                 .collect(),
             signature: None,
         },
-        ConcreteDecl::Typedef { name, ty, .. } => DeclSummary::Typedef {
+        Decl::Typedef { name, ty, .. } => DeclSummary::Typedef {
             name: name.clone(),
             type_name: normalize_type(&type_spelling(ty)),
         },
-        ConcreteDecl::Declaration { declaration, .. } => {
+        Decl::Declaration { declaration, .. } => {
             let name = declarator_identifier(&declaration.declarator);
             if matches!(declaration.declarator, Declarator::Function { .. }) {
                 DeclSummary::Function {
@@ -451,11 +416,11 @@ fn summarize_evaluated_decl(decl: &ConcreteDecl) -> DeclSummary {
                 }
             }
         }
-        ConcreteDecl::Record(record) => DeclSummary::Record {
+        Decl::Record(record) => DeclSummary::Record {
             kind: tag_name(record.kind).into(),
             name: record.name.clone().unwrap_or_else(|| "<anonymous>".into()),
         },
-        ConcreteDecl::Enum(enumeration) => DeclSummary::Enum {
+        Decl::Enum(enumeration) => DeclSummary::Enum {
             name: enumeration
                 .name
                 .clone()

@@ -19,173 +19,7 @@ RightOnly right_value;
 // SLATE-FILECHECK-DEFINES LEFT ONLY_LEFT
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: polyvariant:
-// DEFAULT-NEXT: decl[0]: Conditional(
-// DEFAULT-NEXT:       Conditional {
-// DEFAULT-NEXT:           branches: [
-// DEFAULT-NEXT:               (
-// DEFAULT-NEXT:                   Defined(
-// DEFAULT-NEXT:                       "USE_INT",
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   [
-// DEFAULT-NEXT:                       Typedef {
-// DEFAULT-NEXT:                           name: "Value",
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           provenance: Provenance {
-// DEFAULT-NEXT:                               file: FileId(
-// DEFAULT-NEXT:                                   2,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               kind: User,
-// DEFAULT-NEXT:                               line: 1,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               (
-// DEFAULT-NEXT:                   Not(
-// DEFAULT-NEXT:                       Defined(
-// DEFAULT-NEXT:                           "USE_INT",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   [
-// DEFAULT-NEXT:                       Typedef {
-// DEFAULT-NEXT:                           name: "Value",
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Char {
-// DEFAULT-NEXT:                                   signed: None,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           provenance: Provenance {
-// DEFAULT-NEXT:                               file: FileId(
-// DEFAULT-NEXT:                                   2,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               kind: User,
-// DEFAULT-NEXT:                               line: 3,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ],
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[1]: Declaration {
-// DEFAULT-NEXT:       declaration: Declaration {
-// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Named(
-// DEFAULT-NEXT:                   "Value",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "value",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               2,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 6,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[2]: Conditional(
-// DEFAULT-NEXT:       Conditional {
-// DEFAULT-NEXT:           branches: [
-// DEFAULT-NEXT:               (
-// DEFAULT-NEXT:                   Defined(
-// DEFAULT-NEXT:                       "ONLY_LEFT",
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   [
-// DEFAULT-NEXT:                       Typedef {
-// DEFAULT-NEXT:                           name: "LeftOnly",
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           provenance: Provenance {
-// DEFAULT-NEXT:                               file: FileId(
-// DEFAULT-NEXT:                                   2,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               kind: User,
-// DEFAULT-NEXT:                               line: 9,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Declaration {
-// DEFAULT-NEXT:                           declaration: Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Named(
-// DEFAULT-NEXT:                                       "LeftOnly",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "left_value",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           provenance: Provenance {
-// DEFAULT-NEXT:                               file: FileId(
-// DEFAULT-NEXT:                                   2,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               kind: User,
-// DEFAULT-NEXT:                               line: 10,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               (
-// DEFAULT-NEXT:                   Not(
-// DEFAULT-NEXT:                       Defined(
-// DEFAULT-NEXT:                           "ONLY_LEFT",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   [
-// DEFAULT-NEXT:                       Typedef {
-// DEFAULT-NEXT:                           name: "RightOnly",
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           provenance: Provenance {
-// DEFAULT-NEXT:                               file: FileId(
-// DEFAULT-NEXT:                                   2,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               kind: User,
-// DEFAULT-NEXT:                               line: 12,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Declaration {
-// DEFAULT-NEXT:                           declaration: Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Named(
-// DEFAULT-NEXT:                                       "RightOnly",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "right_value",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           provenance: Provenance {
-// DEFAULT-NEXT:                               file: FileId(
-// DEFAULT-NEXT:                                   2,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               kind: User,
-// DEFAULT-NEXT:                               line: 13,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ],
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   )
-// DEFAULT-NEXT: concrete:
-// DEFAULT-NEXT: decl[0]: Typedef {
+// DEFAULT: decl[0]: Typedef {
 // DEFAULT-NEXT:       name: "Value",
 // DEFAULT-NEXT:       ty: Integer(
 // DEFAULT-NEXT:           Char {
@@ -194,7 +28,7 @@ RightOnly right_value;
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               2,
+// DEFAULT-NEXT:               3,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 3,
@@ -213,7 +47,7 @@ RightOnly right_value;
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               2,
+// DEFAULT-NEXT:               3,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 6,
@@ -229,7 +63,7 @@ RightOnly right_value;
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               2,
+// DEFAULT-NEXT:               3,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 12,
@@ -248,7 +82,7 @@ RightOnly right_value;
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               2,
+// DEFAULT-NEXT:               3,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 13,
@@ -256,173 +90,7 @@ RightOnly right_value;
 // DEFAULT-NEXT:   }
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN INT
-// INT: polyvariant:
-// INT-NEXT: decl[0]: Conditional(
-// INT-NEXT:       Conditional {
-// INT-NEXT:           branches: [
-// INT-NEXT:               (
-// INT-NEXT:                   Defined(
-// INT-NEXT:                       "USE_INT",
-// INT-NEXT:                   ),
-// INT-NEXT:                   [
-// INT-NEXT:                       Typedef {
-// INT-NEXT:                           name: "Value",
-// INT-NEXT:                           ty: Integer(
-// INT-NEXT:                               Ranked {
-// INT-NEXT:                                   rank: Int,
-// INT-NEXT:                                   signed: true,
-// INT-NEXT:                               },
-// INT-NEXT:                           ),
-// INT-NEXT:                           provenance: Provenance {
-// INT-NEXT:                               file: FileId(
-// INT-NEXT:                                   2,
-// INT-NEXT:                               ),
-// INT-NEXT:                               kind: User,
-// INT-NEXT:                               line: 1,
-// INT-NEXT:                           },
-// INT-NEXT:                       },
-// INT-NEXT:                   ],
-// INT-NEXT:               ),
-// INT-NEXT:               (
-// INT-NEXT:                   Not(
-// INT-NEXT:                       Defined(
-// INT-NEXT:                           "USE_INT",
-// INT-NEXT:                       ),
-// INT-NEXT:                   ),
-// INT-NEXT:                   [
-// INT-NEXT:                       Typedef {
-// INT-NEXT:                           name: "Value",
-// INT-NEXT:                           ty: Integer(
-// INT-NEXT:                               Char {
-// INT-NEXT:                                   signed: None,
-// INT-NEXT:                               },
-// INT-NEXT:                           ),
-// INT-NEXT:                           provenance: Provenance {
-// INT-NEXT:                               file: FileId(
-// INT-NEXT:                                   2,
-// INT-NEXT:                               ),
-// INT-NEXT:                               kind: User,
-// INT-NEXT:                               line: 3,
-// INT-NEXT:                           },
-// INT-NEXT:                       },
-// INT-NEXT:                   ],
-// INT-NEXT:               ),
-// INT-NEXT:           ],
-// INT-NEXT:       },
-// INT-NEXT:   )
-// INT-NEXT: decl[1]: Declaration {
-// INT-NEXT:       declaration: Declaration {
-// INT-NEXT:           specifiers: DeclarationSpecifiers {
-// INT-NEXT:               ty: Named(
-// INT-NEXT:                   "Value",
-// INT-NEXT:               ),
-// INT-NEXT:           },
-// INT-NEXT:           declarator: Name(
-// INT-NEXT:               "value",
-// INT-NEXT:           ),
-// INT-NEXT:       },
-// INT-NEXT:       provenance: Provenance {
-// INT-NEXT:           file: FileId(
-// INT-NEXT:               2,
-// INT-NEXT:           ),
-// INT-NEXT:           kind: User,
-// INT-NEXT:           line: 6,
-// INT-NEXT:       },
-// INT-NEXT:   }
-// INT-NEXT: decl[2]: Conditional(
-// INT-NEXT:       Conditional {
-// INT-NEXT:           branches: [
-// INT-NEXT:               (
-// INT-NEXT:                   Defined(
-// INT-NEXT:                       "ONLY_LEFT",
-// INT-NEXT:                   ),
-// INT-NEXT:                   [
-// INT-NEXT:                       Typedef {
-// INT-NEXT:                           name: "LeftOnly",
-// INT-NEXT:                           ty: Integer(
-// INT-NEXT:                               Ranked {
-// INT-NEXT:                                   rank: Int,
-// INT-NEXT:                                   signed: true,
-// INT-NEXT:                               },
-// INT-NEXT:                           ),
-// INT-NEXT:                           provenance: Provenance {
-// INT-NEXT:                               file: FileId(
-// INT-NEXT:                                   2,
-// INT-NEXT:                               ),
-// INT-NEXT:                               kind: User,
-// INT-NEXT:                               line: 9,
-// INT-NEXT:                           },
-// INT-NEXT:                       },
-// INT-NEXT:                       Declaration {
-// INT-NEXT:                           declaration: Declaration {
-// INT-NEXT:                               specifiers: DeclarationSpecifiers {
-// INT-NEXT:                                   ty: Named(
-// INT-NEXT:                                       "LeftOnly",
-// INT-NEXT:                                   ),
-// INT-NEXT:                               },
-// INT-NEXT:                               declarator: Name(
-// INT-NEXT:                                   "left_value",
-// INT-NEXT:                               ),
-// INT-NEXT:                           },
-// INT-NEXT:                           provenance: Provenance {
-// INT-NEXT:                               file: FileId(
-// INT-NEXT:                                   2,
-// INT-NEXT:                               ),
-// INT-NEXT:                               kind: User,
-// INT-NEXT:                               line: 10,
-// INT-NEXT:                           },
-// INT-NEXT:                       },
-// INT-NEXT:                   ],
-// INT-NEXT:               ),
-// INT-NEXT:               (
-// INT-NEXT:                   Not(
-// INT-NEXT:                       Defined(
-// INT-NEXT:                           "ONLY_LEFT",
-// INT-NEXT:                       ),
-// INT-NEXT:                   ),
-// INT-NEXT:                   [
-// INT-NEXT:                       Typedef {
-// INT-NEXT:                           name: "RightOnly",
-// INT-NEXT:                           ty: Integer(
-// INT-NEXT:                               Ranked {
-// INT-NEXT:                                   rank: Int,
-// INT-NEXT:                                   signed: true,
-// INT-NEXT:                               },
-// INT-NEXT:                           ),
-// INT-NEXT:                           provenance: Provenance {
-// INT-NEXT:                               file: FileId(
-// INT-NEXT:                                   2,
-// INT-NEXT:                               ),
-// INT-NEXT:                               kind: User,
-// INT-NEXT:                               line: 12,
-// INT-NEXT:                           },
-// INT-NEXT:                       },
-// INT-NEXT:                       Declaration {
-// INT-NEXT:                           declaration: Declaration {
-// INT-NEXT:                               specifiers: DeclarationSpecifiers {
-// INT-NEXT:                                   ty: Named(
-// INT-NEXT:                                       "RightOnly",
-// INT-NEXT:                                   ),
-// INT-NEXT:                               },
-// INT-NEXT:                               declarator: Name(
-// INT-NEXT:                                   "right_value",
-// INT-NEXT:                               ),
-// INT-NEXT:                           },
-// INT-NEXT:                           provenance: Provenance {
-// INT-NEXT:                               file: FileId(
-// INT-NEXT:                                   2,
-// INT-NEXT:                               ),
-// INT-NEXT:                               kind: User,
-// INT-NEXT:                               line: 13,
-// INT-NEXT:                           },
-// INT-NEXT:                       },
-// INT-NEXT:                   ],
-// INT-NEXT:               ),
-// INT-NEXT:           ],
-// INT-NEXT:       },
-// INT-NEXT:   )
-// INT-NEXT: concrete:
-// INT-NEXT: decl[0]: Typedef {
+// INT: decl[0]: Typedef {
 // INT-NEXT:       name: "Value",
 // INT-NEXT:       ty: Integer(
 // INT-NEXT:           Ranked {
@@ -432,7 +100,7 @@ RightOnly right_value;
 // INT-NEXT:       ),
 // INT-NEXT:       provenance: Provenance {
 // INT-NEXT:           file: FileId(
-// INT-NEXT:               2,
+// INT-NEXT:               3,
 // INT-NEXT:           ),
 // INT-NEXT:           kind: User,
 // INT-NEXT:           line: 1,
@@ -451,7 +119,7 @@ RightOnly right_value;
 // INT-NEXT:       },
 // INT-NEXT:       provenance: Provenance {
 // INT-NEXT:           file: FileId(
-// INT-NEXT:               2,
+// INT-NEXT:               3,
 // INT-NEXT:           ),
 // INT-NEXT:           kind: User,
 // INT-NEXT:           line: 6,
@@ -467,7 +135,7 @@ RightOnly right_value;
 // INT-NEXT:       ),
 // INT-NEXT:       provenance: Provenance {
 // INT-NEXT:           file: FileId(
-// INT-NEXT:               2,
+// INT-NEXT:               3,
 // INT-NEXT:           ),
 // INT-NEXT:           kind: User,
 // INT-NEXT:           line: 12,
@@ -486,7 +154,7 @@ RightOnly right_value;
 // INT-NEXT:       },
 // INT-NEXT:       provenance: Provenance {
 // INT-NEXT:           file: FileId(
-// INT-NEXT:               2,
+// INT-NEXT:               3,
 // INT-NEXT:           ),
 // INT-NEXT:           kind: User,
 // INT-NEXT:           line: 13,
@@ -494,173 +162,7 @@ RightOnly right_value;
 // INT-NEXT:   }
 // SLATE-FILECHECK-END INT
 // SLATE-FILECHECK-BEGIN LEFT
-// LEFT: polyvariant:
-// LEFT-NEXT: decl[0]: Conditional(
-// LEFT-NEXT:       Conditional {
-// LEFT-NEXT:           branches: [
-// LEFT-NEXT:               (
-// LEFT-NEXT:                   Defined(
-// LEFT-NEXT:                       "USE_INT",
-// LEFT-NEXT:                   ),
-// LEFT-NEXT:                   [
-// LEFT-NEXT:                       Typedef {
-// LEFT-NEXT:                           name: "Value",
-// LEFT-NEXT:                           ty: Integer(
-// LEFT-NEXT:                               Ranked {
-// LEFT-NEXT:                                   rank: Int,
-// LEFT-NEXT:                                   signed: true,
-// LEFT-NEXT:                               },
-// LEFT-NEXT:                           ),
-// LEFT-NEXT:                           provenance: Provenance {
-// LEFT-NEXT:                               file: FileId(
-// LEFT-NEXT:                                   2,
-// LEFT-NEXT:                               ),
-// LEFT-NEXT:                               kind: User,
-// LEFT-NEXT:                               line: 1,
-// LEFT-NEXT:                           },
-// LEFT-NEXT:                       },
-// LEFT-NEXT:                   ],
-// LEFT-NEXT:               ),
-// LEFT-NEXT:               (
-// LEFT-NEXT:                   Not(
-// LEFT-NEXT:                       Defined(
-// LEFT-NEXT:                           "USE_INT",
-// LEFT-NEXT:                       ),
-// LEFT-NEXT:                   ),
-// LEFT-NEXT:                   [
-// LEFT-NEXT:                       Typedef {
-// LEFT-NEXT:                           name: "Value",
-// LEFT-NEXT:                           ty: Integer(
-// LEFT-NEXT:                               Char {
-// LEFT-NEXT:                                   signed: None,
-// LEFT-NEXT:                               },
-// LEFT-NEXT:                           ),
-// LEFT-NEXT:                           provenance: Provenance {
-// LEFT-NEXT:                               file: FileId(
-// LEFT-NEXT:                                   2,
-// LEFT-NEXT:                               ),
-// LEFT-NEXT:                               kind: User,
-// LEFT-NEXT:                               line: 3,
-// LEFT-NEXT:                           },
-// LEFT-NEXT:                       },
-// LEFT-NEXT:                   ],
-// LEFT-NEXT:               ),
-// LEFT-NEXT:           ],
-// LEFT-NEXT:       },
-// LEFT-NEXT:   )
-// LEFT-NEXT: decl[1]: Declaration {
-// LEFT-NEXT:       declaration: Declaration {
-// LEFT-NEXT:           specifiers: DeclarationSpecifiers {
-// LEFT-NEXT:               ty: Named(
-// LEFT-NEXT:                   "Value",
-// LEFT-NEXT:               ),
-// LEFT-NEXT:           },
-// LEFT-NEXT:           declarator: Name(
-// LEFT-NEXT:               "value",
-// LEFT-NEXT:           ),
-// LEFT-NEXT:       },
-// LEFT-NEXT:       provenance: Provenance {
-// LEFT-NEXT:           file: FileId(
-// LEFT-NEXT:               2,
-// LEFT-NEXT:           ),
-// LEFT-NEXT:           kind: User,
-// LEFT-NEXT:           line: 6,
-// LEFT-NEXT:       },
-// LEFT-NEXT:   }
-// LEFT-NEXT: decl[2]: Conditional(
-// LEFT-NEXT:       Conditional {
-// LEFT-NEXT:           branches: [
-// LEFT-NEXT:               (
-// LEFT-NEXT:                   Defined(
-// LEFT-NEXT:                       "ONLY_LEFT",
-// LEFT-NEXT:                   ),
-// LEFT-NEXT:                   [
-// LEFT-NEXT:                       Typedef {
-// LEFT-NEXT:                           name: "LeftOnly",
-// LEFT-NEXT:                           ty: Integer(
-// LEFT-NEXT:                               Ranked {
-// LEFT-NEXT:                                   rank: Int,
-// LEFT-NEXT:                                   signed: true,
-// LEFT-NEXT:                               },
-// LEFT-NEXT:                           ),
-// LEFT-NEXT:                           provenance: Provenance {
-// LEFT-NEXT:                               file: FileId(
-// LEFT-NEXT:                                   2,
-// LEFT-NEXT:                               ),
-// LEFT-NEXT:                               kind: User,
-// LEFT-NEXT:                               line: 9,
-// LEFT-NEXT:                           },
-// LEFT-NEXT:                       },
-// LEFT-NEXT:                       Declaration {
-// LEFT-NEXT:                           declaration: Declaration {
-// LEFT-NEXT:                               specifiers: DeclarationSpecifiers {
-// LEFT-NEXT:                                   ty: Named(
-// LEFT-NEXT:                                       "LeftOnly",
-// LEFT-NEXT:                                   ),
-// LEFT-NEXT:                               },
-// LEFT-NEXT:                               declarator: Name(
-// LEFT-NEXT:                                   "left_value",
-// LEFT-NEXT:                               ),
-// LEFT-NEXT:                           },
-// LEFT-NEXT:                           provenance: Provenance {
-// LEFT-NEXT:                               file: FileId(
-// LEFT-NEXT:                                   2,
-// LEFT-NEXT:                               ),
-// LEFT-NEXT:                               kind: User,
-// LEFT-NEXT:                               line: 10,
-// LEFT-NEXT:                           },
-// LEFT-NEXT:                       },
-// LEFT-NEXT:                   ],
-// LEFT-NEXT:               ),
-// LEFT-NEXT:               (
-// LEFT-NEXT:                   Not(
-// LEFT-NEXT:                       Defined(
-// LEFT-NEXT:                           "ONLY_LEFT",
-// LEFT-NEXT:                       ),
-// LEFT-NEXT:                   ),
-// LEFT-NEXT:                   [
-// LEFT-NEXT:                       Typedef {
-// LEFT-NEXT:                           name: "RightOnly",
-// LEFT-NEXT:                           ty: Integer(
-// LEFT-NEXT:                               Ranked {
-// LEFT-NEXT:                                   rank: Int,
-// LEFT-NEXT:                                   signed: true,
-// LEFT-NEXT:                               },
-// LEFT-NEXT:                           ),
-// LEFT-NEXT:                           provenance: Provenance {
-// LEFT-NEXT:                               file: FileId(
-// LEFT-NEXT:                                   2,
-// LEFT-NEXT:                               ),
-// LEFT-NEXT:                               kind: User,
-// LEFT-NEXT:                               line: 12,
-// LEFT-NEXT:                           },
-// LEFT-NEXT:                       },
-// LEFT-NEXT:                       Declaration {
-// LEFT-NEXT:                           declaration: Declaration {
-// LEFT-NEXT:                               specifiers: DeclarationSpecifiers {
-// LEFT-NEXT:                                   ty: Named(
-// LEFT-NEXT:                                       "RightOnly",
-// LEFT-NEXT:                                   ),
-// LEFT-NEXT:                               },
-// LEFT-NEXT:                               declarator: Name(
-// LEFT-NEXT:                                   "right_value",
-// LEFT-NEXT:                               ),
-// LEFT-NEXT:                           },
-// LEFT-NEXT:                           provenance: Provenance {
-// LEFT-NEXT:                               file: FileId(
-// LEFT-NEXT:                                   2,
-// LEFT-NEXT:                               ),
-// LEFT-NEXT:                               kind: User,
-// LEFT-NEXT:                               line: 13,
-// LEFT-NEXT:                           },
-// LEFT-NEXT:                       },
-// LEFT-NEXT:                   ],
-// LEFT-NEXT:               ),
-// LEFT-NEXT:           ],
-// LEFT-NEXT:       },
-// LEFT-NEXT:   )
-// LEFT-NEXT: concrete:
-// LEFT-NEXT: decl[0]: Typedef {
+// LEFT: decl[0]: Typedef {
 // LEFT-NEXT:       name: "Value",
 // LEFT-NEXT:       ty: Integer(
 // LEFT-NEXT:           Char {
@@ -669,7 +171,7 @@ RightOnly right_value;
 // LEFT-NEXT:       ),
 // LEFT-NEXT:       provenance: Provenance {
 // LEFT-NEXT:           file: FileId(
-// LEFT-NEXT:               2,
+// LEFT-NEXT:               3,
 // LEFT-NEXT:           ),
 // LEFT-NEXT:           kind: User,
 // LEFT-NEXT:           line: 3,
@@ -688,7 +190,7 @@ RightOnly right_value;
 // LEFT-NEXT:       },
 // LEFT-NEXT:       provenance: Provenance {
 // LEFT-NEXT:           file: FileId(
-// LEFT-NEXT:               2,
+// LEFT-NEXT:               3,
 // LEFT-NEXT:           ),
 // LEFT-NEXT:           kind: User,
 // LEFT-NEXT:           line: 6,
@@ -704,7 +206,7 @@ RightOnly right_value;
 // LEFT-NEXT:       ),
 // LEFT-NEXT:       provenance: Provenance {
 // LEFT-NEXT:           file: FileId(
-// LEFT-NEXT:               2,
+// LEFT-NEXT:               3,
 // LEFT-NEXT:           ),
 // LEFT-NEXT:           kind: User,
 // LEFT-NEXT:           line: 9,
@@ -723,7 +225,7 @@ RightOnly right_value;
 // LEFT-NEXT:       },
 // LEFT-NEXT:       provenance: Provenance {
 // LEFT-NEXT:           file: FileId(
-// LEFT-NEXT:               2,
+// LEFT-NEXT:               3,
 // LEFT-NEXT:           ),
 // LEFT-NEXT:           kind: User,
 // LEFT-NEXT:           line: 10,

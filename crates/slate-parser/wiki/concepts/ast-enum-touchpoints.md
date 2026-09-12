@@ -8,8 +8,8 @@ several unrelated files. The compiler will refuse to build until every one
 of these is updated, but nothing points at them up front — you either grep
 every constructor name across the crate or read the files end to end. This
 page is that grep, done once, so the next AST change doesn't require
-re-deriving it. See [[architecture_polyvariant_ast]] for why these enums
-are shaped the way they are (the `Conditional<T>` wrapping).
+re-deriving it. See [[architecture_single_configuration]] for the
+single-configuration pipeline these enums belong to.
 
 Update this page whenever a new exhaustive match site over one of these
 enums is added or removed.
@@ -18,20 +18,15 @@ Parsed nodes are stored as `Span<T>`: translation-unit declarations are
 `Span<Decl>`, function bodies contain `Span<Stmt>`, expression-bearing
 fields contain `Span<Expr>`, and preprocessor output uses
 `Span<PPNodeKind>`. Exhaustive matches over these collections must match
-the wrapper's `.value`. Evaluation preserves the wrapper while converting
-`Decl`/`Stmt` into their concrete counterparts.
+the wrapper's `.value`.
 
 ## Adding a `Stmt` variant
 
-- `src/eval.rs` — `impl Span<Stmt> { fn eval }`: must lower the new variant to a
-  `ConcreteStmt`. If it wraps a nested `FunctionDecl`/body, also update
-  `impl Span<Decl> { fn eval }`'s sibling logic for `mark_unreachable` — see how
-  `NestedFunction` mirrors the top-level `Function` case.
-- `src/ast.rs` — add the matching `ConcreteStmt` variant (`Stmt` and
-  `ConcreteStmt` are separate enums with matching shapes; nothing enforces
-  they stay in sync except this convention).
+- `src/parser.rs` — every `FunctionDecl` body (top-level and nested) is
+  passed through `reachability::mark_unreachable` when it is built. A new
+  variant that wraps a nested body needs the same call.
 - `tests/filecheck.rs` — `summarize_evaluated_decl`'s inner match over
-  `ConcreteStmt` (used to build the clang-oracle comparison). Only matters
+  `Stmt` (used to build the clang-oracle comparison). Only matters
   once the new statement can appear where `Return` is being scanned for;
   usually just add it to the `=> None` catch-group.
 - `src/reachability.rs` — **not exhaustive**, safe to skip: both

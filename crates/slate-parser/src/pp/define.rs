@@ -1,72 +1,32 @@
-use super::condition::{difference, intersect, is_satisfiable};
 use super::error::{PPErrorKind, PPFailure};
 use super::syntax::{Directive, identifier};
 use super::{MacroDef, MacroEntry, Preprocessor};
-use crate::ast::{Condition, Conditional, Provenance, Span};
+use crate::ast::Span;
 use crate::lexer::Token;
 
-#[derive(Debug, Clone)]
-pub(super) struct PushedMacro {
-    on_stack: Condition,
-    saved: Vec<(Condition, Option<MacroEntry>)>,
-}
-
 impl Preprocessor<'_> {
-    pub(super) fn push_macro(&mut self, directive: &Directive, active: &Condition) {
+    pub(super) fn push_macro(&mut self, directive: &Directive) {
         let Some(name) = pragma_macro_name(directive) else {
             return;
         };
-        let saved = self
-            .macro_cases(&name, active)
-            .into_iter()
-            .map(|(condition, entry)| (condition, entry.cloned()))
-            .collect();
-        self.pushed_macros
-            .entry(name)
-            .or_default()
-            .push(PushedMacro {
-                on_stack: active.clone(),
-                saved,
-            });
+        let saved = self.macros.get(&name).cloned();
+        self.pushed_macros.entry(name).or_default().push(saved);
     }
 
-    pub(super) fn pop_macro(&mut self, directive: &Directive, active: &Condition) {
+    pub(super) fn pop_macro(&mut self, directive: &Directive) {
         let Some(name) = pragma_macro_name(directive) else {
             return;
         };
-        let pop_provenance = self.provenance(directive.loc);
-        let Some(stack) = self.pushed_macros.get_mut(&name) else {
+        let Some(saved) = self.pushed_macros.get_mut(&name).and_then(Vec::pop) else {
             return;
         };
-        let mut unmatched = active.clone();
-        let mut restores = Vec::new();
-        for pushed in stack.iter_mut().rev() {
-            let joint = intersect(&unmatched, &pushed.on_stack);
-            if !is_satisfiable(&joint) {
-                continue;
+        match saved {
+            Some(entry) => {
+                self.macros.insert(name, entry);
             }
-            pushed.on_stack = difference(&pushed.on_stack, &joint);
-            unmatched = difference(&unmatched, &joint);
-            restores.extend(
-                pushed
-                    .saved
-                    .iter()
-                    .map(|(condition, entry)| (intersect(&joint, condition), entry.clone())),
-            );
-            if !is_satisfiable(&unmatched) {
-                break;
+            None => {
+                self.macros.remove(&name);
             }
-        }
-        stack.retain(|pushed| is_satisfiable(&pushed.on_stack));
-        for (condition, entry) in restores {
-            if !is_satisfiable(&condition) {
-                continue;
-            }
-            let (definition, provenance) = match entry {
-                Some(entry) => (entry.definition, entry.provenance),
-                None => (None, pop_provenance),
-            };
-            self.record_entry(name.clone(), definition, provenance, &condition);
         }
     }
 
@@ -91,11 +51,7 @@ impl Preprocessor<'_> {
             })
     }
 
-    pub(super) fn record_define(
-        &mut self,
-        directive: &Directive,
-        condition: &Condition,
-    ) -> Result<(), PPFailure> {
+    pub(super) fn record_define(&mut self, directive: &Directive) -> Result<(), PPFailure> {
         let (name, name_token) = self.macro_name(directive, "#define")?;
         let src = self.source(directive.loc.file);
         let rest = &directive.arguments[1..];
@@ -126,51 +82,21 @@ impl Preprocessor<'_> {
             variadic,
             replacement: replacement.to_vec(),
         };
-        self.record_macro(name, Some(definition), directive, condition);
-        Ok(())
-    }
-
-    pub(super) fn record_undef(
-        &mut self,
-        directive: &Directive,
-        condition: &Condition,
-    ) -> Result<(), PPFailure> {
-        let (name, _) = self.macro_name(directive, "#undef")?;
-        self.record_macro(name, None, directive, condition);
-        Ok(())
-    }
-
-    fn record_macro(
-        &mut self,
-        name: String,
-        definition: Option<MacroDef>,
-        directive: &Directive,
-        condition: &Condition,
-    ) {
         let provenance = self.provenance(directive.loc);
-        self.record_entry(name, definition, provenance, condition);
+        self.macros.insert(
+            name,
+            MacroEntry {
+                definition,
+                provenance,
+            },
+        );
+        Ok(())
     }
 
-    fn record_entry(
-        &mut self,
-        name: String,
-        definition: Option<MacroDef>,
-        provenance: Provenance,
-        condition: &Condition,
-    ) {
-        let entry = MacroEntry {
-            definition,
-            provenance,
-            order: self.macro_order,
-        };
-        self.macros
-            .entry(name)
-            .or_insert_with(|| Conditional {
-                branches: Vec::new(),
-            })
-            .branches
-            .push((condition.clone(), entry));
-        self.macro_order += 1;
+    pub(super) fn record_undef(&mut self, directive: &Directive) -> Result<(), PPFailure> {
+        let (name, _) = self.macro_name(directive, "#undef")?;
+        self.macros.remove(&name);
+        Ok(())
     }
 }
 

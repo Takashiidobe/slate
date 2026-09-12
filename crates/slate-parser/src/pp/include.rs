@@ -1,8 +1,7 @@
-use super::condition::is_statically_true;
 use super::error::{PPErrorKind, PPFailure};
 use super::syntax::{Directive, DirectiveName};
 use super::{PPNode, Preprocessor};
-use crate::ast::{Condition, FileId, HeaderKind, Loc, Span};
+use crate::ast::{FileId, HeaderKind, Loc, Span};
 use crate::files::display_path;
 use crate::lexer::Token;
 use std::fmt;
@@ -69,7 +68,6 @@ impl Preprocessor<'_> {
         &mut self,
         include: &IncludeDirective,
         directive: Loc,
-        active: &Condition,
     ) -> Result<Vec<PPNode>, PPFailure> {
         let (resolved, kind) = self
             .resolve_include(include, directive.file)
@@ -77,11 +75,7 @@ impl Preprocessor<'_> {
                 PPFailure::at(directive, PPErrorKind::HeaderNotFound(include.to_string()))
             })?;
         let once_key = resolved.canonicalize().unwrap_or_else(|_| resolved.clone());
-        if self.pragma_once.get(&once_key).is_some_and(|conditions| {
-            conditions
-                .iter()
-                .any(|condition| condition == active || is_statically_true(condition))
-        }) {
+        if self.pragma_once.contains(&once_key) {
             return Ok(Vec::new());
         }
         if self.open_stack.contains(&resolved) {
@@ -93,7 +87,7 @@ impl Preprocessor<'_> {
         let src = read_source(&resolved).map_err(|kind| PPFailure::at(directive, kind))?;
         let file = self.files.intern(resolved.clone(), kind);
         self.open_stack.push(resolved);
-        let nodes = self.parse_source(&src, file, active.clone())?;
+        let nodes = self.parse_source(&src, file)?;
         self.open_stack.pop();
         Ok(nodes)
     }

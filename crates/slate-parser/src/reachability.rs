@@ -1,7 +1,7 @@
 use crate::ast::*;
 use std::collections::{HashMap, HashSet};
 
-pub fn mark_unreachable(body: Vec<SpannedConcreteStmt>) -> Vec<SpannedConcreteStmt> {
+pub fn mark_unreachable(body: Vec<SpannedStmt>) -> Vec<SpannedStmt> {
     let mut result = Vec::with_capacity(body.len());
     let mut terminated = false;
     for stmt in body {
@@ -11,7 +11,7 @@ pub fn mark_unreachable(body: Vec<SpannedConcreteStmt>) -> Vec<SpannedConcreteSt
         let stmt = mark_unreachable_in(stmt);
         if terminated {
             let loc = stmt.clone();
-            result.push(loc.with_value(ConcreteStmt::Unreachable(Box::new(stmt))));
+            result.push(loc.with_value(Stmt::Unreachable(Box::new(stmt))));
         } else {
             terminated = always_terminates(&stmt);
             result.push(stmt);
@@ -20,50 +20,50 @@ pub fn mark_unreachable(body: Vec<SpannedConcreteStmt>) -> Vec<SpannedConcreteSt
     result
 }
 
-fn is_jump_target(stmt: &SpannedConcreteStmt) -> bool {
+fn is_jump_target(stmt: &SpannedStmt) -> bool {
     matches!(
         &stmt.value,
-        ConcreteStmt::Labeled(_) | ConcreteStmt::Case(_) | ConcreteStmt::Default
+        Stmt::Labeled(_) | Stmt::Case(_) | Stmt::Default
     )
 }
 
-fn mark_unreachable_in(stmt: SpannedConcreteStmt) -> SpannedConcreteStmt {
+fn mark_unreachable_in(stmt: SpannedStmt) -> SpannedStmt {
     let Span {
         value,
         spelling,
         expansion,
     } = stmt;
     let value = match value {
-        ConcreteStmt::Block(body) => ConcreteStmt::Block(mark_unreachable(body)),
-        ConcreteStmt::If {
+        Stmt::Block(body) => Stmt::Block(mark_unreachable(body)),
+        Stmt::If {
             condition,
             then_branch,
             else_branch,
-        } => ConcreteStmt::If {
+        } => Stmt::If {
             condition,
             then_branch: mark_unreachable(then_branch),
             else_branch: else_branch.map(mark_unreachable),
         },
-        ConcreteStmt::While { condition, body } => ConcreteStmt::While {
+        Stmt::While { condition, body } => Stmt::While {
             condition,
             body: mark_unreachable(body),
         },
-        ConcreteStmt::DoWhile { body, condition } => ConcreteStmt::DoWhile {
+        Stmt::DoWhile { body, condition } => Stmt::DoWhile {
             body: mark_unreachable(body),
             condition,
         },
-        ConcreteStmt::For {
+        Stmt::For {
             init,
             condition,
             increment,
             body,
-        } => ConcreteStmt::For {
+        } => Stmt::For {
             init: init.map(|stmt| Box::new(mark_unreachable_in(*stmt))),
             condition,
             increment,
             body: mark_unreachable(body),
         },
-        ConcreteStmt::Switch { discriminant, body } => ConcreteStmt::Switch {
+        Stmt::Switch { discriminant, body } => Stmt::Switch {
             discriminant,
             body: mark_unreachable(body),
         },
@@ -72,24 +72,21 @@ fn mark_unreachable_in(stmt: SpannedConcreteStmt) -> SpannedConcreteStmt {
     Span::new(value, spelling, expansion)
 }
 
-fn always_terminates(stmt: &SpannedConcreteStmt) -> bool {
+fn always_terminates(stmt: &SpannedStmt) -> bool {
     match &stmt.value {
-        ConcreteStmt::Return(_)
-        | ConcreteStmt::Break
-        | ConcreteStmt::Continue
-        | ConcreteStmt::Goto(_) => true,
-        ConcreteStmt::Block(body) => block_terminates(body),
-        ConcreteStmt::If {
+        Stmt::Return(_) | Stmt::Break | Stmt::Continue | Stmt::Goto(_) => true,
+        Stmt::Block(body) => block_terminates(body),
+        Stmt::If {
             then_branch,
             else_branch: Some(else_branch),
             ..
         } => block_terminates(then_branch) && block_terminates(else_branch),
-        ConcreteStmt::Unreachable(inner) => always_terminates(inner),
+        Stmt::Unreachable(inner) => always_terminates(inner),
         _ => false,
     }
 }
 
-fn block_terminates(body: &[SpannedConcreteStmt]) -> bool {
+fn block_terminates(body: &[SpannedStmt]) -> bool {
     body.iter().any(always_terminates)
 }
 
@@ -97,41 +94,34 @@ pub fn filter_translation_unit(tu: &TranslationUnit, root_file: FileId) -> Trans
     let mut reachability = Reachability::new(tu);
     reachability.mark_roots(root_file);
     TranslationUnit {
-        decls: reachability.filter_decls(&tu.decls),
+        decls: tu
+            .decls
+            .iter()
+            .enumerate()
+            .filter(|(id, _)| reachability.reachable.contains(id))
+            .map(|(_, decl)| decl.clone())
+            .collect(),
     }
 }
 
 struct Reachability<'a> {
-    nodes: Vec<&'a SpannedDecl>,
+    nodes: &'a [SpannedDecl],
     symbols: HashMap<String, Vec<usize>>,
     reachable: HashSet<usize>,
-    next_id: usize,
 }
 
 impl<'a> Reachability<'a> {
     fn new(tu: &'a TranslationUnit) -> Self {
-        let mut reachability = Self {
-            nodes: Vec::new(),
-            symbols: HashMap::new(),
-            reachable: HashSet::new(),
-            next_id: 0,
-        };
-        reachability.index_decls(&tu.decls);
-        reachability
-    }
-
-    fn index_decls(&mut self, decls: &'a [SpannedDecl]) {
-        for decl in decls {
-            let id = self.nodes.len();
-            self.nodes.push(decl);
+        let mut symbols: HashMap<String, Vec<usize>> = HashMap::new();
+        for (id, decl) in tu.decls.iter().enumerate() {
             if let Some(name) = decl.name() {
-                self.symbols.entry(name.to_string()).or_default().push(id);
+                symbols.entry(name.to_string()).or_default().push(id);
             }
-            if let Decl::Conditional(conditional) = &decl.value {
-                for (_, branch) in &conditional.branches {
-                    self.index_decls(branch);
-                }
-            }
+        }
+        Self {
+            nodes: &tu.decls,
+            symbols,
+            reachable: HashSet::new(),
         }
     }
 
@@ -140,7 +130,7 @@ impl<'a> Reachability<'a> {
             .nodes
             .iter()
             .enumerate()
-            .filter_map(|(id, decl)| (decl.provenance() == Some(root_file)).then_some(id))
+            .filter_map(|(id, decl)| (decl.provenance() == root_file).then_some(id))
             .collect::<Vec<_>>();
         for id in roots {
             self.mark(id);
@@ -167,7 +157,6 @@ impl<'a> Reachability<'a> {
                 }
             }
             Decl::Enum(_) => {}
-            Decl::Conditional(_) => {}
         }
     }
 
@@ -229,32 +218,5 @@ impl<'a> Reachability<'a> {
                 }
             }
         }
-    }
-
-    fn filter_decls(&mut self, decls: &[SpannedDecl]) -> Vec<SpannedDecl> {
-        let mut filtered = Vec::new();
-        for decl in decls {
-            let id = self.next_id;
-            self.next_id += 1;
-            match &decl.value {
-                Decl::Conditional(conditional) => {
-                    let branches = conditional
-                        .branches
-                        .iter()
-                        .map(|(condition, branch)| (condition.clone(), self.filter_decls(branch)))
-                        .filter(|(_, branch)| !branch.is_empty())
-                        .collect::<Vec<_>>();
-                    if !branches.is_empty() {
-                        filtered.push(
-                            decl.clone()
-                                .with_value(Decl::Conditional(Conditional { branches })),
-                        );
-                    }
-                }
-                _ if self.reachable.contains(&id) => filtered.push(decl.clone()),
-                _ => {}
-            }
-        }
-        filtered
     }
 }

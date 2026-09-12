@@ -1,6 +1,5 @@
 use crate::ast::*;
 use crate::const_expr::ConstExpr;
-use crate::eval::Env;
 use crate::files::{Files, display_path};
 use miette::{Diagnostic, NamedSource, SourceSpan};
 use std::collections::HashSet;
@@ -26,23 +25,22 @@ pub struct SemaErrors {
 }
 
 impl TranslationUnit {
-    pub fn analyze(&self, env: &Env, files: &Files) -> Result<(), SemaErrors> {
-        let concrete = self.eval(env);
-        let typedefs = concrete
+    pub fn analyze(&self, files: &Files) -> Result<(), SemaErrors> {
+        let typedefs = self
             .decls
             .iter()
             .filter_map(|decl| match &decl.value {
-                ConcreteDecl::Typedef { name, .. } => Some(name.clone()),
+                Decl::Typedef { name, .. } => Some(name.clone()),
                 _ => None,
             })
             .collect::<HashSet<_>>();
-        let tags = concrete
+        let tags = self
             .decls
             .iter()
             .filter_map(|decl| match &decl.value {
-                ConcreteDecl::Record(record) => record.name.clone(),
-                ConcreteDecl::Enum(enumeration) => enumeration.name.clone(),
-                ConcreteDecl::Declaration { declaration, .. } => match &declaration.specifiers.ty {
+                Decl::Record(record) => record.name.clone(),
+                Decl::Enum(enumeration) => enumeration.name.clone(),
+                Decl::Declaration { declaration, .. } => match &declaration.specifiers.ty {
                     CType::Tagged { name, .. } => name.clone(),
                     _ => None,
                 },
@@ -51,10 +49,10 @@ impl TranslationUnit {
             .collect::<HashSet<_>>();
 
         let mut errors = Vec::new();
-        for decl in &concrete.decls {
+        for decl in &self.decls {
             match &decl.value {
-                ConcreteDecl::Comment { .. } => {}
-                ConcreteDecl::Function(function) => {
+                Decl::Comment { .. } => {}
+                Decl::Function(function) => {
                     check_attributes(
                         &function.attributes,
                         function.provenance,
@@ -70,7 +68,7 @@ impl TranslationUnit {
                         &mut errors,
                     );
                 }
-                ConcreteDecl::Declaration {
+                Decl::Declaration {
                     declaration,
                     provenance,
                 } => {
@@ -107,7 +105,7 @@ impl TranslationUnit {
                         &mut errors,
                     );
                 }
-                ConcreteDecl::Typedef {
+                Decl::Typedef {
                     ty,
                     provenance,
                     attributes,
@@ -123,7 +121,7 @@ impl TranslationUnit {
                     );
                     check_attributes(attributes, *provenance, decl.expansion, &mut errors);
                 }
-                ConcreteDecl::Record(record) => {
+                Decl::Record(record) => {
                     check_attributes(
                         &record.attributes,
                         record.provenance,
@@ -150,7 +148,7 @@ impl TranslationUnit {
                         );
                     }
                 }
-                ConcreteDecl::Enum(_) => {}
+                Decl::Enum(_) => {}
             }
         }
         let errors: Vec<SemaError> = errors

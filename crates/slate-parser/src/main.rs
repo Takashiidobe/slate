@@ -1,11 +1,9 @@
 use miette::Severity;
 use slate_parser::compiler_args::CompilerArgParser;
-use slate_parser::eval::Env;
 use slate_parser::files::SearchPaths;
 use slate_parser::parser::Parser;
 use slate_parser::pp::{DirectiveDiagnostic, DirectiveErrors};
 use slate_parser::render::Renderer;
-use std::collections::HashSet;
 use std::env;
 use std::fs;
 use std::io;
@@ -31,52 +29,22 @@ fn main() -> miette::Result<()> {
             .collect(),
         ..SearchPaths::default()
     };
-    let define_names: Vec<String> = compiler_args
-        .defines
-        .iter()
-        .map(|define| define_name(define))
-        .collect();
-    let mut parser = Parser::new(search).with_configuration_names(
-        define_names
-            .iter()
-            .chain(&compiler_args.configuration_names)
-            .cloned(),
-    );
+    let mut parser = Parser::new(search).with_defines(compiler_args.defines);
     let parsed = parser.parse_file(Path::new(&path));
-    let env = parser
-        .predefined_macros()
-        .iter()
-        .chain(&define_names)
-        .cloned()
-        .fold(Env::new(), |env, name| env.define(name));
-    report_directives(parser.directive_diagnostics(), &env)?;
+    report_directives(parser.directive_diagnostics())?;
     let (ast, files) = parsed?;
-    ast.analyze(&env, &files)?;
+    ast.analyze(&files)?;
     let stdout = io::stdout();
     let mut renderer = Renderer::new(stdout.lock());
     renderer
-        .render(&ast, &env)
+        .render(&ast)
         .map_err(|error| miette::miette!(error))?;
     Ok(())
 }
 
-fn define_name(define: &str) -> String {
-    let define = define.trim_start_matches("-D");
-    define
-        .split_once('=')
-        .map_or(define, |(name, _)| name)
-        .to_string()
-}
-
-fn report_directives(diagnostics: &[DirectiveDiagnostic], env: &Env) -> miette::Result<()> {
-    let mut seen = HashSet::new();
+fn report_directives(diagnostics: &[DirectiveDiagnostic]) -> miette::Result<()> {
     let mut errors = Vec::new();
     for diagnostic in diagnostics {
-        if !diagnostic.condition.eval(env)
-            || !seen.insert((diagnostic.loc.file, diagnostic.loc.offset))
-        {
-            continue;
-        }
         if diagnostic.severity == Severity::Warning {
             eprintln!("{:?}", miette::Report::new(diagnostic.clone()));
         } else {

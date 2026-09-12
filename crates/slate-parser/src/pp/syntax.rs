@@ -101,7 +101,6 @@ pub(super) struct Branch {
 #[derive(Debug, Clone)]
 pub(super) struct IfSection {
     pub(super) branches: Vec<Branch>,
-    pub(super) endif: Loc,
 }
 
 #[derive(Default)]
@@ -118,63 +117,6 @@ pub(super) fn identifier(src: &str, token: &Span<Token>) -> Option<String> {
             .map(str::to_string),
         _ => None,
     }
-}
-
-pub(super) fn controlling_macro<'i>(
-    src: &str,
-    items: &'i [Item],
-) -> Option<(usize, &'i IfSection, String)> {
-    let mut significant = items
-        .iter()
-        .enumerate()
-        .filter(|(_, item)| !matches!(item, Item::Comment(_)));
-    let (index, Item::Conditional(section)) = significant.next()? else {
-        return None;
-    };
-    if significant.next().is_some() {
-        return None;
-    }
-    let [branch] = section.branches.as_slice() else {
-        return None;
-    };
-    let guard = guard_name(src, &branch.directive)?;
-    let opens_with_define = branch
-        .body
-        .iter()
-        .find(|item| !matches!(item, Item::Comment(_)))
-        .is_some_and(|item| {
-            matches!(item, Item::Directive(directive)
-                if directive.name == DirectiveName::Define
-                    && directive
-                        .arguments
-                        .first()
-                        .and_then(|token| identifier(src, token))
-                        .as_deref()
-                        == Some(guard.as_str()))
-        });
-    opens_with_define.then_some((index, section, guard))
-}
-
-fn guard_name(src: &str, directive: &Directive) -> Option<String> {
-    let name = match (directive.name, directive.arguments.as_slice()) {
-        (DirectiveName::Ifndef, [name, ..]) => name,
-        (DirectiveName::If, [bang, defined, operand @ ..])
-            if bang.value == Token::Bang
-                && matches!(&defined.value, Token::Ident(word) if word == "defined") =>
-        {
-            match operand {
-                [name] => name,
-                [open, name, close]
-                    if open.value == Token::LParen && close.value == Token::RParen =>
-                {
-                    name
-                }
-                _ => return None,
-            }
-        }
-        _ => return None,
-    };
-    identifier(src, name)
 }
 
 pub(super) fn parse(src: &str, tokens: Vec<Span<Token>>) -> Result<Vec<Item>, PPFailure> {
@@ -292,10 +234,7 @@ impl GroupParser<'_> {
             };
             match next.name {
                 DirectiveName::Endif => {
-                    return Ok(IfSection {
-                        branches,
-                        endif: next.loc,
-                    });
+                    return Ok(IfSection { branches });
                 }
                 DirectiveName::Else if in_else => {
                     return Err(PPFailure::at(next.loc, PPErrorKind::MultipleElse));

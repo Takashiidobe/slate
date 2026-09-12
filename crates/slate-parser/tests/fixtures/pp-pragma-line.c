@@ -12,8 +12,7 @@ once_t value;
 // SLATE-FILECHECK-DEFINES DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: polyvariant:
-// DEFAULT-NEXT: decl[0]: Typedef {
+// DEFAULT: decl[0]: Typedef {
 // DEFAULT-NEXT:       name: "once_t",
 // DEFAULT-NEXT:       ty: Integer(
 // DEFAULT-NEXT:           Ranked {
@@ -23,7 +22,7 @@ once_t value;
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
+// DEFAULT-NEXT:               4,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 1,
@@ -42,43 +41,7 @@ once_t value;
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               2,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 9,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: concrete:
-// DEFAULT-NEXT: decl[0]: Typedef {
-// DEFAULT-NEXT:       name: "once_t",
-// DEFAULT-NEXT:       ty: Integer(
-// DEFAULT-NEXT:           Ranked {
-// DEFAULT-NEXT:               rank: Int,
-// DEFAULT-NEXT:               signed: true,
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:       ),
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
 // DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 1,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[1]: Declaration {
-// DEFAULT-NEXT:       declaration: Declaration {
-// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Named(
-// DEFAULT-NEXT:                   "once_t",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "value",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               2,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 9,

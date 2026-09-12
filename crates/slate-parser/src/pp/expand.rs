@@ -1,131 +1,9 @@
-use super::condition::{difference, implies, intersect, is_satisfiable, simplify_condition};
-use super::{MacroDef, MacroEntry, Preprocessor, lex, tokens_source};
-use crate::ast::{Condition, FileId, Loc, Span};
+use super::{MacroDef, Preprocessor, lex, tokens_source};
+use crate::ast::{FileId, Loc, Span};
 use crate::lexer::{Token, TokenSpanExt};
 use std::collections::HashSet;
 
 impl Preprocessor<'_> {
-    pub(super) fn visible_entry(&self, name: &str, active: &Condition) -> Option<&MacroEntry> {
-        let cases = self.macro_cases(name, active);
-        let (_, first) = cases.first()?;
-        let definition = first.and_then(|entry| entry.definition.as_ref());
-        cases
-            .iter()
-            .all(|(_, entry)| entry.and_then(|entry| entry.definition.as_ref()) == definition)
-            .then_some(*first)
-            .flatten()
-    }
-
-    fn definition_cases(
-        &self,
-        name: &str,
-        active: &Condition,
-    ) -> Vec<(Condition, Option<&MacroDef>)> {
-        let mut groups: Vec<(Option<&MacroDef>, Condition)> = Vec::new();
-        for (condition, entry) in self.macro_cases(name, active) {
-            let definition = entry.and_then(|entry| entry.definition.as_ref());
-            match groups
-                .iter_mut()
-                .find(|(existing, _)| *existing == definition)
-            {
-                Some((_, merged)) => {
-                    *merged = Condition::Or(Box::new(merged.clone()), Box::new(condition));
-                }
-                None => groups.push((definition, condition)),
-            }
-        }
-        if let [(definition, _)] = groups.as_slice() {
-            return vec![(active.clone(), *definition)];
-        }
-        groups
-            .into_iter()
-            .map(|(definition, condition)| (simplify_condition(&condition), definition))
-            .collect()
-    }
-
-    fn refine_cases(
-        &self,
-        tokens: &[Span<Token>],
-        parameters: &[String],
-        cases: Vec<Condition>,
-        expanding: &mut HashSet<String>,
-    ) -> Vec<Condition> {
-        let mut cases = cases;
-        for (index, token) in tokens.iter().enumerate() {
-            let Token::Ident(name) = &token.value else {
-                continue;
-            };
-            if parameters.contains(name) || expanding.contains(name) {
-                continue;
-            }
-            let Some(conditional) = self.macros.get(name) else {
-                continue;
-            };
-            if conditional
-                .branches
-                .iter()
-                .filter_map(|(_, entry)| entry.definition.as_ref())
-                .all(|definition| definition.parameters.is_some())
-                && tokens.value_at(index + 1) != Some(&Token::LParen)
-            {
-                continue;
-            }
-            let mut refined = Vec::new();
-            for case in &cases {
-                for (condition, definition) in self.definition_cases(name, case) {
-                    let Some(definition) = definition else {
-                        refined.push(condition);
-                        continue;
-                    };
-                    expanding.insert(name.clone());
-                    refined.extend(self.refine_cases(
-                        &definition.replacement,
-                        definition.parameters.as_deref().unwrap_or_default(),
-                        vec![condition],
-                        expanding,
-                    ));
-                    expanding.remove(name);
-                }
-            }
-            cases = refined;
-        }
-        cases
-    }
-
-    pub(super) fn macro_cases(
-        &self,
-        name: &str,
-        active: &Condition,
-    ) -> Vec<(Condition, Option<&MacroEntry>)> {
-        let mut cases = Vec::new();
-        let mut remaining = Some(active.clone());
-        let branches = self
-            .macros
-            .get(name)
-            .into_iter()
-            .flat_map(|conditional| conditional.branches.iter().rev());
-        for (condition, entry) in branches {
-            let Some(current) = remaining.take() else {
-                break;
-            };
-            if implies(&current, condition) {
-                cases.push((current, Some(entry)));
-                break;
-            }
-            let joint = intersect(&current, condition);
-            if !is_satisfiable(&joint) {
-                remaining = Some(current);
-                continue;
-            }
-            cases.push((joint, Some(entry)));
-            let rest = difference(&current, condition);
-            remaining = is_satisfiable(&rest).then_some(rest);
-        }
-        cases.reverse();
-        cases.extend(remaining.map(|condition| (condition, None)));
-        cases
-    }
-
     pub(super) fn strip_pragma_operator(tokens: &[Span<Token>]) -> Vec<Span<Token>> {
         let mut result = Vec::with_capacity(tokens.len());
         let mut i = 0;
@@ -148,7 +26,6 @@ impl Preprocessor<'_> {
         &self,
         tokens: &[Span<Token>],
         disabled: &mut HashSet<String>,
-        active: &Condition,
     ) -> Vec<Span<Token>> {
         let mut expanded = Vec::new();
         let mut i = 0;
@@ -159,9 +36,7 @@ impl Preprocessor<'_> {
                 i += 1;
                 continue;
             };
-            let Some(macro_def) = self
-                .visible_entry(name, active)
-                .and_then(|entry| entry.definition.clone())
+            let Some(macro_def) = self.macros.get(name).map(|entry| entry.definition.clone())
             else {
                 expanded.push(token.clone());
                 i += 1;
@@ -182,7 +57,7 @@ impl Preprocessor<'_> {
                         replacement
                     })
                     .collect::<Vec<_>>();
-                expanded.extend(self.expand_macros(&replacement, disabled, active));
+                expanded.extend(self.expand_macros(&replacement, disabled));
                 disabled.remove(name);
                 i += 1;
                 continue;
@@ -205,45 +80,16 @@ impl Preprocessor<'_> {
             for replacement in &mut macro_def.replacement {
                 replacement.expansion = token.expansion;
             }
-            let replacement = substitute_function_macro(
-                &macro_def,
-                &parameters,
-                &arguments,
-                self,
-                disabled,
-                active,
-            );
-            expanded.extend(self.expand_macros(&replacement, disabled, active));
+            let replacement =
+                substitute_function_macro(&macro_def, &parameters, &arguments, self, disabled);
+            expanded.extend(self.expand_macros(&replacement, disabled));
             disabled.remove(name);
             i = end;
         }
         expanded
     }
 
-    pub(super) fn divergent_macro_conditions(
-        &self,
-        tokens: &[Span<Token>],
-        active: &Condition,
-    ) -> Option<Vec<Condition>> {
-        let cases = self.refine_cases(tokens, &[], vec![active.clone()], &mut HashSet::new());
-        (cases.len() > 1).then_some(cases)
-    }
-
-    pub(super) fn expandable_tokens(tokens: &[Span<Token>]) -> Vec<Span<Token>> {
-        let operands = unexpanded_operands(tokens);
-        tokens
-            .iter()
-            .zip(operands)
-            .filter(|(_, unexpanded)| !unexpanded)
-            .map(|(token, _)| token.clone())
-            .collect()
-    }
-
-    pub(super) fn expand_condition(
-        &self,
-        tokens: &[Span<Token>],
-        active: &Condition,
-    ) -> Vec<Span<Token>> {
+    pub(super) fn expand_condition(&self, tokens: &[Span<Token>]) -> Vec<Span<Token>> {
         let operands = unexpanded_operands(tokens);
         let mut expanded = Vec::with_capacity(tokens.len());
         let mut start = 0;
@@ -256,33 +102,12 @@ impl Preprocessor<'_> {
             if unexpanded {
                 expanded.extend_from_slice(&tokens[start..end]);
             } else {
-                expanded.extend(self.expand_macros(
-                    &tokens[start..end],
-                    &mut HashSet::new(),
-                    active,
-                ));
+                expanded.extend(self.expand_macros(&tokens[start..end], &mut HashSet::new()));
             }
             start = end;
         }
         expanded
     }
-}
-
-pub(super) fn defined_operands(tokens: &[Span<Token>]) -> Vec<String> {
-    let mut names: Vec<String> = Vec::new();
-    for (index, token) in tokens.iter().enumerate() {
-        if !matches!(&token.value, Token::Ident(word) if word == "defined") {
-            continue;
-        }
-        let name = match (tokens.value_at(index + 1), tokens.value_at(index + 2)) {
-            (Some(Token::Ident(name)), _) | (Some(Token::LParen), Some(Token::Ident(name))) => name,
-            _ => continue,
-        };
-        if !names.contains(name) {
-            names.push(name.clone());
-        }
-    }
-    names
 }
 
 fn unexpanded_operands(tokens: &[Span<Token>]) -> Vec<bool> {
@@ -357,11 +182,10 @@ fn substitute_function_macro(
     arguments: &[Vec<Span<Token>>],
     preprocessor: &Preprocessor<'_>,
     disabled: &mut HashSet<String>,
-    active: &Condition,
 ) -> Vec<Span<Token>> {
     let expanded_arguments = arguments
         .iter()
-        .map(|argument| preprocessor.expand_macros(argument, disabled, active))
+        .map(|argument| preprocessor.expand_macros(argument, disabled))
         .collect::<Vec<_>>();
     let mut output = Vec::new();
     let mut i = 0;

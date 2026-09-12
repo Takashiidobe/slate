@@ -3,8 +3,8 @@ use crate::const_expr;
 use crate::error::{FrontendError, ParseError};
 use crate::files::{Files, SearchPaths, display_path};
 use crate::lexer::{Keyword, Lexer, Token, TokenSpanExt};
-use crate::pp::{DirectiveDiagnostic, PPConditional, PPNode, PPNodeKind, Preprocessor};
-use crate::reachability::filter_translation_unit;
+use crate::pp::{DirectiveDiagnostic, PPNode, PPNodeKind, Preprocessor};
+use crate::reachability::{filter_translation_unit, mark_unreachable};
 use miette::Diagnostic;
 use std::collections::HashSet;
 use std::path::Path;
@@ -121,7 +121,6 @@ impl<'p, 'a> Cursor for Fragment<'p, 'a> {
     }
 }
 
-#[derive(Clone)]
 pub struct Parser {
     search: SearchPaths,
     source_name: String,
@@ -129,8 +128,7 @@ pub struct Parser {
     files: Files,
     typedef_names: HashSet<String>,
     directive_diagnostics: Vec<DirectiveDiagnostic>,
-    predefined_macros: Vec<String>,
-    configuration_names: Vec<String>,
+    defines: Vec<String>,
 }
 
 impl Parser {
@@ -142,13 +140,12 @@ impl Parser {
             files: Files::new(),
             typedef_names: HashSet::new(),
             directive_diagnostics: Vec::new(),
-            predefined_macros: Vec::new(),
-            configuration_names: Vec::new(),
+            defines: Vec::new(),
         }
     }
 
-    pub fn with_configuration_names(mut self, names: impl IntoIterator<Item = String>) -> Self {
-        self.configuration_names = names.into_iter().collect();
+    pub fn with_defines(mut self, defines: impl IntoIterator<Item = String>) -> Self {
+        self.defines = defines.into_iter().collect();
         self
     }
 
@@ -156,19 +153,14 @@ impl Parser {
         &self.directive_diagnostics
     }
 
-    pub fn predefined_macros(&self) -> &[String] {
-        &self.predefined_macros
-    }
-
     pub fn parse_source(&mut self, src: &str) -> Result<TranslationUnit, FrontendError> {
         self.source_name = "<main>".into();
         self.source = src.into();
         let search = self.search.clone();
         let mut pp = Preprocessor::new(&search);
-        pp.set_configuration_names(self.configuration_names.iter().cloned());
+        pp.define_all(&self.defines).map_err(FrontendError::PP)?;
         let nodes = pp.parse_str("<main>", src).map_err(FrontendError::PP)?;
         self.directive_diagnostics = std::mem::take(&mut pp.directive_diagnostics);
-        self.predefined_macros = std::mem::take(&mut pp.predefined_macros);
         let root_file = pp.main_file.expect("parse_str sets main_file");
         self.parse_nodes(&nodes, root_file)
             .map_err(FrontendError::Parse)
@@ -189,11 +181,10 @@ impl Parser {
             .map_err(FrontendError::Parse)?;
         let search = self.search.clone();
         let mut pp = Preprocessor::new(&search);
-        pp.set_configuration_names(self.configuration_names.iter().cloned());
+        pp.define_all(&self.defines).map_err(FrontendError::PP)?;
         let nodes = pp.parse_file(path).map_err(FrontendError::PP)?;
         self.files = pp.files.clone();
         self.directive_diagnostics = std::mem::take(&mut pp.directive_diagnostics);
-        self.predefined_macros = std::mem::take(&mut pp.predefined_macros);
         let root_file = pp.main_file.expect("parse_file sets main_file");
         let ast = self.parse_nodes(&nodes, root_file);
         ast.map(|ast| (ast, pp.files)).map_err(FrontendError::Parse)
@@ -331,23 +322,7 @@ impl Parser {
                 i += 1;
                 continue;
             }
-            let (new_decls, consumed) = if let PPNodeKind::Code {
-                text, provenance, ..
-            } = &nodes[i].value
-                && let Some(next) = nodes.get(i + 1)
-                && let PPNodeKind::Conditional(cond) = &next.value
-                && text.trim_end().ends_with('=')
-            {
-                (
-                    vec![span_pp_nodes(
-                        self.parse_conditional_initializer(text, *provenance, cond)?,
-                        &nodes[i..i + 2],
-                    )],
-                    2,
-                )
-            } else {
-                self.parse_top_level_item(&nodes[i..])?
-            };
+            let (new_decls, consumed) = self.parse_top_level_item(&nodes[i..])?;
             for decl in new_decls {
                 self.record_typedefs(&decl.value);
                 decls.push(decl);
@@ -355,49 +330,6 @@ impl Parser {
             i += consumed;
         }
         Ok(decls)
-    }
-
-    fn parse_conditional_initializer(
-        &self,
-        prefix: &str,
-        provenance: Provenance,
-        conditional: &PPConditional,
-    ) -> Result<Decl, ParseError> {
-        let declaration = self.parse_declaration(&format!("{prefix} 0;"))?;
-        let initializer = Initializer::Conditional(Conditional {
-            branches: conditional
-                .branches
-                .iter()
-                .map(|(condition, nodes)| {
-                    let Some(node) = nodes.first() else {
-                        panic!("conditional initializer branch is empty")
-                    };
-                    let PPNodeKind::Code { .. } = &node.value else {
-                        panic!("conditional initializer branch is not code")
-                    };
-                    let tokens = self.node_tokens(node);
-                    let end = tokens
-                        .values()
-                        .position(|token| token == &Token::Semi)
-                        .unwrap_or(tokens.len());
-                    let mut parser = DeclaratorParser {
-                        tokens: &tokens[..end],
-                        pos: 0,
-                    };
-                    (
-                        condition.clone(),
-                        Box::new(parser.parse_initializer(&self.typedef_names)),
-                    )
-                })
-                .collect(),
-        });
-        Ok(Decl::Declaration {
-            declaration: Declaration {
-                initializer: Some(initializer),
-                ..declaration
-            },
-            provenance,
-        })
     }
 
     fn parse_top_level_item(
@@ -465,7 +397,10 @@ impl Parser {
                         .parse_tag_definition(nodes)
                         .map(|result| span_decl_result(result, nodes));
                 }
-                let item_span = if paren_depth(&tokens) > 0 {
+                let item_span = if paren_depth(&tokens) > 0
+                    || !tokens.contains_value(&Token::Semi)
+                        && !tokens.contains_value(&Token::LBrace)
+                {
                     signature_node_span(nodes)
                 } else {
                     1
@@ -507,14 +442,6 @@ impl Parser {
                     consumed,
                 ))
             }
-            PPNodeKind::Conditional(cond) => Ok((
-                vec![
-                    nodes[0]
-                        .clone()
-                        .with_value(self.parse_top_level_conditional(cond)?),
-                ],
-                1,
-            )),
         }
     }
 
@@ -762,21 +689,6 @@ impl Parser {
                     }));
                     index += 1;
                 }
-                PPNodeKind::Conditional(cond) => {
-                    let branches = cond
-                        .branches
-                        .iter()
-                        .map(|(condition, body)| {
-                            Ok((condition.clone(), self.parse_field_items(body)?))
-                        })
-                        .collect::<Result<Vec<_>, ParseError>>()?;
-                    fields.push(
-                        nodes[index]
-                            .clone()
-                            .with_value(FieldItem::Conditional(Conditional { branches })),
-                    );
-                    index += 1;
-                }
                 PPNodeKind::Code { .. } => {
                     if self.node_tokens(&nodes[index]).is_empty() {
                         index += 1;
@@ -803,12 +715,6 @@ impl Parser {
                         {
                             break;
                         }
-                        if matches!(
-                            nodes.get(index).map(|node| &node.value),
-                            Some(PPNodeKind::Conditional(_))
-                        ) {
-                            break;
-                        }
                     }
                     fields.push(span_pp_nodes(
                         FieldItem::Field(FieldDecl {
@@ -831,26 +737,6 @@ impl Parser {
             }
         }
         Ok(fields)
-    }
-
-    fn parse_top_level_conditional(&mut self, cond: &PPConditional) -> Result<Decl, ParseError> {
-        let base_typedefs = self.typedef_names.clone();
-        let mut branch_typedefs = Vec::new();
-        let mut branches = Vec::new();
-        for (condition, body) in &cond.branches {
-            let mut branch_parser = self.clone();
-            branch_parser.typedef_names = base_typedefs.clone();
-            let decls = branch_parser.parse_decls(body)?;
-            branch_typedefs.push(branch_parser.typedef_names);
-            branches.push((condition.clone(), decls));
-        }
-        if let Some(common) = branch_typedefs.into_iter().reduce(|mut common, names| {
-            common.retain(|name| names.contains(name));
-            common
-        }) {
-            self.typedef_names = common;
-        }
-        Ok(Decl::Conditional(Conditional { branches }))
     }
 
     fn record_typedefs(&mut self, decl: &Decl) {
@@ -951,9 +837,6 @@ impl Parser {
         match &node.value {
             PPNodeKind::Comment { text, .. } => text,
             PPNodeKind::Code { text, .. } => text,
-            PPNodeKind::Conditional(_) => {
-                panic!("expected a plain code line, found a conditional region")
-            }
         }
     }
 
@@ -975,7 +858,6 @@ impl Parser {
         match &node.value {
             PPNodeKind::Comment { provenance, .. } => *provenance,
             PPNodeKind::Code { provenance, .. } => *provenance,
-            PPNodeKind::Conditional(_) => panic!("conditional regions have no single provenance"),
         }
     }
 }
@@ -1352,7 +1234,6 @@ fn join_node_text(nodes: &[PPNode]) -> String {
         .map(|node| match &node.value {
             PPNodeKind::Comment { text, .. } => text.as_str(),
             PPNodeKind::Code { text, .. } => text.as_str(),
-            PPNodeKind::Conditional(_) => "",
         })
         .collect::<Vec<_>>()
         .join("\n")
@@ -2482,8 +2363,9 @@ impl Parser {
         }
 
         if let Some(same_line_close) = matching_brace(&sig_tokens, body_index) {
-            let body =
-                self.parse_stmts_from_tokens(code, &sig_tokens[body_index + 1..same_line_close])?;
+            let body = mark_unreachable(
+                self.parse_stmts_from_tokens(code, &sig_tokens[body_index + 1..same_line_close])?,
+            );
             return Ok((
                 FunctionDecl {
                     ret_type,
@@ -2536,7 +2418,7 @@ impl Parser {
             attributes.extend(trailing_attributes);
         }
 
-        let body = self.parse_stmt_list(&nodes[sig_node_count..close_idx])?;
+        let body = mark_unreachable(self.parse_stmt_list(&nodes[sig_node_count..close_idx])?);
         Ok((
             FunctionDecl {
                 ret_type,
@@ -2581,22 +2463,6 @@ impl Parser {
                     run_tokens.extend(self.node_tokens(node));
                 }
                 PPNodeKind::Code { .. } => {}
-                PPNodeKind::Conditional(cond) => {
-                    if !run_tokens.is_empty() {
-                        stmts.extend(self.parse_stmts_from_tokens(&run_text, &run_tokens)?);
-                        run_text.clear();
-                        run_tokens.clear();
-                    }
-                    let branches = cond
-                        .branches
-                        .iter()
-                        .map(|(c, body)| self.parse_stmt_list(body).map(|body| (c.clone(), body)))
-                        .collect::<Result<_, _>>()?;
-                    stmts.push(
-                        node.clone()
-                            .with_value(Stmt::Conditional(Conditional { branches })),
-                    );
-                }
             }
         }
         if !run_tokens.is_empty() {
@@ -2720,7 +2586,8 @@ impl Parser {
         attributes.extend(signature_attributes);
         let close =
             matching_brace(tokens, body_index).ok_or_else(|| fragment.error("expected `}`"))?;
-        let body = self.parse_stmts_from_tokens(code, &tokens[body_index + 1..close])?;
+        let body =
+            mark_unreachable(self.parse_stmts_from_tokens(code, &tokens[body_index + 1..close])?);
         Ok(Some((
             FunctionDecl {
                 ret_type,

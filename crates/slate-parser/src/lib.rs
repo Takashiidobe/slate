@@ -2,7 +2,6 @@ pub mod ast;
 pub mod compiler_args;
 pub mod const_expr;
 pub mod error;
-pub mod eval;
 pub mod files;
 pub mod lexer;
 pub mod parser;

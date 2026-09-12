@@ -20,8 +20,7 @@ int sentinel_value = SENTINEL;
 // SLATE-FILECHECK-DEFINES DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: polyvariant:
-// DEFAULT-NEXT: decl[0]: Declaration {
+// DEFAULT: decl[0]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Bool,
@@ -32,7 +31,7 @@ int sentinel_value = SENTINEL;
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               2,
+// DEFAULT-NEXT:               3,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 5,
@@ -63,7 +62,7 @@ int sentinel_value = SENTINEL;
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               2,
+// DEFAULT-NEXT:               3,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 11,
@@ -94,87 +93,7 @@ int sentinel_value = SENTINEL;
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               2,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 17,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: concrete:
-// DEFAULT-NEXT: decl[0]: Declaration {
-// DEFAULT-NEXT:       declaration: Declaration {
-// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Bool,
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "flag",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               2,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 5,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[1]: Declaration {
-// DEFAULT-NEXT:       declaration: Declaration {
-// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Integer(
-// DEFAULT-NEXT:                   Ranked {
-// DEFAULT-NEXT:                       rank: Int,
-// DEFAULT-NEXT:                       signed: true,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "answer",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           initializer: Some(
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Integer(
-// DEFAULT-NEXT:                           42,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               2,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 11,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[2]: Declaration {
-// DEFAULT-NEXT:       declaration: Declaration {
-// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Integer(
-// DEFAULT-NEXT:                   Ranked {
-// DEFAULT-NEXT:                       rank: Int,
-// DEFAULT-NEXT:                       signed: true,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "sentinel_value",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           initializer: Some(
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Integer(
-// DEFAULT-NEXT:                           7,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               2,
+// DEFAULT-NEXT:               3,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 17,

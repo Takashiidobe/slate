@@ -11,8 +11,7 @@ int use_greet(void) {
 // SLATE-FILECHECK-DEFINES DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: polyvariant:
-// DEFAULT-NEXT: decl[0]: Declaration {
+// DEFAULT: decl[0]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -37,7 +36,7 @@ int use_greet(void) {
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               2,
+// DEFAULT-NEXT:               3,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 2,
@@ -66,69 +65,7 @@ int use_greet(void) {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
 // DEFAULT-NEXT:               file: FileId(
-// DEFAULT-NEXT:                   2,
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               kind: User,
-// DEFAULT-NEXT:               line: 4,
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   )
-// DEFAULT-NEXT: concrete:
-// DEFAULT-NEXT: decl[0]: Declaration {
-// DEFAULT-NEXT:       declaration: Declaration {
-// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Integer(
-// DEFAULT-NEXT:                   Ranked {
-// DEFAULT-NEXT:                       rank: Int,
-// DEFAULT-NEXT:                       signed: true,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "shout",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           initializer: Some(
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Integer(
-// DEFAULT-NEXT:                           1,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               2,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 2,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[1]: Function(
-// DEFAULT-NEXT:       ConcreteFunctionDecl {
-// DEFAULT-NEXT:           ret_type: Integer(
-// DEFAULT-NEXT:               Ranked {
-// DEFAULT-NEXT:                   rank: Int,
-// DEFAULT-NEXT:                   signed: true,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           name: "use_greet",
-// DEFAULT-NEXT:           body: [
-// DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "greet",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ],
-// DEFAULT-NEXT:           provenance: Provenance {
-// DEFAULT-NEXT:               file: FileId(
-// DEFAULT-NEXT:                   2,
+// DEFAULT-NEXT:                   3,
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               kind: User,
 // DEFAULT-NEXT:               line: 4,

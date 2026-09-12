@@ -1,5 +1,4 @@
-use crate::ast::{SpannedConcreteDecl, SpannedDecl, TranslationUnit};
-use crate::eval::Env;
+use crate::ast::TranslationUnit;
 use std::fmt::Debug;
 use std::io::{self, Write};
 
@@ -12,30 +11,15 @@ impl<W: Write> Renderer<W> {
         Self { out }
     }
 
-    pub fn render(&mut self, ast: &TranslationUnit, env: &Env) -> io::Result<()> {
-        let concrete = ast.eval(env);
-        self.line("polyvariant:")?;
-        self.render_decls(&ast.decls)?;
-        self.line("concrete:")?;
-        self.render_concrete_decls(&concrete.decls)
+    pub fn render(&mut self, ast: &TranslationUnit) -> io::Result<()> {
+        for (index, decl) in ast.decls.iter().enumerate() {
+            self.render_debug(index, &decl.value)?;
+        }
+        Ok(())
     }
 
     pub fn into_inner(self) -> W {
         self.out
-    }
-
-    fn render_decls(&mut self, decls: &[SpannedDecl]) -> io::Result<()> {
-        for (index, decl) in decls.iter().enumerate() {
-            self.render_debug(index, &decl.value)?;
-        }
-        Ok(())
-    }
-
-    fn render_concrete_decls(&mut self, decls: &[SpannedConcreteDecl]) -> io::Result<()> {
-        for (index, decl) in decls.iter().enumerate() {
-            self.render_debug(index, &decl.value)?;
-        }
-        Ok(())
     }
 
     fn render_debug<T: Debug>(&mut self, index: usize, value: &T) -> io::Result<()> {

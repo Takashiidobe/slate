@@ -1,5 +1,5 @@
 use super::Preprocessor;
-use crate::ast::{Condition, Loc};
+use crate::ast::Loc;
 use crate::files::display_path;
 use miette::{Diagnostic, LabeledSpan, NamedSource, Severity, SourceCode, SourceSpan};
 use thiserror::Error;
@@ -18,8 +18,6 @@ pub struct PPError {
 #[error("{}", .error.message)]
 pub struct DirectiveDiagnostic {
     pub severity: Severity,
-    pub condition: Condition,
-    pub loc: Loc,
     pub error: PPError,
 }
 

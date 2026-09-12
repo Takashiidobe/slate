@@ -52,19 +52,6 @@ def configuration_defines(source: str, prefix: str) -> list[str]:
     return []
 
 
-def configuration_names(source: str) -> list[str]:
-    names = []
-    for line in source.splitlines():
-        match = DEFINE_RE.match(line)
-        if not match:
-            continue
-        for item in (match.group(2) or "").split():
-            name = item.removeprefix("-D").split("=", 1)[0]
-            if name not in names:
-                names.append(name)
-    return names
-
-
 def error_configurations(source: str) -> list[str]:
     return [match.group(1) for line in source.splitlines() if (match := ERROR_RE.match(line))]
 
@@ -91,20 +78,16 @@ def render(repo: Path, fixture: Path, source: str, defines: list[str], isystem: 
         command = ["cargo", "run", "--quiet", "--", "parse", parsed_fixture.name]
         command.extend(f"-D{define.removeprefix('-D')}" for define in defines)
         command.extend(f"-isystem{path}" for path in isystem)
-        command.extend(f"-fslate-config={name}" for name in configuration_names(source))
         result = subprocess.run(command, cwd=repo, text=True, capture_output=True, env=_no_color_env())
     if result.returncode:
         raise RuntimeError(result.stderr or result.stdout)
     return result.stdout.rstrip("\n")
 
 
-def render_error(
-    repo: Path, fixture: Path, source: str, defines: list[str], isystem: list[str]
-) -> list[str]:
+def render_error(repo: Path, fixture: Path, defines: list[str], isystem: list[str]) -> list[str]:
     command = ["cargo", "run", "--quiet", "--", "parse", str(fixture)]
     command.extend(f"-D{define.removeprefix('-D')}" for define in defines)
     command.extend(f"-isystem{path}" for path in isystem)
-    command.extend(f"-fslate-config={name}" for name in configuration_names(source))
     result = subprocess.run(command, cwd=repo, text=True, capture_output=True, env=_no_color_env())
     if result.returncode == 0:
         raise RuntimeError(f"expected {fixture} to fail parsing")
@@ -120,9 +103,7 @@ def generated_blocks(repo: Path, fixture: Path, source: str) -> str:
     isystem = isystem_paths(source)
     blocks = []
     for prefix in error_configurations(source):
-        output = render_error(
-            repo, fixture, source, configuration_defines(source, prefix), isystem
-        )
+        output = render_error(repo, fixture, configuration_defines(source, prefix), isystem)
         block = [f"// SLATE-FILECHECK-BEGIN {prefix}"]
         block.extend(f"// {prefix}: {line}" for line in output)
         block.append(f"// SLATE-FILECHECK-END {prefix}")

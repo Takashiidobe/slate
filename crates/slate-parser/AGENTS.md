@@ -65,20 +65,18 @@ Slate-Parser is to be the new C front end for Slate. It exists to let Slate inge
 real-world C headers and sources and eventually convert them to Rust.
 The pipeline, end to end:
 
-1. **Preprocess + parse together, polyvariantly.** Slate-Parser parses C
-   like clang would, but instead of resolving `#ifdef`/macro branches
-   against one fixed configuration up front, it keeps the preprocessed
-   output and the parsed AST together as it goes. Conditional regions
-   are preserved as `Conditional<T>` nodes rather than eagerly resolved
-   so the same parse can later be "evaluated" against different `-D`
-   defines/target macro sets without reparsing, necessary for cross
-   compiling C to Rust.
-2. **Apply `-D` defines to get a concrete AST.** Given a set of
-   command-line defines and target-specific builtin macros
-   (`compiler_args.rs`), the polyvariant PP+AST is evaluated down to a
-   single concrete AST for that configuration.
+1. **Preprocess for one configuration.** Like a normal compiler,
+   command-line `-D` defines and target predefines become real macros
+   and `#if` selects a single branch. There are no conditional AST
+   nodes; cross-platform output means running once per target. Tokens
+   keep provenance to the outermost header they came from (the header
+   the main file included directly), which is what lets Slate recognize
+   and idiomize libc declarations.
+2. **Parse.** The preprocessed token stream is parsed into one AST.
+   Owning the parser also leaves room for GNU/Clang/MSVC "personalities"
+   where compilers give the same C different meanings.
 3. **Semantic analysis.** `sema.rs` resolves types, scopes, and
-   declarations over the concrete AST, matching clang's semantics
+   declarations over the AST, matching clang's semantics
    closely enough that output can be diffed against clang as an oracle.
 4. **Lower to a Clang-IR-like bytecode.** The concrete, semantically
    analyzed AST is lowered to a small bytecode/IR modeled loosely on
@@ -92,7 +90,7 @@ The pipeline, end to end:
    in steps 2-4.
 
 Steps 4-5 are not fully implemented yet; `src/` currently covers
-preprocessing, parsing, the polyvariant AST, and sema. Check `bd ready`
+preprocessing, parsing, and sema. Check `bd ready`
 / `bd list` for the current state of the bytecode-lowering and
 Rust-conversion work.
 
@@ -108,7 +106,7 @@ Testing is done via filecheck. Standard gate:
 cargo nextest
 ```
 
-The evaluated AST can additionally be checked against clang-ast as an
+The AST can additionally be checked against clang-ast as an
 oracle by setting `SLATE_CLANG_ORACLE=1`:
 
 ```
