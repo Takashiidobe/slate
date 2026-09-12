@@ -91,6 +91,11 @@ pub enum ConstExpr {
         declarator: Declarator,
         value: Box<Self>,
     },
+    BitCast {
+        ty: Box<CType>,
+        declarator: Declarator,
+        value: Box<Self>,
+    },
     CompoundLiteral {
         ty: Box<CType>,
         declarator: Declarator,
@@ -158,6 +163,7 @@ impl std::fmt::Display for ConstExpr {
             Self::AddrOf(value) => write!(formatter, "&{value}"),
             Self::Deref(value) => write!(formatter, "*{value}"),
             Self::Cast { value, .. } => write!(formatter, "(cast){value}"),
+            Self::BitCast { value, .. } => write!(formatter, "__builtin_bit_cast(..., {value})"),
             Self::CompoundLiteral { .. } => write!(formatter, "(compound literal)"),
             Self::LabelAddr(label) => write!(formatter, "&&{label}"),
         }
@@ -517,6 +523,7 @@ impl Parser {
                 }
             }
             ConstExpr::Cast { value, .. } => Self::evaluate_expr(value, is_defined),
+            ConstExpr::BitCast { .. } => Err(ConstExprError::NotConstant("bit cast")),
             ConstExpr::Unary { op, value } => {
                 let value = Self::evaluate_expr(value, is_defined)?;
                 match op {
@@ -873,6 +880,10 @@ impl Parser {
             self.expect(Token::RParen)?;
             return Ok(ConstExpr::SizeOf(Box::new(value)));
         }
+        if self.peek() == Some(&Token::Sizeof) {
+            self.take();
+            return Ok(ConstExpr::SizeOf(Box::new(self.parse_unary()?)));
+        }
         if self.peek() == Some(&Token::Alignof) {
             self.take();
             self.expect(Token::LParen)?;
@@ -1056,6 +1067,7 @@ impl Parser {
                 self.parse_has_include(value.clone())
             }
             Some(Token::Ident(value)) if value == "__builtin_offsetof" => self.parse_offsetof(),
+            Some(Token::Ident(value)) if value == "__builtin_bit_cast" => self.parse_bit_cast(),
             Some(Token::Ident(value)) if value == "__builtin_types_compatible_p" => {
                 self.parse_types_compatible()
             }
@@ -1208,6 +1220,22 @@ impl Parser {
             ty,
             declarator,
             member: Box::new(member),
+        })
+    }
+
+    fn parse_bit_cast(&mut self) -> Result<ConstExpr, ConstExprError> {
+        self.expect(Token::LParen)?;
+        let (ty, declarator, end) = self
+            .try_parse_type_name(self.position)
+            .ok_or(ConstExprError::ExpectedTypeName)?;
+        self.position = end;
+        self.expect(Token::Comma)?;
+        let value = self.parse_assignment()?;
+        self.expect(Token::RParen)?;
+        Ok(ConstExpr::BitCast {
+            ty,
+            declarator,
+            value: Box::new(value),
         })
     }
 

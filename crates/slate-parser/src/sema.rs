@@ -290,6 +290,7 @@ fn is_integer_constant_expression(expression: &ConstExpr) -> bool {
         | ConstExpr::AddrOf(_)
         | ConstExpr::Deref(_)
         | ConstExpr::CompoundLiteral { .. }
+        | ConstExpr::BitCast { .. }
         | ConstExpr::LabelAddr(_) => false,
     }
 }

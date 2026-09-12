@@ -99,13 +99,27 @@ def render_error(repo: Path, fixture: Path, defines: list[str], isystem: list[st
     ]
 
 
+FILECHECK_LITERAL_RE = re.compile(r"\{\{|\}\}|\[\[")
+FILECHECK_LITERAL_ESCAPES = {
+    "{{": "{{\\{\\{}}",
+    "}}": "{{[}][}]}}",
+    "[[": "{{\\[\\[}}",
+}
+
+
+def escape_filecheck_literal(line: str) -> str:
+    return FILECHECK_LITERAL_RE.sub(
+        lambda match: FILECHECK_LITERAL_ESCAPES[match.group(0)], line
+    )
+
+
 def generated_blocks(repo: Path, fixture: Path, source: str) -> str:
     isystem = isystem_paths(source)
     blocks = []
     for prefix in error_configurations(source):
         output = render_error(repo, fixture, configuration_defines(source, prefix), isystem)
         block = [f"// SLATE-FILECHECK-BEGIN {prefix}"]
-        block.extend(f"// {prefix}: {line}" for line in output)
+        block.extend(f"// {prefix}: {escape_filecheck_literal(line)}" for line in output)
         block.append(f"// SLATE-FILECHECK-END {prefix}")
         blocks.extend(block)
     if error_configurations(source):
@@ -116,7 +130,7 @@ def generated_blocks(repo: Path, fixture: Path, source: str) -> str:
         block = [f"// SLATE-FILECHECK-BEGIN {prefix}"]
         for index, line in enumerate(lines):
             directive = prefix if index == 0 else f"{prefix}-NEXT"
-            block.append(f"// {directive}: {line}")
+            block.append(f"// {directive}: {escape_filecheck_literal(line)}")
         block.append(f"// SLATE-FILECHECK-END {prefix}")
         blocks.extend(block)
     return "\n".join(blocks)

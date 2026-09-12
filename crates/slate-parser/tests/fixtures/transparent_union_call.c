@@ -31,4 +31,363 @@ int main(void) {
 // SLATE-FILECHECK-DEFINES DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT
+// DEFAULT: decl[0]: Record(
+// DEFAULT-NEXT:       RecordDecl {
+// DEFAULT-NEXT:           kind: Struct,
+// DEFAULT-NEXT:           name: Some(
+// DEFAULT-NEXT:               "First",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           fields: [
+// DEFAULT-NEXT:               Field(
+// DEFAULT-NEXT:                   FieldDecl {
+// DEFAULT-NEXT:                       declaration: Declaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "value",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               3,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: User,
+// DEFAULT-NEXT:                           line: 3,
+// DEFAULT-NEXT:                           header: None,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           provenance: Provenance {
+// DEFAULT-NEXT:               file: FileId(
+// DEFAULT-NEXT:                   3,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               kind: User,
+// DEFAULT-NEXT:               line: 2,
+// DEFAULT-NEXT:               header: None,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[1]: Record(
+// DEFAULT-NEXT:       RecordDecl {
+// DEFAULT-NEXT:           kind: Struct,
+// DEFAULT-NEXT:           name: Some(
+// DEFAULT-NEXT:               "Second",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           fields: [
+// DEFAULT-NEXT:               Field(
+// DEFAULT-NEXT:                   FieldDecl {
+// DEFAULT-NEXT:                       declaration: Declaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "value",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               3,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: User,
+// DEFAULT-NEXT:                           line: 7,
+// DEFAULT-NEXT:                           header: None,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           provenance: Provenance {
+// DEFAULT-NEXT:               file: FileId(
+// DEFAULT-NEXT:                   3,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               kind: User,
+// DEFAULT-NEXT:               line: 6,
+// DEFAULT-NEXT:               header: None,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[2]: Record(
+// DEFAULT-NEXT:       RecordDecl {
+// DEFAULT-NEXT:           kind: Union,
+// DEFAULT-NEXT:           name: None,
+// DEFAULT-NEXT:           fields: [
+// DEFAULT-NEXT:               Field(
+// DEFAULT-NEXT:                   FieldDecl {
+// DEFAULT-NEXT:                       declaration: Declaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Tagged {
+// DEFAULT-NEXT:                                   kind: Struct,
+// DEFAULT-NEXT:                                   name: Some(
+// DEFAULT-NEXT:                                       "First",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Pointer {
+// DEFAULT-NEXT:                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                               inner: Name(
+// DEFAULT-NEXT:                                   "first",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               3,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: User,
+// DEFAULT-NEXT:                           line: 11,
+// DEFAULT-NEXT:                           header: None,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Field(
+// DEFAULT-NEXT:                   FieldDecl {
+// DEFAULT-NEXT:                       declaration: Declaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Tagged {
+// DEFAULT-NEXT:                                   kind: Struct,
+// DEFAULT-NEXT:                                   name: Some(
+// DEFAULT-NEXT:                                       "Second",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Pointer {
+// DEFAULT-NEXT:                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                               inner: Name(
+// DEFAULT-NEXT:                                   "second",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               3,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: User,
+// DEFAULT-NEXT:                           line: 12,
+// DEFAULT-NEXT:                           header: None,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           provenance: Provenance {
+// DEFAULT-NEXT:               file: FileId(
+// DEFAULT-NEXT:                   3,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               kind: User,
+// DEFAULT-NEXT:               line: 10,
+// DEFAULT-NEXT:               header: None,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[3]: Typedef {
+// DEFAULT-NEXT:       name: "PointerArgument",
+// DEFAULT-NEXT:       ty: Tagged {
+// DEFAULT-NEXT:           kind: Union,
+// DEFAULT-NEXT:           name: None,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               3,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 10,
+// DEFAULT-NEXT:           header: None,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[4]: Function(
+// DEFAULT-NEXT:       FunctionDecl {
+// DEFAULT-NEXT:           ret_type: Integer(
+// DEFAULT-NEXT:               Ranked {
+// DEFAULT-NEXT:                   rank: Int,
+// DEFAULT-NEXT:                   signed: true,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           name: "read_value",
+// DEFAULT-NEXT:           parameters: [
+// DEFAULT-NEXT:               Parameter {
+// DEFAULT-NEXT:                   ty: Named(
+// DEFAULT-NEXT:                       "PointerArgument",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   declarator: Some(
+// DEFAULT-NEXT:                       Name(
+// DEFAULT-NEXT:                           "argument",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           body: [
+// DEFAULT-NEXT:               Return(
+// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                       Arrow {
+// DEFAULT-NEXT:                           base: Member {
+// DEFAULT-NEXT:                               base: Identifier(
+// DEFAULT-NEXT:                                   "argument",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               field: "first",
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           field: "value",
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           provenance: Provenance {
+// DEFAULT-NEXT:               file: FileId(
+// DEFAULT-NEXT:                   3,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               kind: User,
+// DEFAULT-NEXT:               line: 15,
+// DEFAULT-NEXT:               header: None,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           storage: Static,
+// DEFAULT-NEXT:           attributes: [
+// DEFAULT-NEXT:               NoInline,
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[5]: Function(
+// DEFAULT-NEXT:       FunctionDecl {
+// DEFAULT-NEXT:           ret_type: Integer(
+// DEFAULT-NEXT:               Ranked {
+// DEFAULT-NEXT:                   rank: Int,
+// DEFAULT-NEXT:                   signed: true,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           name: "main",
+// DEFAULT-NEXT:           body: [
+// DEFAULT-NEXT:               Decl(
+// DEFAULT-NEXT:                   Declaration {
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Tagged {
+// DEFAULT-NEXT:                               kind: Struct,
+// DEFAULT-NEXT:                               name: Some(
+// DEFAULT-NEXT:                                   "First",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarator: Name(
+// DEFAULT-NEXT:                           "first",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       initializer: Some(
+// DEFAULT-NEXT:                           List(
+// DEFAULT-NEXT:                               [
+// DEFAULT-NEXT:                                   InitializerItem {
+// DEFAULT-NEXT:                                       designators: [
+// DEFAULT-NEXT:                                           Field(
+// DEFAULT-NEXT:                                               "value",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                       value: Expr(
+// DEFAULT-NEXT:                                           Const(
+// DEFAULT-NEXT:                                               Integer(
+// DEFAULT-NEXT:                                                   17,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Decl(
+// DEFAULT-NEXT:                   Declaration {
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Tagged {
+// DEFAULT-NEXT:                               kind: Struct,
+// DEFAULT-NEXT:                               name: Some(
+// DEFAULT-NEXT:                                   "Second",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarator: Name(
+// DEFAULT-NEXT:                           "second",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       initializer: Some(
+// DEFAULT-NEXT:                           List(
+// DEFAULT-NEXT:                               [
+// DEFAULT-NEXT:                                   InitializerItem {
+// DEFAULT-NEXT:                                       designators: [
+// DEFAULT-NEXT:                                           Field(
+// DEFAULT-NEXT:                                               "value",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                       value: Expr(
+// DEFAULT-NEXT:                                           Const(
+// DEFAULT-NEXT:                                               Integer(
+// DEFAULT-NEXT:                                                   29,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                       Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "printf",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               StringLit(
+// DEFAULT-NEXT:                                   "%d %d\\n",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Call {
+// DEFAULT-NEXT:                                   callee: Identifier(
+// DEFAULT-NEXT:                                       "read_value",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   arguments: [
+// DEFAULT-NEXT:                                       AddrOf(
+// DEFAULT-NEXT:                                           Identifier(
+// DEFAULT-NEXT:                                               "first",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               Call {
+// DEFAULT-NEXT:                                   callee: Identifier(
+// DEFAULT-NEXT:                                       "read_value",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   arguments: [
+// DEFAULT-NEXT:                                       AddrOf(
+// DEFAULT-NEXT:                                           Identifier(
+// DEFAULT-NEXT:                                               "second",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Return(
+// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                       Integer(
+// DEFAULT-NEXT:                           0,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           provenance: Provenance {
+// DEFAULT-NEXT:               file: FileId(
+// DEFAULT-NEXT:                   3,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               kind: User,
+// DEFAULT-NEXT:               line: 19,
+// DEFAULT-NEXT:               header: None,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   )
 // SLATE-FILECHECK-END DEFAULT

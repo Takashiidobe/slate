@@ -149,6 +149,7 @@ pub enum Stmt {
     },
     Default,
     Labeled(String),
+    LocalLabelDecl(Vec<String>),
     Goto(String),
     ComputedGoto(SpannedExpr),
     NestedFunction(Box<FunctionDecl>),

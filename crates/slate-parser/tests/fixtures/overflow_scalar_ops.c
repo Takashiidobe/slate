@@ -30,4 +30,408 @@ int main(void) {
 // SLATE-FILECHECK-DEFINES DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT
+// DEFAULT: decl[0]: Function(
+// DEFAULT-NEXT:       FunctionDecl {
+// DEFAULT-NEXT:           ret_type: Integer(
+// DEFAULT-NEXT:               Ranked {
+// DEFAULT-NEXT:                   rank: Int,
+// DEFAULT-NEXT:                   signed: true,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           name: "main",
+// DEFAULT-NEXT:           body: [
+// DEFAULT-NEXT:               Decl(
+// DEFAULT-NEXT:                   Declaration {
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarator: Name(
+// DEFAULT-NEXT:                           "ri",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       initializer: Some(
+// DEFAULT-NEXT:                           Expr(
+// DEFAULT-NEXT:                               Const(
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Decl(
+// DEFAULT-NEXT:                   Declaration {
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: false,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarator: Name(
+// DEFAULT-NEXT:                           "ru",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       initializer: Some(
+// DEFAULT-NEXT:                           Expr(
+// DEFAULT-NEXT:                               Const(
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Decl(
+// DEFAULT-NEXT:                   Declaration {
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: LongLong,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarator: Name(
+// DEFAULT-NEXT:                           "rll",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       initializer: Some(
+// DEFAULT-NEXT:                           Expr(
+// DEFAULT-NEXT:                               Const(
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Decl(
+// DEFAULT-NEXT:                   Declaration {
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarator: Name(
+// DEFAULT-NEXT:                           "add_i",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       initializer: Some(
+// DEFAULT-NEXT:                           Expr(
+// DEFAULT-NEXT:                               Const(
+// DEFAULT-NEXT:                                   Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_add_overflow",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               2147483647,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               1,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           AddrOf(
+// DEFAULT-NEXT:                                               Identifier(
+// DEFAULT-NEXT:                                                   "ri",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                       Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "printf",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               StringLit(
+// DEFAULT-NEXT:                                   "%d %d\\n",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Identifier(
+// DEFAULT-NEXT:                                   "add_i",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Identifier(
+// DEFAULT-NEXT:                                   "ri",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Decl(
+// DEFAULT-NEXT:                   Declaration {
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarator: Name(
+// DEFAULT-NEXT:                           "sub_i",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       initializer: Some(
+// DEFAULT-NEXT:                           Expr(
+// DEFAULT-NEXT:                               Const(
+// DEFAULT-NEXT:                                   Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_sub_overflow",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Sub,
+// DEFAULT-NEXT:                                               left: Unary {
+// DEFAULT-NEXT:                                                   op: Minus,
+// DEFAULT-NEXT:                                                   value: Integer(
+// DEFAULT-NEXT:                                                       2147483647,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               right: Integer(
+// DEFAULT-NEXT:                                                   1,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               1,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           AddrOf(
+// DEFAULT-NEXT:                                               Identifier(
+// DEFAULT-NEXT:                                                   "ri",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                       Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "printf",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               StringLit(
+// DEFAULT-NEXT:                                   "%d %d\\n",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Identifier(
+// DEFAULT-NEXT:                                   "sub_i",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Identifier(
+// DEFAULT-NEXT:                                   "ri",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Decl(
+// DEFAULT-NEXT:                   Declaration {
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarator: Name(
+// DEFAULT-NEXT:                           "mul_i",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       initializer: Some(
+// DEFAULT-NEXT:                           Expr(
+// DEFAULT-NEXT:                               Const(
+// DEFAULT-NEXT:                                   Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_mul_overflow",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               1073741824,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               2,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           AddrOf(
+// DEFAULT-NEXT:                                               Identifier(
+// DEFAULT-NEXT:                                                   "ri",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                       Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "printf",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               StringLit(
+// DEFAULT-NEXT:                                   "%d %d\\n",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Identifier(
+// DEFAULT-NEXT:                                   "mul_i",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Identifier(
+// DEFAULT-NEXT:                                   "ri",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Decl(
+// DEFAULT-NEXT:                   Declaration {
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarator: Name(
+// DEFAULT-NEXT:                           "add_u",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       initializer: Some(
+// DEFAULT-NEXT:                           Expr(
+// DEFAULT-NEXT:                               Const(
+// DEFAULT-NEXT:                                   Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_add_overflow",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               4294967295,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               1,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           AddrOf(
+// DEFAULT-NEXT:                                               Identifier(
+// DEFAULT-NEXT:                                                   "ru",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                       Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "printf",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               StringLit(
+// DEFAULT-NEXT:                                   "%d %u\\n",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Identifier(
+// DEFAULT-NEXT:                                   "add_u",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Identifier(
+// DEFAULT-NEXT:                                   "ru",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Decl(
+// DEFAULT-NEXT:                   Declaration {
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarator: Name(
+// DEFAULT-NEXT:                           "mul_ll",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       initializer: Some(
+// DEFAULT-NEXT:                           Expr(
+// DEFAULT-NEXT:                               Const(
+// DEFAULT-NEXT:                                   Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_mul_overflow",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               3037000500,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               3037000500,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           AddrOf(
+// DEFAULT-NEXT:                                               Identifier(
+// DEFAULT-NEXT:                                                   "rll",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                       Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "printf",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               StringLit(
+// DEFAULT-NEXT:                                   "%d %lld\\n",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Identifier(
+// DEFAULT-NEXT:                                   "mul_ll",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Identifier(
+// DEFAULT-NEXT:                                   "rll",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Return(
+// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                       Integer(
+// DEFAULT-NEXT:                           0,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           provenance: Provenance {
+// DEFAULT-NEXT:               file: FileId(
+// DEFAULT-NEXT:                   3,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               kind: User,
+// DEFAULT-NEXT:               line: 2,
+// DEFAULT-NEXT:               header: None,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   )
 // SLATE-FILECHECK-END DEFAULT

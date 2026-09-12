@@ -27,4 +27,303 @@ int main(void) {
 // SLATE-FILECHECK-DEFINES DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT
+// DEFAULT: decl[0]: Record(
+// DEFAULT-NEXT:       RecordDecl {
+// DEFAULT-NEXT:           kind: Struct,
+// DEFAULT-NEXT:           name: Some(
+// DEFAULT-NEXT:               "Packed",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           fields: [
+// DEFAULT-NEXT:               Field(
+// DEFAULT-NEXT:                   FieldDecl {
+// DEFAULT-NEXT:                       declaration: Declaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Char {
+// DEFAULT-NEXT:                                       signed: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "a",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               3,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: User,
+// DEFAULT-NEXT:                           line: 4,
+// DEFAULT-NEXT:                           header: None,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Field(
+// DEFAULT-NEXT:                   FieldDecl {
+// DEFAULT-NEXT:                       declaration: Declaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "b",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               3,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: User,
+// DEFAULT-NEXT:                           line: 5,
+// DEFAULT-NEXT:                           header: None,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Field(
+// DEFAULT-NEXT:                   FieldDecl {
+// DEFAULT-NEXT:                       declaration: Declaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Char {
+// DEFAULT-NEXT:                                       signed: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "c",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               3,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: User,
+// DEFAULT-NEXT:                           line: 6,
+// DEFAULT-NEXT:                           header: None,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           provenance: Provenance {
+// DEFAULT-NEXT:               file: FileId(
+// DEFAULT-NEXT:                   3,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               kind: User,
+// DEFAULT-NEXT:               line: 3,
+// DEFAULT-NEXT:               header: None,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           attributes: [
+// DEFAULT-NEXT:               Packed,
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[1]: Function(
+// DEFAULT-NEXT:       FunctionDecl {
+// DEFAULT-NEXT:           ret_type: Integer(
+// DEFAULT-NEXT:               Ranked {
+// DEFAULT-NEXT:                   rank: Int,
+// DEFAULT-NEXT:                   signed: true,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           name: "main",
+// DEFAULT-NEXT:           body: [
+// DEFAULT-NEXT:               Decl(
+// DEFAULT-NEXT:                   Declaration {
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Tagged {
+// DEFAULT-NEXT:                               kind: Struct,
+// DEFAULT-NEXT:                               name: Some(
+// DEFAULT-NEXT:                                   "Packed",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarator: Name(
+// DEFAULT-NEXT:                           "p",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                       Assign {
+// DEFAULT-NEXT:                           op: Assign,
+// DEFAULT-NEXT:                           target: Member {
+// DEFAULT-NEXT:                               base: Identifier(
+// DEFAULT-NEXT:                                   "p",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               field: "a",
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           value: Integer(
+// DEFAULT-NEXT:                               1,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                       Assign {
+// DEFAULT-NEXT:                           op: Assign,
+// DEFAULT-NEXT:                           target: Member {
+// DEFAULT-NEXT:                               base: Identifier(
+// DEFAULT-NEXT:                                   "p",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               field: "b",
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           value: Integer(
+// DEFAULT-NEXT:                               287454020,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                       Assign {
+// DEFAULT-NEXT:                           op: Assign,
+// DEFAULT-NEXT:                           target: Member {
+// DEFAULT-NEXT:                               base: Identifier(
+// DEFAULT-NEXT:                                   "p",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               field: "c",
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           value: Integer(
+// DEFAULT-NEXT:                               2,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                       Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "printf",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               StringLit(
+// DEFAULT-NEXT:                                   "%zu %zu\\n",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               SizeOfType {
+// DEFAULT-NEXT:                                   ty: Tagged {
+// DEFAULT-NEXT:                                       kind: Struct,
+// DEFAULT-NEXT:                                       name: Some(
+// DEFAULT-NEXT:                                           "Packed",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               AlignOf {
+// DEFAULT-NEXT:                                   ty: Tagged {
+// DEFAULT-NEXT:                                       kind: Struct,
+// DEFAULT-NEXT:                                       name: Some(
+// DEFAULT-NEXT:                                           "Packed",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                       Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "printf",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               StringLit(
+// DEFAULT-NEXT:                                   "%zu %zu %zu\\n",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               OffsetOf {
+// DEFAULT-NEXT:                                   ty: Tagged {
+// DEFAULT-NEXT:                                       kind: Struct,
+// DEFAULT-NEXT:                                       name: Some(
+// DEFAULT-NEXT:                                           "Packed",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   member: Identifier(
+// DEFAULT-NEXT:                                       "a",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               OffsetOf {
+// DEFAULT-NEXT:                                   ty: Tagged {
+// DEFAULT-NEXT:                                       kind: Struct,
+// DEFAULT-NEXT:                                       name: Some(
+// DEFAULT-NEXT:                                           "Packed",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   member: Identifier(
+// DEFAULT-NEXT:                                       "b",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               OffsetOf {
+// DEFAULT-NEXT:                                   ty: Tagged {
+// DEFAULT-NEXT:                                       kind: Struct,
+// DEFAULT-NEXT:                                       name: Some(
+// DEFAULT-NEXT:                                           "Packed",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   member: Identifier(
+// DEFAULT-NEXT:                                       "c",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                       Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "printf",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               StringLit(
+// DEFAULT-NEXT:                                   "%d %x %d\\n",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Member {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "p",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   field: "a",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               Member {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "p",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   field: "b",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               Member {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "p",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   field: "c",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Return(
+// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                       Integer(
+// DEFAULT-NEXT:                           0,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           provenance: Provenance {
+// DEFAULT-NEXT:               file: FileId(
+// DEFAULT-NEXT:                   3,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               kind: User,
+// DEFAULT-NEXT:               line: 9,
+// DEFAULT-NEXT:               header: None,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   )
 // SLATE-FILECHECK-END DEFAULT

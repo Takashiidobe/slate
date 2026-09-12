@@ -310,7 +310,25 @@ impl Parser {
         parser.pos = position;
         attributes.extend(trailing_attributes);
         let initializer = if parser.matches(Token::Equal) {
-            Some(parser.parse_initializer(&self.typedef_names))
+            if parser.peek() == Some(&Token::LParen)
+                && parser.tokens.value_at(parser.pos + 1) == Some(&Token::LBrace)
+            {
+                let close = matching_brace(parser.tokens, parser.pos + 1)
+                    .ok_or_else(|| self.error_at_tokens(tokens, parser.pos, "expected `}`"))?;
+                if parser.tokens.value_at(close + 1) != Some(&Token::RParen) {
+                    return Err(self.error_at_tokens(tokens, close, "expected `)`"));
+                }
+                let body =
+                    self.parse_stmts_from_tokens(_code, &parser.tokens[parser.pos + 2..close])?;
+                let start = parser.pos;
+                parser.pos = close + 2;
+                Some(Initializer::Expr(span_tokens(
+                    Expr::StatementExpression(body),
+                    &parser.tokens[start..parser.pos],
+                )))
+            } else {
+                Some(parser.parse_initializer(&self.typedef_names))
+            }
         } else {
             None
         };
@@ -505,6 +523,10 @@ impl Parser {
                     ))
                 ) && first_lbrace.is_some_and(|brace_index| {
                     first_equal.is_none_or(|equal_index| brace_index < equal_index)
+                        && brace_index
+                            .checked_sub(1)
+                            .and_then(|index| tokens.value_at(index))
+                            != Some(&Token::RParen)
                 }) {
                     return self
                         .parse_tag_definition(nodes)
@@ -1221,6 +1243,7 @@ fn parse_attribute(name: &str, arguments: &[Span<Token>]) -> Result<Attribute, S
         "weakref" => Ok(single_string()
             .map(Attribute::WeakRef)
             .unwrap_or_else(|| invalid_attribute(name, arguments))),
+        "nonnull" if arguments.is_empty() => Ok(Attribute::NonNull(Vec::new())),
         "nonnull" => Ok(integers()
             .map(Attribute::NonNull)
             .unwrap_or_else(|| invalid_attribute(name, arguments))),
@@ -2995,6 +3018,25 @@ impl Parser {
             let name = name.clone();
             fragment.pos += 2;
             return Ok(Stmt::Labeled(name));
+        }
+
+        if tokens.value_at(fragment.pos) == Some(&Token::Ident("__label__".into())) {
+            let end = top_level_semi(&tokens[fragment.pos..])
+                .map(|position| fragment.pos + position)
+                .ok_or_else(|| self.error_at(Loc::whole(code), "expected `;`"))?;
+            let names = split_top_level(&tokens[fragment.pos + 1..end], &Token::Comma)
+                .into_iter()
+                .filter(|part| !part.is_empty())
+                .map(|part| match part.as_slice() {
+                    [single] => match &single.value {
+                        Token::Ident(name) => Ok(name.clone()),
+                        _ => Err(self.error_at(Loc::whole(code), "expected label name")),
+                    },
+                    _ => Err(self.error_at(Loc::whole(code), "expected label name")),
+                })
+                .collect::<Result<Vec<_>, _>>()?;
+            fragment.pos = end + 1;
+            return Ok(Stmt::LocalLabelDecl(names));
         }
 
         if tokens.value_at(fragment.pos) == Some(&Token::LBracket)

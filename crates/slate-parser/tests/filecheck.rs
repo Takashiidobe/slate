@@ -416,6 +416,7 @@ fn summarize_evaluated_decl(decl: &Decl) -> DeclSummary {
                     | Stmt::CaseRange { .. }
                     | Stmt::Default
                     | Stmt::Labeled(_)
+                    | Stmt::LocalLabelDecl(_)
                     | Stmt::Goto(_)
                     | Stmt::ComputedGoto(_)
                     | Stmt::NestedFunction(_)

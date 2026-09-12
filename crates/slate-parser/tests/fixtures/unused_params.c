@@ -22,4 +22,415 @@ int main(void) {
 // SLATE-FILECHECK-DEFINES DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT
+// DEFAULT: decl[0]: Function(
+// DEFAULT-NEXT:       FunctionDecl {
+// DEFAULT-NEXT:           ret_type: Integer(
+// DEFAULT-NEXT:               Ranked {
+// DEFAULT-NEXT:                   rank: Int,
+// DEFAULT-NEXT:                   signed: true,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           name: "add",
+// DEFAULT-NEXT:           parameters: [
+// DEFAULT-NEXT:               Parameter {
+// DEFAULT-NEXT:                   ty: Integer(
+// DEFAULT-NEXT:                       Ranked {
+// DEFAULT-NEXT:                           rank: Int,
+// DEFAULT-NEXT:                           signed: true,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   declarator: Some(
+// DEFAULT-NEXT:                       Name(
+// DEFAULT-NEXT:                           "a",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               Parameter {
+// DEFAULT-NEXT:                   ty: Integer(
+// DEFAULT-NEXT:                       Ranked {
+// DEFAULT-NEXT:                           rank: Int,
+// DEFAULT-NEXT:                           signed: true,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   declarator: Some(
+// DEFAULT-NEXT:                       Name(
+// DEFAULT-NEXT:                           "unused",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           body: [
+// DEFAULT-NEXT:               Return(
+// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                           op: Add,
+// DEFAULT-NEXT:                           left: Identifier(
+// DEFAULT-NEXT:                               "a",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               1,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           provenance: Provenance {
+// DEFAULT-NEXT:               file: FileId(
+// DEFAULT-NEXT:                   3,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               kind: User,
+// DEFAULT-NEXT:               line: 2,
+// DEFAULT-NEXT:               header: None,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           storage: Static,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[1]: Function(
+// DEFAULT-NEXT:       FunctionDecl {
+// DEFAULT-NEXT:           ret_type: Integer(
+// DEFAULT-NEXT:               Ranked {
+// DEFAULT-NEXT:                   rank: Int,
+// DEFAULT-NEXT:                   signed: true,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           name: "get_used",
+// DEFAULT-NEXT:           parameters: [
+// DEFAULT-NEXT:               Parameter {
+// DEFAULT-NEXT:                   ty: Integer(
+// DEFAULT-NEXT:                       Ranked {
+// DEFAULT-NEXT:                           rank: Int,
+// DEFAULT-NEXT:                           signed: true,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   declarator: Some(
+// DEFAULT-NEXT:                       Name(
+// DEFAULT-NEXT:                           "a",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               Parameter {
+// DEFAULT-NEXT:                   ty: Integer(
+// DEFAULT-NEXT:                       Ranked {
+// DEFAULT-NEXT:                           rank: Int,
+// DEFAULT-NEXT:                           signed: true,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   declarator: Some(
+// DEFAULT-NEXT:                       Name(
+// DEFAULT-NEXT:                           "b",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           body: [
+// DEFAULT-NEXT:               Return(
+// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                           op: Add,
+// DEFAULT-NEXT:                           left: Identifier(
+// DEFAULT-NEXT:                               "a",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Identifier(
+// DEFAULT-NEXT:                               "b",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           provenance: Provenance {
+// DEFAULT-NEXT:               file: FileId(
+// DEFAULT-NEXT:                   3,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               kind: User,
+// DEFAULT-NEXT:               line: 4,
+// DEFAULT-NEXT:               header: None,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           storage: Static,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[2]: Function(
+// DEFAULT-NEXT:       FunctionDecl {
+// DEFAULT-NEXT:           ret_type: Integer(
+// DEFAULT-NEXT:               Ranked {
+// DEFAULT-NEXT:                   rank: Int,
+// DEFAULT-NEXT:                   signed: true,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           name: "remove_two",
+// DEFAULT-NEXT:           parameters: [
+// DEFAULT-NEXT:               Parameter {
+// DEFAULT-NEXT:                   ty: Integer(
+// DEFAULT-NEXT:                       Ranked {
+// DEFAULT-NEXT:                           rank: Int,
+// DEFAULT-NEXT:                           signed: true,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   declarator: Some(
+// DEFAULT-NEXT:                       Name(
+// DEFAULT-NEXT:                           "a",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               Parameter {
+// DEFAULT-NEXT:                   ty: Integer(
+// DEFAULT-NEXT:                       Ranked {
+// DEFAULT-NEXT:                           rank: Int,
+// DEFAULT-NEXT:                           signed: true,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   declarator: Some(
+// DEFAULT-NEXT:                       Name(
+// DEFAULT-NEXT:                           "unused_a",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               Parameter {
+// DEFAULT-NEXT:                   ty: Integer(
+// DEFAULT-NEXT:                       Ranked {
+// DEFAULT-NEXT:                           rank: Int,
+// DEFAULT-NEXT:                           signed: true,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   declarator: Some(
+// DEFAULT-NEXT:                       Name(
+// DEFAULT-NEXT:                           "unused_b",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           body: [
+// DEFAULT-NEXT:               Return(
+// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                           op: Add,
+// DEFAULT-NEXT:                           left: Identifier(
+// DEFAULT-NEXT:                               "a",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               2,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           provenance: Provenance {
+// DEFAULT-NEXT:               file: FileId(
+// DEFAULT-NEXT:                   3,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               kind: User,
+// DEFAULT-NEXT:               line: 6,
+// DEFAULT-NEXT:               header: None,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           storage: Static,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[3]: Function(
+// DEFAULT-NEXT:       FunctionDecl {
+// DEFAULT-NEXT:           ret_type: Integer(
+// DEFAULT-NEXT:               Ranked {
+// DEFAULT-NEXT:                   rank: Int,
+// DEFAULT-NEXT:                   signed: true,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           name: "address_taken",
+// DEFAULT-NEXT:           parameters: [
+// DEFAULT-NEXT:               Parameter {
+// DEFAULT-NEXT:                   ty: Integer(
+// DEFAULT-NEXT:                       Ranked {
+// DEFAULT-NEXT:                           rank: Int,
+// DEFAULT-NEXT:                           signed: true,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   declarator: Some(
+// DEFAULT-NEXT:                       Name(
+// DEFAULT-NEXT:                           "a",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               Parameter {
+// DEFAULT-NEXT:                   ty: Integer(
+// DEFAULT-NEXT:                       Ranked {
+// DEFAULT-NEXT:                           rank: Int,
+// DEFAULT-NEXT:                           signed: true,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   declarator: Some(
+// DEFAULT-NEXT:                       Name(
+// DEFAULT-NEXT:                           "unused",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           body: [
+// DEFAULT-NEXT:               Return(
+// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                           op: Add,
+// DEFAULT-NEXT:                           left: Identifier(
+// DEFAULT-NEXT:                               "a",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               4,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           provenance: Provenance {
+// DEFAULT-NEXT:               file: FileId(
+// DEFAULT-NEXT:                   3,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               kind: User,
+// DEFAULT-NEXT:               line: 8,
+// DEFAULT-NEXT:               header: None,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           storage: Static,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[4]: Function(
+// DEFAULT-NEXT:       FunctionDecl {
+// DEFAULT-NEXT:           ret_type: Integer(
+// DEFAULT-NEXT:               Ranked {
+// DEFAULT-NEXT:                   rank: Int,
+// DEFAULT-NEXT:                   signed: true,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           name: "main",
+// DEFAULT-NEXT:           body: [
+// DEFAULT-NEXT:               Decl(
+// DEFAULT-NEXT:                   Declaration {
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarator: Function {
+// DEFAULT-NEXT:                           inner: Grouped(
+// DEFAULT-NEXT:                               Pointer {
+// DEFAULT-NEXT:                                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                   inner: Name(
+// DEFAULT-NEXT:                                       "indirect",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           parameters: [
+// DEFAULT-NEXT:                               Parameter {
+// DEFAULT-NEXT:                                   ty: Integer(
+// DEFAULT-NEXT:                                       Ranked {
+// DEFAULT-NEXT:                                           rank: Int,
+// DEFAULT-NEXT:                                           signed: true,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               Parameter {
+// DEFAULT-NEXT:                                   ty: Integer(
+// DEFAULT-NEXT:                                       Ranked {
+// DEFAULT-NEXT:                                           rank: Int,
+// DEFAULT-NEXT:                                           signed: true,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       initializer: Some(
+// DEFAULT-NEXT:                           Expr(
+// DEFAULT-NEXT:                               Const(
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "address_taken",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                       Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "printf",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               StringLit(
+// DEFAULT-NEXT:                                   "%d %d %d %d\\n",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Call {
+// DEFAULT-NEXT:                                   callee: Identifier(
+// DEFAULT-NEXT:                                       "add",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   arguments: [
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           5,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           10,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               Call {
+// DEFAULT-NEXT:                                   callee: Identifier(
+// DEFAULT-NEXT:                                       "get_used",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   arguments: [
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           1,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           2,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               Call {
+// DEFAULT-NEXT:                                   callee: Identifier(
+// DEFAULT-NEXT:                                       "remove_two",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   arguments: [
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           3,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           4,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           5,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               Call {
+// DEFAULT-NEXT:                                   callee: Identifier(
+// DEFAULT-NEXT:                                       "indirect",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   arguments: [
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           8,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           9,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Return(
+// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                       Integer(
+// DEFAULT-NEXT:                           0,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           provenance: Provenance {
+// DEFAULT-NEXT:               file: FileId(
+// DEFAULT-NEXT:                   3,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               kind: User,
+// DEFAULT-NEXT:               line: 10,
+// DEFAULT-NEXT:               header: None,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   )
 // SLATE-FILECHECK-END DEFAULT
