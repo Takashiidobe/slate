@@ -763,7 +763,10 @@ impl Parser {
             loop {
                 if self.peek() == Some(&Token::LBracket) {
                     self.take();
-                    let Some(Token::IntLit(index)) = self.take() else {
+                    let Some(token @ Token::IntLit(_)) = self.take() else {
+                        return Err(ConstExprError::ExpectedIntegerExpression);
+                    };
+                    let Some(index) = token.integer_value() else {
                         return Err(ConstExprError::ExpectedIntegerExpression);
                     };
                     self.expect(Token::RBracket)?;
@@ -1005,7 +1008,10 @@ impl Parser {
             return Ok(expression);
         }
         match self.tokens.value_at(self.position.saturating_sub(1)) {
-            Some(Token::IntLit(value)) => Ok(ConstExpr::Integer(*value)),
+            Some(Token::IntLit(value)) => Token::IntLit(value.clone())
+                .integer_value()
+                .map(ConstExpr::Integer)
+                .ok_or(ConstExprError::ExpectedIntegerExpression),
             Some(Token::FloatLit(value)) => FloatLiteral::parse(value).map(ConstExpr::Float),
             Some(Token::StringLit(value)) => Ok(ConstExpr::StringLit(value.clone())),
             Some(Token::Utf8StringLit(value)) => Ok(ConstExpr::Utf8StringLit(value.clone())),

@@ -318,7 +318,7 @@ impl<'a> Preprocessor<'a> {
                             PPErrorKind::InvalidEmbedParameter,
                         ));
                     };
-                    limit = usize::try_from(*value).ok();
+                    limit = value.parse::<usize>().ok();
                     if limit.is_none() {
                         return Err(PPFailure::at(
                             arguments[start - 2].spelling,
@@ -344,7 +344,11 @@ impl<'a> Preprocessor<'a> {
             if index != 0 {
                 tokens.push(Span::new(Token::Comma, loc, loc));
             }
-            tokens.push(Span::new(Token::IntLit(i64::from(byte)), loc, loc));
+            tokens.push(Span::new(
+                Token::IntLit(i64::from(byte).to_string()),
+                loc,
+                loc,
+            ));
         }
         if !is_empty {
             tokens.extend(suffix);
@@ -430,7 +434,7 @@ impl<'a> Preprocessor<'a> {
                 expanded.push(
                     tokens[index]
                         .clone()
-                        .with_value(Token::IntLit(found as i64)),
+                        .with_value(Token::IntLit((found as i64).to_string())),
                 );
                 index += 4;
             } else {

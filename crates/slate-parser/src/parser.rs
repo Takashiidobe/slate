@@ -1133,7 +1133,7 @@ fn parse_attribute(name: &str, arguments: &[Span<Token>]) -> Result<Attribute, S
     };
     let single_int = || match arguments {
         [single] => match &single.value {
-            Token::IntLit(value) => Some(*value),
+            token @ Token::IntLit(_) => token.integer_value(),
             _ => None,
         },
         _ => None,
@@ -1143,7 +1143,7 @@ fn parse_attribute(name: &str, arguments: &[Span<Token>]) -> Result<Attribute, S
             .split(|token| token.value == Token::Comma)
             .map(|tokens| match tokens {
                 [single] => match &single.value {
-                    Token::IntLit(value) => Ok(*value),
+                    token @ Token::IntLit(_) => token.integer_value().ok_or(()),
                     _ => Err(()),
                 },
                 _ => Err(()),
@@ -2136,7 +2136,11 @@ impl<'a> DeclaratorParser<'a> {
         let expression = match tokens {
             [single] => match &single.value {
                 Token::Ident(name) => Expr::Identifier(name.clone()),
-                Token::IntLit(value) => Expr::IntLit(*value),
+                token @ Token::IntLit(_) => Expr::IntLit(
+                    token
+                        .integer_value()
+                        .unwrap_or_else(|| panic!("integer literal does not fit i64")),
+                ),
                 _ => const_expr::string_literal_expr(Some(&single.value))
                     .ok_or(DeclaratorError::UnsupportedTypeofExpression)?,
             },
@@ -2194,6 +2198,9 @@ impl<'a> DeclaratorParser<'a> {
                         let Some(Token::IntLit(index)) = self.peek().cloned() else {
                             panic!("array designator must be an integer literal")
                         };
+                        let index = Token::IntLit(index)
+                            .integer_value()
+                            .unwrap_or_else(|| panic!("array designator does not fit i64"));
                         self.pos += 1;
                         assert!(self.matches(Token::RBracket), "expected `]` in designator");
                         designators.push(Designator::Array(index));

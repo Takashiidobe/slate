@@ -142,7 +142,7 @@ pub enum Token {
     Sizeof,
     Alignof,
     Ident(String),
-    IntLit(i64),
+    IntLit(String),
     FloatLit(String),
     CharLit(String, i64),
     Utf8CharLit(String, i64),
@@ -206,6 +206,27 @@ pub enum Token {
     ShiftRightEqual,
 }
 
+impl Token {
+    pub fn integer_value(&self) -> Option<i64> {
+        let Token::IntLit(spelling) = self else {
+            return None;
+        };
+        let digits = Lexer::integer_digits(spelling).replace('\'', "");
+        let (radix, digits) = if digits.starts_with("0x") || digits.starts_with("0X") {
+            (16, &digits[2..])
+        } else if digits.starts_with("0b") || digits.starts_with("0B") {
+            (2, &digits[2..])
+        } else if digits.len() > 1 && digits.starts_with('0') {
+            (8, &digits[1..])
+        } else {
+            (10, digits.as_str())
+        };
+        u64::from_str_radix(digits, radix)
+            .ok()
+            .map(|value| value.min(i64::MAX as u64) as i64)
+    }
+}
+
 impl std::fmt::Display for Token {
     fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         formatter.write_str(&String::from(self))
@@ -219,7 +240,7 @@ impl From<&Token> for String {
             Token::Alignof => "_Alignof".into(),
             Token::Keyword(keyword) => <&str>::from(*keyword).into(),
             Token::Ident(name) => name.clone(),
-            Token::IntLit(value) => value.to_string(),
+            Token::IntLit(value) => value.clone(),
             Token::FloatLit(value) => value.clone(),
             Token::CharLit(value, _) => format!("'{value}'"),
             Token::Utf8CharLit(value, _) => format!("u8'{value}'"),
@@ -522,11 +543,11 @@ impl Lexer {
                 } else {
                     (10, digits.as_str())
                 };
-                let token = u64::from_str_radix(digits, radix).map_or_else(
-                    |_| Token::FloatLit(spelling.clone()),
-                    |value| Token::IntLit(value.min(i64::MAX as u64) as i64),
-                );
-                self.emit(token);
+                if !digits.is_empty() && digits.chars().all(|digit| digit.is_digit(radix)) {
+                    self.emit(Token::IntLit(spelling));
+                } else {
+                    self.emit(Token::FloatLit(spelling));
+                }
             }
         } else if let Some(prefix_len) = self.string_prefix_len() {
             let start = i + prefix_len;

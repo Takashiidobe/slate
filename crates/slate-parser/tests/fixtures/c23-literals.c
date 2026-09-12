@@ -50,7 +50,7 @@ int unicode_name __attribute__((slate_literal(\u03B1name)));
 // DEFAULT-NEXT:               Unknown {
 // DEFAULT-NEXT:                   name: "slate_literal",
 // DEFAULT-NEXT:                   arguments: [
-// DEFAULT-NEXT:                       "1000",
+// DEFAULT-NEXT:                       "1'000u",
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
@@ -81,7 +81,7 @@ int unicode_name __attribute__((slate_literal(\u03B1name)));
 // DEFAULT-NEXT:               Unknown {
 // DEFAULT-NEXT:                   name: "slate_literal",
 // DEFAULT-NEXT:                   arguments: [
-// DEFAULT-NEXT:                       "10",
+// DEFAULT-NEXT:                       "0b1010wb",
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
@@ -112,7 +112,7 @@ int unicode_name __attribute__((slate_literal(\u03B1name)));
 // DEFAULT-NEXT:               Unknown {
 // DEFAULT-NEXT:                   name: "slate_literal",
 // DEFAULT-NEXT:                   arguments: [
-// DEFAULT-NEXT:                       "42",
+// DEFAULT-NEXT:                       "0x2aUL",
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
