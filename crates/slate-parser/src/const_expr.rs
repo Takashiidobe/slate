@@ -12,6 +12,7 @@ use thiserror::Error;
 #[derive(Debug, Clone, PartialEq)]
 pub enum ConstExpr {
     Integer(i64),
+    IntegerLiteral(String),
     Float(FloatLiteral),
     Identifier(String),
     StringLit(String),
@@ -108,6 +109,7 @@ impl std::fmt::Display for ConstExpr {
     fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Integer(value) => write!(formatter, "{value}"),
+            Self::IntegerLiteral(value) => formatter.write_str(value),
             Self::Float(value) => write!(formatter, "{value}"),
             Self::Identifier(value) => formatter.write_str(value),
             Self::StringLit(value) => write!(formatter, "\"{value}\""),
@@ -458,6 +460,9 @@ impl Parser {
     ) -> Result<i64, ConstExprError> {
         match expression {
             ConstExpr::Integer(value) => Ok(*value),
+            ConstExpr::IntegerLiteral(_) => {
+                Err(ConstExprError::NotConstant("wide integer literal"))
+            }
             ConstExpr::StringLit(_)
             | ConstExpr::Utf8StringLit(_)
             | ConstExpr::Utf16StringLit(_)
@@ -1008,10 +1013,10 @@ impl Parser {
             return Ok(expression);
         }
         match self.tokens.value_at(self.position.saturating_sub(1)) {
-            Some(Token::IntLit(value)) => Token::IntLit(value.clone())
-                .integer_value()
-                .map(ConstExpr::Integer)
-                .ok_or(ConstExprError::ExpectedIntegerExpression),
+            Some(Token::IntLit(value)) => match Token::IntLit(value.clone()).integer_value() {
+                Some(value) => Ok(ConstExpr::Integer(value)),
+                None => Ok(ConstExpr::IntegerLiteral(value.clone())),
+            },
             Some(Token::FloatLit(value)) => FloatLiteral::parse(value).map(ConstExpr::Float),
             Some(Token::StringLit(value)) => Ok(ConstExpr::StringLit(value.clone())),
             Some(Token::Utf8StringLit(value)) => Ok(ConstExpr::Utf8StringLit(value.clone())),
