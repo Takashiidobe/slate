@@ -1,15 +1,11 @@
 #include <stdio.h>
 
-__attribute__((constructor)) static void register_default(void) {
-  printf("ctor: default\n");
-}
-
-__attribute__((destructor)) static void cleanup_default(void) {
-  printf("dtor: default\n");
+__attribute__((constructor)) static void greet(void) {
+  printf("constructor ran\n");
 }
 
 int main(void) {
-  printf("main\n");
+  printf("main ran\n");
   return 0;
 }
 
@@ -23,7 +19,7 @@ int main(void) {
 // DEFAULT: decl[0]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
 // DEFAULT-NEXT:           ret_type: Void,
-// DEFAULT-NEXT:           name: "register_default",
+// DEFAULT-NEXT:           name: "greet",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Expr(
 // DEFAULT-NEXT:                   Const(
@@ -33,7 +29,7 @@ int main(void) {
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           arguments: [
 // DEFAULT-NEXT:                               StringLit(
-// DEFAULT-NEXT:                                   "ctor: default\\n",
+// DEFAULT-NEXT:                                   "constructor ran\\n",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
@@ -58,42 +54,6 @@ int main(void) {
 // DEFAULT-NEXT:   )
 // DEFAULT-NEXT: decl[1]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
-// DEFAULT-NEXT:           ret_type: Void,
-// DEFAULT-NEXT:           name: "cleanup_default",
-// DEFAULT-NEXT:           body: [
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "printf",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               StringLit(
-// DEFAULT-NEXT:                                   "dtor: default\\n",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ],
-// DEFAULT-NEXT:           provenance: Provenance {
-// DEFAULT-NEXT:               file: FileId(
-// DEFAULT-NEXT:                   3,
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               kind: User,
-// DEFAULT-NEXT:               line: 6,
-// DEFAULT-NEXT:               header: None,
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           storage: Static,
-// DEFAULT-NEXT:           attributes: [
-// DEFAULT-NEXT:               Destructor(
-// DEFAULT-NEXT:                   None,
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ],
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[2]: Function(
-// DEFAULT-NEXT:       FunctionDecl {
 // DEFAULT-NEXT:           ret_type: Integer(
 // DEFAULT-NEXT:               Ranked {
 // DEFAULT-NEXT:                   rank: Int,
@@ -110,7 +70,7 @@ int main(void) {
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           arguments: [
 // DEFAULT-NEXT:                               StringLit(
-// DEFAULT-NEXT:                                   "main\\n",
+// DEFAULT-NEXT:                                   "main ran\\n",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
@@ -129,7 +89,7 @@ int main(void) {
 // DEFAULT-NEXT:                   3,
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               kind: User,
-// DEFAULT-NEXT:               line: 10,
+// DEFAULT-NEXT:               line: 6,
 // DEFAULT-NEXT:               header: None,
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },

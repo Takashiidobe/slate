@@ -1224,8 +1224,24 @@ fn parse_attribute(name: &str, arguments: &[Span<Token>]) -> Result<Attribute, S
         "noinline" if arguments.is_empty() => Ok(Attribute::NoInline),
         "always_inline" if arguments.is_empty() => Ok(Attribute::AlwaysInline),
         "noreturn" if arguments.is_empty() => Ok(Attribute::NoReturn),
-        "constructor" if arguments.is_empty() => Ok(Attribute::Constructor),
-        "destructor" if arguments.is_empty() => Ok(Attribute::Destructor),
+        "constructor" => Ok(match arguments {
+            [] => Attribute::Constructor(None),
+            [single] => single
+                .value
+                .integer_value()
+                .map(|value| Attribute::Constructor(Some(value)))
+                .unwrap_or_else(|| invalid_attribute(name, arguments)),
+            _ => invalid_attribute(name, arguments),
+        }),
+        "destructor" => Ok(match arguments {
+            [] => Attribute::Destructor(None),
+            [single] => single
+                .value
+                .integer_value()
+                .map(|value| Attribute::Destructor(Some(value)))
+                .unwrap_or_else(|| invalid_attribute(name, arguments)),
+            _ => invalid_attribute(name, arguments),
+        }),
         "malloc" if arguments.is_empty() => Ok(Attribute::Malloc),
         "returns_nonnull" if arguments.is_empty() => Ok(Attribute::ReturnsNonNull),
         "warn_unused_result" if arguments.is_empty() => Ok(Attribute::WarnUnusedResult),
