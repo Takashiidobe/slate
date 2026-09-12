@@ -426,15 +426,9 @@ impl<'a> Preprocessor<'a> {
     }
 
     fn is_defined(&self, name: &str, active: &Condition) -> bool {
-        match self.visible_entry(name, active) {
-            Some(entry) => entry.definition.is_some(),
-            None => self.macros.get(name).is_some_and(|conditional| {
-                conditional
-                    .branches
-                    .iter()
-                    .any(|(_, entry)| entry.definition.is_some())
-            }),
-        }
+        self.macro_cases(name, active)
+            .iter()
+            .any(|(_, entry)| entry.is_some_and(|entry| entry.definition.is_some()))
     }
 
     fn spelling(&self, loc: Loc) -> &str {

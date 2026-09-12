@@ -1,4 +1,4 @@
-use super::condition::is_statically_true;
+use super::condition::{difference, implies, intersect, is_satisfiable, simplify_condition};
 use super::{MacroDef, MacroEntry, Preprocessor, lex, tokens_source};
 use crate::ast::{Condition, FileId, Loc, Span};
 use crate::lexer::{Token, TokenSpanExt};
@@ -6,13 +6,124 @@ use std::collections::HashSet;
 
 impl Preprocessor<'_> {
     pub(super) fn visible_entry(&self, name: &str, active: &Condition) -> Option<&MacroEntry> {
-        self.macros
-            .get(name)?
-            .branches
+        let cases = self.macro_cases(name, active);
+        let (_, first) = cases.first()?;
+        let definition = first.and_then(|entry| entry.definition.as_ref());
+        cases
             .iter()
-            .rev()
-            .find(|(condition, _)| condition == active || is_statically_true(condition))
-            .map(|(_, entry)| entry)
+            .all(|(_, entry)| entry.and_then(|entry| entry.definition.as_ref()) == definition)
+            .then_some(*first)
+            .flatten()
+    }
+
+    fn definition_cases(
+        &self,
+        name: &str,
+        active: &Condition,
+    ) -> Vec<(Condition, Option<&MacroDef>)> {
+        let mut groups: Vec<(Option<&MacroDef>, Condition)> = Vec::new();
+        for (condition, entry) in self.macro_cases(name, active) {
+            let definition = entry.and_then(|entry| entry.definition.as_ref());
+            match groups
+                .iter_mut()
+                .find(|(existing, _)| *existing == definition)
+            {
+                Some((_, merged)) => {
+                    *merged = Condition::Or(Box::new(merged.clone()), Box::new(condition));
+                }
+                None => groups.push((definition, condition)),
+            }
+        }
+        if let [(definition, _)] = groups.as_slice() {
+            return vec![(active.clone(), *definition)];
+        }
+        groups
+            .into_iter()
+            .map(|(definition, condition)| (simplify_condition(&condition), definition))
+            .collect()
+    }
+
+    fn refine_cases(
+        &self,
+        tokens: &[Span<Token>],
+        parameters: &[String],
+        cases: Vec<Condition>,
+        expanding: &mut HashSet<String>,
+    ) -> Vec<Condition> {
+        let mut cases = cases;
+        for (index, token) in tokens.iter().enumerate() {
+            let Token::Ident(name) = &token.value else {
+                continue;
+            };
+            if parameters.contains(name) || expanding.contains(name) {
+                continue;
+            }
+            let Some(conditional) = self.macros.get(name) else {
+                continue;
+            };
+            if conditional
+                .branches
+                .iter()
+                .filter_map(|(_, entry)| entry.definition.as_ref())
+                .all(|definition| definition.parameters.is_some())
+                && tokens.value_at(index + 1) != Some(&Token::LParen)
+            {
+                continue;
+            }
+            let mut refined = Vec::new();
+            for case in &cases {
+                for (condition, definition) in self.definition_cases(name, case) {
+                    let Some(definition) = definition else {
+                        refined.push(condition);
+                        continue;
+                    };
+                    expanding.insert(name.clone());
+                    refined.extend(self.refine_cases(
+                        &definition.replacement,
+                        definition.parameters.as_deref().unwrap_or_default(),
+                        vec![condition],
+                        expanding,
+                    ));
+                    expanding.remove(name);
+                }
+            }
+            cases = refined;
+        }
+        cases
+    }
+
+    pub(super) fn macro_cases(
+        &self,
+        name: &str,
+        active: &Condition,
+    ) -> Vec<(Condition, Option<&MacroEntry>)> {
+        let mut cases = Vec::new();
+        let mut remaining = Some(active.clone());
+        let branches = self
+            .macros
+            .get(name)
+            .into_iter()
+            .flat_map(|conditional| conditional.branches.iter().rev());
+        for (condition, entry) in branches {
+            let Some(current) = remaining.take() else {
+                break;
+            };
+            if implies(&current, condition) {
+                cases.push((current, Some(entry)));
+                break;
+            }
+            let joint = intersect(&current, condition);
+            if !is_satisfiable(&joint) {
+                remaining = Some(current);
+                continue;
+            }
+            cases.push((joint, Some(entry)));
+            let rest = difference(&current, condition);
+            remaining = is_satisfiable(&rest).then_some(rest);
+        }
+        cases.reverse();
+        cases.extend(remaining.map(|condition| (condition, None)));
+        cases
     }
 
     pub(super) fn strip_pragma_operator(tokens: &[Span<Token>]) -> Vec<Span<Token>> {
@@ -114,40 +225,8 @@ impl Preprocessor<'_> {
         tokens: &[Span<Token>],
         active: &Condition,
     ) -> Option<Vec<Condition>> {
-        for (index, token) in tokens.iter().enumerate() {
-            let Token::Ident(name) = &token.value else {
-                continue;
-            };
-            let Some(conditional) = self.macros.get(name) else {
-                continue;
-            };
-            if conditional
-                .branches
-                .iter()
-                .any(|(condition, _)| condition == active)
-            {
-                continue;
-            }
-            if conditional
-                .branches
-                .iter()
-                .filter_map(|(_, entry)| entry.definition.as_ref())
-                .all(|definition| definition.parameters.is_some())
-                && tokens.value_at(index + 1) != Some(&Token::LParen)
-            {
-                continue;
-            }
-            let mut conditions = Vec::new();
-            for (condition, _) in &conditional.branches {
-                if !conditions.contains(condition) {
-                    conditions.push(condition.clone());
-                }
-            }
-            if conditions.len() > 1 {
-                return Some(conditions);
-            }
-        }
-        None
+        let cases = self.refine_cases(tokens, &[], vec![active.clone()], &mut HashSet::new());
+        (cases.len() > 1).then_some(cases)
     }
 
     pub(super) fn expandable_tokens(tokens: &[Span<Token>]) -> Vec<Span<Token>> {
