@@ -525,17 +525,27 @@ impl Parser {
                     (Some(brace_index), Some(equal_index)) => equal_index < brace_index,
                 };
                 if item_tokens.contains_value(&Token::Semi) && looks_like_declaration {
-                    return Ok((
-                        vec![span_pp_nodes(
+                    let declaration_tokens = if item_tokens
+                        .last()
+                        .is_some_and(|token| token.value == Token::Semi)
+                    {
+                        &item_tokens[..item_tokens.len() - 1]
+                    } else {
+                        &item_tokens
+                    };
+                    let parts = split_top_level(declaration_tokens, &Token::Comma);
+                    let mut declarations = Vec::new();
+                    for mut part in parts.into_iter().filter(|part| !part.is_empty()) {
+                        part.push(synthetic(Token::Semi));
+                        declarations.push(span_pp_nodes(
                             Decl::Declaration {
-                                declaration: self
-                                    .parse_declaration_tokens(item_text, &item_tokens)?,
+                                declaration: self.parse_declaration_tokens(item_text, &part)?,
                                 provenance: self.node_provenance(&nodes[0]),
                             },
                             &nodes[..item_span],
-                        )],
-                        item_span,
-                    ));
+                        ));
+                    }
+                    return Ok((declarations, item_span));
                 }
                 let (func, consumed) = self.parse_function(nodes)?;
                 Ok((
@@ -588,6 +598,10 @@ impl Parser {
             let tag_decl = if kind == TagKind::Enum {
                 let mut enumerators = Vec::new();
                 for segment in split_top_level(body_tokens, &Token::Comma) {
+                    let segment = segment
+                        .into_iter()
+                        .filter(|token| !matches!(token.value, Token::Comment(_)))
+                        .collect::<Vec<_>>();
                     if segment.is_empty() {
                         continue;
                     }
@@ -693,6 +707,9 @@ impl Parser {
             let mut enumerators = Vec::new();
             for node in &nodes[1..close] {
                 let text = self.node_text(node);
+                if matches!(node.value, PPNodeKind::Comment { .. }) {
+                    continue;
+                }
                 let tokens = self.node_tokens(node);
                 if tokens.is_empty() {
                     continue;
@@ -2914,9 +2931,43 @@ impl Parser {
             let end = top_level_semi(&tokens[fragment.pos..])
                 .map(|position| fragment.pos + position)
                 .ok_or_else(|| self.error_at(Loc::whole(code), "expected `;`"))?;
-            let declaration = self.parse_declaration_tokens(code, &tokens[fragment.pos..=end])?;
+            let declaration_tokens = &tokens[fragment.pos..=end];
+            let parts = if declaration_tokens
+                .last()
+                .is_some_and(|token| token.value == Token::Semi)
+            {
+                &declaration_tokens[..declaration_tokens.len() - 1]
+            } else {
+                declaration_tokens
+            };
+            let parts = split_top_level(parts, &Token::Comma);
             fragment.pos = end + 1;
-            return Ok(Stmt::Decl(declaration));
+            if parts.len() == 1 {
+                return Ok(Stmt::Decl(
+                    self.parse_declaration_tokens(code, declaration_tokens)?,
+                ));
+            }
+            let prefix_end = parts[0]
+                .values()
+                .position(|token| matches!(token, Token::Ident(_)))
+                .unwrap_or(0);
+            let prefix = parts[0][..prefix_end].to_vec();
+            let declarations = parts
+                .into_iter()
+                .filter(|part| !part.is_empty())
+                .enumerate()
+                .map(|(index, mut part)| {
+                    if index != 0 {
+                        let mut with_prefix = prefix.clone();
+                        with_prefix.append(&mut part);
+                        part = with_prefix;
+                    }
+                    part.push(synthetic(Token::Semi));
+                    self.parse_declaration_tokens(code, &part)
+                        .map(|declaration| span_tokens(Stmt::Decl(declaration), &part))
+                })
+                .collect::<Result<Vec<_>, _>>()?;
+            return Ok(Stmt::Block(declarations));
         }
 
         match tokens.value_at(fragment.pos) {
