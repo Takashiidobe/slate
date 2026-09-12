@@ -148,6 +148,7 @@ pub enum Token {
     Utf32StringLit(String),
     WideStringLit(String),
     Comment(String),
+    Newline,
     LParen,
     RParen,
     LBrace,
@@ -224,6 +225,7 @@ impl From<&Token> for String {
             Token::Utf32StringLit(value) => format!("U\"{value}\""),
             Token::WideStringLit(value) => format!("L\"{value}\""),
             Token::Comment(text) => text.clone(),
+            Token::Newline => "\n".into(),
             Token::LParen => "(".into(),
             Token::RParen => ")".into(),
             Token::LBrace => "{".into(),
@@ -361,6 +363,7 @@ pub struct Lexer {
     byte_offsets: Vec<usize>,
     pos: usize,
     mark: usize,
+    emit_newlines: bool,
     tokens: Vec<Span<Token>>,
 }
 
@@ -370,8 +373,23 @@ impl Lexer {
     }
 
     pub fn with_offset(file: FileId, src: &str, base_offset: usize) -> Self {
-        let chars: Vec<char> = src.chars().collect();
-        let mut byte_offsets: Vec<usize> = src.char_indices().map(|(b, _)| b).collect();
+        let mut chars = Vec::with_capacity(src.len());
+        let mut byte_offsets = Vec::with_capacity(src.len() + 1);
+        let mut indices = src.char_indices();
+        while let Some((byte, c)) = indices.next() {
+            let rest = &src[byte + c.len_utf8()..];
+            let splice_len = match c {
+                '\\' if rest.starts_with('\n') => 1,
+                '\\' if rest.starts_with("\r\n") => 2,
+                _ => 0,
+            };
+            if splice_len > 0 {
+                indices.nth(splice_len - 1);
+                continue;
+            }
+            chars.push(c);
+            byte_offsets.push(byte);
+        }
         byte_offsets.push(src.len());
         Self {
             file,
@@ -380,8 +398,14 @@ impl Lexer {
             byte_offsets,
             pos: 0,
             mark: 0,
+            emit_newlines: false,
             tokens: Vec::new(),
         }
+    }
+
+    pub fn with_newlines(mut self) -> Self {
+        self.emit_newlines = true;
+        self
     }
 
     fn byte_of(&self, char_index: usize) -> usize {
@@ -425,11 +449,12 @@ impl Lexer {
     }
 
     fn current_loc(&self) -> Loc {
-        Loc::new(
-            self.file,
-            self.byte_of(self.mark),
-            self.byte_of(self.pos) - self.byte_of(self.mark),
-        )
+        let start = self.byte_of(self.mark);
+        let end = match self.pos.checked_sub(1) {
+            Some(last) if last >= self.mark => self.byte_of(last) + self.chars[last].len_utf8(),
+            _ => start,
+        };
+        Loc::new(self.file, start, end - start)
     }
 
     fn emit(&mut self, token: Token) {
@@ -449,7 +474,10 @@ impl Lexer {
         let i = self.pos;
         let c = self.chars[i];
 
-        if c.is_whitespace() {
+        if c == '\n' && self.emit_newlines {
+            self.pos += 1;
+            self.emit(Token::Newline);
+        } else if c.is_whitespace() {
             self.pos += 1;
         } else if self.try_consume("//") {
             while self.peek().is_some_and(|c| c != '\n') {
