@@ -12,7 +12,7 @@ int value;
 // PARSE: ╭─[tests/fixtures/malformed-conditionals.c:4:1]
 // PARSE: 3 │ #else
 // PARSE: 4 │ #elif 0
-// PARSE: · ─
+// PARSE: · ───────
 // PARSE: 5 │ #endif
 // PARSE: ╰────
 // SLATE-FILECHECK-END PARSE

@@ -1,12 +1,25 @@
-use super::{PPError, PPNode, Preprocessor};
-use crate::ast::{Condition, FileId, HeaderKind};
+use super::error::{PPErrorKind, PPFailure};
+use super::{PPNode, Preprocessor};
+use crate::ast::{Condition, FileId, HeaderKind, Loc};
 use crate::files::display_path;
-use std::path::PathBuf;
+use std::fmt;
+use std::path::{Path, PathBuf};
 
 pub(super) enum IncludeDirective {
     Angled(String),
     Quoted(String),
     Next(String),
+}
+
+impl fmt::Display for IncludeDirective {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            IncludeDirective::Angled(name) | IncludeDirective::Next(name) => {
+                write!(formatter, "<{name}>")
+            }
+            IncludeDirective::Quoted(name) => write!(formatter, "\"{name}\""),
+        }
+    }
 }
 
 pub(super) fn parse_include_directive(trimmed: &str) -> Option<IncludeDirective> {
@@ -28,43 +41,53 @@ pub(super) fn parse_include_directive(trimmed: &str) -> Option<IncludeDirective>
     }
 }
 
+pub(super) fn read_source(path: &Path) -> Result<String, PPErrorKind> {
+    std::fs::read_to_string(path).map_err(|error| PPErrorKind::ReadFailed {
+        path: display_path(path),
+        message: error.to_string(),
+    })
+}
+
 impl Preprocessor<'_> {
     pub(super) fn resolve_and_parse_include(
         &mut self,
         include: &IncludeDirective,
-        from: FileId,
+        directive: Loc,
         active: &Condition,
-    ) -> Result<Vec<PPNode>, PPError> {
-        let (resolved, kind) = self.resolve_include(include, from);
-        assert!(
-            !self.open_stack.contains(&resolved),
-            "include cycle detected: {}",
-            resolved.display()
-        );
-
-        let src = std::fs::read_to_string(&resolved)
-            .unwrap_or_else(|e| panic!("failed to read {}: {e}", resolved.display()));
+    ) -> Result<Vec<PPNode>, PPFailure> {
+        let (resolved, kind) = self
+            .resolve_include(include, directive.file)
+            .ok_or_else(|| {
+                PPFailure::at(directive, PPErrorKind::HeaderNotFound(include.to_string()))
+            })?;
+        if self.open_stack.contains(&resolved) {
+            return Err(PPFailure::at(
+                directive,
+                PPErrorKind::IncludeCycle(display_path(&resolved)),
+            ));
+        }
+        let src = read_source(&resolved).map_err(|kind| PPFailure::at(directive, kind))?;
         let file = self.files.intern(resolved.clone(), kind);
-        self.open_stack.push(resolved.clone());
-        let nodes = self.parse_source(&display_path(&resolved), &src, file, active.clone())?;
+        self.open_stack.push(resolved);
+        let nodes = self.parse_source(&src, file, active.clone())?;
         self.open_stack.pop();
         Ok(nodes)
     }
 
-    pub(super) fn resolve_include(
+    fn resolve_include(
         &self,
         include: &IncludeDirective,
         from: FileId,
-    ) -> (PathBuf, HeaderKind) {
-        match include {
-            IncludeDirective::Angled(name) => self
-                .search
-                .system
-                .iter()
+    ) -> Option<(PathBuf, HeaderKind)> {
+        let find_in = |dirs: &[PathBuf], name: &str| {
+            dirs.iter()
                 .map(|dir| dir.join(name))
                 .find(|candidate| candidate.is_file())
-                .map(|path| (path, HeaderKind::System))
-                .unwrap_or_else(|| panic!("system header not found in search path: <{name}>")),
+        };
+        match include {
+            IncludeDirective::Angled(name) => {
+                find_in(&self.search.system, name).map(|path| (path, HeaderKind::System))
+            }
             IncludeDirective::Next(name) => {
                 let current_dir = self.files.path(from).parent();
                 let start = current_dir
@@ -75,38 +98,19 @@ impl Preprocessor<'_> {
                             .position(|candidate| candidate == dir)
                     })
                     .map_or(0, |index| index + 1);
-                self.search.system[start..]
-                    .iter()
-                    .map(|dir| dir.join(name))
-                    .find(|candidate| candidate.is_file())
-                    .map(|path| (path, HeaderKind::System))
-                    .unwrap_or_else(|| {
-                        panic!("system header not found via #include_next in search path: <{name}>")
-                    })
+                find_in(&self.search.system[start..], name).map(|path| (path, HeaderKind::System))
             }
-            IncludeDirective::Quoted(name) => {
-                let same_dir = self.files.path(from).parent().map(|dir| dir.join(name));
-                same_dir
-                    .filter(|c| c.is_file())
-                    .map(|path| (path, HeaderKind::User))
-                    .or_else(|| {
-                        self.search
-                            .user
-                            .iter()
-                            .map(|dir| dir.join(name))
-                            .find(|c| c.is_file())
-                            .map(|path| (path, HeaderKind::User))
-                    })
-                    .or_else(|| {
-                        self.search
-                            .system
-                            .iter()
-                            .map(|dir| dir.join(name))
-                            .find(|c| c.is_file())
-                            .map(|path| (path, HeaderKind::System))
-                    })
-                    .unwrap_or_else(|| panic!("header not found in search path: \"{name}\""))
-            }
+            IncludeDirective::Quoted(name) => self
+                .files
+                .path(from)
+                .parent()
+                .map(|dir| dir.join(name))
+                .filter(|candidate| candidate.is_file())
+                .or_else(|| find_in(&self.search.user, name))
+                .map(|path| (path, HeaderKind::User))
+                .or_else(|| {
+                    find_in(&self.search.system, name).map(|path| (path, HeaderKind::System))
+                }),
         }
     }
 }

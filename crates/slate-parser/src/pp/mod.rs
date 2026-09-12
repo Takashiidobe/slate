@@ -5,7 +5,7 @@ mod include;
 
 use crate::ast::{Condition, Conditional, FileId, HeaderKind, Loc, Provenance, Span};
 use crate::const_expr;
-use crate::files::{Files, SearchPaths, display_path};
+use crate::files::{Files, SearchPaths};
 use crate::lexer::{Lexer, Token, TokenSpanExt};
 use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
@@ -48,8 +48,8 @@ pub struct MacroDef {
 
 use condition::{conjunction, is_statically_false, replace_subterm, simplify_condition};
 pub use error::PPError;
-use error::PPFailure;
-use include::parse_include_directive;
+use error::{PPErrorKind, PPFailure};
+use include::{parse_include_directive, read_source};
 
 fn normalize_directive(raw: &str) -> String {
     let trimmed = raw.trim();
@@ -67,6 +67,7 @@ pub struct Preprocessor<'a> {
     open_stack: Vec<PathBuf>,
     comments: HashMap<(FileId, usize), Vec<Comment>>,
     line_offsets: HashMap<(FileId, usize), usize>,
+    sources: HashMap<FileId, String>,
     macro_order: usize,
 }
 
@@ -83,6 +84,7 @@ impl<'a> Preprocessor<'a> {
             open_stack: Vec::new(),
             comments: HashMap::new(),
             line_offsets: HashMap::new(),
+            sources: HashMap::new(),
             macro_order: 0,
         };
         pp.seed_builtin_macros();
@@ -96,7 +98,6 @@ impl<'a> Preprocessor<'a> {
         );
         let nodes = self
             .parse_source(
-                "<predefines>",
                 CLANG_X86_64_LINUX_GNU_PREDEFINES,
                 file,
                 Condition::Constant(1),
@@ -110,12 +111,14 @@ impl<'a> Preprocessor<'a> {
 
     pub fn parse_file(&mut self, path: &Path) -> Result<Vec<PPNode>, PPError> {
         let canon = path.canonicalize().unwrap_or_else(|_| path.to_path_buf());
-        let src = std::fs::read_to_string(&canon)
-            .unwrap_or_else(|e| panic!("failed to read {}: {e}", canon.display()));
+        let src =
+            read_source(&canon).map_err(|kind| self.render_error(PPFailure::unlocated(kind)))?;
         let file = self.files.intern(canon.clone(), HeaderKind::User);
         self.main_file = Some(file);
-        self.open_stack.push(canon.clone());
-        let nodes = self.parse_source(&display_path(&canon), &src, file, Condition::Constant(1))?;
+        self.open_stack.push(canon);
+        let nodes = self
+            .parse_source(&src, file, Condition::Constant(1))
+            .map_err(|failure| self.render_error(failure))?;
         self.open_stack.pop();
         Ok(nodes)
     }
@@ -123,30 +126,28 @@ impl<'a> Preprocessor<'a> {
     pub fn parse_str(&mut self, name: &str, src: &str) -> Result<Vec<PPNode>, PPError> {
         let file = self.files.intern(PathBuf::from(name), HeaderKind::User);
         self.main_file = Some(file);
-        self.parse_source(name, src, file, Condition::Constant(1))
+        self.parse_source(src, file, Condition::Constant(1))
+            .map_err(|failure| self.render_error(failure))
     }
 
     fn parse_source(
         &mut self,
-        name: &str,
         src: &str,
         file: FileId,
         active: Condition,
-    ) -> Result<Vec<PPNode>, PPError> {
+    ) -> Result<Vec<PPNode>, PPFailure> {
+        self.sources.insert(file, src.to_string());
         self.collect_comments(src, file);
         self.collect_line_offsets(src, file);
         let uncommented = strip_comments(src);
         let spliced = splice_continuations(&uncommented);
         let lines: Vec<&str> = spliced.lines().collect();
         let mut pos = 0;
-        let nodes = self
-            .parse_block(&lines, &mut pos, file, &active)
-            .map_err(|error| self.with_source(error, name, src))?;
+        let nodes = self.parse_block(&lines, &mut pos, file, &active)?;
         if pos < lines.len() {
-            return Err(self.with_source(
-                self.error(pos, "unexpected conditional directive"),
-                name,
-                src,
+            return Err(PPFailure::at(
+                self.line_loc(&lines, file, pos),
+                PPErrorKind::UnexpectedConditional,
             ));
         }
         Ok(nodes)
@@ -213,31 +214,29 @@ impl<'a> Preprocessor<'a> {
                 continue;
             }
 
-            if let Some(condition) = self.parse_opening_condition(trimmed, *pos)? {
-                let start = self.line_loc(lines, file, *pos);
+            let directive_loc = self.line_loc(lines, file, *pos);
+            if let Some(condition) = self.parse_opening_condition(trimmed, directive_loc)? {
                 *pos += 1;
-                let conditional = self.parse_conditional(lines, pos, file, condition, active)?;
+                let conditional =
+                    self.parse_conditional(lines, pos, directive_loc, condition, active)?;
                 let end = self.line_loc(lines, file, pos.saturating_sub(1));
-                let loc = start.through(end);
+                let loc = directive_loc.through(end);
                 nodes.push(Span::new(PPNodeKind::Conditional(conditional), loc, loc));
             } else if let Some(include) = parse_include_directive(trimmed) {
                 *pos += 1;
-                nodes.extend(
-                    self.resolve_and_parse_include(&include, file, active)
-                        .map_err(|error| {
-                            eprintln!("DEBUG nested: {error:?}");
-                            self.error(*pos, error.to_string())
-                        })?,
-                );
+                nodes.extend(self.resolve_and_parse_include(&include, directive_loc, active)?);
             } else if let Some(rest) = trimmed.strip_prefix("#define") {
-                self.record_define(rest.trim_start(), raw, file, *pos, active)?;
+                self.record_define(rest.trim_start(), raw, directive_loc, *pos, active)?;
                 *pos += 1;
             } else if trimmed.starts_with("#undef") || trimmed.starts_with("#error") {
                 *pos += 1;
             } else if trimmed == "#else" || trimmed.starts_with("#elif") || trimmed == "#endif" {
                 break;
             } else if trimmed.starts_with('#') {
-                return Err(self.error(*pos, "unsupported preprocessor directive"));
+                return Err(PPFailure::at(
+                    directive_loc,
+                    PPErrorKind::UnsupportedDirective,
+                ));
             } else if trimmed.is_empty() {
                 *pos += 1;
             } else {
@@ -310,21 +309,32 @@ impl<'a> Preprocessor<'a> {
     fn parse_opening_condition(
         &self,
         trimmed: &str,
-        line: usize,
+        loc: Loc,
     ) -> Result<Option<Condition>, PPFailure> {
         if let Some(expression) = trimmed.strip_prefix("#if ") {
             let value = const_expr::Parser::evaluate_with_defined(
                 &lex_spanned(expression.trim()),
                 &|name| self.macros.contains_key(name),
             )
-            .map_err(|error| self.error(line, format!("invalid #if expression: {error}")))?;
+            .map_err(|error| {
+                PPFailure::at(
+                    loc,
+                    PPErrorKind::InvalidExpression {
+                        directive: "#if",
+                        message: error.to_string(),
+                    },
+                )
+            })?;
             return Ok(Some(Condition::Constant(value)));
         }
         for (directive, negate) in [("#ifdef", false), ("#ifndef", true)] {
             if let Some(rest) = trimmed.strip_prefix(directive) {
                 let name = rest.trim();
                 if name.is_empty() || name.split_whitespace().count() != 1 {
-                    return Err(self.error(line, format!("expected macro name after {directive}")));
+                    return Err(PPFailure::at(
+                        loc,
+                        PPErrorKind::ExpectedMacroName(directive),
+                    ));
                 }
                 let condition = Condition::Defined(name.to_string());
                 return Ok(Some(if negate {
@@ -355,12 +365,13 @@ impl<'a> Preprocessor<'a> {
         &mut self,
         lines: &[&str],
         pos: &mut usize,
-        file: FileId,
+        opening: Loc,
         first_condition: Condition,
         active: &Condition,
     ) -> Result<PPConditional, PPFailure> {
+        let file = opening.file;
         let mut branches = Vec::new();
-        let mut prior = vec![first_condition.clone()];
+        let mut excluded = first_condition.clone();
         let first_active = conjunction(active, &first_condition);
         let order_before = self.macro_order;
         let first_body = self.parse_body_or_skip(lines, pos, file, &first_active)?;
@@ -370,24 +381,20 @@ impl<'a> Preprocessor<'a> {
 
         loop {
             let Some(directive) = lines.get(*pos).map(|line| normalize_directive(line)) else {
-                return Err(self.error(*pos, "expected #endif"));
+                return Err(PPFailure::at(opening, PPErrorKind::UnterminatedConditional));
             };
+            let directive_loc = self.line_loc(lines, file, *pos);
             if directive == "#endif" {
                 *pos += 1;
                 return Ok(PPConditional { branches });
             }
             if directive == "#else" {
                 if saw_else {
-                    return Err(self.error(*pos, "multiple #else directives"));
+                    return Err(PPFailure::at(directive_loc, PPErrorKind::MultipleElse));
                 }
                 saw_else = true;
                 *pos += 1;
-                let excluded = prior
-                    .clone()
-                    .into_iter()
-                    .reduce(|left, right| Condition::Or(Box::new(left), Box::new(right)))
-                    .expect("conditional has an initial branch");
-                let else_condition = Condition::Not(Box::new(excluded));
+                let else_condition = Condition::Not(Box::new(excluded.clone()));
                 let else_active = conjunction(active, &else_condition);
                 let order_before = self.macro_order;
                 let else_body = self.parse_body_or_skip(lines, pos, file, &else_active)?;
@@ -397,24 +404,27 @@ impl<'a> Preprocessor<'a> {
             }
             if let Some(expression) = directive.strip_prefix("#elif ") {
                 if saw_else {
-                    return Err(self.error(*pos, "#elif after #else"));
+                    return Err(PPFailure::at(directive_loc, PPErrorKind::ElifAfterElse));
                 }
                 let value = const_expr::Parser::evaluate_with_defined(
                     &lex_spanned(expression.trim()),
                     &|name| self.macros.contains_key(name),
                 )
-                .map_err(|error| self.error(*pos, format!("invalid #elif expression: {error}")))?;
+                .map_err(|error| {
+                    PPFailure::at(
+                        directive_loc,
+                        PPErrorKind::InvalidExpression {
+                            directive: "#elif",
+                            message: error.to_string(),
+                        },
+                    )
+                })?;
                 let condition = Condition::Constant(value);
-                let excluded = prior
-                    .iter()
-                    .cloned()
-                    .reduce(|left, right| Condition::Or(Box::new(left), Box::new(right)))
-                    .expect("conditional has an initial branch");
                 let branch_condition = Condition::And(
-                    Box::new(Condition::Not(Box::new(excluded))),
+                    Box::new(Condition::Not(Box::new(excluded.clone()))),
                     Box::new(condition),
                 );
-                prior.push(branch_condition.clone());
+                excluded = Condition::Or(Box::new(excluded), Box::new(branch_condition.clone()));
                 *pos += 1;
                 let branch_active = conjunction(active, &branch_condition);
                 let order_before = self.macro_order;
@@ -423,7 +433,10 @@ impl<'a> Preprocessor<'a> {
                 branches.push((branch_condition, body));
                 continue;
             }
-            return Err(self.error(*pos, "expected #elif, #else, or #endif"));
+            return Err(PPFailure::at(
+                directive_loc,
+                PPErrorKind::ExpectedConditionalDirective,
+            ));
         }
     }
 
@@ -464,21 +477,28 @@ impl<'a> Preprocessor<'a> {
         &mut self,
         rest: &str,
         raw: &str,
-        file: FileId,
+        directive: Loc,
         line: usize,
         condition: &Condition,
     ) -> Result<(), PPFailure> {
+        let file = directive.file;
         let name_end = rest
             .find(|character: char| !character.is_ascii_alphanumeric() && character != '_')
             .unwrap_or(rest.len());
         if name_end == 0 {
-            return Err(self.error(line, "expected macro name after #define"));
+            return Err(PPFailure::at(
+                directive,
+                PPErrorKind::ExpectedMacroName("#define"),
+            ));
         }
         let name = rest[..name_end].to_string();
         let after_name = &rest[name_end..];
         let (parameters, variadic, replacement_text) = if after_name.starts_with('(') {
             let Some(close) = after_name.find(')') else {
-                return Err(self.error(line, "expected `)` after macro parameters"));
+                return Err(PPFailure::at(
+                    directive,
+                    PPErrorKind::ExpectedParametersClose,
+                ));
             };
             let parameter_text = &after_name[1..close];
             let mut parameters = Vec::new();
@@ -583,10 +603,10 @@ fn lex_spanned(src: &str) -> Vec<Span<Token>> {
 }
 
 fn source_tokens_loc(tokens: &[Span<Token>]) -> Loc {
-    let Some(first) = tokens.first() else {
+    let (Some(first), Some(last)) = (tokens.first(), tokens.last()) else {
         return Loc::new(FileId(0), 0, 0);
     };
-    first.spelling.through(tokens.last().unwrap().spelling)
+    first.spelling.through(last.spelling)
 }
 
 fn strip_comments(src: &str) -> String {
