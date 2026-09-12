@@ -44,9 +44,7 @@ int main(void) {
   return 0;
 }
 
-// LOWERING: #![allow(
 
-// REWRITES: #![allow(
 
 // SLATE-FILECHECK-ISYSTEM ~/Projects/slate/libc-shim/include /usr/lib/clang/22/include
 

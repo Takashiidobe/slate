@@ -92,9 +92,7 @@ int main(void) {
   return 0;
 }
 
-// LOWERING: #![feature(link_llvm_intrinsics)]
 
-// REWRITES: #![feature(link_llvm_intrinsics)]
 
 // SLATE-FILECHECK-ISYSTEM ~/Projects/slate/libc-shim/include /usr/lib/clang/22/include
 

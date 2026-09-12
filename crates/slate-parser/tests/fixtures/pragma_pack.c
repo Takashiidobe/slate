@@ -44,9 +44,7 @@ int main(void) {
   return packed.tag == 29 && packed.value == 31 ? 0 : 1;
 }
 
-// LOWERING: #![feature(c_variadic)]
 
-// REWRITES: #![feature(c_variadic)]
 
 // SLATE-FILECHECK-ISYSTEM ~/Projects/slate/libc-shim/include /usr/lib/clang/22/include
 

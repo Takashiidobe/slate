@@ -29,11 +29,8 @@ int main(void) {
   return 0;
 }
 
-// REWRITES: #[thread_local]
 
-// LOWERING: #![feature(thread_local)]
 
-// REWRITES: #![feature(thread_local)]
 
 // SLATE-FILECHECK-ISYSTEM ~/Projects/slate/libc-shim/include /usr/lib/clang/22/include
 

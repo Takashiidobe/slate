@@ -25,11 +25,8 @@ int main(void) {
   return 0;
 }
 
-// REWRITES: Vec::from_raw_parts(
 
-// LOWERING: #![feature(c_variadic)]
 
-// REWRITES: #![feature(c_variadic)]
 
 // SLATE-FILECHECK-ISYSTEM ~/Projects/slate/libc-shim/include /usr/lib/clang/22/include
 

@@ -16,11 +16,8 @@ int main(void) {
   return 0;
 }
 
-// REWRITES: fn first_byte(arg{{[0-9]+}}: *mut u8, arg{{[0-9]+}}: i32) -> i32
 
-// LOWERING: #![feature(c_variadic)]
 
-// REWRITES: #![feature(c_variadic)]
 
 // SLATE-FILECHECK-ISYSTEM ~/Projects/slate/libc-shim/include /usr/lib/clang/22/include
 

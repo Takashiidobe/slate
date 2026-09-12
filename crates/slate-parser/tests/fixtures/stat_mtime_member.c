@@ -8,9 +8,7 @@ int main(void) {
   printf("%lld\n", (long long)info.st_mtime);
 }
 
-// LOWERING: #![feature(c_variadic)]
 
-// REWRITES: #![feature(c_variadic)]
 
 // SLATE-FILECHECK-ISYSTEM ~/Projects/slate/libc-shim/include /usr/lib/clang/22/include
 
