@@ -6,8 +6,8 @@ int value;
 // SLATE-FILECHECK-BEGIN PARSE
 // PARSE: Error:   × include cycle detected: tests/fixtures/include-cycle.h
 // PARSE: ╰─▶ include cycle detected: tests/fixtures/include-cycle.h
-// PARSE: ╭─[tests/fixtures/include-cycle.h:1:1]
+// PARSE: ╭─[tests/fixtures/include-cycle.h:1:10]
 // PARSE: 1 │ #include "include-cycle.h"
-// PARSE: · ──────────────────────────
+// PARSE: ·          ─────────────────
 // PARSE: ╰────
 // SLATE-FILECHECK-END PARSE

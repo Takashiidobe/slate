@@ -265,6 +265,12 @@ pub enum ConstExprError {
     NotConstant(&'static str),
 }
 
+#[derive(Debug)]
+pub struct LocatedConstExprError {
+    pub error: ConstExprError,
+    pub token: Option<usize>,
+}
+
 pub struct Parser {
     tokens: Vec<Span<Token>>,
     position: usize,
@@ -310,8 +316,20 @@ impl Parser {
     pub fn evaluate_with_defined(
         tokens: &[Span<Token>],
         is_defined: &dyn Fn(&str) -> bool,
-    ) -> Result<i64, ConstExprError> {
-        Self::evaluate_expr(&Self::parse(tokens)?, Some(is_defined))
+    ) -> Result<i64, LocatedConstExprError> {
+        let mut parser = Self::new(tokens, &HashSet::new());
+        let at_position = |parser: &Self, error| LocatedConstExprError {
+            token: Some(parser.failure_position(&error)),
+            error,
+        };
+        let expression = parser
+            .parse_conditional()
+            .map_err(|error| at_position(&parser, error))?;
+        if parser.peek().is_some() {
+            return Err(at_position(&parser, ConstExprError::UnexpectedTokens));
+        }
+        Self::evaluate_expr(&expression, Some(is_defined))
+            .map_err(|error| LocatedConstExprError { error, token: None })
     }
 
     fn evaluate_expr(
@@ -431,6 +449,18 @@ impl Parser {
             tokens: tokens.to_vec(),
             position: 0,
             typedef_names: typedef_names.clone(),
+        }
+    }
+
+    fn failure_position(&self, error: &ConstExprError) -> usize {
+        match error {
+            // some errors fire after `take()` has already consumed the offending token
+            ConstExprError::UnexpectedToken(token)
+                if self.position > 0 && self.token_at(self.position - 1) == Some(token) =>
+            {
+                self.position - 1
+            }
+            _ => self.position,
         }
     }
 

@@ -35,6 +35,8 @@ pub(super) enum PPErrorKind {
     ExpectedParametersClose,
     #[error("expected \"FILENAME\" or <FILENAME>")]
     ExpectedHeaderName,
+    #[error("#error {0}")]
+    ErrorDirective(String),
     #[error("unsupported preprocessor directive")]
     UnsupportedDirective,
     #[error("header not found in search path: {0}")]

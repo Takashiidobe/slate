@@ -9,13 +9,15 @@ use crate::ast::{Condition, Conditional, FileId, HeaderKind, Loc, Provenance, Sp
 use crate::const_expr;
 use crate::files::{Files, SearchPaths};
 use crate::lexer::{Lexer, Token, TokenSpanExt};
-use condition::{conjunction, is_statically_false, replace_subterm, simplify_condition};
+use condition::{
+    conjunction, is_statically_false, is_statically_true, replace_subterm, simplify_condition,
+};
 pub use error::PPError;
 use error::{PPErrorKind, PPFailure};
 use include::{include_target, read_source};
 use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
-use syntax::{Directive, DirectiveName, IfSection, Item, identifier};
+use syntax::{Directive, DirectiveName, IfSection, Item};
 
 pub type PPNode = Span<PPNodeKind>;
 
@@ -43,13 +45,18 @@ pub struct MacroDef {
     pub parameters: Option<Vec<String>>,
     pub variadic: bool,
     pub replacement: Vec<Span<Token>>,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct MacroEntry {
+    pub definition: Option<MacroDef>,
     pub provenance: Provenance,
     pub order: usize,
 }
 
 pub struct Preprocessor<'a> {
     pub files: Files,
-    pub macros: HashMap<String, Conditional<MacroDef>>,
+    pub macros: HashMap<String, Conditional<MacroEntry>>,
     pub main_file: Option<FileId>,
     search: &'a SearchPaths,
     open_stack: Vec<PathBuf>,
@@ -171,14 +178,22 @@ impl<'a> Preprocessor<'a> {
                         let include = include_target(self.source(directive.loc.file), directive)?;
                         nodes.extend(self.resolve_and_parse_include(
                             &include,
-                            directive.loc,
+                            directive.arguments_loc(),
                             active,
                         )?);
                     }
-                    DirectiveName::Undef | DirectiveName::Error | DirectiveName::Null => {}
-                    _ => {
+                    DirectiveName::Undef => self.record_undef(directive, active)?,
+                    DirectiveName::Error if is_statically_true(active) => {
+                        let message = self.spelling(directive.arguments_loc());
                         return Err(PPFailure::at(
                             directive.loc,
+                            PPErrorKind::ErrorDirective(message.to_string()),
+                        ));
+                    }
+                    DirectiveName::Error | DirectiveName::Null => {}
+                    _ => {
+                        return Err(PPFailure::at(
+                            directive.name_loc,
                             PPErrorKind::UnsupportedDirective,
                         ));
                     }
@@ -235,11 +250,13 @@ impl<'a> Preprocessor<'a> {
         for branch in &section.branches {
             let directive = &branch.directive;
             let condition = match (excluded.take(), directive.name) {
-                (None, DirectiveName::Ifdef) => self.defined_condition(directive, "#ifdef")?,
-                (None, DirectiveName::Ifndef) => {
-                    Condition::Not(Box::new(self.defined_condition(directive, "#ifndef")?))
+                (None, DirectiveName::Ifdef) => {
+                    Condition::Defined(self.macro_name(directive, "#ifdef")?.0)
                 }
-                (None, _) => self.evaluate_condition(directive, "#if")?,
+                (None, DirectiveName::Ifndef) => Condition::Not(Box::new(Condition::Defined(
+                    self.macro_name(directive, "#ifndef")?.0,
+                ))),
+                (None, _) => self.evaluate_condition(directive, "#if", active)?,
                 (Some(prior), DirectiveName::Else) => {
                     let condition = Condition::Not(Box::new(prior.clone()));
                     excluded = Some(prior);
@@ -248,7 +265,7 @@ impl<'a> Preprocessor<'a> {
                 (Some(prior), _) => {
                     let condition = Condition::And(
                         Box::new(Condition::Not(Box::new(prior.clone()))),
-                        Box::new(self.evaluate_condition(directive, "#elif")?),
+                        Box::new(self.evaluate_condition(directive, "#elif", active)?),
                     );
                     excluded = Some(Condition::Or(Box::new(prior), Box::new(condition.clone())));
                     condition
@@ -283,32 +300,46 @@ impl<'a> Preprocessor<'a> {
         &self,
         directive: &Directive,
         name: &'static str,
+        active: &Condition,
     ) -> Result<Condition, PPFailure> {
         const_expr::Parser::evaluate_with_defined(&directive.arguments, &|macro_name| {
-            self.macros.contains_key(macro_name)
+            self.is_defined(macro_name, active)
         })
         .map(Condition::Constant)
-        .map_err(|error| {
+        .map_err(|located| {
+            let loc = match located.token {
+                Some(index) => directive
+                    .arguments
+                    .get(index)
+                    .map_or_else(|| directive.end_loc(), |token| token.spelling),
+                None => directive.arguments_loc(),
+            };
             PPFailure::at(
-                directive.loc,
+                loc,
                 PPErrorKind::InvalidExpression {
                     directive: name,
-                    message: error.to_string(),
+                    message: located.error.to_string(),
                 },
             )
         })
     }
 
-    fn defined_condition(
-        &self,
-        directive: &Directive,
-        name: &'static str,
-    ) -> Result<Condition, PPFailure> {
-        match directive.arguments.as_slice() {
-            [token] => identifier(self.source(directive.loc.file), token).map(Condition::Defined),
-            _ => None,
+    fn is_defined(&self, name: &str, active: &Condition) -> bool {
+        match self.visible_entry(name, active) {
+            Some(entry) => entry.definition.is_some(),
+            None => self.macros.get(name).is_some_and(|conditional| {
+                conditional
+                    .branches
+                    .iter()
+                    .any(|(_, entry)| entry.definition.is_some())
+            }),
         }
-        .ok_or_else(|| PPFailure::at(directive.loc, PPErrorKind::ExpectedMacroName(name)))
+    }
+
+    fn spelling(&self, loc: Loc) -> &str {
+        self.source(loc.file)
+            .get(loc.offset..loc.offset + loc.length)
+            .unwrap_or_default()
     }
 
     fn concretize_guard(&mut self, branch_condition: &Condition, order_from: usize) {
@@ -324,13 +355,13 @@ impl<'a> Preprocessor<'a> {
         let guard_defined_here = conditional
             .branches
             .iter()
-            .any(|(_, def)| def.order >= order_from);
+            .any(|(_, entry)| entry.definition.is_some() && entry.order >= order_from);
         if !guard_defined_here {
             return;
         }
         for conditional in self.macros.values_mut() {
-            for (condition, definition) in conditional.branches.iter_mut() {
-                if definition.order >= order_from {
+            for (condition, entry) in conditional.branches.iter_mut() {
+                if entry.order >= order_from {
                     let rewritten = simplify_condition(&replace_subterm(
                         condition,
                         branch_condition,

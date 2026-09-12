@@ -42,7 +42,22 @@ impl DirectiveName {
 pub(super) struct Directive {
     pub(super) name: DirectiveName,
     pub(super) arguments: Vec<Span<Token>>,
+    pub(super) name_loc: Loc,
     pub(super) loc: Loc,
+}
+
+impl Directive {
+    pub(super) fn arguments_loc(&self) -> Loc {
+        if self.arguments.is_empty() {
+            self.name_loc
+        } else {
+            Span::cover((), &self.arguments).spelling
+        }
+    }
+
+    pub(super) fn end_loc(&self) -> Loc {
+        Loc::new(self.loc.file, self.loc.offset + self.loc.length, 0)
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -158,6 +173,7 @@ impl GroupParser<'_> {
             return Directive {
                 name: DirectiveName::Null,
                 arguments: Vec::new(),
+                name_loc: loc,
                 loc,
             };
         };
@@ -166,6 +182,7 @@ impl GroupParser<'_> {
                 DirectiveName::from_spelling(&name)
             }),
             arguments: tokens.collect(),
+            name_loc: name.spelling,
             loc,
         }
     }

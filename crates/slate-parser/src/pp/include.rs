@@ -42,7 +42,10 @@ pub(super) fn include_target(
     };
     let Some((name, angled)) = target else {
         return Err(PPFailure::at(
-            directive.loc,
+            directive
+                .arguments
+                .first()
+                .map_or(directive.name_loc, |token| token.spelling),
             PPErrorKind::ExpectedHeaderName,
         ));
     };

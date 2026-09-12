@@ -1,10 +1,20 @@
 use super::condition::is_statically_true;
-use super::{MacroDef, Preprocessor, lex, tokens_source};
+use super::{MacroDef, MacroEntry, Preprocessor, lex, tokens_source};
 use crate::ast::{Condition, FileId, Loc, Span};
 use crate::lexer::{Token, TokenSpanExt};
 use std::collections::HashSet;
 
 impl Preprocessor<'_> {
+    pub(super) fn visible_entry(&self, name: &str, active: &Condition) -> Option<&MacroEntry> {
+        self.macros
+            .get(name)?
+            .branches
+            .iter()
+            .rev()
+            .find(|(condition, _)| condition == active || is_statically_true(condition))
+            .map(|(_, entry)| entry)
+    }
+
     pub(super) fn strip_pragma_operator(tokens: &[Span<Token>]) -> Vec<Span<Token>> {
         let mut result = Vec::with_capacity(tokens.len());
         let mut i = 0;
@@ -38,14 +48,10 @@ impl Preprocessor<'_> {
                 i += 1;
                 continue;
             };
-            let Some(macro_def) = self.macros.get(name).and_then(|conditional| {
-                conditional
-                    .branches
-                    .iter()
-                    .rev()
-                    .find(|(condition, _)| condition == active || is_statically_true(condition))
-                    .map(|(_, definition)| definition.clone())
-            }) else {
+            let Some(macro_def) = self
+                .visible_entry(name, active)
+                .and_then(|entry| entry.definition.clone())
+            else {
                 expanded.push(token.clone());
                 i += 1;
                 continue;
@@ -125,7 +131,8 @@ impl Preprocessor<'_> {
             if conditional
                 .branches
                 .iter()
-                .all(|(_, definition)| definition.parameters.is_some())
+                .filter_map(|(_, entry)| entry.definition.as_ref())
+                .all(|definition| definition.parameters.is_some())
                 && tokens.value_at(index + 1) != Some(&Token::LParen)
             {
                 continue;
