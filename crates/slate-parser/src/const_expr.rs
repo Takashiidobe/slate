@@ -308,12 +308,12 @@ impl FloatLiteral {
         }
         let parse_bits = |bits: fn(&str) -> Option<u128>| bits(digits).ok_or_else(invalid);
         let value = match suffix {
-            "" | "f64" | "f32x" => FloatValue::Double(f64::from_bits(
-                parse_bits(apfloat_bits::<ieee::Double>)? as u64,
-            )),
-            "f" | "f32" => {
-                FloatValue::Single(f32::from_bits(parse_bits(apfloat_bits::<ieee::Single>)? as u32))
-            }
+            "" | "f64" | "f32x" => FloatValue::Double(f64::from_bits(parse_bits(
+                apfloat_bits::<ieee::Double>,
+            )? as u64)),
+            "f" | "f32" => FloatValue::Single(f32::from_bits(parse_bits(
+                apfloat_bits::<ieee::Single>,
+            )? as u32)),
             "f16" => FloatValue::Half(parse_bits(apfloat_bits::<ieee::Half>)? as u16),
             "f128" | "q" => FloatValue::Quad(parse_bits(apfloat_bits::<ieee::Quad>)?),
             "l" | "f64x" => FloatValue::LongDouble(digits.to_string()),

@@ -300,6 +300,22 @@ impl Parser {
         })
     }
 
+    fn parse_field_declaration_tokens(
+        &self,
+        code: &str,
+        tokens: &[Span<Token>],
+    ) -> Result<Declaration, ParseError> {
+        let Some(colon) = top_level_token(tokens, &Token::Colon) else {
+            return self.parse_declaration_tokens(code, tokens);
+        };
+        let Some(semi) = top_level_token(tokens, &Token::Semi) else {
+            return Err(self.error_at_tokens(tokens, tokens.len(), "expected `;`"));
+        };
+        let mut declaration_tokens = tokens[..colon].to_vec();
+        declaration_tokens.push(tokens[semi].clone());
+        self.parse_declaration_tokens(code, &declaration_tokens)
+    }
+
     fn parse_nodes(
         &mut self,
         nodes: &[PPNode],
@@ -397,7 +413,15 @@ impl Parser {
                         .parse_tag_definition(nodes)
                         .map(|result| span_decl_result(result, nodes));
                 }
-                let item_span = if paren_depth(&tokens) > 0
+                let first_lbrace = tokens.values().position(|token| *token == Token::LBrace);
+                let first_equal = tokens.values().position(|token| *token == Token::Equal);
+                let has_brace_initializer = matches!(
+                    (first_lbrace, first_equal),
+                    (Some(brace_index), Some(equal_index)) if equal_index < brace_index
+                );
+                let item_span = if has_brace_initializer {
+                    declaration_node_span(nodes)
+                } else if paren_depth(&tokens) > 0
                     || !tokens.contains_value(&Token::Semi)
                         && !tokens.contains_value(&Token::LBrace)
                 {
@@ -527,7 +551,7 @@ impl Parser {
                     segment.push(synthetic(Token::Semi));
                     fields.push(span_tokens(
                         FieldItem::Field(FieldDecl {
-                            declaration: self.parse_declaration_tokens(code, &segment)?,
+                            declaration: self.parse_field_declaration_tokens(code, &segment)?,
                             provenance,
                         }),
                         &segment,
@@ -719,12 +743,12 @@ impl Parser {
                     fields.push(span_pp_nodes(
                         FieldItem::Field(FieldDecl {
                             declaration: if index == start + 1 {
-                                self.parse_declaration_tokens(
+                                self.parse_field_declaration_tokens(
                                     &joined,
                                     &self.node_tokens(&nodes[start]),
                                 )?
                             } else {
-                                self.parse_declaration_tokens(
+                                self.parse_field_declaration_tokens(
                                     &joined,
                                     &self.nodes_tokens(&nodes[start..index]),
                                 )?
@@ -1228,6 +1252,24 @@ fn signature_node_span(nodes: &[PPNode]) -> usize {
     nodes.len().max(1)
 }
 
+fn declaration_node_span(nodes: &[PPNode]) -> usize {
+    let mut depth = 0i32;
+    for (index, node) in nodes.iter().enumerate() {
+        let PPNodeKind::Code { tokens, .. } = &node.value else {
+            continue;
+        };
+        for token in tokens {
+            match token.value {
+                Token::LParen | Token::LBrace | Token::LBracket => depth += 1,
+                Token::RParen | Token::RBrace | Token::RBracket => depth -= 1,
+                Token::Semi if depth == 0 => return index + 1,
+                _ => {}
+            }
+        }
+    }
+    nodes.len().max(1)
+}
+
 fn join_node_text(nodes: &[PPNode]) -> String {
     nodes
         .iter()
@@ -1338,12 +1380,16 @@ fn matching_paren(tokens: &[Span<Token>], open: usize) -> Option<usize> {
 }
 
 fn top_level_semi(tokens: &[Span<Token>]) -> Option<usize> {
+    top_level_token(tokens, &Token::Semi)
+}
+
+fn top_level_token(tokens: &[Span<Token>], target: &Token) -> Option<usize> {
     let mut depth = 0i32;
     for (offset, token) in tokens.iter().enumerate() {
         match token.value {
             Token::LParen | Token::LBrace | Token::LBracket => depth += 1,
             Token::RParen | Token::RBrace | Token::RBracket => depth -= 1,
-            Token::Semi if depth == 0 => return Some(offset),
+            ref token if depth == 0 && token == target => return Some(offset),
             _ => {}
         }
     }
@@ -1708,7 +1754,23 @@ impl<'a> DeclaratorParser<'a> {
                     Token::LParen,
                     DeclaratorError::ExpectedToken(Token::LParen, "after `_Atomic`"),
                 )?;
-                let ty = self.parse_base_type()?;
+                let leading_qualifiers = self.take_qualifiers();
+                let mut ty = self.parse_base_type()?;
+                let trailing_qualifiers = self.take_qualifiers();
+                let qualifiers = Qualifiers {
+                    is_const: leading_qualifiers.is_const || trailing_qualifiers.is_const,
+                    is_volatile: leading_qualifiers.is_volatile || trailing_qualifiers.is_volatile,
+                    is_restrict: leading_qualifiers.is_restrict || trailing_qualifiers.is_restrict,
+                    is_atomic: leading_qualifiers.is_atomic || trailing_qualifiers.is_atomic,
+                };
+                if qualifiers != Qualifiers::default() {
+                    ty = CType::Qualified {
+                        qualifiers,
+                        ty: Box::new(ty),
+                    };
+                }
+                let declarator = self.parse_declarator(true)?;
+                ty = apply_abstract_declarator(ty, declarator);
                 self.expect(
                     Token::RParen,
                     DeclaratorError::ExpectedToken(Token::RParen, "after `_Atomic` type"),
@@ -2230,6 +2292,49 @@ impl<'a> DeclaratorParser<'a> {
     }
 }
 
+fn apply_abstract_declarator(ty: CType, declarator: Declarator) -> CType {
+    match declarator {
+        Declarator::Abstract | Declarator::Name(_) => ty,
+        Declarator::Grouped(inner) => apply_abstract_declarator(ty, *inner),
+        Declarator::Pointer { qualifiers, inner } => CType::Pointer {
+            qualifiers,
+            pointee: Box::new(apply_abstract_declarator(ty, *inner)),
+        },
+        Declarator::Array { inner, size } => match *inner {
+            Declarator::Grouped(grouped) => apply_abstract_declarator(
+                CType::Array {
+                    element: Box::new(ty),
+                    size,
+                },
+                *grouped,
+            ),
+            inner => CType::Array {
+                element: Box::new(apply_abstract_declarator(ty, inner)),
+                size,
+            },
+        },
+        Declarator::Function {
+            inner,
+            parameters,
+            variadic,
+        } => match *inner {
+            Declarator::Grouped(grouped) => apply_abstract_declarator(
+                CType::Function {
+                    return_type: Box::new(ty),
+                    parameters,
+                    variadic,
+                },
+                *grouped,
+            ),
+            inner => CType::Function {
+                return_type: Box::new(apply_abstract_declarator(ty, inner)),
+                parameters,
+                variadic,
+            },
+        },
+    }
+}
+
 impl<'a> Cursor for DeclaratorParser<'a> {
     type Error = DeclaratorError;
 
@@ -2439,21 +2544,30 @@ impl Parser {
 
     fn parse_stmt_list(&self, nodes: &[PPNode]) -> Result<Vec<SpannedStmt>, ParseError> {
         let mut stmts = Vec::new();
+        let mut pending_comments = Vec::new();
         let mut run_text = String::new();
         let mut run_tokens = Vec::new();
         for node in nodes {
             match &node.value {
                 PPNodeKind::Comment { text, provenance } => {
-                    if !run_tokens.is_empty() {
-                        stmts.extend(self.parse_stmts_from_tokens(&run_text, &run_tokens)?);
+                    if !run_tokens.is_empty()
+                        && let Ok(parsed) = self.parse_stmts_from_tokens(&run_text, &run_tokens)
+                    {
+                        stmts.extend(parsed);
+                        stmts.append(&mut pending_comments);
                         run_text.clear();
                         run_tokens.clear();
                     }
-                    stmts.push(node.clone().with_value(Stmt::Comment {
+                    let comment = node.clone().with_value(Stmt::Comment {
                         text: text.clone(),
                         loc: node.expansion,
                         provenance: *provenance,
-                    }));
+                    });
+                    if run_tokens.is_empty() {
+                        stmts.push(comment);
+                    } else {
+                        pending_comments.push(comment);
+                    }
                 }
                 PPNodeKind::Code { text, .. } if !lex(text).is_empty() => {
                     if !run_text.is_empty() {
@@ -2468,6 +2582,7 @@ impl Parser {
         if !run_tokens.is_empty() {
             stmts.extend(self.parse_stmts_from_tokens(&run_text, &run_tokens)?);
         }
+        stmts.append(&mut pending_comments);
         Ok(stmts)
     }
 
