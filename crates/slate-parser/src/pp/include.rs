@@ -1,7 +1,9 @@
 use super::error::{PPErrorKind, PPFailure};
+use super::syntax::{Directive, DirectiveName};
 use super::{PPNode, Preprocessor};
-use crate::ast::{Condition, FileId, HeaderKind, Loc};
+use crate::ast::{Condition, FileId, HeaderKind, Loc, Span};
 use crate::files::display_path;
+use crate::lexer::Token;
 use std::fmt;
 use std::path::{Path, PathBuf};
 
@@ -22,23 +24,33 @@ impl fmt::Display for IncludeDirective {
     }
 }
 
-pub(super) fn parse_include_directive(trimmed: &str) -> Option<IncludeDirective> {
-    if let Some(rest) = trimmed.strip_prefix("#include_next") {
-        let rest = rest.trim();
-        let name = rest
-            .strip_prefix('<')
-            .and_then(|s| s.strip_suffix('>'))
-            .or_else(|| rest.strip_prefix('"').and_then(|s| s.strip_suffix('"')))?;
-        return Some(IncludeDirective::Next(name.to_string()));
-    }
-    let rest = trimmed.strip_prefix("#include")?.trim();
-    if let Some(inner) = rest.strip_prefix('<').and_then(|s| s.strip_suffix('>')) {
-        Some(IncludeDirective::Angled(inner.to_string()))
-    } else {
-        rest.strip_prefix('"')
-            .and_then(|s| s.strip_suffix('"'))
-            .map(|inner| IncludeDirective::Quoted(inner.to_string()))
-    }
+pub(super) fn include_target(
+    src: &str,
+    directive: &Directive,
+) -> Result<IncludeDirective, PPFailure> {
+    let target = match directive.arguments.as_slice() {
+        [
+            Span {
+                value: Token::StringLit(name),
+                ..
+            },
+        ] => Some((name.clone(), false)),
+        [open, .., close] if open.value == Token::Less && close.value == Token::Greater => src
+            .get(open.spelling.offset + open.spelling.length..close.spelling.offset)
+            .map(|name| (name.to_string(), true)),
+        _ => None,
+    };
+    let Some((name, angled)) = target else {
+        return Err(PPFailure::at(
+            directive.loc,
+            PPErrorKind::ExpectedHeaderName,
+        ));
+    };
+    Ok(match (directive.name, angled) {
+        (DirectiveName::IncludeNext, _) => IncludeDirective::Next(name),
+        (_, true) => IncludeDirective::Angled(name),
+        (_, false) => IncludeDirective::Quoted(name),
+    })
 }
 
 pub(super) fn read_source(path: &Path) -> Result<String, PPErrorKind> {

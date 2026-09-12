@@ -520,7 +520,7 @@ impl Lexer {
             let value: String = self.chars[start + 1..self.pos.min(self.chars.len())]
                 .iter()
                 .collect();
-            self.pos = self.pos.saturating_add(1).min(self.chars.len());
+            self.pos = self.past_literal(self.pos);
             let token = match prefix_len {
                 0 => Token::StringLit(value),
                 1 if c == 'u' => Token::Utf16StringLit(value),
@@ -541,20 +541,20 @@ impl Lexer {
                 1 => Token::WideCharLit(value, decoded),
                 _ => Token::Utf8CharLit(value, decoded),
             };
-            self.pos = literal_close.saturating_add(1).min(self.chars.len());
+            self.pos = self.past_literal(literal_close);
             self.emit(token);
         } else if c == '\'' {
             let literal_close = self.literal_end(i, '\'').min(self.chars.len());
             let value: String = self.chars[i + 1..literal_close].iter().collect();
             let decoded = self.decode_char_literal(i + 1, literal_close);
-            self.pos = literal_close.saturating_add(1).min(self.chars.len());
+            self.pos = self.past_literal(literal_close);
             self.emit(Token::CharLit(value, decoded));
         } else if c == '"' {
             let literal_close = self.literal_end(i, '"');
             let value: String = self.chars[i + 1..literal_close.min(self.chars.len())]
                 .iter()
                 .collect();
-            self.pos = literal_close.saturating_add(1).min(self.chars.len());
+            self.pos = self.past_literal(literal_close);
             self.emit(Token::StringLit(value));
         } else if c.is_ascii_alphabetic() || c == '_' || c == '\\' {
             while self.pos < self.chars.len()
@@ -683,13 +683,20 @@ impl Lexer {
         while i < self.chars.len() {
             if self.chars[i] == '\\' {
                 i = self.universal_character_name_end(i).max(i + 2);
-            } else if self.chars[i] == delimiter {
+            } else if self.chars[i] == delimiter || self.chars[i] == '\n' {
                 break;
             } else {
                 i += 1;
             }
         }
         i
+    }
+
+    fn past_literal(&self, close: usize) -> usize {
+        match self.char_at(close) {
+            Some('\n') | None => close,
+            Some(_) => close + 1,
+        }
     }
 
     fn universal_character_name_end(&self, at: usize) -> usize {

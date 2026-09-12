@@ -1,14 +1,21 @@
 mod condition;
+mod define;
 mod error;
 mod expand;
 mod include;
+mod syntax;
 
 use crate::ast::{Condition, Conditional, FileId, HeaderKind, Loc, Provenance, Span};
 use crate::const_expr;
 use crate::files::{Files, SearchPaths};
 use crate::lexer::{Lexer, Token, TokenSpanExt};
+use condition::{conjunction, is_statically_false, replace_subterm, simplify_condition};
+pub use error::PPError;
+use error::{PPErrorKind, PPFailure};
+use include::{include_target, read_source};
 use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
+use syntax::{Directive, DirectiveName, IfSection, Item, identifier};
 
 pub type PPNode = Span<PPNodeKind>;
 
@@ -26,12 +33,6 @@ pub enum PPNodeKind {
     Conditional(PPConditional),
 }
 
-#[derive(Clone)]
-struct Comment {
-    text: String,
-    loc: Loc,
-}
-
 #[derive(Debug, Clone, PartialEq)]
 pub struct PPConditional {
     pub branches: Vec<(Condition, Vec<PPNode>)>,
@@ -46,28 +47,14 @@ pub struct MacroDef {
     pub order: usize,
 }
 
-use condition::{conjunction, is_statically_false, replace_subterm, simplify_condition};
-pub use error::PPError;
-use error::{PPErrorKind, PPFailure};
-use include::{parse_include_directive, read_source};
-
-fn normalize_directive(raw: &str) -> String {
-    let trimmed = raw.trim();
-    match trimmed.strip_prefix('#') {
-        Some(rest) => format!("#{}", rest.trim_start()),
-        None => trimmed.to_string(),
-    }
-}
-
 pub struct Preprocessor<'a> {
     pub files: Files,
-    pub macros: std::collections::HashMap<String, Conditional<MacroDef>>,
+    pub macros: HashMap<String, Conditional<MacroDef>>,
     pub main_file: Option<FileId>,
     search: &'a SearchPaths,
     open_stack: Vec<PathBuf>,
-    comments: HashMap<(FileId, usize), Vec<Comment>>,
-    line_offsets: HashMap<(FileId, usize), usize>,
     sources: HashMap<FileId, String>,
+    line_starts: HashMap<FileId, Vec<usize>>,
     macro_order: usize,
 }
 
@@ -78,13 +65,12 @@ impl<'a> Preprocessor<'a> {
     pub fn new(search: &'a SearchPaths) -> Self {
         let mut pp = Preprocessor {
             files: Files::new(),
-            macros: std::collections::HashMap::new(),
+            macros: HashMap::new(),
             main_file: None,
             search,
             open_stack: Vec::new(),
-            comments: HashMap::new(),
-            line_offsets: HashMap::new(),
             sources: HashMap::new(),
+            line_starts: HashMap::new(),
             macro_order: 0,
         };
         pp.seed_builtin_macros();
@@ -137,307 +123,192 @@ impl<'a> Preprocessor<'a> {
         active: Condition,
     ) -> Result<Vec<PPNode>, PPFailure> {
         self.sources.insert(file, src.to_string());
-        self.collect_comments(src, file);
-        self.collect_line_offsets(src, file);
-        let uncommented = strip_comments(src);
-        let spliced = splice_continuations(&uncommented);
-        let lines: Vec<&str> = spliced.lines().collect();
-        let mut pos = 0;
-        let nodes = self.parse_block(&lines, &mut pos, file, &active)?;
-        if pos < lines.len() {
-            return Err(PPFailure::at(
-                self.line_loc(&lines, file, pos),
-                PPErrorKind::UnexpectedConditional,
-            ));
-        }
-        Ok(nodes)
-    }
-
-    fn collect_comments(&mut self, src: &str, file: FileId) {
-        for token in Lexer::new(file, src).tokenize() {
-            let Token::Comment(text) = token.value else {
-                continue;
-            };
-            let line = src[..token.spelling.offset]
-                .bytes()
-                .filter(|byte| *byte == b'\n')
-                .count();
-            self.comments
-                .entry((file, line))
-                .or_default()
-                .push(Comment {
-                    text,
-                    loc: token.spelling,
-                });
-        }
-    }
-
-    fn collect_line_offsets(&mut self, src: &str, file: FileId) {
-        let mut offset = 0;
-        for (line, text) in src.split_inclusive('\n').enumerate() {
-            self.line_offsets.insert((file, line), offset);
-            offset += text.len();
-        }
-    }
-
-    fn parse_block(
-        &mut self,
-        lines: &[&str],
-        pos: &mut usize,
-        file: FileId,
-        active: &Condition,
-    ) -> Result<Vec<PPNode>, PPFailure> {
-        let mut nodes = Vec::new();
-        while *pos < lines.len() {
-            let raw = lines[*pos];
-            let trimmed = normalize_directive(raw);
-            let trimmed = trimmed.as_str();
-            let provenance = Provenance {
-                file,
-                kind: self.files.kind(file),
-                line: *pos,
-            };
-            if let Some(comments) = self.comments.get(&(file, *pos)) {
-                nodes.extend(comments.iter().cloned().map(|comment| {
-                    Span::new(
-                        PPNodeKind::Comment {
-                            text: comment.text,
-                            provenance,
-                        },
-                        comment.loc,
-                        comment.loc,
-                    )
-                }));
-            }
-            if raw.trim_start().starts_with("//") {
-                *pos += 1;
-                continue;
-            }
-
-            let directive_loc = self.line_loc(lines, file, *pos);
-            if let Some(condition) = self.parse_opening_condition(trimmed, directive_loc)? {
-                *pos += 1;
-                let conditional =
-                    self.parse_conditional(lines, pos, directive_loc, condition, active)?;
-                let end = self.line_loc(lines, file, pos.saturating_sub(1));
-                let loc = directive_loc.through(end);
-                nodes.push(Span::new(PPNodeKind::Conditional(conditional), loc, loc));
-            } else if let Some(include) = parse_include_directive(trimmed) {
-                *pos += 1;
-                nodes.extend(self.resolve_and_parse_include(&include, directive_loc, active)?);
-            } else if let Some(rest) = trimmed.strip_prefix("#define") {
-                self.record_define(rest.trim_start(), raw, directive_loc, *pos, active)?;
-                *pos += 1;
-            } else if trimmed.starts_with("#undef") || trimmed.starts_with("#error") {
-                *pos += 1;
-            } else if trimmed == "#else" || trimmed.starts_with("#elif") || trimmed == "#endif" {
-                break;
-            } else if trimmed.starts_with('#') {
-                return Err(PPFailure::at(
-                    directive_loc,
-                    PPErrorKind::UnsupportedDirective,
-                ));
-            } else if trimmed.is_empty() {
-                *pos += 1;
-            } else {
-                let offset = self.line_offsets.get(&(file, *pos)).copied().unwrap_or(0)
-                    + raw.find(trimmed).unwrap_or(0);
-                let source_tokens = Lexer::with_offset(file, trimmed, offset).tokenize();
-                if let Some(conditions) = self.divergent_macro_conditions(&source_tokens, active) {
-                    let loc = source_tokens_loc(&source_tokens);
-                    nodes.push(Span::new(
-                        PPNodeKind::Conditional(PPConditional {
-                            branches: conditions
-                                .into_iter()
-                                .map(|condition| {
-                                    let expanded =
-                                        Self::strip_pragma_operator(&self.expand_macros(
-                                            &source_tokens,
-                                            &mut HashSet::new(),
-                                            &condition,
-                                        ));
-                                    (
-                                        condition,
-                                        vec![Span::new(
-                                            PPNodeKind::Code {
-                                                text: tokens_source(expanded.values()),
-                                                tokens: expanded,
-                                                provenance,
-                                            },
-                                            loc,
-                                            loc,
-                                        )],
-                                    )
-                                })
-                                .collect(),
-                        }),
-                        loc,
-                        loc,
-                    ));
-                } else {
-                    let expanded = Self::strip_pragma_operator(&self.expand_macros(
-                        &source_tokens,
-                        &mut HashSet::new(),
-                        active,
-                    ));
-                    let loc = source_tokens_loc(&source_tokens);
-                    nodes.push(Span::new(
-                        PPNodeKind::Code {
-                            text: tokens_source(expanded.values()),
-                            tokens: expanded,
-                            provenance,
-                        },
-                        loc,
-                        loc,
-                    ));
-                }
-                *pos += 1;
-            }
-        }
-
-        Ok(nodes)
-    }
-
-    fn line_loc(&self, lines: &[&str], file: FileId, line: usize) -> Loc {
-        Loc::new(
+        self.line_starts.insert(
             file,
-            self.line_offsets.get(&(file, line)).copied().unwrap_or(0),
-            lines.get(line).map_or(0, |text| text.len()),
-        )
+            std::iter::once(0)
+                .chain(src.match_indices('\n').map(|(index, _)| index + 1))
+                .collect(),
+        );
+        let tokens = Lexer::new(file, src).with_newlines().tokenize();
+        let items = syntax::parse(src, tokens)?;
+        self.walk_group(&items, &active)
     }
 
-    fn parse_opening_condition(
-        &self,
-        trimmed: &str,
-        loc: Loc,
-    ) -> Result<Option<Condition>, PPFailure> {
-        if let Some(expression) = trimmed.strip_prefix("#if ") {
-            let value = const_expr::Parser::evaluate_with_defined(
-                &lex_spanned(expression.trim()),
-                &|name| self.macros.contains_key(name),
-            )
-            .map_err(|error| {
-                PPFailure::at(
-                    loc,
-                    PPErrorKind::InvalidExpression {
-                        directive: "#if",
-                        message: error.to_string(),
+    fn source(&self, file: FileId) -> &str {
+        self.sources.get(&file).map_or("", String::as_str)
+    }
+
+    fn provenance(&self, loc: Loc) -> Provenance {
+        let line = self.line_starts.get(&loc.file).map_or(0, |starts| {
+            starts
+                .partition_point(|&start| start <= loc.offset)
+                .saturating_sub(1)
+        });
+        Provenance {
+            file: loc.file,
+            kind: self.files.kind(loc.file),
+            line,
+        }
+    }
+
+    fn walk_group(&mut self, items: &[Item], active: &Condition) -> Result<Vec<PPNode>, PPFailure> {
+        let mut nodes = Vec::new();
+        for item in items {
+            match item {
+                Item::Comment(comment) => nodes.push(Span::new(
+                    PPNodeKind::Comment {
+                        text: comment.value.clone(),
+                        provenance: self.provenance(comment.spelling),
                     },
-                )
-            })?;
-            return Ok(Some(Condition::Constant(value)));
-        }
-        for (directive, negate) in [("#ifdef", false), ("#ifndef", true)] {
-            if let Some(rest) = trimmed.strip_prefix(directive) {
-                let name = rest.trim();
-                if name.is_empty() || name.split_whitespace().count() != 1 {
-                    return Err(PPFailure::at(
-                        loc,
-                        PPErrorKind::ExpectedMacroName(directive),
-                    ));
-                }
-                let condition = Condition::Defined(name.to_string());
-                return Ok(Some(if negate {
-                    Condition::Not(Box::new(condition))
-                } else {
-                    condition
-                }));
+                    comment.spelling,
+                    comment.spelling,
+                )),
+                Item::Text(tokens) => nodes.push(self.expand_line(tokens, active)),
+                Item::Conditional(section) => nodes.push(self.walk_conditional(section, active)?),
+                Item::Directive(directive) => match directive.name {
+                    DirectiveName::Define => self.record_define(directive, active)?,
+                    DirectiveName::Include | DirectiveName::IncludeNext => {
+                        let include = include_target(self.source(directive.loc.file), directive)?;
+                        nodes.extend(self.resolve_and_parse_include(
+                            &include,
+                            directive.loc,
+                            active,
+                        )?);
+                    }
+                    DirectiveName::Undef | DirectiveName::Error | DirectiveName::Null => {}
+                    _ => {
+                        return Err(PPFailure::at(
+                            directive.loc,
+                            PPErrorKind::UnsupportedDirective,
+                        ));
+                    }
+                },
             }
         }
-        Ok(None)
+        Ok(nodes)
     }
 
-    fn parse_body_or_skip(
-        &mut self,
-        lines: &[&str],
-        pos: &mut usize,
-        file: FileId,
-        active: &Condition,
-    ) -> Result<Vec<PPNode>, PPFailure> {
-        if is_statically_false(active) {
-            skip_block(lines, pos);
-            return Ok(Vec::new());
-        }
-        self.parse_block(lines, pos, file, active)
-    }
-
-    fn parse_conditional(
-        &mut self,
-        lines: &[&str],
-        pos: &mut usize,
-        opening: Loc,
-        first_condition: Condition,
-        active: &Condition,
-    ) -> Result<PPConditional, PPFailure> {
-        let file = opening.file;
-        let mut branches = Vec::new();
-        let mut excluded = first_condition.clone();
-        let first_active = conjunction(active, &first_condition);
-        let order_before = self.macro_order;
-        let first_body = self.parse_body_or_skip(lines, pos, file, &first_active)?;
-        self.concretize_guard(&first_condition, order_before);
-        branches.push((first_condition, first_body));
-        let mut saw_else = false;
-
-        loop {
-            let Some(directive) = lines.get(*pos).map(|line| normalize_directive(line)) else {
-                return Err(PPFailure::at(opening, PPErrorKind::UnterminatedConditional));
-            };
-            let directive_loc = self.line_loc(lines, file, *pos);
-            if directive == "#endif" {
-                *pos += 1;
-                return Ok(PPConditional { branches });
-            }
-            if directive == "#else" {
-                if saw_else {
-                    return Err(PPFailure::at(directive_loc, PPErrorKind::MultipleElse));
-                }
-                saw_else = true;
-                *pos += 1;
-                let else_condition = Condition::Not(Box::new(excluded.clone()));
-                let else_active = conjunction(active, &else_condition);
-                let order_before = self.macro_order;
-                let else_body = self.parse_body_or_skip(lines, pos, file, &else_active)?;
-                self.concretize_guard(&else_condition, order_before);
-                branches.push((else_condition, else_body));
-                continue;
-            }
-            if let Some(expression) = directive.strip_prefix("#elif ") {
-                if saw_else {
-                    return Err(PPFailure::at(directive_loc, PPErrorKind::ElifAfterElse));
-                }
-                let value = const_expr::Parser::evaluate_with_defined(
-                    &lex_spanned(expression.trim()),
-                    &|name| self.macros.contains_key(name),
-                )
-                .map_err(|error| {
-                    PPFailure::at(
-                        directive_loc,
-                        PPErrorKind::InvalidExpression {
-                            directive: "#elif",
-                            message: error.to_string(),
-                        },
-                    )
-                })?;
-                let condition = Condition::Constant(value);
-                let branch_condition = Condition::And(
-                    Box::new(Condition::Not(Box::new(excluded.clone()))),
-                    Box::new(condition),
-                );
-                excluded = Condition::Or(Box::new(excluded), Box::new(branch_condition.clone()));
-                *pos += 1;
-                let branch_active = conjunction(active, &branch_condition);
-                let order_before = self.macro_order;
-                let body = self.parse_body_or_skip(lines, pos, file, &branch_active)?;
-                self.concretize_guard(&branch_condition, order_before);
-                branches.push((branch_condition, body));
-                continue;
-            }
-            return Err(PPFailure::at(
-                directive_loc,
-                PPErrorKind::ExpectedConditionalDirective,
+    fn expand_line(&self, source_tokens: &[Span<Token>], active: &Condition) -> PPNode {
+        let loc = Span::cover((), source_tokens).spelling;
+        let provenance = self.provenance(loc);
+        let code = |condition: &Condition| {
+            let expanded = Self::strip_pragma_operator(&self.expand_macros(
+                source_tokens,
+                &mut HashSet::new(),
+                condition,
             ));
+            Span::new(
+                PPNodeKind::Code {
+                    text: tokens_source(expanded.values()),
+                    tokens: expanded,
+                    provenance,
+                },
+                loc,
+                loc,
+            )
+        };
+        match self.divergent_macro_conditions(source_tokens, active) {
+            Some(conditions) => Span::new(
+                PPNodeKind::Conditional(PPConditional {
+                    branches: conditions
+                        .into_iter()
+                        .map(|condition| {
+                            let node = code(&condition);
+                            (condition, vec![node])
+                        })
+                        .collect(),
+                }),
+                loc,
+                loc,
+            ),
+            None => code(active),
         }
+    }
+
+    fn walk_conditional(
+        &mut self,
+        section: &IfSection,
+        active: &Condition,
+    ) -> Result<PPNode, PPFailure> {
+        let mut branches = Vec::new();
+        let mut excluded: Option<Condition> = None;
+        for branch in &section.branches {
+            let directive = &branch.directive;
+            let condition = match (excluded.take(), directive.name) {
+                (None, DirectiveName::Ifdef) => self.defined_condition(directive, "#ifdef")?,
+                (None, DirectiveName::Ifndef) => {
+                    Condition::Not(Box::new(self.defined_condition(directive, "#ifndef")?))
+                }
+                (None, _) => self.evaluate_condition(directive, "#if")?,
+                (Some(prior), DirectiveName::Else) => {
+                    let condition = Condition::Not(Box::new(prior.clone()));
+                    excluded = Some(prior);
+                    condition
+                }
+                (Some(prior), _) => {
+                    let condition = Condition::And(
+                        Box::new(Condition::Not(Box::new(prior.clone()))),
+                        Box::new(self.evaluate_condition(directive, "#elif")?),
+                    );
+                    excluded = Some(Condition::Or(Box::new(prior), Box::new(condition.clone())));
+                    condition
+                }
+            };
+            if excluded.is_none() {
+                excluded = Some(condition.clone());
+            }
+            let branch_active = conjunction(active, &condition);
+            let order_before = self.macro_order;
+            let body = if is_statically_false(&branch_active) {
+                Vec::new()
+            } else {
+                self.walk_group(&branch.body, &branch_active)?
+            };
+            self.concretize_guard(&condition, order_before);
+            branches.push((condition, body));
+        }
+        let loc = section
+            .branches
+            .first()
+            .map_or(section.endif, |branch| branch.directive.loc)
+            .through(section.endif);
+        Ok(Span::new(
+            PPNodeKind::Conditional(PPConditional { branches }),
+            loc,
+            loc,
+        ))
+    }
+
+    fn evaluate_condition(
+        &self,
+        directive: &Directive,
+        name: &'static str,
+    ) -> Result<Condition, PPFailure> {
+        const_expr::Parser::evaluate_with_defined(&directive.arguments, &|macro_name| {
+            self.macros.contains_key(macro_name)
+        })
+        .map(Condition::Constant)
+        .map_err(|error| {
+            PPFailure::at(
+                directive.loc,
+                PPErrorKind::InvalidExpression {
+                    directive: name,
+                    message: error.to_string(),
+                },
+            )
+        })
+    }
+
+    fn defined_condition(
+        &self,
+        directive: &Directive,
+        name: &'static str,
+    ) -> Result<Condition, PPFailure> {
+        match directive.arguments.as_slice() {
+            [token] => identifier(self.source(directive.loc.file), token).map(Condition::Defined),
+            _ => None,
+        }
+        .ok_or_else(|| PPFailure::at(directive.loc, PPErrorKind::ExpectedMacroName(name)))
     }
 
     fn concretize_guard(&mut self, branch_condition: &Condition, order_from: usize) {
@@ -472,115 +343,6 @@ impl<'a> Preprocessor<'a> {
             }
         }
     }
-
-    fn record_define(
-        &mut self,
-        rest: &str,
-        raw: &str,
-        directive: Loc,
-        line: usize,
-        condition: &Condition,
-    ) -> Result<(), PPFailure> {
-        let file = directive.file;
-        let name_end = rest
-            .find(|character: char| !character.is_ascii_alphanumeric() && character != '_')
-            .unwrap_or(rest.len());
-        if name_end == 0 {
-            return Err(PPFailure::at(
-                directive,
-                PPErrorKind::ExpectedMacroName("#define"),
-            ));
-        }
-        let name = rest[..name_end].to_string();
-        let after_name = &rest[name_end..];
-        let (parameters, variadic, replacement_text) = if after_name.starts_with('(') {
-            let Some(close) = after_name.find(')') else {
-                return Err(PPFailure::at(
-                    directive,
-                    PPErrorKind::ExpectedParametersClose,
-                ));
-            };
-            let parameter_text = &after_name[1..close];
-            let mut parameters = Vec::new();
-            let mut variadic = false;
-            for parameter in parameter_text
-                .split(',')
-                .map(str::trim)
-                .filter(|p| !p.is_empty())
-            {
-                if parameter == "..." {
-                    variadic = true;
-                } else {
-                    parameters.push(parameter.to_string());
-                }
-            }
-            (Some(parameters), variadic, &after_name[close + 1..])
-        } else {
-            (None, false, after_name)
-        };
-        let replacement_text = replacement_text.trim();
-        let replacement_offset = self.line_offsets.get(&(file, line)).copied().unwrap_or(0)
-            + raw.find(replacement_text).unwrap_or(raw.len());
-        self.macros
-            .entry(name)
-            .or_insert_with(|| Conditional {
-                branches: Vec::new(),
-            })
-            .branches
-            .push((
-                condition.clone(),
-                MacroDef {
-                    parameters,
-                    variadic,
-                    replacement: Lexer::with_offset(file, replacement_text, replacement_offset)
-                        .tokenize(),
-                    provenance: Provenance {
-                        file,
-                        kind: self.files.kind(file),
-                        line,
-                    },
-                    order: self.macro_order,
-                },
-            ));
-        self.macro_order += 1;
-        Ok(())
-    }
-}
-
-fn splice_continuations(src: &str) -> String {
-    let mut logical: Vec<String> = src.lines().map(str::to_string).collect();
-    for i in 0..logical.len() {
-        let mut next_line = i + 1;
-        while logical[i].ends_with('\\') && next_line < logical.len() {
-            logical[i].pop();
-            let next = std::mem::take(&mut logical[next_line]);
-            logical[i].push_str(&next);
-            next_line += 1;
-        }
-    }
-    logical.join("\n")
-}
-
-fn skip_block(lines: &[&str], pos: &mut usize) {
-    let mut depth = 0usize;
-    while *pos < lines.len() {
-        let trimmed = normalize_directive(lines[*pos]);
-        let trimmed = trimmed.as_str();
-        if trimmed.starts_with("#if") {
-            depth += 1;
-            *pos += 1;
-        } else if trimmed == "#endif" {
-            if depth == 0 {
-                return;
-            }
-            depth -= 1;
-            *pos += 1;
-        } else if depth == 0 && (trimmed == "#else" || trimmed.starts_with("#elif")) {
-            return;
-        } else {
-            *pos += 1;
-        }
-    }
 }
 
 fn tokens_source<'a>(tokens: impl IntoIterator<Item = &'a Token>) -> String {
@@ -600,60 +362,4 @@ fn lex(src: &str) -> Vec<Token> {
 
 fn lex_spanned(src: &str) -> Vec<Span<Token>> {
     Lexer::new(FileId(0), src).tokenize()
-}
-
-fn source_tokens_loc(tokens: &[Span<Token>]) -> Loc {
-    let (Some(first), Some(last)) = (tokens.first(), tokens.last()) else {
-        return Loc::new(FileId(0), 0, 0);
-    };
-    first.spelling.through(last.spelling)
-}
-
-fn strip_comments(src: &str) -> String {
-    let mut out = String::with_capacity(src.len());
-    let mut chars = src.chars().peekable();
-    let mut in_string: Option<char> = None;
-    while let Some(c) = chars.next() {
-        if let Some(quote) = in_string {
-            out.push(c);
-            if c == '\\' {
-                if let Some(next) = chars.next() {
-                    out.push(next);
-                }
-            } else if c == quote {
-                in_string = None;
-            }
-            continue;
-        }
-        match c {
-            '"' | '\'' => {
-                in_string = Some(c);
-                out.push(c);
-            }
-            '/' if chars.peek() == Some(&'/') => {
-                chars.next();
-                for ch in chars.by_ref() {
-                    if ch == '\n' {
-                        out.push('\n');
-                        break;
-                    }
-                }
-            }
-            '/' if chars.peek() == Some(&'*') => {
-                chars.next();
-                let mut prev = '\0';
-                for ch in chars.by_ref() {
-                    if prev == '*' && ch == '/' {
-                        break;
-                    }
-                    if ch == '\n' {
-                        out.push('\n');
-                    }
-                    prev = ch;
-                }
-            }
-            _ => out.push(c),
-        }
-    }
-    out
 }

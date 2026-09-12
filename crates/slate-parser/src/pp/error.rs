@@ -24,8 +24,6 @@ pub(super) enum PPErrorKind {
     MultipleElse,
     #[error("#elif after #else")]
     ElifAfterElse,
-    #[error("expected #elif, #else, or #endif")]
-    ExpectedConditionalDirective,
     #[error("invalid {directive} expression: {message}")]
     InvalidExpression {
         directive: &'static str,
@@ -35,6 +33,8 @@ pub(super) enum PPErrorKind {
     ExpectedMacroName(&'static str),
     #[error("expected `)` after macro parameters")]
     ExpectedParametersClose,
+    #[error("expected \"FILENAME\" or <FILENAME>")]
+    ExpectedHeaderName,
     #[error("unsupported preprocessor directive")]
     UnsupportedDirective,
     #[error("header not found in search path: {0}")]
