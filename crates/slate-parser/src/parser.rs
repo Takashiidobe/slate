@@ -343,6 +343,89 @@ impl Parser {
             Some(Token::LBrace) => None,
             _ => return Err(self.error_at(code, 0, code.len(), "expected tag name or `{`")),
         };
+
+        if let Some(open_brace_idx) = tokens[name_index..]
+            .iter()
+            .position(|token| *token == Token::LBrace)
+            .map(|position| name_index + position)
+        {
+            if let Some(same_line_close) = matching_brace(tokens, open_brace_idx) {
+                let body_tokens = &tokens[open_brace_idx + 1..same_line_close];
+                let trailing_tokens = &tokens[same_line_close + 1..];
+                let (trailing_attributes, alias_position) =
+                    parse_attribute_groups(trailing_tokens, 0)
+                        .map_err(|error| self.error_at(code, 0, code.len(), error))?;
+                attributes.extend(trailing_attributes);
+                let trailing_name = match trailing_tokens.get(alias_position) {
+                    Some(Token::Ident(alias)) => Some(alias.clone()),
+                    _ => None,
+                };
+                let provenance = self.node_provenance(&nodes[0]);
+                let tag_decl = if kind == TagKind::Enum {
+                    let mut enumerators = Vec::new();
+                    for segment in split_top_level(body_tokens, &Token::Comma) {
+                        if segment.is_empty() {
+                            continue;
+                        }
+                        let Some(Token::Ident(enumerator_name)) = segment.first() else {
+                            return Err(self.error_at(code, 0, code.len(), "expected enumerator"));
+                        };
+                        let value = match segment.get(1) {
+                            None => None,
+                            Some(Token::Equal) => {
+                                let value = const_expr::Parser::evaluate(&segment[2..])
+                                    .map_err(|error| {
+                                        self.error_at(code, 0, code.len(), error.to_string())
+                                    })?;
+                                Some(Expr::IntLit(value))
+                            }
+                            _ => {
+                                return Err(self.error_at(
+                                    code,
+                                    0,
+                                    code.len(),
+                                    "expected enumerator value",
+                                ));
+                            }
+                        };
+                        enumerators.push(Enumerator {
+                            name: enumerator_name.clone(),
+                            value,
+                        });
+                    }
+                    Decl::Enum(EnumDecl {
+                        name: name.clone(),
+                        enumerators,
+                        provenance,
+                    })
+                } else {
+                    let mut fields = Vec::new();
+                    for mut segment in split_top_level(body_tokens, &Token::Semi) {
+                        if segment.is_empty() {
+                            continue;
+                        }
+                        segment.push(Token::Semi);
+                        fields.push(FieldItem::Field(FieldDecl {
+                            declaration: self.parse_declaration_tokens(code, &segment)?,
+                            provenance,
+                        }));
+                    }
+                    Decl::Record(RecordDecl {
+                        kind,
+                        name: name.clone(),
+                        fields,
+                        provenance,
+                        attributes,
+                    })
+                };
+                let mut decls = vec![tag_decl];
+                if let Some(alias) = trailing_name {
+                    decls.push(build_tag_alias_decl(is_typedef, kind, name, alias, provenance));
+                }
+                return Ok((decls, 1));
+            }
+        }
+
         let mut depth = 1i32;
         let mut close = None;
         for (offset, node) in nodes[1..].iter().enumerate() {
@@ -436,31 +519,7 @@ impl Parser {
         };
         let mut decls = vec![tag_decl];
         if let Some(alias) = trailing_name {
-            let ty = CType::Tagged { kind, name, body: None };
-            decls.push(if is_typedef {
-                Decl::Typedef {
-                    name: alias,
-                    ty,
-                    provenance,
-                    attributes: Vec::new(),
-                }
-            } else {
-                Decl::Declaration {
-                    declaration: Declaration {
-                        specifiers: DeclarationSpecifiers {
-                            ty,
-                            qualifiers: Qualifiers::default(),
-                            storage: StorageClass::None,
-                            is_inline: false,
-                            is_noreturn: false,
-                        },
-                        declarator: Declarator::Name(alias),
-                        initializer: None,
-                        attributes: Vec::new(),
-                    },
-                    provenance,
-                }
-            });
+            decls.push(build_tag_alias_decl(is_typedef, kind, name, alias, provenance));
         }
         Ok((decls, consumed))
     }
@@ -1032,6 +1091,66 @@ fn matching_brace(tokens: &[Token], open: usize) -> Option<usize> {
         }
     }
     None
+}
+
+fn split_top_level(tokens: &[Token], delimiter: &Token) -> Vec<Vec<Token>> {
+    let mut segments = Vec::new();
+    let mut depth = 0i32;
+    let mut current = Vec::new();
+    for token in tokens {
+        match token {
+            Token::LBrace | Token::LParen | Token::LBracket => {
+                depth += 1;
+                current.push(token.clone());
+            }
+            Token::RBrace | Token::RParen | Token::RBracket => {
+                depth -= 1;
+                current.push(token.clone());
+            }
+            token if depth == 0 && token == delimiter => {
+                segments.push(std::mem::take(&mut current));
+            }
+            token => current.push(token.clone()),
+        }
+    }
+    if !current.is_empty() {
+        segments.push(current);
+    }
+    segments
+}
+
+fn build_tag_alias_decl(
+    is_typedef: bool,
+    kind: TagKind,
+    name: Option<String>,
+    alias: String,
+    provenance: Provenance,
+) -> Decl {
+    let ty = CType::Tagged { kind, name, body: None };
+    if is_typedef {
+        Decl::Typedef {
+            name: alias,
+            ty,
+            provenance,
+            attributes: Vec::new(),
+        }
+    } else {
+        Decl::Declaration {
+            declaration: Declaration {
+                specifiers: DeclarationSpecifiers {
+                    ty,
+                    qualifiers: Qualifiers::default(),
+                    storage: StorageClass::None,
+                    is_inline: false,
+                    is_noreturn: false,
+                },
+                declarator: Declarator::Name(alias),
+                initializer: None,
+                attributes: Vec::new(),
+            },
+            provenance,
+        }
+    }
 }
 
 fn matching_paren(tokens: &[Token], open: usize) -> Option<usize> {
