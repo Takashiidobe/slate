@@ -115,3 +115,5 @@ SLATE_CLANG_ORACLE=1 cargo test
 
 This is a debugging aid, not part of the standard gate; there is no need
 for it to pass.
+
+No unit tests should ever be added.

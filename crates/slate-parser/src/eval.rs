@@ -33,6 +33,15 @@ impl TranslationUnit {
 impl Decl {
     fn eval(&self, env: &Env) -> Vec<ConcreteDecl> {
         match self {
+            Self::Comment {
+                text,
+                loc,
+                provenance,
+            } => vec![ConcreteDecl::Comment {
+                text: text.clone(),
+                loc: *loc,
+                provenance: *provenance,
+            }],
             Self::Function(f) => vec![ConcreteDecl::Function(ConcreteFunctionDecl {
                 ret_type: f.ret_type.clone(),
                 name: f.name.clone(),
@@ -87,6 +96,15 @@ impl Stmt {
 
     fn eval(&self, env: &Env) -> Vec<ConcreteStmt> {
         match self {
+            Self::Comment {
+                text,
+                loc,
+                provenance,
+            } => vec![ConcreteStmt::Comment {
+                text: text.clone(),
+                loc: *loc,
+                provenance: *provenance,
+            }],
             Self::Return(e) => vec![ConcreteStmt::Return(e.clone())],
             Self::Expr(e) => vec![ConcreteStmt::Expr(e.clone())],
             Self::Decl(declaration) => vec![ConcreteStmt::Decl(Declaration {
@@ -185,21 +203,25 @@ impl<T> Conditional<T> {
 impl RecordDecl {
     fn eval(&self, env: &Env) -> Self {
         Self {
-            fields: self
-                .fields
-                .iter()
-                .flat_map(|item| item.eval(env))
-                .map(FieldItem::Field)
-                .collect(),
+            fields: self.fields.iter().flat_map(|item| item.eval(env)).collect(),
             ..self.clone()
         }
     }
 }
 
 impl FieldItem {
-    fn eval(&self, env: &Env) -> Vec<FieldDecl> {
+    fn eval(&self, env: &Env) -> Vec<FieldItem> {
         match self {
-            Self::Field(field) => vec![field.clone()],
+            Self::Comment {
+                text,
+                loc,
+                provenance,
+            } => vec![Self::Comment {
+                text: text.clone(),
+                loc: *loc,
+                provenance: *provenance,
+            }],
+            Self::Field(field) => vec![Self::Field(field.clone())],
             Self::Conditional(cond) => match cond.select_branch(env) {
                 Some(items) => items.iter().flat_map(|item| item.eval(env)).collect(),
                 None => vec![],

@@ -141,10 +141,18 @@ fn error_configurations(source: &str) -> Vec<String> {
 }
 
 fn run_fixture(fixture: &Path, prefix: &str, defines: &[String], isystem: &[String], slot: usize) {
+    let source = fixture_source(fixture);
+    let parsed_fixture = fixture.with_file_name(format!(
+        ".{}.filecheck.{}.{}.c",
+        fixture.file_stem().unwrap().to_string_lossy(),
+        std::process::id(),
+        slot
+    ));
+    std::fs::write(&parsed_fixture, source).expect("write fixture without FileCheck metadata");
     let mut command = Command::new(env!("CARGO_BIN_EXE_slate-parser"));
     command
         .arg("parse")
-        .arg(fixture)
+        .arg(&parsed_fixture)
         .env_remove("FORCE_COLOR")
         .env_remove("CLICOLOR_FORCE")
         .env("NO_COLOR", "1");
@@ -157,6 +165,7 @@ fn run_fixture(fixture: &Path, prefix: &str, defines: &[String], isystem: &[Stri
     let rendered = command
         .output()
         .expect("run slate-parser filecheck renderer");
+    std::fs::remove_file(&parsed_fixture).expect("remove fixture without FileCheck metadata");
     assert!(
         rendered.status.success(),
         "renderer failed for {}:\n{}",
@@ -195,6 +204,25 @@ fn run_fixture(fixture: &Path, prefix: &str, defines: &[String], isystem: &[Stri
     if std::env::var_os("SLATE_CLANG_ORACLE").is_some() {
         assert_evaluated_matches_clang(fixture, defines, isystem);
     }
+}
+
+fn fixture_source(fixture: &Path) -> String {
+    let source = std::fs::read_to_string(fixture).expect("read fixture");
+    let mut result = String::new();
+    let mut in_checks = false;
+    for line in source.lines() {
+        if line.starts_with("// SLATE-FILECHECK-BEGIN ") {
+            in_checks = true;
+        }
+        if !in_checks && !line.starts_with("// SLATE-FILECHECK-") {
+            result.push_str(line);
+            result.push('\n');
+        }
+        if line.starts_with("// SLATE-FILECHECK-END ") {
+            in_checks = false;
+        }
+    }
+    result
 }
 
 fn run_error_fixture(fixture: &Path, prefix: &str, slot: usize) {
@@ -316,6 +344,7 @@ fn summarize_evaluated(tu: &ConcreteTranslationUnit) -> Vec<DeclSummary> {
     tu.decls
         .iter()
         .filter(|decl| match decl {
+            ConcreteDecl::Comment { .. } => false,
             ConcreteDecl::Declaration { declaration, .. } => declaration.attributes.is_empty(),
             ConcreteDecl::Typedef { attributes, .. } => attributes.is_empty(),
             _ => true,
@@ -326,6 +355,7 @@ fn summarize_evaluated(tu: &ConcreteTranslationUnit) -> Vec<DeclSummary> {
 
 fn summarize_evaluated_decl(decl: &ConcreteDecl) -> DeclSummary {
     match decl {
+        ConcreteDecl::Comment { .. } => unreachable!("comments are filtered before summarizing"),
         ConcreteDecl::Function(function) => DeclSummary::Function {
             name: function.name.clone(),
             returns: function
@@ -348,7 +378,8 @@ fn summarize_evaluated_decl(decl: &ConcreteDecl) -> DeclSummary {
                     ) => {
                         panic!("clang return was not an integer")
                     }
-                    ConcreteStmt::Expr(_)
+                    ConcreteStmt::Comment { .. }
+                    | ConcreteStmt::Expr(_)
                     | ConcreteStmt::Decl(_)
                     | ConcreteStmt::Block(_)
                     | ConcreteStmt::If { .. }

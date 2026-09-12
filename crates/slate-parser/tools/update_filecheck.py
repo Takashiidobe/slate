@@ -4,6 +4,7 @@ import difflib
 import os
 import re
 import subprocess
+import tempfile
 from pathlib import Path
 
 
@@ -47,11 +48,29 @@ def error_configurations(source: str) -> list[str]:
     return [match.group(1) for line in source.splitlines() if (match := ERROR_RE.match(line))]
 
 
-def render(repo: Path, fixture: Path, defines: list[str], isystem: list[str]) -> str:
-    command = ["cargo", "run", "--quiet", "--", "parse", str(fixture)]
-    command.extend(f"-D{define.removeprefix('-D')}" for define in defines)
-    command.extend(f"-isystem{path}" for path in isystem)
-    result = subprocess.run(command, cwd=repo, text=True, capture_output=True, env=_no_color_env())
+def fixture_source(source: str) -> str:
+    kept = []
+    in_checks = False
+    for line in source.splitlines():
+        if BEGIN_RE.match(line):
+            in_checks = True
+        if not in_checks and not line.startswith("// SLATE-FILECHECK-"):
+            kept.append(line)
+        if line.startswith("// SLATE-FILECHECK-END "):
+            in_checks = False
+    return "\n".join(kept) + "\n"
+
+
+def render(repo: Path, fixture: Path, source: str, defines: list[str], isystem: list[str]) -> str:
+    with tempfile.NamedTemporaryFile(
+        mode="w", suffix=".c", prefix=f".{fixture.stem}.filecheck.", dir=fixture.parent
+    ) as parsed_fixture:
+        parsed_fixture.write(fixture_source(source))
+        parsed_fixture.flush()
+        command = ["cargo", "run", "--quiet", "--", "parse", parsed_fixture.name]
+        command.extend(f"-D{define.removeprefix('-D')}" for define in defines)
+        command.extend(f"-isystem{path}" for path in isystem)
+        result = subprocess.run(command, cwd=repo, text=True, capture_output=True, env=_no_color_env())
     if result.returncode:
         raise RuntimeError(result.stderr or result.stdout)
     return result.stdout.rstrip("\n")
@@ -83,7 +102,7 @@ def generated_blocks(repo: Path, fixture: Path, source: str) -> str:
     if error_configurations(source):
         return "\n".join(blocks)
     for prefix, defines in configurations(source):
-        output = render(repo, fixture, defines, isystem)
+        output = render(repo, fixture, source, defines, isystem)
         lines = output.splitlines()
         block = [f"// SLATE-FILECHECK-BEGIN {prefix}"]
         for index, line in enumerate(lines):

@@ -1,19 +1,30 @@
-use crate::ast::{Condition, Conditional, FileId, HeaderKind, Provenance, Span};
+use crate::ast::{Condition, Conditional, FileId, HeaderKind, Loc, Provenance, Span};
 use crate::const_expr;
 use crate::files::{Files, SearchPaths, display_path};
 use crate::lexer::{Lexer, Token};
 use miette::{Diagnostic, NamedSource, SourceSpan};
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
 use thiserror::Error;
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum PPNode {
+    Comment {
+        text: String,
+        loc: Loc,
+        provenance: Provenance,
+    },
     Code {
         text: String,
         provenance: Provenance,
     },
     Conditional(PPConditional),
+}
+
+#[derive(Clone)]
+struct Comment {
+    text: String,
+    loc: Loc,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -85,6 +96,7 @@ pub struct Preprocessor<'a> {
     pub main_file: Option<FileId>,
     search: &'a SearchPaths,
     open_stack: Vec<PathBuf>,
+    comments: HashMap<(FileId, usize), Vec<Comment>>,
     macro_order: usize,
 }
 
@@ -98,6 +110,7 @@ impl<'a> Preprocessor<'a> {
             main_file: None,
             search,
             open_stack: Vec::new(),
+            comments: HashMap::new(),
             macro_order: 0,
         };
         pp.seed_builtin_macros();
@@ -148,6 +161,7 @@ impl<'a> Preprocessor<'a> {
         file: FileId,
         active: Condition,
     ) -> Result<Vec<PPNode>, PPError> {
+        self.collect_comments(src, file);
         let uncommented = strip_comments(src);
         let spliced = splice_continuations(&uncommented);
         let lines: Vec<&str> = spliced.lines().collect();
@@ -165,6 +179,25 @@ impl<'a> Preprocessor<'a> {
         Ok(nodes)
     }
 
+    fn collect_comments(&mut self, src: &str, file: FileId) {
+        for token in Lexer::new(file, src).tokenize() {
+            let Token::Comment(text) = token.value else {
+                continue;
+            };
+            let line = src[..token.spelling.offset]
+                .bytes()
+                .filter(|byte| *byte == b'\n')
+                .count();
+            self.comments
+                .entry((file, line))
+                .or_default()
+                .push(Comment {
+                    text,
+                    loc: token.spelling,
+                });
+        }
+    }
+
     fn parse_block(
         &mut self,
         lines: &[&str],
@@ -173,16 +206,26 @@ impl<'a> Preprocessor<'a> {
         active: &Condition,
     ) -> Result<Vec<PPNode>, PPFailure> {
         let mut nodes = Vec::new();
-        let provenance = Provenance {
-            file,
-            kind: self.files.kind(file),
-            line: 0,
-        };
-
         while *pos < lines.len() {
             let raw = lines[*pos];
             let trimmed = normalize_directive(raw);
             let trimmed = trimmed.as_str();
+            let provenance = Provenance {
+                file,
+                kind: self.files.kind(file),
+                line: *pos,
+            };
+            if let Some(comments) = self.comments.get(&(file, *pos)) {
+                nodes.extend(comments.iter().cloned().map(|comment| PPNode::Comment {
+                    text: comment.text,
+                    loc: comment.loc,
+                    provenance,
+                }));
+            }
+            if raw.trim_start().starts_with("//") {
+                *pos += 1;
+                continue;
+            }
 
             if let Some(condition) = self.parse_opening_condition(trimmed, *pos)? {
                 *pos += 1;
@@ -211,10 +254,6 @@ impl<'a> Preprocessor<'a> {
                 *pos += 1;
             } else {
                 let tokens = lex(trimmed);
-                let provenance = Provenance {
-                    line: *pos,
-                    ..provenance
-                };
                 if let Some(conditions) = self.divergent_macro_conditions(&tokens, active) {
                     nodes.push(PPNode::Conditional(PPConditional {
                         branches: conditions
@@ -685,55 +724,6 @@ impl<'a> Preprocessor<'a> {
     }
 }
 
-fn strip_comments(src: &str) -> String {
-    let mut out = String::with_capacity(src.len());
-    let mut chars = src.chars().peekable();
-    let mut in_string: Option<char> = None;
-    while let Some(c) = chars.next() {
-        if let Some(quote) = in_string {
-            out.push(c);
-            if c == '\\' {
-                if let Some(next) = chars.next() {
-                    out.push(next);
-                }
-            } else if c == quote {
-                in_string = None;
-            }
-            continue;
-        }
-        match c {
-            '"' | '\'' => {
-                in_string = Some(c);
-                out.push(c);
-            }
-            '/' if chars.peek() == Some(&'/') => {
-                chars.next();
-                for ch in chars.by_ref() {
-                    if ch == '\n' {
-                        out.push('\n');
-                        break;
-                    }
-                }
-            }
-            '/' if chars.peek() == Some(&'*') => {
-                chars.next();
-                let mut prev = '\0';
-                for ch in chars.by_ref() {
-                    if prev == '*' && ch == '/' {
-                        break;
-                    }
-                    if ch == '\n' {
-                        out.push('\n');
-                    }
-                    prev = ch;
-                }
-            }
-            _ => out.push(c),
-        }
-    }
-    out
-}
-
 fn splice_continuations(src: &str) -> String {
     let mut logical: Vec<String> = src.lines().map(str::to_string).collect();
     for i in 0..logical.len() {
@@ -1033,4 +1023,53 @@ fn lex(src: &str) -> Vec<Token> {
 
 fn lex_spanned(src: &str) -> Vec<Span<Token>> {
     Lexer::new(FileId(0), src).tokenize()
+}
+
+fn strip_comments(src: &str) -> String {
+    let mut out = String::with_capacity(src.len());
+    let mut chars = src.chars().peekable();
+    let mut in_string: Option<char> = None;
+    while let Some(c) = chars.next() {
+        if let Some(quote) = in_string {
+            out.push(c);
+            if c == '\\' {
+                if let Some(next) = chars.next() {
+                    out.push(next);
+                }
+            } else if c == quote {
+                in_string = None;
+            }
+            continue;
+        }
+        match c {
+            '"' | '\'' => {
+                in_string = Some(c);
+                out.push(c);
+            }
+            '/' if chars.peek() == Some(&'/') => {
+                chars.next();
+                for ch in chars.by_ref() {
+                    if ch == '\n' {
+                        out.push('\n');
+                        break;
+                    }
+                }
+            }
+            '/' if chars.peek() == Some(&'*') => {
+                chars.next();
+                let mut prev = '\0';
+                for ch in chars.by_ref() {
+                    if prev == '*' && ch == '/' {
+                        break;
+                    }
+                    if ch == '\n' {
+                        out.push('\n');
+                    }
+                    prev = ch;
+                }
+            }
+            _ => out.push(c),
+        }
+    }
+    out
 }

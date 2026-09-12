@@ -362,6 +362,18 @@ impl Parser {
 
     fn parse_top_level_item(&mut self, nodes: &[PPNode]) -> Result<(Vec<Decl>, usize), ParseError> {
         match &nodes[0] {
+            PPNode::Comment {
+                text,
+                loc,
+                provenance,
+            } => Ok((
+                vec![Decl::Comment {
+                    text: text.clone(),
+                    loc: *loc,
+                    provenance: *provenance,
+                }],
+                1,
+            )),
             PPNode::Code { text, provenance } if text.trim_start().starts_with("typedef") => {
                 let tokens = lex(self.node_text(&nodes[0]));
                 let has_inline_body = matches!(
@@ -680,6 +692,18 @@ impl Parser {
         let mut index = 0;
         while index < nodes.len() {
             match &nodes[index] {
+                PPNode::Comment {
+                    text,
+                    loc,
+                    provenance,
+                } => {
+                    fields.push(FieldItem::Comment {
+                        text: text.clone(),
+                        loc: *loc,
+                        provenance: *provenance,
+                    });
+                    index += 1;
+                }
                 PPNode::Conditional(cond) => {
                     let branches = cond
                         .branches
@@ -817,6 +841,7 @@ impl Parser {
 
     fn node_text<'a>(&self, node: &'a PPNode) -> &'a str {
         match node {
+            PPNode::Comment { text, .. } => text,
             PPNode::Code { text, .. } => text,
             PPNode::Conditional(_) => {
                 panic!("expected a plain code line, found a conditional region")
@@ -826,6 +851,7 @@ impl Parser {
 
     fn node_provenance(&self, node: &PPNode) -> Provenance {
         match node {
+            PPNode::Comment { provenance, .. } => *provenance,
             PPNode::Code { provenance, .. } => *provenance,
             PPNode::Conditional(_) => panic!("conditional regions have no single provenance"),
         }
@@ -1202,6 +1228,7 @@ fn join_node_text(nodes: &[PPNode]) -> String {
     nodes
         .iter()
         .map(|node| match node {
+            PPNode::Comment { text, .. } => text.as_str(),
             PPNode::Code { text, .. } => text.as_str(),
             PPNode::Conditional(_) => "",
         })
@@ -2400,6 +2427,21 @@ impl Parser {
         let mut run: Vec<&str> = Vec::new();
         for node in nodes {
             match node {
+                PPNode::Comment {
+                    text,
+                    loc,
+                    provenance,
+                } => {
+                    if !run.is_empty() {
+                        stmts.extend(self.parse_stmts_from_code(&run.join(" "))?);
+                        run.clear();
+                    }
+                    stmts.push(Stmt::Comment {
+                        text: text.clone(),
+                        loc: *loc,
+                        provenance: *provenance,
+                    });
+                }
                 PPNode::Code { text, .. } if !lex(text).is_empty() => run.push(text),
                 PPNode::Code { .. } => {}
                 PPNode::Conditional(cond) => {

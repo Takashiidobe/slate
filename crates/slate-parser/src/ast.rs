@@ -100,6 +100,11 @@ pub enum Initializer {
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Stmt {
+    Comment {
+        text: String,
+        loc: Loc,
+        provenance: Provenance,
+    },
     Return(Expr),
     Expr(Expr),
     Decl(Declaration),
@@ -578,6 +583,11 @@ pub struct RecordDecl {
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum FieldItem {
+    Comment {
+        text: String,
+        loc: Loc,
+        provenance: Provenance,
+    },
     Field(FieldDecl),
     Conditional(Conditional<Vec<FieldItem>>),
 }
@@ -604,6 +614,11 @@ pub struct Enumerator {
 
 #[derive(CustomDebug, Clone, PartialEq)]
 pub enum Decl {
+    Comment {
+        text: String,
+        loc: Loc,
+        provenance: Provenance,
+    },
     Function(FunctionDecl),
     Declaration {
         declaration: Declaration,
@@ -624,6 +639,7 @@ pub enum Decl {
 impl Decl {
     pub fn name(&self) -> Option<&str> {
         match self {
+            Self::Comment { .. } => None,
             Self::Function(function) => Some(&function.name),
             Self::Declaration { declaration, .. } => declaration.declarator.name(),
             Self::Typedef { name, .. } => Some(name),
@@ -635,6 +651,7 @@ impl Decl {
 
     pub fn provenance(&self) -> Option<FileId> {
         match self {
+            Self::Comment { provenance, .. } => Some(provenance.file),
             Self::Function(function) => Some(function.provenance.file),
             Self::Declaration { provenance, .. } | Self::Typedef { provenance, .. } => {
                 Some(provenance.file)
@@ -653,6 +670,11 @@ pub struct TranslationUnit {
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum ConcreteStmt {
+    Comment {
+        text: String,
+        loc: Loc,
+        provenance: Provenance,
+    },
     Return(Expr),
     Expr(Expr),
     Decl(Declaration),
@@ -716,6 +738,11 @@ pub struct ConcreteFunctionDecl {
 
 #[derive(CustomDebug, Clone, PartialEq)]
 pub enum ConcreteDecl {
+    Comment {
+        text: String,
+        loc: Loc,
+        provenance: Provenance,
+    },
     Function(ConcreteFunctionDecl),
     Declaration {
         declaration: Declaration,

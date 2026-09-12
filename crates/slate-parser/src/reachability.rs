@@ -145,6 +145,7 @@ impl<'a> Reachability<'a> {
             return;
         }
         match self.nodes[id] {
+            Decl::Comment { .. } => {}
             Decl::Function(function) => self.mark_type(&function.ret_type),
             Decl::Declaration { declaration, .. } => {
                 self.mark_type(&declaration.specifiers.ty);

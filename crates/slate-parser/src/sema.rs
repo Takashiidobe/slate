@@ -59,6 +59,7 @@ impl TranslationUnit {
         let mut errors = Vec::new();
         for decl in &concrete.decls {
             match decl {
+                ConcreteDecl::Comment { .. } => {}
                 ConcreteDecl::Function(function) => {
                     check_attributes(&function.attributes, function.provenance, &mut errors);
                     check_type(
