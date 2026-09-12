@@ -274,6 +274,15 @@ impl Parser {
                 .parse_base_type()
                 .map_err(|error| self.error_at_tokens(tokens, parser.pos, error.to_string()))?
         };
+        while let Some(qualifier) = parser.take_qualifier() {
+            match qualifier {
+                Keyword::Const => qualifiers.is_const = true,
+                Keyword::Volatile => qualifiers.is_volatile = true,
+                Keyword::Restrict => qualifiers.is_restrict = true,
+                Keyword::Atomic => qualifiers.is_atomic = true,
+                _ => unreachable!(),
+            }
+        }
         let declarator = if parser.peek() == Some(&Token::Semi) {
             Declarator::Abstract
         } else {
@@ -2230,6 +2239,17 @@ impl<'a> DeclaratorParser<'a> {
             declarator = match self.peek() {
                 Some(Token::LBracket) => {
                     self.pos += 1;
+                    while matches!(
+                        self.peek(),
+                        Some(Token::Keyword(
+                            Keyword::Static
+                                | Keyword::Const
+                                | Keyword::Volatile
+                                | Keyword::Restrict
+                        ))
+                    ) {
+                        self.pos += 1;
+                    }
                     let size = if self.peek() == Some(&Token::RBracket) {
                         ArraySize::Unspecified
                     } else if self.peek() == Some(&Token::Star)
