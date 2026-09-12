@@ -1,10 +1,52 @@
+use super::condition::is_statically_true;
 use super::error::{PPErrorKind, PPFailure};
 use super::syntax::{Directive, identifier};
 use super::{MacroDef, MacroEntry, Preprocessor};
 use crate::ast::{Condition, Conditional, Span};
 use crate::lexer::Token;
 
+#[derive(Debug, Clone)]
+pub(super) struct PushedMacro {
+    active: Condition,
+    order: usize,
+}
+
 impl Preprocessor<'_> {
+    pub(super) fn push_macro(&mut self, directive: &Directive, active: &Condition) {
+        let Some(name) = pragma_macro_name(directive) else {
+            return;
+        };
+        self.pushed_macros
+            .entry(name)
+            .or_default()
+            .push(PushedMacro {
+                active: active.clone(),
+                order: self.macro_order,
+            });
+    }
+
+    pub(super) fn pop_macro(&mut self, directive: &Directive, active: &Condition) {
+        let Some(name) = pragma_macro_name(directive) else {
+            return;
+        };
+        let Some(stack) = self.pushed_macros.get_mut(&name) else {
+            return;
+        };
+        let Some(index) = stack.iter().rposition(|pushed| &pushed.active == active) else {
+            return;
+        };
+        let pushed = stack.remove(index);
+        let Some(conditional) = self.macros.get_mut(&name) else {
+            return;
+        };
+        conditional
+            .branches
+            .retain(|(condition, entry)| entry.order < pushed.order || !implies(condition, active));
+        if conditional.branches.is_empty() {
+            self.macros.remove(&name);
+        }
+    }
+
     pub(super) fn macro_name<'d>(
         &self,
         directive: &'d Directive,
@@ -96,4 +138,22 @@ impl Preprocessor<'_> {
             .push((condition.clone(), entry));
         self.macro_order += 1;
     }
+}
+
+fn pragma_macro_name(directive: &Directive) -> Option<String> {
+    match directive.arguments.get(1..4)? {
+        [open, name, close] if open.value == Token::LParen && close.value == Token::RParen => {
+            match &name.value {
+                Token::StringLit(name) => Some(name.clone()),
+                _ => None,
+            }
+        }
+        _ => None,
+    }
+}
+
+fn implies(condition: &Condition, active: &Condition) -> bool {
+    condition == active
+        || is_statically_true(active)
+        || matches!(condition, Condition::And(left, right) if implies(left, active) || implies(right, active))
 }

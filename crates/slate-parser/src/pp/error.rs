@@ -52,8 +52,8 @@ pub(super) enum PPErrorKind {
     UnterminatedConditional,
     #[error("multiple #else directives")]
     MultipleElse,
-    #[error("#elif after #else")]
-    ElifAfterElse,
+    #[error("{0} after #else")]
+    ElifAfterElse(&'static str),
     #[error("invalid {directive} expression: {message}")]
     InvalidExpression {
         directive: &'static str,

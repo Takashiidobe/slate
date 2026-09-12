@@ -10,13 +10,14 @@ use crate::const_expr;
 use crate::files::{Files, SearchPaths};
 use crate::lexer::{Lexer, Token, TokenSpanExt};
 use condition::{conjunction, is_statically_false, replace_subterm, simplify_condition};
+use define::PushedMacro;
 pub use error::{DirectiveDiagnostic, DirectiveErrors, PPError};
 use error::{PPErrorKind, PPFailure};
 use include::{include_target, read_source};
 use miette::Severity;
 use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
-use syntax::{Directive, DirectiveName, IfSection, Item, identifier};
+use syntax::{Directive, DirectiveName, IfSection, Item, directive_spelling, identifier};
 
 pub type PPNode = Span<PPNodeKind>;
 
@@ -62,6 +63,7 @@ pub struct Preprocessor<'a> {
     sources: HashMap<FileId, String>,
     line_starts: HashMap<FileId, Vec<usize>>,
     pragma_once: HashMap<PathBuf, Vec<Condition>>,
+    pushed_macros: HashMap<String, Vec<PushedMacro>>,
     pub predefined_macros: Vec<String>,
     pub directive_diagnostics: Vec<DirectiveDiagnostic>,
     macro_order: usize,
@@ -89,6 +91,7 @@ impl<'a> Preprocessor<'a> {
             sources: HashMap::new(),
             line_starts: HashMap::new(),
             pragma_once: HashMap::new(),
+            pushed_macros: HashMap::new(),
             predefined_macros: Vec::new(),
             directive_diagnostics: Vec::new(),
             macro_order: 0,
@@ -262,23 +265,35 @@ impl<'a> Preprocessor<'a> {
         let mut excluded: Option<Condition> = None;
         for branch in &section.branches {
             let directive = &branch.directive;
-            let condition = match (excluded.take(), directive.name) {
-                (None, DirectiveName::Ifdef) => {
-                    Condition::Defined(self.macro_name(directive, "#ifdef")?.0)
+            let test = match directive.name {
+                DirectiveName::Ifdef | DirectiveName::Elifdef => Some(Condition::Defined(
+                    self.macro_name(directive, directive_spelling(directive.name))?
+                        .0,
+                )),
+                DirectiveName::Ifndef | DirectiveName::Elifndef => {
+                    Some(Condition::Not(Box::new(Condition::Defined(
+                        self.macro_name(directive, directive_spelling(directive.name))?
+                            .0,
+                    ))))
                 }
-                (None, DirectiveName::Ifndef) => Condition::Not(Box::new(Condition::Defined(
-                    self.macro_name(directive, "#ifndef")?.0,
-                ))),
-                (None, _) => self.evaluate_condition(directive, "#if", active)?,
-                (Some(prior), DirectiveName::Else) => {
+                DirectiveName::Else => None,
+                _ => Some(self.evaluate_condition(
+                    directive,
+                    directive_spelling(directive.name),
+                    active,
+                )?),
+            };
+            let condition = match (excluded.take(), test) {
+                (None, test) => test.unwrap_or(Condition::Constant(1)),
+                (Some(prior), None) => {
                     let condition = Condition::Not(Box::new(prior.clone()));
                     excluded = Some(prior);
                     condition
                 }
-                (Some(prior), _) => {
+                (Some(prior), Some(test)) => {
                     let condition = Condition::And(
                         Box::new(Condition::Not(Box::new(prior.clone()))),
-                        Box::new(self.evaluate_condition(directive, "#elif", active)?),
+                        Box::new(test),
                     );
                     excluded = Some(Condition::Or(Box::new(prior), Box::new(condition.clone())));
                     condition
@@ -391,10 +406,16 @@ impl<'a> Preprocessor<'a> {
     }
 
     fn record_pragma(&mut self, directive: &Directive, active: &Condition) {
-        let is_once = directive.arguments.first().is_some_and(|token| {
-            identifier(self.source(directive.loc.file), token).as_deref() == Some("once")
-        });
-        if is_once {
+        let pragma = directive
+            .arguments
+            .first()
+            .and_then(|token| identifier(self.source(directive.loc.file), token));
+        match pragma.as_deref() {
+            Some("push_macro") => self.push_macro(directive, active),
+            Some("pop_macro") => self.pop_macro(directive, active),
+            _ => {}
+        }
+        if pragma.as_deref() == Some("once") {
             let path = self.files.path(directive.loc.file);
             let key = path.canonicalize().unwrap_or_else(|_| path.to_path_buf());
             self.pragma_once

@@ -8,6 +8,8 @@ pub(super) enum DirectiveName {
     Ifdef,
     Ifndef,
     Elif,
+    Elifdef,
+    Elifndef,
     Else,
     Endif,
     Define,
@@ -31,6 +33,8 @@ impl DirectiveName {
             "ifdef" => Self::Ifdef,
             "ifndef" => Self::Ifndef,
             "elif" => Self::Elif,
+            "elifdef" => Self::Elifdef,
+            "elifndef" => Self::Elifndef,
             "else" => Self::Else,
             "endif" => Self::Endif,
             "define" => Self::Define,
@@ -44,6 +48,17 @@ impl DirectiveName {
             "ident" | "sccs" => Self::Ident,
             _ => Self::Unknown,
         }
+    }
+}
+
+pub(super) fn directive_spelling(name: DirectiveName) -> &'static str {
+    match name {
+        DirectiveName::Ifdef => "#ifdef",
+        DirectiveName::Ifndef => "#ifndef",
+        DirectiveName::Elif => "#elif",
+        DirectiveName::Elifdef => "#elifdef",
+        DirectiveName::Elifndef => "#elifndef",
+        _ => "#if",
     }
 }
 
@@ -162,7 +177,11 @@ impl GroupParser<'_> {
             }
             let directive = self.directive(line.tokens);
             match directive.name {
-                DirectiveName::Elif | DirectiveName::Else | DirectiveName::Endif => {
+                DirectiveName::Elif
+                | DirectiveName::Elifdef
+                | DirectiveName::Elifndef
+                | DirectiveName::Else
+                | DirectiveName::Endif => {
                     return Ok(Some(directive));
                 }
                 DirectiveName::If | DirectiveName::Ifdef | DirectiveName::Ifndef => {
@@ -224,8 +243,13 @@ impl GroupParser<'_> {
                 DirectiveName::Else if in_else => {
                     return Err(PPFailure::at(next.loc, PPErrorKind::MultipleElse));
                 }
-                DirectiveName::Elif if in_else => {
-                    return Err(PPFailure::at(next.loc, PPErrorKind::ElifAfterElse));
+                DirectiveName::Elif | DirectiveName::Elifdef | DirectiveName::Elifndef
+                    if in_else =>
+                {
+                    return Err(PPFailure::at(
+                        next.loc,
+                        PPErrorKind::ElifAfterElse(directive_spelling(next.name)),
+                    ));
                 }
                 _ => directive = next,
             }
