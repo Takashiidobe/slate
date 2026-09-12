@@ -54,10 +54,6 @@ trait Cursor {
         self.tokens().get(self.pos()).map(|span| &span.value)
     }
 
-    fn peek_span(&self) -> Option<&Span<Token>> {
-        self.tokens().get(self.pos())
-    }
-
     fn consume(&mut self, token: Token) -> bool {
         if self.peek() == Some(&token) {
             self.set_pos(self.pos() + 1);
@@ -424,8 +420,12 @@ impl Parser {
                     joined_item_text = join_node_text(&nodes[..item_span]);
                     (&joined_item_text, lex(&joined_item_text))
                 };
-                let first_lbrace = item_tokens.values().position(|token| *token == Token::LBrace);
-                let first_equal = item_tokens.values().position(|token| *token == Token::Equal);
+                let first_lbrace = item_tokens
+                    .values()
+                    .position(|token| *token == Token::LBrace);
+                let first_equal = item_tokens
+                    .values()
+                    .position(|token| *token == Token::Equal);
                 let looks_like_declaration = match (first_lbrace, first_equal) {
                     (None, _) => true,
                     (Some(_), None) => false,
@@ -911,8 +911,8 @@ fn parse_attribute_groups(
             cursor.expect(Token::LParen, "expected `((` after __attribute__")?;
             loop {
                 let name = cursor.expect_ident("expected attribute name")?;
-                let arguments =
-                    cursor.parse_parenthesized_arguments("expected `)` after attribute arguments")?;
+                let arguments = cursor
+                    .parse_parenthesized_arguments("expected `)` after attribute arguments")?;
                 attributes.push(parse_attribute(&name, &arguments)?);
                 if cursor.consume(&Token::Comma) {
                     continue;
@@ -933,8 +933,8 @@ fn parse_attribute_groups(
                     name.push_str("::");
                     name.push_str(&last);
                 }
-                let arguments =
-                    cursor.parse_parenthesized_arguments("expected `)` after attribute arguments")?;
+                let arguments = cursor
+                    .parse_parenthesized_arguments("expected `)` after attribute arguments")?;
                 attributes.push(parse_attribute(&name, &arguments)?);
                 if cursor.consume(&Token::Comma) {
                     continue;
@@ -2100,7 +2100,8 @@ impl<'a> DeclaratorParser<'a> {
         let Some(Token::Keyword(keyword)) = self.peek() else {
             return None;
         };
-        if *keyword == Keyword::Atomic && self.tokens.value_at(self.pos + 1) == Some(&Token::LParen) {
+        if *keyword == Keyword::Atomic && self.tokens.value_at(self.pos + 1) == Some(&Token::LParen)
+        {
             return None;
         }
         if !matches!(

@@ -143,19 +143,21 @@ impl Stmt {
             Self::Goto(name) => vec![ConcreteStmt::Goto(name.clone())],
             Self::ComputedGoto(target) => vec![ConcreteStmt::ComputedGoto(target.clone())],
             Self::NestedFunction(function) => {
-                vec![ConcreteStmt::NestedFunction(Box::new(ConcreteFunctionDecl {
-                    ret_type: function.ret_type.clone(),
-                    name: function.name.clone(),
-                    parameters: function.parameters.clone(),
-                    variadic: function.variadic,
-                    body: mark_unreachable(Self::eval_all(&function.body, env)),
-                    provenance: function.provenance,
-                    qualifiers: function.qualifiers,
-                    storage: function.storage,
-                    is_inline: function.is_inline,
-                    is_noreturn: function.is_noreturn,
-                    attributes: function.attributes.clone(),
-                }))]
+                vec![ConcreteStmt::NestedFunction(Box::new(
+                    ConcreteFunctionDecl {
+                        ret_type: function.ret_type.clone(),
+                        name: function.name.clone(),
+                        parameters: function.parameters.clone(),
+                        variadic: function.variadic,
+                        body: mark_unreachable(Self::eval_all(&function.body, env)),
+                        provenance: function.provenance,
+                        qualifiers: function.qualifiers,
+                        storage: function.storage,
+                        is_inline: function.is_inline,
+                        is_noreturn: function.is_noreturn,
+                        attributes: function.attributes.clone(),
+                    },
+                ))]
             }
             Self::Break => vec![ConcreteStmt::Break],
             Self::Continue => vec![ConcreteStmt::Continue],

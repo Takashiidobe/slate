@@ -201,9 +201,7 @@ impl<'a> Preprocessor<'a> {
             } else if let Some(rest) = trimmed.strip_prefix("#define") {
                 self.record_define(rest.trim_start(), file, *pos, active)?;
                 *pos += 1;
-            } else if trimmed.starts_with("#undef") {
-                *pos += 1;
-            } else if trimmed.starts_with("#error") {
+            } else if trimmed.starts_with("#undef") || trimmed.starts_with("#error") {
                 *pos += 1;
             } else if trimmed == "#else" || trimmed.starts_with("#elif") || trimmed == "#endif" {
                 break;
@@ -385,15 +383,21 @@ impl<'a> Preprocessor<'a> {
         let Some(conditional) = self.macros.get(name) else {
             return;
         };
-        let guard_defined_here = conditional.branches.iter().any(|(_, def)| def.order >= order_from);
+        let guard_defined_here = conditional
+            .branches
+            .iter()
+            .any(|(_, def)| def.order >= order_from);
         if !guard_defined_here {
             return;
         }
         for conditional in self.macros.values_mut() {
             for (condition, definition) in conditional.branches.iter_mut() {
                 if definition.order >= order_from {
-                    let rewritten =
-                        simplify_condition(&replace_subterm(condition, branch_condition, &Condition::Constant(1)));
+                    let rewritten = simplify_condition(&replace_subterm(
+                        condition,
+                        branch_condition,
+                        &Condition::Constant(1),
+                    ));
                     if &rewritten != condition {
                         *condition = rewritten;
                     }
@@ -638,14 +642,21 @@ impl<'a> Preprocessor<'a> {
             IncludeDirective::Next(name) => {
                 let current_dir = self.files.path(from).parent();
                 let start = current_dir
-                    .and_then(|dir| self.search.system.iter().position(|candidate| candidate == dir))
+                    .and_then(|dir| {
+                        self.search
+                            .system
+                            .iter()
+                            .position(|candidate| candidate == dir)
+                    })
                     .map_or(0, |index| index + 1);
                 self.search.system[start..]
                     .iter()
                     .map(|dir| dir.join(name))
                     .find(|candidate| candidate.is_file())
                     .map(|path| (path, HeaderKind::System))
-                    .unwrap_or_else(|| panic!("system header not found via #include_next in search path: <{name}>"))
+                    .unwrap_or_else(|| {
+                        panic!("system header not found via #include_next in search path: <{name}>")
+                    })
             }
             IncludeDirective::Quoted(name) => {
                 let same_dir = self.files.path(from).parent().map(|dir| dir.join(name));
@@ -817,12 +828,18 @@ fn simplify_condition(condition: &Condition) -> Condition {
     }
 }
 
-fn replace_subterm(condition: &Condition, target: &Condition, replacement: &Condition) -> Condition {
+fn replace_subterm(
+    condition: &Condition,
+    target: &Condition,
+    replacement: &Condition,
+) -> Condition {
     if condition == target {
         return replacement.clone();
     }
     match condition {
-        Condition::Not(inner) => Condition::Not(Box::new(replace_subterm(inner, target, replacement))),
+        Condition::Not(inner) => {
+            Condition::Not(Box::new(replace_subterm(inner, target, replacement)))
+        }
         Condition::And(left, right) => Condition::And(
             Box::new(replace_subterm(left, target, replacement)),
             Box::new(replace_subterm(right, target, replacement)),
@@ -1008,7 +1025,10 @@ fn tokens_source(tokens: &[Token]) -> String {
 }
 
 fn lex(src: &str) -> Vec<Token> {
-    lex_spanned(src).into_iter().map(|span| span.value).collect()
+    lex_spanned(src)
+        .into_iter()
+        .map(|span| span.value)
+        .collect()
 }
 
 fn lex_spanned(src: &str) -> Vec<Span<Token>> {

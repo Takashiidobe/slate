@@ -24,7 +24,9 @@ impl CompilerArgParser {
             } else if arg == "-std" {
                 parsed.standard = Some(Self::next_value(&mut args, "-std")?);
             } else if let Some(isystem) = arg.strip_prefix("-isystem") {
-                parsed.isystem.push(Self::value(isystem, &mut args, "-isystem")?);
+                parsed
+                    .isystem
+                    .push(Self::value(isystem, &mut args, "-isystem")?);
             } else {
                 return Err(format!("unsupported argument: {arg}"));
             }

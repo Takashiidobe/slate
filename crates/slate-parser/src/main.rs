@@ -21,7 +21,11 @@ fn main() -> miette::Result<()> {
     let compiler_args = CompilerArgParser::parse(args).map_err(|error| miette::miette!(error))?;
     fs::metadata(Path::new(&path)).map_err(|error| miette::miette!(error))?;
     let search = SearchPaths {
-        system: compiler_args.isystem.iter().map(std::path::PathBuf::from).collect(),
+        system: compiler_args
+            .isystem
+            .iter()
+            .map(std::path::PathBuf::from)
+            .collect(),
         ..SearchPaths::default()
     };
     let mut parser = Parser::new(search);

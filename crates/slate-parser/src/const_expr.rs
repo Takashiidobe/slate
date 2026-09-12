@@ -333,11 +333,11 @@ impl Parser {
             ConstExpr::OffsetOf { .. } => Err(ConstExprError::NotConstant("offsetof")),
             ConstExpr::Call { callee, arguments } => {
                 match (is_defined, callee.as_ref(), arguments.as_slice()) {
-                    (Some(is_defined), ConstExpr::Identifier(name), [ConstExpr::Identifier(macro_name)])
-                        if name == "defined" =>
-                    {
-                        Ok(is_defined(macro_name) as i64)
-                    }
+                    (
+                        Some(is_defined),
+                        ConstExpr::Identifier(name),
+                        [ConstExpr::Identifier(macro_name)],
+                    ) if name == "defined" => Ok(is_defined(macro_name) as i64),
                     (Some(_), ConstExpr::Identifier(name), [ConstExpr::Identifier(_)])
                         if matches!(
                             name.as_str(),
@@ -578,7 +578,8 @@ impl Parser {
         let Some((ty, declarator, end)) = self.try_parse_type_name(self.position + 1) else {
             return Ok(None);
         };
-        if self.token_at(end) != Some(&Token::RParen) || self.token_at(end + 1) != Some(&Token::LBrace)
+        if self.token_at(end) != Some(&Token::RParen)
+            || self.token_at(end + 1) != Some(&Token::LBrace)
         {
             return Ok(None);
         }
