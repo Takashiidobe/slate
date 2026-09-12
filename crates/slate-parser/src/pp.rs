@@ -1,4 +1,4 @@
-use crate::ast::{Condition, Conditional, FileId, HeaderKind, Provenance};
+use crate::ast::{Condition, Conditional, FileId, HeaderKind, Provenance, Span};
 use crate::const_expr;
 use crate::files::{Files, SearchPaths, display_path};
 use crate::lexer::{Lexer, Token};
@@ -262,7 +262,7 @@ impl<'a> Preprocessor<'a> {
     ) -> Result<Option<Condition>, PPFailure> {
         if let Some(expression) = trimmed.strip_prefix("#if ") {
             let value = const_expr::Parser::evaluate_with_defined(
-                &lex(expression.trim()),
+                &lex_spanned(expression.trim()),
                 &|name| self.macros.contains_key(name),
             )
             .map_err(|error| self.error(line, format!("invalid #if expression: {error}")))?;
@@ -348,7 +348,7 @@ impl<'a> Preprocessor<'a> {
                     return Err(self.error(*pos, "#elif after #else"));
                 }
                 let value = const_expr::Parser::evaluate_with_defined(
-                    &lex(expression.trim()),
+                    &lex_spanned(expression.trim()),
                     &|name| self.macros.contains_key(name),
                 )
                 .map_err(|error| self.error(*pos, format!("invalid #elif expression: {error}")))?;
@@ -1008,9 +1008,9 @@ fn tokens_source(tokens: &[Token]) -> String {
 }
 
 fn lex(src: &str) -> Vec<Token> {
-    Lexer::new(FileId(0), src)
-        .tokenize()
-        .into_iter()
-        .map(|span| span.value)
-        .collect()
+    lex_spanned(src).into_iter().map(|span| span.value).collect()
+}
+
+fn lex_spanned(src: &str) -> Vec<Span<Token>> {
+    Lexer::new(FileId(0), src).tokenize()
 }

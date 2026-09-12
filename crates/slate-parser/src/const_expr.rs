@@ -807,7 +807,7 @@ impl Parser {
     }
 
     fn parse_primary(&mut self) -> Result<ConstExpr, ConstExprError> {
-        if self.consume(&Token::LParen) {
+        if self.take() == Some(Token::LParen) {
             let expression = self.parse_comma()?;
             self.expect(Token::RParen)?;
             return Ok(expression);

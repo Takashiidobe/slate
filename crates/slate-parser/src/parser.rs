@@ -2,13 +2,22 @@ use crate::ast::*;
 use crate::const_expr;
 use crate::error::{FrontendError, ParseError};
 use crate::files::{Files, SearchPaths, display_path};
-use crate::lexer::{Keyword, Lexer, Token};
+use crate::lexer::{Keyword, Lexer, Token, TokenSpanExt};
 use crate::pp::{PPConditional, PPNode, Preprocessor};
 use crate::reachability::filter_translation_unit;
 use miette::Diagnostic;
 use std::collections::HashSet;
 use std::path::Path;
 use thiserror::Error;
+
+fn lex(code: &str) -> Vec<Span<Token>> {
+    Lexer::new(FileId(0), code).tokenize()
+}
+
+fn synthetic(token: Token) -> Span<Token> {
+    let loc = crate::ast::Loc::new(FileId(0), 0, 0);
+    Span::new(token, loc, loc)
+}
 
 struct Loc<'a> {
     code: &'a str,
@@ -87,6 +96,17 @@ impl<'p, 'a> Fragment<'p, 'a> {
             Err(self.error(message))
         }
     }
+
+    fn expect_ident(&mut self, message: &str) -> Result<String, ParseError> {
+        match self.peek() {
+            Some(Token::Ident(name)) => {
+                let name = name.clone();
+                self.pos += 1;
+                Ok(name)
+            }
+            _ => Err(self.error(message)),
+        }
+    }
 }
 
 impl<'p, 'a> Cursor for Fragment<'p, 'a> {
@@ -132,7 +152,8 @@ impl Parser {
         let mut pp = Preprocessor::new(&search);
         let nodes = pp.parse_str("<main>", src).map_err(FrontendError::PP)?;
         let root_file = pp.main_file.expect("parse_str sets main_file");
-        self.parse_nodes(&nodes, root_file).map_err(FrontendError::Parse)
+        self.parse_nodes(&nodes, root_file)
+            .map_err(FrontendError::Parse)
     }
 
     pub fn parse_file(&mut self, path: &Path) -> Result<(TranslationUnit, Files), FrontendError> {
@@ -165,7 +186,7 @@ impl Parser {
     fn parse_declaration_tokens(
         &self,
         code: &str,
-        tokens: &[Token],
+        tokens: &[Span<Token>],
     ) -> Result<Declaration, ParseError> {
         let mut parser = DeclaratorParser { tokens, pos: 0 };
         let (mut attributes, position) = parse_attribute_groups(parser.tokens, parser.pos)
@@ -348,14 +369,13 @@ impl Parser {
             PPNode::Code { text, provenance } if text.trim_start().starts_with("typedef") => {
                 let tokens = lex(self.node_text(&nodes[0]));
                 let has_inline_body = matches!(
-                    tokens.iter().find(|token| !matches!(
-                        token,
-                        Token::Keyword(Keyword::Typedef)
-                    )),
+                    tokens
+                        .values()
+                        .find(|token| !matches!(token, Token::Keyword(Keyword::Typedef))),
                     Some(Token::Keyword(
                         Keyword::Struct | Keyword::Union | Keyword::Enum
                     ))
-                ) && tokens.contains(&Token::LBrace);
+                ) && tokens.contains_value(&Token::LBrace);
                 if has_inline_body {
                     return self.parse_tag_definition(nodes);
                 }
@@ -372,16 +392,23 @@ impl Parser {
             }
             PPNode::Code { .. } => {
                 let tokens = lex(self.node_text(&nodes[0]));
-                if matches!(tokens.as_slice(), [Token::Keyword(Keyword::Extern), Token::StringLit(_), Token::LBrace]) {
+                if matches!(
+                    tokens.as_tokens().as_slice(),
+                    [
+                        Token::Keyword(Keyword::Extern),
+                        Token::StringLit(_),
+                        Token::LBrace
+                    ]
+                ) {
                     return self.parse_linkage_spec_block(nodes);
                 }
                 if matches!(
-                    tokens.first(),
+                    tokens.value_at(0),
                     Some(Token::Keyword(
                         Keyword::Struct | Keyword::Union | Keyword::Enum
                     ))
-                ) && tokens.contains(&Token::LBrace)
-                    && !tokens.contains(&Token::Equal)
+                ) && tokens.contains_value(&Token::LBrace)
+                    && !tokens.contains_value(&Token::Equal)
                 {
                     return self.parse_tag_definition(nodes);
                 }
@@ -391,20 +418,20 @@ impl Parser {
                     1
                 };
                 let joined_item_text;
-                let (item_text, item_tokens): (&str, Vec<Token>) = if item_span == 1 {
+                let (item_text, item_tokens): (&str, Vec<Span<Token>>) = if item_span == 1 {
                     (self.node_text(&nodes[0]), tokens)
                 } else {
                     joined_item_text = join_node_text(&nodes[..item_span]);
                     (&joined_item_text, lex(&joined_item_text))
                 };
-                let first_lbrace = item_tokens.iter().position(|token| *token == Token::LBrace);
-                let first_equal = item_tokens.iter().position(|token| *token == Token::Equal);
+                let first_lbrace = item_tokens.values().position(|token| *token == Token::LBrace);
+                let first_equal = item_tokens.values().position(|token| *token == Token::Equal);
                 let looks_like_declaration = match (first_lbrace, first_equal) {
                     (None, _) => true,
                     (Some(_), None) => false,
                     (Some(brace_index), Some(equal_index)) => equal_index < brace_index,
                 };
-                if item_tokens.contains(&Token::Semi) && looks_like_declaration {
+                if item_tokens.contains_value(&Token::Semi) && looks_like_declaration {
                     return Ok((
                         vec![Decl::Declaration {
                             declaration: self.parse_declaration(item_text)?,
@@ -423,9 +450,13 @@ impl Parser {
     fn parse_tag_definition(&self, nodes: &[PPNode]) -> Result<(Vec<Decl>, usize), ParseError> {
         let code = self.node_text(&nodes[0]);
         let tokens = lex(code);
-        let is_typedef = tokens.first() == Some(&Token::Keyword(Keyword::Typedef));
-        let tokens = if is_typedef { &tokens[1..] } else { &tokens[..] };
-        let kind = match tokens.first() {
+        let is_typedef = tokens.value_at(0) == Some(&Token::Keyword(Keyword::Typedef));
+        let tokens = if is_typedef {
+            &tokens[1..]
+        } else {
+            &tokens[..]
+        };
+        let kind = match tokens.value_at(0) {
             Some(Token::Keyword(Keyword::Struct)) => TagKind::Struct,
             Some(Token::Keyword(Keyword::Union)) => TagKind::Union,
             Some(Token::Keyword(Keyword::Enum)) => TagKind::Enum,
@@ -433,89 +464,89 @@ impl Parser {
         };
         let (mut attributes, name_index) = parse_record_attributes(tokens)
             .map_err(|error| self.error_at(Loc::whole(code), error))?;
-        let name = match tokens.get(name_index) {
+        let name = match tokens.value_at(name_index) {
             Some(Token::Ident(name)) => Some(name.clone()),
             Some(Token::LBrace) => None,
             _ => return Err(self.error_at(Loc::whole(code), "expected tag name or `{`")),
         };
 
         if let Some(open_brace_idx) = tokens[name_index..]
-            .iter()
+            .values()
             .position(|token| *token == Token::LBrace)
             .map(|position| name_index + position)
             && let Some(same_line_close) = matching_brace(tokens, open_brace_idx)
         {
             let body_tokens = &tokens[open_brace_idx + 1..same_line_close];
-                let trailing_tokens = &tokens[same_line_close + 1..];
-                let (trailing_attributes, alias_position) =
-                    parse_attribute_groups(trailing_tokens, 0)
-                        .map_err(|error| self.error_at(Loc::whole(code), error))?;
-                attributes.extend(trailing_attributes);
-                let trailing_name = match trailing_tokens.get(alias_position) {
-                    Some(Token::Ident(alias)) => Some(alias.clone()),
-                    _ => None,
-                };
-                let provenance = self.node_provenance(&nodes[0]);
-                let tag_decl = if kind == TagKind::Enum {
-                    let mut enumerators = Vec::new();
-                    for segment in split_top_level(body_tokens, &Token::Comma) {
-                        if segment.is_empty() {
-                            continue;
-                        }
-                        let Some(Token::Ident(enumerator_name)) = segment.first() else {
-                            return Err(self.error_at(Loc::whole(code), "expected enumerator"));
-                        };
-                        let value = match segment.get(1) {
-                            None => None,
-                            Some(Token::Equal) => {
-                                let value = const_expr::Parser::evaluate(&segment[2..])
-                                    .map_err(|error| {
-                                        self.error_at(Loc::whole(code), error.to_string())
-                                    })?;
-                                Some(Expr::IntLit(value))
-                            }
-                            _ => {
-                                return Err(self.error_at(
-                                    Loc::whole(code),
-                                    "expected enumerator value",
-                                ));
-                            }
-                        };
-                        enumerators.push(Enumerator {
-                            name: enumerator_name.clone(),
-                            value,
-                        });
+            let trailing_tokens = &tokens[same_line_close + 1..];
+            let (trailing_attributes, alias_position) = parse_attribute_groups(trailing_tokens, 0)
+                .map_err(|error| self.error_at(Loc::whole(code), error))?;
+            attributes.extend(trailing_attributes);
+            let trailing_name = match trailing_tokens.value_at(alias_position) {
+                Some(Token::Ident(alias)) => Some(alias.clone()),
+                _ => None,
+            };
+            let provenance = self.node_provenance(&nodes[0]);
+            let tag_decl = if kind == TagKind::Enum {
+                let mut enumerators = Vec::new();
+                for segment in split_top_level(body_tokens, &Token::Comma) {
+                    if segment.is_empty() {
+                        continue;
                     }
-                    Decl::Enum(EnumDecl {
-                        name: name.clone(),
-                        enumerators,
-                        provenance,
-                    })
-                } else {
-                    let mut fields = Vec::new();
-                    for mut segment in split_top_level(body_tokens, &Token::Semi) {
-                        if segment.is_empty() {
-                            continue;
+                    let Some(Token::Ident(enumerator_name)) = segment.value_at(0) else {
+                        return Err(self.error_at(Loc::whole(code), "expected enumerator"));
+                    };
+                    let value = match segment.value_at(1) {
+                        None => None,
+                        Some(Token::Equal) => {
+                            let value =
+                                const_expr::Parser::evaluate(&segment[2..]).map_err(|error| {
+                                    self.error_at(Loc::whole(code), error.to_string())
+                                })?;
+                            Some(Expr::IntLit(value))
                         }
-                        segment.push(Token::Semi);
-                        fields.push(FieldItem::Field(FieldDecl {
-                            declaration: self.parse_declaration_tokens(code, &segment)?,
-                            provenance,
-                        }));
-                    }
-                    Decl::Record(RecordDecl {
-                        kind,
-                        name: name.clone(),
-                        fields,
-                        provenance,
-                        attributes,
-                    })
-                };
-                let mut decls = vec![tag_decl];
-                if let Some(alias) = trailing_name {
-                    decls.push(build_tag_alias_decl(is_typedef, kind, name, alias, provenance));
+                        _ => {
+                            return Err(
+                                self.error_at(Loc::whole(code), "expected enumerator value")
+                            );
+                        }
+                    };
+                    enumerators.push(Enumerator {
+                        name: enumerator_name.clone(),
+                        value,
+                    });
                 }
-                return Ok((decls, 1));
+                Decl::Enum(EnumDecl {
+                    name: name.clone(),
+                    enumerators,
+                    provenance,
+                })
+            } else {
+                let mut fields = Vec::new();
+                for mut segment in split_top_level(body_tokens, &Token::Semi) {
+                    if segment.is_empty() {
+                        continue;
+                    }
+                    segment.push(synthetic(Token::Semi));
+                    fields.push(FieldItem::Field(FieldDecl {
+                        declaration: self.parse_declaration_tokens(code, &segment)?,
+                        provenance,
+                    }));
+                }
+                Decl::Record(RecordDecl {
+                    kind,
+                    name: name.clone(),
+                    fields,
+                    provenance,
+                    attributes,
+                })
+            };
+            let mut decls = vec![tag_decl];
+            if let Some(alias) = trailing_name {
+                decls.push(build_tag_alias_decl(
+                    is_typedef, kind, name, alias, provenance,
+                ));
+            }
+            return Ok((decls, 1));
         }
 
         let mut depth = 1i32;
@@ -525,7 +556,7 @@ impl Parser {
                 continue;
             };
             for token in lex(text) {
-                match token {
+                match token.value {
                     Token::LBrace => depth += 1,
                     Token::RBrace => {
                         depth -= 1;
@@ -545,11 +576,11 @@ impl Parser {
         let mut trailing_name = None;
         if let PPNode::Code { text, .. } = &nodes[close] {
             let closing_tokens = lex(text);
-            if closing_tokens.first() == Some(&Token::RBrace) {
+            if closing_tokens.value_at(0) == Some(&Token::RBrace) {
                 let (trailing, position) = parse_attribute_groups(&closing_tokens, 1)
                     .map_err(|error| self.error_at(Loc::whole(text), error))?;
                 attributes.extend(trailing);
-                if let Some(Token::Ident(alias)) = closing_tokens.get(position) {
+                if let Some(Token::Ident(alias)) = closing_tokens.value_at(position) {
                     trailing_name = Some(alias.clone());
                 }
             }
@@ -564,20 +595,18 @@ impl Parser {
                 if tokens.is_empty() {
                     continue;
                 }
-                let Some(Token::Ident(name)) = tokens.first() else {
+                let Some(Token::Ident(name)) = tokens.value_at(0) else {
                     return Err(self.error_at(Loc::whole(text), "expected enumerator"));
                 };
-                let value = match tokens.get(1) {
+                let value = match tokens.value_at(1) {
                     Some(Token::Comma) | None => None,
                     Some(Token::Equal) => {
                         let end = tokens
-                            .iter()
+                            .values()
                             .position(|token| token == &Token::Comma)
                             .unwrap_or(tokens.len());
-                        let value =
-                            const_expr::Parser::evaluate(&tokens[2..end]).map_err(|error| {
-                                self.error_at(Loc::whole(text), error.to_string())
-                            })?;
+                        let value = const_expr::Parser::evaluate(&tokens[2..end])
+                            .map_err(|error| self.error_at(Loc::whole(text), error.to_string()))?;
                         Some(Expr::IntLit(value))
                     }
                     _ => {
@@ -606,12 +635,17 @@ impl Parser {
         };
         let mut decls = vec![tag_decl];
         if let Some(alias) = trailing_name {
-            decls.push(build_tag_alias_decl(is_typedef, kind, name, alias, provenance));
+            decls.push(build_tag_alias_decl(
+                is_typedef, kind, name, alias, provenance,
+            ));
         }
         Ok((decls, consumed))
     }
 
-    fn parse_linkage_spec_block(&mut self, nodes: &[PPNode]) -> Result<(Vec<Decl>, usize), ParseError> {
+    fn parse_linkage_spec_block(
+        &mut self,
+        nodes: &[PPNode],
+    ) -> Result<(Vec<Decl>, usize), ParseError> {
         let code = self.node_text(&nodes[0]);
         let mut depth = 1i32;
         let mut close = None;
@@ -620,7 +654,7 @@ impl Parser {
                 continue;
             };
             for token in lex(text) {
-                match token {
+                match token.value {
                     Token::LBrace => depth += 1,
                     Token::RBrace => {
                         depth -= 1;
@@ -672,7 +706,7 @@ impl Parser {
                         }
                         joined.push_str(text);
                         for token in lex(text) {
-                            match token {
+                            match token.value {
                                 Token::LBrace => depth += 1,
                                 Token::RBrace => depth -= 1,
                                 _ => {}
@@ -798,145 +832,158 @@ impl Parser {
     }
 }
 
-fn parse_record_attributes(tokens: &[Token]) -> Result<(Vec<Attribute>, usize), String> {
+fn parse_record_attributes(tokens: &[Span<Token>]) -> Result<(Vec<Attribute>, usize), String> {
     parse_attribute_groups(tokens, 1)
 }
 
+struct AttrCursor<'a> {
+    tokens: &'a [Span<Token>],
+    pos: usize,
+}
+
+impl<'a> AttrCursor<'a> {
+    fn new(tokens: &'a [Span<Token>], pos: usize) -> Self {
+        Self { tokens, pos }
+    }
+
+    fn peek(&self) -> Option<&Token> {
+        self.tokens.value_at(self.pos)
+    }
+
+    fn consume(&mut self, token: &Token) -> bool {
+        if self.peek() == Some(token) {
+            self.pos += 1;
+            true
+        } else {
+            false
+        }
+    }
+
+    fn expect(&mut self, token: Token, message: &str) -> Result<(), String> {
+        if self.consume(&token) {
+            Ok(())
+        } else {
+            Err(message.into())
+        }
+    }
+
+    fn expect_ident(&mut self, message: &str) -> Result<String, String> {
+        match self.peek() {
+            Some(Token::Ident(name)) => {
+                let name = name.clone();
+                self.pos += 1;
+                Ok(name)
+            }
+            _ => Err(message.into()),
+        }
+    }
+
+    fn parse_parenthesized_arguments(&mut self, message: &str) -> Result<Vec<Span<Token>>, String> {
+        if !self.consume(&Token::LParen) {
+            return Ok(Vec::new());
+        }
+        let start = self.pos;
+        let mut depth = 0;
+        while let Some(token) = self.peek() {
+            match token {
+                Token::LParen => depth += 1,
+                Token::RParen if depth == 0 => break,
+                Token::RParen => depth -= 1,
+                _ => {}
+            }
+            self.pos += 1;
+        }
+        let arguments = self.tokens[start..self.pos].to_vec();
+        self.expect(Token::RParen, message)?;
+        Ok(arguments)
+    }
+}
+
 fn parse_attribute_groups(
-    tokens: &[Token],
-    mut position: usize,
+    tokens: &[Span<Token>],
+    position: usize,
 ) -> Result<(Vec<Attribute>, usize), String> {
+    let mut cursor = AttrCursor::new(tokens, position);
     let mut attributes = Vec::new();
     loop {
-        if tokens.get(position) == Some(&Token::Ident("__attribute__".into())) {
-            position += 1;
-            if tokens.get(position) != Some(&Token::LParen)
-                || tokens.get(position + 1) != Some(&Token::LParen)
-            {
-                return Err("expected `((` after __attribute__".into());
-            }
-            position += 2;
+        if cursor.consume(&Token::Ident("__attribute__".into())) {
+            cursor.expect(Token::LParen, "expected `((` after __attribute__")?;
+            cursor.expect(Token::LParen, "expected `((` after __attribute__")?;
             loop {
-                let Some(Token::Ident(name)) = tokens.get(position) else {
-                    return Err("expected attribute name".into());
-                };
-                let name = name.clone();
-                position += 1;
-                let arguments = if tokens.get(position) == Some(&Token::LParen) {
-                    position += 1;
-                    let start = position;
-                    let mut depth = 0;
-                    while let Some(token) = tokens.get(position) {
-                        match token {
-                            Token::LParen => depth += 1,
-                            Token::RParen if depth == 0 => break,
-                            Token::RParen => depth -= 1,
-                            _ => {}
-                        }
-                        position += 1;
-                    }
-                    if tokens.get(position) != Some(&Token::RParen) {
-                        return Err("expected `)` after attribute arguments".into());
-                    }
-                    let arguments = tokens[start..position].to_vec();
-                    position += 1;
-                    arguments
-                } else {
-                    Vec::new()
-                };
+                let name = cursor.expect_ident("expected attribute name")?;
+                let arguments =
+                    cursor.parse_parenthesized_arguments("expected `)` after attribute arguments")?;
                 attributes.push(parse_attribute(&name, &arguments)?);
-                if tokens.get(position) == Some(&Token::Comma) {
-                    position += 1;
+                if cursor.consume(&Token::Comma) {
                     continue;
                 }
-                if tokens.get(position) != Some(&Token::RParen)
-                    || tokens.get(position + 1) != Some(&Token::RParen)
-                {
-                    return Err("expected `))` after attributes".into());
-                }
-                position += 2;
+                cursor.expect(Token::RParen, "expected `))` after attributes")?;
+                cursor.expect(Token::RParen, "expected `))` after attributes")?;
                 break;
             }
-        } else if tokens.get(position) == Some(&Token::LBracket)
-            && tokens.get(position + 1) == Some(&Token::LBracket)
+        } else if cursor.peek() == Some(&Token::LBracket)
+            && cursor.tokens.value_at(cursor.pos + 1) == Some(&Token::LBracket)
         {
-            position += 2;
+            cursor.pos += 2;
             loop {
-                let Some(Token::Ident(first)) = tokens.get(position) else {
-                    return Err("expected C23 attribute name".into());
-                };
-                let mut name = first.clone();
-                position += 1;
-                if tokens.get(position) == Some(&Token::Colon) {
-                    position += 1;
-                    if tokens.get(position) != Some(&Token::Colon) {
-                        return Err("expected `::` in attribute name".into());
-                    }
-                    position += 1;
-                    let Some(Token::Ident(last)) = tokens.get(position) else {
-                        return Err("expected attribute name after `::`".into());
-                    };
+                let mut name = cursor.expect_ident("expected C23 attribute name")?;
+                if cursor.consume(&Token::Colon) {
+                    cursor.expect(Token::Colon, "expected `::` in attribute name")?;
+                    let last = cursor.expect_ident("expected attribute name after `::`")?;
                     name.push_str("::");
-                    name.push_str(last);
-                    position += 1;
+                    name.push_str(&last);
                 }
-                let arguments = if tokens.get(position) == Some(&Token::LParen) {
-                    position += 1;
-                    let start = position;
-                    while tokens.get(position) != Some(&Token::RParen) {
-                        if tokens.get(position).is_none() {
-                            return Err("expected `)` after attribute arguments".into());
-                        }
-                        position += 1;
-                    }
-                    let arguments = tokens[start..position].to_vec();
-                    position += 1;
-                    arguments
-                } else {
-                    Vec::new()
-                };
+                let arguments =
+                    cursor.parse_parenthesized_arguments("expected `)` after attribute arguments")?;
                 attributes.push(parse_attribute(&name, &arguments)?);
-                if tokens.get(position) == Some(&Token::Comma) {
-                    position += 1;
+                if cursor.consume(&Token::Comma) {
                     continue;
                 }
-                if tokens.get(position) != Some(&Token::RBracket)
-                    || tokens.get(position + 1) != Some(&Token::RBracket)
-                {
-                    return Err("expected `]]` after C23 attributes".into());
-                }
-                position += 2;
+                cursor.expect(Token::RBracket, "expected `]]` after C23 attributes")?;
+                cursor.expect(Token::RBracket, "expected `]]` after C23 attributes")?;
                 break;
             }
         } else {
             break;
         }
     }
-    Ok((attributes, position))
+    Ok((attributes, cursor.pos))
 }
 
-fn parse_attribute(name: &str, arguments: &[Token]) -> Result<Attribute, String> {
+fn parse_attribute(name: &str, arguments: &[Span<Token>]) -> Result<Attribute, String> {
     let canonical_name = name
         .strip_prefix("__")
         .and_then(|name| name.strip_suffix("__"))
         .unwrap_or(name);
     let single_string = || match arguments {
-        [Token::StringLit(value)] => Some(value.clone()),
+        [single] => match &single.value {
+            Token::StringLit(value) => Some(value.clone()),
+            _ => None,
+        },
         _ => None,
     };
     let single_ident = || match arguments {
-        [Token::Ident(value)] => Some(value.clone()),
+        [single] => match &single.value {
+            Token::Ident(value) => Some(value.clone()),
+            _ => None,
+        },
         _ => None,
     };
     let single_int = || match arguments {
-        [Token::IntLit(value)] => Some(*value),
+        [single] => match &single.value {
+            Token::IntLit(value) => Some(*value),
+            _ => None,
+        },
         _ => None,
     };
     let integers = || {
         arguments
-            .split(|token| *token == Token::Comma)
+            .split(|token| token.value == Token::Comma)
             .map(|tokens| match tokens {
-                [Token::IntLit(value)] => Ok(*value),
+                [single] => match &single.value {
+                    Token::IntLit(value) => Ok(*value),
+                    _ => Err(()),
+                },
                 _ => Err(()),
             })
             .collect::<Result<Vec<_>, _>>()
@@ -984,7 +1031,7 @@ fn parse_attribute(name: &str, arguments: &[Token]) -> Result<Attribute, String>
             .unwrap_or_else(|| invalid_attribute(name, arguments))),
         "assume_aligned" => Ok(
             match arguments
-                .split(|token| *token == Token::Comma)
+                .split(|token| token.value == Token::Comma)
                 .map(parse_attribute_expression)
                 .collect::<Result<Vec<_>, _>>()
             {
@@ -994,7 +1041,7 @@ fn parse_attribute(name: &str, arguments: &[Token]) -> Result<Attribute, String>
         ),
         "alloc_size" => Ok(
             match arguments
-                .split(|token| *token == Token::Comma)
+                .split(|token| token.value == Token::Comma)
                 .map(parse_attribute_expression)
                 .collect::<Result<Vec<_>, _>>()
             {
@@ -1031,7 +1078,7 @@ fn parse_attribute(name: &str, arguments: &[Token]) -> Result<Attribute, String>
         "noipa" if arguments.is_empty() => Ok(Attribute::NoIpa),
         "noclone" if arguments.is_empty() => Ok(Attribute::NoClone),
         "optimize" if !arguments.is_empty() => Ok(Attribute::Optimize(
-            arguments.iter().map(String::from).collect(),
+            arguments.values().map(String::from).collect(),
         )),
         "naked" if arguments.is_empty() => Ok(Attribute::Naked),
         "interrupt" if arguments.is_empty() => Ok(Attribute::Interrupt),
@@ -1081,7 +1128,7 @@ fn parse_attribute(name: &str, arguments: &[Token]) -> Result<Attribute, String>
         _ if canonical_name.is_attribute_name() => Ok(invalid_attribute(name, arguments)),
         _ => Ok(Attribute::Unknown {
             name: name.into(),
-            arguments: arguments.iter().map(String::from).collect(),
+            arguments: arguments.values().map(String::from).collect(),
         }),
     }
 }
@@ -1101,19 +1148,19 @@ fn apply_vector_attributes(mut ty: CType, attributes: &[Attribute]) -> CType {
     ty
 }
 
-fn invalid_attribute(name: &str, arguments: &[Token]) -> Attribute {
+fn invalid_attribute(name: &str, arguments: &[Span<Token>]) -> Attribute {
     Attribute::Invalid {
         name: name.into(),
-        arguments: arguments.iter().map(String::from).collect(),
+        arguments: arguments.values().map(String::from).collect(),
     }
 }
 
-fn attribute_arguments(arguments: &[Token]) -> Vec<String> {
+fn attribute_arguments(arguments: &[Span<Token>]) -> Vec<String> {
     arguments
-        .split(|token| *token == Token::Comma)
+        .split(|token| token.value == Token::Comma)
         .map(|tokens| {
             tokens
-                .iter()
+                .values()
                 .map(String::from)
                 .collect::<Vec<_>>()
                 .join(" ")
@@ -1121,12 +1168,12 @@ fn attribute_arguments(arguments: &[Token]) -> Vec<String> {
         .collect()
 }
 
-fn parse_attribute_expression(arguments: &[Token]) -> Result<const_expr::ConstExpr, String> {
+fn parse_attribute_expression(arguments: &[Span<Token>]) -> Result<const_expr::ConstExpr, String> {
     const_expr::Parser::parse(arguments).map_err(|error| error.to_string())
 }
 
-fn paren_depth(tokens: &[Token]) -> i32 {
-    tokens.iter().fold(0i32, |depth, token| match token {
+fn paren_depth(tokens: &[Span<Token>]) -> i32 {
+    tokens.values().fold(0i32, |depth, token| match token {
         Token::LParen => depth + 1,
         Token::RParen => depth - 1,
         _ => depth,
@@ -1140,7 +1187,7 @@ fn signature_node_span(nodes: &[PPNode]) -> usize {
             return index.max(1);
         };
         for token in lex(text) {
-            match token {
+            match token.value {
                 Token::LParen => depth += 1,
                 Token::RParen => depth -= 1,
                 Token::LBrace | Token::Semi if depth <= 0 => return index + 1,
@@ -1162,10 +1209,10 @@ fn join_node_text(nodes: &[PPNode]) -> String {
         .join("\n")
 }
 
-fn matching_brace(tokens: &[Token], open: usize) -> Option<usize> {
+fn matching_brace(tokens: &[Span<Token>], open: usize) -> Option<usize> {
     let mut depth = 0i32;
     for (offset, token) in tokens[open..].iter().enumerate() {
-        match token {
+        match token.value {
             Token::LBrace => depth += 1,
             Token::RBrace => {
                 depth -= 1;
@@ -1179,12 +1226,12 @@ fn matching_brace(tokens: &[Token], open: usize) -> Option<usize> {
     None
 }
 
-fn split_top_level(tokens: &[Token], delimiter: &Token) -> Vec<Vec<Token>> {
+fn split_top_level(tokens: &[Span<Token>], delimiter: &Token) -> Vec<Vec<Span<Token>>> {
     let mut segments = Vec::new();
     let mut depth = 0i32;
     let mut current = Vec::new();
     for token in tokens {
-        match token {
+        match &token.value {
             Token::LBrace | Token::LParen | Token::LBracket => {
                 depth += 1;
                 current.push(token.clone());
@@ -1193,10 +1240,10 @@ fn split_top_level(tokens: &[Token], delimiter: &Token) -> Vec<Vec<Token>> {
                 depth -= 1;
                 current.push(token.clone());
             }
-            token if depth == 0 && token == delimiter => {
+            value if depth == 0 && value == delimiter => {
                 segments.push(std::mem::take(&mut current));
             }
-            token => current.push(token.clone()),
+            _ => current.push(token.clone()),
         }
     }
     if !current.is_empty() {
@@ -1212,7 +1259,11 @@ fn build_tag_alias_decl(
     alias: String,
     provenance: Provenance,
 ) -> Decl {
-    let ty = CType::Tagged { kind, name, body: None };
+    let ty = CType::Tagged {
+        kind,
+        name,
+        body: None,
+    };
     if is_typedef {
         Decl::Typedef {
             name: alias,
@@ -1239,10 +1290,10 @@ fn build_tag_alias_decl(
     }
 }
 
-fn matching_paren(tokens: &[Token], open: usize) -> Option<usize> {
+fn matching_paren(tokens: &[Span<Token>], open: usize) -> Option<usize> {
     let mut depth = 0i32;
     for (offset, token) in tokens[open..].iter().enumerate() {
-        match token {
+        match token.value {
             Token::LParen => depth += 1,
             Token::RParen => {
                 depth -= 1;
@@ -1256,10 +1307,10 @@ fn matching_paren(tokens: &[Token], open: usize) -> Option<usize> {
     None
 }
 
-fn top_level_semi(tokens: &[Token]) -> Option<usize> {
+fn top_level_semi(tokens: &[Span<Token>]) -> Option<usize> {
     let mut depth = 0i32;
     for (offset, token) in tokens.iter().enumerate() {
-        match token {
+        match token.value {
             Token::LParen | Token::LBrace | Token::LBracket => depth += 1,
             Token::RParen | Token::RBrace | Token::RBracket => depth -= 1,
             Token::Semi if depth == 0 => return Some(offset),
@@ -1760,7 +1811,10 @@ impl<'a> DeclaratorParser<'a> {
             self.pos += 1;
             let value = if self.matches(Token::Equal) {
                 let start = self.pos;
-                while !matches!(self.peek(), Some(&Token::Comma) | Some(&Token::RBrace) | None) {
+                while !matches!(
+                    self.peek(),
+                    Some(&Token::Comma) | Some(&Token::RBrace) | None
+                ) {
                     self.pos += 1;
                 }
                 let value = const_expr::Parser::evaluate(&self.tokens[start..self.pos])
@@ -1849,9 +1903,12 @@ impl<'a> DeclaratorParser<'a> {
         )?;
         let tokens = &self.tokens[start..self.pos - 1];
         let expression = match tokens {
-            [Token::Ident(name)] => Expr::Identifier(name.clone()),
-            [Token::IntLit(value)] => Expr::IntLit(*value),
-            [Token::StringLit(value)] => Expr::StringLit(value.clone()),
+            [single] => match &single.value {
+                Token::Ident(name) => Expr::Identifier(name.clone()),
+                Token::IntLit(value) => Expr::IntLit(*value),
+                Token::StringLit(value) => Expr::StringLit(value.clone()),
+                _ => return Err(DeclaratorError::UnsupportedTypeofExpression),
+            },
             _ => return Err(DeclaratorError::UnsupportedTypeofExpression),
         };
         Ok(CType::TypeOf(TypeOfOperand::Expression(Box::new(
@@ -1981,7 +2038,7 @@ impl<'a> DeclaratorParser<'a> {
                     let size = if self.peek() == Some(&Token::RBracket) {
                         ArraySize::Unspecified
                     } else if self.peek() == Some(&Token::Star)
-                        && self.tokens.get(self.pos + 1) == Some(&Token::RBracket)
+                        && self.tokens.value_at(self.pos + 1) == Some(&Token::RBracket)
                     {
                         self.pos += 1;
                         ArraySize::Star
@@ -1996,9 +2053,7 @@ impl<'a> DeclaratorParser<'a> {
                             Ok(value) => Expr::IntLit(value),
                             Err(_) => {
                                 let expression = const_expr::Parser::parse(bound_tokens)
-                                    .unwrap_or_else(|error| {
-                                        panic!("invalid array bound: {error}")
-                                    });
+                                    .unwrap_or_else(|error| panic!("invalid array bound: {error}"));
                                 Expr::Const(Box::new(expression))
                             }
                         };
@@ -2045,7 +2100,7 @@ impl<'a> DeclaratorParser<'a> {
         let Some(Token::Keyword(keyword)) = self.peek() else {
             return None;
         };
-        if *keyword == Keyword::Atomic && self.tokens.get(self.pos + 1) == Some(&Token::LParen) {
+        if *keyword == Keyword::Atomic && self.tokens.value_at(self.pos + 1) == Some(&Token::LParen) {
             return None;
         }
         if !matches!(
@@ -2068,7 +2123,7 @@ impl<'a> DeclaratorParser<'a> {
             return Ok((vec![], false));
         }
         if self.peek() == Some(&Token::Keyword(Keyword::Void))
-            && self.tokens.get(self.pos + 1) == Some(&Token::RParen)
+            && self.tokens.value_at(self.pos + 1) == Some(&Token::RParen)
         {
             self.pos += 2;
             return Ok((vec![], false));
@@ -2125,7 +2180,11 @@ impl<'a> DeclaratorParser<'a> {
     }
 
     fn expect(&mut self, token: Token, err: DeclaratorError) -> Result<(), DeclaratorError> {
-        if self.consume(token) { Ok(()) } else { Err(err) }
+        if self.consume(token) {
+            Ok(())
+        } else {
+            Err(err)
+        }
     }
 }
 
@@ -2179,7 +2238,7 @@ impl Parser {
         let mut is_inline = false;
         let mut is_noreturn = false;
         loop {
-            match sig_tokens.get(index) {
+            match sig_tokens.value_at(index) {
                 Some(Token::Keyword(Keyword::Const)) => qualifiers.is_const = true,
                 Some(Token::Keyword(Keyword::Volatile)) => qualifiers.is_volatile = true,
                 Some(Token::Keyword(Keyword::Restrict)) => qualifiers.is_restrict = true,
@@ -2217,18 +2276,18 @@ impl Parser {
             };
         }
         let name_index = return_type_parser.pos;
-        let name = match sig_tokens.get(name_index) {
+        let name = match sig_tokens.value_at(name_index) {
             Some(Token::Ident(n)) => n.clone(),
             _ => return Err(self.error_at(Loc::whole(code), "expected function name")),
         };
-        if sig_tokens.get(name_index + 1) != Some(&Token::LParen) {
+        if sig_tokens.value_at(name_index + 1) != Some(&Token::LParen) {
             return Err(self.error_at(
                 Loc::at(code, code.len().saturating_sub(1), 1),
                 "expected `(`",
             ));
         }
         let Some(parameter_close) = sig_tokens[name_index + 2..]
-            .iter()
+            .values()
             .position(|token| *token == Token::RParen)
             .map(|position| name_index + 2 + position)
         else {
@@ -2237,7 +2296,7 @@ impl Parser {
                 "expected `)`",
             ));
         };
-        if sig_tokens[name_index + 2..parameter_close].contains(&Token::LBrace) {
+        if sig_tokens[name_index + 2..parameter_close].contains_value(&Token::LBrace) {
             return Err(self.error_at(
                 Loc::at(code, code.find('{').unwrap_or(0), 1),
                 "expected parameter",
@@ -2254,7 +2313,7 @@ impl Parser {
             parse_attribute_groups(&sig_tokens, declarator_parser.pos)
                 .map_err(|error| self.error_at(Loc::whole(code), error))?;
         attributes.extend(signature_attributes);
-        if sig_tokens.get(body_index) != Some(&Token::LBrace) {
+        if sig_tokens.value_at(body_index) != Some(&Token::LBrace) {
             return Err(self.error_at(
                 Loc::at(code, code.len().saturating_sub(1), 1),
                 "expected function body",
@@ -2287,7 +2346,7 @@ impl Parser {
         for (offset, node) in nodes[sig_node_count..].iter().enumerate() {
             if let PPNode::Code { text, .. } = node {
                 for token in lex(text) {
-                    match token {
+                    match token.value {
                         Token::LBrace => depth += 1,
                         Token::RBrace => depth -= 1,
                         _ => {}
@@ -2302,10 +2361,12 @@ impl Parser {
                 break;
             }
         }
-        let close_idx = close_idx
-            .ok_or_else(|| {
-                self.error_at(Loc::at(code, code.len().saturating_sub(1), 1), "expected `}`")
-            })?;
+        let close_idx = close_idx.ok_or_else(|| {
+            self.error_at(
+                Loc::at(code, code.len().saturating_sub(1), 1),
+                "expected `}`",
+            )
+        })?;
 
         if let PPNode::Code { text, .. } = &nodes[close_idx] {
             let closing_tokens = lex(text);
@@ -2368,7 +2429,7 @@ impl Parser {
     fn parse_stmts_from_tokens(
         &self,
         code: &str,
-        tokens: &[Token],
+        tokens: &[Span<Token>],
     ) -> Result<Vec<Stmt>, ParseError> {
         let mut fragment = Fragment::new(self, code, tokens, 0);
         let mut stmts = Vec::new();
@@ -2382,8 +2443,10 @@ impl Parser {
         if fragment.peek() == Some(&Token::LBrace) {
             let close = matching_brace(fragment.tokens, fragment.pos)
                 .ok_or_else(|| fragment.error("expected `}`"))?;
-            let body =
-                self.parse_stmts_from_tokens(fragment.code, &fragment.tokens[fragment.pos + 1..close])?;
+            let body = self.parse_stmts_from_tokens(
+                fragment.code,
+                &fragment.tokens[fragment.pos + 1..close],
+            )?;
             fragment.pos = close + 1;
             Ok(body)
         } else {
@@ -2391,7 +2454,11 @@ impl Parser {
         }
     }
 
-    fn parse_simple_keyword_stmt(&self, fragment: &mut Fragment, stmt: Stmt) -> Result<Stmt, ParseError> {
+    fn parse_simple_keyword_stmt(
+        &self,
+        fragment: &mut Fragment,
+        stmt: Stmt,
+    ) -> Result<Stmt, ParseError> {
         fragment.pos += 1;
         fragment.expect(Token::Semi, "expected `;`")?;
         Ok(stmt)
@@ -2400,18 +2467,18 @@ impl Parser {
     fn try_parse_nested_function(
         &self,
         code: &str,
-        tokens: &[Token],
+        tokens: &[Span<Token>],
         start: usize,
     ) -> Result<Option<(FunctionDecl, usize)>, ParseError> {
         let fragment = Fragment::new(self, code, tokens, start);
-        let (mut attributes, mut index) = parse_attribute_groups(tokens, start)
-            .map_err(|error| fragment.error(error))?;
+        let (mut attributes, mut index) =
+            parse_attribute_groups(tokens, start).map_err(|error| fragment.error(error))?;
         let mut qualifiers = Qualifiers::default();
         let mut storage = StorageClass::None;
         let mut is_inline = false;
         let mut is_noreturn = false;
         loop {
-            match tokens.get(index) {
+            match tokens.value_at(index) {
                 Some(Token::Keyword(Keyword::Const)) => qualifiers.is_const = true,
                 Some(Token::Keyword(Keyword::Volatile)) => qualifiers.is_volatile = true,
                 Some(Token::Keyword(Keyword::Restrict)) => qualifiers.is_restrict = true,
@@ -2448,10 +2515,10 @@ impl Parser {
             };
         }
         let name_index = return_type_parser.position();
-        let Some(Token::Ident(name)) = tokens.get(name_index) else {
+        let Some(Token::Ident(name)) = tokens.value_at(name_index) else {
             return Ok(None);
         };
-        if tokens.get(name_index + 1) != Some(&Token::LParen) {
+        if tokens.value_at(name_index + 1) != Some(&Token::LParen) {
             return Ok(None);
         }
         let mut declarator_parser = DeclaratorParser::new(tokens, name_index + 1);
@@ -2461,11 +2528,12 @@ impl Parser {
         let (signature_attributes, body_index) =
             parse_attribute_groups(tokens, declarator_parser.position())
                 .map_err(|error| fragment.error(error))?;
-        if tokens.get(body_index) != Some(&Token::LBrace) {
+        if tokens.value_at(body_index) != Some(&Token::LBrace) {
             return Ok(None);
         }
         attributes.extend(signature_attributes);
-        let close = matching_brace(tokens, body_index).ok_or_else(|| fragment.error("expected `}`"))?;
+        let close =
+            matching_brace(tokens, body_index).ok_or_else(|| fragment.error("expected `}`"))?;
         let body = self.parse_stmts_from_tokens(code, &tokens[body_index + 1..close])?;
         Ok(Some((
             FunctionDecl {
@@ -2485,8 +2553,8 @@ impl Parser {
         )))
     }
 
-    fn starts_declaration(&self, tokens: &[Token], pos: usize) -> bool {
-        match tokens.get(pos) {
+    fn starts_declaration(&self, tokens: &[Span<Token>], pos: usize) -> bool {
+        match tokens.value_at(pos) {
             Some(Token::Keyword(keyword)) if keyword.is_storage_class_or_specifier() => true,
             Some(token) => const_expr::starts_type_name(token, &self.typedef_names),
             None => false,
@@ -2497,28 +2565,31 @@ impl Parser {
         let code = fragment.code;
         let tokens = fragment.tokens;
 
-        if tokens.get(fragment.pos..fragment.pos + 2) == Some(&[Token::LParen, Token::LBrace]) {
+        if tokens.value_at(fragment.pos) == Some(&Token::LParen)
+            && tokens.value_at(fragment.pos + 1) == Some(&Token::LBrace)
+        {
             let close = matching_brace(tokens, fragment.pos + 1)
                 .ok_or_else(|| self.error_at(Loc::whole(code), "expected `}`"))?;
-            if tokens.get(close + 1) != Some(&Token::RParen) {
+            if tokens.value_at(close + 1) != Some(&Token::RParen) {
                 return Err(self.error_at(Loc::whole(code), "expected `)`"));
             }
             let body = self.parse_stmts_from_tokens(code, &tokens[fragment.pos + 2..close])?;
             fragment.pos = close + 2;
-            if tokens.get(fragment.pos) == Some(&Token::Semi) {
+            if tokens.value_at(fragment.pos) == Some(&Token::Semi) {
                 fragment.pos += 1;
             }
             return Ok(Stmt::Expr(Expr::StatementExpression(body)));
         }
 
-        if let Some([Token::Ident(name), Token::Colon]) = tokens.get(fragment.pos..fragment.pos + 2)
+        if let Some(Token::Ident(name)) = tokens.value_at(fragment.pos)
+            && tokens.value_at(fragment.pos + 1) == Some(&Token::Colon)
         {
             let name = name.clone();
             fragment.pos += 2;
             return Ok(Stmt::Labeled(name));
         }
 
-        if tokens.get(fragment.pos) == Some(&Token::LBrace) {
+        if tokens.value_at(fragment.pos) == Some(&Token::LBrace) {
             let close = matching_brace(tokens, fragment.pos)
                 .ok_or_else(|| self.error_at(Loc::whole(code), "expected `}`"))?;
             let body = self.parse_stmts_from_tokens(code, &tokens[fragment.pos + 1..close])?;
@@ -2543,7 +2614,7 @@ impl Parser {
             return Ok(Stmt::Decl(declaration));
         }
 
-        match tokens.get(fragment.pos) {
+        match tokens.value_at(fragment.pos) {
             Some(Token::Keyword(Keyword::Return)) => {
                 let start = fragment.pos + 1;
                 let end = top_level_semi(&tokens[start..])
@@ -2560,7 +2631,7 @@ impl Parser {
                 self.parse_simple_keyword_stmt(fragment, Stmt::Continue)
             }
             Some(Token::Keyword(Keyword::Goto))
-                if tokens.get(fragment.pos + 1) == Some(&Token::Star) =>
+                if tokens.value_at(fragment.pos + 1) == Some(&Token::Star) =>
             {
                 let start = fragment.pos + 2;
                 let end = top_level_semi(&tokens[start..])
@@ -2571,23 +2642,18 @@ impl Parser {
                 Ok(Stmt::ComputedGoto(target))
             }
             Some(Token::Keyword(Keyword::Goto)) => {
-                let Some(Token::Ident(label)) = tokens.get(fragment.pos + 1) else {
-                    return Err(self.error_at(Loc::whole(code), "expected label after `goto`"));
-                };
-                let label = label.clone();
-                fragment.pos += 2;
+                fragment.pos += 1;
+                let label = fragment.expect_ident("expected label after `goto`")?;
                 fragment.expect(Token::Semi, "expected `;` after `goto` label")?;
                 Ok(Stmt::Goto(label))
             }
             Some(Token::Keyword(Keyword::Case)) => {
                 let start = fragment.pos + 1;
                 let colon = tokens[start..]
-                    .iter()
+                    .values()
                     .position(|token| *token == Token::Colon)
                     .map(|position| start + position)
-                    .ok_or_else(|| {
-                        self.error_at(Loc::whole(code), "expected `:` after `case`")
-                    })?;
+                    .ok_or_else(|| self.error_at(Loc::whole(code), "expected `:` after `case`"))?;
                 let value = self.parse_expression(code, &tokens[start..colon])?;
                 fragment.pos = colon + 1;
                 Ok(Stmt::Case(value))
@@ -2599,7 +2665,7 @@ impl Parser {
             }
             Some(Token::Keyword(Keyword::If)) => {
                 let open = fragment.pos + 1;
-                if tokens.get(open) != Some(&Token::LParen) {
+                if tokens.value_at(open) != Some(&Token::LParen) {
                     return Err(self.error_at(Loc::whole(code), "expected `(` after `if`"));
                 }
                 let close = matching_paren(tokens, open)
@@ -2621,7 +2687,7 @@ impl Parser {
             }
             Some(Token::Keyword(Keyword::While)) => {
                 let open = fragment.pos + 1;
-                if tokens.get(open) != Some(&Token::LParen) {
+                if tokens.value_at(open) != Some(&Token::LParen) {
                     return Err(self.error_at(Loc::whole(code), "expected `(` after `while`"));
                 }
                 let close = matching_paren(tokens, open)
@@ -2634,17 +2700,17 @@ impl Parser {
             Some(Token::Keyword(Keyword::Do)) => {
                 fragment.pos += 1;
                 let body = self.parse_body(fragment)?;
-                if tokens.get(fragment.pos) != Some(&Token::Keyword(Keyword::While)) {
+                if tokens.value_at(fragment.pos) != Some(&Token::Keyword(Keyword::While)) {
                     return Err(self.error_at(Loc::whole(code), "expected `while` after `do` body"));
                 }
                 let open = fragment.pos + 1;
-                if tokens.get(open) != Some(&Token::LParen) {
+                if tokens.value_at(open) != Some(&Token::LParen) {
                     return Err(self.error_at(Loc::whole(code), "expected `(` after `while`"));
                 }
                 let close = matching_paren(tokens, open)
                     .ok_or_else(|| self.error_at(Loc::whole(code), "expected `)`"))?;
                 let condition = self.parse_expression(code, &tokens[open + 1..close])?;
-                if tokens.get(close + 1) != Some(&Token::Semi) {
+                if tokens.value_at(close + 1) != Some(&Token::Semi) {
                     return Err(self.error_at(Loc::whole(code), "expected `;` after `do`-`while`"));
                 }
                 fragment.pos = close + 2;
@@ -2652,7 +2718,7 @@ impl Parser {
             }
             Some(Token::Keyword(Keyword::For)) => {
                 let open = fragment.pos + 1;
-                if tokens.get(open) != Some(&Token::LParen) {
+                if tokens.value_at(open) != Some(&Token::LParen) {
                     return Err(self.error_at(Loc::whole(code), "expected `(` after `for`"));
                 }
                 let close = matching_paren(tokens, open)
@@ -2670,7 +2736,7 @@ impl Parser {
                     None
                 } else if self.starts_declaration(init_tokens, 0) {
                     let mut decl_tokens = init_tokens.to_vec();
-                    decl_tokens.push(Token::Semi);
+                    decl_tokens.push(synthetic(Token::Semi));
                     Some(Box::new(Stmt::Decl(
                         self.parse_declaration_tokens(code, &decl_tokens)?,
                     )))
@@ -2700,7 +2766,7 @@ impl Parser {
             }
             Some(Token::Keyword(Keyword::Switch)) => {
                 let open = fragment.pos + 1;
-                if tokens.get(open) != Some(&Token::LParen) {
+                if tokens.value_at(open) != Some(&Token::LParen) {
                     return Err(self.error_at(Loc::whole(code), "expected `(` after `switch`"));
                 }
                 let close = matching_paren(tokens, open)
@@ -2721,24 +2787,24 @@ impl Parser {
         }
     }
 
-    fn parse_expression(&self, code: &str, tokens: &[Token]) -> Result<Expr, ParseError> {
+    fn parse_expression(&self, code: &str, tokens: &[Span<Token>]) -> Result<Expr, ParseError> {
         if tokens.is_empty() {
             return Err(self.error_at(Loc::whole(code), "expected expression"));
         }
-        if let Some(Token::Ident(name)) = tokens.first()
+        if let Some(Token::Ident(name)) = tokens.value_at(0)
             && name == "_Generic"
         {
-            if tokens.get(1) != Some(&Token::LParen) {
+            if tokens.value_at(1) != Some(&Token::LParen) {
                 return Err(self.error_at(Loc::whole(code), "expected `(` after `_Generic`"));
             }
             let Some(close) = tokens.len().checked_sub(1) else {
                 return Err(self.error_at(Loc::whole(code), "expected `)` after `_Generic`"));
             };
-            if tokens.get(close) != Some(&Token::RParen) {
+            if tokens.value_at(close) != Some(&Token::RParen) {
                 return Err(self.error_at(Loc::whole(code), "expected `)` after `_Generic`"));
             }
             let Some(comma) = tokens[2..close]
-                .iter()
+                .values()
                 .position(|token| *token == Token::Comma)
                 .map(|position| position + 2)
             else {
@@ -2749,24 +2815,23 @@ impl Parser {
             let mut start = comma + 1;
             while start < close {
                 let Some(colon) = tokens[start..close]
-                    .iter()
+                    .values()
                     .position(|token| *token == Token::Colon)
                     .map(|position| start + position)
                 else {
-                    return Err(self.error_at(
-                        Loc::whole(code),
-                        "expected `:` in `_Generic` association",
-                    ));
+                    return Err(
+                        self.error_at(Loc::whole(code), "expected `:` in `_Generic` association")
+                    );
                 };
                 let expression_end = tokens[colon + 1..close]
-                    .iter()
+                    .values()
                     .position(|token| *token == Token::Comma)
                     .map_or(close, |position| colon + 1 + position);
-                let type_name = match tokens[start] {
+                let type_name = match &tokens[start].value {
                     Token::Keyword(Keyword::Default) => None,
                     _ => Some(
                         tokens[start..colon]
-                            .iter()
+                            .values()
                             .map(String::from)
                             .collect::<Vec<_>>()
                             .join(" "),
@@ -2783,7 +2848,9 @@ impl Parser {
                 associations,
             });
         }
-        if let [Token::StringLit(value)] = tokens {
+        if let [single] = tokens
+            && let Token::StringLit(value) = &single.value
+        {
             return Ok(Expr::StringLit(value.clone()));
         }
         const_expr::Parser::parse_expression(tokens, &self.typedef_names)

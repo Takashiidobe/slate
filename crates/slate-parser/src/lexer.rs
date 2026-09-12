@@ -336,6 +336,12 @@ pub trait TokenSpanExt {
         self.value_at(index).cloned()
     }
     fn values(&self) -> impl Iterator<Item = &Token>;
+    fn contains_value(&self, token: &Token) -> bool {
+        self.values().any(|value| value == token)
+    }
+    fn as_tokens(&self) -> Vec<Token> {
+        self.values().cloned().collect()
+    }
 }
 
 impl TokenSpanExt for [Span<Token>] {
