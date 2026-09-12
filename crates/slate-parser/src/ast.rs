@@ -132,6 +132,8 @@ pub enum Stmt {
     Default,
     Labeled(String),
     Goto(String),
+    ComputedGoto(Expr),
+    NestedFunction(Box<FunctionDecl>),
     Break,
     Continue,
 }
@@ -459,6 +461,7 @@ impl TryFrom<&str> for StorageClass {
 pub enum ArraySize {
     Unspecified,
     Expression(Box<Expr>),
+    Star,
 }
 
 #[derive(CustomDebug, Clone, PartialEq)]
@@ -647,6 +650,8 @@ pub enum ConcreteStmt {
     Default,
     Labeled(String),
     Goto(String),
+    ComputedGoto(Expr),
+    NestedFunction(Box<ConcreteFunctionDecl>),
     Break,
     Continue,
     Unreachable(Box<ConcreteStmt>),

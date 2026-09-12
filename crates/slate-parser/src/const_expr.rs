@@ -79,6 +79,7 @@ pub enum ConstExpr {
         declarator: Declarator,
         initializer: Vec<InitializerItem>,
     },
+    LabelAddr(String),
 }
 
 impl std::fmt::Display for ConstExpr {
@@ -125,6 +126,7 @@ impl std::fmt::Display for ConstExpr {
             Self::Deref(value) => write!(formatter, "*{value}"),
             Self::Cast { value, .. } => write!(formatter, "(cast){value}"),
             Self::CompoundLiteral { .. } => write!(formatter, "(compound literal)"),
+            Self::LabelAddr(label) => write!(formatter, "&&{label}"),
         }
     }
 }
@@ -429,6 +431,7 @@ impl Parser {
             ConstExpr::CompoundLiteral { .. } => {
                 Err(ConstExprError::NotConstant("compound literal"))
             }
+            ConstExpr::LabelAddr(_) => Err(ConstExprError::NotConstant("label address")),
         }
     }
 
@@ -713,6 +716,14 @@ impl Parser {
                 self.take();
                 Ok(ConstExpr::Deref(Box::new(self.parse_cast()?)))
             }
+            Some(Token::AndAnd) => {
+                self.take();
+                match self.take() {
+                    Some(Token::Ident(label)) => Ok(ConstExpr::LabelAddr(label)),
+                    Some(token) => Err(ConstExprError::UnexpectedToken(token)),
+                    None => Err(ConstExprError::ExpectedIdentifier),
+                }
+            }
             _ => self.parse_postfix(),
         }
     }
@@ -962,7 +973,9 @@ fn declarator_size(ty: &CType, declarator: &Declarator) -> Result<u64, ConstExpr
                     Expr::IntLit(value) => *value as u64,
                     _ => return Err(ConstExprError::UnsupportedTypeSize),
                 },
-                ArraySize::Unspecified => return Err(ConstExprError::UnsupportedTypeSize),
+                ArraySize::Unspecified | ArraySize::Star => {
+                    return Err(ConstExprError::UnsupportedTypeSize);
+                }
             };
             Ok(element * count)
         }
@@ -1001,7 +1014,9 @@ fn ctype_size(ty: &CType) -> Result<u64, ConstExprError> {
                     Expr::IntLit(value) => *value as u64,
                     _ => return Err(ConstExprError::UnsupportedTypeSize),
                 },
-                ArraySize::Unspecified => return Err(ConstExprError::UnsupportedTypeSize),
+                ArraySize::Unspecified | ArraySize::Star => {
+                    return Err(ConstExprError::UnsupportedTypeSize);
+                }
             };
             Ok(element_size * count)
         }

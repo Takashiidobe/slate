@@ -423,7 +423,6 @@ impl Parser {
                     decls.push(build_tag_alias_decl(is_typedef, kind, name, alias, provenance));
                 }
                 return Ok((decls, 1));
-            }
         }
 
         let mut depth = 1i32;
@@ -1852,15 +1851,29 @@ impl<'a> DeclaratorParser<'a> {
                     self.pos += 1;
                     let size = if self.peek() == Some(&Token::RBracket) {
                         ArraySize::Unspecified
+                    } else if self.peek() == Some(&Token::Star)
+                        && self.tokens.get(self.pos + 1) == Some(&Token::RBracket)
+                    {
+                        self.pos += 1;
+                        ArraySize::Star
                     } else {
                         let start = self.pos;
                         while self.peek() != Some(&Token::RBracket) {
                             assert!(self.peek().is_some(), "expected `]` in array declarator");
                             self.pos += 1;
                         }
-                        let value = const_expr::Parser::evaluate(&self.tokens[start..self.pos])
-                            .unwrap_or_else(|error| panic!("invalid array bound: {error}"));
-                        ArraySize::Expression(Box::new(Expr::IntLit(value)))
+                        let bound_tokens = &self.tokens[start..self.pos];
+                        let size = match const_expr::Parser::evaluate(bound_tokens) {
+                            Ok(value) => Expr::IntLit(value),
+                            Err(_) => {
+                                let expression = const_expr::Parser::parse(bound_tokens)
+                                    .unwrap_or_else(|error| {
+                                        panic!("invalid array bound: {error}")
+                                    });
+                                Expr::Const(Box::new(expression))
+                            }
+                        };
+                        ArraySize::Expression(Box::new(size))
                     };
                     assert!(
                         self.matches(Token::RBracket),
@@ -2235,6 +2248,94 @@ impl Parser {
         Ok(stmt)
     }
 
+    fn try_parse_nested_function(
+        &self,
+        code: &str,
+        tokens: &[Token],
+        start: usize,
+    ) -> Result<Option<(FunctionDecl, usize)>, ParseError> {
+        let (mut attributes, mut index) = parse_attribute_groups(tokens, start)
+            .map_err(|error| self.error_at(code, 0, code.len(), error))?;
+        let mut qualifiers = Qualifiers::default();
+        let mut storage = StorageClass::None;
+        let mut is_inline = false;
+        let mut is_noreturn = false;
+        loop {
+            match tokens.get(index) {
+                Some(Token::Keyword(Keyword::Const)) => qualifiers.is_const = true,
+                Some(Token::Keyword(Keyword::Volatile)) => qualifiers.is_volatile = true,
+                Some(Token::Keyword(Keyword::Restrict)) => qualifiers.is_restrict = true,
+                Some(Token::Keyword(Keyword::Atomic)) => qualifiers.is_atomic = true,
+                Some(Token::Keyword(Keyword::Inline)) => is_inline = true,
+                Some(Token::Keyword(Keyword::Noreturn)) => is_noreturn = true,
+                Some(Token::Keyword(keyword)) => {
+                    let next_storage = match keyword {
+                        Keyword::Extern => StorageClass::Extern,
+                        Keyword::Static => StorageClass::Static,
+                        Keyword::Auto => StorageClass::Auto,
+                        Keyword::Register => StorageClass::Register,
+                        Keyword::ThreadLocal => StorageClass::ThreadLocal,
+                        _ => break,
+                    };
+                    if storage != StorageClass::None {
+                        return Ok(None);
+                    }
+                    storage = next_storage;
+                }
+                _ => break,
+            }
+            index += 1;
+        }
+        let mut return_type_parser = DeclaratorParser::new(tokens, index);
+        let Ok(mut ret_type) = return_type_parser.parse_base_type() else {
+            return Ok(None);
+        };
+        while return_type_parser.matches(Token::Star) {
+            let pointer_qualifiers = return_type_parser.take_qualifiers();
+            ret_type = CType::Pointer {
+                qualifiers: pointer_qualifiers,
+                pointee: Box::new(ret_type),
+            };
+        }
+        let name_index = return_type_parser.position();
+        let Some(Token::Ident(name)) = tokens.get(name_index) else {
+            return Ok(None);
+        };
+        if tokens.get(name_index + 1) != Some(&Token::LParen) {
+            return Ok(None);
+        }
+        let mut declarator_parser = DeclaratorParser::new(tokens, name_index + 1);
+        let Ok((parameters, variadic)) = declarator_parser.parse_parameters() else {
+            return Ok(None);
+        };
+        let (signature_attributes, body_index) =
+            parse_attribute_groups(tokens, declarator_parser.position())
+                .map_err(|error| self.error_at(code, 0, code.len(), error))?;
+        if tokens.get(body_index) != Some(&Token::LBrace) {
+            return Ok(None);
+        }
+        attributes.extend(signature_attributes);
+        let close = matching_brace(tokens, body_index)
+            .ok_or_else(|| self.error_at(code, 0, code.len(), "expected `}`"))?;
+        let body = self.parse_stmts_from_tokens(code, &tokens[body_index + 1..close])?;
+        Ok(Some((
+            FunctionDecl {
+                ret_type,
+                name: name.clone(),
+                parameters,
+                variadic,
+                body,
+                provenance: Provenance::default(),
+                qualifiers,
+                storage,
+                is_inline,
+                is_noreturn,
+                attributes,
+            },
+            close + 1,
+        )))
+    }
+
     fn starts_declaration(&self, tokens: &[Token], pos: usize) -> bool {
         match tokens.get(pos) {
             Some(Token::Keyword(keyword)) if keyword.is_storage_class_or_specifier() => true,
@@ -2277,6 +2378,13 @@ impl Parser {
             return Ok(Stmt::Block(body));
         }
 
+        if self.starts_declaration(tokens, *i)
+            && let Some((function, next)) = self.try_parse_nested_function(code, tokens, *i)?
+        {
+            *i = next;
+            return Ok(Stmt::NestedFunction(Box::new(function)));
+        }
+
         if self.starts_declaration(tokens, *i) {
             let end = top_level_semi(&tokens[*i..])
                 .map(|position| *i + position)
@@ -2301,6 +2409,15 @@ impl Parser {
             }
             Some(Token::Keyword(Keyword::Continue)) => {
                 self.parse_simple_keyword_stmt(code, tokens, i, Stmt::Continue)
+            }
+            Some(Token::Keyword(Keyword::Goto)) if tokens.get(*i + 1) == Some(&Token::Star) => {
+                let start = *i + 2;
+                let end = top_level_semi(&tokens[start..])
+                    .map(|position| start + position)
+                    .ok_or_else(|| self.error_at(code, 0, code.len(), "expected `;`"))?;
+                let target = self.parse_expression(code, &tokens[start..end])?;
+                *i = end + 1;
+                Ok(Stmt::ComputedGoto(target))
             }
             Some(Token::Keyword(Keyword::Goto)) => {
                 let Some(Token::Ident(label)) = tokens.get(*i + 1) else {

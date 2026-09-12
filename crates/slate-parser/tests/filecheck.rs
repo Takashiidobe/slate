@@ -360,6 +360,8 @@ fn summarize_evaluated_decl(decl: &ConcreteDecl) -> DeclSummary {
                     | ConcreteStmt::Default
                     | ConcreteStmt::Labeled(_)
                     | ConcreteStmt::Goto(_)
+                    | ConcreteStmt::ComputedGoto(_)
+                    | ConcreteStmt::NestedFunction(_)
                     | ConcreteStmt::Break
                     | ConcreteStmt::Continue
                     | ConcreteStmt::Unreachable(_) => None,
@@ -698,6 +700,7 @@ fn declarator_identifier(declarator: &Declarator) -> String {
 fn array_size(size: &ArraySize) -> String {
     match size {
         ArraySize::Unspecified => "".into(),
+        ArraySize::Star => "*".into(),
         ArraySize::Expression(expression) => match expression.as_ref() {
             Expr::IntLit(value) => value.to_string(),
             Expr::StringLit(_) => panic!("array bound was not an integer"),
