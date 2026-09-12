@@ -1,0 +1,28 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+static void fill_values(int *values, int len) {
+  for (int i = 0; i < len; ++i)
+    values[i] = i * 3;
+}
+
+static void forward_fill(int *values, int len) { fill_values(values, len); }
+
+int main(void) {
+  int  len    = 5;
+  int *values = malloc(len * sizeof(int));
+  forward_fill(values, len);
+  printf("%d %d\n", values[1], values[4]);
+  return 0;
+}
+
+// LOWERING: #![feature(c_variadic)]
+
+// REWRITES: #![feature(c_variadic)]
+
+// SLATE-FILECHECK-ISYSTEM ~/Projects/slate/libc-shim/include /usr/lib/clang/22/include
+
+// SLATE-FILECHECK-DEFINES DEFAULT
+
+// SLATE-FILECHECK-BEGIN DEFAULT
+// SLATE-FILECHECK-END DEFAULT

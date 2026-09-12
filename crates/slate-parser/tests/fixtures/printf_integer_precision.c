@@ -1,0 +1,24 @@
+#include <stdio.h>
+
+int main(void) {
+  int          a   = 5;
+  int          neg = -5;
+  unsigned int u   = 5u;
+  unsigned int hex = 255u;
+  printf("%.3d %.3d\n", a, neg);
+  printf("%8.3d|%-8.3d|%+.3d\n", a, neg, a);
+  printf("%08.3d\n", neg);
+  printf("%.3u %.4x %.4X %.4o\n", u, hex, hex, hex);
+  return 0;
+}
+
+// LOWERING: #![feature(c_variadic)]
+
+// REWRITES: #![feature(c_variadic)]
+
+// SLATE-FILECHECK-ISYSTEM ~/Projects/slate/libc-shim/include /usr/lib/clang/22/include
+
+// SLATE-FILECHECK-DEFINES DEFAULT
+
+// SLATE-FILECHECK-BEGIN DEFAULT
+// SLATE-FILECHECK-END DEFAULT

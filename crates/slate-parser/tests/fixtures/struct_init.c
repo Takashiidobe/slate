@@ -1,0 +1,32 @@
+#include <stdio.h>
+
+struct Triple {
+  int x;
+  int y;
+  int z;
+};
+
+int main(void) {
+  struct Triple full       = {1, 2, 3};
+  struct Triple partial    = {4, 5};
+  struct Triple designated = {.z = 9, .x = 7};
+  printf("%d %d %d\n", full.x, full.y, full.z);
+  printf("%d %d %d\n", partial.x, partial.y, partial.z);
+  printf("%d %d %d\n", designated.x, designated.y, designated.z);
+
+  struct Triple copy = full;
+  copy.x             = 42;
+  printf("%d %d\n", full.x, copy.x);
+  return 0;
+}
+
+// LOWERING: #![feature(c_variadic)]
+
+// REWRITES: #![feature(c_variadic)]
+
+// SLATE-FILECHECK-ISYSTEM ~/Projects/slate/libc-shim/include /usr/lib/clang/22/include
+
+// SLATE-FILECHECK-DEFINES DEFAULT
+
+// SLATE-FILECHECK-BEGIN DEFAULT
+// SLATE-FILECHECK-END DEFAULT

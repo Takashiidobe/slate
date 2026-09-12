@@ -207,6 +207,25 @@ pub enum Token {
 }
 
 impl Token {
+    pub fn integer_value_i128(&self) -> Option<i128> {
+        let Token::IntLit(spelling) = self else {
+            return None;
+        };
+        let digits = Lexer::integer_digits(spelling).replace('\'', "");
+        let (radix, digits) = if digits.starts_with("0x") || digits.starts_with("0X") {
+            (16, &digits[2..])
+        } else if digits.starts_with("0b") || digits.starts_with("0B") {
+            (2, &digits[2..])
+        } else if digits.len() > 1 && digits.starts_with('0') {
+            (8, &digits[1..])
+        } else {
+            (10, digits.as_str())
+        };
+        u128::from_str_radix(digits, radix)
+            .ok()
+            .and_then(|value| i128::try_from(value).ok())
+    }
+
     pub fn integer_value(&self) -> Option<i64> {
         let Token::IntLit(spelling) = self else {
             return None;
@@ -591,10 +610,10 @@ impl Lexer {
                 .collect();
             self.pos = self.past_literal(literal_close);
             self.emit(Token::StringLit(value));
-        } else if c.is_ascii_alphabetic() || c == '_' || c == '\\' {
+        } else if c.is_ascii_alphabetic() || matches!(c, '_' | '$' | '\\') {
             while self.pos < self.chars.len()
                 && (self.chars[self.pos].is_ascii_alphanumeric()
-                    || self.chars[self.pos] == '_'
+                    || matches!(self.chars[self.pos], '_' | '$')
                     || self.chars[self.pos] == '\\')
             {
                 if self.chars[self.pos] == '\\' {

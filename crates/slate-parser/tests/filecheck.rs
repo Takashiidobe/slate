@@ -401,6 +401,7 @@ fn summarize_evaluated_decl(decl: &Decl) -> DeclSummary {
                             panic!("clang return was not an integer")
                         }
                     },
+                    Stmt::ReturnVoid => None,
                     Stmt::Comment { .. }
                     | Stmt::Expr(_)
                     | Stmt::Decl(_)
@@ -412,6 +413,7 @@ fn summarize_evaluated_decl(decl: &Decl) -> DeclSummary {
                     | Stmt::For { .. }
                     | Stmt::Switch { .. }
                     | Stmt::Case(_)
+                    | Stmt::CaseRange { .. }
                     | Stmt::Default
                     | Stmt::Labeled(_)
                     | Stmt::Goto(_)

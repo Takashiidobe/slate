@@ -81,7 +81,17 @@ pub struct GenericAssociation {
 #[derive(Debug, Clone, PartialEq)]
 pub enum Designator {
     Array(i64),
+    ArrayRange {
+        start: IntegerValue,
+        end: IntegerValue,
+    },
     Field(String),
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum IntegerValue {
+    I128(i128),
+    Arbitrary(String),
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -104,6 +114,7 @@ pub enum Stmt {
         provenance: Provenance,
     },
     Return(SpannedExpr),
+    ReturnVoid,
     Expr(SpannedExpr),
     Decl(Declaration),
     StaticAssert(StaticAssert),
@@ -132,6 +143,10 @@ pub enum Stmt {
         body: Vec<SpannedStmt>,
     },
     Case(SpannedExpr),
+    CaseRange {
+        start: SpannedExpr,
+        end: SpannedExpr,
+    },
     Default,
     Labeled(String),
     Goto(String),

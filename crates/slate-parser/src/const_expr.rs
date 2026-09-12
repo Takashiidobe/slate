@@ -1,6 +1,6 @@
 use crate::ast::{
     ArraySize, CType, Declarator, Designator, Expr, FloatingType, Initializer, InitializerItem,
-    IntegerRank, IntegerType, Span,
+    IntegerRank, IntegerType, IntegerValue, Span,
 };
 use crate::lexer::{Keyword, Token, TokenSpanExt};
 use crate::parser::DeclaratorParser;
@@ -360,6 +360,13 @@ fn strip_imaginary(digits: &str) -> (&str, bool) {
         Some(stripped) => (stripped, true),
         None => (digits, false),
     }
+}
+
+fn integer_value(token: &Token) -> IntegerValue {
+    token.integer_value_i128().map_or_else(
+        || IntegerValue::Arbitrary(String::from(token)),
+        IntegerValue::I128,
+    )
 }
 
 fn apfloat_bits<F: rustc_apfloat::Float>(digits: &str) -> Option<u128> {
@@ -771,11 +778,23 @@ impl Parser {
                     let Some(token @ Token::IntLit(_)) = self.take() else {
                         return Err(ConstExprError::ExpectedIntegerExpression);
                     };
+                    let index_value = integer_value(&token);
                     let Some(index) = token.integer_value() else {
                         return Err(ConstExprError::ExpectedIntegerExpression);
                     };
+                    if self.consume(&Token::Ellipsis) {
+                        let Some(Token::IntLit(end)) = self.take() else {
+                            return Err(ConstExprError::ExpectedIntegerExpression);
+                        };
+                        let end = integer_value(&Token::IntLit(end));
+                        designators.push(Designator::ArrayRange {
+                            start: index_value,
+                            end,
+                        });
+                    } else {
+                        designators.push(Designator::Array(index));
+                    }
                     self.expect(Token::RBracket)?;
-                    designators.push(Designator::Array(index));
                 } else if self.peek() == Some(&Token::Dot) {
                     self.take();
                     designators.push(Designator::Field(self.expect_field_name()?));

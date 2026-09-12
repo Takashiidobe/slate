@@ -1,0 +1,26 @@
+#include <stdio.h>
+
+static int sum_fixed(void) {
+  int a[5]  = {1, 2, 3, 4, 5};
+  int total = 0;
+  for (int i = 0; i < 5; i++) {
+    total += a[i];
+  }
+  return total;
+}
+
+int main(void) {
+  printf("%d\n", sum_fixed());
+  return 0;
+}
+
+// LOWERING: #![feature(c_variadic)]
+
+// REWRITES: #![feature(c_variadic)]
+
+// SLATE-FILECHECK-ISYSTEM ~/Projects/slate/libc-shim/include /usr/lib/clang/22/include
+
+// SLATE-FILECHECK-DEFINES DEFAULT
+
+// SLATE-FILECHECK-BEGIN DEFAULT
+// SLATE-FILECHECK-END DEFAULT

@@ -1,0 +1,30 @@
+#include <stdio.h>
+
+int pick(int x) {
+  int out = 5;
+  switch (x) {
+  case 4:
+    out += 4;
+    break;
+  case 9:
+    out += 9;
+    break;
+  }
+  return out;
+}
+
+int main(void) {
+  printf("%d %d %d\n", pick(4), pick(9), pick(2));
+  return 0;
+}
+
+// LOWERING: #![feature(c_variadic)]
+
+// REWRITES: #![feature(c_variadic)]
+
+// SLATE-FILECHECK-ISYSTEM ~/Projects/slate/libc-shim/include /usr/lib/clang/22/include
+
+// SLATE-FILECHECK-DEFINES DEFAULT
+
+// SLATE-FILECHECK-BEGIN DEFAULT
+// SLATE-FILECHECK-END DEFAULT

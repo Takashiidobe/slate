@@ -19,6 +19,13 @@ fn synthetic(token: Token) -> Span<Token> {
     Span::new(token, loc, loc)
 }
 
+fn integer_value(token: &Token) -> IntegerValue {
+    token.integer_value_i128().map_or_else(
+        || IntegerValue::Arbitrary(String::from(token)),
+        IntegerValue::I128,
+    )
+}
+
 struct Loc<'a> {
     code: &'a str,
     offset: usize,
@@ -210,6 +217,7 @@ impl Parser {
         let mut is_inline = false;
         let mut is_noreturn = false;
         let mut is_constexpr = false;
+        let gnu_auto_type = parser.matches(Token::Ident("__auto_type".into()));
         loop {
             if let Some(qualifier) = parser.take_qualifier() {
                 match qualifier {
@@ -266,7 +274,8 @@ impl Parser {
                 break;
             }
         }
-        let ty = if storage == StorageClass::Auto && matches!(parser.peek(), Some(Token::Ident(_)))
+        let ty = if gnu_auto_type
+            || storage == StorageClass::Auto && matches!(parser.peek(), Some(Token::Ident(_)))
         {
             CType::TargetBuiltin("__auto_type".into())
         } else {
@@ -445,15 +454,24 @@ impl Parser {
                         .parse_tag_definition(nodes)
                         .map(|result| span_decl_result(result, nodes));
                 }
-                let (name, ty, attributes) = self.parse_typedef_line(text)?;
+                let span = declaration_node_span(nodes);
+                let typedef_text = if span == 1 {
+                    text.to_string()
+                } else {
+                    join_node_text(&nodes[..span])
+                };
+                let (name, ty, attributes) = self.parse_typedef_line(&typedef_text)?;
                 Ok((
-                    vec![nodes[0].clone().with_value(Decl::Typedef {
-                        name,
-                        ty,
-                        provenance: *provenance,
-                        attributes,
-                    })],
-                    1,
+                    vec![span_pp_nodes(
+                        Decl::Typedef {
+                            name,
+                            ty,
+                            provenance: self.node_provenance(&nodes[0]),
+                            attributes,
+                        },
+                        &nodes[..span],
+                    )],
+                    span,
                 ))
             }
             PPNodeKind::Code { .. } => {
@@ -834,23 +852,38 @@ impl Parser {
                             break;
                         }
                     }
-                    fields.push(span_pp_nodes(
-                        FieldItem::Field(FieldDecl {
-                            declaration: if index == start + 1 {
-                                self.parse_field_declaration_tokens(
-                                    &joined,
-                                    &self.node_tokens(&nodes[start]),
-                                )?
-                            } else {
-                                self.parse_field_declaration_tokens(
-                                    &joined,
-                                    &self.nodes_tokens(&nodes[start..index]),
-                                )?
-                            },
-                            provenance: self.node_provenance(&nodes[start]),
-                        }),
-                        &nodes[start..index],
-                    ));
+                    let all_tokens = if index == start + 1 {
+                        self.node_tokens(&nodes[start])
+                    } else {
+                        self.nodes_tokens(&nodes[start..index])
+                    };
+                    let declaration_tokens = all_tokens
+                        .last()
+                        .is_some_and(|token| token.value == Token::Semi)
+                        .then(|| &all_tokens[..all_tokens.len() - 1])
+                        .unwrap_or(&all_tokens);
+                    let parts = split_top_level(declaration_tokens, &Token::Comma);
+                    let prefix = declaration_tokens
+                        .values()
+                        .position(|token| *token == Token::Star)
+                        .map(|position| declaration_tokens[..position].to_vec());
+                    for (part_index, mut part) in parts.into_iter().enumerate() {
+                        if part_index > 0
+                            && let Some(prefix) = &prefix
+                        {
+                            let mut with_prefix = prefix.clone();
+                            with_prefix.append(&mut part);
+                            part = with_prefix;
+                        }
+                        part.push(synthetic(Token::Semi));
+                        fields.push(span_pp_nodes(
+                            FieldItem::Field(FieldDecl {
+                                declaration: self.parse_field_declaration_tokens(&joined, &part)?,
+                                provenance: self.node_provenance(&nodes[start]),
+                            }),
+                            &nodes[start..index],
+                        ));
+                    }
                 }
             }
         }
@@ -2214,24 +2247,43 @@ impl<'a> DeclaratorParser<'a> {
                         let Some(Token::IntLit(index)) = self.peek().cloned() else {
                             panic!("array designator must be an integer literal")
                         };
-                        let index = Token::IntLit(index)
+                        let index_token = Token::IntLit(index);
+                        let index_value = integer_value(&index_token);
+                        let index = index_token
                             .integer_value()
                             .unwrap_or_else(|| panic!("array designator does not fit i64"));
                         self.pos += 1;
+                        if self.matches(Token::Ellipsis) {
+                            let Some(Token::IntLit(end)) = self.peek().cloned() else {
+                                panic!("array range designator must end with an integer literal")
+                            };
+                            let end = integer_value(&Token::IntLit(end));
+                            self.pos += 1;
+                            designators.push(Designator::ArrayRange {
+                                start: index_value,
+                                end,
+                            });
+                        } else {
+                            designators.push(Designator::Array(index));
+                        }
                         assert!(self.matches(Token::RBracket), "expected `]` in designator");
-                        designators.push(Designator::Array(index));
                     } else if self.matches(Token::Dot) {
                         let Some(Token::Ident(name)) = self.peek().cloned() else {
                             panic!("field designator must name a field")
                         };
                         self.pos += 1;
                         designators.push(Designator::Field(name));
+                    } else if let Some(Token::Ident(name)) = self.peek().cloned()
+                        && self.tokens.value_at(self.pos + 1) == Some(&Token::Colon)
+                    {
+                        self.pos += 2;
+                        designators.push(Designator::Field(name));
                     } else {
                         break;
                     }
                 }
                 if !designators.is_empty() {
-                    assert!(self.matches(Token::Equal), "expected `=` after designator");
+                    self.matches(Token::Equal);
                 }
                 items.push(InitializerItem {
                     designators,
@@ -2894,7 +2946,11 @@ impl Parser {
     fn starts_declaration(&self, tokens: &[Span<Token>], pos: usize) -> bool {
         match tokens.value_at(pos) {
             Some(Token::Keyword(keyword)) if keyword.is_storage_class_or_specifier() => true,
-            Some(Token::Ident(name)) if name == "_Alignas" || name == "alignas" => true,
+            Some(Token::Ident(name))
+                if matches!(name.as_str(), "_Alignas" | "alignas" | "__auto_type") =>
+            {
+                true
+            }
             Some(token) => const_expr::starts_type_name(token, &self.typedef_names),
             None => false,
         }
@@ -3016,9 +3072,14 @@ impl Parser {
                 let end = top_level_semi(&tokens[start..])
                     .map(|position| start + position)
                     .ok_or_else(|| self.error_at(Loc::whole(code), "expected `;`"))?;
-                let expression = self.parse_expression(code, &tokens[start..end])?;
                 fragment.pos = end + 1;
-                Ok(Stmt::Return(expression))
+                if start == end {
+                    Ok(Stmt::ReturnVoid)
+                } else {
+                    Ok(Stmt::Return(
+                        self.parse_expression(code, &tokens[start..end])?,
+                    ))
+                }
             }
             Some(Token::Keyword(Keyword::Break)) => {
                 self.parse_simple_keyword_stmt(fragment, Stmt::Break)
@@ -3050,7 +3111,21 @@ impl Parser {
                     .position(|token| *token == Token::Colon)
                     .map(|position| start + position)
                     .ok_or_else(|| self.error_at(Loc::whole(code), "expected `:` after `case`"))?;
-                let value = self.parse_expression(code, &tokens[start..colon])?;
+                let range = tokens[start..colon]
+                    .values()
+                    .position(|token| *token == Token::Ellipsis);
+                let value = if let Some(range) = range {
+                    let range_start = self.parse_expression(code, &tokens[start..start + range])?;
+                    let range_end =
+                        self.parse_expression(code, &tokens[start + range + 1..colon])?;
+                    fragment.pos = colon + 1;
+                    return Ok(Stmt::CaseRange {
+                        start: range_start,
+                        end: range_end,
+                    });
+                } else {
+                    self.parse_expression(code, &tokens[start..colon])?
+                };
                 fragment.pos = colon + 1;
                 Ok(Stmt::Case(value))
             }

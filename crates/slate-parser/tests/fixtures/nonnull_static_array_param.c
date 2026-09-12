@@ -1,0 +1,26 @@
+#include <stdio.h>
+
+int sum4(int arr[static 4]) {
+  int s = 0;
+  for (int i = 0; i < 4; i++) {
+    s += arr[i];
+  }
+  return s;
+}
+
+int main(void) {
+  int values[4] = {1, 2, 3, 4};
+  printf("%d\n", sum4(values));
+  return 0;
+}
+
+// LOWERING: #![feature(c_variadic)]
+
+// REWRITES: #![feature(c_variadic)]
+
+// SLATE-FILECHECK-ISYSTEM ~/Projects/slate/libc-shim/include /usr/lib/clang/22/include
+
+// SLATE-FILECHECK-DEFINES DEFAULT
+
+// SLATE-FILECHECK-BEGIN DEFAULT
+// SLATE-FILECHECK-END DEFAULT

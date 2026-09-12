@@ -74,7 +74,7 @@ fn mark_unreachable_in(stmt: SpannedStmt) -> SpannedStmt {
 
 fn always_terminates(stmt: &SpannedStmt) -> bool {
     match &stmt.value {
-        Stmt::Return(_) | Stmt::Break | Stmt::Continue | Stmt::Goto(_) => true,
+        Stmt::Return(_) | Stmt::ReturnVoid | Stmt::Break | Stmt::Continue | Stmt::Goto(_) => true,
         Stmt::Block(body) => block_terminates(body),
         Stmt::If {
             then_branch,
