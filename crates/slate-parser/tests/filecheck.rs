@@ -139,6 +139,29 @@ fn error_configurations(source: &str) -> Vec<String> {
         .collect()
 }
 
+struct FixtureJob {
+    fixture: PathBuf,
+    prefix: String,
+    defines: Vec<String>,
+    isystem: Vec<String>,
+    error: bool,
+    slot: usize,
+}
+
+fn run_job(job: FixtureJob) {
+    if job.error {
+        run_error_fixture(&job.fixture, &job.prefix, &job.defines, job.slot);
+    } else {
+        run_fixture(
+            &job.fixture,
+            &job.prefix,
+            &job.defines,
+            &job.isystem,
+            job.slot,
+        );
+    }
+}
+
 fn run_fixture(fixture: &Path, prefix: &str, defines: &[String], isystem: &[String], slot: usize) {
     let source = fixture_source(fixture);
     let parsed_fixture = fixture.with_file_name(format!(
@@ -776,7 +799,7 @@ fn fixtures_are_filechecked() {
     fixtures.sort();
     assert!(!fixtures.is_empty(), "no C fixtures found");
 
-    let mut checked = 0;
+    let mut jobs = Vec::new();
     for fixture in fixtures {
         let source = std::fs::read_to_string(&fixture).expect("read fixture");
         let configs = configurations(&source);
@@ -787,8 +810,14 @@ fn fixtures_are_filechecked() {
                     .iter()
                     .find(|(name, _)| name == prefix)
                     .map_or(&[][..], |(_, defines)| defines.as_slice());
-                run_error_fixture(&fixture, prefix, defines, slot);
-                checked += 1;
+                jobs.push(FixtureJob {
+                    fixture: fixture.clone(),
+                    prefix: prefix.clone(),
+                    defines: defines.to_vec(),
+                    isystem: Vec::new(),
+                    error: true,
+                    slot,
+                });
             }
             continue;
         }
@@ -799,9 +828,42 @@ fn fixtures_are_filechecked() {
         );
         let isystem = isystem_paths(&source);
         for (slot, (prefix, defines)) in configs.iter().enumerate() {
-            run_fixture(&fixture, prefix, defines, &isystem, slot);
-            checked += 1;
+            jobs.push(FixtureJob {
+                fixture: fixture.clone(),
+                prefix: prefix.clone(),
+                defines: defines.clone(),
+                isystem: isystem.clone(),
+                error: false,
+                slot,
+            });
         }
     }
-    assert!(checked > 0, "no FileCheck configurations found");
+    assert!(!jobs.is_empty(), "no FileCheck configurations found");
+
+    let workers = jobs.len().min(6);
+    let chunk_size = jobs.len().div_ceil(workers);
+    std::thread::scope(|scope| {
+        let handles = jobs
+            .chunks(chunk_size)
+            .map(|jobs| {
+                scope.spawn(move || {
+                    jobs.iter().for_each(|job| {
+                        run_job(FixtureJob {
+                            fixture: job.fixture.clone(),
+                            prefix: job.prefix.clone(),
+                            defines: job.defines.clone(),
+                            isystem: job.isystem.clone(),
+                            error: job.error,
+                            slot: job.slot,
+                        })
+                    })
+                })
+            })
+            .collect::<Vec<_>>();
+        for handle in handles {
+            if let Err(payload) = handle.join() {
+                std::panic::resume_unwind(payload);
+            }
+        }
+    });
 }
