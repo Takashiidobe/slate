@@ -194,7 +194,12 @@ Each phase should be validated against clang before moving to the next
 (fuzz harness: preprocessor output via `-E -P`, AST via
 `-Xclang -ast-dump=json -fsyntax-only`, pinned to one clang version).
 
-**Phase 0 — flat lexer + flat parser, no conditionals, no sema**
+**Status: phases 0-5 are implemented (parsing, including most of GNU/C23
+extension surface, evaluation to a concrete AST, and a reachability pass);
+phase 6 (sema) is in progress; phases 7-8 are not started.** Run `bd ready` /
+`bd list` for the current breakdown of open work per phase.
+
+**Phase 0 — flat lexer + flat parser, no conditionals, no sema** (done)
 Target: `int main() { return 3; }`. Tokenizer for keywords/identifiers/
 int literals/punctuators; recursive-descent parser for a function
 definition, compound-stmt, return-stmt, integer constant expr. No
@@ -202,7 +207,7 @@ preprocessor yet, no type checking yet — sema is deferred to its own
 phase after eval (see above). Establishes the non-conditional AST shape
 everything else builds on.
 
-**Phase 1 — preprocessor conditional stack, structural divergence only**
+**Phase 1 — preprocessor conditional stack, structural divergence only** (done)
 Add `#ifdef`/`#ifndef`/`#if`/`#elif`/`#else`/`#endif` and `defined()`,
 tracked as a condition stack. No macro object/function-like expansion
 yet — just enough to make
@@ -221,7 +226,7 @@ statement/decl lists must accept an interleaved branch point mid-list.
 Also introduces the parser's own conditional typedef-name set (needed
 for grammar disambiguation, not full sema — see architecture section).
 
-**Phase 2 — object/function-like macros, `HashMap<String, Conditional<MacroDef>>`**
+**Phase 2 — object/function-like macros, `HashMap<String, Conditional<MacroDef>>`** (done)
 Macro expansion (object-like, function-like, `##`, `#`, `__VA_ARGS__`).
 Every macro definition/redefinition is inserted into the table as an
 additional branch under the current condition stack. Expansion of a
@@ -229,7 +234,7 @@ macro whose table entry has >1 branch produces `Conditional<TokenStream>`,
 which the parser consumes the same way it consumes a direct `#ifdef`
 region from phase 1. This is what makes the `FLAG` example above work.
 
-**Phase 3 — full C declarator/type grammar (parse-only)**
+**Phase 3 — full C declarator/type grammar (parse-only)** (done)
 Struct/union/enum, arrays, function pointers, qualifiers, storage
 classes, initializers (including designated) — parsed and represented
 in the polyvariant AST, but not yet type-checked. Constant expression
@@ -237,13 +242,20 @@ evaluation still needed here for `#if` and array bounds/case labels
 (this is integer constant folding, not full sema — it's needed to
 parse correctly, same as the typedef-name tracking from phase 1). This
 is the bulk of the "regular C" grammar surface and the largest phase by
-LOC.
+LOC. Remaining edge cases (bitfields, anonymous struct/union members,
+K&R-style declarators, `_Atomic`/`_BitInt(N)`/complex numeric types,
+`typeof`) are tracked as their own follow-up issues rather than blocking
+later phases.
 
-**Phase 4 — GNU/clang extensions (parse-only)**
+Phase 3.5 (full C statement/expression grammar, parse-only) landed
+alongside phase 3 rather than as a separate step.
+
+**Phase 4 — GNU/clang extensions (parse-only)** (mostly done)
 `__attribute__`, `_Generic`, statement expressions, computed goto,
-nested functions, VLAs, `__builtin_*` catalog, vector extensions,
-inline asm (parse-only — no need to understand semantics beyond
-preserving it opaquely), C23 additions clang ships.
+nested functions, VLAs, C23 additions clang ships — implemented. The
+`__builtin_*` catalog, vector extensions, and inline asm (parse-only —
+no need to understand semantics beyond preserving it opaquely) are the
+remaining slice of this phase.
 
 **Phase 5 — eval visitor** (implemented, ahead of schedule — see `src/eval.rs`)
 Given a concrete flag environment (`Env`, a defined-macro set for now),
@@ -265,7 +277,7 @@ built alongside phases 1's `Conditional<Stmt>` and the typedef example's
 `Decl::Conditional`, rather than deferred to the end, since both already
 needed *some* eval path to be testable end-to-end.
 
-**Phase 6 — sema, on the concrete AST**
+**Phase 6 — sema, on the concrete AST** (in progress — see `src/sema.rs`)
 Ordinary monomorphic C sema: implicit conversions, integer promotions,
 scope/tag resolution, declarator/type validation, full diagnostics —
 run once per requested flag configuration, on the already-evaluated
@@ -273,6 +285,16 @@ tree. Deferred to here specifically to avoid conditional-propagating
 type checking (see architecture section above); this is also the phase
 that should track most closely against clang's own diagnostics, since
 by this point there's exactly one branch, same as clang ever sees.
+Scope/tag/declaration resolution, implicit-conversion checking, and
+full constant-expression semantic validation are still open.
+
+A reachability pass (`src/reachability.rs`) also runs on the concrete
+AST: it marks statements after an unconditional jump/return/etc. as
+`ConcreteStmt::Unreachable`, purely structurally (no type information
+needed) — this and a human-readable AST renderer (`src/render.rs`, used
+by the FileCheck fixtures) were added ahead of schedule alongside eval
+and phase 3.5, since both needed something to make the evaluated output
+inspectable/testable end to end.
 
 **Phase 7 — fuzzing harness hardening**
 Corpus generation, clang-version pinning, differential fuzzing loop
@@ -326,3 +348,20 @@ for a new C construct later is additive, not a rewrite.
   during parsing, phases 1 and 3) should share a constant-evaluator
   implementation with phase 6's sema, or stay a separate, narrower
   evaluator — they overlap but sema's version also needs real types.
+
+## In-progress: span/location tracking overhaul
+
+A cross-cutting refactor (tracked as the `1uq` epic) is replacing ad-hoc
+string-offset error reporting with real source spans, since phase 6
+diagnostics need to point at exact source locations rather than
+re-searching source text for a substring. So far: `Loc{file, offset,
+length}` and a generic `Span<T>{value, spelling, expansion}` (`ast.rs`);
+the lexer now returns `Vec<Span<Token>>` with real byte offsets
+(`lexer.rs`, rewritten around a `Lexer` struct with `peek`/`try_consume`
+helpers instead of hand-rolled lookahead); a `Cursor` trait shared by the
+parser's per-construct fragments; and declaration/tag/field parsing in
+`parser.rs` consuming preprocessor-retained token spans instead of
+re-lexing source substrings. Remaining: composing spelling vs. expansion
+spans for macro-expanded tokens, and propagating `Span<T>` through the
+rest of the polyvariant/concrete AST (currently only declarations, tags,
+and some statements carry it) so it reaches sema diagnostics.
