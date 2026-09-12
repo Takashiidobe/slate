@@ -391,7 +391,7 @@ pub fn lex(src: &str) -> Vec<Token> {
                 "static" => Token::Keyword(Keyword::Static),
                 "auto" => Token::Keyword(Keyword::Auto),
                 "register" => Token::Keyword(Keyword::Register),
-                "inline" => Token::Keyword(Keyword::Inline),
+                "inline" | "__inline" | "__inline__" => Token::Keyword(Keyword::Inline),
                 "__int128" => Token::Keyword(Keyword::Int128),
                 "_Noreturn" => Token::Keyword(Keyword::Noreturn),
                 "_Thread_local" | "__thread" => Token::Keyword(Keyword::ThreadLocal),

@@ -957,6 +957,35 @@ fn parse_attribute_expression(arguments: &[Token]) -> Result<const_expr::ConstEx
     const_expr::Parser::parse(arguments).map_err(|error| error.to_string())
 }
 
+fn signature_node_span(nodes: &[PPNode]) -> usize {
+    let mut depth = 0i32;
+    for (index, node) in nodes.iter().enumerate() {
+        let PPNode::Code { text, .. } = node else {
+            return index.max(1);
+        };
+        for token in lex(text) {
+            match token {
+                Token::LParen => depth += 1,
+                Token::RParen => depth -= 1,
+                Token::LBrace if depth <= 0 => return index + 1,
+                _ => {}
+            }
+        }
+    }
+    nodes.len().max(1)
+}
+
+fn join_node_text(nodes: &[PPNode]) -> String {
+    nodes
+        .iter()
+        .map(|node| match node {
+            PPNode::Code { text, .. } => text.as_str(),
+            PPNode::Conditional(_) => "",
+        })
+        .collect::<Vec<_>>()
+        .join("\n")
+}
+
 fn matching_brace(tokens: &[Token], open: usize) -> Option<usize> {
     let mut depth = 0i32;
     for (offset, token) in tokens[open..].iter().enumerate() {
@@ -1807,7 +1836,14 @@ fn is_target_builtin_name(name: &str) -> bool {
 impl Parser {
     fn parse_function(&self, nodes: &[PPNode]) -> Result<(FunctionDecl, usize), ParseError> {
         let provenance = self.node_provenance(&nodes[0]);
-        let code = self.node_text(&nodes[0]);
+        let sig_node_count = signature_node_span(nodes);
+        let joined_code;
+        let code: &str = if sig_node_count == 1 {
+            self.node_text(&nodes[0])
+        } else {
+            joined_code = join_node_text(&nodes[..sig_node_count]);
+            &joined_code
+        };
         let sig_tokens = lex(code);
         let (mut attributes, mut index) = parse_attribute_groups(&sig_tokens, 0)
             .map_err(|error| self.error_at(code, 0, code.len(), error))?;
@@ -1843,9 +1879,16 @@ impl Parser {
             tokens: &sig_tokens,
             pos: index,
         };
-        let ret_type = return_type_parser
+        let mut ret_type = return_type_parser
             .parse_base_type()
             .map_err(|error| self.error_at(code, 0, code.len(), error))?;
+        while return_type_parser.matches(Token::Star) {
+            let qualifiers = return_type_parser.take_qualifiers();
+            ret_type = CType::Pointer {
+                qualifiers,
+                pointee: Box::new(ret_type),
+            };
+        }
         let name_index = return_type_parser.pos;
         let name = match sig_tokens.get(name_index) {
             Some(Token::Ident(n)) => n.clone(),
@@ -1901,13 +1944,13 @@ impl Parser {
                     is_noreturn,
                     attributes,
                 },
-                1,
+                sig_node_count,
             ));
         }
 
         let mut depth = 1i32;
         let mut close_idx = None;
-        for (offset, node) in nodes[1..].iter().enumerate() {
+        for (offset, node) in nodes[sig_node_count..].iter().enumerate() {
             if let PPNode::Code { text, .. } = node {
                 for token in lex(text) {
                     match token {
@@ -1921,7 +1964,7 @@ impl Parser {
                 }
             }
             if depth == 0 {
-                close_idx = Some(offset + 1);
+                close_idx = Some(sig_node_count + offset);
                 break;
             }
         }
@@ -1935,7 +1978,7 @@ impl Parser {
             attributes.extend(trailing_attributes);
         }
 
-        let body = self.parse_stmt_list(&nodes[1..close_idx])?;
+        let body = self.parse_stmt_list(&nodes[sig_node_count..close_idx])?;
         Ok((
             FunctionDecl {
                 ret_type,
