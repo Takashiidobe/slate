@@ -20,6 +20,13 @@ fields contain `Span<Expr>`, and preprocessor output uses
 `Span<PPNodeKind>`. Exhaustive matches over these collections must match
 the wrapper's `.value`.
 
+## Adding a `Decl` variant
+
+- `src/ast.rs` — `Decl::name` and `Decl::provenance` are exhaustive.
+- `src/sema.rs` — typedef/tag collection and the main analysis pass match declarations.
+- `src/reachability.rs` — root dependency marking is exhaustive.
+- `tests/filecheck.rs` — clang-oracle filtering and declaration summaries are exhaustive.
+
 ## Adding a `Stmt` variant
 
 - `src/parser.rs` — every `FunctionDecl` body (top-level and nested) is

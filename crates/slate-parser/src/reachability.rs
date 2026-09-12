@@ -142,7 +142,7 @@ impl<'a> Reachability<'a> {
             return;
         }
         match &self.nodes[id].value {
-            Decl::Comment { .. } => {}
+            Decl::Comment { .. } | Decl::StaticAssert { .. } => {}
             Decl::Function(function) => self.mark_type(&function.ret_type),
             Decl::Declaration { declaration, .. } => {
                 self.mark_type(&declaration.specifiers.ty);

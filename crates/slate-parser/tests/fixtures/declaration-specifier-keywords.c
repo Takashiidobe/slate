@@ -19,7 +19,7 @@ _Atomic(unsigned long) atomic_unsigned_long_value;
 // DEFAULT-NEXT:                       signed: true,
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               storage: ThreadLocal,
+// DEFAULT-NEXT:               is_thread_local: true,
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "thread_local_value",
@@ -43,7 +43,7 @@ _Atomic(unsigned long) atomic_unsigned_long_value;
 // DEFAULT-NEXT:                       signed: true,
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               storage: ThreadLocal,
+// DEFAULT-NEXT:               is_thread_local: true,
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Name(
 // DEFAULT-NEXT:               "gnu_thread_value",

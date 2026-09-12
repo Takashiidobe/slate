@@ -206,6 +206,7 @@ impl Parser {
         parser.pos = position;
         let mut qualifiers = Qualifiers::default();
         let mut storage = StorageClass::None;
+        let mut is_thread_local = false;
         let mut is_inline = false;
         let mut is_noreturn = false;
         loop {
@@ -227,6 +228,17 @@ impl Parser {
                 is_noreturn = true;
                 continue;
             }
+            if parser.matches(Token::Keyword(Keyword::ThreadLocal)) {
+                if is_thread_local {
+                    return Err(self.error_at_tokens(
+                        tokens,
+                        parser.pos - 1,
+                        "duplicate `_Thread_local`",
+                    ));
+                }
+                is_thread_local = true;
+                continue;
+            }
             if let Some(Token::Keyword(keyword)) = parser.peek() {
                 let next_storage = match *keyword {
                     Keyword::Typedef => StorageClass::Typedef,
@@ -234,7 +246,6 @@ impl Parser {
                     Keyword::Static => StorageClass::Static,
                     Keyword::Auto => StorageClass::Auto,
                     Keyword::Register => StorageClass::Register,
-                    Keyword::ThreadLocal => StorageClass::ThreadLocal,
                     _ => break,
                 };
                 if storage != StorageClass::None {
@@ -291,6 +302,7 @@ impl Parser {
                 ty: apply_vector_attributes(ty, &attributes),
                 qualifiers,
                 storage,
+                is_thread_local,
                 is_inline,
                 is_noreturn,
             },
@@ -314,6 +326,41 @@ impl Parser {
         let mut declaration_tokens = tokens[..colon].to_vec();
         declaration_tokens.push(tokens[semi].clone());
         self.parse_declaration_tokens(code, &declaration_tokens)
+    }
+
+    fn parse_static_assert(
+        &self,
+        code: &str,
+        tokens: &[Span<Token>],
+    ) -> Result<StaticAssert, ParseError> {
+        if tokens.value_at(1) != Some(&Token::LParen) {
+            return Err(self.error_at_tokens(tokens, 1, "expected `(` after static assertion"));
+        }
+        let close = matching_paren(tokens, 1)
+            .ok_or_else(|| self.error_at_tokens(tokens, 1, "expected `)`"))?;
+        if tokens.value_at(close + 1) != Some(&Token::Semi) {
+            return Err(self.error_at_tokens(tokens, close + 1, "expected `;`"));
+        }
+        let arguments = &tokens[2..close];
+        let comma = top_level_token(arguments, &Token::Comma);
+        let condition_end = comma.unwrap_or(arguments.len());
+        let condition = self.parse_expression(code, &arguments[..condition_end])?;
+        let message = comma
+            .map(|comma| {
+                if let [message] = &arguments[comma + 1..]
+                    && let Token::StringLit(message) = &message.value
+                {
+                    Ok(message.clone())
+                } else {
+                    Err(self.error_at_tokens(
+                        arguments,
+                        comma + 1,
+                        "expected static assertion message",
+                    ))
+                }
+            })
+            .transpose()?;
+        Ok(StaticAssert { condition, message })
     }
 
     fn parse_nodes(
@@ -391,6 +438,18 @@ impl Parser {
             }
             PPNodeKind::Code { .. } => {
                 let tokens = self.node_tokens(&nodes[0]);
+                if tokens.value_at(0) == Some(&Token::Keyword(Keyword::StaticAssert)) {
+                    return Ok((
+                        vec![nodes[0].clone().with_value(Decl::StaticAssert {
+                            assertion:
+                                self.parse_static_assert(self.node_text(&nodes[0]), &tokens)?,
+                            provenance: self.node_provenance(&nodes[0]),
+                        })],
+                        1,
+                    ));
+                }
+                let first_lbrace = tokens.values().position(|token| *token == Token::LBrace);
+                let first_equal = tokens.values().position(|token| *token == Token::Equal);
                 if matches!(
                     tokens.as_tokens().as_slice(),
                     [
@@ -406,15 +465,13 @@ impl Parser {
                     Some(Token::Keyword(
                         Keyword::Struct | Keyword::Union | Keyword::Enum
                     ))
-                ) && tokens.contains_value(&Token::LBrace)
-                    && !tokens.contains_value(&Token::Equal)
-                {
+                ) && first_lbrace.is_some_and(|brace_index| {
+                    first_equal.is_none_or(|equal_index| brace_index < equal_index)
+                }) {
                     return self
                         .parse_tag_definition(nodes)
                         .map(|result| span_decl_result(result, nodes));
                 }
-                let first_lbrace = tokens.values().position(|token| *token == Token::LBrace);
-                let first_equal = tokens.values().position(|token| *token == Token::Equal);
                 let has_brace_initializer = matches!(
                     (first_lbrace, first_equal),
                     (Some(brace_index), Some(equal_index)) if equal_index < brace_index
@@ -960,7 +1017,14 @@ fn parse_attribute_groups(
     let mut cursor = AttrCursor::new(tokens, position);
     let mut attributes = Vec::new();
     loop {
-        if cursor.consume(&Token::Ident("__attribute__".into())) {
+        if cursor.consume(&Token::Ident("_Alignas".into())) {
+            let arguments =
+                cursor.parse_parenthesized_arguments("expected `)` after `_Alignas` argument")?;
+            if arguments.is_empty() {
+                return Err("expected `(` after `_Alignas`".into());
+            }
+            attributes.push(Attribute::Aligned(parse_attribute_expression(&arguments)?));
+        } else if cursor.consume(&Token::Ident("__attribute__".into())) {
             cursor.expect(Token::LParen, "expected `((` after __attribute__")?;
             cursor.expect(Token::LParen, "expected `((` after __attribute__")?;
             loop {
@@ -1350,6 +1414,7 @@ fn build_tag_alias_decl(
                     ty,
                     qualifiers: Qualifiers::default(),
                     storage: StorageClass::None,
+                    is_thread_local: false,
                     is_inline: false,
                     is_noreturn: false,
                 },
@@ -1876,6 +1941,7 @@ impl<'a> DeclaratorParser<'a> {
                         ty,
                         qualifiers,
                         storage: StorageClass::None,
+                        is_thread_local: false,
                         is_inline: false,
                         is_noreturn: false,
                     },
@@ -2001,8 +2067,8 @@ impl<'a> DeclaratorParser<'a> {
             [single] => match &single.value {
                 Token::Ident(name) => Expr::Identifier(name.clone()),
                 Token::IntLit(value) => Expr::IntLit(*value),
-                Token::StringLit(value) => Expr::StringLit(value.clone()),
-                _ => return Err(DeclaratorError::UnsupportedTypeofExpression),
+                _ => const_expr::string_literal_expr(Some(&single.value))
+                    .ok_or(DeclaratorError::UnsupportedTypeofExpression)?,
             },
             _ => return Err(DeclaratorError::UnsupportedTypeofExpression),
         };
@@ -2084,13 +2150,10 @@ impl<'a> DeclaratorParser<'a> {
                 }
             }
             Initializer::List(items)
-        } else if let Some(Token::StringLit(value)) = self.peek().cloned() {
+        } else if let Some(expression) = const_expr::string_literal_expr(self.peek()) {
             let start = self.pos;
             self.pos += 1;
-            Initializer::Expr(span_tokens(
-                Expr::StringLit(value),
-                &self.tokens[start..self.pos],
-            ))
+            Initializer::Expr(span_tokens(expression, &self.tokens[start..self.pos]))
         } else {
             let start = self.pos;
             let (expression, end) =
@@ -2396,7 +2459,6 @@ impl Parser {
                     let next_storage = match keyword {
                         Keyword::Extern => StorageClass::Extern,
                         Keyword::Static => StorageClass::Static,
-                        Keyword::ThreadLocal => StorageClass::ThreadLocal,
                         _ => break,
                     };
                     if storage != StorageClass::None {
@@ -2658,7 +2720,6 @@ impl Parser {
                         Keyword::Static => StorageClass::Static,
                         Keyword::Auto => StorageClass::Auto,
                         Keyword::Register => StorageClass::Register,
-                        Keyword::ThreadLocal => StorageClass::ThreadLocal,
                         _ => break,
                     };
                     if storage != StorageClass::None {
@@ -2724,6 +2785,7 @@ impl Parser {
     fn starts_declaration(&self, tokens: &[Span<Token>], pos: usize) -> bool {
         match tokens.value_at(pos) {
             Some(Token::Keyword(keyword)) if keyword.is_storage_class_or_specifier() => true,
+            Some(Token::Ident(name)) if name == "_Alignas" => true,
             Some(token) => const_expr::starts_type_name(token, &self.typedef_names),
             None => false,
         }
@@ -2733,6 +2795,15 @@ impl Parser {
         let code = fragment.code;
         let tokens = fragment.tokens;
         let stmt_start = fragment.pos;
+
+        if tokens.value_at(fragment.pos) == Some(&Token::Keyword(Keyword::StaticAssert)) {
+            let end = top_level_semi(&tokens[fragment.pos..])
+                .map(|position| fragment.pos + position)
+                .ok_or_else(|| self.error_at(Loc::whole(code), "expected `;`"))?;
+            let assertion = self.parse_static_assert(code, &tokens[fragment.pos..=end])?;
+            fragment.pos = end + 1;
+            return Ok(Stmt::StaticAssert(assertion));
+        }
 
         if tokens.value_at(fragment.pos) == Some(&Token::LParen)
             && tokens.value_at(fragment.pos + 1) == Some(&Token::LBrace)
@@ -3030,9 +3101,9 @@ impl Parser {
             ));
         }
         if let [single] = tokens
-            && let Token::StringLit(value) = &single.value
+            && let Some(expression) = const_expr::string_literal_expr(Some(&single.value))
         {
-            return Ok(single.clone().with_value(Expr::StringLit(value.clone())));
+            return Ok(single.clone().with_value(expression));
         }
         const_expr::Parser::parse_expression(tokens, &self.typedef_names)
             .map(|expression| span_tokens(Expr::Const(Box::new(expression)), tokens))

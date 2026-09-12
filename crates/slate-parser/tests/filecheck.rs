@@ -340,7 +340,7 @@ fn summarize_evaluated(tu: &TranslationUnit) -> Vec<DeclSummary> {
     tu.decls
         .iter()
         .filter(|decl| match &decl.value {
-            Decl::Comment { .. } => false,
+            Decl::Comment { .. } | Decl::StaticAssert { .. } => false,
             Decl::Declaration { declaration, .. } => declaration.attributes.is_empty(),
             Decl::Typedef { attributes, .. } => attributes.is_empty(),
             _ => true,
@@ -351,7 +351,9 @@ fn summarize_evaluated(tu: &TranslationUnit) -> Vec<DeclSummary> {
 
 fn summarize_evaluated_decl(decl: &Decl) -> DeclSummary {
     match decl {
-        Decl::Comment { .. } => unreachable!("comments are filtered before summarizing"),
+        Decl::Comment { .. } | Decl::StaticAssert { .. } => {
+            unreachable!("non-summary declarations are filtered before summarizing")
+        }
         Decl::Function(function) => DeclSummary::Function {
             name: function.name.clone(),
             returns: function
@@ -360,7 +362,11 @@ fn summarize_evaluated_decl(decl: &Decl) -> DeclSummary {
                 .filter_map(|stmt| match &stmt.value {
                     Stmt::Return(expression) => match &expression.value {
                         Expr::IntLit(value) => Some(*value),
-                        Expr::StringLit(_) => {
+                        Expr::StringLit(_)
+                        | Expr::Utf8StringLit(_)
+                        | Expr::Utf16StringLit(_)
+                        | Expr::Utf32StringLit(_)
+                        | Expr::WideStringLit(_) => {
                             panic!("clang return was not an integer")
                         }
                         Expr::Generic { .. } | Expr::StatementExpression(_) => None,
@@ -375,6 +381,7 @@ fn summarize_evaluated_decl(decl: &Decl) -> DeclSummary {
                     Stmt::Comment { .. }
                     | Stmt::Expr(_)
                     | Stmt::Decl(_)
+                    | Stmt::StaticAssert(_)
                     | Stmt::Block(_)
                     | Stmt::If { .. }
                     | Stmt::While { .. }
@@ -728,7 +735,11 @@ fn array_size(size: &ArraySize) -> String {
         ArraySize::Star => "*".into(),
         ArraySize::Expression(expression) => match &expression.value {
             Expr::IntLit(value) => value.to_string(),
-            Expr::StringLit(_) => panic!("array bound was not an integer"),
+            Expr::StringLit(_)
+            | Expr::Utf8StringLit(_)
+            | Expr::Utf16StringLit(_)
+            | Expr::Utf32StringLit(_)
+            | Expr::WideStringLit(_) => panic!("array bound was not an integer"),
             Expr::Identifier(_)
             | Expr::Const(_)
             | Expr::Unary { .. }

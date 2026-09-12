@@ -53,6 +53,7 @@ pub enum Keyword {
     Break,
     Continue,
     Goto,
+    StaticAssert,
 }
 
 impl Keyword {
@@ -125,6 +126,7 @@ impl From<Keyword> for &'static str {
             Keyword::Break => "break",
             Keyword::Continue => "continue",
             Keyword::Goto => "goto",
+            Keyword::StaticAssert => "_Static_assert",
         }
     }
 }
@@ -634,6 +636,7 @@ impl Lexer {
                 "break" => Token::Keyword(Keyword::Break),
                 "continue" => Token::Keyword(Keyword::Continue),
                 "goto" => Token::Keyword(Keyword::Goto),
+                "_Static_assert" | "static_assert" => Token::Keyword(Keyword::StaticAssert),
                 _ => Token::Ident(word),
             };
             self.emit(token);

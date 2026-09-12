@@ -15,6 +15,14 @@ pub enum ConstExpr {
     Float(FloatLiteral),
     Identifier(String),
     StringLit(String),
+    Utf8StringLit(String),
+    Utf16StringLit(String),
+    Utf32StringLit(String),
+    WideStringLit(String),
+    Generic {
+        controlling: Box<Self>,
+        associations: Vec<ConstGenericAssociation>,
+    },
     SizeOf(Box<Self>),
     SizeOfType {
         ty: Box<CType>,
@@ -84,6 +92,12 @@ pub enum ConstExpr {
     LabelAddr(String),
 }
 
+#[derive(Debug, Clone, PartialEq)]
+pub struct ConstGenericAssociation {
+    pub type_name: Option<String>,
+    pub expression: ConstExpr,
+}
+
 impl std::fmt::Display for ConstExpr {
     fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
@@ -91,6 +105,11 @@ impl std::fmt::Display for ConstExpr {
             Self::Float(value) => write!(formatter, "{value}"),
             Self::Identifier(value) => formatter.write_str(value),
             Self::StringLit(value) => write!(formatter, "\"{value}\""),
+            Self::Utf8StringLit(value) => write!(formatter, "u8\"{value}\""),
+            Self::Utf16StringLit(value) => write!(formatter, "u\"{value}\""),
+            Self::Utf32StringLit(value) => write!(formatter, "U\"{value}\""),
+            Self::WideStringLit(value) => write!(formatter, "L\"{value}\""),
+            Self::Generic { .. } => formatter.write_str("_Generic(...)"),
             Self::SizeOf(value) => write!(formatter, "sizeof({value})"),
             Self::SizeOfType { .. } => write!(formatter, "sizeof(...)"),
             Self::AlignOf { .. } => write!(formatter, "_Alignof(...)"),
@@ -430,7 +449,12 @@ impl Parser {
     ) -> Result<i64, ConstExprError> {
         match expression {
             ConstExpr::Integer(value) => Ok(*value),
-            ConstExpr::StringLit(_) => Err(ConstExprError::NotConstant("string literal")),
+            ConstExpr::StringLit(_)
+            | ConstExpr::Utf8StringLit(_)
+            | ConstExpr::Utf16StringLit(_)
+            | ConstExpr::Utf32StringLit(_)
+            | ConstExpr::WideStringLit(_) => Err(ConstExprError::NotConstant("string literal")),
+            ConstExpr::Generic { .. } => Err(ConstExprError::NotConstant("generic selection")),
             ConstExpr::Float(_) => Err(ConstExprError::NotConstant("floating literal")),
             ConstExpr::Identifier(name) => match is_defined {
                 Some(_) => Ok(0),
@@ -755,10 +779,10 @@ impl Parser {
         let start = self.position;
         if self.peek() == Some(&Token::LBrace) {
             Ok(Initializer::List(self.parse_initializer_list()?))
-        } else if let Some(Token::StringLit(value)) = self.peek().cloned() {
+        } else if let Some(expression) = string_literal_expr(self.peek()) {
             self.take();
             Ok(Initializer::Expr(Span::cover(
-                Expr::StringLit(value),
+                expression,
                 &self.tokens[start..self.position],
             )))
         } else {
@@ -947,6 +971,10 @@ impl Parser {
             Some(Token::IntLit(value)) => Ok(ConstExpr::Integer(*value)),
             Some(Token::FloatLit(value)) => FloatLiteral::parse(value).map(ConstExpr::Float),
             Some(Token::StringLit(value)) => Ok(ConstExpr::StringLit(value.clone())),
+            Some(Token::Utf8StringLit(value)) => Ok(ConstExpr::Utf8StringLit(value.clone())),
+            Some(Token::Utf16StringLit(value)) => Ok(ConstExpr::Utf16StringLit(value.clone())),
+            Some(Token::Utf32StringLit(value)) => Ok(ConstExpr::Utf32StringLit(value.clone())),
+            Some(Token::WideStringLit(value)) => Ok(ConstExpr::WideStringLit(value.clone())),
             Some(
                 Token::CharLit(_, value)
                 | Token::Utf8CharLit(_, value)
@@ -961,6 +989,7 @@ impl Parser {
                 self.parse_has_include(value.clone())
             }
             Some(Token::Ident(value)) if value == "__builtin_offsetof" => self.parse_offsetof(),
+            Some(Token::Ident(value)) if value == "_Generic" => self.parse_generic(),
             Some(Token::Ident(value)) => Ok(ConstExpr::Identifier(value.clone())),
             Some(Token::Keyword(keyword)) => {
                 Ok(ConstExpr::Identifier(<&str>::from(*keyword).into()))
@@ -968,6 +997,51 @@ impl Parser {
             Some(token) => Err(ConstExprError::UnexpectedToken(token.clone())),
             None => Err(ConstExprError::ExpectedIntegerExpression),
         }
+    }
+
+    fn parse_generic(&mut self) -> Result<ConstExpr, ConstExprError> {
+        self.expect(Token::LParen)?;
+        let controlling = self.parse_assignment()?;
+        self.expect(Token::Comma)?;
+        let mut associations = Vec::new();
+        loop {
+            let type_start = self.position;
+            let mut depth = 0i32;
+            while let Some(token) = self.peek() {
+                match token {
+                    Token::LParen | Token::LBracket => depth += 1,
+                    Token::RParen | Token::RBracket if depth > 0 => depth -= 1,
+                    Token::Colon if depth == 0 => break,
+                    _ => {}
+                }
+                self.take();
+            }
+            let type_tokens = self.tokens[type_start..self.position].to_vec();
+            self.expect(Token::Colon)?;
+            let type_name = match type_tokens.as_tokens().as_slice() {
+                [Token::Keyword(Keyword::Default)] => None,
+                _ => Some(
+                    type_tokens
+                        .values()
+                        .map(String::from)
+                        .collect::<Vec<_>>()
+                        .join(" "),
+                ),
+            };
+            associations.push(ConstGenericAssociation {
+                type_name,
+                expression: self.parse_assignment()?,
+            });
+            if self.consume(&Token::Comma) {
+                continue;
+            }
+            self.expect(Token::RParen)?;
+            break;
+        }
+        Ok(ConstExpr::Generic {
+            controlling: Box::new(controlling),
+            associations,
+        })
     }
 
     fn parse_defined(&mut self) -> Result<ConstExpr, ConstExprError> {
@@ -1191,5 +1265,16 @@ pub(crate) fn starts_type_name(token: &Token, typedef_names: &HashSet<String>) -
         ),
         Token::Ident(name) => typedef_names.contains(name),
         _ => false,
+    }
+}
+
+pub(crate) fn string_literal_expr(token: Option<&Token>) -> Option<Expr> {
+    match token? {
+        Token::StringLit(value) => Some(Expr::StringLit(value.clone())),
+        Token::Utf8StringLit(value) => Some(Expr::Utf8StringLit(value.clone())),
+        Token::Utf16StringLit(value) => Some(Expr::Utf16StringLit(value.clone())),
+        Token::Utf32StringLit(value) => Some(Expr::Utf32StringLit(value.clone())),
+        Token::WideStringLit(value) => Some(Expr::WideStringLit(value.clone())),
+        _ => None,
     }
 }

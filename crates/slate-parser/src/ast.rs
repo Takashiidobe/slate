@@ -15,6 +15,10 @@ pub enum Expr {
     Const(Box<ConstExpr>),
     IntLit(i64),
     StringLit(String),
+    Utf8StringLit(String),
+    Utf16StringLit(String),
+    Utf32StringLit(String),
+    WideStringLit(String),
     Identifier(String),
     Unary {
         op: UnaryOp,
@@ -39,6 +43,10 @@ impl std::fmt::Display for Expr {
             Self::Const(value) => write!(formatter, "{value}"),
             Self::IntLit(value) => write!(formatter, "{value}"),
             Self::StringLit(value) => write!(formatter, "\"{value}\""),
+            Self::Utf8StringLit(value) => write!(formatter, "u8\"{value}\""),
+            Self::Utf16StringLit(value) => write!(formatter, "u\"{value}\""),
+            Self::Utf32StringLit(value) => write!(formatter, "U\"{value}\""),
+            Self::WideStringLit(value) => write!(formatter, "L\"{value}\""),
             Self::Identifier(value) => formatter.write_str(value),
             Self::Unary { op, value } => write!(formatter, "{}{}", <&str>::from(*op), value),
             Self::Binary { op, left, right } => {
@@ -98,6 +106,7 @@ pub enum Stmt {
     Return(SpannedExpr),
     Expr(SpannedExpr),
     Decl(Declaration),
+    StaticAssert(StaticAssert),
     Block(Vec<SpannedStmt>),
     If {
         condition: SpannedExpr,
@@ -497,7 +506,6 @@ pub enum StorageClass {
     Static,
     Auto,
     Register,
-    ThreadLocal,
 }
 
 impl StorageClass {
@@ -519,7 +527,6 @@ impl From<StorageClass> for &'static str {
             StorageClass::Static => "static",
             StorageClass::Auto => "auto",
             StorageClass::Register => "register",
-            StorageClass::ThreadLocal => "_Thread_local",
         }
     }
 }
@@ -598,6 +605,8 @@ pub struct DeclarationSpecifiers {
     #[debug(skip_if = StorageClass::is_none)]
     pub storage: StorageClass,
     #[debug(skip_if = is_false)]
+    pub is_thread_local: bool,
+    #[debug(skip_if = is_false)]
     pub is_inline: bool,
     #[debug(skip_if = is_false)]
     pub is_noreturn: bool,
@@ -611,6 +620,13 @@ pub struct Declaration {
     pub initializer: Option<Initializer>,
     #[debug(skip_if = Vec::is_empty)]
     pub attributes: Vec<Attribute>,
+}
+
+#[derive(CustomDebug, Clone, PartialEq)]
+pub struct StaticAssert {
+    pub condition: SpannedExpr,
+    #[debug(skip_if = Option::is_none)]
+    pub message: Option<String>,
 }
 
 #[derive(CustomDebug, Clone, PartialEq)]
@@ -666,6 +682,10 @@ pub enum Decl {
         declaration: Declaration,
         provenance: Provenance,
     },
+    StaticAssert {
+        assertion: StaticAssert,
+        provenance: Provenance,
+    },
     Typedef {
         name: String,
         ty: CType,
@@ -683,6 +703,7 @@ impl Decl {
             Self::Comment { .. } => None,
             Self::Function(function) => Some(&function.name),
             Self::Declaration { declaration, .. } => declaration.declarator.name(),
+            Self::StaticAssert { .. } => None,
             Self::Typedef { name, .. } => Some(name),
             Self::Record(record) => record.name.as_deref(),
             Self::Enum(enumeration) => enumeration.name.as_deref(),
@@ -693,9 +714,9 @@ impl Decl {
         match self {
             Self::Comment { provenance, .. } => provenance.file,
             Self::Function(function) => function.provenance.file,
-            Self::Declaration { provenance, .. } | Self::Typedef { provenance, .. } => {
-                provenance.file
-            }
+            Self::Declaration { provenance, .. }
+            | Self::StaticAssert { provenance, .. }
+            | Self::Typedef { provenance, .. } => provenance.file,
             Self::Record(record) => record.provenance.file,
             Self::Enum(enumeration) => enumeration.provenance.file,
         }

@@ -44,6 +44,10 @@ impl TranslationUnit {
                     CType::Tagged { name, .. } => name.clone(),
                     _ => None,
                 },
+                Decl::Typedef {
+                    ty: CType::Tagged { name, .. },
+                    ..
+                } => name.clone(),
                 _ => None,
             })
             .collect::<HashSet<_>>();
@@ -51,7 +55,7 @@ impl TranslationUnit {
         let mut errors = Vec::new();
         for decl in &self.decls {
             match &decl.value {
-                Decl::Comment { .. } => {}
+                Decl::Comment { .. } | Decl::StaticAssert { .. } => {}
                 Decl::Function(function) => {
                     check_attributes(
                         &function.attributes,
@@ -264,6 +268,11 @@ fn is_integer_constant_expression(expression: &ConstExpr) -> bool {
         }
         ConstExpr::Identifier(_)
         | ConstExpr::StringLit(_)
+        | ConstExpr::Utf8StringLit(_)
+        | ConstExpr::Utf16StringLit(_)
+        | ConstExpr::Utf32StringLit(_)
+        | ConstExpr::WideStringLit(_)
+        | ConstExpr::Generic { .. }
         | ConstExpr::Float(_)
         | ConstExpr::Call { .. }
         | ConstExpr::Assign { .. }
