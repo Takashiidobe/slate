@@ -83,20 +83,45 @@ fn parse_include_directive(trimmed: &str) -> Option<IncludeDirective> {
 pub struct Preprocessor<'a> {
     pub files: Files,
     pub macros: std::collections::HashMap<String, Conditional<MacroDef>>,
+    pub main_file: Option<FileId>,
     search: &'a SearchPaths,
     open_stack: Vec<PathBuf>,
     macro_order: usize,
 }
 
+const CLANG_X86_64_LINUX_GNU_PREDEFINES: &str = include_str!("predefines/clang_x86_64_linux_gnu.h");
+
 impl<'a> Preprocessor<'a> {
     pub fn new(search: &'a SearchPaths) -> Self {
-        Preprocessor {
+        let mut pp = Preprocessor {
             files: Files::new(),
             macros: std::collections::HashMap::new(),
+            main_file: None,
             search,
             open_stack: Vec::new(),
             macro_order: 0,
-        }
+        };
+        pp.seed_builtin_macros();
+        pp
+    }
+
+    fn seed_builtin_macros(&mut self) {
+        let file = self.files.intern(
+            PathBuf::from("<clang-x86_64-linux-gnu-predefines>"),
+            HeaderKind::System,
+        );
+        let nodes = self
+            .parse_source(
+                "<predefines>",
+                CLANG_X86_64_LINUX_GNU_PREDEFINES,
+                file,
+                Condition::Constant(1),
+            )
+            .expect("builtin predefines must parse cleanly");
+        debug_assert!(
+            nodes.is_empty(),
+            "predefines should only contain #define directives"
+        );
     }
 
     pub fn parse_file(&mut self, path: &Path) -> Result<Vec<PPNode>, PPError> {
@@ -104,6 +129,7 @@ impl<'a> Preprocessor<'a> {
         let src = std::fs::read_to_string(&canon)
             .unwrap_or_else(|e| panic!("failed to read {}: {e}", canon.display()));
         let file = self.files.intern(canon.clone(), HeaderKind::User);
+        self.main_file = Some(file);
         self.open_stack.push(canon.clone());
         let nodes = self.parse_source(&display_path(&canon), &src, file, Condition::Constant(1))?;
         self.open_stack.pop();
@@ -112,6 +138,7 @@ impl<'a> Preprocessor<'a> {
 
     pub fn parse_str(&mut self, name: &str, src: &str) -> Result<Vec<PPNode>, PPError> {
         let file = self.files.intern(PathBuf::from(name), HeaderKind::User);
+        self.main_file = Some(file);
         self.parse_source(name, src, file, Condition::Constant(1))
     }
 
@@ -457,7 +484,7 @@ impl<'a> Preprocessor<'a> {
                     .branches
                     .iter()
                     .rev()
-                    .find(|(condition, _)| condition == active)
+                    .find(|(condition, _)| condition == active || is_statically_true(condition))
                     .map(|(_, definition)| definition.clone())
             }) else {
                 expanded.push(token.clone());

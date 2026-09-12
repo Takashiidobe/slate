@@ -46,7 +46,7 @@ int selected __attribute__((slate_literal(CHOICE)));
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               0,
+// DEFAULT-NEXT:               1,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 5,
@@ -76,7 +76,7 @@ int selected __attribute__((slate_literal(CHOICE)));
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               0,
+// DEFAULT-NEXT:               1,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 8,
@@ -114,7 +114,7 @@ int selected __attribute__((slate_literal(CHOICE)));
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           provenance: Provenance {
 // DEFAULT-NEXT:                               file: FileId(
-// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                                   1,
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               kind: User,
 // DEFAULT-NEXT:                               line: 12,
@@ -153,7 +153,7 @@ int selected __attribute__((slate_literal(CHOICE)));
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           provenance: Provenance {
 // DEFAULT-NEXT:                               file: FileId(
-// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                                   1,
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               kind: User,
 // DEFAULT-NEXT:                               line: 15,
@@ -190,7 +190,7 @@ int selected __attribute__((slate_literal(CHOICE)));
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               0,
+// DEFAULT-NEXT:               1,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 5,
@@ -220,7 +220,7 @@ int selected __attribute__((slate_literal(CHOICE)));
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               0,
+// DEFAULT-NEXT:               1,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 8,
@@ -250,7 +250,7 @@ int selected __attribute__((slate_literal(CHOICE)));
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               0,
+// DEFAULT-NEXT:               1,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 15,
@@ -284,7 +284,7 @@ int selected __attribute__((slate_literal(CHOICE)));
 // SELECT-NEXT:       },
 // SELECT-NEXT:       provenance: Provenance {
 // SELECT-NEXT:           file: FileId(
-// SELECT-NEXT:               0,
+// SELECT-NEXT:               1,
 // SELECT-NEXT:           ),
 // SELECT-NEXT:           kind: User,
 // SELECT-NEXT:           line: 5,
@@ -314,7 +314,7 @@ int selected __attribute__((slate_literal(CHOICE)));
 // SELECT-NEXT:       },
 // SELECT-NEXT:       provenance: Provenance {
 // SELECT-NEXT:           file: FileId(
-// SELECT-NEXT:               0,
+// SELECT-NEXT:               1,
 // SELECT-NEXT:           ),
 // SELECT-NEXT:           kind: User,
 // SELECT-NEXT:           line: 8,
@@ -352,7 +352,7 @@ int selected __attribute__((slate_literal(CHOICE)));
 // SELECT-NEXT:                           },
 // SELECT-NEXT:                           provenance: Provenance {
 // SELECT-NEXT:                               file: FileId(
-// SELECT-NEXT:                                   0,
+// SELECT-NEXT:                                   1,
 // SELECT-NEXT:                               ),
 // SELECT-NEXT:                               kind: User,
 // SELECT-NEXT:                               line: 12,
@@ -391,7 +391,7 @@ int selected __attribute__((slate_literal(CHOICE)));
 // SELECT-NEXT:                           },
 // SELECT-NEXT:                           provenance: Provenance {
 // SELECT-NEXT:                               file: FileId(
-// SELECT-NEXT:                                   0,
+// SELECT-NEXT:                                   1,
 // SELECT-NEXT:                               ),
 // SELECT-NEXT:                               kind: User,
 // SELECT-NEXT:                               line: 15,
@@ -428,7 +428,7 @@ int selected __attribute__((slate_literal(CHOICE)));
 // SELECT-NEXT:       },
 // SELECT-NEXT:       provenance: Provenance {
 // SELECT-NEXT:           file: FileId(
-// SELECT-NEXT:               0,
+// SELECT-NEXT:               1,
 // SELECT-NEXT:           ),
 // SELECT-NEXT:           kind: User,
 // SELECT-NEXT:           line: 5,
@@ -458,7 +458,7 @@ int selected __attribute__((slate_literal(CHOICE)));
 // SELECT-NEXT:       },
 // SELECT-NEXT:       provenance: Provenance {
 // SELECT-NEXT:           file: FileId(
-// SELECT-NEXT:               0,
+// SELECT-NEXT:               1,
 // SELECT-NEXT:           ),
 // SELECT-NEXT:           kind: User,
 // SELECT-NEXT:           line: 8,
@@ -488,7 +488,7 @@ int selected __attribute__((slate_literal(CHOICE)));
 // SELECT-NEXT:       },
 // SELECT-NEXT:       provenance: Provenance {
 // SELECT-NEXT:           file: FileId(
-// SELECT-NEXT:               0,
+// SELECT-NEXT:               1,
 // SELECT-NEXT:           ),
 // SELECT-NEXT:           kind: User,
 // SELECT-NEXT:           line: 12,

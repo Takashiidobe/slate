@@ -34,7 +34,8 @@ impl Parser {
         let search = self.search.clone();
         let mut pp = Preprocessor::new(&search);
         let nodes = pp.parse_str("<main>", src).map_err(FrontendError::PP)?;
-        self.parse_nodes(&nodes).map_err(FrontendError::Parse)
+        let root_file = pp.main_file.expect("parse_str sets main_file");
+        self.parse_nodes(&nodes, root_file).map_err(FrontendError::Parse)
     }
 
     pub fn parse_file(&mut self, path: &Path) -> Result<(TranslationUnit, Files), FrontendError> {
@@ -54,7 +55,8 @@ impl Parser {
         let mut pp = Preprocessor::new(&search);
         let nodes = pp.parse_file(path).map_err(FrontendError::PP)?;
         self.files = pp.files.clone();
-        let ast = self.parse_nodes(&nodes);
+        let root_file = pp.main_file.expect("parse_file sets main_file");
+        let ast = self.parse_nodes(&nodes, root_file);
         ast.map(|ast| (ast, pp.files)).map_err(FrontendError::Parse)
     }
 
@@ -165,12 +167,16 @@ impl Parser {
         })
     }
 
-    fn parse_nodes(&mut self, nodes: &[PPNode]) -> Result<TranslationUnit, ParseError> {
+    fn parse_nodes(
+        &mut self,
+        nodes: &[PPNode],
+        root_file: FileId,
+    ) -> Result<TranslationUnit, ParseError> {
         let ast = filter_translation_unit(
             &TranslationUnit {
                 decls: self.parse_decls(nodes)?,
             },
-            FileId(0),
+            root_file,
         );
         Ok(ast)
     }
@@ -284,15 +290,32 @@ impl Parser {
                 {
                     return self.parse_tag_definition(nodes);
                 }
-                if tokens.contains(&Token::Semi)
-                    && (!tokens.contains(&Token::LBrace) || tokens.contains(&Token::Equal))
-                {
+                let item_span = if paren_depth(&tokens) > 0 {
+                    signature_node_span(nodes)
+                } else {
+                    1
+                };
+                let joined_item_text;
+                let (item_text, item_tokens): (&str, Vec<Token>) = if item_span == 1 {
+                    (self.node_text(&nodes[0]), tokens)
+                } else {
+                    joined_item_text = join_node_text(&nodes[..item_span]);
+                    (&joined_item_text, lex(&joined_item_text))
+                };
+                let first_lbrace = item_tokens.iter().position(|token| *token == Token::LBrace);
+                let first_equal = item_tokens.iter().position(|token| *token == Token::Equal);
+                let looks_like_declaration = match (first_lbrace, first_equal) {
+                    (None, _) => true,
+                    (Some(_), None) => false,
+                    (Some(brace_index), Some(equal_index)) => equal_index < brace_index,
+                };
+                if item_tokens.contains(&Token::Semi) && looks_like_declaration {
                     return Ok((
                         vec![Decl::Declaration {
-                            declaration: self.parse_declaration(self.node_text(&nodes[0]))?,
+                            declaration: self.parse_declaration(item_text)?,
                             provenance: self.node_provenance(&nodes[0]),
                         }],
-                        1,
+                        item_span,
                     ));
                 }
                 let (func, consumed) = self.parse_function(nodes)?;
@@ -957,6 +980,14 @@ fn parse_attribute_expression(arguments: &[Token]) -> Result<const_expr::ConstEx
     const_expr::Parser::parse(arguments).map_err(|error| error.to_string())
 }
 
+fn paren_depth(tokens: &[Token]) -> i32 {
+    tokens.iter().fold(0i32, |depth, token| match token {
+        Token::LParen => depth + 1,
+        Token::RParen => depth - 1,
+        _ => depth,
+    })
+}
+
 fn signature_node_span(nodes: &[PPNode]) -> usize {
     let mut depth = 0i32;
     for (index, node) in nodes.iter().enumerate() {
@@ -967,7 +998,7 @@ fn signature_node_span(nodes: &[PPNode]) -> usize {
             match token {
                 Token::LParen => depth += 1,
                 Token::RParen => depth -= 1,
-                Token::LBrace if depth <= 0 => return index + 1,
+                Token::LBrace | Token::Semi if depth <= 0 => return index + 1,
                 _ => {}
             }
         }
@@ -1189,10 +1220,14 @@ impl<'a> DeclaratorParser<'a> {
                     ) {
                         return self.parse_fixed_point(FixedPointRank::LongLong, false);
                     }
+                    let signed = !self.matches(Token::Keyword(Keyword::Unsigned));
+                    if signed {
+                        self.matches(Token::Keyword(Keyword::Signed));
+                    }
                     self.matches(Token::Keyword(Keyword::Int));
                     CType::Integer(IntegerType::Ranked {
                         rank: IntegerRank::LongLong,
-                        signed: true,
+                        signed,
                     })
                 } else if self.matches(Token::Keyword(Keyword::Double)) {
                     if self.matches(Token::Keyword(Keyword::Complex)) {
@@ -1203,10 +1238,14 @@ impl<'a> DeclaratorParser<'a> {
                         CType::Floating(FloatingType::LongDouble)
                     }
                 } else {
+                    let signed = !self.matches(Token::Keyword(Keyword::Unsigned));
+                    if signed {
+                        self.matches(Token::Keyword(Keyword::Signed));
+                    }
                     self.matches(Token::Keyword(Keyword::Int));
                     CType::Integer(IntegerType::Ranked {
                         rank: IntegerRank::Long,
-                        signed: true,
+                        signed,
                     })
                 }
             }
@@ -1217,10 +1256,14 @@ impl<'a> DeclaratorParser<'a> {
                 ) {
                     return self.parse_fixed_point(FixedPointRank::Short, false);
                 }
+                let signed = !self.matches(Token::Keyword(Keyword::Unsigned));
+                if signed {
+                    self.matches(Token::Keyword(Keyword::Signed));
+                }
                 self.matches(Token::Keyword(Keyword::Int));
                 CType::Integer(IntegerType::Ranked {
                     rank: IntegerRank::Short,
-                    signed: true,
+                    signed,
                 })
             }
             Token::Keyword(Keyword::Signed) => match self.peek() {

@@ -68,7 +68,7 @@ typedef int Socket;
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
 // DEFAULT-NEXT:               file: FileId(
-// DEFAULT-NEXT:                   0,
+// DEFAULT-NEXT:                   1,
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               kind: User,
 // DEFAULT-NEXT:               line: 0,
@@ -85,7 +85,7 @@ typedef int Socket;
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               0,
+// DEFAULT-NEXT:               1,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 8,
@@ -106,7 +106,7 @@ typedef int Socket;
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           provenance: Provenance {
 // DEFAULT-NEXT:                               file: FileId(
-// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                                   1,
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               kind: User,
 // DEFAULT-NEXT:                               line: 11,
@@ -131,7 +131,7 @@ typedef int Socket;
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           provenance: Provenance {
 // DEFAULT-NEXT:                               file: FileId(
-// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                                   1,
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               kind: User,
 // DEFAULT-NEXT:                               line: 13,
@@ -163,7 +163,7 @@ typedef int Socket;
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
 // DEFAULT-NEXT:               file: FileId(
-// DEFAULT-NEXT:                   0,
+// DEFAULT-NEXT:                   1,
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               kind: User,
 // DEFAULT-NEXT:               line: 0,
@@ -180,7 +180,7 @@ typedef int Socket;
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               0,
+// DEFAULT-NEXT:               1,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 8,
@@ -196,7 +196,7 @@ typedef int Socket;
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               0,
+// DEFAULT-NEXT:               1,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 13,
@@ -254,7 +254,7 @@ typedef int Socket;
 // WIN32-NEXT:           ],
 // WIN32-NEXT:           provenance: Provenance {
 // WIN32-NEXT:               file: FileId(
-// WIN32-NEXT:                   0,
+// WIN32-NEXT:                   1,
 // WIN32-NEXT:               ),
 // WIN32-NEXT:               kind: User,
 // WIN32-NEXT:               line: 0,
@@ -271,7 +271,7 @@ typedef int Socket;
 // WIN32-NEXT:       ),
 // WIN32-NEXT:       provenance: Provenance {
 // WIN32-NEXT:           file: FileId(
-// WIN32-NEXT:               0,
+// WIN32-NEXT:               1,
 // WIN32-NEXT:           ),
 // WIN32-NEXT:           kind: User,
 // WIN32-NEXT:           line: 8,
@@ -292,7 +292,7 @@ typedef int Socket;
 // WIN32-NEXT:                           ),
 // WIN32-NEXT:                           provenance: Provenance {
 // WIN32-NEXT:                               file: FileId(
-// WIN32-NEXT:                                   0,
+// WIN32-NEXT:                                   1,
 // WIN32-NEXT:                               ),
 // WIN32-NEXT:                               kind: User,
 // WIN32-NEXT:                               line: 11,
@@ -317,7 +317,7 @@ typedef int Socket;
 // WIN32-NEXT:                           ),
 // WIN32-NEXT:                           provenance: Provenance {
 // WIN32-NEXT:                               file: FileId(
-// WIN32-NEXT:                                   0,
+// WIN32-NEXT:                                   1,
 // WIN32-NEXT:                               ),
 // WIN32-NEXT:                               kind: User,
 // WIN32-NEXT:                               line: 13,
@@ -349,7 +349,7 @@ typedef int Socket;
 // WIN32-NEXT:           ],
 // WIN32-NEXT:           provenance: Provenance {
 // WIN32-NEXT:               file: FileId(
-// WIN32-NEXT:                   0,
+// WIN32-NEXT:                   1,
 // WIN32-NEXT:               ),
 // WIN32-NEXT:               kind: User,
 // WIN32-NEXT:               line: 0,
@@ -366,7 +366,7 @@ typedef int Socket;
 // WIN32-NEXT:       ),
 // WIN32-NEXT:       provenance: Provenance {
 // WIN32-NEXT:           file: FileId(
-// WIN32-NEXT:               0,
+// WIN32-NEXT:               1,
 // WIN32-NEXT:           ),
 // WIN32-NEXT:           kind: User,
 // WIN32-NEXT:           line: 8,
@@ -379,7 +379,7 @@ typedef int Socket;
 // WIN32-NEXT:       ),
 // WIN32-NEXT:       provenance: Provenance {
 // WIN32-NEXT:           file: FileId(
-// WIN32-NEXT:               0,
+// WIN32-NEXT:               1,
 // WIN32-NEXT:           ),
 // WIN32-NEXT:           kind: User,
 // WIN32-NEXT:           line: 11,

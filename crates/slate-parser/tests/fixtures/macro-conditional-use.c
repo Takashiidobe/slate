@@ -61,7 +61,7 @@ int picked(void) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           provenance: Provenance {
 // DEFAULT-NEXT:                               file: FileId(
-// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                                   1,
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               kind: User,
 // DEFAULT-NEXT:                               line: 18,
@@ -101,7 +101,7 @@ int picked(void) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           provenance: Provenance {
 // DEFAULT-NEXT:                               file: FileId(
-// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                                   1,
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               kind: User,
 // DEFAULT-NEXT:                               line: 18,
@@ -136,7 +136,7 @@ int picked(void) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           provenance: Provenance {
 // DEFAULT-NEXT:                               file: FileId(
-// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                                   1,
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               kind: User,
 // DEFAULT-NEXT:                               line: 19,
@@ -166,7 +166,7 @@ int picked(void) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           provenance: Provenance {
 // DEFAULT-NEXT:                               file: FileId(
-// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                                   1,
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               kind: User,
 // DEFAULT-NEXT:                               line: 19,
@@ -226,7 +226,7 @@ int picked(void) {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
 // DEFAULT-NEXT:               file: FileId(
-// DEFAULT-NEXT:                   0,
+// DEFAULT-NEXT:                   1,
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               kind: User,
 // DEFAULT-NEXT:               line: 21,
@@ -259,7 +259,7 @@ int picked(void) {
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               0,
+// DEFAULT-NEXT:               1,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 18,
@@ -280,7 +280,7 @@ int picked(void) {
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               0,
+// DEFAULT-NEXT:               1,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 19,
@@ -306,7 +306,7 @@ int picked(void) {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
 // DEFAULT-NEXT:               file: FileId(
-// DEFAULT-NEXT:                   0,
+// DEFAULT-NEXT:                   1,
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               kind: User,
 // DEFAULT-NEXT:               line: 21,
@@ -349,7 +349,7 @@ int picked(void) {
 // SELECT-NEXT:                           },
 // SELECT-NEXT:                           provenance: Provenance {
 // SELECT-NEXT:                               file: FileId(
-// SELECT-NEXT:                                   0,
+// SELECT-NEXT:                                   1,
 // SELECT-NEXT:                               ),
 // SELECT-NEXT:                               kind: User,
 // SELECT-NEXT:                               line: 18,
@@ -389,7 +389,7 @@ int picked(void) {
 // SELECT-NEXT:                           },
 // SELECT-NEXT:                           provenance: Provenance {
 // SELECT-NEXT:                               file: FileId(
-// SELECT-NEXT:                                   0,
+// SELECT-NEXT:                                   1,
 // SELECT-NEXT:                               ),
 // SELECT-NEXT:                               kind: User,
 // SELECT-NEXT:                               line: 18,
@@ -424,7 +424,7 @@ int picked(void) {
 // SELECT-NEXT:                           },
 // SELECT-NEXT:                           provenance: Provenance {
 // SELECT-NEXT:                               file: FileId(
-// SELECT-NEXT:                                   0,
+// SELECT-NEXT:                                   1,
 // SELECT-NEXT:                               ),
 // SELECT-NEXT:                               kind: User,
 // SELECT-NEXT:                               line: 19,
@@ -454,7 +454,7 @@ int picked(void) {
 // SELECT-NEXT:                           },
 // SELECT-NEXT:                           provenance: Provenance {
 // SELECT-NEXT:                               file: FileId(
-// SELECT-NEXT:                                   0,
+// SELECT-NEXT:                                   1,
 // SELECT-NEXT:                               ),
 // SELECT-NEXT:                               kind: User,
 // SELECT-NEXT:                               line: 19,
@@ -514,7 +514,7 @@ int picked(void) {
 // SELECT-NEXT:           ],
 // SELECT-NEXT:           provenance: Provenance {
 // SELECT-NEXT:               file: FileId(
-// SELECT-NEXT:                   0,
+// SELECT-NEXT:                   1,
 // SELECT-NEXT:               ),
 // SELECT-NEXT:               kind: User,
 // SELECT-NEXT:               line: 21,
@@ -547,7 +547,7 @@ int picked(void) {
 // SELECT-NEXT:       },
 // SELECT-NEXT:       provenance: Provenance {
 // SELECT-NEXT:           file: FileId(
-// SELECT-NEXT:               0,
+// SELECT-NEXT:               1,
 // SELECT-NEXT:           ),
 // SELECT-NEXT:           kind: User,
 // SELECT-NEXT:           line: 18,
@@ -569,7 +569,7 @@ int picked(void) {
 // SELECT-NEXT:       },
 // SELECT-NEXT:       provenance: Provenance {
 // SELECT-NEXT:           file: FileId(
-// SELECT-NEXT:               0,
+// SELECT-NEXT:               1,
 // SELECT-NEXT:           ),
 // SELECT-NEXT:           kind: User,
 // SELECT-NEXT:           line: 19,
@@ -595,7 +595,7 @@ int picked(void) {
 // SELECT-NEXT:           ],
 // SELECT-NEXT:           provenance: Provenance {
 // SELECT-NEXT:               file: FileId(
-// SELECT-NEXT:                   0,
+// SELECT-NEXT:                   1,
 // SELECT-NEXT:               ),
 // SELECT-NEXT:               kind: User,
 // SELECT-NEXT:               line: 21,
