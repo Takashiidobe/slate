@@ -1,7 +1,7 @@
 use crate::const_expr::{BinaryOp, ConstExpr, UnaryOp};
 use custom_debug::Debug as CustomDebug;
 
-fn is_false(value: &bool) -> bool {
+pub(crate) fn is_false(value: &bool) -> bool {
     !*value
 }
 

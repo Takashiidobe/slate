@@ -492,10 +492,17 @@ impl Lexer {
             self.pos = (self.pos + 2).min(self.chars.len());
             let text: String = self.chars[i..self.pos].iter().collect();
             self.emit(Token::Comment(text));
-        } else if c.is_ascii_digit() {
+        } else if c.is_ascii_digit()
+            || (c == '.' && self.peek_at(1).is_some_and(|next| next.is_ascii_digit()))
+        {
             self.pos = self.numeric_end(self.pos);
             let spelling: String = self.chars[i..self.pos].iter().collect();
-            if spelling.contains('.') || spelling.contains('e') || spelling.contains('E') {
+            let exponent: &[char] = if spelling.starts_with("0x") || spelling.starts_with("0X") {
+                &['p', 'P']
+            } else {
+                &['e', 'E']
+            };
+            if spelling.contains('.') || spelling.contains(exponent) {
                 self.emit(Token::FloatLit(spelling));
             } else {
                 let digits = Self::integer_digits(&spelling).replace('\'', "");

@@ -5,12 +5,14 @@ use crate::ast::{
 use crate::lexer::{Keyword, Token, TokenSpanExt};
 use crate::parser::DeclaratorParser;
 use miette::Diagnostic;
+use rustc_apfloat::ieee;
 use std::collections::HashSet;
 use thiserror::Error;
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum ConstExpr {
     Integer(i64),
+    Float(FloatLiteral),
     Identifier(String),
     StringLit(String),
     SizeOf(Box<Self>),
@@ -86,6 +88,7 @@ impl std::fmt::Display for ConstExpr {
     fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Integer(value) => write!(formatter, "{value}"),
+            Self::Float(value) => write!(formatter, "{value}"),
             Self::Identifier(value) => formatter.write_str(value),
             Self::StringLit(value) => write!(formatter, "\"{value}\""),
             Self::SizeOf(value) => write!(formatter, "sizeof({value})"),
@@ -263,6 +266,95 @@ pub enum ConstExprError {
     UnsupportedCall(String),
     #[error("{0} is not a constant expression")]
     NotConstant(&'static str),
+    #[error("invalid floating literal `{0}`")]
+    InvalidFloatLiteral(String),
+}
+
+#[derive(custom_debug::Debug, Clone, PartialEq)]
+pub struct FloatLiteral {
+    pub value: FloatValue,
+    #[debug(skip_if = crate::ast::is_false)]
+    pub imaginary: bool,
+}
+
+#[derive(custom_debug::Debug, Clone, PartialEq)]
+pub enum FloatValue {
+    Half(#[debug(format = "{:#x}")] u16),
+    Single(f32),
+    Double(f64),
+    Quad(#[debug(format = "{:#x}")] u128),
+    LongDouble(String),
+    Decimal32(String),
+    Decimal64(String),
+    Decimal128(String),
+}
+
+impl FloatLiteral {
+    const SUFFIXES: [&str; 12] = [
+        "f128", "f64x", "f32x", "f16", "f32", "f64", "df", "dd", "dl", "f", "l", "q",
+    ];
+
+    pub fn parse(spelling: &str) -> Result<Self, ConstExprError> {
+        let invalid = || ConstExprError::InvalidFloatLiteral(spelling.to_string());
+        let lowered = spelling.replace('\'', "").to_ascii_lowercase();
+        let (mut digits, mut imaginary) = strip_imaginary(&lowered);
+        let suffix = Self::SUFFIXES
+            .into_iter()
+            .find(|suffix| digits.ends_with(suffix))
+            .unwrap_or("");
+        digits = &digits[..digits.len() - suffix.len()];
+        if !imaginary {
+            (digits, imaginary) = strip_imaginary(digits);
+        }
+        let parse_bits = |bits: fn(&str) -> Option<u128>| bits(digits).ok_or_else(invalid);
+        let value = match suffix {
+            "" | "f64" | "f32x" => FloatValue::Double(f64::from_bits(
+                parse_bits(apfloat_bits::<ieee::Double>)? as u64,
+            )),
+            "f" | "f32" => {
+                FloatValue::Single(f32::from_bits(parse_bits(apfloat_bits::<ieee::Single>)? as u32))
+            }
+            "f16" => FloatValue::Half(parse_bits(apfloat_bits::<ieee::Half>)? as u16),
+            "f128" | "q" => FloatValue::Quad(parse_bits(apfloat_bits::<ieee::Quad>)?),
+            "l" | "f64x" => FloatValue::LongDouble(digits.to_string()),
+            "df" => FloatValue::Decimal32(digits.to_string()),
+            "dd" => FloatValue::Decimal64(digits.to_string()),
+            _ => FloatValue::Decimal128(digits.to_string()),
+        };
+        Ok(Self { value, imaginary })
+    }
+}
+
+fn strip_imaginary(digits: &str) -> (&str, bool) {
+    match digits.strip_suffix(['i', 'j']) {
+        Some(stripped) => (stripped, true),
+        None => (digits, false),
+    }
+}
+
+fn apfloat_bits<F: rustc_apfloat::Float>(digits: &str) -> Option<u128> {
+    F::from_str_r(digits, rustc_apfloat::Round::NearestTiesToEven)
+        .ok()
+        .map(|parsed| parsed.value.to_bits())
+}
+
+impl std::fmt::Display for FloatLiteral {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match &self.value {
+            FloatValue::Half(bits) => write!(formatter, "f16:{bits:#x}")?,
+            FloatValue::Single(value) => write!(formatter, "{value}f")?,
+            FloatValue::Double(value) => write!(formatter, "{value}")?,
+            FloatValue::Quad(bits) => write!(formatter, "f128:{bits:#x}")?,
+            FloatValue::LongDouble(digits) => write!(formatter, "{digits}L")?,
+            FloatValue::Decimal32(digits) => write!(formatter, "{digits}DF")?,
+            FloatValue::Decimal64(digits) => write!(formatter, "{digits}DD")?,
+            FloatValue::Decimal128(digits) => write!(formatter, "{digits}DL")?,
+        }
+        if self.imaginary {
+            formatter.write_str("i")?;
+        }
+        Ok(())
+    }
 }
 
 #[derive(Debug)]
@@ -339,6 +431,7 @@ impl Parser {
         match expression {
             ConstExpr::Integer(value) => Ok(*value),
             ConstExpr::StringLit(_) => Err(ConstExprError::NotConstant("string literal")),
+            ConstExpr::Float(_) => Err(ConstExprError::NotConstant("floating literal")),
             ConstExpr::Identifier(name) => match is_defined {
                 Some(_) => Ok(0),
                 None => Err(ConstExprError::UnsupportedIdentifier(name.clone())),
@@ -852,6 +945,7 @@ impl Parser {
         }
         match self.tokens.value_at(self.position.saturating_sub(1)) {
             Some(Token::IntLit(value)) => Ok(ConstExpr::Integer(*value)),
+            Some(Token::FloatLit(value)) => FloatLiteral::parse(value).map(ConstExpr::Float),
             Some(Token::StringLit(value)) => Ok(ConstExpr::StringLit(value.clone())),
             Some(
                 Token::CharLit(_, value)

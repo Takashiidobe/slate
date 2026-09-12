@@ -264,6 +264,7 @@ fn is_integer_constant_expression(expression: &ConstExpr) -> bool {
         }
         ConstExpr::Identifier(_)
         | ConstExpr::StringLit(_)
+        | ConstExpr::Float(_)
         | ConstExpr::Call { .. }
         | ConstExpr::Assign { .. }
         | ConstExpr::Comma(..)

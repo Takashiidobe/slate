@@ -1,5 +1,6 @@
 /target
 .llog/index
+.llog/state.json
 
 # Beads / Dolt files (added by bd init)
 .dolt/
