@@ -2645,40 +2645,4 @@ int main(void) {
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[5]: Comment {
-// DEFAULT-NEXT:       text: "// LOWERING: #![feature(c_variadic)]",
-// DEFAULT-NEXT:       loc: Loc {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           offset: 3204,
-// DEFAULT-NEXT:           length: 36,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 109,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[6]: Comment {
-// DEFAULT-NEXT:       text: "// REWRITES: #![feature(c_variadic)]",
-// DEFAULT-NEXT:       loc: Loc {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           offset: 3242,
-// DEFAULT-NEXT:           length: 36,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 111,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
 // SLATE-FILECHECK-END DEFAULT

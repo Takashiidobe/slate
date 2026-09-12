@@ -4926,40 +4926,4 @@ int main(void) {
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[11]: Comment {
-// DEFAULT-NEXT:       text: "// REWRITES-X86_64-GNU: #![feature(f128)]",
-// DEFAULT-NEXT:       loc: Loc {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           offset: 7885,
-// DEFAULT-NEXT:           length: 41,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 247,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[12]: Comment {
-// DEFAULT-NEXT:       text: "// LOWERING-X86_64-GNU: #![feature(f128)]",
-// DEFAULT-NEXT:       loc: Loc {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           offset: 7928,
-// DEFAULT-NEXT:           length: 41,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 249,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
 // SLATE-FILECHECK-END DEFAULT

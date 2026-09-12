@@ -294,40 +294,4 @@ done:
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[5]: Comment {
-// DEFAULT-NEXT:       text: "// LOWERING: #![feature(thread_local)]",
-// DEFAULT-NEXT:       loc: Loc {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           offset: 512,
-// DEFAULT-NEXT:           length: 38,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 23,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[6]: Comment {
-// DEFAULT-NEXT:       text: "// REWRITES: #![feature(thread_local)]",
-// DEFAULT-NEXT:       loc: Loc {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           offset: 552,
-// DEFAULT-NEXT:           length: 38,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 25,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
 // SLATE-FILECHECK-END DEFAULT

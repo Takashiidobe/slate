@@ -577,8 +577,12 @@ int main(void) {
 // DEFAULT-NEXT:                                   InitializerItem {
 // DEFAULT-NEXT:                                       designators: [
 // DEFAULT-NEXT:                                           ArrayRange {
-// DEFAULT-NEXT:                                               start: 2,
-// DEFAULT-NEXT:                                               end: 5,
+// DEFAULT-NEXT:                                               start: I128(
+// DEFAULT-NEXT:                                                   2,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               end: I128(
+// DEFAULT-NEXT:                                                   5,
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                       value: Expr(
