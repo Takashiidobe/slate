@@ -281,6 +281,7 @@ fn is_integer_constant_expression(expression: &ConstExpr) -> bool {
         | ConstExpr::Arrow { .. }
         | ConstExpr::Index { .. }
         | ConstExpr::OffsetOf { .. }
+        | ConstExpr::TypesCompatible { .. }
         | ConstExpr::PostIncrement(_)
         | ConstExpr::PostDecrement(_)
         | ConstExpr::PreIncrement(_)
@@ -318,7 +319,7 @@ fn check_type(
         CType::Vector(vector) => {
             check_type(&vector.element, typedefs, tags, provenance, loc, errors)
         }
-        CType::TypeOf(TypeOfOperand::Type(ty)) => {
+        CType::TypeOf(TypeOfOperand::Type(ty)) | CType::TypeOfUnqual(TypeOfOperand::Type(ty)) => {
             check_type(ty, typedefs, tags, provenance, loc, errors)
         }
         CType::Imaginary(ty) => check_type(ty, typedefs, tags, provenance, loc, errors),
@@ -342,6 +343,7 @@ fn check_type(
         | CType::Complex(_)
         | CType::FixedPoint(_)
         | CType::TypeOf(TypeOfOperand::Expression(_))
+        | CType::TypeOfUnqual(TypeOfOperand::Expression(_))
         | CType::TargetBuiltin(_)
         | CType::Named(_)
         | CType::Tagged { .. } => {}

@@ -563,6 +563,12 @@ fn type_spelling(ty: &CType) -> String {
             format!("typeof({expression})")
         }
         CType::TypeOf(TypeOfOperand::Type(ty)) => format!("typeof({})", type_spelling(ty)),
+        CType::TypeOfUnqual(TypeOfOperand::Expression(expression)) => {
+            format!("typeof_unqual({expression})")
+        }
+        CType::TypeOfUnqual(TypeOfOperand::Type(ty)) => {
+            format!("typeof_unqual({})", type_spelling(ty))
+        }
         CType::Imaginary(element) => format!("_Imaginary {}", type_spelling(element)),
         CType::TargetBuiltin(name) => name.clone(),
         CType::Named(name) => name.clone(),

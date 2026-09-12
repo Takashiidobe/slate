@@ -63,6 +63,10 @@ pub(super) enum PPErrorKind {
     ExpectedParametersClose,
     #[error("expected \"FILENAME\" or <FILENAME>")]
     ExpectedHeaderName,
+    #[error("expected resource name after #embed")]
+    ExpectedEmbedResource,
+    #[error("invalid #embed parameter")]
+    InvalidEmbedParameter,
     #[error("{0}")]
     Directive(String),
     #[error("unsupported preprocessor directive")]

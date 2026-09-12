@@ -209,6 +209,7 @@ impl Parser {
         let mut is_thread_local = false;
         let mut is_inline = false;
         let mut is_noreturn = false;
+        let mut is_constexpr = false;
         loop {
             if let Some(qualifier) = parser.take_qualifier() {
                 match qualifier {
@@ -226,6 +227,10 @@ impl Parser {
             }
             if parser.matches(Token::Keyword(Keyword::Noreturn)) {
                 is_noreturn = true;
+                continue;
+            }
+            if parser.matches(Token::Keyword(Keyword::Constexpr)) {
+                is_constexpr = true;
                 continue;
             }
             if parser.matches(Token::Keyword(Keyword::ThreadLocal)) {
@@ -305,6 +310,7 @@ impl Parser {
                 is_thread_local,
                 is_inline,
                 is_noreturn,
+                is_constexpr,
             },
             declarator,
             initializer,
@@ -1417,6 +1423,7 @@ fn build_tag_alias_decl(
                     is_thread_local: false,
                     is_inline: false,
                     is_noreturn: false,
+                    is_constexpr: false,
                 },
                 declarator: Declarator::Name(alias),
                 initializer: None,
@@ -1850,6 +1857,9 @@ impl<'a> DeclaratorParser<'a> {
             }
             Token::Keyword(Keyword::BitInt) => self.parse_bit_int(false),
             Token::Keyword(Keyword::Typeof) => self.parse_typeof()?,
+            Token::Keyword(Keyword::TypeofUnqual) => {
+                CType::TypeOfUnqual(self.parse_typeof_operand()?)
+            }
             Token::Keyword(Keyword::Fract) => {
                 self.fixed_point(FixedPointKind::Fract, false, FixedPointRank::Default)
             }
@@ -1944,6 +1954,7 @@ impl<'a> DeclaratorParser<'a> {
                         is_thread_local: false,
                         is_inline: false,
                         is_noreturn: false,
+                        is_constexpr: false,
                     },
                     declarator,
                     initializer: None,
@@ -2035,6 +2046,10 @@ impl<'a> DeclaratorParser<'a> {
     }
 
     fn parse_typeof(&mut self) -> Result<CType, DeclaratorError> {
+        self.parse_typeof_operand().map(CType::TypeOf)
+    }
+
+    fn parse_typeof_operand(&mut self) -> Result<TypeOfOperand, DeclaratorError> {
         self.expect(
             Token::LParen,
             DeclaratorError::ExpectedToken(Token::LParen, "after `typeof`"),
@@ -2045,7 +2060,7 @@ impl<'a> DeclaratorParser<'a> {
                 Token::RParen,
                 DeclaratorError::ExpectedToken(Token::RParen, "after typeof type-name"),
             )?;
-            return Ok(CType::TypeOf(TypeOfOperand::Type(Box::new(ty))));
+            return Ok(TypeOfOperand::Type(Box::new(ty)));
         }
         let start = self.pos;
         let mut depth = 0;
@@ -2072,8 +2087,8 @@ impl<'a> DeclaratorParser<'a> {
             },
             _ => return Err(DeclaratorError::UnsupportedTypeofExpression),
         };
-        Ok(CType::TypeOf(TypeOfOperand::Expression(Box::new(
-            span_tokens(expression, tokens),
+        Ok(TypeOfOperand::Expression(Box::new(span_tokens(
+            expression, tokens,
         ))))
     }
 
@@ -2108,6 +2123,8 @@ impl<'a> DeclaratorParser<'a> {
                     | Keyword::Fract
                     | Keyword::Accum
                     | Keyword::Saturated
+                    | Keyword::Typeof
+                    | Keyword::TypeofUnqual
             ))
         )
     }
@@ -2248,7 +2265,7 @@ impl<'a> DeclaratorParser<'a> {
         Ok(declarator)
     }
 
-    fn take_qualifiers(&mut self) -> Qualifiers {
+    pub(crate) fn take_qualifiers(&mut self) -> Qualifiers {
         let mut qualifiers = Qualifiers::default();
         while let Some(qualifier) = self.take_qualifier() {
             match qualifier {
@@ -2426,6 +2443,8 @@ fn is_target_builtin_name(name: &str) -> bool {
             | "__m512"
             | "__m512d"
             | "__m512i"
+            | "char8_t"
+            | "atomic_char8_t"
     )
 }
 

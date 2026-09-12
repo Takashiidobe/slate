@@ -37,6 +37,12 @@ pub enum ConstExpr {
         declarator: Declarator,
         member: Box<Self>,
     },
+    TypesCompatible {
+        left_ty: Box<CType>,
+        left_declarator: Declarator,
+        right_ty: Box<CType>,
+        right_declarator: Declarator,
+    },
     Unary {
         op: UnaryOp,
         value: Box<Self>,
@@ -114,6 +120,9 @@ impl std::fmt::Display for ConstExpr {
             Self::SizeOfType { .. } => write!(formatter, "sizeof(...)"),
             Self::AlignOf { .. } => write!(formatter, "_Alignof(...)"),
             Self::OffsetOf { member, .. } => write!(formatter, "__builtin_offsetof(..., {member})"),
+            Self::TypesCompatible { .. } => {
+                formatter.write_str("__builtin_types_compatible_p(...)")
+            }
             Self::Unary { op, value } => write!(formatter, "{}{}", <&str>::from(*op), value),
             Self::Binary { op, left, right } => {
                 write!(formatter, "({left} {} {right})", <&str>::from(*op))
@@ -466,6 +475,9 @@ impl Parser {
             }
             ConstExpr::AlignOf { .. } => Err(ConstExprError::UnsupportedAlignOf),
             ConstExpr::OffsetOf { .. } => Err(ConstExprError::NotConstant("offsetof")),
+            ConstExpr::TypesCompatible { .. } => {
+                Err(ConstExprError::NotConstant("types compatible"))
+            }
             ConstExpr::Call { callee, arguments } => {
                 match (is_defined, callee.as_ref(), arguments.as_slice()) {
                     (
@@ -796,7 +808,21 @@ impl Parser {
 
     fn try_parse_type_name(&self, start: usize) -> Option<(Box<CType>, Declarator, usize)> {
         let mut declarator_parser = DeclaratorParser::new(&self.tokens, start);
-        let ty = declarator_parser.parse_base_type().ok()?;
+        let leading = declarator_parser.take_qualifiers();
+        let mut ty = declarator_parser.parse_base_type().ok()?;
+        let trailing = declarator_parser.take_qualifiers();
+        let qualifiers = crate::ast::Qualifiers {
+            is_const: leading.is_const || trailing.is_const,
+            is_volatile: leading.is_volatile || trailing.is_volatile,
+            is_restrict: leading.is_restrict || trailing.is_restrict,
+            is_atomic: leading.is_atomic || trailing.is_atomic,
+        };
+        if qualifiers != crate::ast::Qualifiers::default() {
+            ty = CType::Qualified {
+                qualifiers,
+                ty: Box::new(ty),
+            };
+        }
         let declarator = declarator_parser.parse_declarator(true).ok()?;
         Some((Box::new(ty), declarator, declarator_parser.position()))
     }
@@ -989,6 +1015,9 @@ impl Parser {
                 self.parse_has_include(value.clone())
             }
             Some(Token::Ident(value)) if value == "__builtin_offsetof" => self.parse_offsetof(),
+            Some(Token::Ident(value)) if value == "__builtin_types_compatible_p" => {
+                self.parse_types_compatible()
+            }
             Some(Token::Ident(value)) if value == "_Generic" => self.parse_generic(),
             Some(Token::Ident(value)) => Ok(ConstExpr::Identifier(value.clone())),
             Some(Token::Keyword(keyword)) => {
@@ -1134,6 +1163,26 @@ impl Parser {
         })
     }
 
+    fn parse_types_compatible(&mut self) -> Result<ConstExpr, ConstExprError> {
+        self.expect(Token::LParen)?;
+        let (left_ty, left_declarator, end) = self
+            .try_parse_type_name(self.position)
+            .ok_or(ConstExprError::ExpectedTypeName)?;
+        self.position = end;
+        self.expect(Token::Comma)?;
+        let (right_ty, right_declarator, end) = self
+            .try_parse_type_name(self.position)
+            .ok_or(ConstExprError::ExpectedTypeName)?;
+        self.position = end;
+        self.expect(Token::RParen)?;
+        Ok(ConstExpr::TypesCompatible {
+            left_ty,
+            left_declarator,
+            right_ty,
+            right_declarator,
+        })
+    }
+
     fn binary_operator(&self) -> Option<(BinaryOp, u8)> {
         Some(match self.peek()? {
             Token::Star => (BinaryOp::Mul, 6),
@@ -1219,6 +1268,7 @@ fn ctype_size(ty: &CType) -> Result<u64, ConstExprError> {
             Ok(element_size * count)
         }
         CType::TypeOf(_)
+        | CType::TypeOfUnqual(_)
         | CType::TargetBuiltin(_)
         | CType::Named(_)
         | CType::Tagged { .. }
@@ -1262,8 +1312,12 @@ pub(crate) fn starts_type_name(token: &Token, typedef_names: &HashSet<String>) -
                 | Keyword::Fract
                 | Keyword::Saturated
                 | Keyword::Typeof
+                | Keyword::TypeofUnqual
+                | Keyword::Constexpr
         ),
-        Token::Ident(name) => typedef_names.contains(name),
+        Token::Ident(name) => {
+            typedef_names.contains(name) || matches!(name.as_str(), "char8_t" | "atomic_char8_t")
+        }
         _ => false,
     }
 }

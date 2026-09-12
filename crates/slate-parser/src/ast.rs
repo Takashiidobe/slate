@@ -365,6 +365,7 @@ pub enum CType {
     Vector(VectorType),
     FixedPoint(FixedPointType),
     TypeOf(TypeOfOperand),
+    TypeOfUnqual(TypeOfOperand),
     Imaginary(Box<Self>),
     TargetBuiltin(String),
     Named(String),
@@ -610,6 +611,8 @@ pub struct DeclarationSpecifiers {
     pub is_inline: bool,
     #[debug(skip_if = is_false)]
     pub is_noreturn: bool,
+    #[debug(skip_if = is_false)]
+    pub is_constexpr: bool,
 }
 
 #[derive(CustomDebug, Clone, PartialEq)]

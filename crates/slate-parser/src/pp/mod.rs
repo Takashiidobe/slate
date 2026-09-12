@@ -194,6 +194,7 @@ impl<'a> Preprocessor<'a> {
                             self.resolve_and_parse_include(&include, directive.arguments_loc())?,
                         );
                     }
+                    DirectiveName::Embed => nodes.push(self.expand_embed(directive)?),
                     DirectiveName::Undef => self.record_undef(directive)?,
                     DirectiveName::Pragma => self.record_pragma(directive),
                     DirectiveName::Error => {
@@ -231,6 +232,107 @@ impl<'a> Preprocessor<'a> {
             loc,
             loc,
         )
+    }
+
+    fn expand_embed(&self, directive: &Directive) -> Result<PPNode, PPFailure> {
+        let arguments = self.expand_macros(&directive.arguments, &mut HashSet::new());
+        let Some(Span {
+            value: Token::StringLit(name),
+            ..
+        }) = arguments.first()
+        else {
+            return Err(PPFailure::at(
+                directive.arguments_loc(),
+                PPErrorKind::ExpectedEmbedResource,
+            ));
+        };
+        let include = include::IncludeDirective::Quoted(name.clone());
+        let (path, _) = self
+            .resolve_include(&include, directive.loc.file)
+            .ok_or_else(|| {
+                PPFailure::at(
+                    arguments[0].spelling,
+                    PPErrorKind::HeaderNotFound(include.to_string()),
+                )
+            })?;
+        let bytes = std::fs::read(&path).map_err(|error| {
+            PPFailure::at(
+                arguments[0].spelling,
+                PPErrorKind::ReadFailed {
+                    path: crate::files::display_path(&path),
+                    message: error.to_string(),
+                },
+            )
+        })?;
+        let mut prefix = Vec::new();
+        let mut suffix = Vec::new();
+        let mut if_empty = Vec::new();
+        let mut index = 1;
+        while index < arguments.len() {
+            let Some(parameter) = identifier(self.source(directive.loc.file), &arguments[index])
+            else {
+                return Err(PPFailure::at(
+                    arguments[index].spelling,
+                    PPErrorKind::InvalidEmbedParameter,
+                ));
+            };
+            if arguments.value_at(index + 1) != Some(&Token::LParen) {
+                return Err(PPFailure::at(
+                    arguments[index].spelling,
+                    PPErrorKind::InvalidEmbedParameter,
+                ));
+            }
+            let start = index + 2;
+            let mut depth = 1usize;
+            index = start;
+            while index < arguments.len() && depth != 0 {
+                match arguments[index].value {
+                    Token::LParen => depth += 1,
+                    Token::RParen => depth -= 1,
+                    _ => {}
+                }
+                index += 1;
+            }
+            if depth != 0 {
+                return Err(PPFailure::at(
+                    arguments[start - 1].spelling,
+                    PPErrorKind::InvalidEmbedParameter,
+                ));
+            }
+            let replacement = arguments[start..index - 1].to_vec();
+            match parameter.as_str() {
+                "prefix" => prefix = replacement,
+                "suffix" => suffix = replacement,
+                "if_empty" => if_empty = replacement,
+                _ => {
+                    return Err(PPFailure::at(
+                        arguments[start - 2].spelling,
+                        PPErrorKind::InvalidEmbedParameter,
+                    ));
+                }
+            }
+        }
+        let loc = directive.loc;
+        let is_empty = bytes.is_empty();
+        let mut tokens = if is_empty { if_empty } else { prefix };
+        for (index, byte) in bytes.into_iter().enumerate() {
+            if index != 0 {
+                tokens.push(Span::new(Token::Comma, loc, loc));
+            }
+            tokens.push(Span::new(Token::IntLit(i64::from(byte)), loc, loc));
+        }
+        if !is_empty {
+            tokens.extend(suffix);
+        }
+        Ok(Span::new(
+            PPNodeKind::Code {
+                text: tokens_source(tokens.values()),
+                tokens,
+                provenance: self.provenance(loc),
+            },
+            loc,
+            loc,
+        ))
     }
 
     fn walk_conditional(&mut self, section: &IfSection) -> Result<Vec<PPNode>, PPFailure> {

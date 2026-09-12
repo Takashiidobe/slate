@@ -95,7 +95,7 @@ impl Preprocessor<'_> {
         nodes
     }
 
-    fn resolve_include(
+    pub(super) fn resolve_include(
         &self,
         include: &IncludeDirective,
         from: FileId,

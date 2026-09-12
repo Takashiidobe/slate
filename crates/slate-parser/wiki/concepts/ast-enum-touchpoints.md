@@ -2,7 +2,7 @@
 
 _created 2026-09-12_
 
-`Stmt`, `Expr`, `ConstExpr`, and `ArraySize` (all in `src/ast.rs` /
+`Stmt`, `Expr`, `ConstExpr`, `CType`, and `ArraySize` (all in `src/ast.rs` /
 `src/const_expr.rs`) are each matched exhaustively, by variant name, in
 several unrelated files. The compiler will refuse to build until every one
 of these is updated, but nothing points at them up front — you either grep
@@ -86,6 +86,14 @@ construct belongs in `ConstExpr`, not `Expr`.
 - `src/parser.rs` — wherever `ArraySize` is *constructed*
   (`DeclaratorParser::parse_declarator`'s `[` handling) — not a match
   site, but the natural place to add parsing for a new array-size form.
+
+## Adding a `CType` variant
+
+- `src/const_expr.rs` — `ctype_size` is exhaustive and must decide whether
+  the type has a compile-time size.
+- `src/sema.rs` — `check_type` is exhaustive and must traverse nested types.
+- `src/reachability.rs` — `Marker::mark_type` is exhaustive and must mark
+  declarations referenced through the type.
 
 ## Process note
 

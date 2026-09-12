@@ -41,6 +41,8 @@ pub enum Keyword {
     Fract,
     Saturated,
     Typeof,
+    TypeofUnqual,
+    Constexpr,
     Imaginary,
     If,
     Else,
@@ -68,6 +70,7 @@ impl Keyword {
                 | Keyword::ThreadLocal
                 | Keyword::Inline
                 | Keyword::Noreturn
+                | Keyword::Constexpr
         )
     }
 }
@@ -114,6 +117,8 @@ impl From<Keyword> for &'static str {
             Keyword::Fract => "_Fract",
             Keyword::Saturated => "_Sat",
             Keyword::Typeof => "typeof",
+            Keyword::TypeofUnqual => "typeof_unqual",
+            Keyword::Constexpr => "constexpr",
             Keyword::Imaginary => "_Imaginary",
             Keyword::If => "if",
             Keyword::Else => "else",
@@ -624,6 +629,8 @@ impl Lexer {
                 "_Fract" => Token::Keyword(Keyword::Fract),
                 "_Sat" => Token::Keyword(Keyword::Saturated),
                 "typeof" | "__typeof__" => Token::Keyword(Keyword::Typeof),
+                "typeof_unqual" | "__typeof_unqual__" => Token::Keyword(Keyword::TypeofUnqual),
+                "constexpr" => Token::Keyword(Keyword::Constexpr),
                 "_Imaginary" => Token::Keyword(Keyword::Imaginary),
                 "if" => Token::Keyword(Keyword::If),
                 "else" => Token::Keyword(Keyword::Else),
