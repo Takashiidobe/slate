@@ -42,7 +42,7 @@ impl Preprocessor<'_> {
                 i += 1;
                 continue;
             };
-            if !disabled.insert(name.clone()) {
+            if disabled.contains(name) {
                 expanded.push(token.clone());
                 i += 1;
                 continue;
@@ -57,13 +57,13 @@ impl Preprocessor<'_> {
                         replacement
                     })
                     .collect::<Vec<_>>();
+                disabled.insert(name.clone());
                 expanded.extend(self.expand_macros(&replacement, disabled));
                 disabled.remove(name);
                 i += 1;
                 continue;
             };
             let Some((arguments, end)) = invocation_arguments(tokens, i + 1) else {
-                disabled.remove(name);
                 expanded.push(token.clone());
                 i += 1;
                 continue;
@@ -71,19 +71,24 @@ impl Preprocessor<'_> {
             if !macro_def.variadic && arguments.len() != parameters.len()
                 || macro_def.variadic && arguments.len() < parameters.len()
             {
-                disabled.remove(name);
                 expanded.push(token.clone());
                 i += 1;
                 continue;
             }
+            let expanded_arguments = arguments
+                .iter()
+                .map(|argument| self.expand_macros(argument, disabled))
+                .collect::<Vec<_>>();
             let mut macro_def = macro_def;
             for replacement in &mut macro_def.replacement {
                 replacement.expansion = token.expansion;
             }
+            let name = name.clone();
+            disabled.insert(name.clone());
             let replacement =
-                substitute_function_macro(&macro_def, &parameters, &arguments, self, disabled);
+                substitute_function_macro(&macro_def, &parameters, &arguments, &expanded_arguments);
             expanded.extend(self.expand_macros(&replacement, disabled));
-            disabled.remove(name);
+            disabled.remove(&name);
             i = end;
         }
         expanded
@@ -180,13 +185,8 @@ fn substitute_function_macro(
     definition: &MacroDef,
     parameters: &[String],
     arguments: &[Vec<Span<Token>>],
-    preprocessor: &Preprocessor<'_>,
-    disabled: &mut HashSet<String>,
+    expanded_arguments: &[Vec<Span<Token>>],
 ) -> Vec<Span<Token>> {
-    let expanded_arguments = arguments
-        .iter()
-        .map(|argument| preprocessor.expand_macros(argument, disabled))
-        .collect::<Vec<_>>();
     let mut output = Vec::new();
     let mut i = 0;
     while i < definition.replacement.len() {
@@ -200,7 +200,7 @@ fn substitute_function_macro(
                         &optional_token,
                         parameters,
                         arguments,
-                        &expanded_arguments,
+                        expanded_arguments,
                         true,
                     ));
                 }
@@ -236,7 +236,7 @@ fn substitute_function_macro(
                 &definition.replacement[i + 1],
                 parameters,
                 arguments,
-                &expanded_arguments,
+                expanded_arguments,
                 false,
             );
             if let Some(right) = right_tokens.first() {
@@ -266,7 +266,7 @@ fn substitute_function_macro(
             token,
             parameters,
             arguments,
-            &expanded_arguments,
+            expanded_arguments,
             i + 1 >= definition.replacement.len()
                 || definition.replacement[i + 1].value != Token::HashHash,
         ));

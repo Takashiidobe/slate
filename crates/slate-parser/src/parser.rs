@@ -19,13 +19,6 @@ fn synthetic(token: Token) -> Span<Token> {
     Span::new(token, loc, loc)
 }
 
-fn integer_value(token: &Token) -> IntegerValue {
-    token.integer_value_i128().map_or_else(
-        || IntegerValue::Arbitrary(String::from(token)),
-        IntegerValue::I128,
-    )
-}
-
 struct Loc<'a> {
     code: &'a str,
     offset: usize,
@@ -208,6 +201,9 @@ impl Parser {
         tokens: &[Span<Token>],
     ) -> Result<Declaration, ParseError> {
         let mut parser = DeclaratorParser { tokens, pos: 0 };
+        while parser.peek() == Some(&Token::Ident("__extension__".to_string())) {
+            parser.pos += 1;
+        }
         let (mut attributes, position) = parse_attribute_groups(parser.tokens, parser.pos)
             .map_err(|error| self.error_at_tokens(tokens, parser.pos, error))?;
         parser.pos = position;
@@ -219,6 +215,13 @@ impl Parser {
         let mut is_constexpr = false;
         let gnu_auto_type = parser.matches(Token::Ident("__auto_type".into()));
         loop {
+            let (more_attributes, position) = parse_attribute_groups(parser.tokens, parser.pos)
+                .map_err(|error| self.error_at_tokens(tokens, parser.pos, error))?;
+            if position != parser.pos {
+                attributes.extend(more_attributes);
+                parser.pos = position;
+                continue;
+            }
             if let Some(qualifier) = parser.take_qualifier() {
                 match qualifier {
                     Keyword::Const => qualifiers.is_const = true,
@@ -292,6 +295,10 @@ impl Parser {
                 _ => unreachable!(),
             }
         }
+        let (mid_attributes, position) = parse_attribute_groups(parser.tokens, parser.pos)
+            .map_err(|error| self.error_at_tokens(tokens, parser.pos, error))?;
+        parser.pos = position;
+        attributes.extend(mid_attributes);
         let declarator = if parser.peek() == Some(&Token::Semi) {
             Declarator::Abstract
         } else {
@@ -516,8 +523,31 @@ impl Parser {
                 ) {
                     return self.parse_linkage_spec_block(nodes);
                 }
+                let tag_keyword_index = {
+                    let mut index = 0;
+                    while matches!(
+                        tokens.value_at(index),
+                        Some(Token::Keyword(
+                            Keyword::Static
+                                | Keyword::Extern
+                                | Keyword::Auto
+                                | Keyword::Register
+                                | Keyword::Inline
+                                | Keyword::Noreturn
+                                | Keyword::Constexpr
+                                | Keyword::ThreadLocal
+                                | Keyword::Const
+                                | Keyword::Volatile
+                                | Keyword::Restrict
+                                | Keyword::Atomic
+                        ))
+                    ) {
+                        index += 1;
+                    }
+                    index
+                };
                 if matches!(
-                    tokens.value_at(0),
+                    tokens.value_at(tag_keyword_index),
                     Some(Token::Keyword(
                         Keyword::Struct | Keyword::Union | Keyword::Enum
                     ))
@@ -574,8 +604,20 @@ impl Parser {
                         &item_tokens
                     };
                     let parts = split_top_level(declaration_tokens, &Token::Comma);
+                    let prefix = parts.first().map_or(Vec::new(), |part| {
+                        part[..self.declaration_prefix_end(part)].to_vec()
+                    });
                     let mut declarations = Vec::new();
-                    for mut part in parts.into_iter().filter(|part| !part.is_empty()) {
+                    for (index, mut part) in parts
+                        .into_iter()
+                        .filter(|part| !part.is_empty())
+                        .enumerate()
+                    {
+                        if index != 0 {
+                            let mut with_prefix = prefix.clone();
+                            with_prefix.append(&mut part);
+                            part = with_prefix;
+                        }
                         part.push(synthetic(Token::Semi));
                         declarations.push(span_pp_nodes(
                             Decl::Declaration {
@@ -605,6 +647,27 @@ impl Parser {
         } else {
             &tokens[..]
         };
+        let mut skip = 0;
+        while matches!(
+            tokens.value_at(skip),
+            Some(Token::Keyword(
+                Keyword::Static
+                    | Keyword::Extern
+                    | Keyword::Auto
+                    | Keyword::Register
+                    | Keyword::Inline
+                    | Keyword::Noreturn
+                    | Keyword::Constexpr
+                    | Keyword::ThreadLocal
+                    | Keyword::Const
+                    | Keyword::Volatile
+                    | Keyword::Restrict
+                    | Keyword::Atomic
+            ))
+        ) {
+            skip += 1;
+        }
+        let tokens = &tokens[skip..];
         let kind = match tokens.value_at(0) {
             Some(Token::Keyword(Keyword::Struct)) => TagKind::Struct,
             Some(Token::Keyword(Keyword::Union)) => TagKind::Union,
@@ -1971,6 +2034,10 @@ impl<'a> DeclaratorParser<'a> {
                             | Keyword::Short
                             | Keyword::Signed
                             | Keyword::Unsigned
+                            | Keyword::Float16
+                            | Keyword::Float64x
+                            | Keyword::Float128
+                            | Keyword::Float128Ext
                     ))
                 ) {
                     self.parse_base_type()?
@@ -1996,6 +2063,14 @@ impl<'a> DeclaratorParser<'a> {
             Token::Keyword(Keyword::Struct) => self.parse_record_type(TagKind::Struct)?,
             Token::Keyword(Keyword::Union) => self.parse_record_type(TagKind::Union)?,
             Token::Keyword(Keyword::Enum) => self.parse_enum_type()?,
+            Token::Ident(name) if name == "__int128_t" => CType::Integer(IntegerType::Ranked {
+                rank: IntegerRank::Int128,
+                signed: true,
+            }),
+            Token::Ident(name) if name == "__uint128_t" => CType::Integer(IntegerType::Ranked {
+                rank: IntegerRank::Int128,
+                signed: false,
+            }),
             Token::Ident(name) if is_target_builtin_name(&name) => CType::TargetBuiltin(name),
             Token::Ident(name) => CType::Named(name),
             other => return Err(DeclaratorError::UnexpectedToken(other)),
@@ -2031,6 +2106,14 @@ impl<'a> DeclaratorParser<'a> {
             }
             _ => None,
         };
+        if self.peek() == Some(&Token::Colon) {
+            let checkpoint = self.pos;
+            self.pos += 1;
+            self.take_qualifiers();
+            if self.parse_base_type().is_err() {
+                self.pos = checkpoint;
+            }
+        }
         let body = if self.peek() == Some(&Token::LBrace) {
             Some(TagBody::Enumerators(self.parse_enumerator_list()?))
         } else {
@@ -2055,6 +2138,9 @@ impl<'a> DeclaratorParser<'a> {
                     Token::RBrace,
                     "in struct/union body",
                 ));
+            }
+            while self.peek() == Some(&Token::Ident("__extension__".to_string())) {
+                self.pos += 1;
             }
             let qualifiers = self.take_qualifiers();
             let ty = self.parse_base_type()?;
@@ -2260,6 +2346,24 @@ impl<'a> DeclaratorParser<'a> {
         )
     }
 
+    fn parse_designator_index_expr(&mut self) -> i64 {
+        let start = self.pos;
+        let mut depth = 0i32;
+        while let Some(token) = self.tokens.value_at(self.pos) {
+            match token {
+                Token::LBracket | Token::LParen => depth += 1,
+                Token::RBracket if depth == 0 => break,
+                Token::Ellipsis if depth == 0 => break,
+                Token::RBracket | Token::RParen => depth -= 1,
+                _ => {}
+            }
+            self.pos += 1;
+        }
+
+        const_expr::Parser::evaluate(&self.tokens[start..self.pos])
+            .unwrap_or_else(|error| panic!("invalid array designator expression: {error:?}"))
+    }
+
     fn parse_initializer(&mut self, typedef_names: &HashSet<String>) -> Initializer {
         if self.matches(Token::LBrace) {
             let mut items = Vec::new();
@@ -2267,24 +2371,12 @@ impl<'a> DeclaratorParser<'a> {
                 let mut designators = Vec::new();
                 loop {
                     if self.matches(Token::LBracket) {
-                        let Some(Token::IntLit(index)) = self.peek().cloned() else {
-                            panic!("array designator must be an integer literal")
-                        };
-                        let index_token = Token::IntLit(index);
-                        let index_value = integer_value(&index_token);
-                        let index = index_token
-                            .integer_value()
-                            .unwrap_or_else(|| panic!("array designator does not fit i64"));
-                        self.pos += 1;
+                        let index = self.parse_designator_index_expr();
                         if self.matches(Token::Ellipsis) {
-                            let Some(Token::IntLit(end)) = self.peek().cloned() else {
-                                panic!("array range designator must end with an integer literal")
-                            };
-                            let end = integer_value(&Token::IntLit(end));
-                            self.pos += 1;
+                            let end = self.parse_designator_index_expr();
                             designators.push(Designator::ArrayRange {
-                                start: index_value,
-                                end,
+                                start: IntegerValue::I128(index as i128),
+                                end: IntegerValue::I128(end as i128),
                             });
                         } else {
                             designators.push(Designator::Array(index));
@@ -2625,7 +2717,11 @@ impl Parser {
             &joined_code
         };
         let sig_tokens = self.nodes_tokens(&nodes[..sig_node_count]);
-        let (mut attributes, mut index) = parse_attribute_groups(&sig_tokens, 0)
+        let mut leading = 0;
+        while sig_tokens.value_at(leading) == Some(&Token::Ident("__extension__".to_string())) {
+            leading += 1;
+        }
+        let (mut attributes, mut index) = parse_attribute_groups(&sig_tokens, leading)
             .map_err(|error| self.error_at(Loc::whole(code), error))?;
         let mut qualifiers = Qualifiers::default();
         let mut storage = StorageClass::None;
@@ -2653,6 +2749,10 @@ impl Parser {
                 _ => break,
             }
             index += 1;
+            let (more_attributes, position) = parse_attribute_groups(&sig_tokens, index)
+                .map_err(|error| self.error_at(Loc::whole(code), error))?;
+            attributes.extend(more_attributes);
+            index = position;
         }
         let mut return_type_parser = DeclaratorParser {
             tokens: &sig_tokens,
@@ -2668,7 +2768,10 @@ impl Parser {
                 pointee: Box::new(ret_type),
             };
         }
-        let name_index = return_type_parser.pos;
+        let (mid_attributes, name_index) =
+            parse_attribute_groups(&sig_tokens, return_type_parser.pos)
+                .map_err(|error| self.error_at(Loc::whole(code), error))?;
+        attributes.extend(mid_attributes);
         let name = match sig_tokens.value_at(name_index) {
             Some(Token::Ident(n)) => n.clone(),
             _ => return Err(self.error_at(Loc::whole(code), "expected function name")),
@@ -2858,12 +2961,17 @@ impl Parser {
             fragment.pos = close + 1;
             Ok(body)
         } else {
-            let start = fragment.pos;
-            let stmt = self.parse_one_stmt(fragment)?;
-            Ok(vec![span_tokens(
-                stmt,
-                &fragment.tokens[start..fragment.pos],
-            )])
+            let mut stmts = Vec::new();
+            loop {
+                let start = fragment.pos;
+                let stmt = self.parse_one_stmt(fragment)?;
+                let is_label = matches!(stmt, Stmt::Labeled(_));
+                stmts.push(span_tokens(stmt, &fragment.tokens[start..fragment.pos]));
+                if !is_label {
+                    break;
+                }
+            }
+            Ok(stmts)
         }
     }
 
@@ -2979,10 +3087,53 @@ impl Parser {
         }
     }
 
+    fn declaration_prefix_end(&self, tokens: &[Span<Token>]) -> usize {
+        let fallback = tokens
+            .values()
+            .position(|token| matches!(token, Token::Ident(_)))
+            .unwrap_or(0);
+        let (_, position) = match parse_attribute_groups(tokens, 0) {
+            Ok(result) => result,
+            Err(_) => return fallback,
+        };
+        let mut parser = DeclaratorParser::new(tokens, position);
+        loop {
+            if parser.take_qualifier().is_some() {
+                continue;
+            }
+            match parser.peek() {
+                Some(Token::Keyword(
+                    Keyword::Inline
+                    | Keyword::Noreturn
+                    | Keyword::Constexpr
+                    | Keyword::ThreadLocal
+                    | Keyword::Typedef
+                    | Keyword::Extern
+                    | Keyword::Static
+                    | Keyword::Auto
+                    | Keyword::Register,
+                )) => {
+                    parser.pos += 1;
+                }
+                _ => break,
+            }
+        }
+        if parser.parse_base_type().is_err() {
+            return fallback;
+        }
+        while parser.take_qualifier().is_some() {}
+        parser.position()
+    }
+
     fn parse_one_stmt(&self, fragment: &mut Fragment) -> Result<Stmt, ParseError> {
         let code = fragment.code;
         let tokens = fragment.tokens;
         let stmt_start = fragment.pos;
+
+        if tokens.value_at(fragment.pos) == Some(&Token::Semi) {
+            fragment.pos += 1;
+            return Ok(Stmt::Block(Vec::new()));
+        }
 
         if tokens.value_at(fragment.pos) == Some(&Token::Keyword(Keyword::StaticAssert)) {
             let end = top_level_semi(&tokens[fragment.pos..])
@@ -3049,6 +3200,37 @@ impl Parser {
             return self.parse_one_stmt(fragment);
         }
 
+        if let Some(Token::Ident(name)) = tokens.value_at(fragment.pos)
+            && matches!(name.as_str(), "asm" | "__asm__" | "__asm")
+        {
+            let mut cursor = fragment.pos + 1;
+            while matches!(
+                tokens.value_at(cursor),
+                Some(Token::Keyword(
+                    Keyword::Volatile | Keyword::Inline | Keyword::Goto
+                ))
+            ) {
+                cursor += 1;
+            }
+            if tokens.value_at(cursor) == Some(&Token::LParen) {
+                let close = matching_paren(tokens, cursor).ok_or_else(|| {
+                    self.error_at(Loc::whole(code), "expected `)` in asm statement")
+                })?;
+                let end = if tokens.value_at(close + 1) == Some(&Token::Semi) {
+                    close + 1
+                } else {
+                    close
+                };
+                let text = tokens[fragment.pos..=end]
+                    .values()
+                    .map(String::from)
+                    .collect::<Vec<_>>()
+                    .join(" ");
+                fragment.pos = end + 1;
+                return Ok(Stmt::Asm(text));
+            }
+        }
+
         if tokens.value_at(fragment.pos) == Some(&Token::LBrace) {
             let close = matching_brace(tokens, fragment.pos)
                 .ok_or_else(|| self.error_at(Loc::whole(code), "expected `}`"))?;
@@ -3085,11 +3267,7 @@ impl Parser {
                     self.parse_declaration_tokens(code, declaration_tokens)?,
                 ));
             }
-            let prefix_end = parts[0]
-                .values()
-                .position(|token| matches!(token, Token::Ident(_)))
-                .unwrap_or(0);
-            let prefix = parts[0][..prefix_end].to_vec();
+            let prefix = parts[0][..self.declaration_prefix_end(&parts[0])].to_vec();
             let declarations = parts
                 .into_iter()
                 .filter(|part| !part.is_empty())
@@ -3322,10 +3500,8 @@ impl Parser {
             if tokens.value_at(close) != Some(&Token::RParen) {
                 return Err(self.error_at(Loc::whole(code), "expected `)` after `_Generic`"));
             }
-            let Some(comma) = tokens[2..close]
-                .values()
-                .position(|token| *token == Token::Comma)
-                .map(|position| position + 2)
+            let Some(comma) =
+                top_level_token(&tokens[2..close], &Token::Comma).map(|position| position + 2)
             else {
                 return Err(self.error_at(Loc::whole(code), "expected `,` in `_Generic`"));
             };
@@ -3333,18 +3509,14 @@ impl Parser {
             let mut associations = Vec::new();
             let mut start = comma + 1;
             while start < close {
-                let Some(colon) = tokens[start..close]
-                    .values()
-                    .position(|token| *token == Token::Colon)
+                let Some(colon) = top_level_token(&tokens[start..close], &Token::Colon)
                     .map(|position| start + position)
                 else {
                     return Err(
                         self.error_at(Loc::whole(code), "expected `:` in `_Generic` association")
                     );
                 };
-                let expression_end = tokens[colon + 1..close]
-                    .values()
-                    .position(|token| *token == Token::Comma)
+                let expression_end = top_level_token(&tokens[colon + 1..close], &Token::Comma)
                     .map_or(close, |position| colon + 1 + position);
                 let type_name = match &tokens[start].value {
                     Token::Keyword(Keyword::Default) => None,

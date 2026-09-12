@@ -173,7 +173,7 @@ def main() -> int:
     parser.add_argument("fixtures", nargs="*", type=Path)
     args = parser.parse_args()
     repo = Path(__file__).resolve().parent.parent
-    fixtures = args.fixtures or sorted((repo / "tests/fixtures").glob("*.c"))
+    fixtures = args.fixtures or sorted((repo / "tests/fixtures").rglob("*.c"))
     changed = False
     for fixture_arg in fixtures:
         fixture = (Path.cwd() / fixture_arg).resolve() if not fixture_arg.is_absolute() else fixture_arg

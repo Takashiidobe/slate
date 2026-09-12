@@ -417,6 +417,7 @@ fn summarize_evaluated_decl(decl: &Decl) -> DeclSummary {
                     | Stmt::Default
                     | Stmt::Labeled(_)
                     | Stmt::LocalLabelDecl(_)
+                    | Stmt::Asm(_)
                     | Stmt::Goto(_)
                     | Stmt::ComputedGoto(_)
                     | Stmt::NestedFunction(_)
@@ -792,13 +793,21 @@ fn tag_name(kind: TagKind) -> &'static str {
     }
 }
 
+fn collect_c_fixtures(dir: &Path, out: &mut Vec<PathBuf>) {
+    for entry in std::fs::read_dir(dir).expect("read fixture directory") {
+        let path = entry.expect("read fixture entry").path();
+        if path.is_dir() {
+            collect_c_fixtures(&path, out);
+        } else if path.extension().and_then(|extension| extension.to_str()) == Some("c") {
+            out.push(path);
+        }
+    }
+}
+
 #[test]
 fn fixtures_are_filechecked() {
-    let mut fixtures = std::fs::read_dir(fixtures_dir())
-        .expect("read fixture directory")
-        .map(|entry| entry.expect("read fixture entry").path())
-        .filter(|path| path.extension().and_then(|extension| extension.to_str()) == Some("c"))
-        .collect::<Vec<_>>();
+    let mut fixtures = Vec::new();
+    collect_c_fixtures(&fixtures_dir(), &mut fixtures);
     fixtures.sort();
     assert!(!fixtures.is_empty(), "no C fixtures found");
 

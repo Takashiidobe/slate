@@ -11,6 +11,7 @@
 #define __BOOL_WIDTH__ 1
 #define __BYTE_ORDER__ __ORDER_LITTLE_ENDIAN__
 #define __CHAR16_TYPE__ unsigned short
+#define __CHAR8_TYPE__ unsigned char
 #define __CHAR32_TYPE__ unsigned int
 #define __CHAR_BIT__ 8
 #define __clang__ 1
