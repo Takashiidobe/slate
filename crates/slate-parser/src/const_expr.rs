@@ -629,14 +629,21 @@ impl Parser {
     }
 
     fn parse_initializer_value(&mut self) -> Result<Initializer, ConstExprError> {
+        let start = self.position;
         if self.peek() == Some(&Token::LBrace) {
             Ok(Initializer::List(self.parse_initializer_list()?))
         } else if let Some(Token::StringLit(value)) = self.peek().cloned() {
             self.take();
-            Ok(Initializer::Expr(Expr::StringLit(value)))
+            Ok(Initializer::Expr(Span::cover(
+                Expr::StringLit(value),
+                &self.tokens[start..self.position],
+            )))
         } else {
             let expression = self.parse_assignment()?;
-            Ok(Initializer::Expr(Expr::Const(Box::new(expression))))
+            Ok(Initializer::Expr(Span::cover(
+                Expr::Const(Box::new(expression)),
+                &self.tokens[start..self.position],
+            )))
         }
     }
 
@@ -962,7 +969,7 @@ fn declarator_size(ty: &CType, declarator: &Declarator) -> Result<u64, ConstExpr
         Declarator::Array { inner, size } => {
             let element = declarator_size(ty, inner)?;
             let count = match size {
-                ArraySize::Expression(expr) => match expr.as_ref() {
+                ArraySize::Expression(expr) => match &expr.value {
                     Expr::IntLit(value) => *value as u64,
                     _ => return Err(ConstExprError::UnsupportedTypeSize),
                 },
@@ -1003,7 +1010,7 @@ fn ctype_size(ty: &CType) -> Result<u64, ConstExprError> {
         CType::Array { element, size } => {
             let element_size = ctype_size(element)?;
             let count = match size {
-                ArraySize::Expression(expr) => match expr.as_ref() {
+                ArraySize::Expression(expr) => match &expr.value {
                     Expr::IntLit(value) => *value as u64,
                     _ => return Err(ConstExprError::UnsupportedTypeSize),
                 },

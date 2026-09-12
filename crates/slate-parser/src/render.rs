@@ -1,4 +1,4 @@
-use crate::ast::{ConcreteDecl, Decl, TranslationUnit};
+use crate::ast::{SpannedConcreteDecl, SpannedDecl, TranslationUnit};
 use crate::eval::Env;
 use std::fmt::Debug;
 use std::io::{self, Write};
@@ -24,16 +24,16 @@ impl<W: Write> Renderer<W> {
         self.out
     }
 
-    fn render_decls(&mut self, decls: &[Decl]) -> io::Result<()> {
+    fn render_decls(&mut self, decls: &[SpannedDecl]) -> io::Result<()> {
         for (index, decl) in decls.iter().enumerate() {
-            self.render_debug(index, decl)?;
+            self.render_debug(index, &decl.value)?;
         }
         Ok(())
     }
 
-    fn render_concrete_decls(&mut self, decls: &[ConcreteDecl]) -> io::Result<()> {
+    fn render_concrete_decls(&mut self, decls: &[SpannedConcreteDecl]) -> io::Result<()> {
         for (index, decl) in decls.iter().enumerate() {
-            self.render_debug(index, decl)?;
+            self.render_debug(index, &decl.value)?;
         }
         Ok(())
     }

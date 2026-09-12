@@ -19,6 +19,13 @@ pub struct Conditional<T> {
     pub branches: Vec<(Condition, T)>,
 }
 
+pub type SpannedExpr = Span<Expr>;
+pub type SpannedStmt = Span<Stmt>;
+pub type SpannedFieldItem = Span<FieldItem>;
+pub type SpannedDecl = Span<Decl>;
+pub type SpannedConcreteStmt = Span<ConcreteStmt>;
+pub type SpannedConcreteDecl = Span<ConcreteDecl>;
+
 #[derive(Debug, Clone, PartialEq)]
 pub enum Expr {
     Const(Box<ConstExpr>),
@@ -27,19 +34,19 @@ pub enum Expr {
     Identifier(String),
     Unary {
         op: UnaryOp,
-        value: Box<Expr>,
+        value: Box<SpannedExpr>,
     },
     Binary {
         op: BinaryOp,
-        left: Box<Expr>,
-        right: Box<Expr>,
+        left: Box<SpannedExpr>,
+        right: Box<SpannedExpr>,
     },
-    SizeOf(Box<Expr>),
+    SizeOf(Box<SpannedExpr>),
     Generic {
-        controlling: Box<Expr>,
+        controlling: Box<SpannedExpr>,
         associations: Vec<GenericAssociation>,
     },
-    StatementExpression(Vec<Stmt>),
+    StatementExpression(Vec<SpannedStmt>),
 }
 
 impl std::fmt::Display for Expr {
@@ -76,7 +83,7 @@ impl std::fmt::Display for Expr {
 #[derive(Debug, Clone, PartialEq)]
 pub struct GenericAssociation {
     pub type_name: Option<String>,
-    pub expression: Expr,
+    pub expression: SpannedExpr,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -93,7 +100,7 @@ pub struct InitializerItem {
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Initializer {
-    Expr(Expr),
+    Expr(SpannedExpr),
     List(Vec<InitializerItem>),
     Conditional(Conditional<Box<Initializer>>),
 }
@@ -105,39 +112,39 @@ pub enum Stmt {
         loc: Loc,
         provenance: Provenance,
     },
-    Return(Expr),
-    Expr(Expr),
+    Return(SpannedExpr),
+    Expr(SpannedExpr),
     Decl(Declaration),
-    Block(Vec<Stmt>),
-    Conditional(Conditional<Vec<Stmt>>),
+    Block(Vec<SpannedStmt>),
+    Conditional(Conditional<Vec<SpannedStmt>>),
     If {
-        condition: Expr,
-        then_branch: Vec<Stmt>,
-        else_branch: Option<Vec<Stmt>>,
+        condition: SpannedExpr,
+        then_branch: Vec<SpannedStmt>,
+        else_branch: Option<Vec<SpannedStmt>>,
     },
     While {
-        condition: Expr,
-        body: Vec<Stmt>,
+        condition: SpannedExpr,
+        body: Vec<SpannedStmt>,
     },
     DoWhile {
-        body: Vec<Stmt>,
-        condition: Expr,
+        body: Vec<SpannedStmt>,
+        condition: SpannedExpr,
     },
     For {
-        init: Option<Box<Stmt>>,
-        condition: Option<Expr>,
-        increment: Option<Expr>,
-        body: Vec<Stmt>,
+        init: Option<Box<SpannedStmt>>,
+        condition: Option<SpannedExpr>,
+        increment: Option<SpannedExpr>,
+        body: Vec<SpannedStmt>,
     },
     Switch {
-        discriminant: Expr,
-        body: Vec<Stmt>,
+        discriminant: SpannedExpr,
+        body: Vec<SpannedStmt>,
     },
-    Case(Expr),
+    Case(SpannedExpr),
     Default,
     Labeled(String),
     Goto(String),
-    ComputedGoto(Expr),
+    ComputedGoto(SpannedExpr),
     NestedFunction(Box<FunctionDecl>),
     Break,
     Continue,
@@ -161,13 +168,31 @@ impl Loc {
             length,
         }
     }
+
+    pub fn through(self, end: Self) -> Self {
+        if self.file != end.file {
+            return self;
+        }
+        let end_offset = end.offset.saturating_add(end.length);
+        Self::new(
+            self.file,
+            self.offset.min(end.offset),
+            end_offset.saturating_sub(self.offset.min(end.offset)),
+        )
+    }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Clone, PartialEq, Eq)]
 pub struct Span<T> {
     pub value: T,
     pub spelling: Loc,
     pub expansion: Loc,
+}
+
+impl<T: std::fmt::Debug> std::fmt::Debug for Span<T> {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        self.value.fmt(formatter)
+    }
 }
 
 impl<T> Span<T> {
@@ -177,6 +202,39 @@ impl<T> Span<T> {
             spelling,
             expansion,
         }
+    }
+}
+
+impl<T> std::ops::Deref for Span<T> {
+    type Target = T;
+
+    fn deref(&self) -> &Self::Target {
+        &self.value
+    }
+}
+
+impl<T: std::fmt::Display> std::fmt::Display for Span<T> {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        self.value.fmt(formatter)
+    }
+}
+
+impl<T> Span<T> {
+    pub fn with_value<U>(self, value: U) -> Span<U> {
+        Span::new(value, self.spelling, self.expansion)
+    }
+
+    pub fn cover<U>(value: T, spans: &[Span<U>]) -> Self {
+        let Some(first) = spans.first() else {
+            let loc = Loc::new(FileId(0), 0, 0);
+            return Self::new(value, loc, loc);
+        };
+        let last = spans.last().unwrap();
+        Self::new(
+            value,
+            first.spelling.through(last.spelling),
+            first.expansion.through(last.expansion),
+        )
     }
 }
 
@@ -288,7 +346,7 @@ pub struct FunctionDecl {
     #[debug(skip_if = is_false)]
     pub variadic: bool,
     #[debug(skip_if = Vec::is_empty)]
-    pub body: Vec<Stmt>,
+    pub body: Vec<SpannedStmt>,
     pub provenance: Provenance,
     #[debug(skip_if = Qualifiers::is_default)]
     pub qualifiers: Qualifiers,
@@ -409,7 +467,7 @@ pub struct FixedPointType {
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum TypeOfOperand {
-    Expression(Box<Expr>),
+    Expression(Box<SpannedExpr>),
     Type(Box<CType>),
 }
 
@@ -499,7 +557,7 @@ impl TryFrom<&str> for StorageClass {
 #[derive(Debug, Clone, PartialEq)]
 pub enum ArraySize {
     Unspecified,
-    Expression(Box<Expr>),
+    Expression(Box<SpannedExpr>),
     Star,
 }
 
@@ -575,7 +633,7 @@ pub struct RecordDecl {
     pub kind: TagKind,
     pub name: Option<String>,
     #[debug(skip_if = Vec::is_empty)]
-    pub fields: Vec<FieldItem>,
+    pub fields: Vec<SpannedFieldItem>,
     pub provenance: Provenance,
     #[debug(skip_if = Vec::is_empty)]
     pub attributes: Vec<Attribute>,
@@ -589,7 +647,7 @@ pub enum FieldItem {
         provenance: Provenance,
     },
     Field(FieldDecl),
-    Conditional(Conditional<Vec<FieldItem>>),
+    Conditional(Conditional<Vec<SpannedFieldItem>>),
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -609,7 +667,7 @@ pub struct EnumDecl {
 #[derive(Debug, Clone, PartialEq)]
 pub struct Enumerator {
     pub name: String,
-    pub value: Option<Expr>,
+    pub value: Option<SpannedExpr>,
 }
 
 #[derive(CustomDebug, Clone, PartialEq)]
@@ -633,7 +691,7 @@ pub enum Decl {
     },
     Record(RecordDecl),
     Enum(EnumDecl),
-    Conditional(Conditional<Vec<Decl>>),
+    Conditional(Conditional<Vec<SpannedDecl>>),
 }
 
 impl Decl {
@@ -665,7 +723,7 @@ impl Decl {
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct TranslationUnit {
-    pub decls: Vec<Decl>,
+    pub decls: Vec<SpannedDecl>,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -675,42 +733,42 @@ pub enum ConcreteStmt {
         loc: Loc,
         provenance: Provenance,
     },
-    Return(Expr),
-    Expr(Expr),
+    Return(SpannedExpr),
+    Expr(SpannedExpr),
     Decl(Declaration),
-    Block(Vec<ConcreteStmt>),
+    Block(Vec<SpannedConcreteStmt>),
     If {
-        condition: Expr,
-        then_branch: Vec<ConcreteStmt>,
-        else_branch: Option<Vec<ConcreteStmt>>,
+        condition: SpannedExpr,
+        then_branch: Vec<SpannedConcreteStmt>,
+        else_branch: Option<Vec<SpannedConcreteStmt>>,
     },
     While {
-        condition: Expr,
-        body: Vec<ConcreteStmt>,
+        condition: SpannedExpr,
+        body: Vec<SpannedConcreteStmt>,
     },
     DoWhile {
-        body: Vec<ConcreteStmt>,
-        condition: Expr,
+        body: Vec<SpannedConcreteStmt>,
+        condition: SpannedExpr,
     },
     For {
-        init: Option<Box<ConcreteStmt>>,
-        condition: Option<Expr>,
-        increment: Option<Expr>,
-        body: Vec<ConcreteStmt>,
+        init: Option<Box<SpannedConcreteStmt>>,
+        condition: Option<SpannedExpr>,
+        increment: Option<SpannedExpr>,
+        body: Vec<SpannedConcreteStmt>,
     },
     Switch {
-        discriminant: Expr,
-        body: Vec<ConcreteStmt>,
+        discriminant: SpannedExpr,
+        body: Vec<SpannedConcreteStmt>,
     },
-    Case(Expr),
+    Case(SpannedExpr),
     Default,
     Labeled(String),
     Goto(String),
-    ComputedGoto(Expr),
+    ComputedGoto(SpannedExpr),
     NestedFunction(Box<ConcreteFunctionDecl>),
     Break,
     Continue,
-    Unreachable(Box<ConcreteStmt>),
+    Unreachable(Box<SpannedConcreteStmt>),
 }
 
 #[derive(CustomDebug, Clone, PartialEq)]
@@ -722,7 +780,7 @@ pub struct ConcreteFunctionDecl {
     #[debug(skip_if = is_false)]
     pub variadic: bool,
     #[debug(skip_if = Vec::is_empty)]
-    pub body: Vec<ConcreteStmt>,
+    pub body: Vec<SpannedConcreteStmt>,
     pub provenance: Provenance,
     #[debug(skip_if = Qualifiers::is_default)]
     pub qualifiers: Qualifiers,
@@ -761,5 +819,5 @@ pub enum ConcreteDecl {
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct ConcreteTranslationUnit {
-    pub decls: Vec<ConcreteDecl>,
+    pub decls: Vec<SpannedConcreteDecl>,
 }

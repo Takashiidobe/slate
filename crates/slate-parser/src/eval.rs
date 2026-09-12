@@ -30,10 +30,10 @@ impl TranslationUnit {
     }
 }
 
-impl Decl {
-    fn eval(&self, env: &Env) -> Vec<ConcreteDecl> {
-        match self {
-            Self::Comment {
+impl Span<Decl> {
+    fn eval(&self, env: &Env) -> Vec<SpannedConcreteDecl> {
+        let concrete = match &self.value {
+            Decl::Comment {
                 text,
                 loc,
                 provenance,
@@ -42,12 +42,12 @@ impl Decl {
                 loc: *loc,
                 provenance: *provenance,
             }],
-            Self::Function(f) => vec![ConcreteDecl::Function(ConcreteFunctionDecl {
+            Decl::Function(f) => vec![ConcreteDecl::Function(ConcreteFunctionDecl {
                 ret_type: f.ret_type.clone(),
                 name: f.name.clone(),
                 parameters: f.parameters.clone(),
                 variadic: f.variadic,
-                body: mark_unreachable(Stmt::eval_all(&f.body, env)),
+                body: mark_unreachable(Span::<Stmt>::eval_all(&f.body, env)),
                 provenance: f.provenance,
                 qualifiers: f.qualifiers,
                 storage: f.storage,
@@ -55,7 +55,7 @@ impl Decl {
                 is_noreturn: f.is_noreturn,
                 attributes: f.attributes.clone(),
             })],
-            Self::Declaration {
+            Decl::Declaration {
                 declaration,
                 provenance,
             } => vec![ConcreteDecl::Declaration {
@@ -68,7 +68,7 @@ impl Decl {
                 },
                 provenance: *provenance,
             }],
-            Self::Typedef {
+            Decl::Typedef {
                 name,
                 ty,
                 provenance,
@@ -79,24 +79,30 @@ impl Decl {
                 provenance: *provenance,
                 attributes: attributes.clone(),
             }],
-            Self::Record(record) => vec![ConcreteDecl::Record(record.eval(env))],
-            Self::Enum(enumeration) => vec![ConcreteDecl::Enum(enumeration.clone())],
-            Self::Conditional(cond) => match cond.select_branch(env) {
-                Some(body) => body.iter().flat_map(|decl| decl.eval(env)).collect(),
-                None => vec![],
-            },
-        }
+            Decl::Record(record) => vec![ConcreteDecl::Record(record.eval(env))],
+            Decl::Enum(enumeration) => vec![ConcreteDecl::Enum(enumeration.clone())],
+            Decl::Conditional(cond) => {
+                return match cond.select_branch(env) {
+                    Some(body) => body.iter().flat_map(|decl| decl.eval(env)).collect(),
+                    None => vec![],
+                };
+            }
+        };
+        concrete
+            .into_iter()
+            .map(|decl| self.clone().with_value(decl))
+            .collect()
     }
 }
 
-impl Stmt {
-    fn eval_all(stmts: &[Self], env: &Env) -> Vec<ConcreteStmt> {
+impl Span<Stmt> {
+    fn eval_all(stmts: &[SpannedStmt], env: &Env) -> Vec<SpannedConcreteStmt> {
         stmts.iter().flat_map(|stmt| stmt.eval(env)).collect()
     }
 
-    fn eval(&self, env: &Env) -> Vec<ConcreteStmt> {
-        match self {
-            Self::Comment {
+    fn eval(&self, env: &Env) -> Vec<SpannedConcreteStmt> {
+        let concrete = match &self.value {
+            Stmt::Comment {
                 text,
                 loc,
                 provenance,
@@ -105,21 +111,23 @@ impl Stmt {
                 loc: *loc,
                 provenance: *provenance,
             }],
-            Self::Return(e) => vec![ConcreteStmt::Return(e.clone())],
-            Self::Expr(e) => vec![ConcreteStmt::Expr(e.clone())],
-            Self::Decl(declaration) => vec![ConcreteStmt::Decl(Declaration {
+            Stmt::Return(e) => vec![ConcreteStmt::Return(e.clone())],
+            Stmt::Expr(e) => vec![ConcreteStmt::Expr(e.clone())],
+            Stmt::Decl(declaration) => vec![ConcreteStmt::Decl(Declaration {
                 initializer: declaration
                     .initializer
                     .as_ref()
                     .and_then(|initializer| initializer.eval(env)),
                 ..declaration.clone()
             })],
-            Self::Block(body) => vec![ConcreteStmt::Block(Self::eval_all(body, env))],
-            Self::Conditional(cond) => match cond.select_branch(env) {
-                Some(body) => body.iter().flat_map(|stmt| stmt.eval(env)).collect(),
-                None => vec![],
-            },
-            Self::If {
+            Stmt::Block(body) => vec![ConcreteStmt::Block(Self::eval_all(body, env))],
+            Stmt::Conditional(cond) => {
+                return match cond.select_branch(env) {
+                    Some(body) => body.iter().flat_map(|stmt| stmt.eval(env)).collect(),
+                    None => vec![],
+                };
+            }
+            Stmt::If {
                 condition,
                 then_branch,
                 else_branch,
@@ -130,15 +138,15 @@ impl Stmt {
                     .as_ref()
                     .map(|branch| Self::eval_all(branch, env)),
             }],
-            Self::While { condition, body } => vec![ConcreteStmt::While {
+            Stmt::While { condition, body } => vec![ConcreteStmt::While {
                 condition: condition.clone(),
                 body: Self::eval_all(body, env),
             }],
-            Self::DoWhile { body, condition } => vec![ConcreteStmt::DoWhile {
+            Stmt::DoWhile { body, condition } => vec![ConcreteStmt::DoWhile {
                 body: Self::eval_all(body, env),
                 condition: condition.clone(),
             }],
-            Self::For {
+            Stmt::For {
                 init,
                 condition,
                 increment,
@@ -151,16 +159,16 @@ impl Stmt {
                 increment: increment.clone(),
                 body: Self::eval_all(body, env),
             }],
-            Self::Switch { discriminant, body } => vec![ConcreteStmt::Switch {
+            Stmt::Switch { discriminant, body } => vec![ConcreteStmt::Switch {
                 discriminant: discriminant.clone(),
                 body: Self::eval_all(body, env),
             }],
-            Self::Case(value) => vec![ConcreteStmt::Case(value.clone())],
-            Self::Default => vec![ConcreteStmt::Default],
-            Self::Labeled(name) => vec![ConcreteStmt::Labeled(name.clone())],
-            Self::Goto(name) => vec![ConcreteStmt::Goto(name.clone())],
-            Self::ComputedGoto(target) => vec![ConcreteStmt::ComputedGoto(target.clone())],
-            Self::NestedFunction(function) => {
+            Stmt::Case(value) => vec![ConcreteStmt::Case(value.clone())],
+            Stmt::Default => vec![ConcreteStmt::Default],
+            Stmt::Labeled(name) => vec![ConcreteStmt::Labeled(name.clone())],
+            Stmt::Goto(name) => vec![ConcreteStmt::Goto(name.clone())],
+            Stmt::ComputedGoto(target) => vec![ConcreteStmt::ComputedGoto(target.clone())],
+            Stmt::NestedFunction(function) => {
                 vec![ConcreteStmt::NestedFunction(Box::new(
                     ConcreteFunctionDecl {
                         ret_type: function.ret_type.clone(),
@@ -177,9 +185,13 @@ impl Stmt {
                     },
                 ))]
             }
-            Self::Break => vec![ConcreteStmt::Break],
-            Self::Continue => vec![ConcreteStmt::Continue],
-        }
+            Stmt::Break => vec![ConcreteStmt::Break],
+            Stmt::Continue => vec![ConcreteStmt::Continue],
+        };
+        concrete
+            .into_iter()
+            .map(|stmt| self.clone().with_value(stmt))
+            .collect()
     }
 }
 
@@ -209,20 +221,22 @@ impl RecordDecl {
     }
 }
 
-impl FieldItem {
-    fn eval(&self, env: &Env) -> Vec<FieldItem> {
-        match self {
-            Self::Comment {
+impl Span<FieldItem> {
+    fn eval(&self, env: &Env) -> Vec<SpannedFieldItem> {
+        match &self.value {
+            FieldItem::Comment {
                 text,
                 loc,
                 provenance,
-            } => vec![Self::Comment {
+            } => vec![self.clone().with_value(FieldItem::Comment {
                 text: text.clone(),
                 loc: *loc,
                 provenance: *provenance,
-            }],
-            Self::Field(field) => vec![Self::Field(field.clone())],
-            Self::Conditional(cond) => match cond.select_branch(env) {
+            })],
+            FieldItem::Field(field) => {
+                vec![self.clone().with_value(FieldItem::Field(field.clone()))]
+            }
+            FieldItem::Conditional(cond) => match cond.select_branch(env) {
                 Some(items) => items.iter().flat_map(|item| item.eval(env)).collect(),
                 None => vec![],
             },

@@ -1,7 +1,7 @@
 use crate::ast::*;
 use std::collections::{HashMap, HashSet};
 
-pub fn mark_unreachable(body: Vec<ConcreteStmt>) -> Vec<ConcreteStmt> {
+pub fn mark_unreachable(body: Vec<SpannedConcreteStmt>) -> Vec<SpannedConcreteStmt> {
     let mut result = Vec::with_capacity(body.len());
     let mut terminated = false;
     for stmt in body {
@@ -10,7 +10,8 @@ pub fn mark_unreachable(body: Vec<ConcreteStmt>) -> Vec<ConcreteStmt> {
         }
         let stmt = mark_unreachable_in(stmt);
         if terminated {
-            result.push(ConcreteStmt::Unreachable(Box::new(stmt)));
+            let loc = stmt.clone();
+            result.push(loc.with_value(ConcreteStmt::Unreachable(Box::new(stmt))));
         } else {
             terminated = always_terminates(&stmt);
             result.push(stmt);
@@ -19,15 +20,20 @@ pub fn mark_unreachable(body: Vec<ConcreteStmt>) -> Vec<ConcreteStmt> {
     result
 }
 
-fn is_jump_target(stmt: &ConcreteStmt) -> bool {
+fn is_jump_target(stmt: &SpannedConcreteStmt) -> bool {
     matches!(
-        stmt,
+        &stmt.value,
         ConcreteStmt::Labeled(_) | ConcreteStmt::Case(_) | ConcreteStmt::Default
     )
 }
 
-fn mark_unreachable_in(stmt: ConcreteStmt) -> ConcreteStmt {
-    match stmt {
+fn mark_unreachable_in(stmt: SpannedConcreteStmt) -> SpannedConcreteStmt {
+    let Span {
+        value,
+        spelling,
+        expansion,
+    } = stmt;
+    let value = match value {
         ConcreteStmt::Block(body) => ConcreteStmt::Block(mark_unreachable(body)),
         ConcreteStmt::If {
             condition,
@@ -62,11 +68,12 @@ fn mark_unreachable_in(stmt: ConcreteStmt) -> ConcreteStmt {
             body: mark_unreachable(body),
         },
         other => other,
-    }
+    };
+    Span::new(value, spelling, expansion)
 }
 
-fn always_terminates(stmt: &ConcreteStmt) -> bool {
-    match stmt {
+fn always_terminates(stmt: &SpannedConcreteStmt) -> bool {
+    match &stmt.value {
         ConcreteStmt::Return(_)
         | ConcreteStmt::Break
         | ConcreteStmt::Continue
@@ -82,7 +89,7 @@ fn always_terminates(stmt: &ConcreteStmt) -> bool {
     }
 }
 
-fn block_terminates(body: &[ConcreteStmt]) -> bool {
+fn block_terminates(body: &[SpannedConcreteStmt]) -> bool {
     body.iter().any(always_terminates)
 }
 
@@ -95,7 +102,7 @@ pub fn filter_translation_unit(tu: &TranslationUnit, root_file: FileId) -> Trans
 }
 
 struct Reachability<'a> {
-    nodes: Vec<&'a Decl>,
+    nodes: Vec<&'a SpannedDecl>,
     symbols: HashMap<String, Vec<usize>>,
     reachable: HashSet<usize>,
     next_id: usize,
@@ -113,14 +120,14 @@ impl<'a> Reachability<'a> {
         reachability
     }
 
-    fn index_decls(&mut self, decls: &'a [Decl]) {
+    fn index_decls(&mut self, decls: &'a [SpannedDecl]) {
         for decl in decls {
             let id = self.nodes.len();
             self.nodes.push(decl);
             if let Some(name) = decl.name() {
                 self.symbols.entry(name.to_string()).or_default().push(id);
             }
-            if let Decl::Conditional(conditional) = decl {
+            if let Decl::Conditional(conditional) = &decl.value {
                 for (_, branch) in &conditional.branches {
                     self.index_decls(branch);
                 }
@@ -144,7 +151,7 @@ impl<'a> Reachability<'a> {
         if !self.reachable.insert(id) {
             return;
         }
-        match self.nodes[id] {
+        match &self.nodes[id].value {
             Decl::Comment { .. } => {}
             Decl::Function(function) => self.mark_type(&function.ret_type),
             Decl::Declaration { declaration, .. } => {
@@ -154,7 +161,7 @@ impl<'a> Reachability<'a> {
             Decl::Typedef { ty, .. } => self.mark_type(ty),
             Decl::Record(record) => {
                 for field in &record.fields {
-                    if let FieldItem::Field(field) = field {
+                    if let FieldItem::Field(field) = &field.value {
                         self.mark_type(&field.declaration.specifiers.ty);
                     }
                 }
@@ -224,12 +231,12 @@ impl<'a> Reachability<'a> {
         }
     }
 
-    fn filter_decls(&mut self, decls: &[Decl]) -> Vec<Decl> {
+    fn filter_decls(&mut self, decls: &[SpannedDecl]) -> Vec<SpannedDecl> {
         let mut filtered = Vec::new();
         for decl in decls {
             let id = self.next_id;
             self.next_id += 1;
-            match decl {
+            match &decl.value {
                 Decl::Conditional(conditional) => {
                     let branches = conditional
                         .branches
@@ -238,7 +245,10 @@ impl<'a> Reachability<'a> {
                         .filter(|(_, branch)| !branch.is_empty())
                         .collect::<Vec<_>>();
                     if !branches.is_empty() {
-                        filtered.push(Decl::Conditional(Conditional { branches }));
+                        filtered.push(
+                            decl.clone()
+                                .with_value(Decl::Conditional(Conditional { branches })),
+                        );
                     }
                 }
                 _ if self.reachable.contains(&id) => filtered.push(decl.clone()),

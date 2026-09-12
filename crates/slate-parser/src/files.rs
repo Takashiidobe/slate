@@ -40,6 +40,12 @@ impl Files {
         &self.entries[id.0 as usize].0
     }
 
+    pub fn get_path(&self, id: FileId) -> Option<&Path> {
+        self.entries
+            .get(id.0 as usize)
+            .map(|(path, _)| path.as_path())
+    }
+
     pub fn kind(&self, id: FileId) -> HeaderKind {
         self.entries[id.0 as usize].1
     }

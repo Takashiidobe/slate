@@ -1,7 +1,5 @@
 # Instructions for AI Agents
 
-<!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:970c3bf2 -->
-
 ## Beads Issue Tracker
 
 This project uses **bd (beads)** for issue tracking. Run `bd prime` to see full workflow context and commands.
@@ -28,12 +26,17 @@ bd close <id>         # Complete work
 This protocol applies when ending a Beads implementation workflow. It is subordinate to explicit user, repository, and orchestrator instructions.
 
 1. **File issues for remaining work** - Create beads for anything that needs follow-up
-2. **Run quality gates** (if code changed) - Tests, linters, builds
+2. **Run quality gates** (if rust changed) - `clippy, fmt`
+   - run `cargo clippy --allow-dirty --fix` to fix what can be fixed
+     first.
+   - afterwards, run `cargo fmt` to clean up code
+   - run `cargo nextest` to run tests afterwards
 3. **Update issue status** - Close finished work, update in-progress items
-4. **Handle git/sync by active profile**:
-5. **Every change must have a corresponding log**: - create a new log
+4. **Every change must have a corresponding log**: - create a new log
    with `llog new` for every change made, summarizing the change, no
    more than 30 lines.
+5. **Git commit**: run `git commit -m ...` with a one line message
+   summarizing the task.
 6. **Hand off** - Summarize changes, validation, issue status, and commit.
 
 **Critical rules:**
@@ -41,13 +44,8 @@ This protocol applies when ending a Beads implementation workflow. It is subordi
 - Explicit user or orchestrator instructions override this Beads block.
 - Do not push without clear authority from the user.
 - If a required sync or push is blocked, stop and report the exact command and error.
-<!-- END BEADS INTEGRATION -->
 
 ## Slate-Parser
-
-FileCheck expectations are generated. After changing a fixture or its
-renderer, run `python3 tools/update_filecheck.py --in-place <fixture>`;
-do not write `CHECK` lines by hand.
 
 ### Wiki
 
@@ -63,7 +61,7 @@ re-deriving something from scratch:
 
 ### Goal
 
-Slate-Parser is the C front end for Slate. It exists to let Slate ingest
+Slate-Parser is to be the new C front end for Slate. It exists to let Slate ingest
 real-world C headers and sources and eventually convert them to Rust.
 The pipeline, end to end:
 
@@ -72,9 +70,9 @@ The pipeline, end to end:
    against one fixed configuration up front, it keeps the preprocessed
    output and the parsed AST together as it goes. Conditional regions
    are preserved as `Conditional<T>` nodes rather than eagerly resolved
-   (see `[[architecture_polyvariant_ast]]` in memory) so the same parse
-   can later be "evaluated" against different `-D` defines/target macro
-   sets without reparsing.
+   so the same parse can later be "evaluated" against different `-D`
+   defines/target macro sets without reparsing, necessary for cross
+   compiling C to Rust.
 2. **Apply `-D` defines to get a concrete AST.** Given a set of
    command-line defines and target-specific builtin macros
    (`compiler_args.rs`), the polyvariant PP+AST is evaluated down to a
@@ -100,6 +98,10 @@ Rust-conversion work.
 
 ### Testing
 
+FileCheck expectations are generated. After changing a fixture or its
+renderer, run `python3 tools/update_filecheck.py --in-place <fixture>`;
+do not write `CHECK` lines by hand.
+
 Testing is done via filecheck. Standard gate:
 
 ```
@@ -116,4 +118,4 @@ SLATE_CLANG_ORACLE=1 cargo test
 This is a debugging aid, not part of the standard gate; there is no need
 for it to pass.
 
-No unit tests should ever be added.
+No unit tests should **ever** be added.

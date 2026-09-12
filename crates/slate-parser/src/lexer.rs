@@ -356,6 +356,7 @@ impl TokenSpanExt for [Span<Token>] {
 
 pub struct Lexer {
     file: FileId,
+    base_offset: usize,
     chars: Vec<char>,
     byte_offsets: Vec<usize>,
     pos: usize,
@@ -365,11 +366,16 @@ pub struct Lexer {
 
 impl Lexer {
     pub fn new(file: FileId, src: &str) -> Self {
+        Self::with_offset(file, src, 0)
+    }
+
+    pub fn with_offset(file: FileId, src: &str, base_offset: usize) -> Self {
         let chars: Vec<char> = src.chars().collect();
         let mut byte_offsets: Vec<usize> = src.char_indices().map(|(b, _)| b).collect();
         byte_offsets.push(src.len());
         Self {
             file,
+            base_offset,
             chars,
             byte_offsets,
             pos: 0,
@@ -379,7 +385,7 @@ impl Lexer {
     }
 
     fn byte_of(&self, char_index: usize) -> usize {
-        self.byte_offsets[char_index]
+        self.base_offset + self.byte_offsets[char_index]
     }
 
     fn char_at(&self, index: usize) -> Option<char> {

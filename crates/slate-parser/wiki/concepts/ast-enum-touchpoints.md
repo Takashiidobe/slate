@@ -14,11 +14,18 @@ are shaped the way they are (the `Conditional<T>` wrapping).
 Update this page whenever a new exhaustive match site over one of these
 enums is added or removed.
 
+Parsed nodes are stored as `Span<T>`: translation-unit declarations are
+`Span<Decl>`, function bodies contain `Span<Stmt>`, expression-bearing
+fields contain `Span<Expr>`, and preprocessor output uses
+`Span<PPNodeKind>`. Exhaustive matches over these collections must match
+the wrapper's `.value`. Evaluation preserves the wrapper while converting
+`Decl`/`Stmt` into their concrete counterparts.
+
 ## Adding a `Stmt` variant
 
-- `src/eval.rs` — `impl Stmt { fn eval }`: must lower the new variant to a
+- `src/eval.rs` — `impl Span<Stmt> { fn eval }`: must lower the new variant to a
   `ConcreteStmt`. If it wraps a nested `FunctionDecl`/body, also update
-  `impl Decl { fn eval }`'s sibling logic for `mark_unreachable` — see how
+  `impl Span<Decl> { fn eval }`'s sibling logic for `mark_unreachable` — see how
   `NestedFunction` mirrors the top-level `Function` case.
 - `src/ast.rs` — add the matching `ConcreteStmt` variant (`Stmt` and
   `ConcreteStmt` are separate enums with matching shapes; nothing enforces

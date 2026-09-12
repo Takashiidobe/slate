@@ -343,13 +343,13 @@ fn run_clang_ast(fixture: &Path, defines: &[String], isystem: &[String]) -> Clan
 fn summarize_evaluated(tu: &ConcreteTranslationUnit) -> Vec<DeclSummary> {
     tu.decls
         .iter()
-        .filter(|decl| match decl {
+        .filter(|decl| match &decl.value {
             ConcreteDecl::Comment { .. } => false,
             ConcreteDecl::Declaration { declaration, .. } => declaration.attributes.is_empty(),
             ConcreteDecl::Typedef { attributes, .. } => attributes.is_empty(),
             _ => true,
         })
-        .map(summarize_evaluated_decl)
+        .map(|decl| summarize_evaluated_decl(&decl.value))
         .collect()
 }
 
@@ -361,23 +361,21 @@ fn summarize_evaluated_decl(decl: &ConcreteDecl) -> DeclSummary {
             returns: function
                 .body
                 .iter()
-                .filter_map(|stmt| match stmt {
-                    ConcreteStmt::Return(Expr::IntLit(value)) => Some(*value),
-                    ConcreteStmt::Return(Expr::StringLit(_)) => {
-                        panic!("clang return was not an integer")
-                    }
-                    ConcreteStmt::Return(Expr::Generic { .. } | Expr::StatementExpression(_)) => {
-                        None
-                    }
-                    ConcreteStmt::Return(
+                .filter_map(|stmt| match &stmt.value {
+                    ConcreteStmt::Return(expression) => match &expression.value {
+                        Expr::IntLit(value) => Some(*value),
+                        Expr::StringLit(_) => {
+                            panic!("clang return was not an integer")
+                        }
+                        Expr::Generic { .. } | Expr::StatementExpression(_) => None,
                         Expr::Identifier(_)
                         | Expr::Const(_)
                         | Expr::Unary { .. }
                         | Expr::Binary { .. }
-                        | Expr::SizeOf(_),
-                    ) => {
-                        panic!("clang return was not an integer")
-                    }
+                        | Expr::SizeOf(_) => {
+                            panic!("clang return was not an integer")
+                        }
+                    },
                     ConcreteStmt::Comment { .. }
                     | ConcreteStmt::Expr(_)
                     | ConcreteStmt::Decl(_)
@@ -732,7 +730,7 @@ fn array_size(size: &ArraySize) -> String {
     match size {
         ArraySize::Unspecified => "".into(),
         ArraySize::Star => "*".into(),
-        ArraySize::Expression(expression) => match expression.as_ref() {
+        ArraySize::Expression(expression) => match &expression.value {
             Expr::IntLit(value) => value.to_string(),
             Expr::StringLit(_) => panic!("array bound was not an integer"),
             Expr::Identifier(_)

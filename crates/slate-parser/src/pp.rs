@@ -1,21 +1,23 @@
 use crate::ast::{Condition, Conditional, FileId, HeaderKind, Loc, Provenance, Span};
 use crate::const_expr;
 use crate::files::{Files, SearchPaths, display_path};
-use crate::lexer::{Lexer, Token};
+use crate::lexer::{Lexer, Token, TokenSpanExt};
 use miette::{Diagnostic, NamedSource, SourceSpan};
 use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
 use thiserror::Error;
 
+pub type PPNode = Span<PPNodeKind>;
+
 #[derive(Debug, Clone, PartialEq)]
-pub enum PPNode {
+pub enum PPNodeKind {
     Comment {
         text: String,
-        loc: Loc,
         provenance: Provenance,
     },
     Code {
         text: String,
+        tokens: Vec<Span<Token>>,
         provenance: Provenance,
     },
     Conditional(PPConditional),
@@ -36,7 +38,7 @@ pub struct PPConditional {
 pub struct MacroDef {
     pub parameters: Option<Vec<String>>,
     pub variadic: bool,
-    pub replacement: Vec<Token>,
+    pub replacement: Vec<Span<Token>>,
     pub provenance: Provenance,
     pub order: usize,
 }
@@ -97,6 +99,7 @@ pub struct Preprocessor<'a> {
     search: &'a SearchPaths,
     open_stack: Vec<PathBuf>,
     comments: HashMap<(FileId, usize), Vec<Comment>>,
+    line_offsets: HashMap<(FileId, usize), usize>,
     macro_order: usize,
 }
 
@@ -111,6 +114,7 @@ impl<'a> Preprocessor<'a> {
             search,
             open_stack: Vec::new(),
             comments: HashMap::new(),
+            line_offsets: HashMap::new(),
             macro_order: 0,
         };
         pp.seed_builtin_macros();
@@ -162,6 +166,7 @@ impl<'a> Preprocessor<'a> {
         active: Condition,
     ) -> Result<Vec<PPNode>, PPError> {
         self.collect_comments(src, file);
+        self.collect_line_offsets(src, file);
         let uncommented = strip_comments(src);
         let spliced = splice_continuations(&uncommented);
         let lines: Vec<&str> = spliced.lines().collect();
@@ -198,6 +203,14 @@ impl<'a> Preprocessor<'a> {
         }
     }
 
+    fn collect_line_offsets(&mut self, src: &str, file: FileId) {
+        let mut offset = 0;
+        for (line, text) in src.split_inclusive('\n').enumerate() {
+            self.line_offsets.insert((file, line), offset);
+            offset += text.len();
+        }
+    }
+
     fn parse_block(
         &mut self,
         lines: &[&str],
@@ -216,10 +229,15 @@ impl<'a> Preprocessor<'a> {
                 line: *pos,
             };
             if let Some(comments) = self.comments.get(&(file, *pos)) {
-                nodes.extend(comments.iter().cloned().map(|comment| PPNode::Comment {
-                    text: comment.text,
-                    loc: comment.loc,
-                    provenance,
+                nodes.extend(comments.iter().cloned().map(|comment| {
+                    Span::new(
+                        PPNodeKind::Comment {
+                            text: comment.text,
+                            provenance,
+                        },
+                        comment.loc,
+                        comment.loc,
+                    )
                 }));
             }
             if raw.trim_start().starts_with("//") {
@@ -228,10 +246,12 @@ impl<'a> Preprocessor<'a> {
             }
 
             if let Some(condition) = self.parse_opening_condition(trimmed, *pos)? {
+                let start = self.line_loc(lines, file, *pos);
                 *pos += 1;
-                nodes.push(PPNode::Conditional(
-                    self.parse_conditional(lines, pos, file, condition, active)?,
-                ));
+                let conditional = self.parse_conditional(lines, pos, file, condition, active)?;
+                let end = self.line_loc(lines, file, pos.saturating_sub(1));
+                let loc = start.through(end);
+                nodes.push(Span::new(PPNodeKind::Conditional(conditional), loc, loc));
             } else if let Some(include) = parse_include_directive(trimmed) {
                 *pos += 1;
                 nodes.extend(
@@ -242,7 +262,7 @@ impl<'a> Preprocessor<'a> {
                         })?,
                 );
             } else if let Some(rest) = trimmed.strip_prefix("#define") {
-                self.record_define(rest.trim_start(), file, *pos, active)?;
+                self.record_define(rest.trim_start(), raw, file, *pos, active)?;
                 *pos += 1;
             } else if trimmed.starts_with("#undef") || trimmed.starts_with("#error") {
                 *pos += 1;
@@ -253,43 +273,70 @@ impl<'a> Preprocessor<'a> {
             } else if trimmed.is_empty() {
                 *pos += 1;
             } else {
-                let tokens = lex(trimmed);
-                if let Some(conditions) = self.divergent_macro_conditions(&tokens, active) {
-                    nodes.push(PPNode::Conditional(PPConditional {
-                        branches: conditions
-                            .into_iter()
-                            .map(|condition| {
-                                let expanded = Self::strip_pragma_operator(&self.expand_macros(
-                                    &tokens,
-                                    &mut HashSet::new(),
-                                    &condition,
-                                ));
-                                (
-                                    condition,
-                                    vec![PPNode::Code {
-                                        text: tokens_source(&expanded),
-                                        provenance,
-                                    }],
-                                )
-                            })
-                            .collect(),
-                    }));
+                let offset = self.line_offsets.get(&(file, *pos)).copied().unwrap_or(0)
+                    + raw.find(trimmed).unwrap_or(0);
+                let source_tokens = Lexer::with_offset(file, trimmed, offset).tokenize();
+                if let Some(conditions) = self.divergent_macro_conditions(&source_tokens, active) {
+                    let loc = source_tokens_loc(&source_tokens);
+                    nodes.push(Span::new(
+                        PPNodeKind::Conditional(PPConditional {
+                            branches: conditions
+                                .into_iter()
+                                .map(|condition| {
+                                    let expanded =
+                                        Self::strip_pragma_operator(&self.expand_macros(
+                                            &source_tokens,
+                                            &mut HashSet::new(),
+                                            &condition,
+                                        ));
+                                    (
+                                        condition,
+                                        vec![Span::new(
+                                            PPNodeKind::Code {
+                                                text: tokens_source(expanded.values()),
+                                                tokens: expanded,
+                                                provenance,
+                                            },
+                                            loc,
+                                            loc,
+                                        )],
+                                    )
+                                })
+                                .collect(),
+                        }),
+                        loc,
+                        loc,
+                    ));
                 } else {
                     let expanded = Self::strip_pragma_operator(&self.expand_macros(
-                        &tokens,
+                        &source_tokens,
                         &mut HashSet::new(),
                         active,
                     ));
-                    nodes.push(PPNode::Code {
-                        text: tokens_source(&expanded),
-                        provenance,
-                    });
+                    let loc = source_tokens_loc(&source_tokens);
+                    nodes.push(Span::new(
+                        PPNodeKind::Code {
+                            text: tokens_source(expanded.values()),
+                            tokens: expanded,
+                            provenance,
+                        },
+                        loc,
+                        loc,
+                    ));
                 }
                 *pos += 1;
             }
         }
 
         Ok(nodes)
+    }
+
+    fn line_loc(&self, lines: &[&str], file: FileId, line: usize) -> Loc {
+        Loc::new(
+            file,
+            self.line_offsets.get(&(file, line)).copied().unwrap_or(0),
+            lines.get(line).map_or(0, |text| text.len()),
+        )
     }
 
     fn parse_opening_condition(
@@ -455,6 +502,7 @@ impl<'a> Preprocessor<'a> {
     fn record_define(
         &mut self,
         rest: &str,
+        raw: &str,
         file: FileId,
         line: usize,
         condition: &Condition,
@@ -489,6 +537,9 @@ impl<'a> Preprocessor<'a> {
         } else {
             (None, false, after_name)
         };
+        let replacement_text = replacement_text.trim();
+        let replacement_offset = self.line_offsets.get(&(file, line)).copied().unwrap_or(0)
+            + raw.find(replacement_text).unwrap_or(raw.len());
         self.macros
             .entry(name)
             .or_insert_with(|| Conditional {
@@ -500,7 +551,8 @@ impl<'a> Preprocessor<'a> {
                 MacroDef {
                     parameters,
                     variadic,
-                    replacement: lex(replacement_text.trim()),
+                    replacement: Lexer::with_offset(file, replacement_text, replacement_offset)
+                        .tokenize(),
                     provenance: Provenance {
                         file,
                         kind: self.files.kind(file),
@@ -513,14 +565,14 @@ impl<'a> Preprocessor<'a> {
         Ok(())
     }
 
-    fn strip_pragma_operator(tokens: &[Token]) -> Vec<Token> {
+    fn strip_pragma_operator(tokens: &[Span<Token>]) -> Vec<Span<Token>> {
         let mut result = Vec::with_capacity(tokens.len());
         let mut i = 0;
         while i < tokens.len() {
-            if tokens[i] == Token::Ident("_Pragma".to_string())
-                && tokens.get(i + 1) == Some(&Token::LParen)
-                && matches!(tokens.get(i + 2), Some(Token::StringLit(_)))
-                && tokens.get(i + 3) == Some(&Token::RParen)
+            if tokens.value_at(i) == Some(&Token::Ident("_Pragma".to_string()))
+                && tokens.value_at(i + 1) == Some(&Token::LParen)
+                && matches!(tokens.value_at(i + 2), Some(Token::StringLit(_)))
+                && tokens.value_at(i + 3) == Some(&Token::RParen)
             {
                 i += 4;
                 continue;
@@ -533,15 +585,15 @@ impl<'a> Preprocessor<'a> {
 
     fn expand_macros(
         &self,
-        tokens: &[Token],
+        tokens: &[Span<Token>],
         disabled: &mut HashSet<String>,
         active: &Condition,
-    ) -> Vec<Token> {
+    ) -> Vec<Span<Token>> {
         let mut expanded = Vec::new();
         let mut i = 0;
         while i < tokens.len() {
             let token = &tokens[i];
-            let Token::Ident(name) = token else {
+            let Token::Ident(name) = &token.value else {
                 expanded.push(token.clone());
                 i += 1;
                 continue;
@@ -563,8 +615,17 @@ impl<'a> Preprocessor<'a> {
                 i += 1;
                 continue;
             }
-            let Some(parameters) = macro_def.parameters.as_ref() else {
-                expanded.extend(self.expand_macros(&macro_def.replacement, disabled, active));
+            let Some(parameters) = macro_def.parameters.clone() else {
+                let replacement = macro_def
+                    .replacement
+                    .iter()
+                    .cloned()
+                    .map(|mut replacement| {
+                        replacement.expansion = token.expansion;
+                        replacement
+                    })
+                    .collect::<Vec<_>>();
+                expanded.extend(self.expand_macros(&replacement, disabled, active));
                 disabled.remove(name);
                 i += 1;
                 continue;
@@ -583,8 +644,17 @@ impl<'a> Preprocessor<'a> {
                 i += 1;
                 continue;
             }
+            let mut macro_def = macro_def;
+            for replacement in &mut macro_def.replacement {
+                replacement.expansion = token.expansion;
+            }
             let replacement = substitute_function_macro(
-                &macro_def, parameters, &arguments, self, disabled, active,
+                &macro_def,
+                &parameters,
+                &arguments,
+                self,
+                disabled,
+                active,
             );
             expanded.extend(self.expand_macros(&replacement, disabled, active));
             disabled.remove(name);
@@ -595,11 +665,11 @@ impl<'a> Preprocessor<'a> {
 
     fn divergent_macro_conditions(
         &self,
-        tokens: &[Token],
+        tokens: &[Span<Token>],
         active: &Condition,
     ) -> Option<Vec<Condition>> {
         for (index, token) in tokens.iter().enumerate() {
-            let Token::Ident(name) = token else {
+            let Token::Ident(name) = &token.value else {
                 continue;
             };
             let Some(conditional) = self.macros.get(name) else {
@@ -616,7 +686,7 @@ impl<'a> Preprocessor<'a> {
                 .branches
                 .iter()
                 .all(|(_, definition)| definition.parameters.is_some())
-                && tokens.get(index + 1) != Some(&Token::LParen)
+                && tokens.value_at(index + 1) != Some(&Token::LParen)
             {
                 continue;
             }
@@ -842,8 +912,11 @@ fn replace_subterm(
     }
 }
 
-fn invocation_arguments(tokens: &[Token], start: usize) -> Option<(Vec<Vec<Token>>, usize)> {
-    if tokens.get(start) != Some(&Token::LParen) {
+fn invocation_arguments(
+    tokens: &[Span<Token>],
+    start: usize,
+) -> Option<(Vec<Vec<Span<Token>>>, usize)> {
+    if tokens.value_at(start) != Some(&Token::LParen) {
         return None;
     }
     let mut arguments = Vec::new();
@@ -851,7 +924,7 @@ fn invocation_arguments(tokens: &[Token], start: usize) -> Option<(Vec<Vec<Token
     let mut depth = 0;
     let mut i = start + 1;
     while i < tokens.len() {
-        match &tokens[i] {
+        match &tokens[i].value {
             Token::LParen => {
                 depth += 1;
                 current.push(tokens[i].clone());
@@ -879,11 +952,11 @@ fn invocation_arguments(tokens: &[Token], start: usize) -> Option<(Vec<Vec<Token
 fn substitute_function_macro(
     definition: &MacroDef,
     parameters: &[String],
-    arguments: &[Vec<Token>],
+    arguments: &[Vec<Span<Token>>],
     preprocessor: &Preprocessor<'_>,
     disabled: &mut HashSet<String>,
     active: &Condition,
-) -> Vec<Token> {
+) -> Vec<Span<Token>> {
     let expanded_arguments = arguments
         .iter()
         .map(|argument| preprocessor.expand_macros(argument, disabled, active))
@@ -892,22 +965,26 @@ fn substitute_function_macro(
     let mut i = 0;
     while i < definition.replacement.len() {
         let token = &definition.replacement[i];
-        if *token == Token::Hash
+        if token.value == Token::Hash
             && i + 1 < definition.replacement.len()
-            && let Token::Ident(name) = &definition.replacement[i + 1]
+            && let Token::Ident(name) = &definition.replacement[i + 1].value
         {
             let argument = if name == "__VA_ARGS__" {
                 Some(variadic_tokens(arguments, parameters.len()))
             } else {
-                macro_argument(name, parameters, arguments).map(<[Token]>::to_vec)
+                macro_argument(name, parameters, arguments).map(<[Span<Token>]>::to_vec)
             };
             if let Some(argument) = argument {
-                output.push(Token::StringLit(tokens_source(&argument)));
+                output.push(
+                    token
+                        .clone()
+                        .with_value(Token::StringLit(tokens_source(argument.values()))),
+                );
                 i += 2;
                 continue;
             }
         }
-        if *token == Token::HashHash && i + 1 < definition.replacement.len() {
+        if token.value == Token::HashHash && i + 1 < definition.replacement.len() {
             let Some(left) = output.pop() else {
                 i += 1;
                 continue;
@@ -920,9 +997,17 @@ fn substitute_function_macro(
                 false,
             );
             if let Some(right) = right_tokens.first() {
-                let pasted = lex(&format!("{}{}", String::from(&left), String::from(right)));
+                let pasted = lex(&format!(
+                    "{}{}",
+                    String::from(&left.value),
+                    String::from(&right.value)
+                ));
                 if pasted.len() == 1 {
-                    output.push(pasted[0].clone());
+                    output.push(Span::new(
+                        pasted[0].clone(),
+                        left.spelling.through(right.spelling),
+                        left.expansion.through(right.expansion),
+                    ));
                     output.extend(right_tokens.into_iter().skip(1));
                 } else {
                     output.push(left);
@@ -940,7 +1025,7 @@ fn substitute_function_macro(
             arguments,
             &expanded_arguments,
             i + 1 >= definition.replacement.len()
-                || definition.replacement[i + 1] != Token::HashHash,
+                || definition.replacement[i + 1].value != Token::HashHash,
         ));
         i += 1;
     }
@@ -950,8 +1035,8 @@ fn substitute_function_macro(
 fn macro_argument<'a>(
     name: &str,
     parameters: &[String],
-    arguments: &'a [Vec<Token>],
-) -> Option<&'a [Token]> {
+    arguments: &'a [Vec<Span<Token>>],
+) -> Option<&'a [Span<Token>]> {
     if name == "__VA_ARGS__" {
         return None;
     }
@@ -962,13 +1047,13 @@ fn macro_argument<'a>(
 }
 
 fn replacement_tokens(
-    token: &Token,
+    token: &Span<Token>,
     parameters: &[String],
-    arguments: &[Vec<Token>],
-    expanded_arguments: &[Vec<Token>],
+    arguments: &[Vec<Span<Token>>],
+    expanded_arguments: &[Vec<Span<Token>>],
     prescan: bool,
-) -> Vec<Token> {
-    let Token::Ident(name) = token else {
+) -> Vec<Span<Token>> {
+    let Token::Ident(name) = &token.value else {
         return vec![token.clone()];
     };
     if name == "__VA_ARGS__" {
@@ -994,21 +1079,29 @@ fn replacement_tokens(
         .unwrap_or_else(|| vec![token.clone()])
 }
 
-fn variadic_tokens(arguments: &[Vec<Token>], fixed: usize) -> Vec<Token> {
+fn variadic_tokens(arguments: &[Vec<Span<Token>>], fixed: usize) -> Vec<Span<Token>> {
     arguments
         .iter()
         .skip(fixed)
         .enumerate()
         .flat_map(|(index, argument)| {
-            let separator = (index != 0).then_some(Token::Comma);
+            let separator = (index != 0).then(|| {
+                argument.first().cloned().map_or_else(
+                    || {
+                        let loc = Loc::new(FileId(0), 0, 0);
+                        Span::new(Token::Comma, loc, loc)
+                    },
+                    |token| token.with_value(Token::Comma),
+                )
+            });
             separator.into_iter().chain(argument.iter().cloned())
         })
         .collect()
 }
 
-fn tokens_source(tokens: &[Token]) -> String {
+fn tokens_source<'a>(tokens: impl IntoIterator<Item = &'a Token>) -> String {
     tokens
-        .iter()
+        .into_iter()
         .map(String::from)
         .collect::<Vec<_>>()
         .join(" ")
@@ -1023,6 +1116,13 @@ fn lex(src: &str) -> Vec<Token> {
 
 fn lex_spanned(src: &str) -> Vec<Span<Token>> {
     Lexer::new(FileId(0), src).tokenize()
+}
+
+fn source_tokens_loc(tokens: &[Span<Token>]) -> Loc {
+    let Some(first) = tokens.first() else {
+        return Loc::new(FileId(0), 0, 0);
+    };
+    first.spelling.through(tokens.last().unwrap().spelling)
 }
 
 fn strip_comments(src: &str) -> String {

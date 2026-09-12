@@ -8,7 +8,7 @@ int broken __attribute__((visibility(1)));
 // SEMANTIC: × invalid arguments for attribute `visibility`
 // SEMANTIC: ╭─[tests/fixtures/malformed-attributes.c:1:1]
 // SEMANTIC: 1 │ int broken __attribute__((visibility(1)));
-// SEMANTIC: · ─
+// SEMANTIC: · ──────────────────────────────────────────
 // SEMANTIC: 2 │
 // SEMANTIC: ╰────
 // SLATE-FILECHECK-END SEMANTIC
