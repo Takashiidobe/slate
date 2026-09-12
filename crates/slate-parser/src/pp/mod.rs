@@ -315,16 +315,41 @@ impl<'a> Preprocessor<'a> {
         name: &'static str,
         active: &Condition,
     ) -> Result<Condition, PPFailure> {
-        const_expr::Parser::evaluate_with_defined(&directive.arguments, &|macro_name| {
+        let expandable = Self::expandable_tokens(&directive.arguments);
+        let Some(conditions) = self.divergent_macro_conditions(&expandable, active) else {
+            return self
+                .evaluate_expanded_condition(directive, name, active)
+                .map(Condition::Constant);
+        };
+        let mut combined = Condition::Constant(0);
+        for condition in conditions {
+            let value = self.evaluate_expanded_condition(directive, name, &condition)?;
+            combined = Condition::Or(
+                Box::new(combined),
+                Box::new(Condition::And(
+                    Box::new(condition),
+                    Box::new(Condition::Constant(value)),
+                )),
+            );
+        }
+        Ok(simplify_condition(&combined))
+    }
+
+    fn evaluate_expanded_condition(
+        &self,
+        directive: &Directive,
+        name: &'static str,
+        active: &Condition,
+    ) -> Result<i64, PPFailure> {
+        let expanded = self.expand_condition(&directive.arguments, active);
+        const_expr::Parser::evaluate_with_defined(&expanded, &|macro_name| {
             self.is_defined(macro_name, active)
         })
-        .map(Condition::Constant)
         .map_err(|located| {
             let loc = match located.token {
-                Some(index) => directive
-                    .arguments
+                Some(index) => expanded
                     .get(index)
-                    .map_or_else(|| directive.end_loc(), |token| token.spelling),
+                    .map_or_else(|| directive.end_loc(), |token| token.expansion),
                 None => directive.arguments_loc(),
             };
             PPFailure::at(

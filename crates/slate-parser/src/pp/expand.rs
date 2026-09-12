@@ -149,6 +149,73 @@ impl Preprocessor<'_> {
         }
         None
     }
+
+    pub(super) fn expandable_tokens(tokens: &[Span<Token>]) -> Vec<Span<Token>> {
+        let operands = unexpanded_operands(tokens);
+        tokens
+            .iter()
+            .zip(operands)
+            .filter(|(_, unexpanded)| !unexpanded)
+            .map(|(token, _)| token.clone())
+            .collect()
+    }
+
+    pub(super) fn expand_condition(
+        &self,
+        tokens: &[Span<Token>],
+        active: &Condition,
+    ) -> Vec<Span<Token>> {
+        let operands = unexpanded_operands(tokens);
+        let mut expanded = Vec::with_capacity(tokens.len());
+        let mut start = 0;
+        while start < tokens.len() {
+            let unexpanded = operands[start];
+            let end = operands[start..]
+                .iter()
+                .position(|&flag| flag != unexpanded)
+                .map_or(tokens.len(), |offset| start + offset);
+            if unexpanded {
+                expanded.extend_from_slice(&tokens[start..end]);
+            } else {
+                expanded.extend(self.expand_macros(
+                    &tokens[start..end],
+                    &mut HashSet::new(),
+                    active,
+                ));
+            }
+            start = end;
+        }
+        expanded
+    }
+}
+
+fn unexpanded_operands(tokens: &[Span<Token>]) -> Vec<bool> {
+    let mut operands = vec![false; tokens.len()];
+    let mut i = 0;
+    while i < tokens.len() {
+        let operand_end = match tokens.value_at(i) {
+            Some(Token::Ident(name)) if name == "defined" => {
+                Some(if tokens.value_at(i + 1) == Some(&Token::LParen) {
+                    i + 4
+                } else {
+                    i + 2
+                })
+            }
+            Some(Token::Ident(name)) if name.starts_with("__has_") => {
+                invocation_arguments(tokens, i + 1).map(|(_, end)| end)
+            }
+            _ => None,
+        };
+        match operand_end {
+            Some(end) => {
+                let end = end.min(tokens.len());
+                operands[i..end].fill(true);
+                i = end;
+            }
+            None => i += 1,
+        }
+    }
+    operands
 }
 
 fn invocation_arguments(
