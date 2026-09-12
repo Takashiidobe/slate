@@ -9,12 +9,11 @@ use crate::ast::{Condition, Conditional, FileId, HeaderKind, Loc, Provenance, Sp
 use crate::const_expr;
 use crate::files::{Files, SearchPaths};
 use crate::lexer::{Lexer, Token, TokenSpanExt};
-use condition::{
-    conjunction, is_statically_false, is_statically_true, replace_subterm, simplify_condition,
-};
-pub use error::PPError;
+use condition::{conjunction, is_statically_false, replace_subterm, simplify_condition};
+pub use error::{DirectiveDiagnostic, DirectiveErrors, PPError};
 use error::{PPErrorKind, PPFailure};
 use include::{include_target, read_source};
+use miette::Severity;
 use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
 use syntax::{Directive, DirectiveName, IfSection, Item, identifier};
@@ -63,11 +62,21 @@ pub struct Preprocessor<'a> {
     sources: HashMap<FileId, String>,
     line_starts: HashMap<FileId, Vec<usize>>,
     pragma_once: HashMap<PathBuf, Vec<Condition>>,
+    pub predefined_macros: Vec<String>,
+    pub directive_diagnostics: Vec<DirectiveDiagnostic>,
     macro_order: usize,
 }
 
-const CLANG_X86_64_LINUX_GNU_PREDEFINES: &str =
-    include_str!("../predefines/clang_x86_64_linux_gnu.h");
+const BUILTIN_PREDEFINES: [(&str, &str); 2] = [
+    (
+        "<clang-x86_64-linux-gnu-predefines>",
+        include_str!("../predefines/clang_x86_64_linux_gnu.h"),
+    ),
+    (
+        "<slate-target-defaults>",
+        include_str!("../predefines/slate_target_defaults.h"),
+    ),
+];
 
 impl<'a> Preprocessor<'a> {
     pub fn new(search: &'a SearchPaths) -> Self {
@@ -80,6 +89,8 @@ impl<'a> Preprocessor<'a> {
             sources: HashMap::new(),
             line_starts: HashMap::new(),
             pragma_once: HashMap::new(),
+            predefined_macros: Vec::new(),
+            directive_diagnostics: Vec::new(),
             macro_order: 0,
         };
         pp.seed_builtin_macros();
@@ -87,21 +98,18 @@ impl<'a> Preprocessor<'a> {
     }
 
     fn seed_builtin_macros(&mut self) {
-        let file = self.files.intern(
-            PathBuf::from("<clang-x86_64-linux-gnu-predefines>"),
-            HeaderKind::System,
-        );
-        let nodes = self
-            .parse_source(
-                CLANG_X86_64_LINUX_GNU_PREDEFINES,
-                file,
-                Condition::Constant(1),
-            )
-            .expect("builtin predefines must parse cleanly");
-        debug_assert!(
-            nodes.is_empty(),
-            "predefines should only contain #define directives"
-        );
+        for (name, source) in BUILTIN_PREDEFINES {
+            let file = self.files.intern(PathBuf::from(name), HeaderKind::System);
+            let nodes = self
+                .parse_source(source, file, Condition::Constant(1))
+                .expect("builtin predefines must parse cleanly");
+            debug_assert!(
+                nodes.is_empty(),
+                "predefines should only contain #define directives"
+            );
+        }
+        self.predefined_macros = self.macros.keys().cloned().collect();
+        self.predefined_macros.sort();
     }
 
     pub fn parse_file(&mut self, path: &Path) -> Result<Vec<PPNode>, PPError> {
@@ -185,17 +193,14 @@ impl<'a> Preprocessor<'a> {
                         )?);
                     }
                     DirectiveName::Undef => self.record_undef(directive, active)?,
-                    DirectiveName::Error if is_statically_true(active) => {
-                        let message = self.spelling(directive.arguments_loc());
-                        return Err(PPFailure::at(
-                            directive.loc,
-                            PPErrorKind::ErrorDirective(message.to_string()),
-                        ));
-                    }
                     DirectiveName::Pragma => self.record_pragma(directive, active),
-                    DirectiveName::Error
-                    | DirectiveName::Warning
-                    | DirectiveName::Line
+                    DirectiveName::Error => {
+                        self.record_directive_diagnostic(directive, Severity::Error, active)
+                    }
+                    DirectiveName::Warning => {
+                        self.record_directive_diagnostic(directive, Severity::Warning, active)
+                    }
+                    DirectiveName::Line
                     | DirectiveName::LineMarker
                     | DirectiveName::Ident
                     | DirectiveName::Null => {}
@@ -330,6 +335,34 @@ impl<'a> Preprocessor<'a> {
                 },
             )
         })
+    }
+
+    fn record_directive_diagnostic(
+        &mut self,
+        directive: &Directive,
+        severity: Severity,
+        active: &Condition,
+    ) {
+        let keyword = if severity == Severity::Warning {
+            "#warning"
+        } else {
+            "#error"
+        };
+        let message = if directive.arguments.is_empty() {
+            keyword.to_string()
+        } else {
+            format!("{keyword} {}", self.spelling(directive.arguments_loc()))
+        };
+        let error = self.render_error(PPFailure::at(
+            directive.loc,
+            PPErrorKind::Directive(message),
+        ));
+        self.directive_diagnostics.push(DirectiveDiagnostic {
+            severity,
+            condition: active.clone(),
+            loc: directive.loc,
+            error,
+        });
     }
 
     fn record_pragma(&mut self, directive: &Directive, active: &Condition) {

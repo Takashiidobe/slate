@@ -37,7 +37,7 @@ int use_greet(void) {
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               1,
+// DEFAULT-NEXT:               2,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 2,
@@ -66,7 +66,7 @@ int use_greet(void) {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
 // DEFAULT-NEXT:               file: FileId(
-// DEFAULT-NEXT:                   1,
+// DEFAULT-NEXT:                   2,
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               kind: User,
 // DEFAULT-NEXT:               line: 4,
@@ -99,7 +99,7 @@ int use_greet(void) {
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               1,
+// DEFAULT-NEXT:               2,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 2,
@@ -128,7 +128,7 @@ int use_greet(void) {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
 // DEFAULT-NEXT:               file: FileId(
-// DEFAULT-NEXT:                   1,
+// DEFAULT-NEXT:                   2,
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               kind: User,
 // DEFAULT-NEXT:               line: 4,

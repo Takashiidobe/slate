@@ -112,7 +112,7 @@ int main() {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
 // DEFAULT-NEXT:               file: FileId(
-// DEFAULT-NEXT:                   1,
+// DEFAULT-NEXT:                   2,
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               kind: User,
 // DEFAULT-NEXT:               line: 0,
@@ -140,7 +140,7 @@ int main() {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
 // DEFAULT-NEXT:               file: FileId(
-// DEFAULT-NEXT:                   1,
+// DEFAULT-NEXT:                   2,
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               kind: User,
 // DEFAULT-NEXT:               line: 0,
@@ -245,7 +245,7 @@ int main() {
 // INNER-NEXT:           ],
 // INNER-NEXT:           provenance: Provenance {
 // INNER-NEXT:               file: FileId(
-// INNER-NEXT:                   1,
+// INNER-NEXT:                   2,
 // INNER-NEXT:               ),
 // INNER-NEXT:               kind: User,
 // INNER-NEXT:               line: 0,
@@ -273,7 +273,7 @@ int main() {
 // INNER-NEXT:           ],
 // INNER-NEXT:           provenance: Provenance {
 // INNER-NEXT:               file: FileId(
-// INNER-NEXT:                   1,
+// INNER-NEXT:                   2,
 // INNER-NEXT:               ),
 // INNER-NEXT:               kind: User,
 // INNER-NEXT:               line: 0,

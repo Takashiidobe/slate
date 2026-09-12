@@ -225,10 +225,15 @@ fn fixture_source(fixture: &Path) -> String {
     result
 }
 
-fn run_error_fixture(fixture: &Path, prefix: &str, slot: usize) {
+fn run_error_fixture(fixture: &Path, prefix: &str, defines: &[String], slot: usize) {
     let output = Command::new(env!("CARGO_BIN_EXE_slate-parser"))
         .arg("parse")
         .arg(fixture)
+        .args(
+            defines
+                .iter()
+                .map(|define| format!("-D{}", define.trim_start_matches("-D"))),
+        )
         .env_remove("FORCE_COLOR")
         .env_remove("CLICOLOR_FORCE")
         .env("NO_COLOR", "1")
@@ -286,7 +291,10 @@ fn assert_evaluated_matches_clang(fixture: &Path, defines: &[String], isystem: &
     };
     let mut parser = Parser::new(search);
     let (ast, _) = parser.parse_file(fixture).expect("parse fixture");
-    let mut env = Env::new();
+    let mut env = parser
+        .predefined_macros()
+        .iter()
+        .fold(Env::new(), |env, name| env.define(name.as_str()));
     for define in defines {
         env = env.define(macro_name(define));
     }
@@ -766,15 +774,19 @@ fn fixtures_are_filechecked() {
     let mut checked = 0;
     for fixture in fixtures {
         let source = std::fs::read_to_string(&fixture).expect("read fixture");
+        let configs = configurations(&source);
         let errors = error_configurations(&source);
         if !errors.is_empty() {
             for (slot, prefix) in errors.iter().enumerate() {
-                run_error_fixture(&fixture, prefix, slot);
+                let defines = configs
+                    .iter()
+                    .find(|(name, _)| name == prefix)
+                    .map_or(&[][..], |(_, defines)| defines.as_slice());
+                run_error_fixture(&fixture, prefix, defines, slot);
                 checked += 1;
             }
             continue;
         }
-        let configs = configurations(&source);
         assert!(
             !configs.is_empty(),
             "fixture has no FileCheck configurations: {}",

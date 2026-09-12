@@ -47,7 +47,7 @@ struct outer {
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               1,
+// DEFAULT-NEXT:                               2,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: User,
 // DEFAULT-NEXT:                           line: 1,
@@ -118,7 +118,7 @@ struct outer {
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               1,
+// DEFAULT-NEXT:                               2,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: User,
 // DEFAULT-NEXT:                           line: 2,
@@ -150,7 +150,7 @@ struct outer {
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           provenance: Provenance {
 // DEFAULT-NEXT:                                               file: FileId(
-// DEFAULT-NEXT:                                                   1,
+// DEFAULT-NEXT:                                                   2,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               kind: User,
 // DEFAULT-NEXT:                                               line: 7,
@@ -183,7 +183,7 @@ struct outer {
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           provenance: Provenance {
 // DEFAULT-NEXT:                                               file: FileId(
-// DEFAULT-NEXT:                                                   1,
+// DEFAULT-NEXT:                                                   2,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               kind: User,
 // DEFAULT-NEXT:                                               line: 9,
@@ -198,7 +198,7 @@ struct outer {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
 // DEFAULT-NEXT:               file: FileId(
-// DEFAULT-NEXT:                   1,
+// DEFAULT-NEXT:                   2,
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               kind: User,
 // DEFAULT-NEXT:               line: 0,
@@ -237,7 +237,7 @@ struct outer {
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               1,
+// DEFAULT-NEXT:                               2,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: User,
 // DEFAULT-NEXT:                           line: 1,
@@ -308,7 +308,7 @@ struct outer {
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               1,
+// DEFAULT-NEXT:                               2,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: User,
 // DEFAULT-NEXT:                           line: 2,
@@ -332,7 +332,7 @@ struct outer {
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               1,
+// DEFAULT-NEXT:                               2,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: User,
 // DEFAULT-NEXT:                           line: 9,
@@ -342,7 +342,7 @@ struct outer {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
 // DEFAULT-NEXT:               file: FileId(
-// DEFAULT-NEXT:                   1,
+// DEFAULT-NEXT:                   2,
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               kind: User,
 // DEFAULT-NEXT:               line: 0,
@@ -383,7 +383,7 @@ struct outer {
 // EXTRA-NEXT:                       },
 // EXTRA-NEXT:                       provenance: Provenance {
 // EXTRA-NEXT:                           file: FileId(
-// EXTRA-NEXT:                               1,
+// EXTRA-NEXT:                               2,
 // EXTRA-NEXT:                           ),
 // EXTRA-NEXT:                           kind: User,
 // EXTRA-NEXT:                           line: 1,
@@ -454,7 +454,7 @@ struct outer {
 // EXTRA-NEXT:                       },
 // EXTRA-NEXT:                       provenance: Provenance {
 // EXTRA-NEXT:                           file: FileId(
-// EXTRA-NEXT:                               1,
+// EXTRA-NEXT:                               2,
 // EXTRA-NEXT:                           ),
 // EXTRA-NEXT:                           kind: User,
 // EXTRA-NEXT:                           line: 2,
@@ -486,7 +486,7 @@ struct outer {
 // EXTRA-NEXT:                                           },
 // EXTRA-NEXT:                                           provenance: Provenance {
 // EXTRA-NEXT:                                               file: FileId(
-// EXTRA-NEXT:                                                   1,
+// EXTRA-NEXT:                                                   2,
 // EXTRA-NEXT:                                               ),
 // EXTRA-NEXT:                                               kind: User,
 // EXTRA-NEXT:                                               line: 7,
@@ -519,7 +519,7 @@ struct outer {
 // EXTRA-NEXT:                                           },
 // EXTRA-NEXT:                                           provenance: Provenance {
 // EXTRA-NEXT:                                               file: FileId(
-// EXTRA-NEXT:                                                   1,
+// EXTRA-NEXT:                                                   2,
 // EXTRA-NEXT:                                               ),
 // EXTRA-NEXT:                                               kind: User,
 // EXTRA-NEXT:                                               line: 9,
@@ -534,7 +534,7 @@ struct outer {
 // EXTRA-NEXT:           ],
 // EXTRA-NEXT:           provenance: Provenance {
 // EXTRA-NEXT:               file: FileId(
-// EXTRA-NEXT:                   1,
+// EXTRA-NEXT:                   2,
 // EXTRA-NEXT:               ),
 // EXTRA-NEXT:               kind: User,
 // EXTRA-NEXT:               line: 0,
@@ -573,7 +573,7 @@ struct outer {
 // EXTRA-NEXT:                       },
 // EXTRA-NEXT:                       provenance: Provenance {
 // EXTRA-NEXT:                           file: FileId(
-// EXTRA-NEXT:                               1,
+// EXTRA-NEXT:                               2,
 // EXTRA-NEXT:                           ),
 // EXTRA-NEXT:                           kind: User,
 // EXTRA-NEXT:                           line: 1,
@@ -644,7 +644,7 @@ struct outer {
 // EXTRA-NEXT:                       },
 // EXTRA-NEXT:                       provenance: Provenance {
 // EXTRA-NEXT:                           file: FileId(
-// EXTRA-NEXT:                               1,
+// EXTRA-NEXT:                               2,
 // EXTRA-NEXT:                           ),
 // EXTRA-NEXT:                           kind: User,
 // EXTRA-NEXT:                           line: 2,
@@ -668,7 +668,7 @@ struct outer {
 // EXTRA-NEXT:                       },
 // EXTRA-NEXT:                       provenance: Provenance {
 // EXTRA-NEXT:                           file: FileId(
-// EXTRA-NEXT:                               1,
+// EXTRA-NEXT:                               2,
 // EXTRA-NEXT:                           ),
 // EXTRA-NEXT:                           kind: User,
 // EXTRA-NEXT:                           line: 7,
@@ -678,7 +678,7 @@ struct outer {
 // EXTRA-NEXT:           ],
 // EXTRA-NEXT:           provenance: Provenance {
 // EXTRA-NEXT:               file: FileId(
-// EXTRA-NEXT:                   1,
+// EXTRA-NEXT:                   2,
 // EXTRA-NEXT:               ),
 // EXTRA-NEXT:               kind: User,
 // EXTRA-NEXT:               line: 0,

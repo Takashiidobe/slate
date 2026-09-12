@@ -30,7 +30,7 @@ int main(void) { exit(L'1' != L'1'); }
 // GCC-NEXT:       },
 // GCC-NEXT:       provenance: Provenance {
 // GCC-NEXT:           file: FileId(
-// GCC-NEXT:               1,
+// GCC-NEXT:               2,
 // GCC-NEXT:           ),
 // GCC-NEXT:           kind: User,
 // GCC-NEXT:           line: 0,
@@ -69,7 +69,7 @@ int main(void) { exit(L'1' != L'1'); }
 // GCC-NEXT:           ],
 // GCC-NEXT:           provenance: Provenance {
 // GCC-NEXT:               file: FileId(
-// GCC-NEXT:                   1,
+// GCC-NEXT:                   2,
 // GCC-NEXT:               ),
 // GCC-NEXT:               kind: User,
 // GCC-NEXT:               line: 3,
@@ -100,7 +100,7 @@ int main(void) { exit(L'1' != L'1'); }
 // GCC-NEXT:       },
 // GCC-NEXT:       provenance: Provenance {
 // GCC-NEXT:           file: FileId(
-// GCC-NEXT:               1,
+// GCC-NEXT:               2,
 // GCC-NEXT:           ),
 // GCC-NEXT:           kind: User,
 // GCC-NEXT:           line: 0,
@@ -139,7 +139,7 @@ int main(void) { exit(L'1' != L'1'); }
 // GCC-NEXT:           ],
 // GCC-NEXT:           provenance: Provenance {
 // GCC-NEXT:               file: FileId(
-// GCC-NEXT:                   1,
+// GCC-NEXT:                   2,
 // GCC-NEXT:               ),
 // GCC-NEXT:               kind: User,
 // GCC-NEXT:               line: 3,

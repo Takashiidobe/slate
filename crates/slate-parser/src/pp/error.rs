@@ -1,7 +1,7 @@
 use super::Preprocessor;
-use crate::ast::Loc;
+use crate::ast::{Condition, Loc};
 use crate::files::display_path;
-use miette::{Diagnostic, NamedSource, SourceSpan};
+use miette::{Diagnostic, LabeledSpan, NamedSource, Severity, SourceCode, SourceSpan};
 use thiserror::Error;
 
 #[derive(Debug, Error, Diagnostic, Clone)]
@@ -12,6 +12,36 @@ pub struct PPError {
     pub source_code: NamedSource<String>,
     #[label]
     pub span: Option<SourceSpan>,
+}
+
+#[derive(Debug, Clone, Error)]
+#[error("{}", .error.message)]
+pub struct DirectiveDiagnostic {
+    pub severity: Severity,
+    pub condition: Condition,
+    pub loc: Loc,
+    pub error: PPError,
+}
+
+impl Diagnostic for DirectiveDiagnostic {
+    fn severity(&self) -> Option<Severity> {
+        Some(self.severity)
+    }
+
+    fn source_code(&self) -> Option<&dyn SourceCode> {
+        self.error.source_code()
+    }
+
+    fn labels(&self) -> Option<Box<dyn Iterator<Item = LabeledSpan> + '_>> {
+        self.error.labels()
+    }
+}
+
+#[derive(Debug, Error, Diagnostic)]
+#[error("preprocessing failed")]
+pub struct DirectiveErrors {
+    #[related]
+    pub errors: Vec<DirectiveDiagnostic>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Error)]
@@ -35,8 +65,8 @@ pub(super) enum PPErrorKind {
     ExpectedParametersClose,
     #[error("expected \"FILENAME\" or <FILENAME>")]
     ExpectedHeaderName,
-    #[error("#error {0}")]
-    ErrorDirective(String),
+    #[error("{0}")]
+    Directive(String),
     #[error("unsupported preprocessor directive")]
     UnsupportedDirective,
     #[error("header not found in search path: {0}")]

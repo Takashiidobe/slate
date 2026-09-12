@@ -157,7 +157,7 @@ int vla_sum(int n, int arr[n]) {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
 // DEFAULT-NEXT:               file: FileId(
-// DEFAULT-NEXT:                   1,
+// DEFAULT-NEXT:                   2,
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               kind: User,
 // DEFAULT-NEXT:               line: 0,
@@ -313,7 +313,7 @@ int vla_sum(int n, int arr[n]) {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
 // DEFAULT-NEXT:               file: FileId(
-// DEFAULT-NEXT:                   1,
+// DEFAULT-NEXT:                   2,
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               kind: User,
 // DEFAULT-NEXT:               line: 13,
@@ -418,7 +418,7 @@ int vla_sum(int n, int arr[n]) {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
 // DEFAULT-NEXT:               file: FileId(
-// DEFAULT-NEXT:                   1,
+// DEFAULT-NEXT:                   2,
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               kind: User,
 // DEFAULT-NEXT:               line: 0,
@@ -522,7 +522,7 @@ int vla_sum(int n, int arr[n]) {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
 // DEFAULT-NEXT:               file: FileId(
-// DEFAULT-NEXT:                   1,
+// DEFAULT-NEXT:                   2,
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               kind: User,
 // DEFAULT-NEXT:               line: 13,
@@ -663,7 +663,7 @@ int vla_sum(int n, int arr[n]) {
 // COMPUTED-NEXT:           ],
 // COMPUTED-NEXT:           provenance: Provenance {
 // COMPUTED-NEXT:               file: FileId(
-// COMPUTED-NEXT:                   1,
+// COMPUTED-NEXT:                   2,
 // COMPUTED-NEXT:               ),
 // COMPUTED-NEXT:               kind: User,
 // COMPUTED-NEXT:               line: 0,
@@ -819,7 +819,7 @@ int vla_sum(int n, int arr[n]) {
 // COMPUTED-NEXT:           ],
 // COMPUTED-NEXT:           provenance: Provenance {
 // COMPUTED-NEXT:               file: FileId(
-// COMPUTED-NEXT:                   1,
+// COMPUTED-NEXT:                   2,
 // COMPUTED-NEXT:               ),
 // COMPUTED-NEXT:               kind: User,
 // COMPUTED-NEXT:               line: 13,
@@ -933,7 +933,7 @@ int vla_sum(int n, int arr[n]) {
 // COMPUTED-NEXT:           ],
 // COMPUTED-NEXT:           provenance: Provenance {
 // COMPUTED-NEXT:               file: FileId(
-// COMPUTED-NEXT:                   1,
+// COMPUTED-NEXT:                   2,
 // COMPUTED-NEXT:               ),
 // COMPUTED-NEXT:               kind: User,
 // COMPUTED-NEXT:               line: 0,
@@ -1037,7 +1037,7 @@ int vla_sum(int n, int arr[n]) {
 // COMPUTED-NEXT:           ],
 // COMPUTED-NEXT:           provenance: Provenance {
 // COMPUTED-NEXT:               file: FileId(
-// COMPUTED-NEXT:                   1,
+// COMPUTED-NEXT:                   2,
 // COMPUTED-NEXT:               ),
 // COMPUTED-NEXT:               kind: User,
 // COMPUTED-NEXT:               line: 13,
@@ -1178,7 +1178,7 @@ int vla_sum(int n, int arr[n]) {
 // DOUBLED-NEXT:           ],
 // DOUBLED-NEXT:           provenance: Provenance {
 // DOUBLED-NEXT:               file: FileId(
-// DOUBLED-NEXT:                   1,
+// DOUBLED-NEXT:                   2,
 // DOUBLED-NEXT:               ),
 // DOUBLED-NEXT:               kind: User,
 // DOUBLED-NEXT:               line: 0,
@@ -1334,7 +1334,7 @@ int vla_sum(int n, int arr[n]) {
 // DOUBLED-NEXT:           ],
 // DOUBLED-NEXT:           provenance: Provenance {
 // DOUBLED-NEXT:               file: FileId(
-// DOUBLED-NEXT:                   1,
+// DOUBLED-NEXT:                   2,
 // DOUBLED-NEXT:               ),
 // DOUBLED-NEXT:               kind: User,
 // DOUBLED-NEXT:               line: 13,
@@ -1439,7 +1439,7 @@ int vla_sum(int n, int arr[n]) {
 // DOUBLED-NEXT:           ],
 // DOUBLED-NEXT:           provenance: Provenance {
 // DOUBLED-NEXT:               file: FileId(
-// DOUBLED-NEXT:                   1,
+// DOUBLED-NEXT:                   2,
 // DOUBLED-NEXT:               ),
 // DOUBLED-NEXT:               kind: User,
 // DOUBLED-NEXT:               line: 0,
@@ -1549,7 +1549,7 @@ int vla_sum(int n, int arr[n]) {
 // DOUBLED-NEXT:           ],
 // DOUBLED-NEXT:           provenance: Provenance {
 // DOUBLED-NEXT:               file: FileId(
-// DOUBLED-NEXT:                   1,
+// DOUBLED-NEXT:                   2,
 // DOUBLED-NEXT:               ),
 // DOUBLED-NEXT:               kind: User,
 // DOUBLED-NEXT:               line: 13,

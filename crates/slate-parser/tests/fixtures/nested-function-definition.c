@@ -171,7 +171,7 @@ void nested_outer(int n) {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
 // DEFAULT-NEXT:               file: FileId(
-// DEFAULT-NEXT:                   1,
+// DEFAULT-NEXT:                   2,
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               kind: User,
 // DEFAULT-NEXT:               line: 0,
@@ -264,7 +264,7 @@ void nested_outer(int n) {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
 // DEFAULT-NEXT:               file: FileId(
-// DEFAULT-NEXT:                   1,
+// DEFAULT-NEXT:                   2,
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               kind: User,
 // DEFAULT-NEXT:               line: 0,
@@ -429,7 +429,7 @@ void nested_outer(int n) {
 // DOUBLED-NEXT:           ],
 // DOUBLED-NEXT:           provenance: Provenance {
 // DOUBLED-NEXT:               file: FileId(
-// DOUBLED-NEXT:                   1,
+// DOUBLED-NEXT:                   2,
 // DOUBLED-NEXT:               ),
 // DOUBLED-NEXT:               kind: User,
 // DOUBLED-NEXT:               line: 0,
@@ -522,7 +522,7 @@ void nested_outer(int n) {
 // DOUBLED-NEXT:           ],
 // DOUBLED-NEXT:           provenance: Provenance {
 // DOUBLED-NEXT:               file: FileId(
-// DOUBLED-NEXT:                   1,
+// DOUBLED-NEXT:                   2,
 // DOUBLED-NEXT:               ),
 // DOUBLED-NEXT:               kind: User,
 // DOUBLED-NEXT:               line: 0,

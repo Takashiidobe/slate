@@ -26,15 +26,8 @@ pub struct SemaErrors {
 }
 
 impl TranslationUnit {
-    pub fn analyze(&self, defines: &[String], files: &Files) -> Result<(), SemaErrors> {
-        let mut env = Env::new();
-        for define in defines {
-            env = env.define(define.trim_start_matches("-D").split_once('=').map_or_else(
-                || define.trim_start_matches("-D").to_string(),
-                |(name, _)| name.to_string(),
-            ));
-        }
-        let concrete = self.eval(&env);
+    pub fn analyze(&self, env: &Env, files: &Files) -> Result<(), SemaErrors> {
+        let concrete = self.eval(env);
         let typedefs = concrete
             .decls
             .iter()

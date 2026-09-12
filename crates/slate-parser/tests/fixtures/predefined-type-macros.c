@@ -37,7 +37,7 @@ static __inline __UINTPTR_TYPE__ as_uintptr(const void *p) {
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               1,
+// DEFAULT-NEXT:               2,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 0,
@@ -124,7 +124,7 @@ static __inline __UINTPTR_TYPE__ as_uintptr(const void *p) {
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                               provenance: Provenance {
 // DEFAULT-NEXT:                                   file: FileId(
-// DEFAULT-NEXT:                                       1,
+// DEFAULT-NEXT:                                       2,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   kind: User,
 // DEFAULT-NEXT:                                   line: 4,
@@ -164,7 +164,7 @@ static __inline __UINTPTR_TYPE__ as_uintptr(const void *p) {
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               1,
+// DEFAULT-NEXT:               2,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 0,
@@ -241,7 +241,7 @@ static __inline __UINTPTR_TYPE__ as_uintptr(const void *p) {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
 // DEFAULT-NEXT:               file: FileId(
-// DEFAULT-NEXT:                   1,
+// DEFAULT-NEXT:                   2,
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               kind: User,
 // DEFAULT-NEXT:               line: 4,

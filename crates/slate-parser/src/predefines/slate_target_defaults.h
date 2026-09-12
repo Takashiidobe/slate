@@ -1,0 +1,8 @@
+#define __SLATE_ARCH_X86_64 1
+#define __SLATE_VENDOR_UNKNOWN 1
+#define __SLATE_KERNEL_LINUX 1
+#define __SLATE_LIBC_GLIBC 1
+#define __SLATE_GLIBC_MINOR__ 43
+#define __SLATE_OBJ_ELF 1
+#define __SLATE_WORDSIZE_64 1
+#define __SLATE_ENDIAN_LITTLE 1

@@ -48,7 +48,7 @@ int main() {
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               1,
+// DEFAULT-NEXT:               2,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 0,
@@ -83,7 +83,7 @@ int main() {
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               1,
+// DEFAULT-NEXT:               2,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 1,
@@ -179,7 +179,7 @@ int main() {
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               1,
+// DEFAULT-NEXT:               2,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 2,
@@ -209,7 +209,7 @@ int main() {
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               1,
+// DEFAULT-NEXT:                               2,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: User,
 // DEFAULT-NEXT:                           line: 4,
@@ -233,7 +233,7 @@ int main() {
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               1,
+// DEFAULT-NEXT:                               2,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: User,
 // DEFAULT-NEXT:                           line: 5,
@@ -243,7 +243,7 @@ int main() {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
 // DEFAULT-NEXT:               file: FileId(
-// DEFAULT-NEXT:                   1,
+// DEFAULT-NEXT:                   2,
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               kind: User,
 // DEFAULT-NEXT:               line: 3,
@@ -300,7 +300,7 @@ int main() {
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               1,
+// DEFAULT-NEXT:               2,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 7,
@@ -363,7 +363,7 @@ int main() {
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               1,
+// DEFAULT-NEXT:               2,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 8,
@@ -419,7 +419,7 @@ int main() {
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               1,
+// DEFAULT-NEXT:               2,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 9,
@@ -445,7 +445,7 @@ int main() {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
 // DEFAULT-NEXT:               file: FileId(
-// DEFAULT-NEXT:                   1,
+// DEFAULT-NEXT:                   2,
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               kind: User,
 // DEFAULT-NEXT:               line: 16,
@@ -478,7 +478,7 @@ int main() {
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               1,
+// DEFAULT-NEXT:               2,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 0,
@@ -513,7 +513,7 @@ int main() {
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               1,
+// DEFAULT-NEXT:               2,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 1,
@@ -609,7 +609,7 @@ int main() {
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               1,
+// DEFAULT-NEXT:               2,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 2,
@@ -639,7 +639,7 @@ int main() {
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               1,
+// DEFAULT-NEXT:                               2,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: User,
 // DEFAULT-NEXT:                           line: 4,
@@ -663,7 +663,7 @@ int main() {
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               1,
+// DEFAULT-NEXT:                               2,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: User,
 // DEFAULT-NEXT:                           line: 5,
@@ -673,7 +673,7 @@ int main() {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
 // DEFAULT-NEXT:               file: FileId(
-// DEFAULT-NEXT:                   1,
+// DEFAULT-NEXT:                   2,
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               kind: User,
 // DEFAULT-NEXT:               line: 3,
@@ -730,7 +730,7 @@ int main() {
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               1,
+// DEFAULT-NEXT:               2,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 7,
@@ -793,7 +793,7 @@ int main() {
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               1,
+// DEFAULT-NEXT:               2,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 8,
@@ -824,7 +824,7 @@ int main() {
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               1,
+// DEFAULT-NEXT:               2,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 9,
@@ -850,7 +850,7 @@ int main() {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
 // DEFAULT-NEXT:               file: FileId(
-// DEFAULT-NEXT:                   1,
+// DEFAULT-NEXT:                   2,
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               kind: User,
 // DEFAULT-NEXT:               line: 16,
@@ -885,7 +885,7 @@ int main() {
 // ENABLED-NEXT:       },
 // ENABLED-NEXT:       provenance: Provenance {
 // ENABLED-NEXT:           file: FileId(
-// ENABLED-NEXT:               1,
+// ENABLED-NEXT:               2,
 // ENABLED-NEXT:           ),
 // ENABLED-NEXT:           kind: User,
 // ENABLED-NEXT:           line: 0,
@@ -920,7 +920,7 @@ int main() {
 // ENABLED-NEXT:       },
 // ENABLED-NEXT:       provenance: Provenance {
 // ENABLED-NEXT:           file: FileId(
-// ENABLED-NEXT:               1,
+// ENABLED-NEXT:               2,
 // ENABLED-NEXT:           ),
 // ENABLED-NEXT:           kind: User,
 // ENABLED-NEXT:           line: 1,
@@ -1016,7 +1016,7 @@ int main() {
 // ENABLED-NEXT:       },
 // ENABLED-NEXT:       provenance: Provenance {
 // ENABLED-NEXT:           file: FileId(
-// ENABLED-NEXT:               1,
+// ENABLED-NEXT:               2,
 // ENABLED-NEXT:           ),
 // ENABLED-NEXT:           kind: User,
 // ENABLED-NEXT:           line: 2,
@@ -1046,7 +1046,7 @@ int main() {
 // ENABLED-NEXT:                       },
 // ENABLED-NEXT:                       provenance: Provenance {
 // ENABLED-NEXT:                           file: FileId(
-// ENABLED-NEXT:                               1,
+// ENABLED-NEXT:                               2,
 // ENABLED-NEXT:                           ),
 // ENABLED-NEXT:                           kind: User,
 // ENABLED-NEXT:                           line: 4,
@@ -1070,7 +1070,7 @@ int main() {
 // ENABLED-NEXT:                       },
 // ENABLED-NEXT:                       provenance: Provenance {
 // ENABLED-NEXT:                           file: FileId(
-// ENABLED-NEXT:                               1,
+// ENABLED-NEXT:                               2,
 // ENABLED-NEXT:                           ),
 // ENABLED-NEXT:                           kind: User,
 // ENABLED-NEXT:                           line: 5,
@@ -1080,7 +1080,7 @@ int main() {
 // ENABLED-NEXT:           ],
 // ENABLED-NEXT:           provenance: Provenance {
 // ENABLED-NEXT:               file: FileId(
-// ENABLED-NEXT:                   1,
+// ENABLED-NEXT:                   2,
 // ENABLED-NEXT:               ),
 // ENABLED-NEXT:               kind: User,
 // ENABLED-NEXT:               line: 3,
@@ -1137,7 +1137,7 @@ int main() {
 // ENABLED-NEXT:       },
 // ENABLED-NEXT:       provenance: Provenance {
 // ENABLED-NEXT:           file: FileId(
-// ENABLED-NEXT:               1,
+// ENABLED-NEXT:               2,
 // ENABLED-NEXT:           ),
 // ENABLED-NEXT:           kind: User,
 // ENABLED-NEXT:           line: 7,
@@ -1200,7 +1200,7 @@ int main() {
 // ENABLED-NEXT:       },
 // ENABLED-NEXT:       provenance: Provenance {
 // ENABLED-NEXT:           file: FileId(
-// ENABLED-NEXT:               1,
+// ENABLED-NEXT:               2,
 // ENABLED-NEXT:           ),
 // ENABLED-NEXT:           kind: User,
 // ENABLED-NEXT:           line: 8,
@@ -1256,7 +1256,7 @@ int main() {
 // ENABLED-NEXT:       },
 // ENABLED-NEXT:       provenance: Provenance {
 // ENABLED-NEXT:           file: FileId(
-// ENABLED-NEXT:               1,
+// ENABLED-NEXT:               2,
 // ENABLED-NEXT:           ),
 // ENABLED-NEXT:           kind: User,
 // ENABLED-NEXT:           line: 9,
@@ -1282,7 +1282,7 @@ int main() {
 // ENABLED-NEXT:           ],
 // ENABLED-NEXT:           provenance: Provenance {
 // ENABLED-NEXT:               file: FileId(
-// ENABLED-NEXT:                   1,
+// ENABLED-NEXT:                   2,
 // ENABLED-NEXT:               ),
 // ENABLED-NEXT:               kind: User,
 // ENABLED-NEXT:               line: 16,
@@ -1315,7 +1315,7 @@ int main() {
 // ENABLED-NEXT:       },
 // ENABLED-NEXT:       provenance: Provenance {
 // ENABLED-NEXT:           file: FileId(
-// ENABLED-NEXT:               1,
+// ENABLED-NEXT:               2,
 // ENABLED-NEXT:           ),
 // ENABLED-NEXT:           kind: User,
 // ENABLED-NEXT:           line: 0,
@@ -1350,7 +1350,7 @@ int main() {
 // ENABLED-NEXT:       },
 // ENABLED-NEXT:       provenance: Provenance {
 // ENABLED-NEXT:           file: FileId(
-// ENABLED-NEXT:               1,
+// ENABLED-NEXT:               2,
 // ENABLED-NEXT:           ),
 // ENABLED-NEXT:           kind: User,
 // ENABLED-NEXT:           line: 1,
@@ -1446,7 +1446,7 @@ int main() {
 // ENABLED-NEXT:       },
 // ENABLED-NEXT:       provenance: Provenance {
 // ENABLED-NEXT:           file: FileId(
-// ENABLED-NEXT:               1,
+// ENABLED-NEXT:               2,
 // ENABLED-NEXT:           ),
 // ENABLED-NEXT:           kind: User,
 // ENABLED-NEXT:           line: 2,
@@ -1476,7 +1476,7 @@ int main() {
 // ENABLED-NEXT:                       },
 // ENABLED-NEXT:                       provenance: Provenance {
 // ENABLED-NEXT:                           file: FileId(
-// ENABLED-NEXT:                               1,
+// ENABLED-NEXT:                               2,
 // ENABLED-NEXT:                           ),
 // ENABLED-NEXT:                           kind: User,
 // ENABLED-NEXT:                           line: 4,
@@ -1500,7 +1500,7 @@ int main() {
 // ENABLED-NEXT:                       },
 // ENABLED-NEXT:                       provenance: Provenance {
 // ENABLED-NEXT:                           file: FileId(
-// ENABLED-NEXT:                               1,
+// ENABLED-NEXT:                               2,
 // ENABLED-NEXT:                           ),
 // ENABLED-NEXT:                           kind: User,
 // ENABLED-NEXT:                           line: 5,
@@ -1510,7 +1510,7 @@ int main() {
 // ENABLED-NEXT:           ],
 // ENABLED-NEXT:           provenance: Provenance {
 // ENABLED-NEXT:               file: FileId(
-// ENABLED-NEXT:                   1,
+// ENABLED-NEXT:                   2,
 // ENABLED-NEXT:               ),
 // ENABLED-NEXT:               kind: User,
 // ENABLED-NEXT:               line: 3,
@@ -1567,7 +1567,7 @@ int main() {
 // ENABLED-NEXT:       },
 // ENABLED-NEXT:       provenance: Provenance {
 // ENABLED-NEXT:           file: FileId(
-// ENABLED-NEXT:               1,
+// ENABLED-NEXT:               2,
 // ENABLED-NEXT:           ),
 // ENABLED-NEXT:           kind: User,
 // ENABLED-NEXT:           line: 7,
@@ -1630,7 +1630,7 @@ int main() {
 // ENABLED-NEXT:       },
 // ENABLED-NEXT:       provenance: Provenance {
 // ENABLED-NEXT:           file: FileId(
-// ENABLED-NEXT:               1,
+// ENABLED-NEXT:               2,
 // ENABLED-NEXT:           ),
 // ENABLED-NEXT:           kind: User,
 // ENABLED-NEXT:           line: 8,
@@ -1661,7 +1661,7 @@ int main() {
 // ENABLED-NEXT:       },
 // ENABLED-NEXT:       provenance: Provenance {
 // ENABLED-NEXT:           file: FileId(
-// ENABLED-NEXT:               1,
+// ENABLED-NEXT:               2,
 // ENABLED-NEXT:           ),
 // ENABLED-NEXT:           kind: User,
 // ENABLED-NEXT:           line: 9,
@@ -1687,7 +1687,7 @@ int main() {
 // ENABLED-NEXT:           ],
 // ENABLED-NEXT:           provenance: Provenance {
 // ENABLED-NEXT:               file: FileId(
-// ENABLED-NEXT:                   1,
+// ENABLED-NEXT:                   2,
 // ENABLED-NEXT:               ),
 // ENABLED-NEXT:               kind: User,
 // ENABLED-NEXT:               line: 16,

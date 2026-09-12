@@ -3,7 +3,7 @@ use crate::const_expr;
 use crate::error::{FrontendError, ParseError};
 use crate::files::{Files, SearchPaths, display_path};
 use crate::lexer::{Keyword, Lexer, Token, TokenSpanExt};
-use crate::pp::{PPConditional, PPNode, PPNodeKind, Preprocessor};
+use crate::pp::{DirectiveDiagnostic, PPConditional, PPNode, PPNodeKind, Preprocessor};
 use crate::reachability::filter_translation_unit;
 use miette::Diagnostic;
 use std::collections::HashSet;
@@ -128,6 +128,8 @@ pub struct Parser {
     source: String,
     files: Files,
     typedef_names: HashSet<String>,
+    directive_diagnostics: Vec<DirectiveDiagnostic>,
+    predefined_macros: Vec<String>,
 }
 
 impl Parser {
@@ -138,7 +140,17 @@ impl Parser {
             source: String::new(),
             files: Files::new(),
             typedef_names: HashSet::new(),
+            directive_diagnostics: Vec::new(),
+            predefined_macros: Vec::new(),
         }
+    }
+
+    pub fn directive_diagnostics(&self) -> &[DirectiveDiagnostic] {
+        &self.directive_diagnostics
+    }
+
+    pub fn predefined_macros(&self) -> &[String] {
+        &self.predefined_macros
     }
 
     pub fn parse_source(&mut self, src: &str) -> Result<TranslationUnit, FrontendError> {
@@ -147,6 +159,8 @@ impl Parser {
         let search = self.search.clone();
         let mut pp = Preprocessor::new(&search);
         let nodes = pp.parse_str("<main>", src).map_err(FrontendError::PP)?;
+        self.directive_diagnostics = std::mem::take(&mut pp.directive_diagnostics);
+        self.predefined_macros = std::mem::take(&mut pp.predefined_macros);
         let root_file = pp.main_file.expect("parse_str sets main_file");
         self.parse_nodes(&nodes, root_file)
             .map_err(FrontendError::Parse)
@@ -169,6 +183,8 @@ impl Parser {
         let mut pp = Preprocessor::new(&search);
         let nodes = pp.parse_file(path).map_err(FrontendError::PP)?;
         self.files = pp.files.clone();
+        self.directive_diagnostics = std::mem::take(&mut pp.directive_diagnostics);
+        self.predefined_macros = std::mem::take(&mut pp.predefined_macros);
         let root_file = pp.main_file.expect("parse_file sets main_file");
         let ast = self.parse_nodes(&nodes, root_file);
         ast.map(|ast| (ast, pp.files)).map_err(FrontendError::Parse)
