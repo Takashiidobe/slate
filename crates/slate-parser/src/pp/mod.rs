@@ -9,15 +9,20 @@ use crate::ast::{Condition, Conditional, FileId, HeaderKind, Loc, Provenance, Sp
 use crate::const_expr;
 use crate::files::{Files, SearchPaths};
 use crate::lexer::{Lexer, Token, TokenSpanExt};
-use condition::{conjunction, is_statically_false, replace_subterm, simplify_condition};
+use condition::{
+    conjunction, difference, intersect, is_satisfiable, is_statically_false, negate, normalize,
+};
 use define::PushedMacro;
 pub use error::{DirectiveDiagnostic, DirectiveErrors, PPError};
 use error::{PPErrorKind, PPFailure};
+use expand::defined_operands;
 use include::{include_target, read_source};
 use miette::Severity;
 use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
-use syntax::{Directive, DirectiveName, IfSection, Item, directive_spelling, identifier};
+use syntax::{
+    Directive, DirectiveName, IfSection, Item, controlling_macro, directive_spelling, identifier,
+};
 
 pub type PPNode = Span<PPNodeKind>;
 
@@ -64,6 +69,7 @@ pub struct Preprocessor<'a> {
     line_starts: HashMap<FileId, Vec<usize>>,
     pragma_once: HashMap<PathBuf, Vec<Condition>>,
     pushed_macros: HashMap<String, Vec<PushedMacro>>,
+    configuration_names: HashSet<String>,
     pub predefined_macros: Vec<String>,
     pub directive_diagnostics: Vec<DirectiveDiagnostic>,
     macro_order: usize,
@@ -92,6 +98,7 @@ impl<'a> Preprocessor<'a> {
             line_starts: HashMap::new(),
             pragma_once: HashMap::new(),
             pushed_macros: HashMap::new(),
+            configuration_names: HashSet::new(),
             predefined_macros: Vec::new(),
             directive_diagnostics: Vec::new(),
             macro_order: 0,
@@ -113,6 +120,10 @@ impl<'a> Preprocessor<'a> {
         }
         self.predefined_macros = self.macros.keys().cloned().collect();
         self.predefined_macros.sort();
+    }
+
+    pub fn set_configuration_names(&mut self, names: impl IntoIterator<Item = String>) {
+        self.configuration_names = names.into_iter().collect();
     }
 
     pub fn parse_file(&mut self, path: &Path) -> Result<Vec<PPNode>, PPError> {
@@ -151,7 +162,39 @@ impl<'a> Preprocessor<'a> {
         );
         let tokens = Lexer::new(file, src).with_newlines().tokenize();
         let items = syntax::parse(src, tokens)?;
-        self.walk_group(&items, &active)
+        match controlling_macro(src, &items) {
+            Some((index, section, guard)) => {
+                self.walk_guarded(&items, index, section, &guard, &active)
+            }
+            None => self.walk_group(&items, &active),
+        }
+    }
+
+    fn walk_guarded(
+        &mut self,
+        items: &[Item],
+        index: usize,
+        section: &IfSection,
+        guard: &str,
+        active: &Condition,
+    ) -> Result<Vec<PPNode>, PPFailure> {
+        let mut nodes = self.walk_group(&items[..index], active)?;
+        let unguarded = normalize(&negate(&self.defined_condition(guard, false)));
+        let branch_active = intersect(active, &unguarded);
+        if is_satisfiable(&branch_active) {
+            let body = section
+                .branches
+                .first()
+                .map_or(&[][..], |branch| branch.body.as_slice());
+            let body_nodes = self.walk_group(body, &branch_active)?;
+            if is_satisfiable(&difference(active, &unguarded)) {
+                nodes.push(conditional_node(section, vec![(unguarded, body_nodes)]));
+            } else {
+                nodes.extend(body_nodes);
+            }
+        }
+        nodes.extend(self.walk_group(&items[index + 1..], active)?);
+        Ok(nodes)
     }
 
     fn source(&self, file: FileId) -> &str {
@@ -266,15 +309,15 @@ impl<'a> Preprocessor<'a> {
         for branch in &section.branches {
             let directive = &branch.directive;
             let test = match directive.name {
-                DirectiveName::Ifdef | DirectiveName::Elifdef => Some(Condition::Defined(
-                    self.macro_name(directive, directive_spelling(directive.name))?
-                        .0,
-                )),
+                DirectiveName::Ifdef | DirectiveName::Elifdef => {
+                    let (name, _) =
+                        self.macro_name(directive, directive_spelling(directive.name))?;
+                    Some(self.defined_condition(&name, true))
+                }
                 DirectiveName::Ifndef | DirectiveName::Elifndef => {
-                    Some(Condition::Not(Box::new(Condition::Defined(
-                        self.macro_name(directive, directive_spelling(directive.name))?
-                            .0,
-                    ))))
+                    let (name, _) =
+                        self.macro_name(directive, directive_spelling(directive.name))?;
+                    Some(normalize(&negate(&self.defined_condition(&name, true))))
                 }
                 DirectiveName::Else => None,
                 _ => Some(self.evaluate_condition(
@@ -303,25 +346,14 @@ impl<'a> Preprocessor<'a> {
                 excluded = Some(condition.clone());
             }
             let branch_active = conjunction(active, &condition);
-            let order_before = self.macro_order;
             let body = if is_statically_false(&branch_active) {
                 Vec::new()
             } else {
                 self.walk_group(&branch.body, &branch_active)?
             };
-            self.concretize_guard(&condition, order_before);
             branches.push((condition, body));
         }
-        let loc = section
-            .branches
-            .first()
-            .map_or(section.endif, |branch| branch.directive.loc)
-            .through(section.endif);
-        Ok(Span::new(
-            PPNodeKind::Conditional(PPConditional { branches }),
-            loc,
-            loc,
-        ))
+        Ok(conditional_node(section, branches))
     }
 
     fn evaluate_condition(
@@ -331,23 +363,34 @@ impl<'a> Preprocessor<'a> {
         active: &Condition,
     ) -> Result<Condition, PPFailure> {
         let expandable = Self::expandable_tokens(&directive.arguments);
-        let Some(conditions) = self.divergent_macro_conditions(&expandable, active) else {
+        let mut cases = self
+            .divergent_macro_conditions(&expandable, active)
+            .unwrap_or_else(|| vec![active.clone()]);
+        for operand in defined_operands(&directive.arguments) {
+            let defined = self.defined_condition(&operand, true);
+            cases = cases
+                .iter()
+                .flat_map(|case| [intersect(case, &defined), difference(case, &defined)])
+                .filter(is_satisfiable)
+                .collect();
+        }
+        if let [case] = cases.as_slice() {
             return self
-                .evaluate_expanded_condition(directive, name, active)
+                .evaluate_expanded_condition(directive, name, case)
                 .map(Condition::Constant);
-        };
+        }
         let mut combined = Condition::Constant(0);
-        for condition in conditions {
-            let value = self.evaluate_expanded_condition(directive, name, &condition)?;
+        for case in cases {
+            let value = self.evaluate_expanded_condition(directive, name, &case)?;
             combined = Condition::Or(
                 Box::new(combined),
                 Box::new(Condition::And(
-                    Box::new(condition),
+                    Box::new(case),
                     Box::new(Condition::Constant(value)),
                 )),
             );
         }
-        Ok(simplify_condition(&combined))
+        Ok(normalize(&combined))
     }
 
     fn evaluate_expanded_condition(
@@ -426,9 +469,22 @@ impl<'a> Preprocessor<'a> {
     }
 
     fn is_defined(&self, name: &str, active: &Condition) -> bool {
-        self.macro_cases(name, active)
-            .iter()
-            .any(|(_, entry)| entry.is_some_and(|entry| entry.definition.is_some()))
+        !is_satisfiable(&difference(active, &self.defined_condition(name, true)))
+    }
+
+    fn defined_condition(&self, name: &str, configurable: bool) -> Condition {
+        let mut defined = Condition::Constant(0);
+        for (case, entry) in self.macro_cases(name, &Condition::Constant(1)) {
+            let case_defined = match entry {
+                Some(entry) if entry.definition.is_some() => case,
+                None if configurable && self.configuration_names.contains(name) => {
+                    intersect(&case, &Condition::Defined(name.to_string()))
+                }
+                _ => continue,
+            };
+            defined = Condition::Or(Box::new(defined), Box::new(case_defined));
+        }
+        normalize(&defined)
     }
 
     fn spelling(&self, loc: Loc) -> &str {
@@ -436,39 +492,19 @@ impl<'a> Preprocessor<'a> {
             .get(loc.offset..loc.offset + loc.length)
             .unwrap_or_default()
     }
+}
 
-    fn concretize_guard(&mut self, branch_condition: &Condition, order_from: usize) {
-        let Condition::Not(inner) = branch_condition else {
-            return;
-        };
-        let Condition::Defined(name) = inner.as_ref() else {
-            return;
-        };
-        let Some(conditional) = self.macros.get(name) else {
-            return;
-        };
-        let guard_defined_here = conditional
-            .branches
-            .iter()
-            .any(|(_, entry)| entry.definition.is_some() && entry.order >= order_from);
-        if !guard_defined_here {
-            return;
-        }
-        for conditional in self.macros.values_mut() {
-            for (condition, entry) in conditional.branches.iter_mut() {
-                if entry.order >= order_from {
-                    let rewritten = simplify_condition(&replace_subterm(
-                        condition,
-                        branch_condition,
-                        &Condition::Constant(1),
-                    ));
-                    if &rewritten != condition {
-                        *condition = rewritten;
-                    }
-                }
-            }
-        }
-    }
+fn conditional_node(section: &IfSection, branches: Vec<(Condition, Vec<PPNode>)>) -> PPNode {
+    let loc = section
+        .branches
+        .first()
+        .map_or(section.endif, |branch| branch.directive.loc)
+        .through(section.endif);
+    Span::new(
+        PPNodeKind::Conditional(PPConditional { branches }),
+        loc,
+        loc,
+    )
 }
 
 fn tokens_source<'a>(tokens: impl IntoIterator<Item = &'a Token>) -> String {

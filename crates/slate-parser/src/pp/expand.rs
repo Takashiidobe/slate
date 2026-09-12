@@ -268,6 +268,23 @@ impl Preprocessor<'_> {
     }
 }
 
+pub(super) fn defined_operands(tokens: &[Span<Token>]) -> Vec<String> {
+    let mut names: Vec<String> = Vec::new();
+    for (index, token) in tokens.iter().enumerate() {
+        if !matches!(&token.value, Token::Ident(word) if word == "defined") {
+            continue;
+        }
+        let name = match (tokens.value_at(index + 1), tokens.value_at(index + 2)) {
+            (Some(Token::Ident(name)), _) | (Some(Token::LParen), Some(Token::Ident(name))) => name,
+            _ => continue,
+        };
+        if !names.contains(name) {
+            names.push(name.clone());
+        }
+    }
+    names
+}
+
 fn unexpanded_operands(tokens: &[Span<Token>]) -> Vec<bool> {
     let mut operands = vec![false; tokens.len()];
     let mut i = 0;

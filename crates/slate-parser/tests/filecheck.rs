@@ -129,6 +129,20 @@ fn expand_home(path: &str) -> String {
     )
 }
 
+fn configuration_names(fixture: &Path) -> Vec<String> {
+    let source = std::fs::read_to_string(fixture).expect("read fixture");
+    let mut names: Vec<String> = Vec::new();
+    for (_, defines) in configurations(&source) {
+        for define in defines {
+            let name = macro_name(&define);
+            if !names.contains(&name) {
+                names.push(name);
+            }
+        }
+    }
+    names
+}
+
 fn error_configurations(source: &str) -> Vec<String> {
     source
         .lines()
@@ -161,6 +175,9 @@ fn run_fixture(fixture: &Path, prefix: &str, defines: &[String], isystem: &[Stri
     }
     for path in isystem {
         command.arg(format!("-isystem{path}"));
+    }
+    for name in configuration_names(fixture) {
+        command.arg(format!("-fslate-config={name}"));
     }
     let rendered = command
         .output()
@@ -234,6 +251,11 @@ fn run_error_fixture(fixture: &Path, prefix: &str, defines: &[String], slot: usi
                 .iter()
                 .map(|define| format!("-D{}", define.trim_start_matches("-D"))),
         )
+        .args(
+            configuration_names(fixture)
+                .into_iter()
+                .map(|name| format!("-fslate-config={name}")),
+        )
         .env_remove("FORCE_COLOR")
         .env_remove("CLICOLOR_FORCE")
         .env("NO_COLOR", "1")
@@ -289,7 +311,8 @@ fn assert_evaluated_matches_clang(fixture: &Path, defines: &[String], isystem: &
         system: isystem.iter().map(std::path::PathBuf::from).collect(),
         ..SearchPaths::default()
     };
-    let mut parser = Parser::new(search);
+    let mut parser = Parser::new(search)
+        .with_configuration_names(defines.iter().map(|define| macro_name(define)));
     let (ast, _) = parser.parse_file(fixture).expect("parse fixture");
     let mut env = parser
         .predefined_macros()

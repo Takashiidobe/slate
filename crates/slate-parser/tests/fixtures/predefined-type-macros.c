@@ -47,10 +47,8 @@ static __inline __UINTPTR_TYPE__ as_uintptr(const void *p) {
 // DEFAULT-NEXT:       Conditional {
 // DEFAULT-NEXT:           branches: [
 // DEFAULT-NEXT:               (
-// DEFAULT-NEXT:                   Not(
-// DEFAULT-NEXT:                       Defined(
-// DEFAULT-NEXT:                           "GUARD_H",
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   Constant(
+// DEFAULT-NEXT:                       1,
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   [
 // DEFAULT-NEXT:                       Function(

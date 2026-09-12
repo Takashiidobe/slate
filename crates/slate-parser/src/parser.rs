@@ -130,6 +130,7 @@ pub struct Parser {
     typedef_names: HashSet<String>,
     directive_diagnostics: Vec<DirectiveDiagnostic>,
     predefined_macros: Vec<String>,
+    configuration_names: Vec<String>,
 }
 
 impl Parser {
@@ -142,7 +143,13 @@ impl Parser {
             typedef_names: HashSet::new(),
             directive_diagnostics: Vec::new(),
             predefined_macros: Vec::new(),
+            configuration_names: Vec::new(),
         }
+    }
+
+    pub fn with_configuration_names(mut self, names: impl IntoIterator<Item = String>) -> Self {
+        self.configuration_names = names.into_iter().collect();
+        self
     }
 
     pub fn directive_diagnostics(&self) -> &[DirectiveDiagnostic] {
@@ -158,6 +165,7 @@ impl Parser {
         self.source = src.into();
         let search = self.search.clone();
         let mut pp = Preprocessor::new(&search);
+        pp.set_configuration_names(self.configuration_names.iter().cloned());
         let nodes = pp.parse_str("<main>", src).map_err(FrontendError::PP)?;
         self.directive_diagnostics = std::mem::take(&mut pp.directive_diagnostics);
         self.predefined_macros = std::mem::take(&mut pp.predefined_macros);
@@ -181,6 +189,7 @@ impl Parser {
             .map_err(FrontendError::Parse)?;
         let search = self.search.clone();
         let mut pp = Preprocessor::new(&search);
+        pp.set_configuration_names(self.configuration_names.iter().cloned());
         let nodes = pp.parse_file(path).map_err(FrontendError::PP)?;
         self.files = pp.files.clone();
         self.directive_diagnostics = std::mem::take(&mut pp.directive_diagnostics);

@@ -5,6 +5,7 @@ pub struct CompilerArgs {
     pub defines: Vec<String>,
     pub standard: Option<String>,
     pub isystem: Vec<String>,
+    pub configuration_names: Vec<String>,
 }
 
 pub struct CompilerArgParser;
@@ -17,7 +18,9 @@ impl CompilerArgParser {
         let mut args = args.into_iter().peekable();
         let mut parsed = CompilerArgs::default();
         while let Some(arg) = args.next() {
-            if let Some(define) = arg.strip_prefix("-D") {
+            if let Some(name) = arg.strip_prefix("-fslate-config=") {
+                parsed.configuration_names.push(name.to_string());
+            } else if let Some(define) = arg.strip_prefix("-D") {
                 parsed.defines.push(Self::value(define, &mut args, "-D")?);
             } else if let Some(standard) = arg.strip_prefix("-std=") {
                 parsed.standard = Some(standard.to_string());

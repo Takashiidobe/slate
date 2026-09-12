@@ -27,7 +27,18 @@ pub(super) fn implies(condition: &Condition, consequence: &Condition) -> bool {
             if implies(left, consequence) || implies(right, consequence))
 }
 
-fn negate(condition: &Condition) -> Condition {
+pub(super) fn normalize(condition: &Condition) -> Condition {
+    let simplified = simplify_condition(condition);
+    if !is_satisfiable(&simplified) {
+        Condition::Constant(0)
+    } else if !is_satisfiable(&negate(&simplified)) {
+        Condition::Constant(1)
+    } else {
+        simplified
+    }
+}
+
+pub(super) fn negate(condition: &Condition) -> Condition {
     match condition {
         Condition::Not(inner) => inner.as_ref().clone(),
         _ => Condition::Not(Box::new(condition.clone())),
@@ -130,30 +141,6 @@ pub(super) fn simplify_condition(condition: &Condition) -> Condition {
             Condition::Constant(v) => Condition::Constant(if v != 0 { 0 } else { 1 }),
             other => Condition::Not(Box::new(other)),
         },
-        Condition::Defined(_) | Condition::Constant(_) => condition.clone(),
-    }
-}
-
-pub(super) fn replace_subterm(
-    condition: &Condition,
-    target: &Condition,
-    replacement: &Condition,
-) -> Condition {
-    if condition == target {
-        return replacement.clone();
-    }
-    match condition {
-        Condition::Not(inner) => {
-            Condition::Not(Box::new(replace_subterm(inner, target, replacement)))
-        }
-        Condition::And(left, right) => Condition::And(
-            Box::new(replace_subterm(left, target, replacement)),
-            Box::new(replace_subterm(right, target, replacement)),
-        ),
-        Condition::Or(left, right) => Condition::Or(
-            Box::new(replace_subterm(left, target, replacement)),
-            Box::new(replace_subterm(right, target, replacement)),
-        ),
         Condition::Defined(_) | Condition::Constant(_) => condition.clone(),
     }
 }

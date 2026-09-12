@@ -84,42 +84,7 @@ int after[WIDTH];
 // DEFAULT-NEXT:           line: 6,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[2]: Conditional(
-// DEFAULT-NEXT:       Conditional {
-// DEFAULT-NEXT:           branches: [
-// DEFAULT-NEXT:               (
-// DEFAULT-NEXT:                   Defined(
-// DEFAULT-NEXT:                       "FRESH",
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   [
-// DEFAULT-NEXT:                       Declaration {
-// DEFAULT-NEXT:                           declaration: Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Int,
-// DEFAULT-NEXT:                                           signed: true,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "fresh",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           provenance: Provenance {
-// DEFAULT-NEXT:                               file: FileId(
-// DEFAULT-NEXT:                                   2,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               kind: User,
-// DEFAULT-NEXT:                               line: 11,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ],
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[3]: Declaration {
+// DEFAULT-NEXT: decl[2]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -148,7 +113,7 @@ int after[WIDTH];
 // DEFAULT-NEXT:           line: 14,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[4]: Conditional(
+// DEFAULT-NEXT: decl[3]: Conditional(
 // DEFAULT-NEXT:       Conditional {
 // DEFAULT-NEXT:           branches: [
 // DEFAULT-NEXT:               (
@@ -190,7 +155,7 @@ int after[WIDTH];
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[5]: Declaration {
+// DEFAULT-NEXT: decl[4]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -397,42 +362,7 @@ int after[WIDTH];
 // WIDE-NEXT:           line: 6,
 // WIDE-NEXT:       },
 // WIDE-NEXT:   }
-// WIDE-NEXT: decl[2]: Conditional(
-// WIDE-NEXT:       Conditional {
-// WIDE-NEXT:           branches: [
-// WIDE-NEXT:               (
-// WIDE-NEXT:                   Defined(
-// WIDE-NEXT:                       "FRESH",
-// WIDE-NEXT:                   ),
-// WIDE-NEXT:                   [
-// WIDE-NEXT:                       Declaration {
-// WIDE-NEXT:                           declaration: Declaration {
-// WIDE-NEXT:                               specifiers: DeclarationSpecifiers {
-// WIDE-NEXT:                                   ty: Integer(
-// WIDE-NEXT:                                       Ranked {
-// WIDE-NEXT:                                           rank: Int,
-// WIDE-NEXT:                                           signed: true,
-// WIDE-NEXT:                                       },
-// WIDE-NEXT:                                   ),
-// WIDE-NEXT:                               },
-// WIDE-NEXT:                               declarator: Name(
-// WIDE-NEXT:                                   "fresh",
-// WIDE-NEXT:                               ),
-// WIDE-NEXT:                           },
-// WIDE-NEXT:                           provenance: Provenance {
-// WIDE-NEXT:                               file: FileId(
-// WIDE-NEXT:                                   2,
-// WIDE-NEXT:                               ),
-// WIDE-NEXT:                               kind: User,
-// WIDE-NEXT:                               line: 11,
-// WIDE-NEXT:                           },
-// WIDE-NEXT:                       },
-// WIDE-NEXT:                   ],
-// WIDE-NEXT:               ),
-// WIDE-NEXT:           ],
-// WIDE-NEXT:       },
-// WIDE-NEXT:   )
-// WIDE-NEXT: decl[3]: Declaration {
+// WIDE-NEXT: decl[2]: Declaration {
 // WIDE-NEXT:       declaration: Declaration {
 // WIDE-NEXT:           specifiers: DeclarationSpecifiers {
 // WIDE-NEXT:               ty: Integer(
@@ -461,7 +391,7 @@ int after[WIDTH];
 // WIDE-NEXT:           line: 14,
 // WIDE-NEXT:       },
 // WIDE-NEXT:   }
-// WIDE-NEXT: decl[4]: Conditional(
+// WIDE-NEXT: decl[3]: Conditional(
 // WIDE-NEXT:       Conditional {
 // WIDE-NEXT:           branches: [
 // WIDE-NEXT:               (
@@ -503,7 +433,7 @@ int after[WIDTH];
 // WIDE-NEXT:           ],
 // WIDE-NEXT:       },
 // WIDE-NEXT:   )
-// WIDE-NEXT: decl[5]: Declaration {
+// WIDE-NEXT: decl[4]: Declaration {
 // WIDE-NEXT:       declaration: Declaration {
 // WIDE-NEXT:           specifiers: DeclarationSpecifiers {
 // WIDE-NEXT:               ty: Integer(

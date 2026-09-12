@@ -31,18 +31,23 @@ fn main() -> miette::Result<()> {
             .collect(),
         ..SearchPaths::default()
     };
-    let mut parser = Parser::new(search);
+    let define_names: Vec<String> = compiler_args
+        .defines
+        .iter()
+        .map(|define| define_name(define))
+        .collect();
+    let mut parser = Parser::new(search).with_configuration_names(
+        define_names
+            .iter()
+            .chain(&compiler_args.configuration_names)
+            .cloned(),
+    );
     let parsed = parser.parse_file(Path::new(&path));
     let env = parser
         .predefined_macros()
         .iter()
+        .chain(&define_names)
         .cloned()
-        .chain(
-            compiler_args
-                .defines
-                .iter()
-                .map(|define| define_name(define)),
-        )
         .fold(Env::new(), |env, name| env.define(name));
     report_directives(parser.directive_diagnostics(), &env)?;
     let (ast, files) = parsed?;
