@@ -22,6 +22,11 @@ pub enum ConstExpr {
         ty: Box<CType>,
         declarator: Declarator,
     },
+    OffsetOf {
+        ty: Box<CType>,
+        declarator: Declarator,
+        member: Box<Self>,
+    },
     Unary {
         op: UnaryOp,
         value: Box<Self>,
@@ -85,6 +90,7 @@ impl std::fmt::Display for ConstExpr {
             Self::SizeOf(value) => write!(formatter, "sizeof({value})"),
             Self::SizeOfType { .. } => write!(formatter, "sizeof(...)"),
             Self::AlignOf { .. } => write!(formatter, "_Alignof(...)"),
+            Self::OffsetOf { member, .. } => write!(formatter, "__builtin_offsetof(..., {member})"),
             Self::Unary { op, value } => write!(formatter, "{}{}", <&str>::from(*op), value),
             Self::Binary { op, left, right } => {
                 write!(formatter, "({left} {} {right})", <&str>::from(*op))
@@ -246,6 +252,8 @@ pub enum ConstExprError {
     ExpectedColon,
     #[error("expected `(`")]
     ExpectedLParen,
+    #[error("expected `,`")]
+    ExpectedComma,
     #[error("expected identifier")]
     ExpectedIdentifier,
     #[error("expected type name")]
@@ -329,6 +337,7 @@ impl Parser {
                 declarator_size(ty, declarator).map(|size| size as i64)
             }
             ConstExpr::AlignOf { .. } => Err(ConstExprError::UnsupportedAlignOf),
+            ConstExpr::OffsetOf { .. } => Err(ConstExprError::NotConstant("offsetof")),
             ConstExpr::Call { callee, arguments } => {
                 match (is_defined, callee.as_ref(), arguments.as_slice()) {
                     (Some(is_defined), ConstExpr::Identifier(name), [ConstExpr::Identifier(macro_name)])
@@ -806,6 +815,7 @@ impl Parser {
             {
                 self.parse_has_include(value.clone())
             }
+            Some(Token::Ident(value)) if value == "__builtin_offsetof" => self.parse_offsetof(),
             Some(Token::Ident(value)) => Ok(ConstExpr::Identifier(value.clone())),
             Some(Token::Keyword(keyword)) => {
                 Ok(ConstExpr::Identifier(<&str>::from(*keyword).into()))
@@ -867,6 +877,51 @@ impl Parser {
         Ok(ConstExpr::Call {
             callee: Box::new(ConstExpr::Identifier(name)),
             arguments: vec![ConstExpr::Identifier(header)],
+        })
+    }
+
+    fn parse_offsetof(&mut self) -> Result<ConstExpr, ConstExprError> {
+        if self.take() != Some(Token::LParen) {
+            return Err(ConstExprError::ExpectedLParen);
+        }
+        let (ty, declarator, end) = self
+            .try_parse_type_name(self.position)
+            .ok_or(ConstExprError::ExpectedTypeName)?;
+        self.position = end;
+        if self.take() != Some(Token::Comma) {
+            return Err(ConstExprError::ExpectedComma);
+        }
+        let mut member = ConstExpr::Identifier(self.expect_field_name()?);
+        loop {
+            member = match self.peek() {
+                Some(Token::Dot) => {
+                    self.take();
+                    ConstExpr::Member {
+                        base: Box::new(member),
+                        field: self.expect_field_name()?,
+                    }
+                }
+                Some(Token::LBracket) => {
+                    self.take();
+                    let index = self.parse_comma()?;
+                    if self.take() != Some(Token::RBracket) {
+                        return Err(ConstExprError::ExpectedRBracket);
+                    }
+                    ConstExpr::Index {
+                        base: Box::new(member),
+                        index: Box::new(index),
+                    }
+                }
+                _ => break,
+            };
+        }
+        if self.take() != Some(Token::RParen) {
+            return Err(ConstExprError::ExpectedRParen);
+        }
+        Ok(ConstExpr::OffsetOf {
+            ty,
+            declarator,
+            member: Box::new(member),
         })
     }
 

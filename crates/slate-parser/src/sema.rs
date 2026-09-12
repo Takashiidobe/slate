@@ -239,6 +239,7 @@ fn is_integer_constant_expression(expression: &ConstExpr) -> bool {
         | ConstExpr::Member { .. }
         | ConstExpr::Arrow { .. }
         | ConstExpr::Index { .. }
+        | ConstExpr::OffsetOf { .. }
         | ConstExpr::PostIncrement(_)
         | ConstExpr::PostDecrement(_)
         | ConstExpr::PreIncrement(_)

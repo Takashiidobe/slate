@@ -348,9 +348,9 @@ impl Parser {
             .iter()
             .position(|token| *token == Token::LBrace)
             .map(|position| name_index + position)
+            && let Some(same_line_close) = matching_brace(tokens, open_brace_idx)
         {
-            if let Some(same_line_close) = matching_brace(tokens, open_brace_idx) {
-                let body_tokens = &tokens[open_brace_idx + 1..same_line_close];
+            let body_tokens = &tokens[open_brace_idx + 1..same_line_close];
                 let trailing_tokens = &tokens[same_line_close + 1..];
                 let (trailing_attributes, alias_position) =
                     parse_attribute_groups(trailing_tokens, 0)

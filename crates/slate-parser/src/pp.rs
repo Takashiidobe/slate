@@ -223,8 +223,11 @@ impl<'a> Preprocessor<'a> {
                         branches: conditions
                             .into_iter()
                             .map(|condition| {
-                                let expanded =
-                                    self.expand_macros(&tokens, &mut HashSet::new(), &condition);
+                                let expanded = Self::strip_pragma_operator(&self.expand_macros(
+                                    &tokens,
+                                    &mut HashSet::new(),
+                                    &condition,
+                                ));
                                 (
                                     condition,
                                     vec![PPNode::Code {
@@ -236,7 +239,11 @@ impl<'a> Preprocessor<'a> {
                             .collect(),
                     }));
                 } else {
-                    let expanded = self.expand_macros(&tokens, &mut HashSet::new(), active);
+                    let expanded = Self::strip_pragma_operator(&self.expand_macros(
+                        &tokens,
+                        &mut HashSet::new(),
+                        active,
+                    ));
                     nodes.push(PPNode::Code {
                         text: tokens_source(&expanded),
                         provenance,
@@ -462,6 +469,24 @@ impl<'a> Preprocessor<'a> {
             ));
         self.macro_order += 1;
         Ok(())
+    }
+
+    fn strip_pragma_operator(tokens: &[Token]) -> Vec<Token> {
+        let mut result = Vec::with_capacity(tokens.len());
+        let mut i = 0;
+        while i < tokens.len() {
+            if tokens[i] == Token::Ident("_Pragma".to_string())
+                && tokens.get(i + 1) == Some(&Token::LParen)
+                && matches!(tokens.get(i + 2), Some(Token::StringLit(_)))
+                && tokens.get(i + 3) == Some(&Token::RParen)
+            {
+                i += 4;
+                continue;
+            }
+            result.push(tokens[i].clone());
+            i += 1;
+        }
+        result
     }
 
     fn expand_macros(
