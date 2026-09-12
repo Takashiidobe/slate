@@ -352,15 +352,13 @@ impl<'a> Preprocessor<'a> {
         let Some(conditional) = self.macros.get(name) else {
             return;
         };
-        let Some(guard_order) = conditional.branches.iter().map(|(_, def)| def.order).min() else {
-            return;
-        };
-        if guard_order < order_from {
+        let guard_defined_here = conditional.branches.iter().any(|(_, def)| def.order >= order_from);
+        if !guard_defined_here {
             return;
         }
         for conditional in self.macros.values_mut() {
             for (condition, definition) in conditional.branches.iter_mut() {
-                if definition.order > guard_order {
+                if definition.order >= order_from {
                     let rewritten =
                         simplify_condition(&replace_subterm(condition, branch_condition, &Condition::Constant(1)));
                     if &rewritten != condition {
