@@ -15,6 +15,11 @@ pub(super) enum DirectiveName {
     Include,
     IncludeNext,
     Error,
+    Warning,
+    Pragma,
+    Line,
+    LineMarker,
+    Ident,
     Null,
     Unknown,
 }
@@ -33,6 +38,10 @@ impl DirectiveName {
             "include" => Self::Include,
             "include_next" => Self::IncludeNext,
             "error" => Self::Error,
+            "warning" => Self::Warning,
+            "pragma" => Self::Pragma,
+            "line" => Self::Line,
+            "ident" | "sccs" => Self::Ident,
             _ => Self::Unknown,
         }
     }
@@ -178,9 +187,12 @@ impl GroupParser<'_> {
             };
         };
         Directive {
-            name: identifier(self.src, &name).map_or(DirectiveName::Unknown, |name| {
-                DirectiveName::from_spelling(&name)
-            }),
+            name: match &name.value {
+                Token::IntLit(_) => DirectiveName::LineMarker,
+                _ => identifier(self.src, &name).map_or(DirectiveName::Unknown, |name| {
+                    DirectiveName::from_spelling(&name)
+                }),
+            },
             arguments: tokens.collect(),
             name_loc: name.spelling,
             loc,

@@ -1,3 +1,4 @@
+use super::condition::is_statically_true;
 use super::error::{PPErrorKind, PPFailure};
 use super::syntax::{Directive, DirectiveName};
 use super::{PPNode, Preprocessor};
@@ -75,6 +76,14 @@ impl Preprocessor<'_> {
             .ok_or_else(|| {
                 PPFailure::at(directive, PPErrorKind::HeaderNotFound(include.to_string()))
             })?;
+        let once_key = resolved.canonicalize().unwrap_or_else(|_| resolved.clone());
+        if self.pragma_once.get(&once_key).is_some_and(|conditions| {
+            conditions
+                .iter()
+                .any(|condition| condition == active || is_statically_true(condition))
+        }) {
+            return Ok(Vec::new());
+        }
         if self.open_stack.contains(&resolved) {
             return Err(PPFailure::at(
                 directive,

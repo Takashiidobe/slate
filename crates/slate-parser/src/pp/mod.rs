@@ -17,7 +17,7 @@ use error::{PPErrorKind, PPFailure};
 use include::{include_target, read_source};
 use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
-use syntax::{Directive, DirectiveName, IfSection, Item};
+use syntax::{Directive, DirectiveName, IfSection, Item, identifier};
 
 pub type PPNode = Span<PPNodeKind>;
 
@@ -62,6 +62,7 @@ pub struct Preprocessor<'a> {
     open_stack: Vec<PathBuf>,
     sources: HashMap<FileId, String>,
     line_starts: HashMap<FileId, Vec<usize>>,
+    pragma_once: HashMap<PathBuf, Vec<Condition>>,
     macro_order: usize,
 }
 
@@ -78,6 +79,7 @@ impl<'a> Preprocessor<'a> {
             open_stack: Vec::new(),
             sources: HashMap::new(),
             line_starts: HashMap::new(),
+            pragma_once: HashMap::new(),
             macro_order: 0,
         };
         pp.seed_builtin_macros();
@@ -190,7 +192,13 @@ impl<'a> Preprocessor<'a> {
                             PPErrorKind::ErrorDirective(message.to_string()),
                         ));
                     }
-                    DirectiveName::Error | DirectiveName::Null => {}
+                    DirectiveName::Pragma => self.record_pragma(directive, active),
+                    DirectiveName::Error
+                    | DirectiveName::Warning
+                    | DirectiveName::Line
+                    | DirectiveName::LineMarker
+                    | DirectiveName::Ident
+                    | DirectiveName::Null => {}
                     _ => {
                         return Err(PPFailure::at(
                             directive.name_loc,
@@ -322,6 +330,20 @@ impl<'a> Preprocessor<'a> {
                 },
             )
         })
+    }
+
+    fn record_pragma(&mut self, directive: &Directive, active: &Condition) {
+        let is_once = directive.arguments.first().is_some_and(|token| {
+            identifier(self.source(directive.loc.file), token).as_deref() == Some("once")
+        });
+        if is_once {
+            let path = self.files.path(directive.loc.file);
+            let key = path.canonicalize().unwrap_or_else(|_| path.to_path_buf());
+            self.pragma_once
+                .entry(key)
+                .or_default()
+                .push(active.clone());
+        }
     }
 
     fn is_defined(&self, name: &str, active: &Condition) -> bool {
