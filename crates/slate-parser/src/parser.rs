@@ -1888,7 +1888,24 @@ impl<'a> DeclaratorParser<'a> {
                 CType::Atomic(Box::new(ty))
             }
             Token::Keyword(Keyword::Complex) => {
-                CType::Complex(Box::new(CType::Floating(FloatingType::Double)))
+                let element = if matches!(
+                    self.peek(),
+                    Some(Token::Keyword(
+                        Keyword::Char
+                            | Keyword::Double
+                            | Keyword::Float
+                            | Keyword::Int
+                            | Keyword::Long
+                            | Keyword::Short
+                            | Keyword::Signed
+                            | Keyword::Unsigned
+                    ))
+                ) {
+                    self.parse_base_type()?
+                } else {
+                    CType::Floating(FloatingType::Double)
+                };
+                CType::Complex(Box::new(element))
             }
             Token::Keyword(Keyword::Imaginary) => {
                 CType::Imaginary(Box::new(CType::Floating(FloatingType::Double)))

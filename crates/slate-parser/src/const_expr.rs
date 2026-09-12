@@ -861,6 +861,16 @@ impl Parser {
             self.position = end + 1;
             return Ok(ConstExpr::AlignOf { ty, declarator });
         }
+        if let Some(Token::Ident(name)) = self.peek()
+            && matches!(name.as_str(), "__real__" | "__imag__")
+        {
+            let name = name.clone();
+            self.take();
+            return Ok(ConstExpr::Call {
+                callee: Box::new(ConstExpr::Identifier(name)),
+                arguments: vec![self.parse_unary()?],
+            });
+        }
         match self.peek() {
             Some(Token::Plus) => {
                 self.take();
