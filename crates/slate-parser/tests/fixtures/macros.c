@@ -49,6 +49,7 @@ int selected __attribute__((slate_literal(CHOICE)));
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 5,
+// DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[1]: Declaration {
@@ -79,6 +80,7 @@ int selected __attribute__((slate_literal(CHOICE)));
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 8,
+// DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[2]: Declaration {
@@ -109,6 +111,7 @@ int selected __attribute__((slate_literal(CHOICE)));
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 15,
+// DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
 // SLATE-FILECHECK-END DEFAULT
@@ -142,6 +145,7 @@ int selected __attribute__((slate_literal(CHOICE)));
 // SELECT-NEXT:           ),
 // SELECT-NEXT:           kind: User,
 // SELECT-NEXT:           line: 5,
+// SELECT-NEXT:           header: None,
 // SELECT-NEXT:       },
 // SELECT-NEXT:   }
 // SELECT-NEXT: decl[1]: Declaration {
@@ -172,6 +176,7 @@ int selected __attribute__((slate_literal(CHOICE)));
 // SELECT-NEXT:           ),
 // SELECT-NEXT:           kind: User,
 // SELECT-NEXT:           line: 8,
+// SELECT-NEXT:           header: None,
 // SELECT-NEXT:       },
 // SELECT-NEXT:   }
 // SELECT-NEXT: decl[2]: Declaration {
@@ -202,6 +207,7 @@ int selected __attribute__((slate_literal(CHOICE)));
 // SELECT-NEXT:           ),
 // SELECT-NEXT:           kind: User,
 // SELECT-NEXT:           line: 12,
+// SELECT-NEXT:           header: None,
 // SELECT-NEXT:       },
 // SELECT-NEXT:   }
 // SLATE-FILECHECK-END SELECT

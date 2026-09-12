@@ -56,6 +56,7 @@ int picked(void) {
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 18,
+// DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[1]: Declaration {
@@ -77,6 +78,7 @@ int picked(void) {
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 19,
+// DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[2]: Function(
@@ -103,6 +105,7 @@ int picked(void) {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               kind: User,
 // DEFAULT-NEXT:               line: 21,
+// DEFAULT-NEXT:               header: None,
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
@@ -137,6 +140,7 @@ int picked(void) {
 // SELECT-NEXT:           ),
 // SELECT-NEXT:           kind: User,
 // SELECT-NEXT:           line: 18,
+// SELECT-NEXT:           header: None,
 // SELECT-NEXT:       },
 // SELECT-NEXT:   }
 // SELECT-NEXT: decl[1]: Declaration {
@@ -159,6 +163,7 @@ int picked(void) {
 // SELECT-NEXT:           ),
 // SELECT-NEXT:           kind: User,
 // SELECT-NEXT:           line: 19,
+// SELECT-NEXT:           header: None,
 // SELECT-NEXT:       },
 // SELECT-NEXT:   }
 // SELECT-NEXT: decl[2]: Function(
@@ -185,6 +190,7 @@ int picked(void) {
 // SELECT-NEXT:               ),
 // SELECT-NEXT:               kind: User,
 // SELECT-NEXT:               line: 21,
+// SELECT-NEXT:               header: None,
 // SELECT-NEXT:           },
 // SELECT-NEXT:       },
 // SELECT-NEXT:   )

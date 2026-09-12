@@ -52,6 +52,7 @@ int after[WIDTH];
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 4,
+// DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[1]: Declaration {
@@ -81,6 +82,7 @@ int after[WIDTH];
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 6,
+// DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[2]: Declaration {
@@ -110,6 +112,7 @@ int after[WIDTH];
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 14,
+// DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[3]: Declaration {
@@ -139,6 +142,7 @@ int after[WIDTH];
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 21,
+// DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
 // SLATE-FILECHECK-END DEFAULT
@@ -170,6 +174,7 @@ int after[WIDTH];
 // WIDE-NEXT:           ),
 // WIDE-NEXT:           kind: User,
 // WIDE-NEXT:           line: 4,
+// WIDE-NEXT:           header: None,
 // WIDE-NEXT:       },
 // WIDE-NEXT:   }
 // WIDE-NEXT: decl[1]: Declaration {
@@ -199,6 +204,7 @@ int after[WIDTH];
 // WIDE-NEXT:           ),
 // WIDE-NEXT:           kind: User,
 // WIDE-NEXT:           line: 6,
+// WIDE-NEXT:           header: None,
 // WIDE-NEXT:       },
 // WIDE-NEXT:   }
 // WIDE-NEXT: decl[2]: Declaration {
@@ -228,6 +234,7 @@ int after[WIDTH];
 // WIDE-NEXT:           ),
 // WIDE-NEXT:           kind: User,
 // WIDE-NEXT:           line: 14,
+// WIDE-NEXT:           header: None,
 // WIDE-NEXT:       },
 // WIDE-NEXT:   }
 // WIDE-NEXT: decl[3]: Declaration {
@@ -257,6 +264,7 @@ int after[WIDTH];
 // WIDE-NEXT:           ),
 // WIDE-NEXT:           kind: User,
 // WIDE-NEXT:           line: 18,
+// WIDE-NEXT:           header: None,
 // WIDE-NEXT:       },
 // WIDE-NEXT:   }
 // WIDE-NEXT: decl[4]: Declaration {
@@ -286,6 +294,7 @@ int after[WIDTH];
 // WIDE-NEXT:           ),
 // WIDE-NEXT:           kind: User,
 // WIDE-NEXT:           line: 21,
+// WIDE-NEXT:           header: None,
 // WIDE-NEXT:       },
 // WIDE-NEXT:   }
 // SLATE-FILECHECK-END WIDE

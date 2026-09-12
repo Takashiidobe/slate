@@ -232,6 +232,7 @@ pub struct Provenance {
     pub file: FileId,
     pub kind: HeaderKind,
     pub line: usize,
+    pub header: Option<FileId>,
 }
 
 impl Default for Provenance {
@@ -240,6 +241,7 @@ impl Default for Provenance {
             file: FileId(0),
             kind: HeaderKind::System,
             line: 0,
+            header: None,
         }
     }
 }

@@ -45,6 +45,7 @@ int nested[X];
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 5,
+// DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[1]: Declaration {
@@ -74,6 +75,7 @@ int nested[X];
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 12,
+// DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
 // SLATE-FILECHECK-END DEFAULT
@@ -105,6 +107,7 @@ int nested[X];
 // A-NEXT:           ),
 // A-NEXT:           kind: User,
 // A-NEXT:           line: 5,
+// A-NEXT:           header: None,
 // A-NEXT:       },
 // A-NEXT:   }
 // A-NEXT: decl[1]: Declaration {
@@ -134,6 +137,7 @@ int nested[X];
 // A-NEXT:           ),
 // A-NEXT:           kind: User,
 // A-NEXT:           line: 12,
+// A-NEXT:           header: None,
 // A-NEXT:       },
 // A-NEXT:   }
 // SLATE-FILECHECK-END A
@@ -165,6 +169,7 @@ int nested[X];
 // B-NEXT:           ),
 // B-NEXT:           kind: User,
 // B-NEXT:           line: 5,
+// B-NEXT:           header: None,
 // B-NEXT:       },
 // B-NEXT:   }
 // B-NEXT: decl[1]: Declaration {
@@ -194,6 +199,7 @@ int nested[X];
 // B-NEXT:           ),
 // B-NEXT:           kind: User,
 // B-NEXT:           line: 12,
+// B-NEXT:           header: None,
 // B-NEXT:       },
 // B-NEXT:   }
 // SLATE-FILECHECK-END B
@@ -225,6 +231,7 @@ int nested[X];
 // AB-NEXT:           ),
 // AB-NEXT:           kind: User,
 // AB-NEXT:           line: 5,
+// AB-NEXT:           header: None,
 // AB-NEXT:       },
 // AB-NEXT:   }
 // AB-NEXT: decl[1]: Declaration {
@@ -254,6 +261,7 @@ int nested[X];
 // AB-NEXT:           ),
 // AB-NEXT:           kind: User,
 // AB-NEXT:           line: 12,
+// AB-NEXT:           header: None,
 // AB-NEXT:       },
 // AB-NEXT:   }
 // SLATE-FILECHECK-END AB

@@ -80,6 +80,7 @@ void nested_outer(int n) {
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
 // DEFAULT-NEXT:                           line: 0,
+// DEFAULT-NEXT:                           header: None,
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
@@ -104,6 +105,7 @@ void nested_outer(int n) {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               kind: User,
 // DEFAULT-NEXT:               line: 0,
+// DEFAULT-NEXT:               header: None,
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
@@ -174,6 +176,7 @@ void nested_outer(int n) {
 // DOUBLED-NEXT:                           ),
 // DOUBLED-NEXT:                           kind: System,
 // DOUBLED-NEXT:                           line: 0,
+// DOUBLED-NEXT:                           header: None,
 // DOUBLED-NEXT:                       },
 // DOUBLED-NEXT:                   },
 // DOUBLED-NEXT:               ),
@@ -198,6 +201,7 @@ void nested_outer(int n) {
 // DOUBLED-NEXT:               ),
 // DOUBLED-NEXT:               kind: User,
 // DOUBLED-NEXT:               line: 0,
+// DOUBLED-NEXT:               header: None,
 // DOUBLED-NEXT:           },
 // DOUBLED-NEXT:       },
 // DOUBLED-NEXT:   )

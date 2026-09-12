@@ -51,6 +51,7 @@ int main() {
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 0,
+// DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[1]: Declaration {
@@ -86,6 +87,7 @@ int main() {
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 1,
+// DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[2]: Declaration {
@@ -182,6 +184,7 @@ int main() {
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 2,
+// DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[3]: Record(
@@ -212,6 +215,7 @@ int main() {
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: User,
 // DEFAULT-NEXT:                           line: 4,
+// DEFAULT-NEXT:                           header: None,
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
@@ -236,6 +240,7 @@ int main() {
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: User,
 // DEFAULT-NEXT:                           line: 5,
+// DEFAULT-NEXT:                           header: None,
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
@@ -246,6 +251,7 @@ int main() {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               kind: User,
 // DEFAULT-NEXT:               line: 3,
+// DEFAULT-NEXT:               header: None,
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
@@ -303,6 +309,7 @@ int main() {
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 7,
+// DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[5]: Declaration {
@@ -366,6 +373,7 @@ int main() {
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 8,
+// DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[6]: Declaration {
@@ -397,6 +405,7 @@ int main() {
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 9,
+// DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[7]: Function(
@@ -423,6 +432,7 @@ int main() {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               kind: User,
 // DEFAULT-NEXT:               line: 16,
+// DEFAULT-NEXT:               header: None,
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
@@ -457,6 +467,7 @@ int main() {
 // ENABLED-NEXT:           ),
 // ENABLED-NEXT:           kind: User,
 // ENABLED-NEXT:           line: 0,
+// ENABLED-NEXT:           header: None,
 // ENABLED-NEXT:       },
 // ENABLED-NEXT:   }
 // ENABLED-NEXT: decl[1]: Declaration {
@@ -492,6 +503,7 @@ int main() {
 // ENABLED-NEXT:           ),
 // ENABLED-NEXT:           kind: User,
 // ENABLED-NEXT:           line: 1,
+// ENABLED-NEXT:           header: None,
 // ENABLED-NEXT:       },
 // ENABLED-NEXT:   }
 // ENABLED-NEXT: decl[2]: Declaration {
@@ -588,6 +600,7 @@ int main() {
 // ENABLED-NEXT:           ),
 // ENABLED-NEXT:           kind: User,
 // ENABLED-NEXT:           line: 2,
+// ENABLED-NEXT:           header: None,
 // ENABLED-NEXT:       },
 // ENABLED-NEXT:   }
 // ENABLED-NEXT: decl[3]: Record(
@@ -618,6 +631,7 @@ int main() {
 // ENABLED-NEXT:                           ),
 // ENABLED-NEXT:                           kind: User,
 // ENABLED-NEXT:                           line: 4,
+// ENABLED-NEXT:                           header: None,
 // ENABLED-NEXT:                       },
 // ENABLED-NEXT:                   },
 // ENABLED-NEXT:               ),
@@ -642,6 +656,7 @@ int main() {
 // ENABLED-NEXT:                           ),
 // ENABLED-NEXT:                           kind: User,
 // ENABLED-NEXT:                           line: 5,
+// ENABLED-NEXT:                           header: None,
 // ENABLED-NEXT:                       },
 // ENABLED-NEXT:                   },
 // ENABLED-NEXT:               ),
@@ -652,6 +667,7 @@ int main() {
 // ENABLED-NEXT:               ),
 // ENABLED-NEXT:               kind: User,
 // ENABLED-NEXT:               line: 3,
+// ENABLED-NEXT:               header: None,
 // ENABLED-NEXT:           },
 // ENABLED-NEXT:       },
 // ENABLED-NEXT:   )
@@ -709,6 +725,7 @@ int main() {
 // ENABLED-NEXT:           ),
 // ENABLED-NEXT:           kind: User,
 // ENABLED-NEXT:           line: 7,
+// ENABLED-NEXT:           header: None,
 // ENABLED-NEXT:       },
 // ENABLED-NEXT:   }
 // ENABLED-NEXT: decl[5]: Declaration {
@@ -772,6 +789,7 @@ int main() {
 // ENABLED-NEXT:           ),
 // ENABLED-NEXT:           kind: User,
 // ENABLED-NEXT:           line: 8,
+// ENABLED-NEXT:           header: None,
 // ENABLED-NEXT:       },
 // ENABLED-NEXT:   }
 // ENABLED-NEXT: decl[6]: Declaration {
@@ -803,6 +821,7 @@ int main() {
 // ENABLED-NEXT:           ),
 // ENABLED-NEXT:           kind: User,
 // ENABLED-NEXT:           line: 9,
+// ENABLED-NEXT:           header: None,
 // ENABLED-NEXT:       },
 // ENABLED-NEXT:   }
 // ENABLED-NEXT: decl[7]: Function(
@@ -829,6 +848,7 @@ int main() {
 // ENABLED-NEXT:               ),
 // ENABLED-NEXT:               kind: User,
 // ENABLED-NEXT:               line: 16,
+// ENABLED-NEXT:               header: None,
 // ENABLED-NEXT:           },
 // ENABLED-NEXT:       },
 // ENABLED-NEXT:   )

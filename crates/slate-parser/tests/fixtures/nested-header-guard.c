@@ -63,6 +63,7 @@ int triple = TRIPLE_NESTED;
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 16,
+// DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[1]: Declaration {
@@ -94,6 +95,7 @@ int triple = TRIPLE_NESTED;
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 17,
+// DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[2]: Declaration {
@@ -125,6 +127,7 @@ int triple = TRIPLE_NESTED;
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 30,
+// DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
 // SLATE-FILECHECK-END DEFAULT
@@ -158,6 +161,7 @@ int triple = TRIPLE_NESTED;
 // FEATURE-NEXT:           ),
 // FEATURE-NEXT:           kind: User,
 // FEATURE-NEXT:           line: 16,
+// FEATURE-NEXT:           header: None,
 // FEATURE-NEXT:       },
 // FEATURE-NEXT:   }
 // FEATURE-NEXT: decl[1]: Declaration {
@@ -189,6 +193,7 @@ int triple = TRIPLE_NESTED;
 // FEATURE-NEXT:           ),
 // FEATURE-NEXT:           kind: User,
 // FEATURE-NEXT:           line: 17,
+// FEATURE-NEXT:           header: None,
 // FEATURE-NEXT:       },
 // FEATURE-NEXT:   }
 // FEATURE-NEXT: decl[2]: Declaration {
@@ -220,6 +225,7 @@ int triple = TRIPLE_NESTED;
 // FEATURE-NEXT:           ),
 // FEATURE-NEXT:           kind: User,
 // FEATURE-NEXT:           line: 30,
+// FEATURE-NEXT:           header: None,
 // FEATURE-NEXT:       },
 // FEATURE-NEXT:   }
 // SLATE-FILECHECK-END FEATURE

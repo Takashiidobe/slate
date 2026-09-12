@@ -39,6 +39,7 @@ int wrapped[WRAP(1)];
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 7,
+// DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[1]: Declaration {
@@ -68,6 +69,7 @@ int wrapped[WRAP(1)];
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 8,
+// DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
 // SLATE-FILECHECK-END DEFAULT
@@ -99,6 +101,7 @@ int wrapped[WRAP(1)];
 // A-NEXT:           ),
 // A-NEXT:           kind: User,
 // A-NEXT:           line: 7,
+// A-NEXT:           header: None,
 // A-NEXT:       },
 // A-NEXT:   }
 // A-NEXT: decl[1]: Declaration {
@@ -128,6 +131,7 @@ int wrapped[WRAP(1)];
 // A-NEXT:           ),
 // A-NEXT:           kind: User,
 // A-NEXT:           line: 8,
+// A-NEXT:           header: None,
 // A-NEXT:       },
 // A-NEXT:   }
 // SLATE-FILECHECK-END A

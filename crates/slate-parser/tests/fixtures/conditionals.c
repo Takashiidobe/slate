@@ -42,6 +42,7 @@ typedef int Socket;
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               kind: User,
 // DEFAULT-NEXT:               line: 0,
+// DEFAULT-NEXT:               header: None,
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
@@ -59,6 +60,7 @@ typedef int Socket;
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 8,
+// DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[2]: Typedef {
@@ -75,6 +77,7 @@ typedef int Socket;
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 13,
+// DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
 // SLATE-FILECHECK-END DEFAULT
@@ -103,6 +106,7 @@ typedef int Socket;
 // WIN32-NEXT:               ),
 // WIN32-NEXT:               kind: User,
 // WIN32-NEXT:               line: 0,
+// WIN32-NEXT:               header: None,
 // WIN32-NEXT:           },
 // WIN32-NEXT:       },
 // WIN32-NEXT:   )
@@ -120,6 +124,7 @@ typedef int Socket;
 // WIN32-NEXT:           ),
 // WIN32-NEXT:           kind: User,
 // WIN32-NEXT:           line: 8,
+// WIN32-NEXT:           header: None,
 // WIN32-NEXT:       },
 // WIN32-NEXT:   }
 // WIN32-NEXT: decl[2]: Typedef {
@@ -133,6 +138,7 @@ typedef int Socket;
 // WIN32-NEXT:           ),
 // WIN32-NEXT:           kind: User,
 // WIN32-NEXT:           line: 11,
+// WIN32-NEXT:           header: None,
 // WIN32-NEXT:       },
 // WIN32-NEXT:   }
 // SLATE-FILECHECK-END WIN32

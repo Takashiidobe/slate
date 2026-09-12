@@ -39,6 +39,7 @@ int fallback;
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 5,
+// DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
 // SLATE-FILECHECK-END DEFAULT
@@ -63,6 +64,7 @@ int fallback;
 // FIRST-NEXT:           ),
 // FIRST-NEXT:           kind: User,
 // FIRST-NEXT:           line: 1,
+// FIRST-NEXT:           header: None,
 // FIRST-NEXT:       },
 // FIRST-NEXT:   }
 // SLATE-FILECHECK-END FIRST
@@ -87,6 +89,7 @@ int fallback;
 // SECOND-NEXT:           ),
 // SECOND-NEXT:           kind: User,
 // SECOND-NEXT:           line: 3,
+// SECOND-NEXT:           header: None,
 // SECOND-NEXT:       },
 // SECOND-NEXT:   }
 // SLATE-FILECHECK-END SECOND
@@ -111,6 +114,7 @@ int fallback;
 // THIRD-NEXT:           ),
 // THIRD-NEXT:           kind: User,
 // THIRD-NEXT:           line: 7,
+// THIRD-NEXT:           header: None,
 // THIRD-NEXT:       },
 // THIRD-NEXT:   }
 // SLATE-FILECHECK-END THIRD

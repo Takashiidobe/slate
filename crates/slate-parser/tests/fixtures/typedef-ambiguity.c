@@ -37,6 +37,7 @@ int call_main() {
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 0,
+// DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[1]: Declaration {
@@ -76,6 +77,7 @@ int call_main() {
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 9,
+// DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[2]: Function(
@@ -116,6 +118,7 @@ int call_main() {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               kind: User,
 // DEFAULT-NEXT:               line: 10,
+// DEFAULT-NEXT:               header: None,
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
@@ -141,6 +144,7 @@ int call_main() {
 // CAST-NEXT:           ),
 // CAST-NEXT:           kind: User,
 // CAST-NEXT:           line: 0,
+// CAST-NEXT:           header: None,
 // CAST-NEXT:       },
 // CAST-NEXT:   }
 // CAST-NEXT: decl[1]: Typedef {
@@ -157,6 +161,7 @@ int call_main() {
 // CAST-NEXT:           ),
 // CAST-NEXT:           kind: User,
 // CAST-NEXT:           line: 3,
+// CAST-NEXT:           header: None,
 // CAST-NEXT:       },
 // CAST-NEXT:   }
 // CAST-NEXT: decl[2]: Function(
@@ -196,6 +201,7 @@ int call_main() {
 // CAST-NEXT:               ),
 // CAST-NEXT:               kind: User,
 // CAST-NEXT:               line: 4,
+// CAST-NEXT:               header: None,
 // CAST-NEXT:           },
 // CAST-NEXT:       },
 // CAST-NEXT:   )

@@ -46,6 +46,7 @@ int x_missing[4];
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 6,
+// DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[1]: Declaration {
@@ -75,6 +76,7 @@ int x_missing[4];
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 12,
+// DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
 // SLATE-FILECHECK-END DEFAULT
@@ -106,6 +108,7 @@ int x_missing[4];
 // A-NEXT:           ),
 // A-NEXT:           kind: User,
 // A-NEXT:           line: 4,
+// A-NEXT:           header: None,
 // A-NEXT:       },
 // A-NEXT:   }
 // SLATE-FILECHECK-END A
@@ -137,6 +140,7 @@ int x_missing[4];
 // FLAG-NEXT:           ),
 // FLAG-NEXT:           kind: User,
 // FLAG-NEXT:           line: 6,
+// FLAG-NEXT:           header: None,
 // FLAG-NEXT:       },
 // FLAG-NEXT:   }
 // FLAG-NEXT: decl[1]: Declaration {
@@ -166,6 +170,7 @@ int x_missing[4];
 // FLAG-NEXT:           ),
 // FLAG-NEXT:           kind: User,
 // FLAG-NEXT:           line: 9,
+// FLAG-NEXT:           header: None,
 // FLAG-NEXT:       },
 // FLAG-NEXT:   }
 // FLAG-NEXT: decl[2]: Declaration {
@@ -195,6 +200,7 @@ int x_missing[4];
 // FLAG-NEXT:           ),
 // FLAG-NEXT:           kind: User,
 // FLAG-NEXT:           line: 12,
+// FLAG-NEXT:           header: None,
 // FLAG-NEXT:       },
 // FLAG-NEXT:   }
 // SLATE-FILECHECK-END FLAG
@@ -226,6 +232,7 @@ int x_missing[4];
 // X-NEXT:           ),
 // X-NEXT:           kind: User,
 // X-NEXT:           line: 4,
+// X-NEXT:           header: None,
 // X-NEXT:       },
 // X-NEXT:   }
 // SLATE-FILECHECK-END X

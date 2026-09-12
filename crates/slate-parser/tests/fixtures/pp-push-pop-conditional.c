@@ -57,6 +57,7 @@ int second_pop[Y];
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 7,
+// DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[1]: Declaration {
@@ -86,6 +87,7 @@ int second_pop[Y];
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 17,
+// DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[2]: Declaration {
@@ -115,6 +117,7 @@ int second_pop[Y];
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 24,
+// DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[3]: Declaration {
@@ -144,6 +147,7 @@ int second_pop[Y];
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 26,
+// DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
 // SLATE-FILECHECK-END DEFAULT
@@ -175,6 +179,7 @@ int second_pop[Y];
 // A-NEXT:           ),
 // A-NEXT:           kind: User,
 // A-NEXT:           line: 7,
+// A-NEXT:           header: None,
 // A-NEXT:       },
 // A-NEXT:   }
 // A-NEXT: decl[1]: Declaration {
@@ -204,6 +209,7 @@ int second_pop[Y];
 // A-NEXT:           ),
 // A-NEXT:           kind: User,
 // A-NEXT:           line: 17,
+// A-NEXT:           header: None,
 // A-NEXT:       },
 // A-NEXT:   }
 // A-NEXT: decl[2]: Declaration {
@@ -233,6 +239,7 @@ int second_pop[Y];
 // A-NEXT:           ),
 // A-NEXT:           kind: User,
 // A-NEXT:           line: 24,
+// A-NEXT:           header: None,
 // A-NEXT:       },
 // A-NEXT:   }
 // A-NEXT: decl[3]: Declaration {
@@ -262,6 +269,7 @@ int second_pop[Y];
 // A-NEXT:           ),
 // A-NEXT:           kind: User,
 // A-NEXT:           line: 26,
+// A-NEXT:           header: None,
 // A-NEXT:       },
 // A-NEXT:   }
 // SLATE-FILECHECK-END A

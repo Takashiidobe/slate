@@ -26,6 +26,11 @@ trailing_t trailing;
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 3,
+// DEFAULT-NEXT:           header: Some(
+// DEFAULT-NEXT:               FileId(
+// DEFAULT-NEXT:                   4,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[1]: Typedef {
@@ -42,6 +47,11 @@ trailing_t trailing;
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 4,
+// DEFAULT-NEXT:           header: Some(
+// DEFAULT-NEXT:               FileId(
+// DEFAULT-NEXT:                   5,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[2]: Declaration {
@@ -61,6 +71,7 @@ trailing_t trailing;
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 6,
+// DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[3]: Declaration {
@@ -80,6 +91,7 @@ trailing_t trailing;
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 7,
+// DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
 // SLATE-FILECHECK-END DEFAULT
@@ -98,6 +110,11 @@ trailing_t trailing;
 // A-NEXT:           ),
 // A-NEXT:           kind: User,
 // A-NEXT:           line: 3,
+// A-NEXT:           header: Some(
+// A-NEXT:               FileId(
+// A-NEXT:                   4,
+// A-NEXT:               ),
+// A-NEXT:           ),
 // A-NEXT:       },
 // A-NEXT:   }
 // A-NEXT: decl[1]: Typedef {
@@ -114,6 +131,11 @@ trailing_t trailing;
 // A-NEXT:           ),
 // A-NEXT:           kind: User,
 // A-NEXT:           line: 4,
+// A-NEXT:           header: Some(
+// A-NEXT:               FileId(
+// A-NEXT:                   5,
+// A-NEXT:               ),
+// A-NEXT:           ),
 // A-NEXT:       },
 // A-NEXT:   }
 // A-NEXT: decl[2]: Declaration {
@@ -133,6 +155,7 @@ trailing_t trailing;
 // A-NEXT:           ),
 // A-NEXT:           kind: User,
 // A-NEXT:           line: 6,
+// A-NEXT:           header: None,
 // A-NEXT:       },
 // A-NEXT:   }
 // A-NEXT: decl[3]: Declaration {
@@ -152,6 +175,7 @@ trailing_t trailing;
 // A-NEXT:           ),
 // A-NEXT:           kind: User,
 // A-NEXT:           line: 7,
+// A-NEXT:           header: None,
 // A-NEXT:       },
 // A-NEXT:   }
 // SLATE-FILECHECK-END A
@@ -170,6 +194,11 @@ trailing_t trailing;
 // SKIP-NEXT:           ),
 // SKIP-NEXT:           kind: User,
 // SKIP-NEXT:           line: 3,
+// SKIP-NEXT:           header: Some(
+// SKIP-NEXT:               FileId(
+// SKIP-NEXT:                   4,
+// SKIP-NEXT:               ),
+// SKIP-NEXT:           ),
 // SKIP-NEXT:       },
 // SKIP-NEXT:   }
 // SKIP-NEXT: decl[1]: Typedef {
@@ -186,6 +215,11 @@ trailing_t trailing;
 // SKIP-NEXT:           ),
 // SKIP-NEXT:           kind: User,
 // SKIP-NEXT:           line: 4,
+// SKIP-NEXT:           header: Some(
+// SKIP-NEXT:               FileId(
+// SKIP-NEXT:                   5,
+// SKIP-NEXT:               ),
+// SKIP-NEXT:           ),
 // SKIP-NEXT:       },
 // SKIP-NEXT:   }
 // SKIP-NEXT: decl[2]: Declaration {
@@ -205,6 +239,7 @@ trailing_t trailing;
 // SKIP-NEXT:           ),
 // SKIP-NEXT:           kind: User,
 // SKIP-NEXT:           line: 6,
+// SKIP-NEXT:           header: None,
 // SKIP-NEXT:       },
 // SKIP-NEXT:   }
 // SKIP-NEXT: decl[3]: Declaration {
@@ -224,6 +259,7 @@ trailing_t trailing;
 // SKIP-NEXT:           ),
 // SKIP-NEXT:           kind: User,
 // SKIP-NEXT:           line: 7,
+// SKIP-NEXT:           header: None,
 // SKIP-NEXT:       },
 // SKIP-NEXT:   }
 // SLATE-FILECHECK-END SKIP

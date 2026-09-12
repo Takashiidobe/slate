@@ -40,6 +40,7 @@ int main() {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               kind: User,
 // DEFAULT-NEXT:               line: 0,
+// DEFAULT-NEXT:               header: None,
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
@@ -69,6 +70,7 @@ int main() {
 // INNER-NEXT:               ),
 // INNER-NEXT:               kind: User,
 // INNER-NEXT:               line: 0,
+// INNER-NEXT:               header: None,
 // INNER-NEXT:           },
 // INNER-NEXT:       },
 // INNER-NEXT:   )

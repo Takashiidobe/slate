@@ -46,6 +46,7 @@ int narrow;
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 5,
+// DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[1]: Declaration {
@@ -68,6 +69,7 @@ int narrow;
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 8,
+// DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[2]: Declaration {
@@ -90,6 +92,7 @@ int narrow;
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 11,
+// DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[3]: Declaration {
@@ -112,6 +115,7 @@ int narrow;
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 21,
+// DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
 // SLATE-FILECHECK-END DEFAULT
@@ -136,6 +140,7 @@ int narrow;
 // WIDE-NEXT:           ),
 // WIDE-NEXT:           kind: User,
 // WIDE-NEXT:           line: 5,
+// WIDE-NEXT:           header: None,
 // WIDE-NEXT:       },
 // WIDE-NEXT:   }
 // WIDE-NEXT: decl[1]: Declaration {
@@ -158,6 +163,7 @@ int narrow;
 // WIDE-NEXT:           ),
 // WIDE-NEXT:           kind: User,
 // WIDE-NEXT:           line: 8,
+// WIDE-NEXT:           header: None,
 // WIDE-NEXT:       },
 // WIDE-NEXT:   }
 // WIDE-NEXT: decl[2]: Declaration {
@@ -180,6 +186,7 @@ int narrow;
 // WIDE-NEXT:           ),
 // WIDE-NEXT:           kind: User,
 // WIDE-NEXT:           line: 11,
+// WIDE-NEXT:           header: None,
 // WIDE-NEXT:       },
 // WIDE-NEXT:   }
 // WIDE-NEXT: decl[3]: Declaration {
@@ -202,6 +209,7 @@ int narrow;
 // WIDE-NEXT:           ),
 // WIDE-NEXT:           kind: User,
 // WIDE-NEXT:           line: 19,
+// WIDE-NEXT:           header: None,
 // WIDE-NEXT:       },
 // WIDE-NEXT:   }
 // SLATE-FILECHECK-END WIDE

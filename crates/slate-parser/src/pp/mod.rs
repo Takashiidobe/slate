@@ -48,6 +48,7 @@ pub struct Preprocessor<'a> {
     pub files: Files,
     pub macros: HashMap<String, MacroEntry>,
     pub main_file: Option<FileId>,
+    outermost_header: Option<FileId>,
     search: &'a SearchPaths,
     open_stack: Vec<PathBuf>,
     sources: HashMap<FileId, String>,
@@ -74,6 +75,7 @@ impl<'a> Preprocessor<'a> {
             files: Files::new(),
             macros: HashMap::new(),
             main_file: None,
+            outermost_header: None,
             search,
             open_stack: Vec::new(),
             sources: HashMap::new(),
@@ -166,6 +168,7 @@ impl<'a> Preprocessor<'a> {
             file: loc.file,
             kind: self.files.kind(loc.file),
             line,
+            header: self.outermost_header,
         }
     }
 

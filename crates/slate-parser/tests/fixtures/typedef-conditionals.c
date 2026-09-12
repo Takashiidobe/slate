@@ -32,6 +32,7 @@ RightOnly right_value;
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 3,
+// DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[1]: Declaration {
@@ -51,6 +52,7 @@ RightOnly right_value;
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 6,
+// DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[2]: Typedef {
@@ -67,6 +69,7 @@ RightOnly right_value;
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 12,
+// DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[3]: Declaration {
@@ -86,6 +89,7 @@ RightOnly right_value;
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 13,
+// DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
 // SLATE-FILECHECK-END DEFAULT
@@ -104,6 +108,7 @@ RightOnly right_value;
 // INT-NEXT:           ),
 // INT-NEXT:           kind: User,
 // INT-NEXT:           line: 1,
+// INT-NEXT:           header: None,
 // INT-NEXT:       },
 // INT-NEXT:   }
 // INT-NEXT: decl[1]: Declaration {
@@ -123,6 +128,7 @@ RightOnly right_value;
 // INT-NEXT:           ),
 // INT-NEXT:           kind: User,
 // INT-NEXT:           line: 6,
+// INT-NEXT:           header: None,
 // INT-NEXT:       },
 // INT-NEXT:   }
 // INT-NEXT: decl[2]: Typedef {
@@ -139,6 +145,7 @@ RightOnly right_value;
 // INT-NEXT:           ),
 // INT-NEXT:           kind: User,
 // INT-NEXT:           line: 12,
+// INT-NEXT:           header: None,
 // INT-NEXT:       },
 // INT-NEXT:   }
 // INT-NEXT: decl[3]: Declaration {
@@ -158,6 +165,7 @@ RightOnly right_value;
 // INT-NEXT:           ),
 // INT-NEXT:           kind: User,
 // INT-NEXT:           line: 13,
+// INT-NEXT:           header: None,
 // INT-NEXT:       },
 // INT-NEXT:   }
 // SLATE-FILECHECK-END INT
@@ -175,6 +183,7 @@ RightOnly right_value;
 // LEFT-NEXT:           ),
 // LEFT-NEXT:           kind: User,
 // LEFT-NEXT:           line: 3,
+// LEFT-NEXT:           header: None,
 // LEFT-NEXT:       },
 // LEFT-NEXT:   }
 // LEFT-NEXT: decl[1]: Declaration {
@@ -194,6 +203,7 @@ RightOnly right_value;
 // LEFT-NEXT:           ),
 // LEFT-NEXT:           kind: User,
 // LEFT-NEXT:           line: 6,
+// LEFT-NEXT:           header: None,
 // LEFT-NEXT:       },
 // LEFT-NEXT:   }
 // LEFT-NEXT: decl[2]: Typedef {
@@ -210,6 +220,7 @@ RightOnly right_value;
 // LEFT-NEXT:           ),
 // LEFT-NEXT:           kind: User,
 // LEFT-NEXT:           line: 9,
+// LEFT-NEXT:           header: None,
 // LEFT-NEXT:       },
 // LEFT-NEXT:   }
 // LEFT-NEXT: decl[3]: Declaration {
@@ -229,6 +240,7 @@ RightOnly right_value;
 // LEFT-NEXT:           ),
 // LEFT-NEXT:           kind: User,
 // LEFT-NEXT:           line: 10,
+// LEFT-NEXT:           header: None,
 // LEFT-NEXT:       },
 // LEFT-NEXT:   }
 // SLATE-FILECHECK-END LEFT

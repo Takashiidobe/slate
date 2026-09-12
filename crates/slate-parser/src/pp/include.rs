@@ -87,9 +87,12 @@ impl Preprocessor<'_> {
         let src = read_source(&resolved).map_err(|kind| PPFailure::at(directive, kind))?;
         let file = self.files.intern(resolved.clone(), kind);
         self.open_stack.push(resolved);
-        let nodes = self.parse_source(&src, file)?;
+        let enclosing_header = self.outermost_header;
+        self.outermost_header.get_or_insert(file);
+        let nodes = self.parse_source(&src, file);
+        self.outermost_header = enclosing_header;
         self.open_stack.pop();
-        Ok(nodes)
+        nodes
     }
 
     fn resolve_include(

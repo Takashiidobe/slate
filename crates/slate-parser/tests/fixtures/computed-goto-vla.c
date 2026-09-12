@@ -126,6 +126,7 @@ int vla_sum(int n, int arr[n]) {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               kind: User,
 // DEFAULT-NEXT:               line: 0,
+// DEFAULT-NEXT:               header: None,
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
@@ -230,6 +231,7 @@ int vla_sum(int n, int arr[n]) {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               kind: User,
 // DEFAULT-NEXT:               line: 13,
+// DEFAULT-NEXT:               header: None,
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
@@ -345,6 +347,7 @@ int vla_sum(int n, int arr[n]) {
 // COMPUTED-NEXT:               ),
 // COMPUTED-NEXT:               kind: User,
 // COMPUTED-NEXT:               line: 0,
+// COMPUTED-NEXT:               header: None,
 // COMPUTED-NEXT:           },
 // COMPUTED-NEXT:       },
 // COMPUTED-NEXT:   )
@@ -449,6 +452,7 @@ int vla_sum(int n, int arr[n]) {
 // COMPUTED-NEXT:               ),
 // COMPUTED-NEXT:               kind: User,
 // COMPUTED-NEXT:               line: 13,
+// COMPUTED-NEXT:               header: None,
 // COMPUTED-NEXT:           },
 // COMPUTED-NEXT:       },
 // COMPUTED-NEXT:   )
@@ -555,6 +559,7 @@ int vla_sum(int n, int arr[n]) {
 // DOUBLED-NEXT:               ),
 // DOUBLED-NEXT:               kind: User,
 // DOUBLED-NEXT:               line: 0,
+// DOUBLED-NEXT:               header: None,
 // DOUBLED-NEXT:           },
 // DOUBLED-NEXT:       },
 // DOUBLED-NEXT:   )
@@ -665,6 +670,7 @@ int vla_sum(int n, int arr[n]) {
 // DOUBLED-NEXT:               ),
 // DOUBLED-NEXT:               kind: User,
 // DOUBLED-NEXT:               line: 13,
+// DOUBLED-NEXT:               header: None,
 // DOUBLED-NEXT:           },
 // DOUBLED-NEXT:       },
 // DOUBLED-NEXT:   )

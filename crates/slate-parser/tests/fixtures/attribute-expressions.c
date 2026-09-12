@@ -19,6 +19,7 @@ __attribute__((__const__, __may_alias__)) int aliased;
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 0,
+// DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       attributes: [
 // DEFAULT-NEXT:           Aligned(
@@ -69,6 +70,7 @@ __attribute__((__const__, __may_alias__)) int aliased;
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 1,
+// DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       attributes: [
 // DEFAULT-NEXT:           VectorSize(
@@ -114,6 +116,7 @@ __attribute__((__const__, __may_alias__)) int aliased;
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
 // DEFAULT-NEXT:           line: 2,
+// DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
 // SLATE-FILECHECK-END DEFAULT

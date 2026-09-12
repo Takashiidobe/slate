@@ -33,6 +33,7 @@ int main(void) { exit(L'1' != L'1'); }
 // GCC-NEXT:           ),
 // GCC-NEXT:           kind: User,
 // GCC-NEXT:           line: 0,
+// GCC-NEXT:           header: None,
 // GCC-NEXT:       },
 // GCC-NEXT:   }
 // GCC-NEXT: decl[1]: Function(
@@ -72,6 +73,7 @@ int main(void) { exit(L'1' != L'1'); }
 // GCC-NEXT:               ),
 // GCC-NEXT:               kind: User,
 // GCC-NEXT:               line: 3,
+// GCC-NEXT:               header: None,
 // GCC-NEXT:           },
 // GCC-NEXT:       },
 // GCC-NEXT:   )
