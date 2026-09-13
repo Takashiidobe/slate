@@ -1,7 +1,7 @@
 void operands(int x, int y, int *p) {
   asm("basic %eax %0");
   __asm__ volatile inline("mov %[in], %0 %% %= %{att%|intel%} %a1 %cc2"
-                          : [out] "=&r,{rax}"(x)
+                          : [out] "=&r,m"(x)
                           : [in] "+%-rm,0"(y), "[out]"(*p)
                           : "memory", "cc", "unwind", "%rdx", "not_a_register");
 }
@@ -151,17 +151,8 @@ other:
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                               AsmConstraintAlternative {
-// DEFAULT-NEXT:                                                   location: HardRegister(
-// DEFAULT-NEXT:                                                       X86(
-// DEFAULT-NEXT:                                                           X86Register {
-// DEFAULT-NEXT:                                                               spelling: "rax",
-// DEFAULT-NEXT:                                                               number: 0,
-// DEFAULT-NEXT:                                                               canonical: "ax",
-// DEFAULT-NEXT:                                                               width: Some(
-// DEFAULT-NEXT:                                                                   Bits64,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   location: Letters(
+// DEFAULT-NEXT:                                                       "m",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ],

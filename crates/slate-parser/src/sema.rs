@@ -62,14 +62,14 @@ impl TranslationUnit {
                     collect_tag_names(&declaration.specifiers.ty, &mut tags);
                 }
                 Decl::Typedef { ty, .. } => collect_tag_names(ty, &mut tags),
-                Decl::Comment { .. } | Decl::StaticAssert { .. } => {}
+                Decl::Comment { .. } | Decl::StaticAssert { .. } | Decl::Asm { .. } => {}
             }
         }
 
         let mut errors = Vec::new();
         for decl in &self.decls {
             match &decl.value {
-                Decl::Comment { .. } | Decl::StaticAssert { .. } => {}
+                Decl::Comment { .. } | Decl::StaticAssert { .. } | Decl::Asm { .. } => {}
                 Decl::Function(function) => {
                     check_attributes(
                         &function.attributes,

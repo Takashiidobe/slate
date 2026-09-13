@@ -423,7 +423,7 @@ fn summarize_evaluated(tu: &TranslationUnit) -> Vec<DeclSummary> {
     tu.decls
         .iter()
         .filter(|decl| match &decl.value {
-            Decl::Comment { .. } | Decl::StaticAssert { .. } => false,
+            Decl::Comment { .. } | Decl::StaticAssert { .. } | Decl::Asm { .. } => false,
             Decl::Declaration { declaration, .. } => declaration.attributes.is_empty(),
             Decl::Typedef { attributes, .. } => attributes.is_empty(),
             _ => true,
@@ -434,7 +434,7 @@ fn summarize_evaluated(tu: &TranslationUnit) -> Vec<DeclSummary> {
 
 fn summarize_evaluated_decl(decl: &Decl) -> DeclSummary {
     match decl {
-        Decl::Comment { .. } | Decl::StaticAssert { .. } => {
+        Decl::Comment { .. } | Decl::StaticAssert { .. } | Decl::Asm { .. } => {
             unreachable!("non-summary declarations are filtered before summarizing")
         }
         Decl::Function(function) => DeclSummary::Function {

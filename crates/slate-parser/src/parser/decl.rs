@@ -418,6 +418,15 @@ impl Parser {
                         1,
                     ));
                 }
+                if let Some(asm) = self.parse_file_scope_asm(self.node_text(&nodes[0]), &tokens)? {
+                    return Ok((
+                        vec![nodes[0].clone().with_value(Decl::Asm {
+                            asm,
+                            provenance: self.node_provenance(&nodes[0]),
+                        })],
+                        1,
+                    ));
+                }
                 let first_lbrace = top_level_token(&tokens, &Token::LBrace);
                 let first_equal = top_level_token(&tokens, &Token::Equal);
                 if matches!(

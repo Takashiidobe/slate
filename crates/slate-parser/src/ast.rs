@@ -809,6 +809,10 @@ pub enum Decl {
         assertion: StaticAssert,
         provenance: Provenance,
     },
+    Asm {
+        asm: GnuAsm,
+        provenance: Provenance,
+    },
     Typedef {
         name: String,
         ty: CType,
@@ -828,7 +832,7 @@ impl Decl {
             Self::Comment { .. } => None,
             Self::Function(function) => Some(&function.name),
             Self::Declaration { declaration, .. } => declaration.declarator.name(),
-            Self::StaticAssert { .. } => None,
+            Self::StaticAssert { .. } | Self::Asm { .. } => None,
             Self::Typedef { name, .. } => Some(name),
             Self::Record(record) => record.name.as_deref(),
             Self::Enum(enumeration) => enumeration.name.as_deref(),
@@ -841,6 +845,7 @@ impl Decl {
             Self::Function(function) => function.provenance.file,
             Self::Declaration { provenance, .. }
             | Self::StaticAssert { provenance, .. }
+            | Self::Asm { provenance, .. }
             | Self::Typedef { provenance, .. } => provenance.file,
             Self::Record(record) => record.provenance.file,
             Self::Enum(enumeration) => enumeration.provenance.file,

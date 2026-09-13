@@ -6,6 +6,7 @@ use crate::ast::{
     AsmConstraintModifier, AsmLabel, AsmOperand, AsmOperands, AsmQualifier, AsmTemplatePiece,
     GnuAsm, Span, SpannedExpr, StorageClass,
 };
+use crate::compiler_args::CompilerFlavor;
 use crate::error::ParseError;
 use crate::lexer::{Keyword, Token};
 use crate::target::x86::decode_register;
@@ -102,13 +103,37 @@ impl DeclaratorParser<'_> {
 struct RawOperand {
     name: Option<Span<String>>,
     constraint: Span<String>,
+    constraint_pos: usize,
     expr: SpannedExpr,
 }
 
 impl Parser {
+    pub(super) fn parse_file_scope_asm(
+        &self,
+        code: &str,
+        tokens: &[Span<Token>],
+    ) -> Result<Option<GnuAsm>, ParseError> {
+        let mut fragment = Fragment::new(self, code, tokens, 0);
+        let Some(asm) = self.parse_asm(&mut fragment, true)? else {
+            return Ok(None);
+        };
+        if fragment.pos != tokens.len() {
+            return Err(fragment.error("expected `;` after top-level asm block"));
+        }
+        Ok(Some(asm))
+    }
+
     pub(super) fn parse_asm_stmt(
         &self,
         fragment: &mut Fragment<'_, '_>,
+    ) -> Result<Option<GnuAsm>, ParseError> {
+        self.parse_asm(fragment, false)
+    }
+
+    fn parse_asm(
+        &self,
+        fragment: &mut Fragment<'_, '_>,
+        at_file_scope: bool,
     ) -> Result<Option<GnuAsm>, ParseError> {
         if !is_asm_keyword(fragment.peek()) {
             return Ok(None);
@@ -123,10 +148,40 @@ impl Parser {
         if tokens.get(cursor).map(|token| &token.value) != Some(&Token::LParen) {
             return Ok(None);
         }
+        if at_file_scope {
+            if !is_string_literal(tokens.get(cursor + 1).map(|token| &token.value)) {
+                return Ok(None);
+            }
+            if let Some(qualifier) = qualifiers.first() {
+                return Err(self.error_at_tokens(
+                    tokens,
+                    fragment.pos + 1,
+                    format!(
+                        "meaningless `{}` on asm outside function",
+                        qualifier_spelling(qualifier.value)
+                    ),
+                ));
+            }
+        }
+        let is_goto = qualifiers
+            .iter()
+            .any(|qualifier| qualifier.value == AsmQualifier::Goto);
         fragment.pos = cursor + 1;
         let template_pos = fragment.pos;
         let template =
             asm_string(tokens, &mut fragment.pos).map_err(|error| fragment.error(error))?;
+        if is_goto
+            && self.flavor() == CompilerFlavor::Gcc
+            && fragment.peek() == Some(&Token::RParen)
+        {
+            return Err(fragment.error("expected `:`"));
+        }
+        if at_file_scope
+            && self.flavor() == CompilerFlavor::Clang
+            && fragment.peek() != Some(&Token::RParen)
+        {
+            return Err(fragment.error("expected `)`"));
+        }
         if fragment.consume(Token::RParen) {
             fragment.consume(Token::Semi);
             return Ok(Some(GnuAsm {
@@ -160,9 +215,6 @@ impl Parser {
                 }
             }
         }
-        let is_goto = qualifiers
-            .iter()
-            .any(|qualifier| qualifier.value == AsmQualifier::Goto);
         if !is_goto && fragment.peek() != Some(&Token::RParen) {
             return Err(fragment.error("expected `)`"));
         }
@@ -188,17 +240,40 @@ impl Parser {
         names.extend(labels.iter().map(|label| Some(label.value.as_str())));
         let pieces = analyze_template(&template.value, &names, operand_count)
             .map_err(|error| self.error_at_tokens(tokens, template_pos, error))?;
-        let resolve = |operand: &RawOperand| AsmOperand {
-            name: operand.name.clone(),
-            constraint: Span::new(
-                decode_constraint(&operand.constraint.value, &output_names),
-                operand.constraint.spelling,
-                operand.constraint.expansion,
-            ),
-            expr: operand.expr.clone(),
+        let resolve = |operand: &RawOperand, direction: &str| {
+            let constraint = decode_constraint(&operand.constraint.value, &output_names);
+            if self.flavor() == CompilerFlavor::Clang
+                && constraint.alternatives.iter().any(|alternative| {
+                    matches!(alternative.location, AsmConstraintLocation::HardRegister(_))
+                })
+            {
+                return Err(self.error_at_tokens(
+                    tokens,
+                    operand.constraint_pos,
+                    format!(
+                        "invalid {direction} constraint '{}' in asm",
+                        operand.constraint.value
+                    ),
+                ));
+            }
+            Ok(AsmOperand {
+                name: operand.name.clone(),
+                constraint: Span::new(
+                    constraint,
+                    operand.constraint.spelling,
+                    operand.constraint.expansion,
+                ),
+                expr: operand.expr.clone(),
+            })
         };
-        let outputs = outputs.iter().map(resolve).collect();
-        let inputs = inputs.iter().map(resolve).collect();
+        let outputs = outputs
+            .iter()
+            .map(|operand| resolve(operand, "output"))
+            .collect::<Result<_, _>>()?;
+        let inputs = inputs
+            .iter()
+            .map(|operand| resolve(operand, "input"))
+            .collect::<Result<_, _>>()?;
         Ok(Some(GnuAsm {
             qualifiers,
             template,
@@ -231,6 +306,7 @@ impl Parser {
             } else {
                 None
             };
+            let constraint_pos = fragment.pos;
             let constraint =
                 asm_string(tokens, &mut fragment.pos).map_err(|error| fragment.error(error))?;
             if fragment.peek() != Some(&Token::LParen) {
@@ -243,6 +319,7 @@ impl Parser {
             operands.push(RawOperand {
                 name,
                 constraint,
+                constraint_pos,
                 expr,
             });
             if !fragment.consume(Token::Comma) {
