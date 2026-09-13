@@ -515,8 +515,8 @@ impl Parser {
                         1,
                     ));
                 }
-                let first_lbrace = tokens.values().position(|token| *token == Token::LBrace);
-                let first_equal = tokens.values().position(|token| *token == Token::Equal);
+                let first_lbrace = top_level_token(&tokens, &Token::LBrace);
+                let first_equal = top_level_token(&tokens, &Token::Equal);
                 if matches!(
                     tokens.as_tokens().as_slice(),
                     [
@@ -587,12 +587,16 @@ impl Parser {
                     joined_item_text = join_node_text(&nodes[..item_span]);
                     (&joined_item_text, self.nodes_tokens(&nodes[..item_span]))
                 };
-                let first_lbrace = item_tokens
-                    .values()
-                    .position(|token| *token == Token::LBrace);
-                let first_equal = item_tokens
-                    .values()
-                    .position(|token| *token == Token::Equal);
+                let first_lbrace = top_level_token(&item_tokens, &Token::LBrace).or_else(|| {
+                    (paren_depth(&item_tokens) > 0)
+                        .then(|| {
+                            item_tokens
+                                .values()
+                                .position(|token| *token == Token::LBrace)
+                        })
+                        .flatten()
+                });
+                let first_equal = top_level_token(&item_tokens, &Token::Equal);
                 let looks_like_declaration = match (first_lbrace, first_equal) {
                     (None, _) => true,
                     (Some(_), None) => false,
@@ -742,18 +746,29 @@ impl Parser {
                 })
             } else {
                 let mut fields = Vec::new();
-                for mut segment in split_top_level(body_tokens, &Token::Semi) {
+                for segment in split_top_level(body_tokens, &Token::Semi) {
                     if segment.is_empty() {
                         continue;
                     }
-                    segment.push(synthetic(Token::Semi));
-                    fields.push(span_tokens(
-                        FieldItem::Field(FieldDecl {
-                            declaration: self.parse_field_declaration_tokens(code, &segment)?,
-                            provenance,
-                        }),
-                        &segment,
-                    ));
+                    let parts = split_top_level(&segment, &Token::Comma);
+                    let prefix = parts.first().map_or(Vec::new(), |part| {
+                        part[..self.declaration_prefix_end(part)].to_vec()
+                    });
+                    for (index, mut part) in parts.into_iter().enumerate() {
+                        if index != 0 {
+                            let mut with_prefix = prefix.clone();
+                            with_prefix.append(&mut part);
+                            part = with_prefix;
+                        }
+                        part.push(synthetic(Token::Semi));
+                        fields.push(span_tokens(
+                            FieldItem::Field(FieldDecl {
+                                declaration: self.parse_field_declaration_tokens(code, &part)?,
+                                provenance,
+                            }),
+                            &part,
+                        ));
+                    }
                 }
                 Decl::Record(RecordDecl {
                     kind,
@@ -953,13 +968,10 @@ impl Parser {
                         .unwrap_or(&all_tokens);
                     let parts = split_top_level(declaration_tokens, &Token::Comma);
                     let prefix = declaration_tokens
-                        .values()
-                        .position(|token| *token == Token::Star)
-                        .map(|position| declaration_tokens[..position].to_vec());
+                        [..self.declaration_prefix_end(declaration_tokens)]
+                        .to_vec();
                     for (part_index, mut part) in parts.into_iter().enumerate() {
-                        if part_index > 0
-                            && let Some(prefix) = &prefix
-                        {
+                        if part_index > 0 {
                             let mut with_prefix = prefix.clone();
                             with_prefix.append(&mut part);
                             part = with_prefix;
@@ -1636,10 +1648,12 @@ fn top_level_semi(tokens: &[Span<Token>]) -> Option<usize> {
 fn top_level_token(tokens: &[Span<Token>], target: &Token) -> Option<usize> {
     let mut depth = 0i32;
     for (offset, token) in tokens.iter().enumerate() {
+        if depth == 0 && &token.value == target {
+            return Some(offset);
+        }
         match token.value {
             Token::LParen | Token::LBrace | Token::LBracket => depth += 1,
             Token::RParen | Token::RBrace | Token::RBracket => depth -= 1,
-            ref token if depth == 0 && token == target => return Some(offset),
             _ => {}
         }
     }
@@ -2503,8 +2517,14 @@ impl<'a> DeclaratorParser<'a> {
                         ArraySize::Star
                     } else {
                         let start = self.pos;
-                        while self.peek() != Some(&Token::RBracket) {
+                        let mut depth = 0i32;
+                        while !matches!(self.peek(), Some(Token::RBracket) if depth == 0) {
                             assert!(self.peek().is_some(), "expected `]` in array declarator");
+                            match self.peek() {
+                                Some(Token::LParen | Token::LBrace | Token::LBracket) => depth += 1,
+                                Some(Token::RParen | Token::RBrace | Token::RBracket) => depth -= 1,
+                                _ => {}
+                            }
                             self.pos += 1;
                         }
                         let bound_tokens = &self.tokens[start..self.pos];
@@ -2803,20 +2823,10 @@ impl Parser {
                 "expected `(`",
             ));
         }
-        let Some(parameter_close) = sig_tokens[name_index + 2..]
-            .values()
-            .position(|token| *token == Token::RParen)
-            .map(|position| name_index + 2 + position)
-        else {
+        if matching_paren(&sig_tokens, name_index + 1).is_none() {
             return Err(self.error_at(
                 Loc::at(code, code.find('{').unwrap_or(0), 1),
                 "expected `)`",
-            ));
-        };
-        if sig_tokens[name_index + 2..parameter_close].contains_value(&Token::LBrace) {
-            return Err(self.error_at(
-                Loc::at(code, code.find('{').unwrap_or(0), 1),
-                "expected parameter",
             ));
         }
         let mut declarator_parser = DeclaratorParser {

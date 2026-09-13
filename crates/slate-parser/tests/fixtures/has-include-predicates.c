@@ -22,8 +22,6 @@ int have_quoted_missing = 1;
 int have_quoted_missing = 0;
 #endif
 
-#include <checker.h>
-
 // SLATE-FILECHECK-ISYSTEM tests/fixtures/include-next-headers/outer tests/fixtures/include-next-headers/inner
 
 // SLATE-FILECHECK-DEFINES DEFAULT
