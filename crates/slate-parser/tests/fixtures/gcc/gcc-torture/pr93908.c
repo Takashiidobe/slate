@@ -164,6 +164,13 @@ int main() {
 // DEFAULT-NEXT:                               "e",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   1,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -189,6 +196,13 @@ int main() {
 // DEFAULT-NEXT:                               "f",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   1,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -214,6 +228,13 @@ int main() {
 // DEFAULT-NEXT:                               "g",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   1,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -239,6 +260,13 @@ int main() {
 // DEFAULT-NEXT:                               "h",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   2,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -264,6 +292,13 @@ int main() {
 // DEFAULT-NEXT:                               "i",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   1,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -289,6 +324,13 @@ int main() {
 // DEFAULT-NEXT:                               "j",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   1,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -314,6 +356,13 @@ int main() {
 // DEFAULT-NEXT:                               "k",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   2,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,

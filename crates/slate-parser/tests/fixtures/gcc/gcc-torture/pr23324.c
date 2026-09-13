@@ -229,6 +229,13 @@ int main() {
 // DEFAULT-NEXT:                                                           "av6",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               6,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -252,6 +259,13 @@ int main() {
 // DEFAULT-NEXT:                                                           "bv6",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               7,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -275,6 +289,13 @@ int main() {
 // DEFAULT-NEXT:                                                           "cv6",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               6,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -298,6 +319,13 @@ int main() {
 // DEFAULT-NEXT:                                                           "dv6",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               5,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -436,6 +464,13 @@ int main() {
 // DEFAULT-NEXT:                               "ov6",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   12,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -461,6 +496,13 @@ int main() {
 // DEFAULT-NEXT:                               "pv6",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -486,6 +528,13 @@ int main() {
 // DEFAULT-NEXT:                               "qv6",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   2,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -511,6 +560,13 @@ int main() {
 // DEFAULT-NEXT:                               "rv6",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   10,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -1921,6 +1977,13 @@ int main() {
 // DEFAULT-NEXT:                               "mv7",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   9,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,

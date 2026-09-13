@@ -85,6 +85,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "left",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   1,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -111,6 +118,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "right",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   1,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -137,6 +151,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "middle",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   1,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,

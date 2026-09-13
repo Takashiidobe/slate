@@ -139,6 +139,13 @@ int main(void) {
 // DEFAULT-NEXT:                                                           "sig",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -159,6 +166,13 @@ int main(void) {
 // DEFAULT-NEXT:                                                           "exp",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               11,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -179,6 +193,13 @@ int main(void) {
 // DEFAULT-NEXT:                                                           "manh",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               20,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -199,6 +220,13 @@ int main(void) {
 // DEFAULT-NEXT:                                                           "manl",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               32,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,

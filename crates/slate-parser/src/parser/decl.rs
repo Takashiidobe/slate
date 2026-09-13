@@ -221,16 +221,23 @@ impl Parser {
         &self,
         code: &str,
         tokens: &[Span<Token>],
-    ) -> Result<Declaration, ParseError> {
+    ) -> Result<(Declaration, Option<SpannedExpr>), ParseError> {
         let Some(colon) = top_level_token(tokens, &Token::Colon) else {
-            return self.parse_declaration_tokens_with(code, tokens, false);
+            return self
+                .parse_declaration_tokens_with(code, tokens, false)
+                .map(|declaration| (declaration, None));
         };
         let Some(semi) = top_level_token(tokens, &Token::Semi) else {
             return Err(self.error_at_tokens(tokens, tokens.len(), "expected `;`"));
         };
+        let (width, width_end) =
+            const_expr::Parser::parse_one(tokens, colon + 1, &self.typedef_names)
+                .map_err(|error| self.error_at_tokens(tokens, colon + 1, error.to_string()))?;
         let mut declaration_tokens = tokens[..colon].to_vec();
-        declaration_tokens.push(tokens[semi].clone());
-        self.parse_declaration_tokens_with(code, &declaration_tokens, false)
+        declaration_tokens.extend_from_slice(&tokens[width_end..=semi]);
+        let declaration = self.parse_declaration_tokens_with(code, &declaration_tokens, false)?;
+        let bit_width = span_tokens(Expr::Const(Box::new(width)), &tokens[colon + 1..width_end]);
+        Ok((declaration, Some(bit_width)))
     }
 
     pub(super) fn parse_static_assert(
@@ -727,9 +734,12 @@ impl Parser {
                             part = with_prefix;
                         }
                         part.push(synthetic(Token::Semi));
+                        let (declaration, bit_width) =
+                            self.parse_field_declaration_tokens(code, &part)?;
                         fields.push(span_tokens(
                             FieldItem::Field(FieldDecl {
-                                declaration: self.parse_field_declaration_tokens(code, &part)?,
+                                declaration,
+                                bit_width,
                                 provenance,
                             }),
                             &part,
@@ -979,10 +989,12 @@ impl Parser {
                                 part = with_prefix;
                             }
                             part.push(synthetic(Token::Semi));
+                            let (declaration, bit_width) =
+                                self.parse_field_declaration_tokens(&joined, &part)?;
                             fields.push(span_pp_nodes(
                                 FieldItem::Field(FieldDecl {
-                                    declaration: self
-                                        .parse_field_declaration_tokens(&joined, &part)?,
+                                    declaration,
+                                    bit_width,
                                     provenance: self.node_provenance(&nodes[start]),
                                 }),
                                 &nodes[start..index],

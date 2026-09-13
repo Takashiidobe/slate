@@ -434,6 +434,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "i",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   6,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -459,6 +466,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "l",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   1,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -484,6 +498,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "j",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   10,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -509,6 +530,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "k",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   15,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -1794,6 +1822,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "i",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   6,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -1819,6 +1854,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "j",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   11,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -1844,6 +1886,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "k",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   15,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -3179,6 +3228,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "i",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   6,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -3204,6 +3260,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "j",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   11,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -3229,6 +3292,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "k",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   15,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -4514,6 +4584,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "l",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   6,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -4539,6 +4616,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "i",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   6,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -4564,6 +4648,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "j",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   23,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -4589,6 +4680,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "k",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   29,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -5899,6 +5997,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "i",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   12,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -5924,6 +6029,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "j",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   23,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -5949,6 +6061,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "k",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   29,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -7234,6 +7353,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "i",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   12,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -7259,6 +7385,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "j",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   23,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -7284,6 +7417,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "k",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   29,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -8594,6 +8734,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "i",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   12,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -8619,6 +8766,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "j",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   13,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -8644,6 +8798,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "k",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   7,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -9954,6 +10115,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "i",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   12,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -9979,6 +10147,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "j",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   11,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -10004,6 +10179,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "k",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   9,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -11314,6 +11496,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "i",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   1,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -11339,6 +11528,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "j",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   6,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -11364,6 +11560,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "k",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   9,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -12674,6 +12877,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "i",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   1,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -12699,6 +12909,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "j",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   8,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -12724,6 +12941,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "k",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   7,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -14034,6 +14258,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "k",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   6,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -14059,6 +14290,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "l",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   1,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -14084,6 +14322,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "j",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   10,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -14109,6 +14354,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "i",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   15,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -15394,6 +15646,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "k",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   6,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -15419,6 +15678,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "j",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   11,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -15444,6 +15710,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "i",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   15,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -16779,6 +17052,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "k",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   6,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -16804,6 +17084,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "j",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   11,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -16829,6 +17116,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "i",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   15,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -18114,6 +18408,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "l",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   6,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -18139,6 +18440,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "k",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   6,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -18164,6 +18472,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "j",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   23,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -18189,6 +18504,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "i",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   29,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -19499,6 +19821,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "k",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   12,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -19524,6 +19853,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "j",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   23,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -19549,6 +19885,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "i",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   29,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -20834,6 +21177,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "k",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   12,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -20859,6 +21209,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "j",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   23,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -20884,6 +21241,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "i",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   29,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -22194,6 +22558,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "k",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   12,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -22219,6 +22590,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "j",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   13,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -22244,6 +22622,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "i",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   7,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -23554,6 +23939,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "k",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   12,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -23579,6 +23971,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "j",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   11,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -23604,6 +24003,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "i",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   9,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -24914,6 +25320,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "k",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   1,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -24939,6 +25352,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "j",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   6,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -24964,6 +25384,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "i",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   9,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -26274,6 +26701,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "k",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   1,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -26299,6 +26733,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "j",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   8,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -26324,6 +26765,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "i",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   7,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -27634,6 +28082,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "j",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   6,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -27659,6 +28114,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "k",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   1,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -27684,6 +28146,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "i",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   9,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -28994,6 +29463,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "j",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   8,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -29019,6 +29495,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "k",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   1,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -29044,6 +29527,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "i",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   7,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -30376,6 +30866,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "k",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   12,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -30401,6 +30898,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "j",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   13,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -30426,6 +30930,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "i",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   7,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -31711,6 +32222,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "k",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   12,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -31736,6 +32254,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "j",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   13,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -31761,6 +32286,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "i",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   7,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -33068,6 +33600,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "k",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   12,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -33093,6 +33632,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "j",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   11,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -33118,6 +33664,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "i",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   9,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -34447,6 +35000,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "j",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   13,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -34472,6 +35032,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "i",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   7,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -34497,6 +35064,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "k",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   12,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,

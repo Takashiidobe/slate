@@ -247,6 +247,13 @@ StartDisplay (struct display *d)
 // DEFAULT-NEXT:                               "rLogin",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   2,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -272,6 +279,13 @@ StartDisplay (struct display *d)
 // DEFAULT-NEXT:                               "sd_how",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   2,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -297,6 +311,13 @@ StartDisplay (struct display *d)
 // DEFAULT-NEXT:                               "sd_when",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   2,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -322,6 +343,13 @@ StartDisplay (struct display *d)
 // DEFAULT-NEXT:                               "lock",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   1,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -347,6 +375,13 @@ StartDisplay (struct display *d)
 // DEFAULT-NEXT:                               "goodExit",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   1,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,

@@ -394,6 +394,13 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                   "min_align",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           bit_width: Some(
+// DEFAULT-NEXT:                               Const(
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       8,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           provenance: Provenance {
 // DEFAULT-NEXT:                               file: FileId(
 // DEFAULT-NEXT:                                   0,
@@ -417,6 +424,13 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                   "base_after_vec",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           bit_width: Some(
+// DEFAULT-NEXT:                               Const(
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       1,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           provenance: Provenance {
 // DEFAULT-NEXT:                               file: FileId(
 // DEFAULT-NEXT:                                   0,
@@ -440,6 +454,13 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                   "min_after_vec",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           bit_width: Some(
+// DEFAULT-NEXT:                               Const(
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       1,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           provenance: Provenance {
 // DEFAULT-NEXT:                               file: FileId(
 // DEFAULT-NEXT:                                   0,
@@ -463,6 +484,13 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                   "max_after_vec",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           bit_width: Some(
+// DEFAULT-NEXT:                               Const(
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       1,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           provenance: Provenance {
 // DEFAULT-NEXT:                               file: FileId(
 // DEFAULT-NEXT:                                   0,
@@ -486,6 +514,13 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                   "min_after_base",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           bit_width: Some(
+// DEFAULT-NEXT:                               Const(
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       1,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           provenance: Provenance {
 // DEFAULT-NEXT:                               file: FileId(
 // DEFAULT-NEXT:                                   0,
@@ -509,6 +544,13 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                   "max_after_base",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           bit_width: Some(
+// DEFAULT-NEXT:                               Const(
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       1,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           provenance: Provenance {
 // DEFAULT-NEXT:                               file: FileId(
 // DEFAULT-NEXT:                                   0,
@@ -532,6 +574,13 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                   "offset_unsigned",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           bit_width: Some(
+// DEFAULT-NEXT:                               Const(
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       1,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           provenance: Provenance {
 // DEFAULT-NEXT:                               file: FileId(
 // DEFAULT-NEXT:                                   0,
@@ -553,6 +602,13 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               declarator: Abstract,
 // DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           bit_width: Some(
+// DEFAULT-NEXT:                               Const(
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       2,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           provenance: Provenance {
 // DEFAULT-NEXT:                               file: FileId(
 // DEFAULT-NEXT:                                   0,
@@ -576,6 +632,13 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                   "scale",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           bit_width: Some(
+// DEFAULT-NEXT:                               Const(
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       8,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           provenance: Provenance {
 // DEFAULT-NEXT:                               file: FileId(
 // DEFAULT-NEXT:                                   0,
@@ -941,6 +1004,13 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                   "code",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           bit_width: Some(
+// DEFAULT-NEXT:                               Const(
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       16,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           provenance: Provenance {
 // DEFAULT-NEXT:                               file: FileId(
 // DEFAULT-NEXT:                                   0,
@@ -964,6 +1034,13 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                   "mode",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           bit_width: Some(
+// DEFAULT-NEXT:                               Const(
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       8,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           provenance: Provenance {
 // DEFAULT-NEXT:                               file: FileId(
 // DEFAULT-NEXT:                                   0,
@@ -987,6 +1064,13 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                   "jump",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           bit_width: Some(
+// DEFAULT-NEXT:                               Const(
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       1,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           provenance: Provenance {
 // DEFAULT-NEXT:                               file: FileId(
 // DEFAULT-NEXT:                                   0,
@@ -1010,6 +1094,13 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                   "call",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           bit_width: Some(
+// DEFAULT-NEXT:                               Const(
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       1,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           provenance: Provenance {
 // DEFAULT-NEXT:                               file: FileId(
 // DEFAULT-NEXT:                                   0,
@@ -1033,6 +1124,13 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                   "unchanging",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           bit_width: Some(
+// DEFAULT-NEXT:                               Const(
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       1,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           provenance: Provenance {
 // DEFAULT-NEXT:                               file: FileId(
 // DEFAULT-NEXT:                                   0,
@@ -1056,6 +1154,13 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                   "volatil",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           bit_width: Some(
+// DEFAULT-NEXT:                               Const(
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       1,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           provenance: Provenance {
 // DEFAULT-NEXT:                               file: FileId(
 // DEFAULT-NEXT:                                   0,
@@ -1079,6 +1184,13 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                   "in_struct",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           bit_width: Some(
+// DEFAULT-NEXT:                               Const(
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       1,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           provenance: Provenance {
 // DEFAULT-NEXT:                               file: FileId(
 // DEFAULT-NEXT:                                   0,
@@ -1102,6 +1214,13 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                   "used",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           bit_width: Some(
+// DEFAULT-NEXT:                               Const(
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       1,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           provenance: Provenance {
 // DEFAULT-NEXT:                               file: FileId(
 // DEFAULT-NEXT:                                   0,
@@ -1125,6 +1244,13 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                   "integrated",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           bit_width: Some(
+// DEFAULT-NEXT:                               Const(
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       1,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           provenance: Provenance {
 // DEFAULT-NEXT:                               file: FileId(
 // DEFAULT-NEXT:                                   0,
@@ -1148,6 +1274,13 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                   "frame_related",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           bit_width: Some(
+// DEFAULT-NEXT:                               Const(
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       1,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           provenance: Provenance {
 // DEFAULT-NEXT:                               file: FileId(
 // DEFAULT-NEXT:                                   0,
@@ -1708,6 +1841,13 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                               "optional",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   1,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -1733,6 +1873,13 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                               "nocombine",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   1,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -1758,6 +1905,13 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                               "secondary_p",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   1,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -1783,6 +1937,13 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                               "nongroup",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   1,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,

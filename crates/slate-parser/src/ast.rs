@@ -778,9 +778,11 @@ pub enum FieldItem {
     Field(FieldDecl),
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(CustomDebug, Clone, PartialEq)]
 pub struct FieldDecl {
     pub declaration: Declaration,
+    #[debug(skip_if = Option::is_none)]
+    pub bit_width: Option<SpannedExpr>,
     pub provenance: Provenance,
 }
 

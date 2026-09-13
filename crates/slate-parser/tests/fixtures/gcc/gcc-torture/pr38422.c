@@ -81,6 +81,31 @@ int main() {
 // DEFAULT-NEXT:                               "s",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Sub,
+// DEFAULT-NEXT:                                   left: Binary {
+// DEFAULT-NEXT:                                       op: Mul,
+// DEFAULT-NEXT:                                       left: SizeOfType {
+// DEFAULT-NEXT:                                           ty: Integer(
+// DEFAULT-NEXT:                                               Ranked {
+// DEFAULT-NEXT:                                                   rank: Int,
+// DEFAULT-NEXT:                                                   signed: true,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       right: Integer(
+// DEFAULT-NEXT:                                           8,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       2,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,

@@ -133,6 +133,13 @@ int main(void) {
 // DEFAULT-NEXT:                                                           "columns",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               4,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -156,6 +163,13 @@ int main(void) {
 // DEFAULT-NEXT:                                                           "fore",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               12,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -179,6 +193,13 @@ int main(void) {
 // DEFAULT-NEXT:                                                           "back",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               6,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -202,6 +223,13 @@ int main(void) {
 // DEFAULT-NEXT:                                                           "fragment",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -225,6 +253,13 @@ int main(void) {
 // DEFAULT-NEXT:                                                           "standout",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -248,6 +283,13 @@ int main(void) {
 // DEFAULT-NEXT:                                                           "underline",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -271,6 +313,13 @@ int main(void) {
 // DEFAULT-NEXT:                                                           "strikethrough",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -294,6 +343,13 @@ int main(void) {
 // DEFAULT-NEXT:                                                           "reverse",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -317,6 +373,13 @@ int main(void) {
 // DEFAULT-NEXT:                                                           "blink",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -340,6 +403,13 @@ int main(void) {
 // DEFAULT-NEXT:                                                           "half",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -363,6 +433,13 @@ int main(void) {
 // DEFAULT-NEXT:                                                           "bold",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -386,6 +463,13 @@ int main(void) {
 // DEFAULT-NEXT:                                                           "invisible",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -409,6 +493,13 @@ int main(void) {
 // DEFAULT-NEXT:                                                           "pad",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -570,6 +661,13 @@ int main(void) {
 // DEFAULT-NEXT:                               "soft_wrapped",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       bit_width: Some(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   1,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,

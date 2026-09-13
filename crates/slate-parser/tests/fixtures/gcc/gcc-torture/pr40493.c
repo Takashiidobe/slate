@@ -134,6 +134,13 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                           "reg8",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -157,6 +164,13 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                           "reg16",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -180,6 +194,13 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                           "reg32",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -203,6 +224,13 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                           "reg64",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -226,6 +254,13 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                           "floatreg",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -249,6 +284,13 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                           "regmmx",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -272,6 +314,13 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                           "regxmm",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -295,6 +344,13 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                           "regymm",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -318,6 +374,13 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                           "control",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -341,6 +404,13 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                           "debug",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -364,6 +434,13 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                           "test",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -387,6 +464,13 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                           "sreg2",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -410,6 +494,13 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                           "sreg3",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -433,6 +524,13 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                           "imm1",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -456,6 +554,13 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                           "imm8",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -479,6 +584,13 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                           "imm8s",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -502,6 +614,13 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                           "imm16",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -525,6 +644,13 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                           "imm32",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -548,6 +674,13 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                           "imm32s",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -571,6 +704,13 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                           "imm64",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -594,6 +734,13 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                           "disp8",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -617,6 +764,13 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                           "disp16",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -640,6 +794,13 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                           "disp32",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -663,6 +824,13 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                           "disp32s",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -686,6 +854,13 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                           "disp64",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -709,6 +884,13 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                           "acc",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -732,6 +914,13 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                           "floatacc",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -755,6 +944,13 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                           "baseindex",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -778,6 +974,13 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                           "inoutportreg",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -801,6 +1004,13 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                           "shiftcount",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -824,6 +1034,13 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                           "jumpabsolute",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -847,6 +1064,13 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                           "esseg",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -870,6 +1094,13 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                           "regmem",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -893,6 +1124,13 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                           "mem",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -916,6 +1154,13 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                           "byte",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -939,6 +1184,13 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                           "word",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -962,6 +1214,13 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                           "dword",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -985,6 +1244,13 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                           "fword",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -1008,6 +1274,13 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                           "qword",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -1031,6 +1304,13 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                           "tbyte",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -1054,6 +1334,13 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                           "xmmword",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -1077,6 +1364,13 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                           "ymmword",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -1100,6 +1394,13 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                           "unspecified",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,
@@ -1123,6 +1424,13 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                           "anysize",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   bit_width: Some(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   provenance: Provenance {
 // DEFAULT-NEXT:                                                       file: FileId(
 // DEFAULT-NEXT:                                                           0,

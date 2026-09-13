@@ -106,6 +106,13 @@ int main() {
 // DEFAULT-NEXT:                                                       "bit0",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               bit_width: Some(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           1,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               provenance: Provenance {
 // DEFAULT-NEXT:                                                   file: FileId(
 // DEFAULT-NEXT:                                                       0,
@@ -129,6 +136,13 @@ int main() {
 // DEFAULT-NEXT:                                                       "bit1",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               bit_width: Some(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           1,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               provenance: Provenance {
 // DEFAULT-NEXT:                                                   file: FileId(
 // DEFAULT-NEXT:                                                       0,
@@ -152,6 +166,13 @@ int main() {
 // DEFAULT-NEXT:                                                       "bit2",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               bit_width: Some(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           1,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               provenance: Provenance {
 // DEFAULT-NEXT:                                                   file: FileId(
 // DEFAULT-NEXT:                                                       0,
@@ -175,6 +196,13 @@ int main() {
 // DEFAULT-NEXT:                                                       "bit3",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               bit_width: Some(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           1,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               provenance: Provenance {
 // DEFAULT-NEXT:                                                   file: FileId(
 // DEFAULT-NEXT:                                                       0,
@@ -198,6 +226,13 @@ int main() {
 // DEFAULT-NEXT:                                                       "bit4",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               bit_width: Some(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           1,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               provenance: Provenance {
 // DEFAULT-NEXT:                                                   file: FileId(
 // DEFAULT-NEXT:                                                       0,
@@ -221,6 +256,13 @@ int main() {
 // DEFAULT-NEXT:                                                       "bit5",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               bit_width: Some(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           1,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               provenance: Provenance {
 // DEFAULT-NEXT:                                                   file: FileId(
 // DEFAULT-NEXT:                                                       0,
@@ -244,6 +286,13 @@ int main() {
 // DEFAULT-NEXT:                                                       "bit6",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               bit_width: Some(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           1,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               provenance: Provenance {
 // DEFAULT-NEXT:                                                   file: FileId(
 // DEFAULT-NEXT:                                                       0,
@@ -267,6 +316,13 @@ int main() {
 // DEFAULT-NEXT:                                                       "bit7",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               bit_width: Some(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           1,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               provenance: Provenance {
 // DEFAULT-NEXT:                                                   file: FileId(
 // DEFAULT-NEXT:                                                       0,

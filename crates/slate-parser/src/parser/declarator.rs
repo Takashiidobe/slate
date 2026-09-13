@@ -470,21 +470,20 @@ impl<'a> DeclaratorParser<'a> {
                 } else {
                     self.parse_declarator(true)?
                 };
-                if self.matches(Token::Colon) {
-                    let mut depth = 0i32;
-                    while !matches!(
-                        self.peek(),
-                        Some(Token::Comma | Token::Semi) if depth == 0
-                    ) {
-                        match self.peek() {
-                            Some(Token::LParen | Token::LBrace | Token::LBracket) => depth += 1,
-                            Some(Token::RParen | Token::RBrace | Token::RBracket) => depth -= 1,
-                            None => break,
-                            _ => {}
-                        }
-                        self.pos += 1;
-                    }
-                }
+                let bit_width = if self.matches(Token::Colon) {
+                    let start = self.pos;
+                    let (expression, end) =
+                        const_expr::Parser::parse_one(self.tokens, start, self.typedef_names)
+                            .map_err(|error| DeclaratorError::Other(error.to_string()))?;
+                    self.pos = end;
+                    Some(span_tokens(
+                        Expr::Const(Box::new(expression)),
+                        &self.tokens[start..self.pos],
+                    ))
+                } else {
+                    None
+                };
+                let attributes = self.parse_attributes()?;
                 fields.push(FieldDecl {
                     declaration: Declaration {
                         specifiers: DeclarationSpecifiers {
@@ -499,8 +498,9 @@ impl<'a> DeclaratorParser<'a> {
                         declarator,
                         asm_label: None,
                         initializer: None,
-                        attributes: Vec::new(),
+                        attributes,
                     },
+                    bit_width,
                     provenance: Provenance::default(),
                 });
                 if self.matches(Token::Comma) {

@@ -122,6 +122,13 @@ init_device_faces (int *d)
 // DEFAULT-NEXT:                                                               "type",
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       bit_width: Some(
+// DEFAULT-NEXT:                                                           Const(
+// DEFAULT-NEXT:                                                               Integer(
+// DEFAULT-NEXT:                                                                   3,
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                       provenance: Provenance {
 // DEFAULT-NEXT:                                                           file: FileId(
 // DEFAULT-NEXT:                                                               0,
@@ -145,6 +152,13 @@ init_device_faces (int *d)
 // DEFAULT-NEXT:                                                               "markbit",
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       bit_width: Some(
+// DEFAULT-NEXT:                                                           Const(
+// DEFAULT-NEXT:                                                               Integer(
+// DEFAULT-NEXT:                                                                   1,
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                       provenance: Provenance {
 // DEFAULT-NEXT:                                                           file: FileId(
 // DEFAULT-NEXT:                                                               0,
@@ -168,6 +182,13 @@ init_device_faces (int *d)
 // DEFAULT-NEXT:                                                               "val",
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       bit_width: Some(
+// DEFAULT-NEXT:                                                           Const(
+// DEFAULT-NEXT:                                                               Integer(
+// DEFAULT-NEXT:                                                                   32,
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                       provenance: Provenance {
 // DEFAULT-NEXT:                                                           file: FileId(
 // DEFAULT-NEXT:                                                               0,

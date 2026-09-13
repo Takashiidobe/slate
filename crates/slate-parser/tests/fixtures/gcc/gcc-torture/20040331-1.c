@@ -128,6 +128,13 @@ int main(void) {
 // DEFAULT-NEXT:                                                       "count",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               bit_width: Some(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           31,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               provenance: Provenance {
 // DEFAULT-NEXT:                                                   file: FileId(
 // DEFAULT-NEXT:                                                       0,

@@ -86,6 +86,13 @@ int main() {
 // DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                                   declarator: Abstract,
 // DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               bit_width: Some(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           1,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               provenance: Provenance {
 // DEFAULT-NEXT:                                                   file: FileId(
 // DEFAULT-NEXT:                                                       0,
@@ -109,6 +116,13 @@ int main() {
 // DEFAULT-NEXT:                                                       "s",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               bit_width: Some(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           1,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               provenance: Provenance {
 // DEFAULT-NEXT:                                                   file: FileId(
 // DEFAULT-NEXT:                                                       0,
