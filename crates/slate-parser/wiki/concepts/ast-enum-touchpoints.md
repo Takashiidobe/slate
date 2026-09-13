@@ -56,10 +56,26 @@ the wrapper's `.value`.
 Note: most *general* expressions never construct `ast::Expr` directly —
 they go through `const_expr::Parser` and get wrapped once as
 `Expr::Const(Box<ConstExpr>)` by `Parser::parse_expression` in
-`src/parser.rs`. Only a couple of special forms (bare string literals,
-statement-expressions `({ ... })`) are built as `Expr` variants directly,
-bypassing `const_expr`. When in doubt, a new expression-level construct
-belongs in `ConstExpr`, not `Expr`.
+`src/parser.rs`. Only bare string literals are built as an `Expr` variant
+directly, bypassing `const_expr`. When in doubt, a new expression-level
+construct belongs in `ConstExpr`, not `Expr`.
+
+GNU statement expressions `({ ... })` are split across both: when the
+*entire* statement is `({ ... });` (or the whole initializer is
+`= ({ ... })`), `parser.rs`'s statement/initializer parsing special-cases
+it directly into `ast::Expr::StatementExpression(Vec<SpannedStmt>)` with
+real parsed statements (see `parse_one_stmt` and the initializer path in
+`parse_declaration_tokens`). But when `({ ... })` appears nested inside a
+larger expression (a call argument, a binary operand — see
+slate-parser-wf8.3.8), it has to go through `const_expr::Parser`, which
+has no way to call back into `parser.rs`'s statement grammar (that needs
+`&Parser` for diagnostics, typedef names, and recursion). So
+`const_expr::Parser::parse_primary` instead captures the raw token span
+as `ConstExpr::StatementExpression(Vec<Span<Token>>)` — unparsed — when it
+sees `(` `{`. The two `StatementExpression` variants (one on `ast::Expr`
+holding parsed statements, one on `ConstExpr` holding raw tokens) are
+*not* the same shape; don't assume parity between them without checking
+which parser produced the node.
 
 `_Generic` used to be one of those bypassing special forms (its own
 `Expr::Generic` variant, parsed by a hand-rolled paren/comma scanner in

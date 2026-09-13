@@ -34,23 +34,37 @@ impl TranslationUnit {
                 _ => None,
             })
             .collect::<HashSet<_>>();
-        let tags = self
-            .decls
-            .iter()
-            .filter_map(|decl| match &decl.value {
-                Decl::Record(record) => record.name.clone(),
-                Decl::Enum(enumeration) => enumeration.name.clone(),
-                Decl::Declaration { declaration, .. } => match &declaration.specifiers.ty {
-                    CType::Tagged { name, .. } => name.clone(),
-                    _ => None,
-                },
-                Decl::Typedef {
-                    ty: CType::Tagged { name, .. },
-                    ..
-                } => name.clone(),
-                _ => None,
-            })
-            .collect::<HashSet<_>>();
+        let mut tags = HashSet::new();
+        for decl in &self.decls {
+            match &decl.value {
+                Decl::Record(record) => {
+                    if let Some(name) = &record.name {
+                        tags.insert(name.clone());
+                    }
+                    for field_item in &record.fields {
+                        if let FieldItem::Field(field) = &field_item.value {
+                            collect_tag_names(&field.declaration.specifiers.ty, &mut tags);
+                        }
+                    }
+                }
+                Decl::Enum(enumeration) => {
+                    if let Some(name) = &enumeration.name {
+                        tags.insert(name.clone());
+                    }
+                }
+                Decl::Function(function) => {
+                    collect_tag_names(&function.ret_type, &mut tags);
+                    for parameter in &function.parameters {
+                        collect_tag_names(&parameter.ty, &mut tags);
+                    }
+                }
+                Decl::Declaration { declaration, .. } => {
+                    collect_tag_names(&declaration.specifiers.ty, &mut tags);
+                }
+                Decl::Typedef { ty, .. } => collect_tag_names(ty, &mut tags),
+                Decl::Comment { .. } | Decl::StaticAssert { .. } => {}
+            }
+        }
 
         let mut errors = Vec::new();
         for decl in &self.decls {
@@ -303,7 +317,56 @@ fn is_integer_constant_expression(expression: &ConstExpr) -> bool {
         | ConstExpr::Deref(_)
         | ConstExpr::CompoundLiteral { .. }
         | ConstExpr::BitCast { .. }
-        | ConstExpr::LabelAddr(_) => false,
+        | ConstExpr::LabelAddr(_)
+        | ConstExpr::StatementExpression(_) => false,
+    }
+}
+
+fn collect_tag_names(ty: &CType, tags: &mut HashSet<String>) {
+    match ty {
+        CType::Tagged { name, body, .. } => {
+            if let Some(name) = name {
+                tags.insert(name.clone());
+            }
+            match body {
+                Some(TagBody::Fields(fields)) => {
+                    for field in fields {
+                        collect_tag_names(&field.declaration.specifiers.ty, tags);
+                    }
+                }
+                Some(TagBody::Enumerators(_)) | None => {}
+            }
+        }
+        CType::Qualified { ty, .. } | CType::Pointer { pointee: ty, .. } => {
+            collect_tag_names(ty, tags)
+        }
+        CType::Atomic(ty) | CType::Complex(ty) | CType::Imaginary(ty) => {
+            collect_tag_names(ty, tags)
+        }
+        CType::Vector(vector) => collect_tag_names(&vector.element, tags),
+        CType::TypeOf(TypeOfOperand::Type(ty)) | CType::TypeOfUnqual(TypeOfOperand::Type(ty)) => {
+            collect_tag_names(ty, tags)
+        }
+        CType::Array { element, .. } => collect_tag_names(element, tags),
+        CType::Function {
+            return_type,
+            parameters,
+            ..
+        } => {
+            collect_tag_names(return_type, tags);
+            for parameter in parameters {
+                collect_tag_names(&parameter.ty, tags);
+            }
+        }
+        CType::Void
+        | CType::Bool
+        | CType::Integer(_)
+        | CType::Floating(_)
+        | CType::FixedPoint(_)
+        | CType::TypeOf(TypeOfOperand::Expression(_))
+        | CType::TypeOfUnqual(TypeOfOperand::Expression(_))
+        | CType::TargetBuiltin(_)
+        | CType::Named(_) => {}
     }
 }
 

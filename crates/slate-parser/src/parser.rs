@@ -732,9 +732,21 @@ impl Parser {
             let (trailing_attributes, alias_position) = parse_attribute_groups(trailing_tokens, 0)
                 .map_err(|error| self.error_at(Loc::whole(code), error))?;
             attributes.extend(trailing_attributes);
-            let trailing_name = match trailing_tokens.value_at(alias_position) {
-                Some(Token::Ident(alias)) => Some(alias.clone()),
-                _ => None,
+            let trailing_alias = if matches!(
+                trailing_tokens.value_at(alias_position),
+                Some(Token::Ident(_) | Token::Star)
+            ) {
+                let mut declarator_parser =
+                    DeclaratorParser::new(trailing_tokens, alias_position, &self.typedef_names);
+                match declarator_parser.parse_declarator(false) {
+                    Ok(declarator) => declarator
+                        .name()
+                        .map(|name| name.to_string())
+                        .map(|name| (name, declarator)),
+                    Err(_) => None,
+                }
+            } else {
+                None
             };
             let provenance = self.node_provenance(&nodes[0]);
             let tag_decl = if kind == TagKind::Enum {
@@ -817,9 +829,9 @@ impl Parser {
                 })
             };
             let mut decls = vec![tag_decl];
-            if let Some(alias) = trailing_name {
+            if let Some((alias, declarator)) = trailing_alias {
                 decls.push(build_tag_alias_decl(
-                    is_typedef, kind, name, alias, provenance,
+                    is_typedef, kind, name, alias, declarator, provenance,
                 ));
             }
             return Ok((decls, 1));
@@ -849,15 +861,26 @@ impl Parser {
             }
         }
         let close = close.ok_or_else(|| self.error_at(Loc::whole(code), "expected `}`"))?;
-        let mut trailing_name = None;
+        let mut trailing_alias = None;
         if let PPNodeKind::Code { text, .. } = &nodes[close].value {
             let closing_tokens = self.node_tokens(&nodes[close]);
             if closing_tokens.value_at(0) == Some(&Token::RBrace) {
                 let (trailing, position) = parse_attribute_groups(&closing_tokens, 1)
                     .map_err(|error| self.error_at(Loc::whole(text), error))?;
                 attributes.extend(trailing);
-                if let Some(Token::Ident(alias)) = closing_tokens.value_at(position) {
-                    trailing_name = Some(alias.clone());
+                if matches!(
+                    closing_tokens.value_at(position),
+                    Some(Token::Ident(_) | Token::Star)
+                ) {
+                    let mut declarator_parser =
+                        DeclaratorParser::new(&closing_tokens, position, &self.typedef_names);
+                    trailing_alias = match declarator_parser.parse_declarator(false) {
+                        Ok(declarator) => declarator
+                            .name()
+                            .map(|name| name.to_string())
+                            .map(|name| (name, declarator)),
+                        Err(_) => None,
+                    };
                 }
             }
         }
@@ -917,9 +940,9 @@ impl Parser {
             })
         };
         let mut decls = vec![tag_decl];
-        if let Some(alias) = trailing_name {
+        if let Some((alias, declarator)) = trailing_alias {
             decls.push(build_tag_alias_decl(
-                is_typedef, kind, name, alias, provenance,
+                is_typedef, kind, name, alias, declarator, provenance,
             ));
         }
         Ok((decls, consumed))
@@ -1592,7 +1615,7 @@ fn join_node_text(nodes: &[PPNode]) -> String {
         .join("\n")
 }
 
-fn matching_brace(tokens: &[Span<Token>], open: usize) -> Option<usize> {
+pub(crate) fn matching_brace(tokens: &[Span<Token>], open: usize) -> Option<usize> {
     let mut depth = 0i32;
     for (offset, token) in tokens[open..].iter().enumerate() {
         match token.value {
@@ -1668,9 +1691,10 @@ fn build_tag_alias_decl(
     kind: TagKind,
     name: Option<String>,
     alias: String,
+    declarator: Declarator,
     provenance: Provenance,
 ) -> Decl {
-    let ty = CType::Tagged {
+    let base = CType::Tagged {
         kind,
         name,
         body: None,
@@ -1678,7 +1702,7 @@ fn build_tag_alias_decl(
     if is_typedef {
         Decl::Typedef {
             name: alias,
-            ty,
+            ty: apply_abstract_declarator(base, declarator),
             provenance,
             attributes: Vec::new(),
         }
@@ -1686,7 +1710,7 @@ fn build_tag_alias_decl(
         Decl::Declaration {
             declaration: Declaration {
                 specifiers: DeclarationSpecifiers {
-                    ty,
+                    ty: base,
                     qualifiers: Qualifiers::default(),
                     storage: StorageClass::None,
                     is_thread_local: false,
@@ -1694,7 +1718,7 @@ fn build_tag_alias_decl(
                     is_noreturn: false,
                     is_constexpr: false,
                 },
-                declarator: Declarator::Name(alias),
+                declarator,
                 initializer: None,
                 attributes: Vec::new(),
             },
@@ -2728,7 +2752,9 @@ impl<'a> DeclaratorParser<'a> {
                 variadic = true;
                 break;
             }
+            self.matches(Token::Keyword(Keyword::Register));
             let leading_qualifiers = self.take_qualifiers();
+            self.matches(Token::Keyword(Keyword::Register));
             let base_ty = self.parse_base_type()?;
             let trailing_qualifiers = self.take_qualifiers();
             let qualifiers = Qualifiers {

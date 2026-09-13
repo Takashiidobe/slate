@@ -223,6 +223,7 @@ pub enum ConstExpr {
         initializer: Vec<InitializerItem>,
     },
     LabelAddr(String),
+    StatementExpression(Vec<Span<Token>>),
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -287,6 +288,7 @@ impl std::fmt::Display for ConstExpr {
             Self::BitCast { value, .. } => write!(formatter, "__builtin_bit_cast(..., {value})"),
             Self::CompoundLiteral { .. } => write!(formatter, "(compound literal)"),
             Self::LabelAddr(label) => write!(formatter, "&&{label}"),
+            Self::StatementExpression(_) => formatter.write_str("({ ... })"),
         }
     }
 }
@@ -745,6 +747,9 @@ impl Parser {
                 Err(ConstExprError::NotConstant("compound literal"))
             }
             ConstExpr::LabelAddr(_) => Err(ConstExprError::NotConstant("label address")),
+            ConstExpr::StatementExpression(_) => {
+                Err(ConstExprError::NotConstant("statement expression"))
+            }
         }
     }
 
@@ -1273,6 +1278,9 @@ impl Parser {
     }
 
     fn parse_primary(&mut self) -> Result<ConstExpr, ConstExprError> {
+        if self.peek() == Some(&Token::LParen) && self.peek_at(1) == Some(&Token::LBrace) {
+            return self.parse_statement_expression();
+        }
         if self.take() == Some(Token::LParen) {
             let expression = self.parse_comma()?;
             self.expect(Token::RParen)?;
@@ -1310,6 +1318,17 @@ impl Parser {
             Some(token) => Err(ConstExprError::UnexpectedToken(token.clone())),
             None => Err(ConstExprError::ExpectedIntegerExpression),
         }
+    }
+
+    fn parse_statement_expression(&mut self) -> Result<ConstExpr, ConstExprError> {
+        self.expect(Token::LParen)?;
+        let open = self.position;
+        let close = crate::parser::matching_brace(&self.tokens, open)
+            .ok_or(ConstExprError::ExpectedIntegerExpression)?;
+        let body = self.tokens[open + 1..close].to_vec();
+        self.position = close + 1;
+        self.expect(Token::RParen)?;
+        Ok(ConstExpr::StatementExpression(body))
     }
 
     fn parse_generic(&mut self) -> Result<ConstExpr, ConstExprError> {
