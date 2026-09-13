@@ -490,10 +490,32 @@ impl Parser {
                     join_node_text(&nodes[..span])
                 };
                 let typedef_tokens = self.nodes_tokens(&nodes[..span]);
-                let (name, ty, attributes) =
-                    self.parse_typedef_line(&typedef_text, &typedef_tokens)?;
-                Ok((
-                    vec![span_pp_nodes(
+                let Some(semi) = typedef_tokens
+                    .last()
+                    .filter(|token| token.value == Token::Semi)
+                    .cloned()
+                else {
+                    return Err(self.error_at_tokens(
+                        &typedef_tokens,
+                        typedef_tokens.len(),
+                        "expected `;`",
+                    ));
+                };
+                let declaration_tokens = &typedef_tokens[..typedef_tokens.len() - 1];
+                let parts = split_top_level(declaration_tokens, &Token::Comma);
+                let prefix = parts.first().map_or(Vec::new(), |part| {
+                    part[..self.declaration_prefix_end(part)].to_vec()
+                });
+                let mut typedefs = Vec::new();
+                for (index, mut part) in parts.into_iter().enumerate() {
+                    if index != 0 {
+                        let mut with_prefix = prefix.clone();
+                        with_prefix.append(&mut part);
+                        part = with_prefix;
+                    }
+                    part.push(semi.clone());
+                    let (name, ty, attributes) = self.parse_typedef_line(&typedef_text, &part)?;
+                    typedefs.push(span_pp_nodes(
                         Decl::Typedef {
                             name,
                             ty,
@@ -501,9 +523,9 @@ impl Parser {
                             attributes,
                         },
                         &nodes[..span],
-                    )],
-                    span,
-                ))
+                    ));
+                }
+                Ok((typedefs, span))
             }
             PPNodeKind::Code { .. } => {
                 let tokens = self.node_tokens(&nodes[0]);

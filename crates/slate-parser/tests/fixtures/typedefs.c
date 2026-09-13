@@ -3,6 +3,7 @@
 typedef int           my_int;
 typedef unsigned char byte;
 typedef long long     wide;
+typedef long long multi_scalar, multi_array[23], *multi_pointer;
 
 struct Box {
   my_int value;
@@ -87,7 +88,58 @@ int main(void) {
 // DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[3]: Record(
+// DEFAULT-NEXT: decl[3]: Typedef {
+// DEFAULT-NEXT:       name: "multi_scalar",
+// DEFAULT-NEXT:       ty: Integer(
+// DEFAULT-NEXT:           Ranked {
+// DEFAULT-NEXT:               rank: LongLong,
+// DEFAULT-NEXT:               signed: true,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       ),
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               3,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 5,
+// DEFAULT-NEXT:           header: None,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[4]: Typedef {
+// DEFAULT-NEXT:       name: "multi_array",
+// DEFAULT-NEXT:       ty: Integer(
+// DEFAULT-NEXT:           Ranked {
+// DEFAULT-NEXT:               rank: LongLong,
+// DEFAULT-NEXT:               signed: true,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       ),
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               3,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 5,
+// DEFAULT-NEXT:           header: None,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[5]: Typedef {
+// DEFAULT-NEXT:       name: "multi_pointer",
+// DEFAULT-NEXT:       ty: Integer(
+// DEFAULT-NEXT:           Ranked {
+// DEFAULT-NEXT:               rank: LongLong,
+// DEFAULT-NEXT:               signed: true,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       ),
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               3,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 5,
+// DEFAULT-NEXT:           header: None,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[6]: Record(
 // DEFAULT-NEXT:       RecordDecl {
 // DEFAULT-NEXT:           kind: Struct,
 // DEFAULT-NEXT:           name: Some(
@@ -111,7 +163,7 @@ int main(void) {
 // DEFAULT-NEXT:                               3,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: User,
-// DEFAULT-NEXT:                           line: 7,
+// DEFAULT-NEXT:                           line: 8,
 // DEFAULT-NEXT:                           header: None,
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
@@ -133,7 +185,7 @@ int main(void) {
 // DEFAULT-NEXT:                               3,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: User,
-// DEFAULT-NEXT:                           line: 8,
+// DEFAULT-NEXT:                           line: 9,
 // DEFAULT-NEXT:                           header: None,
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
@@ -144,12 +196,12 @@ int main(void) {
 // DEFAULT-NEXT:                   3,
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               kind: User,
-// DEFAULT-NEXT:               line: 6,
+// DEFAULT-NEXT:               line: 7,
 // DEFAULT-NEXT:               header: None,
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[4]: Function(
+// DEFAULT-NEXT: decl[7]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
 // DEFAULT-NEXT:           ret_type: Named(
 // DEFAULT-NEXT:               "my_int",
@@ -218,13 +270,13 @@ int main(void) {
 // DEFAULT-NEXT:                   3,
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               kind: User,
-// DEFAULT-NEXT:               line: 11,
+// DEFAULT-NEXT:               line: 12,
 // DEFAULT-NEXT:               header: None,
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           storage: Static,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[5]: Function(
+// DEFAULT-NEXT: decl[8]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
 // DEFAULT-NEXT:           ret_type: Integer(
 // DEFAULT-NEXT:               Ranked {
@@ -453,7 +505,7 @@ int main(void) {
 // DEFAULT-NEXT:                   3,
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               kind: User,
-// DEFAULT-NEXT:               line: 16,
+// DEFAULT-NEXT:               line: 17,
 // DEFAULT-NEXT:               header: None,
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
