@@ -6,7 +6,7 @@ What the parser's output means, as consumed by IR sema (`src/ir/sema`).
 Type definitions live in `src/ast.rs` and `src/const_expr.rs`; this page
 records the semantics and invariants that aren't visible from the types.
 For where each enum is matched exhaustively see
-[[ast-enum-touchpoints]]; for what the AST lowers into see [[ir-design]].
+[[ast-enum-touchpoints]]; for what the AST lowers into see [[ir-spec]].
 
 ## Invariants
 

@@ -1,4 +1,4 @@
-# IR Design (draft)
+# IR Spec
 
 _created 2026-09-13 — living design doc, decisions marked **Decided** / **Open**_
 
