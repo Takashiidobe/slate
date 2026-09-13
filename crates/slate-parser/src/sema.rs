@@ -182,9 +182,11 @@ impl SemaError {
 
 fn declarator_indirects_void(declarator: &Declarator) -> bool {
     match declarator {
-        Declarator::Grouped(inner) => declarator_indirects_void(inner),
+        Declarator::Grouped(inner) | Declarator::Array { inner, .. } => {
+            declarator_indirects_void(inner)
+        }
         Declarator::Pointer { .. } | Declarator::Function { .. } => true,
-        Declarator::Abstract | Declarator::Name(_) | Declarator::Array { .. } => false,
+        Declarator::Abstract | Declarator::Name(_) => false,
     }
 }
 
