@@ -61,6 +61,7 @@ pub struct Preprocessor<'a> {
     outermost_header: Option<FileId>,
     search: &'a SearchPaths,
     open_stack: Vec<PathBuf>,
+    open_macro_states: Vec<(PathBuf, Vec<String>)>,
     sources: HashMap<FileId, String>,
     line_starts: HashMap<FileId, Vec<usize>>,
     pragma_once: HashSet<PathBuf>,
@@ -92,6 +93,7 @@ impl<'a> Preprocessor<'a> {
             outermost_header: None,
             search,
             open_stack: Vec::new(),
+            open_macro_states: Vec::new(),
             sources: HashMap::new(),
             line_starts: HashMap::new(),
             pragma_once: HashSet::new(),
@@ -144,12 +146,25 @@ impl<'a> Preprocessor<'a> {
             read_source(&canon).map_err(|kind| self.render_error(PPFailure::unlocated(kind)))?;
         let file = self.files.intern(canon.clone(), HeaderKind::User);
         self.main_file = Some(file);
+        self.open_macro_states
+            .push((canon.clone(), self.macro_state()));
         self.open_stack.push(canon);
         let nodes = self
             .parse_source(&src, file)
             .map_err(|failure| self.render_error(failure))?;
         self.open_stack.pop();
+        self.open_macro_states.pop();
         Ok(nodes)
+    }
+
+    pub(super) fn macro_state(&self) -> Vec<String> {
+        let mut state = self
+            .macros
+            .iter()
+            .map(|(name, entry)| format!("{name}:{:?}", entry.definition))
+            .collect::<Vec<_>>();
+        state.sort();
+        state
     }
 
     pub fn parse_str(&mut self, name: &str, src: &str) -> Result<Vec<PPNode>, PPError> {

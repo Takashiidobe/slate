@@ -80,7 +80,12 @@ impl Preprocessor<'_> {
         if self.pragma_once.contains(&once_key) {
             return Ok(Vec::new());
         }
-        if self.open_stack.contains(&once_key) {
+        let macro_state = self.macro_state();
+        if self
+            .open_macro_states
+            .iter()
+            .any(|(path, state)| path == &once_key && state == &macro_state)
+        {
             if self
                 .include_guards
                 .get(&once_key)
@@ -95,12 +100,14 @@ impl Preprocessor<'_> {
         }
         let src = read_source(&resolved).map_err(|kind| PPFailure::at(directive, kind))?;
         let file = self.files.intern(resolved.clone(), kind);
+        self.open_macro_states.push((once_key.clone(), macro_state));
         self.open_stack.push(once_key);
         let enclosing_header = self.outermost_header;
         self.outermost_header.get_or_insert(file);
         let nodes = self.parse_source(&src, file);
         self.outermost_header = enclosing_header;
         self.open_stack.pop();
+        self.open_macro_states.pop();
         nodes
     }
 
