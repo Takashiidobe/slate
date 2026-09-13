@@ -3,7 +3,7 @@ use crate::const_expr;
 use crate::error::{FrontendError, ParseError};
 use crate::files::{Files, SearchPaths, decode_source_bytes, display_path};
 use crate::lexer::{Keyword, Lexer, Token, TokenSpanExt};
-use crate::pp::{DirectiveDiagnostic, PPNode, PPNodeKind, Preprocessor};
+use crate::pp::{DirectiveDiagnostic, MacroEntry, PPNode, PPNodeKind, Preprocessor};
 use crate::reachability::{filter_translation_unit, mark_unreachable};
 use miette::Diagnostic;
 use std::collections::{HashMap, HashSet};
@@ -129,6 +129,16 @@ pub struct Parser {
     typedef_names: HashSet<String>,
     directive_diagnostics: Vec<DirectiveDiagnostic>,
     defines: Vec<String>,
+    biggest_alignment: i64,
+}
+
+pub(crate) const FALLBACK_BIGGEST_ALIGNMENT: i64 = 16;
+
+fn resolve_biggest_alignment(macros: &HashMap<String, MacroEntry>) -> i64 {
+    macros
+        .get("__BIGGEST_ALIGNMENT__")
+        .and_then(|entry| const_expr::Parser::evaluate(&entry.definition.replacement).ok())
+        .unwrap_or(FALLBACK_BIGGEST_ALIGNMENT)
 }
 
 impl Parser {
@@ -141,6 +151,7 @@ impl Parser {
             typedef_names: HashSet::new(),
             directive_diagnostics: Vec::new(),
             defines: Vec::new(),
+            biggest_alignment: FALLBACK_BIGGEST_ALIGNMENT,
         }
     }
 
@@ -161,6 +172,7 @@ impl Parser {
         pp.define_all(&self.defines).map_err(FrontendError::PP)?;
         let nodes = pp.parse_str("<main>", src).map_err(FrontendError::PP)?;
         self.directive_diagnostics = std::mem::take(&mut pp.directive_diagnostics);
+        self.biggest_alignment = resolve_biggest_alignment(&pp.macros);
         let root_file = pp.main_file.expect("parse_str sets main_file");
         self.parse_nodes(&nodes, root_file)
             .map_err(FrontendError::Parse)
@@ -186,6 +198,7 @@ impl Parser {
         let nodes = pp.parse_file(path).map_err(FrontendError::PP)?;
         self.files = pp.files.clone();
         self.directive_diagnostics = std::mem::take(&mut pp.directive_diagnostics);
+        self.biggest_alignment = resolve_biggest_alignment(&pp.macros);
         let root_file = pp.main_file.expect("parse_file sets main_file");
         let ast = self.parse_nodes(&nodes, root_file);
         ast.map(|ast| (ast, pp.files)).map_err(FrontendError::Parse)
@@ -205,11 +218,13 @@ impl Parser {
             tokens,
             pos: 0,
             typedef_names: &self.typedef_names,
+            biggest_alignment: self.biggest_alignment,
         };
         while parser.peek() == Some(&Token::Ident("__extension__".to_string())) {
             parser.pos += 1;
         }
-        let (mut attributes, position) = parse_attribute_groups(parser.tokens, parser.pos)
+        let (mut attributes, position) = self
+            .parse_attribute_groups(parser.tokens, parser.pos)
             .map_err(|error| self.error_at_tokens(tokens, parser.pos, error))?;
         parser.pos = position;
         let mut qualifiers = Qualifiers::default();
@@ -220,7 +235,8 @@ impl Parser {
         let mut is_constexpr = false;
         let gnu_auto_type = parser.matches(Token::Ident("__auto_type".into()));
         loop {
-            let (more_attributes, position) = parse_attribute_groups(parser.tokens, parser.pos)
+            let (more_attributes, position) = self
+                .parse_attribute_groups(parser.tokens, parser.pos)
                 .map_err(|error| self.error_at_tokens(tokens, parser.pos, error))?;
             if position != parser.pos {
                 attributes.extend(more_attributes);
@@ -300,7 +316,8 @@ impl Parser {
                 _ => unreachable!(),
             }
         }
-        let (mid_attributes, position) = parse_attribute_groups(parser.tokens, parser.pos)
+        let (mid_attributes, position) = self
+            .parse_attribute_groups(parser.tokens, parser.pos)
             .map_err(|error| self.error_at_tokens(tokens, parser.pos, error))?;
         parser.pos = position;
         attributes.extend(mid_attributes);
@@ -317,7 +334,8 @@ impl Parser {
                 .parse_declarator(false)
                 .map_err(|error| self.error_at_tokens(tokens, parser.pos, error.to_string()))?
         };
-        let (trailing_attributes, position) = parse_attribute_groups(parser.tokens, parser.pos)
+        let (trailing_attributes, position) = self
+            .parse_attribute_groups(parser.tokens, parser.pos)
             .map_err(|error| self.error_at_tokens(tokens, parser.pos, error))?;
         parser.pos = position;
         attributes.extend(trailing_attributes);
@@ -614,7 +632,9 @@ impl Parser {
                                 | Keyword::Restrict
                                 | Keyword::Atomic
                         ))
-                    ) {
+                    ) || tokens.value_at(index)
+                        == Some(&Token::Ident("__extension__".to_string()))
+                    {
                         index += 1;
                     }
                     index
@@ -717,13 +737,16 @@ impl Parser {
 
     fn parse_tag_definition(&self, nodes: &[PPNode]) -> Result<(Vec<Decl>, usize), ParseError> {
         let code = self.node_text(&nodes[0]);
-        let tokens = self.node_tokens(&nodes[0]);
+        let all_tokens = self.node_tokens(&nodes[0]);
+        let mut extension_prefix = 0usize;
+        while all_tokens.value_at(extension_prefix)
+            == Some(&Token::Ident("__extension__".to_string()))
+        {
+            extension_prefix += 1;
+        }
+        let tokens = &all_tokens[extension_prefix..];
         let is_typedef = tokens.value_at(0) == Some(&Token::Keyword(Keyword::Typedef));
-        let tokens = if is_typedef {
-            &tokens[1..]
-        } else {
-            &tokens[..]
-        };
+        let tokens = if is_typedef { &tokens[1..] } else { tokens };
         let mut skip = 0;
         while matches!(
             tokens.value_at(skip),
@@ -745,14 +768,15 @@ impl Parser {
             skip += 1;
         }
         let tokens = &tokens[skip..];
-        let node0_offset = (is_typedef as usize) + skip;
+        let node0_offset = extension_prefix + (is_typedef as usize) + skip;
         let kind = match tokens.value_at(0) {
             Some(Token::Keyword(Keyword::Struct)) => TagKind::Struct,
             Some(Token::Keyword(Keyword::Union)) => TagKind::Union,
             Some(Token::Keyword(Keyword::Enum)) => TagKind::Enum,
             _ => return Err(self.error_at(Loc::whole(code), "expected record or enum")),
         };
-        let (mut attributes, name_index) = parse_record_attributes(tokens)
+        let (mut attributes, name_index) = self
+            .parse_record_attributes(tokens)
             .map_err(|error| self.error_at(Loc::whole(code), error))?;
         let name = match tokens.value_at(name_index) {
             Some(Token::Ident(name)) => Some(name.clone()),
@@ -770,15 +794,20 @@ impl Parser {
             let (trailing_tokens, consumed) =
                 tag_trailing_tokens(nodes, 0, node0_offset + same_line_close + 1)
                     .ok_or_else(|| self.error_at(Loc::whole(code), "expected `;`"))?;
-            let (trailing_attributes, alias_position) = parse_attribute_groups(&trailing_tokens, 0)
+            let (trailing_attributes, alias_position) = self
+                .parse_attribute_groups(&trailing_tokens, 0)
                 .map_err(|error| self.error_at(Loc::whole(code), error))?;
             attributes.extend(trailing_attributes);
             let trailing_alias = if matches!(
                 trailing_tokens.value_at(alias_position),
                 Some(Token::Ident(_) | Token::Star)
             ) {
-                let mut declarator_parser =
-                    DeclaratorParser::new(&trailing_tokens, alias_position, &self.typedef_names);
+                let mut declarator_parser = DeclaratorParser::with_biggest_alignment(
+                    &trailing_tokens,
+                    alias_position,
+                    &self.typedef_names,
+                    self.biggest_alignment,
+                );
                 match declarator_parser.parse_declarator(false) {
                     Ok(declarator) => declarator
                         .name()
@@ -909,15 +938,20 @@ impl Parser {
             .ok_or_else(|| self.error_at(Loc::whole(code), "expected `}`"))?;
         let (trailing_tokens, consumed) = tag_trailing_tokens(nodes, close, close_token + 1)
             .ok_or_else(|| self.error_at(Loc::whole(code), "expected `;`"))?;
-        let (trailing, position) = parse_attribute_groups(&trailing_tokens, 0)
+        let (trailing, position) = self
+            .parse_attribute_groups(&trailing_tokens, 0)
             .map_err(|error| self.error_at(Loc::whole(code), error))?;
         attributes.extend(trailing);
         let trailing_alias = if matches!(
             trailing_tokens.value_at(position),
             Some(Token::Ident(_) | Token::Star)
         ) {
-            let mut declarator_parser =
-                DeclaratorParser::new(&trailing_tokens, position, &self.typedef_names);
+            let mut declarator_parser = DeclaratorParser::with_biggest_alignment(
+                &trailing_tokens,
+                position,
+                &self.typedef_names,
+                self.biggest_alignment,
+            );
             declarator_parser
                 .parse_declarator(false)
                 .ok()
@@ -1228,10 +1262,21 @@ impl Parser {
             PPNodeKind::Code { provenance, .. } => *provenance,
         }
     }
-}
 
-fn parse_record_attributes(tokens: &[Span<Token>]) -> Result<(Vec<Attribute>, usize), String> {
-    parse_attribute_groups(tokens, 1)
+    fn parse_attribute_groups(
+        &self,
+        tokens: &[Span<Token>],
+        position: usize,
+    ) -> Result<(Vec<Attribute>, usize), String> {
+        parse_attribute_groups(tokens, position, self.biggest_alignment)
+    }
+
+    fn parse_record_attributes(
+        &self,
+        tokens: &[Span<Token>],
+    ) -> Result<(Vec<Attribute>, usize), String> {
+        self.parse_attribute_groups(tokens, 1)
+    }
 }
 
 struct AttrCursor<'a> {
@@ -1305,6 +1350,7 @@ impl<'a> AttrCursor<'a> {
 fn parse_attribute_groups(
     tokens: &[Span<Token>],
     position: usize,
+    biggest_alignment: i64,
 ) -> Result<(Vec<Attribute>, usize), String> {
     let mut cursor = AttrCursor::new(tokens, position);
     let mut attributes = Vec::new();
@@ -1325,7 +1371,7 @@ fn parse_attribute_groups(
                 let name = cursor.expect_ident("expected attribute name")?;
                 let arguments = cursor
                     .parse_parenthesized_arguments("expected `)` after attribute arguments")?;
-                attributes.push(parse_attribute(&name, &arguments)?);
+                attributes.push(parse_attribute(&name, &arguments, biggest_alignment)?);
                 if cursor.consume(&Token::Comma) {
                     continue;
                 }
@@ -1347,7 +1393,7 @@ fn parse_attribute_groups(
                 }
                 let arguments = cursor
                     .parse_parenthesized_arguments("expected `)` after attribute arguments")?;
-                attributes.push(parse_attribute(&name, &arguments)?);
+                attributes.push(parse_attribute(&name, &arguments, biggest_alignment)?);
                 if cursor.consume(&Token::Comma) {
                     continue;
                 }
@@ -1362,7 +1408,11 @@ fn parse_attribute_groups(
     Ok((attributes, cursor.pos))
 }
 
-fn parse_attribute(name: &str, arguments: &[Span<Token>]) -> Result<Attribute, String> {
+fn parse_attribute(
+    name: &str,
+    arguments: &[Span<Token>],
+    biggest_alignment: i64,
+) -> Result<Attribute, String> {
     let canonical_name = name
         .strip_prefix("__")
         .and_then(|name| name.strip_suffix("__"))
@@ -1405,10 +1455,10 @@ fn parse_attribute(name: &str, arguments: &[Span<Token>]) -> Result<Attribute, S
         "packed" if arguments.is_empty() => Ok(Attribute::Packed),
         "aligned" => Ok(match single_int() {
             Some(value) => Attribute::Aligned(const_expr::ConstExpr::Integer(value)),
-            None if !arguments.is_empty() => {
-                Attribute::Aligned(parse_attribute_expression(arguments)?)
+            None if arguments.is_empty() => {
+                Attribute::Aligned(const_expr::ConstExpr::Integer(biggest_alignment))
             }
-            None => invalid_attribute(name, arguments),
+            None => Attribute::Aligned(parse_attribute_expression(arguments)?),
         }),
         "vector_size" => Ok(match single_int() {
             Some(value) => Attribute::VectorSize(const_expr::ConstExpr::Integer(value)),
@@ -1976,6 +2026,7 @@ pub(crate) struct DeclaratorParser<'a> {
     tokens: &'a [Span<Token>],
     pos: usize,
     typedef_names: &'a HashSet<String>,
+    biggest_alignment: i64,
 }
 
 impl<'a> DeclaratorParser<'a> {
@@ -1984,10 +2035,20 @@ impl<'a> DeclaratorParser<'a> {
         pos: usize,
         typedef_names: &'a HashSet<String>,
     ) -> Self {
+        Self::with_biggest_alignment(tokens, pos, typedef_names, FALLBACK_BIGGEST_ALIGNMENT)
+    }
+
+    pub(crate) fn with_biggest_alignment(
+        tokens: &'a [Span<Token>],
+        pos: usize,
+        typedef_names: &'a HashSet<String>,
+        biggest_alignment: i64,
+    ) -> Self {
         Self {
             tokens,
             pos,
             typedef_names,
+            biggest_alignment,
         }
     }
 
@@ -2879,7 +2940,8 @@ impl<'a> DeclaratorParser<'a> {
                 Some(Token::Comma) | Some(Token::RParen) => None,
                 _ => Some(self.parse_declarator(true)?),
             };
-            let (attributes, position) = parse_attribute_groups(self.tokens, self.pos)?;
+            let (attributes, position) =
+                parse_attribute_groups(self.tokens, self.pos, self.biggest_alignment)?;
             self.pos = position;
             parameters.push(Parameter {
                 ty: apply_vector_attributes(ty, &attributes),
@@ -3000,7 +3062,8 @@ impl Parser {
         while sig_tokens.value_at(leading) == Some(&Token::Ident("__extension__".to_string())) {
             leading += 1;
         }
-        let (mut attributes, mut index) = parse_attribute_groups(&sig_tokens, leading)
+        let (mut attributes, mut index) = self
+            .parse_attribute_groups(&sig_tokens, leading)
             .map_err(|error| self.error_at(Loc::whole(code), error))?;
         let mut qualifiers = Qualifiers::default();
         let mut storage = StorageClass::None;
@@ -3028,7 +3091,8 @@ impl Parser {
                 _ => break,
             }
             index += 1;
-            let (more_attributes, position) = parse_attribute_groups(&sig_tokens, index)
+            let (more_attributes, position) = self
+                .parse_attribute_groups(&sig_tokens, index)
                 .map_err(|error| self.error_at(Loc::whole(code), error))?;
             attributes.extend(more_attributes);
             index = position;
@@ -3037,6 +3101,7 @@ impl Parser {
             tokens: &sig_tokens,
             pos: index,
             typedef_names: &self.typedef_names,
+            biggest_alignment: self.biggest_alignment,
         };
         let mut ret_type = return_type_parser
             .parse_base_type()
@@ -3048,9 +3113,9 @@ impl Parser {
                 pointee: Box::new(ret_type),
             };
         }
-        let (mid_attributes, name_index) =
-            parse_attribute_groups(&sig_tokens, return_type_parser.pos)
-                .map_err(|error| self.error_at(Loc::whole(code), error))?;
+        let (mid_attributes, name_index) = self
+            .parse_attribute_groups(&sig_tokens, return_type_parser.pos)
+            .map_err(|error| self.error_at(Loc::whole(code), error))?;
         attributes.extend(mid_attributes);
         let name = match sig_tokens.value_at(name_index) {
             Some(Token::Ident(n)) => n.clone(),
@@ -3072,13 +3137,14 @@ impl Parser {
             tokens: &sig_tokens,
             pos: name_index + 1,
             typedef_names: &self.typedef_names,
+            biggest_alignment: self.biggest_alignment,
         };
         let (parameters, variadic) = declarator_parser
             .parse_parameters()
             .map_err(|error| self.error_at(Loc::whole(code), error.to_string()))?;
-        let (signature_attributes, body_index) =
-            parse_attribute_groups(&sig_tokens, declarator_parser.pos)
-                .map_err(|error| self.error_at(Loc::whole(code), error))?;
+        let (signature_attributes, body_index) = self
+            .parse_attribute_groups(&sig_tokens, declarator_parser.pos)
+            .map_err(|error| self.error_at(Loc::whole(code), error))?;
         attributes.extend(signature_attributes);
         if sig_tokens.value_at(body_index) != Some(&Token::LBrace) {
             return Err(self.error_at(
@@ -3138,7 +3204,8 @@ impl Parser {
 
         if let PPNodeKind::Code { text, .. } = &nodes[close_idx].value {
             let closing_tokens = self.node_tokens(&nodes[close_idx]);
-            let (trailing_attributes, _) = parse_attribute_groups(&closing_tokens, 1)
+            let (trailing_attributes, _) = self
+                .parse_attribute_groups(&closing_tokens, 1)
                 .map_err(|error| self.error_at(Loc::whole(text), error))?;
             attributes.extend(trailing_attributes);
         }
@@ -3263,8 +3330,9 @@ impl Parser {
         start: usize,
     ) -> Result<Option<(FunctionDecl, usize)>, ParseError> {
         let fragment = Fragment::new(self, code, tokens, start);
-        let (mut attributes, mut index) =
-            parse_attribute_groups(tokens, start).map_err(|error| fragment.error(error))?;
+        let (mut attributes, mut index) = self
+            .parse_attribute_groups(tokens, start)
+            .map_err(|error| fragment.error(error))?;
         let mut qualifiers = Qualifiers::default();
         let mut storage = StorageClass::None;
         let mut is_inline = false;
@@ -3294,7 +3362,12 @@ impl Parser {
             }
             index += 1;
         }
-        let mut return_type_parser = DeclaratorParser::new(tokens, index, &self.typedef_names);
+        let mut return_type_parser = DeclaratorParser::with_biggest_alignment(
+            tokens,
+            index,
+            &self.typedef_names,
+            self.biggest_alignment,
+        );
         let Ok(mut ret_type) = return_type_parser.parse_base_type() else {
             return Ok(None);
         };
@@ -3312,14 +3385,18 @@ impl Parser {
         if tokens.value_at(name_index + 1) != Some(&Token::LParen) {
             return Ok(None);
         }
-        let mut declarator_parser =
-            DeclaratorParser::new(tokens, name_index + 1, &self.typedef_names);
+        let mut declarator_parser = DeclaratorParser::with_biggest_alignment(
+            tokens,
+            name_index + 1,
+            &self.typedef_names,
+            self.biggest_alignment,
+        );
         let Ok((parameters, variadic)) = declarator_parser.parse_parameters() else {
             return Ok(None);
         };
-        let (signature_attributes, body_index) =
-            parse_attribute_groups(tokens, declarator_parser.position())
-                .map_err(|error| fragment.error(error))?;
+        let (signature_attributes, body_index) = self
+            .parse_attribute_groups(tokens, declarator_parser.position())
+            .map_err(|error| fragment.error(error))?;
         if tokens.value_at(body_index) != Some(&Token::LBrace) {
             return Ok(None);
         }
@@ -3347,6 +3424,11 @@ impl Parser {
     }
 
     fn starts_declaration(&self, tokens: &[Span<Token>], pos: usize) -> bool {
+        let pos = if tokens.value_at(pos) == Some(&Token::Ident("__extension__".to_string())) {
+            pos + 1
+        } else {
+            pos
+        };
         match tokens.value_at(pos) {
             Some(Token::Keyword(keyword)) if keyword.is_storage_class_or_specifier() => true,
             Some(Token::Ident(name))
@@ -3364,11 +3446,16 @@ impl Parser {
             .values()
             .position(|token| matches!(token, Token::Ident(_)))
             .unwrap_or(0);
-        let (_, position) = match parse_attribute_groups(tokens, 0) {
+        let (_, position) = match self.parse_attribute_groups(tokens, 0) {
             Ok(result) => result,
             Err(_) => return fallback,
         };
-        let mut parser = DeclaratorParser::new(tokens, position, &self.typedef_names);
+        let mut parser = DeclaratorParser::with_biggest_alignment(
+            tokens,
+            position,
+            &self.typedef_names,
+            self.biggest_alignment,
+        );
         loop {
             if parser.take_qualifier().is_some() {
                 continue;
@@ -3465,7 +3552,8 @@ impl Parser {
         if tokens.value_at(fragment.pos) == Some(&Token::LBracket)
             && tokens.value_at(fragment.pos + 1) == Some(&Token::LBracket)
         {
-            let (_, position) = parse_attribute_groups(tokens, fragment.pos)
+            let (_, position) = self
+                .parse_attribute_groups(tokens, fragment.pos)
                 .map_err(|error| fragment.error(error))?;
             fragment.pos = position;
             fragment.expect(Token::Semi, "expected `;` after attributes")?;
