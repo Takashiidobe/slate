@@ -638,9 +638,21 @@ impl Parser {
                     }
                     index
                 };
-                let tag_body_follows = nodes
-                    .get(1)
-                    .is_some_and(|node| self.node_tokens(node).value_at(0) == Some(&Token::LBrace));
+                let tag_body_follows = first_equal.is_none()
+                    && {
+                        let after_name_index = if matches!(
+                            tokens.value_at(tag_keyword_index + 1),
+                            Some(Token::Ident(_))
+                        ) {
+                            tag_keyword_index + 2
+                        } else {
+                            tag_keyword_index + 1
+                        };
+                        tokens.len() == after_name_index
+                    }
+                    && nodes
+                        .get(1)
+                        .is_some_and(|node| self.node_tokens(node).value_at(0) == Some(&Token::LBrace));
                 if matches!(
                     tokens.value_at(tag_keyword_index),
                     Some(Token::Keyword(
@@ -3181,29 +3193,79 @@ impl Parser {
             attributes.extend(more_attributes);
             index = position;
         }
-        let mut return_type_parser = DeclaratorParser {
-            tokens: &sig_tokens,
-            pos: index,
-            typedef_names: &self.typedef_names,
-            biggest_alignment: self.biggest_alignment,
-        };
-        let mut ret_type = return_type_parser
-            .parse_base_type()
-            .map_err(|error| self.error_at(Loc::whole(code), error.to_string()))?;
-        while return_type_parser.matches(Token::Star) {
-            let qualifiers = return_type_parser.take_qualifiers();
-            ret_type = CType::Pointer {
-                qualifiers,
-                pointee: Box::new(ret_type),
+        let implicit_int = matches!(
+            (sig_tokens.value_at(index), sig_tokens.value_at(index + 1)),
+            (Some(Token::Ident(candidate)), Some(Token::LParen))
+                if !self.typedef_names.contains(candidate)
+        );
+        let (ret_type, name, name_index) = if implicit_int {
+            let Some(Token::Ident(name)) = sig_tokens.value_at(index) else {
+                unreachable!()
             };
-        }
-        let (mid_attributes, name_index) = self
-            .parse_attribute_groups(&sig_tokens, return_type_parser.pos)
-            .map_err(|error| self.error_at(Loc::whole(code), error))?;
-        attributes.extend(mid_attributes);
-        let name = match sig_tokens.value_at(name_index) {
-            Some(Token::Ident(n)) => n.clone(),
-            _ => return Err(self.error_at(Loc::whole(code), "expected function name")),
+            (
+                CType::Integer(IntegerType::Ranked {
+                    rank: IntegerRank::Int,
+                    signed: true,
+                }),
+                name.clone(),
+                index,
+            )
+        } else {
+            let mut return_type_parser = DeclaratorParser {
+                tokens: &sig_tokens,
+                pos: index,
+                typedef_names: &self.typedef_names,
+                biggest_alignment: self.biggest_alignment,
+            };
+            let mut ret_type = return_type_parser
+                .parse_base_type()
+                .map_err(|error| self.error_at(Loc::whole(code), error.to_string()))?;
+            while return_type_parser.matches(Token::Star) {
+                let qualifiers = return_type_parser.take_qualifiers();
+                ret_type = CType::Pointer {
+                    qualifiers,
+                    pointee: Box::new(ret_type),
+                };
+            }
+            loop {
+                match sig_tokens.value_at(return_type_parser.pos) {
+                    Some(Token::Keyword(Keyword::Const)) => qualifiers.is_const = true,
+                    Some(Token::Keyword(Keyword::Volatile)) => qualifiers.is_volatile = true,
+                    Some(Token::Keyword(Keyword::Restrict)) => qualifiers.is_restrict = true,
+                    Some(Token::Keyword(Keyword::Atomic)) => qualifiers.is_atomic = true,
+                    Some(Token::Keyword(Keyword::Inline)) => is_inline = true,
+                    Some(Token::Keyword(Keyword::Noreturn)) => is_noreturn = true,
+                    Some(Token::Keyword(keyword)) => {
+                        let next_storage = match keyword {
+                            Keyword::Extern => StorageClass::Extern,
+                            Keyword::Static => StorageClass::Static,
+                            _ => break,
+                        };
+                        if storage != StorageClass::None {
+                            return Err(
+                                self.error_at(Loc::whole(code), "multiple storage classes")
+                            );
+                        }
+                        storage = next_storage;
+                    }
+                    _ => break,
+                }
+                return_type_parser.pos += 1;
+                let (more_attributes, position) = self
+                    .parse_attribute_groups(&sig_tokens, return_type_parser.pos)
+                    .map_err(|error| self.error_at(Loc::whole(code), error))?;
+                attributes.extend(more_attributes);
+                return_type_parser.pos = position;
+            }
+            let (mid_attributes, name_index) = self
+                .parse_attribute_groups(&sig_tokens, return_type_parser.pos)
+                .map_err(|error| self.error_at(Loc::whole(code), error))?;
+            attributes.extend(mid_attributes);
+            let name = match sig_tokens.value_at(name_index) {
+                Some(Token::Ident(n)) => n.clone(),
+                _ => return Err(self.error_at(Loc::whole(code), "expected function name")),
+            };
+            (ret_type, name, name_index)
         };
         if sig_tokens.value_at(name_index + 1) != Some(&Token::LParen) {
             return Err(self.error_at(

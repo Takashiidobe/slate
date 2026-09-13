@@ -56,7 +56,7 @@ int main(void) {
 
 
 
-// SLATE-FILECHECK-ISYSTEM ~/Projects/slate-parser/tests/upstream/fixtures ~/Projects/slate/libc-shim/include /usr/lib/clang/22/include
+// SLATE-FILECHECK-ISYSTEM tests/fixtures/gnu-pragmas-headers ~/Projects/slate/libc-shim/include /usr/lib/clang/22/include
 
 // SLATE-FILECHECK-DEFINES DEFAULT
 
