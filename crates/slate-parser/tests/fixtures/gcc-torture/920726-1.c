@@ -366,18 +366,17 @@ int main(void) {
 // DEFAULT-NEXT:                                           target: Identifier(
 // DEFAULT-NEXT:                                               "number",
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           value: Call {
-// DEFAULT-NEXT:                                               callee: Identifier(
-// DEFAULT-NEXT:                                                   "__builtin_va_arg",
+// DEFAULT-NEXT:                                           value: VaArg {
+// DEFAULT-NEXT:                                               ap: Identifier(
+// DEFAULT-NEXT:                                                   "args",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               arguments: [
-// DEFAULT-NEXT:                                                   Identifier(
-// DEFAULT-NEXT:                                                       "args",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   Identifier(
-// DEFAULT-NEXT:                                                       "int",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                               ty: Integer(
+// DEFAULT-NEXT:                                                   Ranked {
+// DEFAULT-NEXT:                                                       rank: Int,
+// DEFAULT-NEXT:                                                       signed: true,
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               declarator: Abstract,
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
@@ -709,18 +708,17 @@ int main(void) {
 // DEFAULT-NEXT:                                           target: Identifier(
 // DEFAULT-NEXT:                                               "number",
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           value: Call {
-// DEFAULT-NEXT:                                               callee: Identifier(
-// DEFAULT-NEXT:                                                   "__builtin_va_arg",
+// DEFAULT-NEXT:                                           value: VaArg {
+// DEFAULT-NEXT:                                               ap: Identifier(
+// DEFAULT-NEXT:                                                   "args",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               arguments: [
-// DEFAULT-NEXT:                                                   Identifier(
-// DEFAULT-NEXT:                                                       "args",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   Identifier(
-// DEFAULT-NEXT:                                                       "int",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                               ty: Integer(
+// DEFAULT-NEXT:                                                   Ranked {
+// DEFAULT-NEXT:                                                       rank: Int,
+// DEFAULT-NEXT:                                                       signed: true,
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               declarator: Abstract,
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),

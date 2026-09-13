@@ -2873,6 +2873,7 @@ fn is_target_builtin_name(name: &str) -> bool {
             | "__m512"
             | "__m512d"
             | "__m512i"
+            | "__builtin_va_list"
             | "char8_t"
             | "atomic_char8_t"
             | "nullptr_t"

@@ -217,6 +217,11 @@ pub enum ConstExpr {
         declarator: Declarator,
         value: Box<Self>,
     },
+    VaArg {
+        ap: Box<Self>,
+        ty: Box<CType>,
+        declarator: Declarator,
+    },
     CompoundLiteral {
         ty: Box<CType>,
         declarator: Declarator,
@@ -286,6 +291,7 @@ impl std::fmt::Display for ConstExpr {
             Self::Deref(value) => write!(formatter, "*{value}"),
             Self::Cast { value, .. } => write!(formatter, "(cast){value}"),
             Self::BitCast { value, .. } => write!(formatter, "__builtin_bit_cast(..., {value})"),
+            Self::VaArg { ap, .. } => write!(formatter, "__builtin_va_arg({ap}, ...)"),
             Self::CompoundLiteral { .. } => write!(formatter, "(compound literal)"),
             Self::LabelAddr(label) => write!(formatter, "&&{label}"),
             Self::StatementExpression(_) => formatter.write_str("({ ... })"),
@@ -666,6 +672,7 @@ impl Parser {
             }
             ConstExpr::Cast { value, .. } => Self::evaluate_expr(value, is_defined),
             ConstExpr::BitCast { .. } => Err(ConstExprError::NotConstant("bit cast")),
+            ConstExpr::VaArg { .. } => Err(ConstExprError::NotConstant("va_arg")),
             ConstExpr::Unary { op, value } => {
                 if contains_wide(value) {
                     return Self::evaluate_wide(expression, is_defined)
@@ -1307,6 +1314,7 @@ impl Parser {
             Some(Token::Ident(value)) if value == "defined" => self.parse_defined(),
             Some(Token::Ident(value)) if value == "__builtin_offsetof" => self.parse_offsetof(),
             Some(Token::Ident(value)) if value == "__builtin_bit_cast" => self.parse_bit_cast(),
+            Some(Token::Ident(value)) if value == "__builtin_va_arg" => self.parse_va_arg(),
             Some(Token::Ident(value)) if value == "__builtin_types_compatible_p" => {
                 self.parse_types_compatible()
             }
@@ -1449,6 +1457,22 @@ impl Parser {
             ty,
             declarator,
             value: Box::new(value),
+        })
+    }
+
+    fn parse_va_arg(&mut self) -> Result<ConstExpr, ConstExprError> {
+        self.expect(Token::LParen)?;
+        let ap = self.parse_assignment()?;
+        self.expect(Token::Comma)?;
+        let (ty, declarator, end) = self
+            .try_parse_type_name(self.position)
+            .ok_or(ConstExprError::ExpectedTypeName)?;
+        self.position = end;
+        self.expect(Token::RParen)?;
+        Ok(ConstExpr::VaArg {
+            ap: Box::new(ap),
+            ty,
+            declarator,
         })
     }
 

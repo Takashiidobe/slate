@@ -317,6 +317,7 @@ fn is_integer_constant_expression(expression: &ConstExpr) -> bool {
         | ConstExpr::Deref(_)
         | ConstExpr::CompoundLiteral { .. }
         | ConstExpr::BitCast { .. }
+        | ConstExpr::VaArg { .. }
         | ConstExpr::LabelAddr(_)
         | ConstExpr::StatementExpression(_) => false,
     }

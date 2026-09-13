@@ -282,18 +282,14 @@ int main(void) {
 // DEFAULT-NEXT:                                       left: Identifier(
 // DEFAULT-NEXT:                                           "total",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       right: Call {
-// DEFAULT-NEXT:                                           callee: Identifier(
-// DEFAULT-NEXT:                                               "__builtin_va_arg",
+// DEFAULT-NEXT:                                       right: VaArg {
+// DEFAULT-NEXT:                                           ap: Identifier(
+// DEFAULT-NEXT:                                               "ap",
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           arguments: [
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "ap",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "_Float16",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                           ty: Floating(
+// DEFAULT-NEXT:                                               Float16,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           declarator: Abstract,
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
