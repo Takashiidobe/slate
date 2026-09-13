@@ -9,7 +9,7 @@ use num_bigint::BigInt;
 use std::collections::HashSet;
 use thiserror::Error;
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct WideInt {
     pub value: BigInt,
     pub width: u32,
@@ -521,10 +521,13 @@ fn contains_wide(expression: &ConstExpr) -> bool {
 }
 
 fn integer_value(token: &Token) -> IntegerValue {
-    token.integer_value_i128().map_or_else(
-        || IntegerValue::Arbitrary(String::from(token)),
-        IntegerValue::I128,
-    )
+    if let Some(value) = token.integer_value_i128() {
+        return IntegerValue::I128(value);
+    }
+    let Token::IntLit(spelling) = token else {
+        unreachable!("integer_value called on a non-IntLit token");
+    };
+    IntegerValue::Wide(parse_wide_integer_literal(spelling))
 }
 
 impl std::fmt::Display for FloatLiteral {

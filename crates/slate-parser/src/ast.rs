@@ -1,4 +1,4 @@
-use crate::const_expr::{BinaryOp, ConstExpr, UnaryOp};
+use crate::const_expr::{BinaryOp, ConstExpr, UnaryOp, WideInt};
 use custom_debug::Debug as CustomDebug;
 
 pub(crate) fn is_false(value: &bool) -> bool {
@@ -73,7 +73,7 @@ pub enum Designator {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum IntegerValue {
     I128(i128),
-    Arbitrary(String),
+    Wide(WideInt),
 }
 
 #[derive(Debug, Clone, PartialEq)]
