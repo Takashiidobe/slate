@@ -276,6 +276,7 @@ impl Parser {
         let ast = filter_translation_unit(
             &TranslationUnit {
                 decls: self.parse_decls(nodes)?,
+                flavor: self.flavor(),
             },
             root_file,
         );

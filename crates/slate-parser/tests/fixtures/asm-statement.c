@@ -2,7 +2,7 @@ void operands(int x, int y, int *p) {
   asm("basic %eax %0");
   __asm__ volatile inline("mov %[in], %0 %% %= %{att%|intel%} %a1 %cc2"
                           : [out] "=&r,m"(x)
-                          : [in] "+%-rm,0"(y), "[out]"(*p)
+                          : [in] "+%-rm,0"(y), "[out],m"(*p)
                           : "memory", "cc", "unwind", "%rdx", "not_a_register");
 }
 
@@ -200,6 +200,11 @@ other:
 // DEFAULT-NEXT:                                               AsmConstraintAlternative {
 // DEFAULT-NEXT:                                                   location: Matching(
 // DEFAULT-NEXT:                                                       0,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               AsmConstraintAlternative {
+// DEFAULT-NEXT:                                                   location: Letters(
+// DEFAULT-NEXT:                                                       "m",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ],

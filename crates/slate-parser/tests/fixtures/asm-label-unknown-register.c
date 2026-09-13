@@ -2,6 +2,7 @@ void locals(void) {
   register int unknown_register asm("not_a_register");
 }
 
+// SLATE-FILECHECK-FLAVOR gcc
 // SLATE-FILECHECK-DEFINES DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT

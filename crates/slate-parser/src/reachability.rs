@@ -101,6 +101,7 @@ pub fn filter_translation_unit(tu: &TranslationUnit, root_file: FileId) -> Trans
             .filter(|(id, _)| reachability.reachable.contains(id))
             .map(|(_, decl)| decl.clone())
             .collect(),
+        flavor: tu.flavor,
     }
 }
 

@@ -856,4 +856,5 @@ impl Decl {
 #[derive(Debug, Clone, PartialEq)]
 pub struct TranslationUnit {
     pub decls: Vec<SpannedDecl>,
+    pub flavor: crate::compiler_args::CompilerFlavor,
 }

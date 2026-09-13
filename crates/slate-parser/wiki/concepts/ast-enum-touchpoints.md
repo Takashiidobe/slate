@@ -45,11 +45,15 @@ the wrapper's `.value`.
   `Goto`).
 - `Stmt::Attribute` is a standalone GNU or C23 attribute declaration; it
   needs no reachability handling beyond that conservative default.
+- `src/sema.rs` — `walk_stmt` is exhaustive: a variant holding statements
+  or expressions must recurse so clang-flavor asm checks see nested
+  `asm`, register locals, and labels.
 
 ## Adding an `Expr` variant
 
 - `src/ast.rs` — `impl Display for Expr`: exhaustive, needs an arm.
-- No other file matches `ast::Expr` exhaustively (checked via
+- `src/sema.rs` — `walk_expr` is exhaustive; recurse into sub-expressions.
+- No other file matches `ast::Expr` exhaustively outside the above (checked via
   `grep -rn "Expr::" src/*.rs tests/*.rs`). `tests/filecheck.rs` matches on
   it in two places (`summarize_evaluated_decl`'s `Return` scan,
   `array_size`) but both are exhaustive over `Expr` too — see below,
@@ -108,6 +112,9 @@ is now `Err(DeclaratorError::ExpectedToken(..))`.
 - `src/sema.rs` — `is_integer_constant_expression`: exhaustive, decide
   `true`/`false` for the new construct (almost always `false` unless it's
   provably a compile-time integer constant).
+- `src/sema.rs` — `walk_const_expr` is exhaustive; recurse into
+  sub-expressions (it finds raw statement-expression tokens for label
+  lookup).
 - `ConstExpr::Elvis` is the GNU omitted-middle conditional form; preserve its
   single evaluation of the condition in evaluators and lowering.
 - `tests/filecheck.rs` — only reachable through the two `Expr`-level
