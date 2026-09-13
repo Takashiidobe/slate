@@ -298,9 +298,19 @@ fn run_error_fixture(
     flavor: Option<&str>,
     slot: usize,
 ) {
+    let file_name = fixture.file_name().unwrap().to_string_lossy();
+    let parsed_name = format!(
+        ".{}.filecheck.{}.{}.c",
+        fixture.file_stem().unwrap().to_string_lossy(),
+        std::process::id(),
+        slot
+    );
+    let parsed_fixture = fixture.with_file_name(&parsed_name);
+    std::fs::write(&parsed_fixture, fixture_source(fixture))
+        .expect("write fixture without FileCheck metadata");
     let output = Command::new(env!("CARGO_BIN_EXE_slate-parser"))
         .arg("parse")
-        .arg(fixture)
+        .arg(&parsed_fixture)
         .args(
             defines
                 .iter()
@@ -312,6 +322,7 @@ fn run_error_fixture(
         .env("NO_COLOR", "1")
         .output()
         .expect("run slate-parser failing fixture");
+    std::fs::remove_file(&parsed_fixture).expect("remove fixture without FileCheck metadata");
     assert!(
         !output.status.success(),
         "fixture unexpectedly parsed: {}",
@@ -328,7 +339,8 @@ fn run_error_fixture(
         ));
     std::fs::create_dir_all(&work).expect("create FileCheck work directory");
     let input = work.join("diagnostic.txt");
-    std::fs::write(&input, output.stderr).expect("write diagnostic");
+    let diagnostic = String::from_utf8_lossy(&output.stderr).replace(&parsed_name, &file_name);
+    std::fs::write(&input, diagnostic).expect("write diagnostic");
     let result = Command::new(filecheck())
         .arg(fixture)
         .arg(format!("--check-prefix={prefix}"))

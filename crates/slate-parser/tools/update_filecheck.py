@@ -108,19 +108,21 @@ def render(repo: Path, fixture: Path, source: str, defines: list[str], isystem: 
 def render_error(
     repo: Path, fixture: Path, source: str, defines: list[str], isystem: list[str]
 ) -> list[str]:
-    with tempfile.TemporaryDirectory(prefix=f".{fixture.stem}.filecheck.") as directory:
-        parsed_fixture = write_isolated_fixture(Path(directory), fixture, source)
+    parsed_name = f".{fixture.stem}.filecheck.{os.getpid()}.0.c"
+    parsed_fixture = fixture.with_name(parsed_name)
+    parsed_fixture.write_text(fixture_source(source), errors="surrogateescape")
+    try:
         command = ["cargo", "run", "--quiet", "--", "parse", str(parsed_fixture)]
         command.extend(f"-D{define.removeprefix('-D')}" for define in defines)
         command.extend(f"-isystem{path}" for path in isystem)
         command.extend(flavor_args(source))
         result = subprocess.run(command, cwd=repo, text=True, capture_output=True, env=_no_color_env())
-        temp_display = os.path.relpath(parsed_fixture, repo)
+    finally:
+        parsed_fixture.unlink()
     if result.returncode == 0:
         raise RuntimeError(f"expected {fixture} to fail parsing")
-    fixture_display = os.path.relpath(fixture, repo)
     return [
-        line.strip().replace(str(parsed_fixture), fixture_display).replace(temp_display, fixture_display)
+        line.strip().replace(parsed_name, fixture.name)
         for line in result.stderr.splitlines()
         if line.startswith("Error:")
         or re.match(r"^\s*(?:\d+ │|×|⚠|╭─|·|╰─)", line)
