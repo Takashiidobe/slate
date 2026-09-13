@@ -1,10 +1,35 @@
 use std::iter::Peekable;
+use std::str::FromStr;
+
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
+pub enum CompilerFlavor {
+    Gcc,
+    #[default]
+    Clang,
+    Msvc,
+}
+
+impl FromStr for CompilerFlavor {
+    type Err = String;
+
+    fn from_str(name: &str) -> Result<Self, Self::Err> {
+        match name {
+            "gcc" => Ok(Self::Gcc),
+            "clang" => Ok(Self::Clang),
+            "msvc" => Ok(Self::Msvc),
+            _ => Err(format!(
+                "unknown compiler flavor: {name} (expected gcc, clang, or msvc)"
+            )),
+        }
+    }
+}
 
 #[derive(Debug, Default, PartialEq, Eq)]
 pub struct CompilerArgs {
     pub defines: Vec<String>,
     pub standard: Option<String>,
     pub isystem: Vec<String>,
+    pub flavor: CompilerFlavor,
 }
 
 pub struct CompilerArgParser;
@@ -27,6 +52,10 @@ impl CompilerArgParser {
                 parsed
                     .isystem
                     .push(Self::value(isystem, &mut args, "-isystem")?);
+            } else if let Some(flavor) = arg.strip_prefix("--flavor=") {
+                parsed.flavor = flavor.parse()?;
+            } else if arg == "--flavor" {
+                parsed.flavor = Self::next_value(&mut args, "--flavor")?.parse()?;
             } else {
                 return Err(format!("unsupported argument: {arg}"));
             }

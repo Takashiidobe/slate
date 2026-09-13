@@ -20,6 +20,7 @@ DEFINE_RE = re.compile(r"^\s*//\s*SLATE-FILECHECK-DEFINES\s+([A-Za-z0-9_-]+)(?:\
 BEGIN_RE = re.compile(r"^// SLATE-FILECHECK-BEGIN ([A-Za-z0-9_-]+)$")
 ERROR_RE = re.compile(r"^\s*//\s*SLATE-FILECHECK-ERROR\s+([A-Za-z0-9_-]+)$")
 ISYSTEM_RE = re.compile(r"^\s*//\s*SLATE-FILECHECK-ISYSTEM\s+(.*)$")
+FLAVOR_RE = re.compile(r"^\s*//\s*SLATE-FILECHECK-FLAVOR\s+(\S+)\s*$")
 QUOTED_C_INCLUDE_RE = re.compile(r'^\s*#\s*include\s*"([^"/]+\.c)"', re.MULTILINE)
 
 
@@ -30,6 +31,14 @@ def isystem_paths(source: str) -> list[str]:
         if match:
             paths.extend(os.path.expanduser(path) for path in match.group(1).split())
     return paths
+
+
+def flavor_args(source: str) -> list[str]:
+    for line in source.splitlines():
+        match = FLAVOR_RE.match(line)
+        if match:
+            return [f"--flavor={match.group(1)}"]
+    return []
 
 
 def configurations(source: str) -> list[tuple[str, list[str]]]:
@@ -89,6 +98,7 @@ def render(repo: Path, fixture: Path, source: str, defines: list[str], isystem: 
         command = ["cargo", "run", "--quiet", "--", "parse", str(parsed_fixture)]
         command.extend(f"-D{define.removeprefix('-D')}" for define in defines)
         command.extend(f"-isystem{path}" for path in isystem)
+        command.extend(flavor_args(source))
         result = subprocess.run(command, cwd=repo, text=True, capture_output=True, env=_no_color_env())
     if result.returncode:
         raise RuntimeError(result.stderr or result.stdout)
@@ -103,6 +113,7 @@ def render_error(
         command = ["cargo", "run", "--quiet", "--", "parse", str(parsed_fixture)]
         command.extend(f"-D{define.removeprefix('-D')}" for define in defines)
         command.extend(f"-isystem{path}" for path in isystem)
+        command.extend(flavor_args(source))
         result = subprocess.run(command, cwd=repo, text=True, capture_output=True, env=_no_color_env())
         temp_display = os.path.relpath(parsed_fixture, repo)
     if result.returncode == 0:

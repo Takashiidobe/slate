@@ -4,6 +4,7 @@ mod declarator;
 mod stmt;
 
 use crate::ast::*;
+use crate::compiler_args::CompilerFlavor;
 use crate::const_expr;
 use crate::error::{FrontendError, ParseError};
 use crate::files::{Files, SearchPaths, decode_source_bytes, display_path};
@@ -135,6 +136,7 @@ pub struct Parser {
     directive_diagnostics: Vec<DirectiveDiagnostic>,
     defines: Vec<String>,
     biggest_alignment: i64,
+    flavor: CompilerFlavor,
 }
 
 pub(crate) const FALLBACK_BIGGEST_ALIGNMENT: i64 = 16;
@@ -157,12 +159,22 @@ impl Parser {
             directive_diagnostics: Vec::new(),
             defines: Vec::new(),
             biggest_alignment: FALLBACK_BIGGEST_ALIGNMENT,
+            flavor: CompilerFlavor::default(),
         }
     }
 
     pub fn with_defines(mut self, defines: impl IntoIterator<Item = String>) -> Self {
         self.defines = defines.into_iter().collect();
         self
+    }
+
+    pub fn with_flavor(mut self, flavor: CompilerFlavor) -> Self {
+        self.flavor = flavor;
+        self
+    }
+
+    pub fn flavor(&self) -> CompilerFlavor {
+        self.flavor
     }
 
     pub fn directive_diagnostics(&self) -> &[DirectiveDiagnostic] {

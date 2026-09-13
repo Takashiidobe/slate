@@ -13,7 +13,7 @@ fn main() -> miette::Result<()> {
     let mut args = env::args().skip(1);
     if args.next().as_deref() != Some("parse") {
         return Err(miette::miette!(
-            "usage: slate-parser parse <source.c> [-DNAME]"
+            "usage: slate-parser parse <source.c> [-DNAME] [--flavor=gcc|clang|msvc]"
         ));
     }
     let path = args
@@ -29,7 +29,9 @@ fn main() -> miette::Result<()> {
             .collect(),
         ..SearchPaths::default()
     };
-    let mut parser = Parser::new(search).with_defines(compiler_args.defines);
+    let mut parser = Parser::new(search)
+        .with_defines(compiler_args.defines)
+        .with_flavor(compiler_args.flavor);
     let parsed = parser.parse_file(Path::new(&path));
     report_directives(parser.directive_diagnostics())?;
     let (ast, files) = parsed?;

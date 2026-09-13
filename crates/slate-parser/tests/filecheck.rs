@@ -1,6 +1,7 @@
 use clang_ast::Node;
 use serde::Deserialize;
 use slate_parser::ast::*;
+use slate_parser::compiler_args::CompilerFlavor;
 use slate_parser::files::{SearchPaths, decode_source_bytes};
 use slate_parser::parser::Parser;
 use std::path::{Path, PathBuf};
@@ -128,6 +129,13 @@ fn expand_home(path: &str) -> String {
     )
 }
 
+fn flavor(source: &str) -> Option<String> {
+    source
+        .lines()
+        .find_map(|line| line.trim().strip_prefix("// SLATE-FILECHECK-FLAVOR "))
+        .map(|name| name.trim().to_string())
+}
+
 fn error_configurations(source: &str) -> Vec<String> {
     source
         .lines()
@@ -144,25 +152,40 @@ struct FixtureJob {
     prefix: String,
     defines: Vec<String>,
     isystem: Vec<String>,
+    flavor: Option<String>,
     error: bool,
     slot: usize,
 }
 
 fn run_job(job: FixtureJob) {
     if job.error {
-        run_error_fixture(&job.fixture, &job.prefix, &job.defines, job.slot);
+        run_error_fixture(
+            &job.fixture,
+            &job.prefix,
+            &job.defines,
+            job.flavor.as_deref(),
+            job.slot,
+        );
     } else {
         run_fixture(
             &job.fixture,
             &job.prefix,
             &job.defines,
             &job.isystem,
+            job.flavor.as_deref(),
             job.slot,
         );
     }
 }
 
-fn run_fixture(fixture: &Path, prefix: &str, defines: &[String], isystem: &[String], slot: usize) {
+fn run_fixture(
+    fixture: &Path,
+    prefix: &str,
+    defines: &[String],
+    isystem: &[String],
+    flavor: Option<&str>,
+    slot: usize,
+) {
     let source = fixture_source(fixture);
     let self_include = format!(
         "#include \"{}\"",
@@ -198,6 +221,9 @@ fn run_fixture(fixture: &Path, prefix: &str, defines: &[String], isystem: &[Stri
     }
     for path in isystem {
         command.arg(format!("-isystem{path}"));
+    }
+    if let Some(flavor) = flavor {
+        command.arg(format!("--flavor={flavor}"));
     }
     let rendered = command
         .output()
@@ -242,7 +268,7 @@ fn run_fixture(fixture: &Path, prefix: &str, defines: &[String], isystem: &[Stri
     );
 
     if std::env::var_os("SLATE_CLANG_ORACLE").is_some() {
-        assert_evaluated_matches_clang(fixture, defines, isystem);
+        assert_evaluated_matches_clang(fixture, defines, isystem, flavor);
     }
 }
 
@@ -265,7 +291,13 @@ fn fixture_source(fixture: &Path) -> String {
     result
 }
 
-fn run_error_fixture(fixture: &Path, prefix: &str, defines: &[String], slot: usize) {
+fn run_error_fixture(
+    fixture: &Path,
+    prefix: &str,
+    defines: &[String],
+    flavor: Option<&str>,
+    slot: usize,
+) {
     let output = Command::new(env!("CARGO_BIN_EXE_slate-parser"))
         .arg("parse")
         .arg(fixture)
@@ -274,6 +306,7 @@ fn run_error_fixture(fixture: &Path, prefix: &str, defines: &[String], slot: usi
                 .iter()
                 .map(|define| format!("-D{}", define.trim_start_matches("-D"))),
         )
+        .args(flavor.map(|flavor| format!("--flavor={flavor}")))
         .env_remove("FORCE_COLOR")
         .env_remove("CLICOLOR_FORCE")
         .env("NO_COLOR", "1")
@@ -313,7 +346,12 @@ fn run_error_fixture(fixture: &Path, prefix: &str, defines: &[String], slot: usi
     );
 }
 
-fn assert_evaluated_matches_clang(fixture: &Path, defines: &[String], isystem: &[String]) {
+fn assert_evaluated_matches_clang(
+    fixture: &Path,
+    defines: &[String],
+    isystem: &[String],
+    flavor: Option<&str>,
+) {
     if matches!(
         fixture.file_stem().and_then(|name| name.to_str()),
         Some(
@@ -329,11 +367,15 @@ fn assert_evaluated_matches_clang(fixture: &Path, defines: &[String], isystem: &
         system: isystem.iter().map(std::path::PathBuf::from).collect(),
         ..SearchPaths::default()
     };
-    let mut parser = Parser::new(search).with_defines(
-        defines
-            .iter()
-            .map(|define| define.trim_start_matches("-D").to_string()),
-    );
+    let mut parser = Parser::new(search)
+        .with_defines(
+            defines
+                .iter()
+                .map(|define| define.trim_start_matches("-D").to_string()),
+        )
+        .with_flavor(flavor.map_or_else(CompilerFlavor::default, |name| {
+            name.parse().expect("valid fixture flavor")
+        }));
     let (ast, _) = parser.parse_file(fixture).expect("parse fixture");
     let ours = summarize_evaluated(&ast);
     let theirs = summarize_clang(&run_clang_ast(fixture, defines, isystem));
@@ -835,6 +877,7 @@ fn fixtures_are_filechecked() {
         let source = decode_source_bytes(&std::fs::read(&fixture).expect("read fixture"));
         let configs = configurations(&source);
         let errors = error_configurations(&source);
+        let flavor = flavor(&source);
         if !errors.is_empty() {
             for (slot, prefix) in errors.iter().enumerate() {
                 let defines = configs
@@ -846,6 +889,7 @@ fn fixtures_are_filechecked() {
                     prefix: prefix.clone(),
                     defines: defines.to_vec(),
                     isystem: Vec::new(),
+                    flavor: flavor.clone(),
                     error: true,
                     slot,
                 });
@@ -864,6 +908,7 @@ fn fixtures_are_filechecked() {
                 prefix: prefix.clone(),
                 defines: defines.clone(),
                 isystem: isystem.clone(),
+                flavor: flavor.clone(),
                 error: false,
                 slot,
             });
@@ -884,6 +929,7 @@ fn fixtures_are_filechecked() {
                             prefix: job.prefix.clone(),
                             defines: job.defines.clone(),
                             isystem: job.isystem.clone(),
+                            flavor: job.flavor.clone(),
                             error: job.error,
                             slot: job.slot,
                         })
