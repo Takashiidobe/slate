@@ -536,6 +536,44 @@ impl Parser {
             }
             PPNodeKind::Code { .. } => {
                 let tokens = self.node_tokens(&nodes[0]);
+                let top_level_items = split_top_level_items(&tokens);
+                if top_level_items.len() > 1
+                    && tokens.iter().any(|token| token.spelling != token.expansion)
+                {
+                    let provenance = self.node_provenance(&nodes[0]);
+                    let mut declarations = Vec::new();
+                    for item in top_level_items {
+                        if item.as_tokens() == [Token::Semi] {
+                            continue;
+                        }
+                        let text = item
+                            .values()
+                            .map(String::from)
+                            .collect::<Vec<_>>()
+                            .join(" ");
+                        if item.last().is_some_and(|token| token.value == Token::Semi) {
+                            declarations.push(span_pp_nodes(
+                                Decl::Declaration {
+                                    declaration: self.parse_declaration_tokens(&text, &item)?,
+                                    provenance,
+                                },
+                                &nodes[..1],
+                            ));
+                        } else {
+                            let item_node = Span::cover(
+                                PPNodeKind::Code {
+                                    text,
+                                    tokens: item,
+                                    provenance,
+                                },
+                                &tokens,
+                            );
+                            let (function, _) = self.parse_function(&[item_node])?;
+                            declarations.push(span_pp_nodes(Decl::Function(function), &nodes[..1]));
+                        }
+                    }
+                    return Ok((declarations, 1));
+                }
                 if tokens.value_at(0) == Some(&Token::Keyword(Keyword::StaticAssert)) {
                     return Ok((
                         vec![nodes[0].clone().with_value(Decl::StaticAssert {
@@ -1744,6 +1782,36 @@ fn matching_paren(tokens: &[Span<Token>], open: usize) -> Option<usize> {
 
 fn top_level_semi(tokens: &[Span<Token>]) -> Option<usize> {
     top_level_token(tokens, &Token::Semi)
+}
+
+fn split_top_level_items(tokens: &[Span<Token>]) -> Vec<Vec<Span<Token>>> {
+    let mut items = Vec::new();
+    let mut start = 0;
+    let mut depth = 0i32;
+    let mut function_body = false;
+    for (index, token) in tokens.iter().enumerate() {
+        match token.value {
+            Token::LParen | Token::LBracket => depth += 1,
+            Token::LBrace => {
+                function_body = depth == 0
+                    && index > start
+                    && tokens.value_at(index - 1) == Some(&Token::RParen);
+                depth += 1;
+            }
+            Token::RParen | Token::RBracket | Token::RBrace => depth -= 1,
+            _ => {}
+        }
+        let is_function_end = function_body && depth == 0 && token.value == Token::RBrace;
+        if depth == 0 && (token.value == Token::Semi || is_function_end) {
+            items.push(tokens[start..=index].to_vec());
+            start = index + 1;
+            function_body = false;
+        }
+    }
+    if start < tokens.len() {
+        items.push(tokens[start..].to_vec());
+    }
+    items
 }
 
 fn top_level_token(tokens: &[Span<Token>], target: &Token) -> Option<usize> {
