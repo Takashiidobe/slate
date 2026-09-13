@@ -680,7 +680,7 @@ impl Lexer {
                 "typedef" => Token::Keyword(Keyword::Typedef),
                 "unsigned" => Token::Keyword(Keyword::Unsigned),
                 "void" => Token::Keyword(Keyword::Void),
-                "_Complex" | "__complex__" => Token::Keyword(Keyword::Complex),
+                "_Complex" | "__complex__" | "__complex" => Token::Keyword(Keyword::Complex),
                 "struct" => Token::Keyword(Keyword::Struct),
                 "union" => Token::Keyword(Keyword::Union),
                 "enum" => Token::Keyword(Keyword::Enum),

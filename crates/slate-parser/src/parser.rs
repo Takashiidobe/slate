@@ -3667,16 +3667,50 @@ impl Parser {
     }
 }
 
+fn string_literal_content(token: &Token) -> Option<&str> {
+    match token {
+        Token::StringLit(value)
+        | Token::Utf8StringLit(value)
+        | Token::Utf16StringLit(value)
+        | Token::Utf32StringLit(value)
+        | Token::WideStringLit(value) => Some(value),
+        _ => None,
+    }
+}
+
+fn concatenated_string_literal(previous: &Token, next: &Token, content: String) -> Token {
+    match (previous, next) {
+        (Token::StringLit(_), Token::StringLit(_)) => Token::StringLit(content),
+        (Token::StringLit(_), other) => match other {
+            Token::Utf8StringLit(_) => Token::Utf8StringLit(content),
+            Token::Utf16StringLit(_) => Token::Utf16StringLit(content),
+            Token::Utf32StringLit(_) => Token::Utf32StringLit(content),
+            Token::WideStringLit(_) => Token::WideStringLit(content),
+            _ => unreachable!("caller only merges string literal tokens"),
+        },
+        (Token::Utf8StringLit(_), _) => Token::Utf8StringLit(content),
+        (Token::Utf16StringLit(_), _) => Token::Utf16StringLit(content),
+        (Token::Utf32StringLit(_), _) => Token::Utf32StringLit(content),
+        (Token::WideStringLit(_), _) => Token::WideStringLit(content),
+        _ => unreachable!("caller only merges string literal tokens"),
+    }
+}
+
 fn coalesce_string_literals(tokens: &[Span<Token>]) -> Vec<Span<Token>> {
-    let mut result = Vec::with_capacity(tokens.len());
+    let mut result: Vec<Span<Token>> = Vec::with_capacity(tokens.len());
     for token in tokens {
         let Some(previous) = result.last_mut() else {
             result.push(token.clone());
             continue;
         };
-        match (&mut previous.value, &token.value) {
-            (Token::StringLit(left), Token::StringLit(right)) => {
-                left.push_str(right);
+        match (
+            string_literal_content(&previous.value),
+            string_literal_content(&token.value),
+        ) {
+            (Some(left), Some(right)) => {
+                let content = format!("{left}{right}");
+                previous.value =
+                    concatenated_string_literal(&previous.value, &token.value, content);
                 previous.spelling = previous.spelling.through(token.spelling);
                 previous.expansion = previous.expansion.through(token.expansion);
             }

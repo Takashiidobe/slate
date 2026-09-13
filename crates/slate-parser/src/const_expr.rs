@@ -1141,7 +1141,7 @@ impl Parser {
             return Ok(ConstExpr::AlignOf { ty, declarator });
         }
         if let Some(Token::Ident(name)) = self.peek()
-            && matches!(name.as_str(), "__real__" | "__imag__")
+            && matches!(name.as_str(), "__real__" | "__imag__" | "__real" | "__imag")
         {
             let name = name.clone();
             self.take();
