@@ -78,7 +78,14 @@ impl Preprocessor<'_> {
         if self.pragma_once.contains(&once_key) {
             return Ok(Vec::new());
         }
-        if self.open_stack.contains(&resolved) {
+        if self.open_stack.contains(&once_key) {
+            if self
+                .include_guards
+                .get(&once_key)
+                .is_some_and(|guard| self.macros.contains_key(guard))
+            {
+                return Ok(Vec::new());
+            }
             return Err(PPFailure::at(
                 directive,
                 PPErrorKind::IncludeCycle(display_path(&resolved)),
@@ -86,7 +93,7 @@ impl Preprocessor<'_> {
         }
         let src = read_source(&resolved).map_err(|kind| PPFailure::at(directive, kind))?;
         let file = self.files.intern(resolved.clone(), kind);
-        self.open_stack.push(resolved);
+        self.open_stack.push(once_key);
         let enclosing_header = self.outermost_header;
         self.outermost_header.get_or_insert(file);
         let nodes = self.parse_source(&src, file);
