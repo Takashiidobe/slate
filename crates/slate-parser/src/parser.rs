@@ -638,18 +638,23 @@ impl Parser {
                     }
                     index
                 };
+                let tag_body_follows = nodes.get(1).is_some_and(|node| {
+                    self.node_tokens(node).value_at(0) == Some(&Token::LBrace)
+                });
                 if matches!(
                     tokens.value_at(tag_keyword_index),
                     Some(Token::Keyword(
                         Keyword::Struct | Keyword::Union | Keyword::Enum
                     ))
-                ) && first_lbrace.is_some_and(|brace_index| {
-                    first_equal.is_none_or(|equal_index| brace_index < equal_index)
-                        && brace_index
-                            .checked_sub(1)
-                            .and_then(|index| tokens.value_at(index))
-                            != Some(&Token::RParen)
-                }) {
+                ) && (tag_body_follows
+                    || first_lbrace.is_some_and(|brace_index| {
+                        first_equal.is_none_or(|equal_index| brace_index < equal_index)
+                            && brace_index
+                                .checked_sub(1)
+                                .and_then(|index| tokens.value_at(index))
+                                != Some(&Token::RParen)
+                    }))
+                {
                     return self
                         .parse_tag_definition(nodes)
                         .map(|result| span_decl_result(result, nodes));
@@ -906,19 +911,25 @@ impl Parser {
             return Ok((decls, consumed));
         }
 
-        let mut depth = 1i32;
+        let mut depth = 0i32;
+        let mut opened = false;
         let mut close = None;
-        for (offset, node) in nodes[1..].iter().enumerate() {
+        for (offset, node) in nodes.iter().enumerate() {
             let PPNodeKind::Code { .. } = &node.value else {
                 continue;
             };
             for token in self.node_tokens(node) {
                 match token.value {
-                    Token::LBrace => depth += 1,
+                    Token::LBrace => {
+                        opened = true;
+                        depth += 1;
+                    }
                     Token::RBrace => {
-                        depth -= 1;
-                        if depth == 0 {
-                            close = Some(offset + 1);
+                        if opened {
+                            depth -= 1;
+                        }
+                        if opened && depth == 0 {
+                            close = Some(offset);
                             break;
                         }
                     }
@@ -961,43 +972,51 @@ impl Parser {
         } else {
             None
         };
+        let body_start = if self.node_tokens(&nodes[1]).value_at(0) == Some(&Token::LBrace) {
+            2
+        } else {
+            1
+        };
         let provenance = self.node_provenance(&nodes[0]);
         let tag_decl = if kind == TagKind::Enum {
             let mut enumerators = Vec::new();
             let mut values = HashMap::new();
             let mut next_value = 0i64;
-            for node in &nodes[1..close] {
-                let text = self.node_text(node);
-                if matches!(node.value, PPNodeKind::Comment { .. }) {
+            let body_tokens = self.nodes_tokens(&nodes[body_start..close]);
+            for segment in split_top_level(&body_tokens, &Token::Comma) {
+                let segment = segment
+                    .into_iter()
+                    .filter(|token| !matches!(token.value, Token::Comment(_)))
+                    .collect::<Vec<_>>();
+                if segment.is_empty() {
                     continue;
                 }
-                let tokens = self.node_tokens(node);
-                if tokens.is_empty() {
-                    continue;
-                }
-                let Some(Token::Ident(name)) = tokens.value_at(0) else {
-                    return Err(self.error_at(Loc::whole(text), "expected enumerator"));
+                let Some(Token::Ident(enumerator_name)) = segment.value_at(0) else {
+                    return Err(self.error_at(Loc::whole(code), "expected enumerator"));
                 };
-                let explicit_value = match tokens.value_at(1) {
-                    Some(Token::Comma) | None => None,
+                let explicit_value = match segment.value_at(1) {
+                    None => None,
                     Some(Token::Equal) => {
-                        let end = tokens
-                            .values()
-                            .position(|token| token == &Token::Comma)
-                            .unwrap_or(tokens.len());
-                        Some(evaluate_enum_expression(&tokens[2..end], &values).map_err(
-                            |error| self.error_at_tokens(&tokens[2..end], 0, error.to_string()),
+                        Some(evaluate_enum_expression(&segment[2..], &values).map_err(
+                            |error| self.error_at_tokens(&segment[2..], 0, error.to_string()),
                         )?)
                     }
                     _ => {
-                        return Err(self.error_at(Loc::whole(text), "expected enumerator value"));
+                        return Err(
+                            self.error_at(Loc::whole(code), "expected enumerator value")
+                        );
                     }
                 };
-                record_enum_value(&mut values, &mut next_value, name, explicit_value);
+                record_enum_value(
+                    &mut values,
+                    &mut next_value,
+                    enumerator_name,
+                    explicit_value,
+                );
                 enumerators.push(Enumerator {
-                    name: name.clone(),
+                    name: enumerator_name.clone(),
                     value: explicit_value
-                        .map(|value| span_tokens(Expr::IntLit(value), &tokens[2..])),
+                        .map(|value| span_tokens(Expr::IntLit(value), &segment[2..])),
                 });
             }
             Decl::Enum(EnumDecl {
@@ -1006,7 +1025,7 @@ impl Parser {
                 provenance,
             })
         } else {
-            let fields = self.parse_field_items(&nodes[1..close])?;
+            let fields = self.parse_field_items(&nodes[body_start..close])?;
             Decl::Record(RecordDecl {
                 kind,
                 name: name.clone(),

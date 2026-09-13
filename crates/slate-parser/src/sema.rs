@@ -293,6 +293,12 @@ fn is_integer_constant_expression(expression: &ConstExpr) -> bool {
                 && is_integer_constant_expression(then_value)
                 && is_integer_constant_expression(else_value)
         }
+        ConstExpr::Elvis {
+            condition,
+            else_value,
+        } => {
+            is_integer_constant_expression(condition) && is_integer_constant_expression(else_value)
+        }
         ConstExpr::Identifier(_)
         | ConstExpr::StringLit(_)
         | ConstExpr::Utf8StringLit(_)

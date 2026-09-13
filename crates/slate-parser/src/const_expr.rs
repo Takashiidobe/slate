@@ -184,6 +184,10 @@ pub enum ConstExpr {
         then_value: Box<Self>,
         else_value: Box<Self>,
     },
+    Elvis {
+        condition: Box<Self>,
+        else_value: Box<Self>,
+    },
     Comma(Box<Self>, Box<Self>),
     Call {
         callee: Box<Self>,
@@ -269,6 +273,10 @@ impl std::fmt::Display for ConstExpr {
                 then_value,
                 else_value,
             } => write!(formatter, "({condition} ? {then_value} : {else_value})"),
+            Self::Elvis {
+                condition,
+                else_value,
+            } => write!(formatter, "({condition} ?: {else_value})"),
             Self::Comma(left, right) => write!(formatter, "({left}, {right})"),
             Self::Call { callee, arguments } => {
                 write!(formatter, "{callee}(")?;
@@ -523,6 +531,10 @@ fn contains_wide(expression: &ConstExpr) -> bool {
             else_value,
             ..
         } => contains_wide(then_value) || contains_wide(else_value),
+        ConstExpr::Elvis {
+            condition,
+            else_value,
+        } => contains_wide(condition) || contains_wide(else_value),
         ConstExpr::Comma(_, right) => contains_wide(right),
         _ => false,
     }
@@ -736,6 +748,17 @@ impl Parser {
                     Self::evaluate_expr(else_value, is_defined)
                 }
             }
+            ConstExpr::Elvis {
+                condition,
+                else_value,
+            } => {
+                let value = Self::evaluate_expr(condition, is_defined)?;
+                if value != 0 {
+                    Ok(value)
+                } else {
+                    Self::evaluate_expr(else_value, is_defined)
+                }
+            }
             ConstExpr::Comma(left, right) => {
                 Self::evaluate_expr(left, is_defined)?;
                 Self::evaluate_expr(right, is_defined)
@@ -829,6 +852,17 @@ impl Parser {
             } => {
                 if !Self::evaluate_wide(condition, is_defined)?.is_zero() {
                     Self::evaluate_wide(then_value, is_defined)
+                } else {
+                    Self::evaluate_wide(else_value, is_defined)
+                }
+            }
+            ConstExpr::Elvis {
+                condition,
+                else_value,
+            } => {
+                let value = Self::evaluate_wide(condition, is_defined)?;
+                if !value.is_zero() {
+                    Ok(value)
                 } else {
                     Self::evaluate_wide(else_value, is_defined)
                 }
@@ -944,11 +978,15 @@ impl Parser {
         let condition = self.parse_binary(0)?;
         if self.peek() == Some(&Token::Question) {
             self.take();
-            let then_value = if self.peek() == Some(&Token::Colon) {
-                condition.clone()
-            } else {
-                self.parse_comma()?
-            };
+            if self.peek() == Some(&Token::Colon) {
+                self.take();
+                let else_value = self.parse_conditional()?;
+                return Ok(ConstExpr::Elvis {
+                    condition: Box::new(condition),
+                    else_value: Box::new(else_value),
+                });
+            }
+            let then_value = self.parse_comma()?;
             self.expect(Token::Colon)?;
             let else_value = self.parse_conditional()?;
             return Ok(ConstExpr::Ternary {

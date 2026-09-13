@@ -108,6 +108,8 @@ is now `Err(DeclaratorError::ExpectedToken(..))`.
 - `src/sema.rs` — `is_integer_constant_expression`: exhaustive, decide
   `true`/`false` for the new construct (almost always `false` unless it's
   provably a compile-time integer constant).
+- `ConstExpr::Elvis` is the GNU omitted-middle conditional form; preserve its
+  single evaluation of the condition in evaluators and lowering.
 - `tests/filecheck.rs` — only reachable through the two `Expr`-level
   matches above (`Expr::Const(_)` catches it as an opaque case there), so
   usually no separate touch needed unless the test wants to unwrap and
