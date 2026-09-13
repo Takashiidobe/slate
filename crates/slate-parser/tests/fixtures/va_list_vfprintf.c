@@ -64,7 +64,7 @@ int main(void) {
 // DEFAULT-NEXT:                   Const(
 // DEFAULT-NEXT:                       Call {
 // DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "__builtin_va_start",
+// DEFAULT-NEXT:                               "__builtin_c23_va_start",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           arguments: [
 // DEFAULT-NEXT:                               Identifier(

@@ -484,6 +484,7 @@ impl Parser {
             ConstExpr::Generic { .. } => Err(ConstExprError::NotConstant("generic selection")),
             ConstExpr::Float(_) => Err(ConstExprError::NotConstant("floating literal")),
             ConstExpr::Identifier(name) => match is_defined {
+                Some(_) if name == "true" => Ok(1),
                 Some(_) => Ok(0),
                 None => Err(ConstExprError::UnsupportedIdentifier(name.clone())),
             },
@@ -842,7 +843,7 @@ impl Parser {
     }
 
     fn try_parse_type_name(&self, start: usize) -> Option<(Box<CType>, Declarator, usize)> {
-        let mut declarator_parser = DeclaratorParser::new(&self.tokens, start);
+        let mut declarator_parser = DeclaratorParser::new(&self.tokens, start, &self.typedef_names);
         let leading = declarator_parser.take_qualifiers();
         let mut ty = declarator_parser.parse_base_type().ok()?;
         let trailing = declarator_parser.take_qualifiers();

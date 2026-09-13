@@ -6,3 +6,5 @@
 #define __SLATE_OBJ_ELF 1
 #define __SLATE_WORDSIZE_64 1
 #define __SLATE_ENDIAN_LITTLE 1
+
+#define __STDC_VERSION__ 202311L

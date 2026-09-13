@@ -30,10 +30,6 @@ pub enum Expr {
         right: Box<SpannedExpr>,
     },
     SizeOf(Box<SpannedExpr>),
-    Generic {
-        controlling: Box<SpannedExpr>,
-        associations: Vec<GenericAssociation>,
-    },
     StatementExpression(Vec<SpannedStmt>),
 }
 
@@ -53,14 +49,6 @@ impl std::fmt::Display for Expr {
                 write!(formatter, "({left} {} {right})", <&str>::from(*op))
             }
             Self::SizeOf(value) => write!(formatter, "sizeof({value})"),
-            Self::Generic {
-                controlling,
-                associations,
-            } => write!(
-                formatter,
-                "_Generic({controlling}, {} )",
-                associations.len()
-            ),
             Self::StatementExpression(statements) => {
                 write!(
                     formatter,
@@ -70,12 +58,6 @@ impl std::fmt::Display for Expr {
             }
         }
     }
-}
-
-#[derive(Debug, Clone, PartialEq)]
-pub struct GenericAssociation {
-    pub type_name: Option<String>,
-    pub expression: SpannedExpr,
 }
 
 #[derive(Debug, Clone, PartialEq)]

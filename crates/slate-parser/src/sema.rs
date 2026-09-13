@@ -78,7 +78,7 @@ impl TranslationUnit {
                 } => {
                     if matches!(declaration.specifiers.ty, CType::Void)
                         && declaration.declarator.name().is_some()
-                        && !matches!(declaration.declarator, Declarator::Function { .. })
+                        && !declarator_indirects_void(&declaration.declarator)
                     {
                         errors.push(error(
                             *provenance,
@@ -177,6 +177,14 @@ impl SemaError {
         self.source_code = NamedSource::new(display_path(path), source).with_language("C");
         self.span = SourceSpan::new(loc.offset.into(), loc.length.max(1));
         self
+    }
+}
+
+fn declarator_indirects_void(declarator: &Declarator) -> bool {
+    match declarator {
+        Declarator::Grouped(inner) => declarator_indirects_void(inner),
+        Declarator::Pointer { .. } | Declarator::Function { .. } => true,
+        Declarator::Abstract | Declarator::Name(_) | Declarator::Array { .. } => false,
     }
 }
 

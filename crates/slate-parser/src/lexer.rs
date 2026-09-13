@@ -706,7 +706,12 @@ impl Lexer {
         let mut i = start;
         while i < self.chars.len()
             && (self.chars[i].is_ascii_alphanumeric()
-                || matches!(self.chars[i], '\'' | '.')
+                || self.chars[i] == '.'
+                || (self.chars[i] == '\''
+                    && self
+                        .chars
+                        .get(i + 1)
+                        .is_some_and(char::is_ascii_alphanumeric))
                 || (self.chars[i] == '+' || self.chars[i] == '-')
                     && i > 0
                     && matches!(self.chars[i - 1], 'e' | 'E' | 'p' | 'P'))

@@ -569,10 +569,7 @@ int main(void) {
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           storage: Static,
 // DEFAULT-NEXT:           attributes: [
-// DEFAULT-NEXT:               Unknown {
-// DEFAULT-NEXT:                   name: "_Noreturn",
-// DEFAULT-NEXT:                   arguments: [],
-// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               NoReturn,
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
@@ -1002,7 +999,7 @@ int main(void) {
 // DEFAULT-NEXT:                   Const(
 // DEFAULT-NEXT:                       Call {
 // DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "va_start",
+// DEFAULT-NEXT:                               "__builtin_c23_va_start",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           arguments: [
 // DEFAULT-NEXT:                               Identifier(
@@ -1190,8 +1187,10 @@ int main(void) {
 // DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:                           ty: TypeOf(
 // DEFAULT-NEXT:                               Expression(
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "inferred_value",
+// DEFAULT-NEXT:                                   Const(
+// DEFAULT-NEXT:                                       Identifier(
+// DEFAULT-NEXT:                                           "inferred_value",
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
@@ -1242,8 +1241,10 @@ int main(void) {
 // DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:                           ty: TypeOfUnqual(
 // DEFAULT-NEXT:                               Expression(
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "qualified_value",
+// DEFAULT-NEXT:                                   Const(
+// DEFAULT-NEXT:                                       Identifier(
+// DEFAULT-NEXT:                                           "qualified_value",
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
@@ -2449,7 +2450,7 @@ int main(void) {
 // DEFAULT-NEXT:                           value: Binary {
 // DEFAULT-NEXT:                               op: Equal,
 // DEFAULT-NEXT:                               left: Integer(
-// DEFAULT-NEXT:                                   201710,
+// DEFAULT-NEXT:                                   202311,
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               right: Integer(
 // DEFAULT-NEXT:                                   202311,

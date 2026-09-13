@@ -200,7 +200,11 @@ impl Parser {
         _code: &str,
         tokens: &[Span<Token>],
     ) -> Result<Declaration, ParseError> {
-        let mut parser = DeclaratorParser { tokens, pos: 0 };
+        let mut parser = DeclaratorParser {
+            tokens,
+            pos: 0,
+            typedef_names: &self.typedef_names,
+        };
         while parser.peek() == Some(&Token::Ident("__extension__".to_string())) {
             parser.pos += 1;
         }
@@ -1086,6 +1090,7 @@ impl Parser {
     fn nodes_tokens(&self, nodes: &[PPNode]) -> Vec<Span<Token>> {
         nodes
             .iter()
+            .filter(|node| matches!(node.value, PPNodeKind::Code { .. }))
             .flat_map(|node| self.node_tokens(node))
             .collect()
     }
@@ -1481,7 +1486,7 @@ fn signature_node_span(nodes: &[PPNode]) -> usize {
     let mut depth = 0i32;
     for (index, node) in nodes.iter().enumerate() {
         let PPNodeKind::Code { text, .. } = &node.value else {
-            return index.max(1);
+            continue;
         };
         for token in lex(text) {
             match token.value {
@@ -1749,11 +1754,20 @@ impl From<String> for DeclaratorError {
 pub(crate) struct DeclaratorParser<'a> {
     tokens: &'a [Span<Token>],
     pos: usize,
+    typedef_names: &'a HashSet<String>,
 }
 
 impl<'a> DeclaratorParser<'a> {
-    pub(crate) fn new(tokens: &'a [Span<Token>], pos: usize) -> Self {
-        Self { tokens, pos }
+    pub(crate) fn new(
+        tokens: &'a [Span<Token>],
+        pos: usize,
+        typedef_names: &'a HashSet<String>,
+    ) -> Self {
+        Self {
+            tokens,
+            pos,
+            typedef_names,
+        }
     }
 
     pub(crate) fn position(&self) -> usize {
@@ -2291,21 +2305,22 @@ impl<'a> DeclaratorParser<'a> {
             DeclaratorError::ExpectedToken(Token::RParen, "after typeof expression"),
         )?;
         let tokens = &self.tokens[start..self.pos - 1];
-        let expression = match tokens {
-            [single] => match &single.value {
-                Token::Ident(name) => Expr::Identifier(name.clone()),
-                token @ Token::IntLit(_) => Expr::IntLit(
-                    token
-                        .integer_value()
-                        .unwrap_or_else(|| panic!("integer literal does not fit i64")),
-                ),
-                _ => const_expr::string_literal_expr(Some(&single.value))
-                    .ok_or(DeclaratorError::UnsupportedTypeofExpression)?,
-            },
-            _ => return Err(DeclaratorError::UnsupportedTypeofExpression),
-        };
+        if tokens.is_empty() {
+            return Err(DeclaratorError::UnsupportedTypeofExpression);
+        }
+        if let [single] = tokens
+            && let Some(expression) = const_expr::string_literal_expr(Some(&single.value))
+        {
+            return Ok(TypeOfOperand::Expression(Box::new(
+                single.clone().with_value(expression),
+            )));
+        }
+        let tokens = coalesce_string_literals(tokens);
+        let expression = const_expr::Parser::parse_expression(&tokens, self.typedef_names)
+            .map_err(|error| DeclaratorError::Other(error.to_string()))?;
         Ok(TypeOfOperand::Expression(Box::new(span_tokens(
-            expression, tokens,
+            Expr::Const(Box::new(expression)),
+            &tokens,
         ))))
     }
 
@@ -2445,7 +2460,12 @@ impl<'a> DeclaratorParser<'a> {
             Some(Token::LParen) => {
                 self.pos += 1;
                 let declarator = self.parse_declarator(allow_abstract)?;
-                assert!(self.matches(Token::RParen), "expected `)` in declarator");
+                if !self.matches(Token::RParen) {
+                    return Err(DeclaratorError::ExpectedToken(
+                        Token::RParen,
+                        "in declarator",
+                    ));
+                }
                 Declarator::Grouped(Box::new(declarator))
             }
             _ if allow_abstract => Declarator::Abstract,
@@ -2757,6 +2777,7 @@ impl Parser {
         let mut return_type_parser = DeclaratorParser {
             tokens: &sig_tokens,
             pos: index,
+            typedef_names: &self.typedef_names,
         };
         let mut ret_type = return_type_parser
             .parse_base_type()
@@ -2801,6 +2822,7 @@ impl Parser {
         let mut declarator_parser = DeclaratorParser {
             tokens: &sig_tokens,
             pos: name_index + 1,
+            typedef_names: &self.typedef_names,
         };
         let (parameters, variadic) = declarator_parser
             .parse_parameters()
@@ -3023,7 +3045,7 @@ impl Parser {
             }
             index += 1;
         }
-        let mut return_type_parser = DeclaratorParser::new(tokens, index);
+        let mut return_type_parser = DeclaratorParser::new(tokens, index, &self.typedef_names);
         let Ok(mut ret_type) = return_type_parser.parse_base_type() else {
             return Ok(None);
         };
@@ -3041,7 +3063,8 @@ impl Parser {
         if tokens.value_at(name_index + 1) != Some(&Token::LParen) {
             return Ok(None);
         }
-        let mut declarator_parser = DeclaratorParser::new(tokens, name_index + 1);
+        let mut declarator_parser =
+            DeclaratorParser::new(tokens, name_index + 1, &self.typedef_names);
         let Ok((parameters, variadic)) = declarator_parser.parse_parameters() else {
             return Ok(None);
         };
@@ -3096,7 +3119,7 @@ impl Parser {
             Ok(result) => result,
             Err(_) => return fallback,
         };
-        let mut parser = DeclaratorParser::new(tokens, position);
+        let mut parser = DeclaratorParser::new(tokens, position, &self.typedef_names);
         loop {
             if parser.take_qualifier().is_some() {
                 continue;
@@ -3487,60 +3510,6 @@ impl Parser {
     ) -> Result<SpannedExpr, ParseError> {
         if tokens.is_empty() {
             return Err(self.error_at(Loc::whole(code), "expected expression"));
-        }
-        if let Some(Token::Ident(name)) = tokens.value_at(0)
-            && name == "_Generic"
-        {
-            if tokens.value_at(1) != Some(&Token::LParen) {
-                return Err(self.error_at(Loc::whole(code), "expected `(` after `_Generic`"));
-            }
-            let Some(close) = tokens.len().checked_sub(1) else {
-                return Err(self.error_at(Loc::whole(code), "expected `)` after `_Generic`"));
-            };
-            if tokens.value_at(close) != Some(&Token::RParen) {
-                return Err(self.error_at(Loc::whole(code), "expected `)` after `_Generic`"));
-            }
-            let Some(comma) =
-                top_level_token(&tokens[2..close], &Token::Comma).map(|position| position + 2)
-            else {
-                return Err(self.error_at(Loc::whole(code), "expected `,` in `_Generic`"));
-            };
-            let controlling = self.parse_expression(code, &tokens[2..comma])?;
-            let mut associations = Vec::new();
-            let mut start = comma + 1;
-            while start < close {
-                let Some(colon) = top_level_token(&tokens[start..close], &Token::Colon)
-                    .map(|position| start + position)
-                else {
-                    return Err(
-                        self.error_at(Loc::whole(code), "expected `:` in `_Generic` association")
-                    );
-                };
-                let expression_end = top_level_token(&tokens[colon + 1..close], &Token::Comma)
-                    .map_or(close, |position| colon + 1 + position);
-                let type_name = match &tokens[start].value {
-                    Token::Keyword(Keyword::Default) => None,
-                    _ => Some(
-                        tokens[start..colon]
-                            .values()
-                            .map(String::from)
-                            .collect::<Vec<_>>()
-                            .join(" "),
-                    ),
-                };
-                associations.push(GenericAssociation {
-                    type_name,
-                    expression: self.parse_expression(code, &tokens[colon + 1..expression_end])?,
-                });
-                start = expression_end + 1;
-            }
-            return Ok(span_tokens(
-                Expr::Generic {
-                    controlling: Box::new(controlling),
-                    associations,
-                },
-                tokens,
-            ));
         }
         if let [single] = tokens
             && let Some(expression) = const_expr::string_literal_expr(Some(&single.value))

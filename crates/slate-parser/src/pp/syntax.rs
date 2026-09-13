@@ -154,7 +154,61 @@ fn logical_lines(tokens: Vec<Span<Token>>) -> Vec<LogicalLine> {
     if !current.comments.is_empty() || !current.tokens.is_empty() {
         lines.push(current);
     }
-    lines
+    merge_open_lines(lines)
+}
+
+fn is_directive_line(line: &LogicalLine) -> bool {
+    line.tokens
+        .first()
+        .is_some_and(|token| token.value == Token::Hash)
+}
+
+fn paren_depth(line: &LogicalLine) -> i32 {
+    line.tokens
+        .iter()
+        .fold(0i32, |depth, token| match token.value {
+            Token::LParen | Token::LBracket => depth + 1,
+            Token::RParen | Token::RBracket => depth - 1,
+            _ => depth,
+        })
+}
+
+fn merge_open_lines(lines: Vec<LogicalLine>) -> Vec<LogicalLine> {
+    let mut merged = Vec::with_capacity(lines.len());
+    let mut lines = lines.into_iter();
+    while let Some(mut line) = lines.next() {
+        if is_directive_line(&line) {
+            merged.push(line);
+            continue;
+        }
+        let mut depth = paren_depth(&line);
+        let mut deferred_comments = Vec::new();
+        while depth > 0 {
+            let Some(next) = lines.next() else { break };
+            if is_directive_line(&next) {
+                merged.push(line);
+                merged.push(LogicalLine {
+                    comments: deferred_comments,
+                    tokens: Vec::new(),
+                });
+                line = next;
+                depth = 0;
+                deferred_comments = Vec::new();
+                break;
+            }
+            depth += paren_depth(&next);
+            deferred_comments.extend(next.comments);
+            line.tokens.extend(next.tokens);
+        }
+        merged.push(line);
+        if !deferred_comments.is_empty() {
+            merged.push(LogicalLine {
+                comments: deferred_comments,
+                tokens: Vec::new(),
+            });
+        }
+    }
+    merged
 }
 
 struct GroupParser<'a> {

@@ -82,10 +82,7 @@ int main(void) {
 // DEFAULT-NEXT:               header: None,
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           attributes: [
-// DEFAULT-NEXT:               Unknown {
-// DEFAULT-NEXT:                   name: "_Noreturn",
-// DEFAULT-NEXT:                   arguments: [],
-// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               NoReturn,
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )

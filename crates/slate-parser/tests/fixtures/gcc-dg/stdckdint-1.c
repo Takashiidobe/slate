@@ -641,9 +641,9 @@ int main() {
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               StaticAssert(
 // DEFAULT-NEXT:                   StaticAssert {
-// DEFAULT-NEXT:                       condition: Generic {
-// DEFAULT-NEXT:                           controlling: Const(
-// DEFAULT-NEXT:                               Call {
+// DEFAULT-NEXT:                       condition: Const(
+// DEFAULT-NEXT:                           Generic {
+// DEFAULT-NEXT:                               controlling: Call {
 // DEFAULT-NEXT:                                   callee: Identifier(
 // DEFAULT-NEXT:                                       "__builtin_add_overflow",
 // DEFAULT-NEXT:                                   ),
@@ -661,35 +661,31 @@ int main() {
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           associations: [
-// DEFAULT-NEXT:                               GenericAssociation {
-// DEFAULT-NEXT:                                   type_name: Some(
-// DEFAULT-NEXT:                                       "_Bool",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   expression: Const(
-// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                               associations: [
+// DEFAULT-NEXT:                                   ConstGenericAssociation {
+// DEFAULT-NEXT:                                       type_name: Some(
+// DEFAULT-NEXT:                                           "_Bool",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       expression: Integer(
 // DEFAULT-NEXT:                                           1,
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               GenericAssociation {
-// DEFAULT-NEXT:                                   type_name: None,
-// DEFAULT-NEXT:                                   expression: Const(
-// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   ConstGenericAssociation {
+// DEFAULT-NEXT:                                       type_name: None,
+// DEFAULT-NEXT:                                       expression: Integer(
 // DEFAULT-NEXT:                                           0,
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               StaticAssert(
 // DEFAULT-NEXT:                   StaticAssert {
-// DEFAULT-NEXT:                       condition: Generic {
-// DEFAULT-NEXT:                           controlling: Const(
-// DEFAULT-NEXT:                               Call {
+// DEFAULT-NEXT:                       condition: Const(
+// DEFAULT-NEXT:                           Generic {
+// DEFAULT-NEXT:                               controlling: Call {
 // DEFAULT-NEXT:                                   callee: Identifier(
 // DEFAULT-NEXT:                                       "__builtin_sub_overflow",
 // DEFAULT-NEXT:                                   ),
@@ -707,35 +703,31 @@ int main() {
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           associations: [
-// DEFAULT-NEXT:                               GenericAssociation {
-// DEFAULT-NEXT:                                   type_name: Some(
-// DEFAULT-NEXT:                                       "_Bool",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   expression: Const(
-// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                               associations: [
+// DEFAULT-NEXT:                                   ConstGenericAssociation {
+// DEFAULT-NEXT:                                       type_name: Some(
+// DEFAULT-NEXT:                                           "_Bool",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       expression: Integer(
 // DEFAULT-NEXT:                                           1,
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               GenericAssociation {
-// DEFAULT-NEXT:                                   type_name: None,
-// DEFAULT-NEXT:                                   expression: Const(
-// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   ConstGenericAssociation {
+// DEFAULT-NEXT:                                       type_name: None,
+// DEFAULT-NEXT:                                       expression: Integer(
 // DEFAULT-NEXT:                                           0,
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               StaticAssert(
 // DEFAULT-NEXT:                   StaticAssert {
-// DEFAULT-NEXT:                       condition: Generic {
-// DEFAULT-NEXT:                           controlling: Const(
-// DEFAULT-NEXT:                               Call {
+// DEFAULT-NEXT:                       condition: Const(
+// DEFAULT-NEXT:                           Generic {
+// DEFAULT-NEXT:                               controlling: Call {
 // DEFAULT-NEXT:                                   callee: Identifier(
 // DEFAULT-NEXT:                                       "__builtin_mul_overflow",
 // DEFAULT-NEXT:                                   ),
@@ -753,28 +745,24 @@ int main() {
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           associations: [
-// DEFAULT-NEXT:                               GenericAssociation {
-// DEFAULT-NEXT:                                   type_name: Some(
-// DEFAULT-NEXT:                                       "_Bool",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   expression: Const(
-// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                               associations: [
+// DEFAULT-NEXT:                                   ConstGenericAssociation {
+// DEFAULT-NEXT:                                       type_name: Some(
+// DEFAULT-NEXT:                                           "_Bool",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       expression: Integer(
 // DEFAULT-NEXT:                                           1,
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               GenericAssociation {
-// DEFAULT-NEXT:                                   type_name: None,
-// DEFAULT-NEXT:                                   expression: Const(
-// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   ConstGenericAssociation {
+// DEFAULT-NEXT:                                       type_name: None,
+// DEFAULT-NEXT:                                       expression: Integer(
 // DEFAULT-NEXT:                                           0,
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Decl(

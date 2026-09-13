@@ -100,8 +100,10 @@ int main() {
 // DEFAULT-NEXT:       FunctionDecl {
 // DEFAULT-NEXT:           ret_type: TypeOf(
 // DEFAULT-NEXT:               Expression(
-// DEFAULT-NEXT:                   Identifier(
-// DEFAULT-NEXT:                       "nullptr",
+// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                       Identifier(
+// DEFAULT-NEXT:                           "nullptr",
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ),

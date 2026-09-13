@@ -63,8 +63,10 @@ int main(void) {
 // DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:                           ty: TypeOfUnqual(
 // DEFAULT-NEXT:                               Expression(
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "qualified",
+// DEFAULT-NEXT:                                   Const(
+// DEFAULT-NEXT:                                       Identifier(
+// DEFAULT-NEXT:                                           "qualified",
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
@@ -88,8 +90,10 @@ int main(void) {
 // DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:                           ty: TypeOf(
 // DEFAULT-NEXT:                               Expression(
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "qualified",
+// DEFAULT-NEXT:                                   Const(
+// DEFAULT-NEXT:                                       Identifier(
+// DEFAULT-NEXT:                                           "qualified",
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
@@ -205,8 +209,10 @@ int main(void) {
 // DEFAULT-NEXT:                                   TypesCompatible {
 // DEFAULT-NEXT:                                       left_ty: TypeOf(
 // DEFAULT-NEXT:                                           Expression(
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "copy",
+// DEFAULT-NEXT:                                               Const(
+// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                                       "copy",
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
@@ -243,8 +249,10 @@ int main(void) {
 // DEFAULT-NEXT:                                   TypesCompatible {
 // DEFAULT-NEXT:                                       left_ty: TypeOf(
 // DEFAULT-NEXT:                                           Expression(
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "preserved",
+// DEFAULT-NEXT:                                               Const(
+// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                                       "preserved",
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),

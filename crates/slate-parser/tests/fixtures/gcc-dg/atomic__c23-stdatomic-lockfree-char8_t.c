@@ -195,7 +195,7 @@ int main() {
 // DEFAULT-NEXT:                                   Expr(
 // DEFAULT-NEXT:                                       Const(
 // DEFAULT-NEXT:                                           Identifier(
-// DEFAULT-NEXT:                                               "ATOMIC_CHAR8_T_LOCK_FREE",
+// DEFAULT-NEXT:                                               "__CLANG_ATOMIC_CHAR8_T_LOCK_FREE",
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),

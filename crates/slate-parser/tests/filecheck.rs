@@ -392,7 +392,7 @@ fn summarize_evaluated_decl(decl: &Decl) -> DeclSummary {
                         | Expr::WideStringLit(_) => {
                             panic!("clang return was not an integer")
                         }
-                        Expr::Generic { .. } | Expr::StatementExpression(_) => None,
+                        Expr::StatementExpression(_) => None,
                         Expr::Identifier(_)
                         | Expr::Const(_)
                         | Expr::Unary { .. }
@@ -778,7 +778,7 @@ fn array_size(size: &ArraySize) -> String {
             | Expr::Unary { .. }
             | Expr::Binary { .. }
             | Expr::SizeOf(_) => panic!("array bound was not an integer"),
-            Expr::Generic { .. } | Expr::StatementExpression(_) => {
+            Expr::StatementExpression(_) => {
                 panic!("array bound was not an integer")
             }
         },

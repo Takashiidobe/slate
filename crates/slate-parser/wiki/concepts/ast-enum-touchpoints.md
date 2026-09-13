@@ -56,10 +56,30 @@ the wrapper's `.value`.
 Note: most *general* expressions never construct `ast::Expr` directly —
 they go through `const_expr::Parser` and get wrapped once as
 `Expr::Const(Box<ConstExpr>)` by `Parser::parse_expression` in
-`src/parser.rs`. Only a handful of special forms (`_Generic`, bare string
-literals, statement-expressions `({ ... })`) are built as `Expr` variants
-directly, bypassing `const_expr`. When in doubt, a new expression-level
-construct belongs in `ConstExpr`, not `Expr`.
+`src/parser.rs`. Only a couple of special forms (bare string literals,
+statement-expressions `({ ... })`) are built as `Expr` variants directly,
+bypassing `const_expr`. When in doubt, a new expression-level construct
+belongs in `ConstExpr`, not `Expr`.
+
+`_Generic` used to be one of those bypassing special forms (its own
+`Expr::Generic` variant, parsed by a hand-rolled paren/comma scanner in
+`parser.rs::parse_expression`), removed in slate-parser-wf8.2.4: that
+scanner only matched when the *entire* expression span was exactly
+`_Generic(...)`, so `_Generic(x, int: 1) != 1` (a `_Generic` embedded as
+a primary expression inside a larger expression) hit "expected `)` after
+`_Generic`". `const_expr::Parser::parse_primary` already had a correct,
+depth-aware `_Generic` implementation (`ConstExpr::Generic`, used for
+`#if`), so the fix was to delete the duplicate top-level special case
+entirely and let `_Generic` always flow through `const_expr`, like any
+other primary expression. Fixing this also exposed a real, independent
+bug it happened to route around: `const_expr::Parser::try_parse_type_name`
+speculatively tries the `_Generic` controlling operand as a type name and
+is supposed to fail safely (`.ok()?`) when it isn't one, but the shared
+`DeclaratorParser::parse_declarator`'s grouped-declarator case used
+`assert!` for a mismatched `)` instead of returning `Err`, so a
+speculative parse of a call expression like `ckd_add(&a, 1, 1)` as the
+controlling operand could panic instead of falling through. That `assert!`
+is now `Err(DeclaratorError::ExpectedToken(..))`.
 
 ## Adding a `ConstExpr` variant
 

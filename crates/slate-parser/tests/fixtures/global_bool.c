@@ -26,8 +26,8 @@ int main(void) {
 // DEFAULT-NEXT:           initializer: Some(
 // DEFAULT-NEXT:               Expr(
 // DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Integer(
-// DEFAULT-NEXT:                           1,
+// DEFAULT-NEXT:                       Identifier(
+// DEFAULT-NEXT:                           "true",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),

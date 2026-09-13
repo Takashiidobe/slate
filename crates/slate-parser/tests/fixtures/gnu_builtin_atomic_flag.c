@@ -38,8 +38,8 @@ int main(void) {
 // DEFAULT-NEXT:                       initializer: Some(
 // DEFAULT-NEXT:                           Expr(
 // DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "false",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
