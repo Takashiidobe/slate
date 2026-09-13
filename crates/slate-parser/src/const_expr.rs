@@ -134,7 +134,6 @@ impl std::fmt::Display for WideInt {
 #[derive(Debug, Clone, PartialEq)]
 pub enum ConstExpr {
     Integer(i64),
-    IntegerLiteral(String),
     WideInteger(WideInt),
     Float(FloatLiteral),
     Identifier(String),
@@ -237,7 +236,6 @@ impl std::fmt::Display for ConstExpr {
     fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Integer(value) => write!(formatter, "{value}"),
-            Self::IntegerLiteral(value) => formatter.write_str(value),
             Self::WideInteger(value) => write!(formatter, "{value}"),
             Self::Float(value) => write!(formatter, "{value}"),
             Self::Identifier(value) => formatter.write_str(value),
@@ -492,12 +490,9 @@ fn strip_imaginary(digits: &str) -> (&str, bool) {
     }
 }
 
-fn parse_wide_bit_int_literal(spelling: &str) -> Option<WideInt> {
+fn parse_wide_integer_literal(spelling: &str) -> WideInt {
     let digits = Lexer::integer_digits(spelling);
     let suffix = spelling[digits.len()..].to_ascii_lowercase();
-    if !suffix.contains("wb") {
-        return None;
-    }
     let signed = !suffix.contains('u');
     let cleaned = digits.replace('\'', "");
     let (radix, digits) = if cleaned.starts_with("0x") || cleaned.starts_with("0X") {
@@ -509,9 +504,10 @@ fn parse_wide_bit_int_literal(spelling: &str) -> Option<WideInt> {
     } else {
         (10, cleaned.as_str())
     };
-    let magnitude = BigInt::parse_bytes(digits.as_bytes(), radix)?;
+    let magnitude =
+        BigInt::parse_bytes(digits.as_bytes(), radix).expect("lexer only emits valid digits");
     let width = magnitude.bits() as u32 + u32::from(signed);
-    Some(WideInt::wrap(magnitude, width.max(2), signed))
+    WideInt::wrap(magnitude, width.max(2), signed)
 }
 
 fn contains_wide(expression: &ConstExpr) -> bool {
@@ -634,9 +630,6 @@ impl Parser {
     ) -> Result<i64, ConstExprError> {
         match expression {
             ConstExpr::Integer(value) => Ok(*value),
-            ConstExpr::IntegerLiteral(_) => {
-                Err(ConstExprError::NotConstant("wide integer literal"))
-            }
             ConstExpr::WideInteger(value) => Ok(value.truncate_to_i64()),
             ConstExpr::StringLit(_)
             | ConstExpr::Utf8StringLit(_)
@@ -1296,10 +1289,7 @@ impl Parser {
         match self.tokens.value_at(self.position.saturating_sub(1)) {
             Some(Token::IntLit(value)) => match Token::IntLit(value.clone()).integer_value() {
                 Some(value) => Ok(ConstExpr::Integer(value)),
-                None => match parse_wide_bit_int_literal(value) {
-                    Some(wide) => Ok(ConstExpr::WideInteger(wide)),
-                    None => Ok(ConstExpr::IntegerLiteral(value.clone())),
-                },
+                None => Ok(ConstExpr::WideInteger(parse_wide_integer_literal(value))),
             },
             Some(Token::FloatLit(value)) => FloatLiteral::parse(value).map(ConstExpr::Float),
             Some(Token::StringLit(value)) => Ok(ConstExpr::StringLit(value.clone())),
