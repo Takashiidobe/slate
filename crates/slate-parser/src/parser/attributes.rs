@@ -113,6 +113,10 @@ pub(super) fn parse_attribute_groups(
         {
             cursor.expect(Token::LParen, "expected `((` after __attribute__")?;
             cursor.expect(Token::LParen, "expected `((` after __attribute__")?;
+            if cursor.consume(&Token::RParen) {
+                cursor.expect(Token::RParen, "expected `))` after attributes")?;
+                continue;
+            }
             loop {
                 let name = cursor.expect_ident("expected attribute name")?;
                 let arguments = cursor

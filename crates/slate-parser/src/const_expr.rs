@@ -1177,16 +1177,10 @@ impl Parser {
             && starts_type_name(next, &self.typedef_names)
             && let Some((ty, declarator, end)) = self.try_parse_type_name(self.position + 2)
             && self.token_at(end) == Some(&Token::RParen)
+            && self.token_at(end + 1) != Some(&Token::LBrace)
         {
             self.position = end + 1;
             return Ok(ConstExpr::SizeOfType { ty, declarator });
-        }
-        if self.peek() == Some(&Token::Sizeof) && self.peek_at(1) == Some(&Token::LParen) {
-            self.take();
-            self.take();
-            let value = self.parse_comma()?;
-            self.expect(Token::RParen)?;
-            return Ok(ConstExpr::SizeOf(Box::new(value)));
         }
         if self.peek() == Some(&Token::Sizeof) {
             self.take();
@@ -1607,7 +1601,9 @@ impl Parser {
 fn declarator_size(ty: &CType, declarator: &Declarator) -> Result<u64, ConstExprError> {
     match declarator {
         Declarator::Abstract | Declarator::Name(_) => ctype_size(ty),
-        Declarator::Grouped(inner) => declarator_size(ty, inner),
+        Declarator::Grouped(inner) | Declarator::Attributed { inner, .. } => {
+            declarator_size(ty, inner)
+        }
         Declarator::Pointer { .. } => Ok(8),
         Declarator::Array { inner, size } => {
             let element = declarator_size(ty, inner)?;

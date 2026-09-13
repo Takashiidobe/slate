@@ -12,3 +12,175 @@ void set_bh_page(struct blah *bh, unsigned long offset)
                 __builtin_trap() ;
         bh->b_data = (char *)offset;
 }
+
+// SLATE-FILECHECK-BEGIN DEFAULT
+// DEFAULT: decl[0]: Comment {
+// DEFAULT-NEXT:       text: "/* Test for proper preparation of the comparison operands for \n   generation of a conditional trap.  Produced unrecognizable\n   rtl on Sparc.  */",
+// DEFAULT-NEXT:       loc: Loc {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               3,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           offset: 1,
+// DEFAULT-NEXT:           length: 145,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               3,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 1,
+// DEFAULT-NEXT:           header: None,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[1]: Record(
+// DEFAULT-NEXT:       RecordDecl {
+// DEFAULT-NEXT:           kind: Struct,
+// DEFAULT-NEXT:           name: Some(
+// DEFAULT-NEXT:               "blah",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           fields: [
+// DEFAULT-NEXT:               Field(
+// DEFAULT-NEXT:                   FieldDecl {
+// DEFAULT-NEXT:                       declaration: Declaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Char {
+// DEFAULT-NEXT:                                       signed: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Pointer {
+// DEFAULT-NEXT:                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                               inner: Name(
+// DEFAULT-NEXT:                                   "b_data",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               3,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: User,
+// DEFAULT-NEXT:                           line: 5,
+// DEFAULT-NEXT:                           header: None,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           provenance: Provenance {
+// DEFAULT-NEXT:               file: FileId(
+// DEFAULT-NEXT:                   3,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               kind: User,
+// DEFAULT-NEXT:               line: 5,
+// DEFAULT-NEXT:               header: None,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[2]: Function(
+// DEFAULT-NEXT:       FunctionDecl {
+// DEFAULT-NEXT:           ret_type: Void,
+// DEFAULT-NEXT:           name: "set_bh_page",
+// DEFAULT-NEXT:           parameters: [
+// DEFAULT-NEXT:               Parameter {
+// DEFAULT-NEXT:                   ty: Tagged {
+// DEFAULT-NEXT:                       kind: Struct,
+// DEFAULT-NEXT:                       name: Some(
+// DEFAULT-NEXT:                           "blah",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   declarator: Some(
+// DEFAULT-NEXT:                       Pointer {
+// DEFAULT-NEXT:                           qualifiers: Qualifiers,
+// DEFAULT-NEXT:                           inner: Name(
+// DEFAULT-NEXT:                               "bh",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               Parameter {
+// DEFAULT-NEXT:                   ty: Integer(
+// DEFAULT-NEXT:                       Ranked {
+// DEFAULT-NEXT:                           rank: Long,
+// DEFAULT-NEXT:                           signed: false,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   declarator: Some(
+// DEFAULT-NEXT:                       Name(
+// DEFAULT-NEXT:                           "offset",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           body: [
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Const(
+// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                           op: LessEqual,
+// DEFAULT-NEXT:                           left: Binary {
+// DEFAULT-NEXT:                               op: ShiftLeft,
+// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                                   1,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: Integer(
+// DEFAULT-NEXT:                                   12,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           right: Identifier(
+// DEFAULT-NEXT:                               "offset",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Call {
+// DEFAULT-NEXT:                                   callee: Identifier(
+// DEFAULT-NEXT:                                       "__builtin_trap",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   arguments: [],
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                       Assign {
+// DEFAULT-NEXT:                           op: Assign,
+// DEFAULT-NEXT:                           target: Arrow {
+// DEFAULT-NEXT:                               base: Identifier(
+// DEFAULT-NEXT:                                   "bh",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               field: "b_data",
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           value: Cast {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Char {
+// DEFAULT-NEXT:                                       signed: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               declarator: Pointer {
+// DEFAULT-NEXT:                                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                   inner: Abstract,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               value: Identifier(
+// DEFAULT-NEXT:                                   "offset",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           provenance: Provenance {
+// DEFAULT-NEXT:               file: FileId(
+// DEFAULT-NEXT:                   3,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               kind: User,
+// DEFAULT-NEXT:               line: 7,
+// DEFAULT-NEXT:               header: None,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   )
+// SLATE-FILECHECK-END DEFAULT

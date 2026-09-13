@@ -380,12 +380,21 @@ impl Parser {
         code: &str,
         tokens: &[Span<Token>],
     ) -> Result<Vec<SpannedStmt>, ParseError> {
-        let mut fragment = Fragment::new(self, code, tokens, 0);
+        let mut parser = self.clone();
+        let mut position = 0;
         let mut stmts = Vec::new();
-        while fragment.pos < fragment.tokens.len() {
-            let start = fragment.pos;
-            let stmt = self.parse_one_stmt(&mut fragment)?;
-            stmts.push(span_tokens(stmt, &fragment.tokens[start..fragment.pos]));
+        while position < tokens.len() {
+            let start = position;
+            let mut fragment = Fragment::new(&parser, code, tokens, position);
+            let stmt = parser.parse_one_stmt(&mut fragment)?;
+            position = fragment.pos;
+            if let Stmt::Decl(declaration) = &stmt
+                && declaration.specifiers.storage == StorageClass::Typedef
+                && let Some(name) = declaration.declarator.name()
+            {
+                parser.typedef_names.insert(name.to_string());
+            }
+            stmts.push(span_tokens(stmt, &tokens[start..position]));
         }
         Ok(stmts)
     }

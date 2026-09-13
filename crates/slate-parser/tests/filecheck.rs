@@ -829,6 +829,7 @@ fn declarator_identifier(declarator: &Declarator) -> String {
         Declarator::Name(name) => name.clone(),
         Declarator::Abstract => "<abstract>".into(),
         Declarator::Grouped(inner)
+        | Declarator::Attributed { inner, .. }
         | Declarator::Pointer { inner, .. }
         | Declarator::Array { inner, .. }
         | Declarator::Function { inner, .. } => declarator_identifier(inner),

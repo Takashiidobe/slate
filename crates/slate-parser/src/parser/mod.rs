@@ -128,6 +128,7 @@ impl<'p, 'a> Cursor for Fragment<'p, 'a> {
     }
 }
 
+#[derive(Clone)]
 pub struct Parser {
     search: SearchPaths,
     source_name: String,

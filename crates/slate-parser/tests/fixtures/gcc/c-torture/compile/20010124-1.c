@@ -9,3 +9,176 @@
 
 struct s { int a; int b; };
 char x[((sizeof (struct s){ 1, 2 }) == sizeof (struct s)) ? 1 : -1];
+
+// SLATE-FILECHECK-BEGIN DEFAULT
+// DEFAULT: decl[0]: Comment {
+// DEFAULT-NEXT:       text: "/* Origin: testcase from Joseph Myers <jsm28@cam.ac.uk>, problem pointed\n   out in a post to comp.std.c\n   <980283801.3063.0.nnrp-07.c2deb1c2@news.demon.co.uk>\n   by Dibyendu Majumdar <dibyendu@mazumdar.demon.co.uk>.\n   Compound literals should be parsed as postfix expressions, rather than\n   as cast expressions.  In particular, they are valid operands of sizeof.  */",
+// DEFAULT-NEXT:       loc: Loc {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               3,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           offset: 1,
+// DEFAULT-NEXT:           length: 369,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               3,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 1,
+// DEFAULT-NEXT:           header: None,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[1]: Record(
+// DEFAULT-NEXT:       RecordDecl {
+// DEFAULT-NEXT:           kind: Struct,
+// DEFAULT-NEXT:           name: Some(
+// DEFAULT-NEXT:               "s",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           fields: [
+// DEFAULT-NEXT:               Field(
+// DEFAULT-NEXT:                   FieldDecl {
+// DEFAULT-NEXT:                       declaration: Declaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "a",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               3,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: User,
+// DEFAULT-NEXT:                           line: 8,
+// DEFAULT-NEXT:                           header: None,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Field(
+// DEFAULT-NEXT:                   FieldDecl {
+// DEFAULT-NEXT:                       declaration: Declaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "b",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               3,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: User,
+// DEFAULT-NEXT:                           line: 8,
+// DEFAULT-NEXT:                           header: None,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           provenance: Provenance {
+// DEFAULT-NEXT:               file: FileId(
+// DEFAULT-NEXT:                   3,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               kind: User,
+// DEFAULT-NEXT:               line: 8,
+// DEFAULT-NEXT:               header: None,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[2]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Char {
+// DEFAULT-NEXT:                       signed: None,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Array {
+// DEFAULT-NEXT:               inner: Name(
+// DEFAULT-NEXT:                   "x",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               size: Expression(
+// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                       Ternary {
+// DEFAULT-NEXT:                           condition: Binary {
+// DEFAULT-NEXT:                               op: Equal,
+// DEFAULT-NEXT:                               left: SizeOf(
+// DEFAULT-NEXT:                                   CompoundLiteral {
+// DEFAULT-NEXT:                                       ty: Tagged {
+// DEFAULT-NEXT:                                           kind: Struct,
+// DEFAULT-NEXT:                                           name: Some(
+// DEFAULT-NEXT:                                               "s",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                       initializer: [
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           1,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           2,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: SizeOfType {
+// DEFAULT-NEXT:                                   ty: Tagged {
+// DEFAULT-NEXT:                                       kind: Struct,
+// DEFAULT-NEXT:                                       name: Some(
+// DEFAULT-NEXT:                                           "s",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           then_value: Integer(
+// DEFAULT-NEXT:                               1,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           else_value: Unary {
+// DEFAULT-NEXT:                               op: Minus,
+// DEFAULT-NEXT:                               value: Integer(
+// DEFAULT-NEXT:                                   1,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               3,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 9,
+// DEFAULT-NEXT:           header: None,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// SLATE-FILECHECK-END DEFAULT

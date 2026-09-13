@@ -206,11 +206,12 @@ int main() {
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Return(
 // DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               SizeOf(
-// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                               SizeOfType {
+// DEFAULT-NEXT:                                   ty: Named(
 // DEFAULT-NEXT:                                       "c",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
@@ -220,11 +221,12 @@ int main() {
 // DEFAULT-NEXT:                               Const(
 // DEFAULT-NEXT:                                   Binary {
 // DEFAULT-NEXT:                                       op: Mul,
-// DEFAULT-NEXT:                                       left: SizeOf(
-// DEFAULT-NEXT:                                           Identifier(
+// DEFAULT-NEXT:                                       left: SizeOfType {
+// DEFAULT-NEXT:                                           ty: Named(
 // DEFAULT-NEXT:                                               "c",
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       right: Integer(
 // DEFAULT-NEXT:                                           3,
 // DEFAULT-NEXT:                                       ),

@@ -807,12 +807,19 @@ impl<'a> DeclaratorParser<'a> {
             }
             Some(Token::LParen) => {
                 self.pos += 1;
-                let declarator = self.parse_declarator(allow_abstract)?;
+                let attributes = self.parse_attributes()?;
+                let mut declarator = self.parse_declarator(allow_abstract)?;
                 if !self.matches(Token::RParen) {
                     return Err(DeclaratorError::ExpectedToken(
                         Token::RParen,
                         "in declarator",
                     ));
+                }
+                if !attributes.is_empty() {
+                    declarator = Declarator::Attributed {
+                        inner: Box::new(declarator),
+                        attributes,
+                    };
                 }
                 Declarator::Grouped(Box::new(declarator))
             }
@@ -1022,6 +1029,7 @@ pub(super) fn apply_abstract_declarator(ty: CType, declarator: Declarator) -> CT
     match declarator {
         Declarator::Abstract | Declarator::Name(_) => ty,
         Declarator::Grouped(inner) => apply_abstract_declarator(ty, *inner),
+        Declarator::Attributed { inner, .. } => apply_abstract_declarator(ty, *inner),
         Declarator::Pointer { qualifiers, inner } => CType::Pointer {
             qualifiers,
             pointee: Box::new(apply_abstract_declarator(ty, *inner)),

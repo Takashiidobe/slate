@@ -208,9 +208,9 @@ impl<'a> Reachability<'a> {
     fn mark_declarator(&mut self, declarator: &Declarator) {
         match declarator {
             Declarator::Abstract | Declarator::Name(_) => {}
-            Declarator::Grouped(inner) | Declarator::Pointer { inner, .. } => {
-                self.mark_declarator(inner)
-            }
+            Declarator::Grouped(inner)
+            | Declarator::Attributed { inner, .. }
+            | Declarator::Pointer { inner, .. } => self.mark_declarator(inner),
             Declarator::Array { inner, .. } => self.mark_declarator(inner),
             Declarator::Function {
                 inner, parameters, ..

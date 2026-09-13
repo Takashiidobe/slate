@@ -97,6 +97,7 @@ impl TranslationUnit {
                     provenance,
                 } => {
                     if matches!(declaration.specifiers.ty, CType::Void)
+                        && declaration.specifiers.storage != StorageClass::Extern
                         && declaration.declarator.name().is_some()
                         && !declarator_indirects_void(&declaration.declarator)
                     {
@@ -213,9 +214,9 @@ impl SemaError {
 
 fn declarator_indirects_void(declarator: &Declarator) -> bool {
     match declarator {
-        Declarator::Grouped(inner) | Declarator::Array { inner, .. } => {
-            declarator_indirects_void(inner)
-        }
+        Declarator::Grouped(inner)
+        | Declarator::Attributed { inner, .. }
+        | Declarator::Array { inner, .. } => declarator_indirects_void(inner),
         Declarator::Pointer { .. } | Declarator::Function { .. } => true,
         Declarator::Abstract | Declarator::Name(_) => false,
     }
@@ -241,6 +242,10 @@ fn check_declarator(
                     check_declarator(declarator, typedefs, tags, provenance, loc, errors);
                 }
             }
+        }
+        Declarator::Attributed { inner, attributes } => {
+            check_attributes(attributes, provenance, loc, errors);
+            check_declarator(inner, typedefs, tags, provenance, loc, errors);
         }
         Declarator::Grouped(inner)
         | Declarator::Pointer { inner, .. }
@@ -843,7 +848,7 @@ fn check_register_variable(
 
 fn is_register_variable_type(declaration: &Declaration) -> bool {
     let mut declarator = &declaration.declarator;
-    while let Declarator::Grouped(inner) = declarator {
+    while let Declarator::Grouped(inner) | Declarator::Attributed { inner, .. } = declarator {
         declarator = inner;
     }
     match declarator {
@@ -852,7 +857,7 @@ fn is_register_variable_type(declaration: &Declaration) -> bool {
         Declarator::Name(_) | Declarator::Abstract => {
             is_register_scalar_type(&declaration.specifiers.ty)
         }
-        Declarator::Grouped(_) => unreachable!(),
+        Declarator::Grouped(_) | Declarator::Attributed { .. } => unreachable!(),
     }
 }
 

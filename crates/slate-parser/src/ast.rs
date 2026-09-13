@@ -677,6 +677,10 @@ pub enum Declarator {
     Abstract,
     Name(String),
     Grouped(Box<Declarator>),
+    Attributed {
+        inner: Box<Declarator>,
+        attributes: Vec<Attribute>,
+    },
     Pointer {
         qualifiers: Qualifiers,
         inner: Box<Declarator>,
@@ -700,6 +704,7 @@ impl Declarator {
             Self::Name(name) => Some(name),
             Self::Abstract => None,
             Self::Grouped(inner)
+            | Self::Attributed { inner, .. }
             | Self::Pointer { inner, .. }
             | Self::Array { inner, .. }
             | Self::Function { inner, .. } => inner.name(),
