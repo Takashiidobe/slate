@@ -2202,37 +2202,54 @@ impl<'a> DeclaratorParser<'a> {
             }
             let qualifiers = self.take_qualifiers();
             let ty = self.parse_base_type()?;
-            let declarator = if matches!(self.peek(), Some(&Token::Semi) | Some(&Token::Colon)) {
-                Declarator::Abstract
-            } else {
-                self.parse_declarator(true)?
-            };
-            if self.matches(Token::Colon) {
-                while !matches!(self.peek(), Some(&Token::Semi) | None) {
-                    self.pos += 1;
+            loop {
+                let declarator = if matches!(self.peek(), Some(&Token::Semi) | Some(&Token::Colon))
+                {
+                    Declarator::Abstract
+                } else {
+                    self.parse_declarator(true)?
+                };
+                if self.matches(Token::Colon) {
+                    let mut depth = 0i32;
+                    while !matches!(
+                        self.peek(),
+                        Some(Token::Comma | Token::Semi) if depth == 0
+                    ) {
+                        match self.peek() {
+                            Some(Token::LParen | Token::LBrace | Token::LBracket) => depth += 1,
+                            Some(Token::RParen | Token::RBrace | Token::RBracket) => depth -= 1,
+                            None => break,
+                            _ => {}
+                        }
+                        self.pos += 1;
+                    }
                 }
-            }
-            self.expect(
-                Token::Semi,
-                DeclaratorError::ExpectedToken(Token::Semi, "in struct/union field"),
-            )?;
-            fields.push(FieldDecl {
-                declaration: Declaration {
-                    specifiers: DeclarationSpecifiers {
-                        ty,
-                        qualifiers,
-                        storage: StorageClass::None,
-                        is_thread_local: false,
-                        is_inline: false,
-                        is_noreturn: false,
-                        is_constexpr: false,
+                fields.push(FieldDecl {
+                    declaration: Declaration {
+                        specifiers: DeclarationSpecifiers {
+                            ty: ty.clone(),
+                            qualifiers,
+                            storage: StorageClass::None,
+                            is_thread_local: false,
+                            is_inline: false,
+                            is_noreturn: false,
+                            is_constexpr: false,
+                        },
+                        declarator,
+                        initializer: None,
+                        attributes: Vec::new(),
                     },
-                    declarator,
-                    initializer: None,
-                    attributes: Vec::new(),
-                },
-                provenance: Provenance::default(),
-            });
+                    provenance: Provenance::default(),
+                });
+                if self.matches(Token::Comma) {
+                    continue;
+                }
+                self.expect(
+                    Token::Semi,
+                    DeclaratorError::ExpectedToken(Token::Semi, "in struct/union field"),
+                )?;
+                break;
+            }
         }
         self.pos += 1;
         Ok(fields)
