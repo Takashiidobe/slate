@@ -685,7 +685,7 @@ impl Lexer {
                 "union" => Token::Keyword(Keyword::Union),
                 "enum" => Token::Keyword(Keyword::Enum),
                 "const" | "__const" | "__const__" => Token::Keyword(Keyword::Const),
-                "volatile" => Token::Keyword(Keyword::Volatile),
+                "volatile" | "__volatile" | "__volatile__" => Token::Keyword(Keyword::Volatile),
                 "restrict" => Token::Keyword(Keyword::Restrict),
                 "_Atomic" => Token::Keyword(Keyword::Atomic),
                 "extern" => Token::Keyword(Keyword::Extern),

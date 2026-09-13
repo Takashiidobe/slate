@@ -1053,12 +1053,17 @@ impl Parser {
                 } else if self.peek() == Some(&Token::Dot) {
                     self.take();
                     designators.push(Designator::Field(self.expect_field_name()?));
+                } else if let Some(Token::Ident(name)) = self.peek().cloned()
+                    && self.peek_at(1) == Some(&Token::Colon)
+                {
+                    self.position += 2;
+                    designators.push(Designator::Field(name));
                 } else {
                     break;
                 }
             }
             if !designators.is_empty() {
-                self.expect(Token::Equal)?;
+                self.consume(&Token::Equal);
             }
             let value = self.parse_initializer_value()?;
             items.push(InitializerItem { designators, value });
