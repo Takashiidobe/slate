@@ -482,6 +482,37 @@ impl Parser {
         &mut self,
         nodes: &[PPNode],
     ) -> Result<(Vec<SpannedDecl>, usize), ParseError> {
+        if let PPNodeKind::Code { .. } = &nodes[0].value {
+            let tokens = self.node_tokens(&nodes[0]);
+            let top_level_items = split_top_level_items(&tokens);
+            if top_level_items.len() > 1
+                && tokens.iter().any(|token| token.spelling != token.expansion)
+            {
+                let provenance = self.node_provenance(&nodes[0]);
+                let mut declarations = Vec::new();
+                for item in top_level_items {
+                    if item.as_tokens() == [Token::Semi] {
+                        continue;
+                    }
+                    let text = item
+                        .values()
+                        .map(String::from)
+                        .collect::<Vec<_>>()
+                        .join(" ");
+                    let item_node = Span::cover(
+                        PPNodeKind::Code {
+                            text,
+                            tokens: item,
+                            provenance,
+                        },
+                        &tokens,
+                    );
+                    let (decls, _) = self.parse_top_level_item(std::slice::from_ref(&item_node))?;
+                    declarations.extend(decls);
+                }
+                return Ok((declarations, 1));
+            }
+        }
         match &nodes[0].value {
             PPNodeKind::Comment { text, provenance } => Ok((
                 vec![nodes[0].clone().with_value(Decl::Comment {
@@ -493,12 +524,13 @@ impl Parser {
             )),
             PPNodeKind::Code {
                 text, provenance, ..
-            } if text.trim_start().starts_with("typedef") => {
+            } if text_starts_with_typedef(text) => {
                 let tokens = self.node_tokens(&nodes[0]);
                 let has_inline_body = matches!(
-                    tokens
-                        .values()
-                        .find(|token| !matches!(token, Token::Keyword(Keyword::Typedef))),
+                    tokens.values().find(|token| {
+                        !matches!(token, Token::Keyword(Keyword::Typedef))
+                            && **token != Token::Ident("__extension__".to_string())
+                    }),
                     Some(Token::Keyword(
                         Keyword::Struct | Keyword::Union | Keyword::Enum
                     ))
@@ -526,72 +558,39 @@ impl Parser {
                         "expected `;`",
                     ));
                 };
-                let declaration_tokens = &typedef_tokens[..typedef_tokens.len() - 1];
-                let parts = split_top_level(declaration_tokens, &Token::Comma);
-                let prefix = parts.first().map_or(Vec::new(), |part| {
-                    part[..self.declaration_prefix_end(part)].to_vec()
-                });
                 let mut typedefs = Vec::new();
-                for (index, mut part) in parts.into_iter().enumerate() {
-                    if index != 0 {
-                        let mut with_prefix = prefix.clone();
-                        with_prefix.append(&mut part);
-                        part = with_prefix;
+                for statement_tokens in split_top_level(&typedef_tokens, &Token::Semi) {
+                    if statement_tokens.is_empty() {
+                        continue;
                     }
-                    part.push(semi.clone());
-                    let (name, ty, attributes) = self.parse_typedef_line(&typedef_text, &part)?;
-                    typedefs.push(span_pp_nodes(
-                        Decl::Typedef {
-                            name,
-                            ty,
-                            provenance: self.node_provenance(&nodes[0]),
-                            attributes,
-                        },
-                        &nodes[..span],
-                    ));
+                    let parts = split_top_level(&statement_tokens, &Token::Comma);
+                    let prefix = parts.first().map_or(Vec::new(), |part| {
+                        part[..self.declaration_prefix_end(part)].to_vec()
+                    });
+                    for (index, mut part) in parts.into_iter().enumerate() {
+                        if index != 0 {
+                            let mut with_prefix = prefix.clone();
+                            with_prefix.append(&mut part);
+                            part = with_prefix;
+                        }
+                        part.push(semi.clone());
+                        let (name, ty, attributes) =
+                            self.parse_typedef_line(&typedef_text, &part)?;
+                        typedefs.push(span_pp_nodes(
+                            Decl::Typedef {
+                                name,
+                                ty,
+                                provenance: self.node_provenance(&nodes[0]),
+                                attributes,
+                            },
+                            &nodes[..span],
+                        ));
+                    }
                 }
                 Ok((typedefs, span))
             }
             PPNodeKind::Code { .. } => {
                 let tokens = self.node_tokens(&nodes[0]);
-                let top_level_items = split_top_level_items(&tokens);
-                if top_level_items.len() > 1
-                    && tokens.iter().any(|token| token.spelling != token.expansion)
-                {
-                    let provenance = self.node_provenance(&nodes[0]);
-                    let mut declarations = Vec::new();
-                    for item in top_level_items {
-                        if item.as_tokens() == [Token::Semi] {
-                            continue;
-                        }
-                        let text = item
-                            .values()
-                            .map(String::from)
-                            .collect::<Vec<_>>()
-                            .join(" ");
-                        if item.last().is_some_and(|token| token.value == Token::Semi) {
-                            declarations.push(span_pp_nodes(
-                                Decl::Declaration {
-                                    declaration: self.parse_declaration_tokens(&text, &item)?,
-                                    provenance,
-                                },
-                                &nodes[..1],
-                            ));
-                        } else {
-                            let item_node = Span::cover(
-                                PPNodeKind::Code {
-                                    text,
-                                    tokens: item,
-                                    provenance,
-                                },
-                                &tokens,
-                            );
-                            let (function, _) = self.parse_function(&[item_node])?;
-                            declarations.push(span_pp_nodes(Decl::Function(function), &nodes[..1]));
-                        }
-                    }
-                    return Ok((declarations, 1));
-                }
                 if tokens.value_at(0) == Some(&Token::Keyword(Keyword::StaticAssert)) {
                     return Ok((
                         vec![nodes[0].clone().with_value(Decl::StaticAssert {
@@ -2745,7 +2744,12 @@ impl<'a> DeclaratorParser<'a> {
                 }
             }
             Ok(Initializer::List(items))
-        } else if let Some(expression) = const_expr::string_literal_expr(self.peek()) {
+        } else if let Some(expression) = const_expr::string_literal_expr(self.peek())
+            && matches!(
+                self.tokens.value_at(self.pos + 1),
+                Some(&Token::Comma) | Some(&Token::RBrace)
+            )
+        {
             let start = self.pos;
             self.pos += 1;
             Ok(Initializer::Expr(span_tokens(
@@ -3034,6 +3038,12 @@ impl<'a> Cursor for DeclaratorParser<'a> {
     fn set_pos(&mut self, pos: usize) {
         self.pos = pos;
     }
+}
+
+fn text_starts_with_typedef(text: &str) -> bool {
+    let text = text.trim_start();
+    let text = text.strip_prefix("__extension__").map_or(text, str::trim_start);
+    text.starts_with("typedef")
 }
 
 pub(crate) fn is_target_builtin_name(name: &str) -> bool {
@@ -3441,7 +3451,10 @@ impl Parser {
         match tokens.value_at(pos) {
             Some(Token::Keyword(keyword)) if keyword.is_storage_class_or_specifier() => true,
             Some(Token::Ident(name))
-                if matches!(name.as_str(), "_Alignas" | "alignas" | "__auto_type") =>
+                if matches!(
+                    name.as_str(),
+                    "_Alignas" | "alignas" | "__auto_type" | "__attribute__" | "__attribute"
+                ) =>
             {
                 true
             }
@@ -3869,7 +3882,7 @@ impl Parser {
     }
 }
 
-fn string_literal_content(token: &Token) -> Option<&str> {
+pub(crate) fn string_literal_content(token: &Token) -> Option<&str> {
     match token {
         Token::StringLit(value)
         | Token::Utf8StringLit(value)
@@ -3880,7 +3893,7 @@ fn string_literal_content(token: &Token) -> Option<&str> {
     }
 }
 
-fn concatenated_string_literal(previous: &Token, next: &Token, content: String) -> Token {
+pub(crate) fn concatenated_string_literal(previous: &Token, next: &Token, content: String) -> Token {
     match (previous, next) {
         (Token::StringLit(_), Token::StringLit(_)) => Token::StringLit(content),
         (Token::StringLit(_), other) => match other {

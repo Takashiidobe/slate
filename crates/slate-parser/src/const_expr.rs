@@ -944,7 +944,11 @@ impl Parser {
         let condition = self.parse_binary(0)?;
         if self.peek() == Some(&Token::Question) {
             self.take();
-            let then_value = self.parse_comma()?;
+            let then_value = if self.peek() == Some(&Token::Colon) {
+                condition.clone()
+            } else {
+                self.parse_comma()?
+            };
             self.expect(Token::Colon)?;
             let else_value = self.parse_conditional()?;
             return Ok(ConstExpr::Ternary {
@@ -1079,7 +1083,9 @@ impl Parser {
         let start = self.position;
         if self.peek() == Some(&Token::LBrace) {
             Ok(Initializer::List(self.parse_initializer_list()?))
-        } else if let Some(expression) = string_literal_expr(self.peek()) {
+        } else if let Some(expression) = string_literal_expr(self.peek())
+            && matches!(self.peek_at(1), Some(&Token::Comma) | Some(&Token::RBrace))
+        {
             self.take();
             Ok(Initializer::Expr(Span::cover(
                 expression,
@@ -1096,7 +1102,9 @@ impl Parser {
 
     fn try_parse_type_name(&self, start: usize) -> Option<(Box<CType>, Declarator, usize)> {
         let mut declarator_parser = DeclaratorParser::new(&self.tokens, start, &self.typedef_names);
+        let mut leading_attributes = declarator_parser.parse_attributes().ok()?;
         let leading = declarator_parser.take_qualifiers();
+        leading_attributes.extend(declarator_parser.parse_attributes().ok()?);
         let mut ty = declarator_parser.parse_base_type().ok()?;
         let trailing = declarator_parser.take_qualifiers();
         let qualifiers = crate::ast::Qualifiers {
@@ -1111,7 +1119,8 @@ impl Parser {
                 ty: Box::new(ty),
             };
         }
-        let attributes = declarator_parser.parse_attributes().ok()?;
+        let mut attributes = leading_attributes;
+        attributes.extend(declarator_parser.parse_attributes().ok()?);
         ty = crate::parser::apply_vector_attributes(ty, &attributes);
         let declarator = declarator_parser.parse_declarator(true).ok()?;
         Some((Box::new(ty), declarator, declarator_parser.position()))
@@ -1312,11 +1321,34 @@ impl Parser {
                 None => Ok(ConstExpr::WideInteger(parse_wide_integer_literal(value))),
             },
             Some(Token::FloatLit(value)) => FloatLiteral::parse(value).map(ConstExpr::Float),
-            Some(Token::StringLit(value)) => Ok(ConstExpr::StringLit(value.clone())),
-            Some(Token::Utf8StringLit(value)) => Ok(ConstExpr::Utf8StringLit(value.clone())),
-            Some(Token::Utf16StringLit(value)) => Ok(ConstExpr::Utf16StringLit(value.clone())),
-            Some(Token::Utf32StringLit(value)) => Ok(ConstExpr::Utf32StringLit(value.clone())),
-            Some(Token::WideStringLit(value)) => Ok(ConstExpr::WideStringLit(value.clone())),
+            Some(
+                token @ (Token::StringLit(_)
+                | Token::Utf8StringLit(_)
+                | Token::Utf16StringLit(_)
+                | Token::Utf32StringLit(_)
+                | Token::WideStringLit(_)),
+            ) => {
+                let mut merged = token.clone();
+                while let Some(next) = self.peek()
+                    && crate::parser::string_literal_content(next).is_some()
+                {
+                    let content = format!(
+                        "{}{}",
+                        crate::parser::string_literal_content(&merged).unwrap(),
+                        crate::parser::string_literal_content(next).unwrap()
+                    );
+                    merged = crate::parser::concatenated_string_literal(&merged, next, content);
+                    self.take();
+                }
+                Ok(match merged {
+                    Token::StringLit(value) => ConstExpr::StringLit(value),
+                    Token::Utf8StringLit(value) => ConstExpr::Utf8StringLit(value),
+                    Token::Utf16StringLit(value) => ConstExpr::Utf16StringLit(value),
+                    Token::Utf32StringLit(value) => ConstExpr::Utf32StringLit(value),
+                    Token::WideStringLit(value) => ConstExpr::WideStringLit(value),
+                    _ => unreachable!(),
+                })
+            }
             Some(
                 Token::CharLit(_, value)
                 | Token::Utf8CharLit(_, value)
@@ -1642,7 +1674,9 @@ pub(crate) fn starts_type_name(token: &Token, typedef_names: &HashSet<String>) -
                 | Keyword::Constexpr
         ),
         Token::Ident(name) => {
-            typedef_names.contains(name) || crate::parser::is_target_builtin_name(name)
+            typedef_names.contains(name)
+                || crate::parser::is_target_builtin_name(name)
+                || matches!(name.as_str(), "__attribute__" | "__attribute")
         }
         _ => false,
     }
