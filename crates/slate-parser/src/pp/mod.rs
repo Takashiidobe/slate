@@ -15,6 +15,7 @@ use miette::Severity;
 use std::cell::Cell;
 use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
+use std::time::SystemTime;
 use syntax::{Directive, DirectiveName, IfSection, Item, directive_spelling, identifier};
 
 pub type PPNode = Span<PPNodeKind>;
@@ -66,6 +67,7 @@ pub struct Preprocessor<'a> {
     pub directive_diagnostics: Vec<DirectiveDiagnostic>,
     line_overrides: HashMap<FileId, Vec<LineOverride>>,
     counter: Cell<i64>,
+    build_time: SystemTime,
 }
 
 const BUILTIN_PREDEFINES: [(&str, &str); 2] = [
@@ -95,6 +97,7 @@ impl<'a> Preprocessor<'a> {
             directive_diagnostics: Vec::new(),
             line_overrides: HashMap::new(),
             counter: Cell::new(0),
+            build_time: SystemTime::now(),
         };
         pp.seed_builtin_macros();
         pp

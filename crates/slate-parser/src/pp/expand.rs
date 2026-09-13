@@ -54,8 +54,66 @@ impl Preprocessor<'_> {
                 self.counter.set(value + 1);
                 Some(token.clone().with_value(Token::IntLit(value.to_string())))
             }
+            "__DATE__" => Some(
+                token
+                    .clone()
+                    .with_value(Token::StringLit(self.build_date())),
+            ),
+            "__TIME__" => Some(
+                token
+                    .clone()
+                    .with_value(Token::StringLit(self.build_time())),
+            ),
             _ => None,
         }
+    }
+
+    fn build_date(&self) -> String {
+        let (year, month, day, _, _, _) = self.build_calendar_time();
+        const MONTHS: [&str; 12] = [
+            "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+        ];
+        format!("{} {:2} {year:04}", MONTHS[month as usize - 1], day)
+    }
+
+    fn build_time(&self) -> String {
+        let (_, _, _, hour, minute, second) = self.build_calendar_time();
+        format!("{hour:02}:{minute:02}:{second:02}")
+    }
+
+    fn build_calendar_time(&self) -> (i64, i64, i64, i64, i64, i64) {
+        let seconds = self
+            .build_time
+            .duration_since(std::time::UNIX_EPOCH)
+            .map_or(0, |duration| duration.as_secs() as i64);
+        #[cfg(unix)]
+        if let Some(local) = local_calendar_time(seconds) {
+            return local;
+        }
+        let days = seconds.div_euclid(86_400);
+        let day_seconds = seconds.rem_euclid(86_400);
+        let z = days + 719_468;
+        let era = if z >= 0 { z } else { z - 146_096 }.div_euclid(146_097);
+        let day_of_era = z - era * 146_097;
+        let year_of_era = (day_of_era - day_of_era / 1_460 + day_of_era / 36_524
+            - day_of_era / 146_096)
+            .div_euclid(365);
+        let mut year = year_of_era + era * 400;
+        let day_of_year = day_of_era - (365 * year_of_era + year_of_era / 4 - year_of_era / 100);
+        let month_part = (5 * day_of_year + 2).div_euclid(153);
+        let day = day_of_year - (153 * month_part + 2).div_euclid(5) + 1;
+        let month = month_part + if month_part < 10 { 3 } else { -9 };
+        if month <= 2 {
+            year += 1;
+        }
+        (
+            year,
+            month,
+            day,
+            day_seconds / 3_600,
+            day_seconds % 3_600 / 60,
+            day_seconds % 60,
+        )
     }
 
     pub(super) fn expand_macros(
@@ -154,6 +212,24 @@ impl Preprocessor<'_> {
         }
         expanded
     }
+}
+
+#[cfg(unix)]
+fn local_calendar_time(seconds: i64) -> Option<(i64, i64, i64, i64, i64, i64)> {
+    let timestamp = seconds as libc::time_t;
+    let mut local = std::mem::MaybeUninit::<libc::tm>::uninit();
+    if unsafe { libc::localtime_r(&timestamp, local.as_mut_ptr()) }.is_null() {
+        return None;
+    }
+    let local = unsafe { local.assume_init() };
+    Some((
+        i64::from(local.tm_year) + 1900,
+        i64::from(local.tm_mon) + 1,
+        i64::from(local.tm_mday),
+        i64::from(local.tm_hour),
+        i64::from(local.tm_min),
+        i64::from(local.tm_sec),
+    ))
 }
 
 fn unexpanded_operands(tokens: &[Span<Token>]) -> Vec<bool> {

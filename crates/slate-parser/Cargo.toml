@@ -5,6 +5,7 @@ edition = "2024"
 
 [dependencies]
 custom_debug = "0.6.2"
+libc = "0.2"
 miette = { version = "7", features = ["fancy", "syntect-highlighter"] }
 rustc_apfloat = "0.2.3"
 thiserror = "2"
