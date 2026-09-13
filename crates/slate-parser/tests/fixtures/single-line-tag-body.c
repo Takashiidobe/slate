@@ -1,5 +1,5 @@
 struct Point { int x; int y; };
-enum Color { RED, GREEN, BLUE };
+enum Color { RED, GREEN, BLUE, CYAN = GREEN | BLUE };
 typedef struct Pair { int a; int b; } Pair;
 
 // SLATE-FILECHECK-DEFINES DEFAULT
@@ -90,6 +90,14 @@ typedef struct Pair { int a; int b; } Pair;
 // DEFAULT-NEXT:               Enumerator {
 // DEFAULT-NEXT:                   name: "BLUE",
 // DEFAULT-NEXT:                   value: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               Enumerator {
+// DEFAULT-NEXT:                   name: "CYAN",
+// DEFAULT-NEXT:                   value: Some(
+// DEFAULT-NEXT:                       IntLit(
+// DEFAULT-NEXT:                           3,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {

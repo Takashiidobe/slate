@@ -6,7 +6,7 @@ use crate::lexer::{Keyword, Lexer, Token, TokenSpanExt};
 use crate::pp::{DirectiveDiagnostic, PPNode, PPNodeKind, Preprocessor};
 use crate::reachability::{filter_translation_unit, mark_unreachable};
 use miette::Diagnostic;
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 use std::path::Path;
 use thiserror::Error;
 
@@ -732,6 +732,8 @@ impl Parser {
             let provenance = self.node_provenance(&nodes[0]);
             let tag_decl = if kind == TagKind::Enum {
                 let mut enumerators = Vec::new();
+                let mut values = HashMap::new();
+                let mut next_value = 0i64;
                 for segment in split_top_level(body_tokens, &Token::Comma) {
                     let segment = segment
                         .into_iter()
@@ -743,14 +745,12 @@ impl Parser {
                     let Some(Token::Ident(enumerator_name)) = segment.value_at(0) else {
                         return Err(self.error_at(Loc::whole(code), "expected enumerator"));
                     };
-                    let value = match segment.value_at(1) {
+                    let explicit_value = match segment.value_at(1) {
                         None => None,
                         Some(Token::Equal) => {
-                            let value =
-                                const_expr::Parser::evaluate(&segment[2..]).map_err(|error| {
-                                    self.error_at(Loc::whole(code), error.to_string())
-                                })?;
-                            Some(span_tokens(Expr::IntLit(value), &segment[2..]))
+                            Some(evaluate_enum_expression(&segment[2..], &values).map_err(
+                                |error| self.error_at_tokens(&segment[2..], 0, error.to_string()),
+                            )?)
                         }
                         _ => {
                             return Err(
@@ -758,9 +758,16 @@ impl Parser {
                             );
                         }
                     };
+                    record_enum_value(
+                        &mut values,
+                        &mut next_value,
+                        enumerator_name,
+                        explicit_value,
+                    );
                     enumerators.push(Enumerator {
                         name: enumerator_name.clone(),
-                        value,
+                        value: explicit_value
+                            .map(|value| span_tokens(Expr::IntLit(value), &segment[2..])),
                     });
                 }
                 Decl::Enum(EnumDecl {
@@ -851,6 +858,8 @@ impl Parser {
         let provenance = self.node_provenance(&nodes[0]);
         let tag_decl = if kind == TagKind::Enum {
             let mut enumerators = Vec::new();
+            let mut values = HashMap::new();
+            let mut next_value = 0i64;
             for node in &nodes[1..close] {
                 let text = self.node_text(node);
                 if matches!(node.value, PPNodeKind::Comment { .. }) {
@@ -863,24 +872,26 @@ impl Parser {
                 let Some(Token::Ident(name)) = tokens.value_at(0) else {
                     return Err(self.error_at(Loc::whole(text), "expected enumerator"));
                 };
-                let value = match tokens.value_at(1) {
+                let explicit_value = match tokens.value_at(1) {
                     Some(Token::Comma) | None => None,
                     Some(Token::Equal) => {
                         let end = tokens
                             .values()
                             .position(|token| token == &Token::Comma)
                             .unwrap_or(tokens.len());
-                        let value = const_expr::Parser::evaluate(&tokens[2..end])
-                            .map_err(|error| self.error_at(Loc::whole(text), error.to_string()))?;
-                        Some(span_tokens(Expr::IntLit(value), &tokens[2..end]))
+                        Some(evaluate_enum_expression(&tokens[2..end], &values).map_err(
+                            |error| self.error_at_tokens(&tokens[2..end], 0, error.to_string()),
+                        )?)
                     }
                     _ => {
                         return Err(self.error_at(Loc::whole(text), "expected enumerator value"));
                     }
                 };
+                record_enum_value(&mut values, &mut next_value, name, explicit_value);
                 enumerators.push(Enumerator {
                     name: name.clone(),
-                    value,
+                    value: explicit_value
+                        .map(|value| span_tokens(Expr::IntLit(value), &tokens[2..])),
                 });
             }
             Decl::Enum(EnumDecl {
@@ -1614,6 +1625,34 @@ fn split_top_level(tokens: &[Span<Token>], delimiter: &Token) -> Vec<Vec<Span<To
     segments
 }
 
+fn evaluate_enum_expression(
+    tokens: &[Span<Token>],
+    values: &HashMap<String, i64>,
+) -> Result<i64, const_expr::ConstExprError> {
+    let tokens = tokens
+        .iter()
+        .map(|token| match &token.value {
+            Token::Ident(name) => values.get(name).map_or_else(
+                || token.clone(),
+                |value| token.clone().with_value(Token::IntLit(value.to_string())),
+            ),
+            _ => token.clone(),
+        })
+        .collect::<Vec<_>>();
+    const_expr::Parser::evaluate(&tokens)
+}
+
+fn record_enum_value(
+    values: &mut HashMap<String, i64>,
+    next_value: &mut i64,
+    name: &str,
+    explicit_value: Option<i64>,
+) {
+    let value = explicit_value.unwrap_or(*next_value);
+    values.insert(name.to_string(), value);
+    *next_value = value.wrapping_add(1);
+}
+
 fn build_tag_alias_decl(
     is_typedef: bool,
     kind: TagKind,
@@ -2258,6 +2297,8 @@ impl<'a> DeclaratorParser<'a> {
     fn parse_enumerator_list(&mut self) -> Result<Vec<Enumerator>, DeclaratorError> {
         self.pos += 1;
         let mut enumerators = Vec::new();
+        let mut values = HashMap::new();
+        let mut next_value = 0i64;
         loop {
             if self.matches(Token::RBrace) {
                 break;
@@ -2274,7 +2315,7 @@ impl<'a> DeclaratorParser<'a> {
                 ) {
                     self.pos += 1;
                 }
-                let value = const_expr::Parser::evaluate(&self.tokens[start..self.pos])
+                let value = evaluate_enum_expression(&self.tokens[start..self.pos], &values)
                     .map_err(|error| error.to_string())?;
                 Some(span_tokens(
                     Expr::IntLit(value),
@@ -2283,6 +2324,11 @@ impl<'a> DeclaratorParser<'a> {
             } else {
                 None
             };
+            let explicit_value = value.as_ref().map(|value| match value.value {
+                Expr::IntLit(value) => value,
+                _ => unreachable!(),
+            });
+            record_enum_value(&mut values, &mut next_value, &name, explicit_value);
             enumerators.push(Enumerator { name, value });
             if self.matches(Token::Comma) {
                 continue;
