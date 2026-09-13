@@ -1111,11 +1111,19 @@ impl Parser {
                 ty: Box::new(ty),
             };
         }
+        let attributes = declarator_parser.parse_attributes().ok()?;
+        ty = crate::parser::apply_vector_attributes(ty, &attributes);
         let declarator = declarator_parser.parse_declarator(true).ok()?;
         Some((Box::new(ty), declarator, declarator_parser.position()))
     }
 
     fn parse_unary(&mut self) -> Result<ConstExpr, ConstExprError> {
+        if let Some(Token::Ident(name)) = self.peek()
+            && name == "__extension__"
+        {
+            self.take();
+            return self.parse_cast();
+        }
         if self.peek() == Some(&Token::Sizeof)
             && self.peek_at(1) == Some(&Token::LParen)
             && let Some(next) = self.peek_at(2)
@@ -1634,8 +1642,7 @@ pub(crate) fn starts_type_name(token: &Token, typedef_names: &HashSet<String>) -
                 | Keyword::Constexpr
         ),
         Token::Ident(name) => {
-            typedef_names.contains(name)
-                || matches!(name.as_str(), "char8_t" | "atomic_char8_t" | "nullptr_t")
+            typedef_names.contains(name) || crate::parser::is_target_builtin_name(name)
         }
         _ => false,
     }

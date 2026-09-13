@@ -1364,7 +1364,9 @@ fn parse_attribute_groups(
                 return Err("expected `(` after `_Alignas`".into());
             }
             attributes.push(Attribute::Aligned(parse_attribute_expression(&arguments)?));
-        } else if cursor.consume(&Token::Ident("__attribute__".into())) {
+        } else if cursor.consume(&Token::Ident("__attribute__".into()))
+            || cursor.consume(&Token::Ident("__attribute".into()))
+        {
             cursor.expect(Token::LParen, "expected `((` after __attribute__")?;
             cursor.expect(Token::LParen, "expected `((` after __attribute__")?;
             loop {
@@ -1612,7 +1614,7 @@ fn parse_attribute(
     }
 }
 
-fn apply_vector_attributes(mut ty: CType, attributes: &[Attribute]) -> CType {
+pub(crate) fn apply_vector_attributes(mut ty: CType, attributes: &[Attribute]) -> CType {
     for attribute in attributes {
         let size = match attribute {
             Attribute::VectorSize(size) => VectorSize::Bytes(size.clone()),
@@ -2054,6 +2056,13 @@ impl<'a> DeclaratorParser<'a> {
 
     pub(crate) fn position(&self) -> usize {
         self.pos
+    }
+
+    pub(crate) fn parse_attributes(&mut self) -> Result<Vec<Attribute>, String> {
+        let (attributes, position) =
+            parse_attribute_groups(self.tokens, self.pos, self.biggest_alignment)?;
+        self.pos = position;
+        Ok(attributes)
     }
 
     fn peek(&self) -> Option<&Token> {
@@ -3027,7 +3036,7 @@ impl<'a> Cursor for DeclaratorParser<'a> {
     }
 }
 
-fn is_target_builtin_name(name: &str) -> bool {
+pub(crate) fn is_target_builtin_name(name: &str) -> bool {
     matches!(
         name,
         "__m128"
