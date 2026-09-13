@@ -338,7 +338,13 @@ impl Parser {
                     &parser.tokens[start..parser.pos],
                 )))
             } else {
-                Some(parser.parse_initializer(&self.typedef_names))
+                Some(
+                    parser
+                        .parse_initializer(&self.typedef_names)
+                        .map_err(|error| {
+                            self.error_at_tokens(tokens, parser.pos, error.to_string())
+                        })?,
+                )
             }
         } else {
             None
@@ -2486,7 +2492,10 @@ impl<'a> DeclaratorParser<'a> {
             .unwrap_or_else(|error| panic!("invalid array designator expression: {error:?}"))
     }
 
-    fn parse_initializer(&mut self, typedef_names: &HashSet<String>) -> Initializer {
+    fn parse_initializer(
+        &mut self,
+        typedef_names: &HashSet<String>,
+    ) -> Result<Initializer, const_expr::ConstExprError> {
         if self.matches(Token::LBrace) {
             let mut items = Vec::new();
             while !self.matches(Token::RBrace) {
@@ -2524,7 +2533,7 @@ impl<'a> DeclaratorParser<'a> {
                 }
                 items.push(InitializerItem {
                     designators,
-                    value: self.parse_initializer(typedef_names),
+                    value: self.parse_initializer(typedef_names)?,
                 });
                 if !self.matches(Token::Comma) {
                     assert!(
@@ -2533,21 +2542,23 @@ impl<'a> DeclaratorParser<'a> {
                     );
                 }
             }
-            Initializer::List(items)
+            Ok(Initializer::List(items))
         } else if let Some(expression) = const_expr::string_literal_expr(self.peek()) {
             let start = self.pos;
             self.pos += 1;
-            Initializer::Expr(span_tokens(expression, &self.tokens[start..self.pos]))
+            Ok(Initializer::Expr(span_tokens(
+                expression,
+                &self.tokens[start..self.pos],
+            )))
         } else {
             let start = self.pos;
             let (expression, end) =
-                const_expr::Parser::parse_one(self.tokens, self.pos, typedef_names)
-                    .unwrap_or_else(|error| panic!("unsupported initializer expression: {error}"));
+                const_expr::Parser::parse_one(self.tokens, self.pos, typedef_names)?;
             self.pos = end;
-            Initializer::Expr(span_tokens(
+            Ok(Initializer::Expr(span_tokens(
                 Expr::Const(Box::new(expression)),
                 &self.tokens[start..end],
-            ))
+            )))
         }
     }
 

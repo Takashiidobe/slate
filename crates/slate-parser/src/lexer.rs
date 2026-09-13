@@ -782,11 +782,17 @@ impl Lexer {
     fn integer_digits(spelling: &str) -> String {
         let mut end = spelling.len();
         let bytes = spelling.as_bytes();
-        if end >= 2 && matches!(&bytes[end - 2..], b"wb" | b"WB") {
-            end -= 2;
-        }
-        while end > 0 && matches!(bytes[end - 1], b'u' | b'U' | b'l' | b'L' | b'w' | b'W') {
-            end -= 1;
+        loop {
+            let previous = end;
+            if end >= 2 && bytes[end - 2..end].eq_ignore_ascii_case(b"wb") {
+                end -= 2;
+            }
+            while end > 0 && matches!(bytes[end - 1], b'u' | b'U' | b'l' | b'L' | b'w' | b'W') {
+                end -= 1;
+            }
+            if end == previous {
+                break;
+            }
         }
         spelling[..end].to_string()
     }
