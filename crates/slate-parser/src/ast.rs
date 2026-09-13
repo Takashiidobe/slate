@@ -255,6 +255,29 @@ impl Default for Provenance {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum Register {
+    X86(X86Register),
+    Other(String),
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct X86Register {
+    pub spelling: String,
+    pub number: usize,
+    pub canonical: &'static str,
+    pub width: Option<X86RegisterWidth>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum X86RegisterWidth {
+    Low8,
+    High8,
+    Bits16,
+    Bits32,
+    Bits64,
+}
+
 #[derive(Debug, Clone, PartialEq)]
 pub enum Attribute {
     Packed,
