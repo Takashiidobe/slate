@@ -226,7 +226,7 @@ int main(void) { printf("%d\n", convert(6.75L)); }
 // DEFAULT-NEXT:                                       Float(
 // DEFAULT-NEXT:                                           FloatLiteral {
 // DEFAULT-NEXT:                                               value: LongDouble(
-// DEFAULT-NEXT:                                                   "6.75",
+// DEFAULT-NEXT:                                                   0x4001d800000000000000,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),

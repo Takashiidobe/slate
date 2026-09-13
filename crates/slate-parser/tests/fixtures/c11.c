@@ -4067,14 +4067,14 @@ int main(void) {
 // DEFAULT-NEXT:                                               left: Float(
 // DEFAULT-NEXT:                                                   FloatLiteral {
 // DEFAULT-NEXT:                                                       value: LongDouble(
-// DEFAULT-NEXT:                                                           "3.64519953188247460253e-4951",
+// DEFAULT-NEXT:                                                           0x1,
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               right: Float(
 // DEFAULT-NEXT:                                                   FloatLiteral {
 // DEFAULT-NEXT:                                                       value: LongDouble(
-// DEFAULT-NEXT:                                                           "0.0",
+// DEFAULT-NEXT:                                                           0x0,
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),

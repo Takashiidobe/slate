@@ -245,6 +245,38 @@ impl Token {
             .ok()
             .map(|value| value as i64)
     }
+
+    pub fn float_value_f16(&self) -> Option<u16> {
+        self.apfloat_bits::<rustc_apfloat::ieee::Half>()
+            .map(|bits| bits as u16)
+    }
+
+    pub fn float_value_f32(&self) -> Option<f32> {
+        self.apfloat_bits::<rustc_apfloat::ieee::Single>()
+            .map(|bits| f32::from_bits(bits as u32))
+    }
+
+    pub fn float_value_f64(&self) -> Option<f64> {
+        self.apfloat_bits::<rustc_apfloat::ieee::Double>()
+            .map(|bits| f64::from_bits(bits as u64))
+    }
+
+    pub fn float_value_f80(&self) -> Option<u128> {
+        self.apfloat_bits::<rustc_apfloat::ieee::X87DoubleExtended>()
+    }
+
+    pub fn float_value_f128(&self) -> Option<u128> {
+        self.apfloat_bits::<rustc_apfloat::ieee::Quad>()
+    }
+
+    fn apfloat_bits<F: rustc_apfloat::Float>(&self) -> Option<u128> {
+        let Token::FloatLit(spelling) = self else {
+            return None;
+        };
+        F::from_str_r(spelling, rustc_apfloat::Round::NearestTiesToEven)
+            .ok()
+            .map(|parsed| parsed.value.to_bits())
+    }
 }
 
 impl std::fmt::Display for Token {

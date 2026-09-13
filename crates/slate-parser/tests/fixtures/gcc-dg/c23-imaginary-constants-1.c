@@ -414,7 +414,7 @@ int main() {
 // DEFAULT-NEXT:                       Float(
 // DEFAULT-NEXT:                           FloatLiteral {
 // DEFAULT-NEXT:                               value: LongDouble(
-// DEFAULT-NEXT:                                   "1.",
+// DEFAULT-NEXT:                                   0x3fff8000000000000000,
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               imaginary: true,
 // DEFAULT-NEXT:                           },
@@ -450,7 +450,7 @@ int main() {
 // DEFAULT-NEXT:                       Float(
 // DEFAULT-NEXT:                           FloatLiteral {
 // DEFAULT-NEXT:                               value: LongDouble(
-// DEFAULT-NEXT:                                   "2.",
+// DEFAULT-NEXT:                                   0x40008000000000000000,
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               imaginary: true,
 // DEFAULT-NEXT:                           },
@@ -486,7 +486,7 @@ int main() {
 // DEFAULT-NEXT:                       Float(
 // DEFAULT-NEXT:                           FloatLiteral {
 // DEFAULT-NEXT:                               value: LongDouble(
-// DEFAULT-NEXT:                                   "3.",
+// DEFAULT-NEXT:                                   0x4000c000000000000000,
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               imaginary: true,
 // DEFAULT-NEXT:                           },
@@ -522,7 +522,7 @@ int main() {
 // DEFAULT-NEXT:                       Float(
 // DEFAULT-NEXT:                           FloatLiteral {
 // DEFAULT-NEXT:                               value: LongDouble(
-// DEFAULT-NEXT:                                   "4.",
+// DEFAULT-NEXT:                                   0x40018000000000000000,
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               imaginary: true,
 // DEFAULT-NEXT:                           },
@@ -846,7 +846,7 @@ int main() {
 // DEFAULT-NEXT:                       Float(
 // DEFAULT-NEXT:                           FloatLiteral {
 // DEFAULT-NEXT:                               value: LongDouble(
-// DEFAULT-NEXT:                                   "1.",
+// DEFAULT-NEXT:                                   0x3fff8000000000000000,
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               imaginary: true,
 // DEFAULT-NEXT:                           },
@@ -882,7 +882,7 @@ int main() {
 // DEFAULT-NEXT:                       Float(
 // DEFAULT-NEXT:                           FloatLiteral {
 // DEFAULT-NEXT:                               value: LongDouble(
-// DEFAULT-NEXT:                                   "2.",
+// DEFAULT-NEXT:                                   0x40008000000000000000,
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               imaginary: true,
 // DEFAULT-NEXT:                           },
@@ -918,7 +918,7 @@ int main() {
 // DEFAULT-NEXT:                       Float(
 // DEFAULT-NEXT:                           FloatLiteral {
 // DEFAULT-NEXT:                               value: LongDouble(
-// DEFAULT-NEXT:                                   "3.",
+// DEFAULT-NEXT:                                   0x4000c000000000000000,
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               imaginary: true,
 // DEFAULT-NEXT:                           },
@@ -954,7 +954,7 @@ int main() {
 // DEFAULT-NEXT:                       Float(
 // DEFAULT-NEXT:                           FloatLiteral {
 // DEFAULT-NEXT:                               value: LongDouble(
-// DEFAULT-NEXT:                                   "4.",
+// DEFAULT-NEXT:                                   0x40018000000000000000,
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               imaginary: true,
 // DEFAULT-NEXT:                           },
@@ -1229,7 +1229,7 @@ int main() {
 // DEFAULT-NEXT:                                                                                               value: Float(
 // DEFAULT-NEXT:                                                                                                   FloatLiteral {
 // DEFAULT-NEXT:                                                                                                       value: LongDouble(
-// DEFAULT-NEXT:                                                                                                           "1.",
+// DEFAULT-NEXT:                                                                                                           0x3fff8000000000000000,
 // DEFAULT-NEXT:                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                   },
 // DEFAULT-NEXT:                                                                                               ),
@@ -1252,7 +1252,7 @@ int main() {
 // DEFAULT-NEXT:                                                                                           value: Float(
 // DEFAULT-NEXT:                                                                                               FloatLiteral {
 // DEFAULT-NEXT:                                                                                                   value: LongDouble(
-// DEFAULT-NEXT:                                                                                                       "4.",
+// DEFAULT-NEXT:                                                                                                       0x40018000000000000000,
 // DEFAULT-NEXT:                                                                                                   ),
 // DEFAULT-NEXT:                                                                                               },
 // DEFAULT-NEXT:                                                                                           ),
@@ -1275,7 +1275,7 @@ int main() {
 // DEFAULT-NEXT:                                                                                       value: Float(
 // DEFAULT-NEXT:                                                                                           FloatLiteral {
 // DEFAULT-NEXT:                                                                                               value: LongDouble(
-// DEFAULT-NEXT:                                                                                                   "9.",
+// DEFAULT-NEXT:                                                                                                   0x40029000000000000000,
 // DEFAULT-NEXT:                                                                                               ),
 // DEFAULT-NEXT:                                                                                           },
 // DEFAULT-NEXT:                                                                                       ),
@@ -1298,7 +1298,7 @@ int main() {
 // DEFAULT-NEXT:                                                                                   value: Float(
 // DEFAULT-NEXT:                                                                                       FloatLiteral {
 // DEFAULT-NEXT:                                                                                           value: LongDouble(
-// DEFAULT-NEXT:                                                                                               "16.",
+// DEFAULT-NEXT:                                                                                               0x40038000000000000000,
 // DEFAULT-NEXT:                                                                                           ),
 // DEFAULT-NEXT:                                                                                       },
 // DEFAULT-NEXT:                                                                                   ),
@@ -1505,7 +1505,7 @@ int main() {
 // DEFAULT-NEXT:                                               value: Float(
 // DEFAULT-NEXT:                                                   FloatLiteral {
 // DEFAULT-NEXT:                                                       value: LongDouble(
-// DEFAULT-NEXT:                                                           "1.",
+// DEFAULT-NEXT:                                                           0x3fff8000000000000000,
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
@@ -1528,7 +1528,7 @@ int main() {
 // DEFAULT-NEXT:                                           value: Float(
 // DEFAULT-NEXT:                                               FloatLiteral {
 // DEFAULT-NEXT:                                                   value: LongDouble(
-// DEFAULT-NEXT:                                                       "4.",
+// DEFAULT-NEXT:                                                       0x40018000000000000000,
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
@@ -1551,7 +1551,7 @@ int main() {
 // DEFAULT-NEXT:                                       value: Float(
 // DEFAULT-NEXT:                                           FloatLiteral {
 // DEFAULT-NEXT:                                               value: LongDouble(
-// DEFAULT-NEXT:                                                   "9.",
+// DEFAULT-NEXT:                                                   0x40029000000000000000,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
@@ -1574,7 +1574,7 @@ int main() {
 // DEFAULT-NEXT:                                   value: Float(
 // DEFAULT-NEXT:                                       FloatLiteral {
 // DEFAULT-NEXT:                                           value: LongDouble(
-// DEFAULT-NEXT:                                               "16.",
+// DEFAULT-NEXT:                                               0x40038000000000000000,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),

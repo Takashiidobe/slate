@@ -117,7 +117,7 @@ int main(void) {
 // DEFAULT-NEXT:                               right: Float(
 // DEFAULT-NEXT:                                   FloatLiteral {
 // DEFAULT-NEXT:                                       value: LongDouble(
-// DEFAULT-NEXT:                                           "0x1.0000000000000002p0",
+// DEFAULT-NEXT:                                           0x3fff8000000000000001,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),

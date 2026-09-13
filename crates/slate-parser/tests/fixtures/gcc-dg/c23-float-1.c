@@ -232,14 +232,14 @@ int main(void) {
 // DEFAULT-NEXT:                           left: Float(
 // DEFAULT-NEXT:                               FloatLiteral {
 // DEFAULT-NEXT:                                   value: LongDouble(
-// DEFAULT-NEXT:                                       "1.18973149535723176502e+4932",
+// DEFAULT-NEXT:                                       0x7ffeffffffffffffffff,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           right: Float(
 // DEFAULT-NEXT:                               FloatLiteral {
 // DEFAULT-NEXT:                                   value: LongDouble(
-// DEFAULT-NEXT:                                       "1.18973149535723176502e+4932",
+// DEFAULT-NEXT:                                       0x7ffeffffffffffffffff,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),

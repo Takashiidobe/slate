@@ -1872,7 +1872,7 @@ int main(void) {
 // DEFAULT-NEXT:                                       left: Float(
 // DEFAULT-NEXT:                                           FloatLiteral {
 // DEFAULT-NEXT:                                               value: LongDouble(
-// DEFAULT-NEXT:                                                   "5.0",
+// DEFAULT-NEXT:                                                   0x4001a000000000000000,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
@@ -1881,7 +1881,7 @@ int main(void) {
 // DEFAULT-NEXT:                                           left: Float(
 // DEFAULT-NEXT:                                               FloatLiteral {
 // DEFAULT-NEXT:                                                   value: LongDouble(
-// DEFAULT-NEXT:                                                       "6.0",
+// DEFAULT-NEXT:                                                       0x4001c000000000000000,
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
@@ -2083,7 +2083,7 @@ int main(void) {
 // DEFAULT-NEXT:                                               left: Float(
 // DEFAULT-NEXT:                                                   FloatLiteral {
 // DEFAULT-NEXT:                                                       value: LongDouble(
-// DEFAULT-NEXT:                                                           "5.0",
+// DEFAULT-NEXT:                                                           0x4001a000000000000000,
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
@@ -2092,7 +2092,7 @@ int main(void) {
 // DEFAULT-NEXT:                                                   left: Float(
 // DEFAULT-NEXT:                                                       FloatLiteral {
 // DEFAULT-NEXT:                                                           value: LongDouble(
-// DEFAULT-NEXT:                                                               "6.0",
+// DEFAULT-NEXT:                                                               0x4001c000000000000000,
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),

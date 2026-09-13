@@ -97,7 +97,7 @@ int main() {
 // DEFAULT-NEXT:                           value: Float(
 // DEFAULT-NEXT:                               FloatLiteral {
 // DEFAULT-NEXT:                                   value: LongDouble(
-// DEFAULT-NEXT:                                       "0x1.0p-500",
+// DEFAULT-NEXT:                                       0x3e0b8000000000000000,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
@@ -114,7 +114,7 @@ int main() {
 // DEFAULT-NEXT:                           value: Float(
 // DEFAULT-NEXT:                               FloatLiteral {
 // DEFAULT-NEXT:                                   value: LongDouble(
-// DEFAULT-NEXT:                                       "0x1.0p-522",
+// DEFAULT-NEXT:                                       0x3df58000000000000000,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
@@ -131,7 +131,7 @@ int main() {
 // DEFAULT-NEXT:                           right: Float(
 // DEFAULT-NEXT:                               FloatLiteral {
 // DEFAULT-NEXT:                                   value: LongDouble(
-// DEFAULT-NEXT:                                       "0x1.0p-1022",
+// DEFAULT-NEXT:                                       0x3c018000000000000000,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),

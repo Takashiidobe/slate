@@ -1849,7 +1849,7 @@ main() {
 // DEFAULT-NEXT:                               Float(
 // DEFAULT-NEXT:                                   FloatLiteral {
 // DEFAULT-NEXT:                                       value: LongDouble(
-// DEFAULT-NEXT:                                           "123465987893275.53244532",
+// DEFAULT-NEXT:                                           0x402de09554b35037109d,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
@@ -1870,7 +1870,7 @@ main() {
 // DEFAULT-NEXT:                               Float(
 // DEFAULT-NEXT:                                   FloatLiteral {
 // DEFAULT-NEXT:                                       value: LongDouble(
-// DEFAULT-NEXT:                                           "123465987893275.53244532",
+// DEFAULT-NEXT:                                           0x402de09554b35037109d,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),

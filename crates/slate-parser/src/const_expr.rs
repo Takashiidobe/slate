@@ -6,7 +6,6 @@ use crate::lexer::{Keyword, Lexer, Token, TokenSpanExt};
 use crate::parser::DeclaratorParser;
 use miette::Diagnostic;
 use num_bigint::BigInt;
-use rustc_apfloat::ieee;
 use std::collections::HashSet;
 use thiserror::Error;
 
@@ -441,7 +440,7 @@ pub enum FloatValue {
     Single(f32),
     Double(f64),
     Quad(#[debug(format = "{:#x}")] u128),
-    LongDouble(String),
+    LongDouble(#[debug(format = "{:#x}")] u128),
     Decimal32(String),
     Decimal64(String),
     Decimal128(String),
@@ -464,17 +463,13 @@ impl FloatLiteral {
         if !imaginary {
             (digits, imaginary) = strip_imaginary(digits);
         }
-        let parse_bits = |bits: fn(&str) -> Option<u128>| bits(digits).ok_or_else(invalid);
+        let token = Token::FloatLit(digits.to_string());
         let value = match suffix {
-            "" | "f64" | "f32x" => FloatValue::Double(f64::from_bits(parse_bits(
-                apfloat_bits::<ieee::Double>,
-            )? as u64)),
-            "f" | "f32" => FloatValue::Single(f32::from_bits(parse_bits(
-                apfloat_bits::<ieee::Single>,
-            )? as u32)),
-            "f16" => FloatValue::Half(parse_bits(apfloat_bits::<ieee::Half>)? as u16),
-            "f128" | "q" => FloatValue::Quad(parse_bits(apfloat_bits::<ieee::Quad>)?),
-            "l" | "f64x" => FloatValue::LongDouble(digits.to_string()),
+            "" | "f64" | "f32x" => FloatValue::Double(token.float_value_f64().ok_or_else(invalid)?),
+            "f" | "f32" => FloatValue::Single(token.float_value_f32().ok_or_else(invalid)?),
+            "f16" => FloatValue::Half(token.float_value_f16().ok_or_else(invalid)?),
+            "f128" | "q" => FloatValue::Quad(token.float_value_f128().ok_or_else(invalid)?),
+            "l" | "f64x" => FloatValue::LongDouble(token.float_value_f80().ok_or_else(invalid)?),
             "df" => FloatValue::Decimal32(digits.to_string()),
             "dd" => FloatValue::Decimal64(digits.to_string()),
             _ => FloatValue::Decimal128(digits.to_string()),
@@ -532,12 +527,6 @@ fn integer_value(token: &Token) -> IntegerValue {
     )
 }
 
-fn apfloat_bits<F: rustc_apfloat::Float>(digits: &str) -> Option<u128> {
-    F::from_str_r(digits, rustc_apfloat::Round::NearestTiesToEven)
-        .ok()
-        .map(|parsed| parsed.value.to_bits())
-}
-
 impl std::fmt::Display for FloatLiteral {
     fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match &self.value {
@@ -545,7 +534,7 @@ impl std::fmt::Display for FloatLiteral {
             FloatValue::Single(value) => write!(formatter, "{value}f")?,
             FloatValue::Double(value) => write!(formatter, "{value}")?,
             FloatValue::Quad(bits) => write!(formatter, "f128:{bits:#x}")?,
-            FloatValue::LongDouble(digits) => write!(formatter, "{digits}L")?,
+            FloatValue::LongDouble(bits) => write!(formatter, "f80:{bits:#x}")?,
             FloatValue::Decimal32(digits) => write!(formatter, "{digits}DF")?,
             FloatValue::Decimal64(digits) => write!(formatter, "{digits}DD")?,
             FloatValue::Decimal128(digits) => write!(formatter, "{digits}DL")?,
