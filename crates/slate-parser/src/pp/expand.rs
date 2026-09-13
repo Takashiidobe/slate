@@ -22,6 +22,42 @@ impl Preprocessor<'_> {
         result
     }
 
+    fn expand_builtin_macro(&self, name: &str, token: &Span<Token>) -> Option<Span<Token>> {
+        let loc = token.expansion;
+        match name {
+            "__LINE__" => {
+                let (line, _) = self.presumed_location(loc);
+                Some(token.clone().with_value(Token::IntLit(line.to_string())))
+            }
+            "__FILE__" => {
+                let (_, file) = self.presumed_location(loc);
+                Some(token.clone().with_value(Token::StringLit(file)))
+            }
+            "__FILE_NAME__" => {
+                let (_, file) = self.presumed_location(loc);
+                let name = std::path::Path::new(&file)
+                    .file_name()
+                    .map_or(file.clone(), |name| name.to_string_lossy().into_owned());
+                Some(token.clone().with_value(Token::StringLit(name)))
+            }
+            "__BASE_FILE__" => {
+                let main = self.main_file.unwrap_or(loc.file);
+                let file = crate::files::display_path(self.files.path(main));
+                Some(token.clone().with_value(Token::StringLit(file)))
+            }
+            "__INCLUDE_LEVEL__" => {
+                let level = self.open_stack.len().saturating_sub(1);
+                Some(token.clone().with_value(Token::IntLit(level.to_string())))
+            }
+            "__COUNTER__" => {
+                let value = self.counter.get();
+                self.counter.set(value + 1);
+                Some(token.clone().with_value(Token::IntLit(value.to_string())))
+            }
+            _ => None,
+        }
+    }
+
     pub(super) fn expand_macros(
         &self,
         tokens: &[Span<Token>],
@@ -36,6 +72,11 @@ impl Preprocessor<'_> {
                 i += 1;
                 continue;
             };
+            if let Some(replacement) = self.expand_builtin_macro(name, token) {
+                expanded.push(replacement);
+                i += 1;
+                continue;
+            }
             let Some(macro_def) = self.macros.get(name).map(|entry| entry.definition.clone())
             else {
                 expanded.push(token.clone());

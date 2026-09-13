@@ -1,3 +1,4 @@
+#line 1 "assert_compile_time_true.c"
 #include <assert.h>
 #include <stdio.h>
 
@@ -62,11 +63,11 @@ int main(void) {
 // DEFAULT-NEXT:                                           StringLit(
 // DEFAULT-NEXT:                                               "5 == 5",
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Identifier(
-// DEFAULT-NEXT:                                               "__FILE__",
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "assert_compile_time_true.c",
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Identifier(
-// DEFAULT-NEXT:                                               "__LINE__",
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               6,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           Identifier(
 // DEFAULT-NEXT:                                               "__func__",
@@ -108,7 +109,7 @@ int main(void) {
 // DEFAULT-NEXT:                   3,
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               kind: User,
-// DEFAULT-NEXT:               line: 3,
+// DEFAULT-NEXT:               line: 4,
 // DEFAULT-NEXT:               header: None,
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },

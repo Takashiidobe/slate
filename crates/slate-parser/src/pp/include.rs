@@ -131,6 +131,10 @@ impl Preprocessor<'_> {
                 .map(|path| (path, HeaderKind::User))
                 .or_else(|| {
                     find_in(&self.search.system, name).map(|path| (path, HeaderKind::System))
+                })
+                .or_else(|| {
+                    let candidate = PathBuf::from(name);
+                    candidate.is_file().then_some((candidate, HeaderKind::User))
                 }),
         }
     }

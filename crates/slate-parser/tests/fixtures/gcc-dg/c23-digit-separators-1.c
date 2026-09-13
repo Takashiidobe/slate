@@ -431,8 +431,8 @@ _Static_assert(__LINE__ == 456789);
 // DEFAULT-NEXT:           condition: Const(
 // DEFAULT-NEXT:               Binary {
 // DEFAULT-NEXT:                   op: Equal,
-// DEFAULT-NEXT:                   left: Identifier(
-// DEFAULT-NEXT:                       "__LINE__",
+// DEFAULT-NEXT:                   left: Integer(
+// DEFAULT-NEXT:                       123,
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   right: Integer(
 // DEFAULT-NEXT:                       123,
@@ -454,8 +454,8 @@ _Static_assert(__LINE__ == 456789);
 // DEFAULT-NEXT:           condition: Const(
 // DEFAULT-NEXT:               Binary {
 // DEFAULT-NEXT:                   op: Equal,
-// DEFAULT-NEXT:                   left: Identifier(
-// DEFAULT-NEXT:                       "__LINE__",
+// DEFAULT-NEXT:                   left: Integer(
+// DEFAULT-NEXT:                       456789,
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   right: Integer(
 // DEFAULT-NEXT:                       456789,

@@ -67,6 +67,8 @@ pub(super) enum PPErrorKind {
     ExpectedEmbedResource,
     #[error("invalid #embed parameter")]
     InvalidEmbedParameter,
+    #[error("invalid #line directive, expected a digit sequence")]
+    InvalidLineDirective,
     #[error("{0}")]
     Directive(String),
     #[error("unsupported preprocessor directive")]

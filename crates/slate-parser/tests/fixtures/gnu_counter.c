@@ -42,8 +42,8 @@ int main(void) {
 // DEFAULT-NEXT:           initializer: Some(
 // DEFAULT-NEXT:               Expr(
 // DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Identifier(
-// DEFAULT-NEXT:                           "__COUNTER__",
+// DEFAULT-NEXT:                       Integer(
+// DEFAULT-NEXT:                           0,
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
@@ -75,8 +75,8 @@ int main(void) {
 // DEFAULT-NEXT:           initializer: Some(
 // DEFAULT-NEXT:               Expr(
 // DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Identifier(
-// DEFAULT-NEXT:                           "__COUNTER__",
+// DEFAULT-NEXT:                       Integer(
+// DEFAULT-NEXT:                           1,
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
@@ -112,15 +112,15 @@ int main(void) {
 // DEFAULT-NEXT:                           op: Add,
 // DEFAULT-NEXT:                           left: Binary {
 // DEFAULT-NEXT:                               op: Mul,
-// DEFAULT-NEXT:                               left: Identifier(
-// DEFAULT-NEXT:                                   "__COUNTER__",
+// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                                   2,
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               right: Integer(
 // DEFAULT-NEXT:                                   10,
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Identifier(
-// DEFAULT-NEXT:                               "__COUNTER__",
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               3,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
@@ -162,8 +162,8 @@ int main(void) {
 // DEFAULT-NEXT:                       initializer: Some(
 // DEFAULT-NEXT:                           Expr(
 // DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "__COUNTER__",
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       4,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),

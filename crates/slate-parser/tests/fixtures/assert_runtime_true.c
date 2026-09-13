@@ -1,3 +1,4 @@
+#line 1 "assert_runtime_true.c"
 #include <assert.h>
 #include <stdio.h>
 
@@ -95,11 +96,11 @@ int main(int argc, char **argv) {
 // DEFAULT-NEXT:                                           StringLit(
 // DEFAULT-NEXT:                                               "argc == 1",
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Identifier(
-// DEFAULT-NEXT:                                               "__FILE__",
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "assert_runtime_true.c",
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Identifier(
-// DEFAULT-NEXT:                                               "__LINE__",
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               6,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           Identifier(
 // DEFAULT-NEXT:                                               "__func__",
@@ -141,7 +142,7 @@ int main(int argc, char **argv) {
 // DEFAULT-NEXT:                   3,
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               kind: User,
-// DEFAULT-NEXT:               line: 3,
+// DEFAULT-NEXT:               line: 4,
 // DEFAULT-NEXT:               header: None,
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },

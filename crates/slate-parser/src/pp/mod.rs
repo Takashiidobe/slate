@@ -6,12 +6,13 @@ mod syntax;
 
 use crate::ast::{FileId, HeaderKind, Loc, Provenance, Span};
 use crate::const_expr;
-use crate::files::{Files, SearchPaths};
+use crate::files::{Files, SearchPaths, display_path};
 use crate::lexer::{Lexer, Token, TokenSpanExt};
 pub use error::{DirectiveDiagnostic, DirectiveErrors, PPError};
 use error::{PPErrorKind, PPFailure};
 use include::{include_target, read_source};
 use miette::Severity;
+use std::cell::Cell;
 use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
 use syntax::{Directive, DirectiveName, IfSection, Item, directive_spelling, identifier};
@@ -44,6 +45,13 @@ pub struct MacroEntry {
     pub provenance: Provenance,
 }
 
+#[derive(Debug, Clone)]
+struct LineOverride {
+    at_line: usize,
+    presumed_line: i64,
+    presumed_file: String,
+}
+
 pub struct Preprocessor<'a> {
     pub files: Files,
     pub macros: HashMap<String, MacroEntry>,
@@ -56,6 +64,8 @@ pub struct Preprocessor<'a> {
     pragma_once: HashSet<PathBuf>,
     pushed_macros: HashMap<String, Vec<Option<MacroEntry>>>,
     pub directive_diagnostics: Vec<DirectiveDiagnostic>,
+    line_overrides: HashMap<FileId, Vec<LineOverride>>,
+    counter: Cell<i64>,
 }
 
 const BUILTIN_PREDEFINES: [(&str, &str); 2] = [
@@ -83,6 +93,8 @@ impl<'a> Preprocessor<'a> {
             pragma_once: HashSet::new(),
             pushed_macros: HashMap::new(),
             directive_diagnostics: Vec::new(),
+            line_overrides: HashMap::new(),
+            counter: Cell::new(0),
         };
         pp.seed_builtin_macros();
         pp
@@ -158,18 +170,96 @@ impl<'a> Preprocessor<'a> {
         self.sources.get(&file).map_or("", String::as_str)
     }
 
-    fn provenance(&self, loc: Loc) -> Provenance {
-        let line = self.line_starts.get(&loc.file).map_or(0, |starts| {
+    fn line_number(&self, loc: Loc) -> usize {
+        self.line_starts.get(&loc.file).map_or(0, |starts| {
             starts
                 .partition_point(|&start| start <= loc.offset)
                 .saturating_sub(1)
-        });
+        })
+    }
+
+    fn provenance(&self, loc: Loc) -> Provenance {
         Provenance {
             file: loc.file,
             kind: self.files.kind(loc.file),
-            line,
+            line: self.line_number(loc),
             header: self.outermost_header,
         }
+    }
+
+    pub(super) fn presumed_location(&self, loc: Loc) -> (i64, String) {
+        let actual = self.line_number(loc);
+        let overrides = self.line_overrides.get(&loc.file);
+        let applicable = overrides.and_then(|overrides| {
+            let index = overrides.partition_point(|entry| entry.at_line <= actual);
+            index.checked_sub(1).map(|index| &overrides[index])
+        });
+        match applicable {
+            Some(entry) => (
+                entry.presumed_line + (actual - entry.at_line) as i64,
+                entry.presumed_file.clone(),
+            ),
+            None => (actual as i64 + 1, display_path(self.files.path(loc.file))),
+        }
+    }
+
+    fn push_line_override(&mut self, loc: Loc, presumed_line: i64, presumed_file: String) {
+        let at_line = self.line_number(loc) + 1;
+        self.line_overrides
+            .entry(loc.file)
+            .or_default()
+            .push(LineOverride {
+                at_line,
+                presumed_line,
+                presumed_file,
+            });
+    }
+
+    fn record_line_directive(&mut self, directive: &Directive) -> Result<(), PPFailure> {
+        let expanded = self.expand_macros(&directive.arguments, &mut HashSet::new());
+        let Some(Span {
+            value: Token::IntLit(number),
+            ..
+        }) = expanded.first()
+        else {
+            return Err(PPFailure::at(
+                directive.arguments_loc(),
+                PPErrorKind::InvalidLineDirective,
+            ));
+        };
+        let Ok(presumed_line) = number.replace('\'', "").parse::<i64>() else {
+            return Err(PPFailure::at(
+                directive.arguments_loc(),
+                PPErrorKind::InvalidLineDirective,
+            ));
+        };
+        let presumed_file = match expanded.get(1) {
+            Some(Span {
+                value: Token::StringLit(name),
+                ..
+            }) => name.clone(),
+            _ => self.presumed_location(directive.loc).1,
+        };
+        self.push_line_override(directive.loc, presumed_line, presumed_file);
+        Ok(())
+    }
+
+    fn record_line_marker(&mut self, directive: &Directive) {
+        let Ok(presumed_line) = self
+            .spelling(directive.name_loc)
+            .replace('\'', "")
+            .parse::<i64>()
+        else {
+            return;
+        };
+        let presumed_file = match directive.arguments.first() {
+            Some(Span {
+                value: Token::StringLit(name),
+                ..
+            }) => name.clone(),
+            _ => self.presumed_location(directive.loc).1,
+        };
+        self.push_line_override(directive.loc, presumed_line, presumed_file);
     }
 
     fn walk_group(&mut self, items: &[Item]) -> Result<Vec<PPNode>, PPFailure> {
@@ -203,10 +293,9 @@ impl<'a> Preprocessor<'a> {
                     DirectiveName::Warning => {
                         self.record_directive_diagnostic(directive, Severity::Warning)
                     }
-                    DirectiveName::Line
-                    | DirectiveName::LineMarker
-                    | DirectiveName::Ident
-                    | DirectiveName::Null => {}
+                    DirectiveName::Line => self.record_line_directive(directive)?,
+                    DirectiveName::LineMarker => self.record_line_marker(directive),
+                    DirectiveName::Ident | DirectiveName::Null => {}
                     _ => {
                         return Err(PPFailure::at(
                             directive.name_loc,
