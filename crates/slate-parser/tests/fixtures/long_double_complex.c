@@ -124,6 +124,1066 @@ int main(void) {
 // DEFAULT: decl[0]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Floating(
+// DEFAULT-NEXT:                   LongDouble,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Function {
+// DEFAULT-NEXT:               inner: Name(
+// DEFAULT-NEXT:                   "creall",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               parameters: [
+// DEFAULT-NEXT:                   Parameter {
+// DEFAULT-NEXT:                       ty: Complex(
+// DEFAULT-NEXT:                           Floating(
+// DEFAULT-NEXT:                               LongDouble,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       declarator: Some(
+// DEFAULT-NEXT:                           Name(
+// DEFAULT-NEXT:                               "z",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               4,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: System,
+// DEFAULT-NEXT:           line: 10,
+// DEFAULT-NEXT:           header: Some(
+// DEFAULT-NEXT:               FileId(
+// DEFAULT-NEXT:                   4,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[1]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Floating(
+// DEFAULT-NEXT:                   LongDouble,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Function {
+// DEFAULT-NEXT:               inner: Name(
+// DEFAULT-NEXT:                   "cimagl",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               parameters: [
+// DEFAULT-NEXT:                   Parameter {
+// DEFAULT-NEXT:                       ty: Complex(
+// DEFAULT-NEXT:                           Floating(
+// DEFAULT-NEXT:                               LongDouble,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       declarator: Some(
+// DEFAULT-NEXT:                           Name(
+// DEFAULT-NEXT:                               "z",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               4,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: System,
+// DEFAULT-NEXT:           line: 14,
+// DEFAULT-NEXT:           header: Some(
+// DEFAULT-NEXT:               FileId(
+// DEFAULT-NEXT:                   4,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[2]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Complex(
+// DEFAULT-NEXT:                   Floating(
+// DEFAULT-NEXT:                       LongDouble,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Function {
+// DEFAULT-NEXT:               inner: Name(
+// DEFAULT-NEXT:                   "cacosl",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               parameters: [
+// DEFAULT-NEXT:                   Parameter {
+// DEFAULT-NEXT:                       ty: Complex(
+// DEFAULT-NEXT:                           Floating(
+// DEFAULT-NEXT:                               LongDouble,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       declarator: Some(
+// DEFAULT-NEXT:                           Name(
+// DEFAULT-NEXT:                               "z",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               4,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: System,
+// DEFAULT-NEXT:           line: 54,
+// DEFAULT-NEXT:           header: Some(
+// DEFAULT-NEXT:               FileId(
+// DEFAULT-NEXT:                   4,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[3]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Complex(
+// DEFAULT-NEXT:                   Floating(
+// DEFAULT-NEXT:                       LongDouble,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Function {
+// DEFAULT-NEXT:               inner: Name(
+// DEFAULT-NEXT:                   "casinl",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               parameters: [
+// DEFAULT-NEXT:                   Parameter {
+// DEFAULT-NEXT:                       ty: Complex(
+// DEFAULT-NEXT:                           Floating(
+// DEFAULT-NEXT:                               LongDouble,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       declarator: Some(
+// DEFAULT-NEXT:                           Name(
+// DEFAULT-NEXT:                               "z",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               4,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: System,
+// DEFAULT-NEXT:           line: 58,
+// DEFAULT-NEXT:           header: Some(
+// DEFAULT-NEXT:               FileId(
+// DEFAULT-NEXT:                   4,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[4]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Complex(
+// DEFAULT-NEXT:                   Floating(
+// DEFAULT-NEXT:                       LongDouble,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Function {
+// DEFAULT-NEXT:               inner: Name(
+// DEFAULT-NEXT:                   "catanl",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               parameters: [
+// DEFAULT-NEXT:                   Parameter {
+// DEFAULT-NEXT:                       ty: Complex(
+// DEFAULT-NEXT:                           Floating(
+// DEFAULT-NEXT:                               LongDouble,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       declarator: Some(
+// DEFAULT-NEXT:                           Name(
+// DEFAULT-NEXT:                               "z",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               4,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: System,
+// DEFAULT-NEXT:           line: 62,
+// DEFAULT-NEXT:           header: Some(
+// DEFAULT-NEXT:               FileId(
+// DEFAULT-NEXT:                   4,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[5]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Complex(
+// DEFAULT-NEXT:                   Floating(
+// DEFAULT-NEXT:                       LongDouble,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Function {
+// DEFAULT-NEXT:               inner: Name(
+// DEFAULT-NEXT:                   "ccosl",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               parameters: [
+// DEFAULT-NEXT:                   Parameter {
+// DEFAULT-NEXT:                       ty: Complex(
+// DEFAULT-NEXT:                           Floating(
+// DEFAULT-NEXT:                               LongDouble,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       declarator: Some(
+// DEFAULT-NEXT:                           Name(
+// DEFAULT-NEXT:                               "z",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               4,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: System,
+// DEFAULT-NEXT:           line: 68,
+// DEFAULT-NEXT:           header: Some(
+// DEFAULT-NEXT:               FileId(
+// DEFAULT-NEXT:                   4,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[6]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Complex(
+// DEFAULT-NEXT:                   Floating(
+// DEFAULT-NEXT:                       LongDouble,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Function {
+// DEFAULT-NEXT:               inner: Name(
+// DEFAULT-NEXT:                   "csinl",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               parameters: [
+// DEFAULT-NEXT:                   Parameter {
+// DEFAULT-NEXT:                       ty: Complex(
+// DEFAULT-NEXT:                           Floating(
+// DEFAULT-NEXT:                               LongDouble,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       declarator: Some(
+// DEFAULT-NEXT:                           Name(
+// DEFAULT-NEXT:                               "z",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               4,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: System,
+// DEFAULT-NEXT:           line: 72,
+// DEFAULT-NEXT:           header: Some(
+// DEFAULT-NEXT:               FileId(
+// DEFAULT-NEXT:                   4,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[7]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Complex(
+// DEFAULT-NEXT:                   Floating(
+// DEFAULT-NEXT:                       LongDouble,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Function {
+// DEFAULT-NEXT:               inner: Name(
+// DEFAULT-NEXT:                   "ctanl",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               parameters: [
+// DEFAULT-NEXT:                   Parameter {
+// DEFAULT-NEXT:                       ty: Complex(
+// DEFAULT-NEXT:                           Floating(
+// DEFAULT-NEXT:                               LongDouble,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       declarator: Some(
+// DEFAULT-NEXT:                           Name(
+// DEFAULT-NEXT:                               "z",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               4,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: System,
+// DEFAULT-NEXT:           line: 76,
+// DEFAULT-NEXT:           header: Some(
+// DEFAULT-NEXT:               FileId(
+// DEFAULT-NEXT:                   4,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[8]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Complex(
+// DEFAULT-NEXT:                   Floating(
+// DEFAULT-NEXT:                       LongDouble,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Function {
+// DEFAULT-NEXT:               inner: Name(
+// DEFAULT-NEXT:                   "cacoshl",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               parameters: [
+// DEFAULT-NEXT:                   Parameter {
+// DEFAULT-NEXT:                       ty: Complex(
+// DEFAULT-NEXT:                           Floating(
+// DEFAULT-NEXT:                               LongDouble,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       declarator: Some(
+// DEFAULT-NEXT:                           Name(
+// DEFAULT-NEXT:                               "z",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               4,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: System,
+// DEFAULT-NEXT:           line: 82,
+// DEFAULT-NEXT:           header: Some(
+// DEFAULT-NEXT:               FileId(
+// DEFAULT-NEXT:                   4,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[9]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Complex(
+// DEFAULT-NEXT:                   Floating(
+// DEFAULT-NEXT:                       LongDouble,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Function {
+// DEFAULT-NEXT:               inner: Name(
+// DEFAULT-NEXT:                   "casinhl",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               parameters: [
+// DEFAULT-NEXT:                   Parameter {
+// DEFAULT-NEXT:                       ty: Complex(
+// DEFAULT-NEXT:                           Floating(
+// DEFAULT-NEXT:                               LongDouble,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       declarator: Some(
+// DEFAULT-NEXT:                           Name(
+// DEFAULT-NEXT:                               "z",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               4,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: System,
+// DEFAULT-NEXT:           line: 86,
+// DEFAULT-NEXT:           header: Some(
+// DEFAULT-NEXT:               FileId(
+// DEFAULT-NEXT:                   4,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[10]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Complex(
+// DEFAULT-NEXT:                   Floating(
+// DEFAULT-NEXT:                       LongDouble,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Function {
+// DEFAULT-NEXT:               inner: Name(
+// DEFAULT-NEXT:                   "catanhl",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               parameters: [
+// DEFAULT-NEXT:                   Parameter {
+// DEFAULT-NEXT:                       ty: Complex(
+// DEFAULT-NEXT:                           Floating(
+// DEFAULT-NEXT:                               LongDouble,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       declarator: Some(
+// DEFAULT-NEXT:                           Name(
+// DEFAULT-NEXT:                               "z",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               4,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: System,
+// DEFAULT-NEXT:           line: 90,
+// DEFAULT-NEXT:           header: Some(
+// DEFAULT-NEXT:               FileId(
+// DEFAULT-NEXT:                   4,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[11]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Complex(
+// DEFAULT-NEXT:                   Floating(
+// DEFAULT-NEXT:                       LongDouble,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Function {
+// DEFAULT-NEXT:               inner: Name(
+// DEFAULT-NEXT:                   "ccoshl",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               parameters: [
+// DEFAULT-NEXT:                   Parameter {
+// DEFAULT-NEXT:                       ty: Complex(
+// DEFAULT-NEXT:                           Floating(
+// DEFAULT-NEXT:                               LongDouble,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       declarator: Some(
+// DEFAULT-NEXT:                           Name(
+// DEFAULT-NEXT:                               "z",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               4,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: System,
+// DEFAULT-NEXT:           line: 96,
+// DEFAULT-NEXT:           header: Some(
+// DEFAULT-NEXT:               FileId(
+// DEFAULT-NEXT:                   4,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[12]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Complex(
+// DEFAULT-NEXT:                   Floating(
+// DEFAULT-NEXT:                       LongDouble,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Function {
+// DEFAULT-NEXT:               inner: Name(
+// DEFAULT-NEXT:                   "csinhl",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               parameters: [
+// DEFAULT-NEXT:                   Parameter {
+// DEFAULT-NEXT:                       ty: Complex(
+// DEFAULT-NEXT:                           Floating(
+// DEFAULT-NEXT:                               LongDouble,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       declarator: Some(
+// DEFAULT-NEXT:                           Name(
+// DEFAULT-NEXT:                               "z",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               4,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: System,
+// DEFAULT-NEXT:           line: 100,
+// DEFAULT-NEXT:           header: Some(
+// DEFAULT-NEXT:               FileId(
+// DEFAULT-NEXT:                   4,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[13]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Complex(
+// DEFAULT-NEXT:                   Floating(
+// DEFAULT-NEXT:                       LongDouble,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Function {
+// DEFAULT-NEXT:               inner: Name(
+// DEFAULT-NEXT:                   "ctanhl",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               parameters: [
+// DEFAULT-NEXT:                   Parameter {
+// DEFAULT-NEXT:                       ty: Complex(
+// DEFAULT-NEXT:                           Floating(
+// DEFAULT-NEXT:                               LongDouble,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       declarator: Some(
+// DEFAULT-NEXT:                           Name(
+// DEFAULT-NEXT:                               "z",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               4,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: System,
+// DEFAULT-NEXT:           line: 104,
+// DEFAULT-NEXT:           header: Some(
+// DEFAULT-NEXT:               FileId(
+// DEFAULT-NEXT:                   4,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[14]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Complex(
+// DEFAULT-NEXT:                   Floating(
+// DEFAULT-NEXT:                       LongDouble,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Function {
+// DEFAULT-NEXT:               inner: Name(
+// DEFAULT-NEXT:                   "cexpl",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               parameters: [
+// DEFAULT-NEXT:                   Parameter {
+// DEFAULT-NEXT:                       ty: Complex(
+// DEFAULT-NEXT:                           Floating(
+// DEFAULT-NEXT:                               LongDouble,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       declarator: Some(
+// DEFAULT-NEXT:                           Name(
+// DEFAULT-NEXT:                               "z",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               4,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: System,
+// DEFAULT-NEXT:           line: 110,
+// DEFAULT-NEXT:           header: Some(
+// DEFAULT-NEXT:               FileId(
+// DEFAULT-NEXT:                   4,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[15]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Complex(
+// DEFAULT-NEXT:                   Floating(
+// DEFAULT-NEXT:                       LongDouble,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Function {
+// DEFAULT-NEXT:               inner: Name(
+// DEFAULT-NEXT:                   "clogl",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               parameters: [
+// DEFAULT-NEXT:                   Parameter {
+// DEFAULT-NEXT:                       ty: Complex(
+// DEFAULT-NEXT:                           Floating(
+// DEFAULT-NEXT:                               LongDouble,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       declarator: Some(
+// DEFAULT-NEXT:                           Name(
+// DEFAULT-NEXT:                               "z",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               4,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: System,
+// DEFAULT-NEXT:           line: 114,
+// DEFAULT-NEXT:           header: Some(
+// DEFAULT-NEXT:               FileId(
+// DEFAULT-NEXT:                   4,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[16]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Floating(
+// DEFAULT-NEXT:                   LongDouble,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Function {
+// DEFAULT-NEXT:               inner: Name(
+// DEFAULT-NEXT:                   "cabsl",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               parameters: [
+// DEFAULT-NEXT:                   Parameter {
+// DEFAULT-NEXT:                       ty: Complex(
+// DEFAULT-NEXT:                           Floating(
+// DEFAULT-NEXT:                               LongDouble,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       declarator: Some(
+// DEFAULT-NEXT:                           Name(
+// DEFAULT-NEXT:                               "z",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               4,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: System,
+// DEFAULT-NEXT:           line: 120,
+// DEFAULT-NEXT:           header: Some(
+// DEFAULT-NEXT:               FileId(
+// DEFAULT-NEXT:                   4,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[17]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Complex(
+// DEFAULT-NEXT:                   Floating(
+// DEFAULT-NEXT:                       LongDouble,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Function {
+// DEFAULT-NEXT:               inner: Name(
+// DEFAULT-NEXT:                   "cpowl",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               parameters: [
+// DEFAULT-NEXT:                   Parameter {
+// DEFAULT-NEXT:                       ty: Complex(
+// DEFAULT-NEXT:                           Floating(
+// DEFAULT-NEXT:                               LongDouble,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       declarator: Some(
+// DEFAULT-NEXT:                           Name(
+// DEFAULT-NEXT:                               "x",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   Parameter {
+// DEFAULT-NEXT:                       ty: Complex(
+// DEFAULT-NEXT:                           Floating(
+// DEFAULT-NEXT:                               LongDouble,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       declarator: Some(
+// DEFAULT-NEXT:                           Name(
+// DEFAULT-NEXT:                               "y",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               4,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: System,
+// DEFAULT-NEXT:           line: 124,
+// DEFAULT-NEXT:           header: Some(
+// DEFAULT-NEXT:               FileId(
+// DEFAULT-NEXT:                   4,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[18]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Complex(
+// DEFAULT-NEXT:                   Floating(
+// DEFAULT-NEXT:                       LongDouble,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Function {
+// DEFAULT-NEXT:               inner: Name(
+// DEFAULT-NEXT:                   "csqrtl",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               parameters: [
+// DEFAULT-NEXT:                   Parameter {
+// DEFAULT-NEXT:                       ty: Complex(
+// DEFAULT-NEXT:                           Floating(
+// DEFAULT-NEXT:                               LongDouble,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       declarator: Some(
+// DEFAULT-NEXT:                           Name(
+// DEFAULT-NEXT:                               "z",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               4,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: System,
+// DEFAULT-NEXT:           line: 128,
+// DEFAULT-NEXT:           header: Some(
+// DEFAULT-NEXT:               FileId(
+// DEFAULT-NEXT:                   4,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[19]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Floating(
+// DEFAULT-NEXT:                   LongDouble,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Function {
+// DEFAULT-NEXT:               inner: Name(
+// DEFAULT-NEXT:                   "cargl",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               parameters: [
+// DEFAULT-NEXT:                   Parameter {
+// DEFAULT-NEXT:                       ty: Complex(
+// DEFAULT-NEXT:                           Floating(
+// DEFAULT-NEXT:                               LongDouble,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       declarator: Some(
+// DEFAULT-NEXT:                           Name(
+// DEFAULT-NEXT:                               "z",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               4,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: System,
+// DEFAULT-NEXT:           line: 134,
+// DEFAULT-NEXT:           header: Some(
+// DEFAULT-NEXT:               FileId(
+// DEFAULT-NEXT:                   4,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[20]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Floating(
+// DEFAULT-NEXT:                   LongDouble,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Function {
+// DEFAULT-NEXT:               inner: Name(
+// DEFAULT-NEXT:                   "cimagl",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               parameters: [
+// DEFAULT-NEXT:                   Parameter {
+// DEFAULT-NEXT:                       ty: Complex(
+// DEFAULT-NEXT:                           Floating(
+// DEFAULT-NEXT:                               LongDouble,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       declarator: Some(
+// DEFAULT-NEXT:                           Name(
+// DEFAULT-NEXT:                               "z",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               4,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: System,
+// DEFAULT-NEXT:           line: 138,
+// DEFAULT-NEXT:           header: Some(
+// DEFAULT-NEXT:               FileId(
+// DEFAULT-NEXT:                   4,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[21]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Complex(
+// DEFAULT-NEXT:                   Floating(
+// DEFAULT-NEXT:                       LongDouble,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Function {
+// DEFAULT-NEXT:               inner: Name(
+// DEFAULT-NEXT:                   "conjl",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               parameters: [
+// DEFAULT-NEXT:                   Parameter {
+// DEFAULT-NEXT:                       ty: Complex(
+// DEFAULT-NEXT:                           Floating(
+// DEFAULT-NEXT:                               LongDouble,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       declarator: Some(
+// DEFAULT-NEXT:                           Name(
+// DEFAULT-NEXT:                               "z",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               4,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: System,
+// DEFAULT-NEXT:           line: 142,
+// DEFAULT-NEXT:           header: Some(
+// DEFAULT-NEXT:               FileId(
+// DEFAULT-NEXT:                   4,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[22]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Complex(
+// DEFAULT-NEXT:                   Floating(
+// DEFAULT-NEXT:                       LongDouble,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Function {
+// DEFAULT-NEXT:               inner: Name(
+// DEFAULT-NEXT:                   "cprojl",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               parameters: [
+// DEFAULT-NEXT:                   Parameter {
+// DEFAULT-NEXT:                       ty: Complex(
+// DEFAULT-NEXT:                           Floating(
+// DEFAULT-NEXT:                               LongDouble,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       declarator: Some(
+// DEFAULT-NEXT:                           Name(
+// DEFAULT-NEXT:                               "z",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               4,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: System,
+// DEFAULT-NEXT:           line: 146,
+// DEFAULT-NEXT:           header: Some(
+// DEFAULT-NEXT:               FileId(
+// DEFAULT-NEXT:                   4,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[23]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Floating(
+// DEFAULT-NEXT:                   LongDouble,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Function {
+// DEFAULT-NEXT:               inner: Name(
+// DEFAULT-NEXT:                   "creall",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               parameters: [
+// DEFAULT-NEXT:                   Parameter {
+// DEFAULT-NEXT:                       ty: Complex(
+// DEFAULT-NEXT:                           Floating(
+// DEFAULT-NEXT:                               LongDouble,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       declarator: Some(
+// DEFAULT-NEXT:                           Name(
+// DEFAULT-NEXT:                               "z",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               4,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: System,
+// DEFAULT-NEXT:           line: 150,
+// DEFAULT-NEXT:           header: Some(
+// DEFAULT-NEXT:               FileId(
+// DEFAULT-NEXT:                   4,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[24]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Function {
+// DEFAULT-NEXT:               inner: Name(
+// DEFAULT-NEXT:                   "printf",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               parameters: [
+// DEFAULT-NEXT:                   Parameter {
+// DEFAULT-NEXT:                       ty: Qualified {
+// DEFAULT-NEXT:                           qualifiers: Qualifiers {
+// DEFAULT-NEXT:                               is_const: true,
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Char {
+// DEFAULT-NEXT:                                   signed: None,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarator: Some(
+// DEFAULT-NEXT:                           Pointer {
+// DEFAULT-NEXT:                               qualifiers: Qualifiers {
+// DEFAULT-NEXT:                                   is_restrict: true,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               inner: Abstract,
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:               variadic: true,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               5,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: System,
+// DEFAULT-NEXT:           line: 170,
+// DEFAULT-NEXT:           header: Some(
+// DEFAULT-NEXT:               FileId(
+// DEFAULT-NEXT:                   5,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[25]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Void,
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Function {
@@ -141,7 +1201,7 @@ int main(void) {
 // DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[1]: Function(
+// DEFAULT-NEXT: decl[26]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
 // DEFAULT-NEXT:           ret_type: Void,
 // DEFAULT-NEXT:           name: "print_lc",
@@ -229,7 +1289,7 @@ int main(void) {
 // DEFAULT-NEXT:           storage: Static,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[2]: Function(
+// DEFAULT-NEXT: decl[27]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
 // DEFAULT-NEXT:           ret_type: Complex(
 // DEFAULT-NEXT:               Floating(
@@ -332,7 +1392,7 @@ int main(void) {
 // DEFAULT-NEXT:           storage: Static,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[3]: Function(
+// DEFAULT-NEXT: decl[28]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
 // DEFAULT-NEXT:           ret_type: Void,
 // DEFAULT-NEXT:           name: "check_arithmetic",
@@ -923,7 +1983,7 @@ int main(void) {
 // DEFAULT-NEXT:           storage: Static,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[4]: Function(
+// DEFAULT-NEXT: decl[29]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
 // DEFAULT-NEXT:           ret_type: Void,
 // DEFAULT-NEXT:           name: "check_casts",
@@ -1444,7 +2504,7 @@ int main(void) {
 // DEFAULT-NEXT:           storage: Static,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[5]: Function(
+// DEFAULT-NEXT: decl[30]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
 // DEFAULT-NEXT:           ret_type: Void,
 // DEFAULT-NEXT:           name: "check_stdlib_functions",
@@ -2511,7 +3571,7 @@ int main(void) {
 // DEFAULT-NEXT:           storage: Static,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[6]: Function(
+// DEFAULT-NEXT: decl[31]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
 // DEFAULT-NEXT:           ret_type: Integer(
 // DEFAULT-NEXT:               Ranked {

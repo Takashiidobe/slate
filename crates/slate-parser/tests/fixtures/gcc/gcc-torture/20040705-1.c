@@ -8,6 +8,8 @@
 #endif
 
 #if 0
+#endif
+
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: decl[0]: Comment {
 // DEFAULT-NEXT:       text: "/* { dg-require-effective-target int32plus } */",
@@ -28,4 +30,3 @@
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
 // SLATE-FILECHECK-END DEFAULT
-#endif

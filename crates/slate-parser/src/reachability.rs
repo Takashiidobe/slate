@@ -1,4 +1,6 @@
 use crate::ast::*;
+use crate::const_expr::ConstExpr;
+use crate::lexer::Token;
 use std::collections::{HashMap, HashSet};
 
 pub fn mark_unreachable(body: Vec<SpannedStmt>) -> Vec<SpannedStmt> {
@@ -118,6 +120,11 @@ impl<'a> Reachability<'a> {
             if let Some(name) = decl.name() {
                 symbols.entry(name.to_string()).or_default().push(id);
             }
+            if let Decl::Enum(enumeration) = &decl.value {
+                for enumerator in &enumeration.enumerators {
+                    symbols.entry(enumerator.name.clone()).or_default().push(id);
+                }
+            }
         }
         Self {
             nodes: &tu.decls,
@@ -144,20 +151,266 @@ impl<'a> Reachability<'a> {
         }
         match &self.nodes[id].value {
             Decl::Comment { .. } | Decl::StaticAssert { .. } | Decl::Asm { .. } => {}
-            Decl::Function(function) => self.mark_type(&function.ret_type),
-            Decl::Declaration { declaration, .. } => {
-                self.mark_type(&declaration.specifiers.ty);
-                self.mark_declarator(&declaration.declarator);
-            }
+            Decl::Function(function) => self.mark_function(function),
+            Decl::Declaration { declaration, .. } => self.mark_declaration(declaration),
             Decl::Typedef { ty, .. } => self.mark_type(ty),
             Decl::Record(record) => {
                 for field in &record.fields {
                     if let FieldItem::Field(field) = &field.value {
-                        self.mark_type(&field.declaration.specifiers.ty);
+                        self.mark_declaration(&field.declaration);
                     }
                 }
             }
-            Decl::Enum(_) => {}
+            Decl::Enum(enumeration) => {
+                for value in enumeration
+                    .enumerators
+                    .iter()
+                    .filter_map(|e| e.value.as_ref())
+                {
+                    self.mark_expr(value);
+                }
+            }
+        }
+    }
+
+    fn mark_function(&mut self, function: &FunctionDecl) {
+        self.mark_type(&function.ret_type);
+        for parameter in &function.parameters {
+            self.mark_parameter(parameter);
+        }
+        self.mark_stmts(&function.body);
+    }
+
+    fn mark_parameter(&mut self, parameter: &Parameter) {
+        self.mark_type(&parameter.ty);
+        if let Some(declarator) = &parameter.declarator {
+            self.mark_declarator(declarator);
+        }
+    }
+
+    fn mark_declaration(&mut self, declaration: &Declaration) {
+        self.mark_type_name(&declaration.specifiers.ty, &declaration.declarator);
+        if let Some(initializer) = &declaration.initializer {
+            self.mark_initializer(initializer);
+        }
+    }
+
+    fn mark_type_name(&mut self, ty: &CType, declarator: &Declarator) {
+        self.mark_type(ty);
+        self.mark_declarator(declarator);
+    }
+
+    fn mark_initializer(&mut self, initializer: &Initializer) {
+        match initializer {
+            Initializer::Expr(expr) => self.mark_expr(expr),
+            Initializer::List(items) => {
+                for item in items {
+                    self.mark_initializer(&item.value);
+                }
+            }
+        }
+    }
+
+    fn mark_stmts(&mut self, stmts: &[SpannedStmt]) {
+        for stmt in stmts {
+            self.mark_stmt(stmt);
+        }
+    }
+
+    fn mark_stmt(&mut self, stmt: &SpannedStmt) {
+        match &stmt.value {
+            Stmt::Return(expr) | Stmt::Expr(expr) | Stmt::Case(expr) | Stmt::ComputedGoto(expr) => {
+                self.mark_expr(expr)
+            }
+            Stmt::CaseRange { start, end } => {
+                self.mark_expr(start);
+                self.mark_expr(end);
+            }
+            Stmt::Decl(declaration) => self.mark_declaration(declaration),
+            Stmt::Block(body) => self.mark_stmts(body),
+            Stmt::If {
+                condition,
+                then_branch,
+                else_branch,
+            } => {
+                self.mark_expr(condition);
+                self.mark_stmts(then_branch);
+                if let Some(else_branch) = else_branch {
+                    self.mark_stmts(else_branch);
+                }
+            }
+            Stmt::While { condition, body }
+            | Stmt::DoWhile { body, condition }
+            | Stmt::Switch {
+                discriminant: condition,
+                body,
+            } => {
+                self.mark_expr(condition);
+                self.mark_stmts(body);
+            }
+            Stmt::For {
+                init,
+                condition,
+                increment,
+                body,
+            } => {
+                if let Some(init) = init {
+                    self.mark_stmt(init);
+                }
+                for expr in condition.iter().chain(increment) {
+                    self.mark_expr(expr);
+                }
+                self.mark_stmts(body);
+            }
+            Stmt::NestedFunction(function) => self.mark_function(function),
+            Stmt::Unreachable(inner) => self.mark_stmt(inner),
+            Stmt::Comment { .. }
+            | Stmt::ReturnVoid
+            | Stmt::StaticAssert(_)
+            | Stmt::Attribute(_)
+            | Stmt::Default
+            | Stmt::Labeled(_)
+            | Stmt::LocalLabelDecl(_)
+            | Stmt::Asm(_)
+            | Stmt::Goto(_)
+            | Stmt::Break
+            | Stmt::Continue => {}
+        }
+    }
+
+    fn mark_expr(&mut self, expr: &SpannedExpr) {
+        match &expr.value {
+            Expr::Const(value) => self.mark_const_expr(value),
+            Expr::Identifier(name) => self.mark_name(name),
+            Expr::Unary { value, .. } | Expr::SizeOf(value) => self.mark_expr(value),
+            Expr::Binary { left, right, .. } => {
+                self.mark_expr(left);
+                self.mark_expr(right);
+            }
+            Expr::StatementExpression(body) => self.mark_stmts(body),
+            Expr::IntLit(_)
+            | Expr::StringLit(_)
+            | Expr::Utf8StringLit(_)
+            | Expr::Utf16StringLit(_)
+            | Expr::Utf32StringLit(_)
+            | Expr::WideStringLit(_) => {}
+        }
+    }
+
+    fn mark_const_expr(&mut self, expr: &ConstExpr) {
+        match expr {
+            ConstExpr::Identifier(name) => self.mark_name(name),
+            ConstExpr::Generic {
+                controlling,
+                associations,
+            } => {
+                self.mark_const_expr(controlling);
+                for association in associations {
+                    if let Some(type_name) = &association.type_name {
+                        self.mark_name(type_name);
+                    }
+                    self.mark_const_expr(&association.expression);
+                }
+            }
+            ConstExpr::SizeOfType { ty, declarator }
+            | ConstExpr::AlignOf { ty, declarator }
+            | ConstExpr::OffsetOf { ty, declarator, .. } => self.mark_type_name(ty, declarator),
+            ConstExpr::TypesCompatible {
+                left_ty,
+                left_declarator,
+                right_ty,
+                right_declarator,
+            } => {
+                self.mark_type_name(left_ty, left_declarator);
+                self.mark_type_name(right_ty, right_declarator);
+            }
+            ConstExpr::Cast {
+                ty,
+                declarator,
+                value,
+            }
+            | ConstExpr::BitCast {
+                ty,
+                declarator,
+                value,
+            }
+            | ConstExpr::VaArg {
+                ap: value,
+                ty,
+                declarator,
+            } => {
+                self.mark_type_name(ty, declarator);
+                self.mark_const_expr(value);
+            }
+            ConstExpr::CompoundLiteral {
+                ty,
+                declarator,
+                initializer,
+            } => {
+                self.mark_type_name(ty, declarator);
+                for item in initializer {
+                    self.mark_initializer(&item.value);
+                }
+            }
+            ConstExpr::SizeOf(value)
+            | ConstExpr::Unary { value, .. }
+            | ConstExpr::Member { base: value, .. }
+            | ConstExpr::Arrow { base: value, .. }
+            | ConstExpr::PostIncrement(value)
+            | ConstExpr::PostDecrement(value)
+            | ConstExpr::PreIncrement(value)
+            | ConstExpr::PreDecrement(value)
+            | ConstExpr::AddrOf(value)
+            | ConstExpr::Deref(value) => self.mark_const_expr(value),
+            ConstExpr::Binary { left, right, .. }
+            | ConstExpr::Assign {
+                target: left,
+                value: right,
+                ..
+            }
+            | ConstExpr::Comma(left, right)
+            | ConstExpr::Index {
+                base: left,
+                index: right,
+            }
+            | ConstExpr::Elvis {
+                condition: left,
+                else_value: right,
+            } => {
+                self.mark_const_expr(left);
+                self.mark_const_expr(right);
+            }
+            ConstExpr::Ternary {
+                condition,
+                then_value,
+                else_value,
+            } => {
+                self.mark_const_expr(condition);
+                self.mark_const_expr(then_value);
+                self.mark_const_expr(else_value);
+            }
+            ConstExpr::Call { callee, arguments } => {
+                self.mark_const_expr(callee);
+                for argument in arguments {
+                    self.mark_const_expr(argument);
+                }
+            }
+            ConstExpr::StatementExpression(tokens) => {
+                for token in tokens {
+                    if let Token::Ident(name) = &token.value {
+                        self.mark_name(name);
+                    }
+                }
+            }
+            ConstExpr::Integer(_)
+            | ConstExpr::WideInteger(_)
+            | ConstExpr::Float(_)
+            | ConstExpr::StringLit(_)
+            | ConstExpr::Utf8StringLit(_)
+            | ConstExpr::Utf16StringLit(_)
+            | ConstExpr::Utf32StringLit(_)
+            | ConstExpr::WideStringLit(_)
+            | ConstExpr::LabelAddr(_) => {}
         }
     }
 
@@ -199,8 +452,8 @@ impl<'a> Reachability<'a> {
             | CType::Floating(_)
             | CType::Complex(_) => {}
             CType::FixedPoint(_) => {}
-            CType::TypeOf(TypeOfOperand::Expression(_))
-            | CType::TypeOfUnqual(TypeOfOperand::Expression(_)) => {}
+            CType::TypeOf(TypeOfOperand::Expression(expr))
+            | CType::TypeOfUnqual(TypeOfOperand::Expression(expr)) => self.mark_expr(expr),
             CType::TargetBuiltin(_) => {}
         }
     }
@@ -211,13 +464,18 @@ impl<'a> Reachability<'a> {
             Declarator::Grouped(inner)
             | Declarator::Attributed { inner, .. }
             | Declarator::Pointer { inner, .. } => self.mark_declarator(inner),
-            Declarator::Array { inner, .. } => self.mark_declarator(inner),
+            Declarator::Array { inner, size } => {
+                self.mark_declarator(inner);
+                if let ArraySize::Expression(size) = size {
+                    self.mark_expr(size);
+                }
+            }
             Declarator::Function {
                 inner, parameters, ..
             } => {
                 self.mark_declarator(inner);
                 for parameter in parameters {
-                    self.mark_type(&parameter.ty);
+                    self.mark_parameter(parameter);
                 }
             }
         }

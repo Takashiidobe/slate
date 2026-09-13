@@ -36,13 +36,13 @@ the wrapper's `.value`.
   `Stmt` (used to build the clang-oracle comparison). Only matters
   once the new statement can appear where `Return` is being scanned for;
   usually just add it to the `=> None` catch-group.
-- `src/reachability.rs` — **not exhaustive**, safe to skip: both
-  `mark_unreachable_in` and `always_terminates` use wildcard arms
-  (`other => other`, `_ => false`), so an unhandled new variant just gets
-  the conservative default (reachable, doesn't terminate) rather than a
-  compile error. Only touch this file if the new statement actually needs
-  special reachability behavior (e.g. it always transfers control, like
-  `Goto`).
+- `src/reachability.rs` — `Reachability::mark_stmt` is exhaustive: it
+  decides which translation-unit declarations survive filtering, so a
+  variant holding expressions, declarations, or nested bodies must recurse
+  or the header declarations they reference get pruned from the AST.
+  `mark_unreachable_in` and `always_terminates` (dead-code marking, a
+  separate concern) use wildcard arms and only need touching if the new
+  statement always transfers control, like `Goto`.
 - `Stmt::Attribute` is a standalone GNU or C23 attribute declaration; it
   needs no reachability handling beyond that conservative default.
 - `src/sema.rs` — `walk_stmt` is exhaustive: a variant holding statements
@@ -53,6 +53,8 @@ the wrapper's `.value`.
 
 - `src/ast.rs` — `impl Display for Expr`: exhaustive, needs an arm.
 - `src/sema.rs` — `walk_expr` is exhaustive; recurse into sub-expressions.
+- `src/reachability.rs` — `Reachability::mark_expr` is exhaustive; mark
+  identifiers and recurse so referenced header declarations are kept.
 - No other file matches `ast::Expr` exhaustively outside the above (checked via
   `grep -rn "Expr::" src/*.rs tests/*.rs`). `tests/filecheck.rs` matches on
   it in two places (`summarize_evaluated_decl`'s `Return` scan,
@@ -115,6 +117,9 @@ is now `Err(DeclaratorError::ExpectedToken(..))`.
 - `src/sema.rs` — `walk_const_expr` is exhaustive; recurse into
   sub-expressions (it finds raw statement-expression tokens for label
   lookup).
+- `src/reachability.rs` — `Reachability::mark_const_expr` is exhaustive;
+  mark identifiers and embedded type names (casts, `sizeof`, compound
+  literals) so the header declarations they name survive filtering.
 - `ConstExpr::Elvis` is the GNU omitted-middle conditional form; preserve its
   single evaluation of the condition in evaluators and lowering.
 - `tests/filecheck.rs` — only reachable through the two `Expr`-level
