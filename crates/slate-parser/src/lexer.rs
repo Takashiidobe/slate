@@ -670,8 +670,10 @@ impl Lexer {
                 "_Accum" => Token::Keyword(Keyword::Accum),
                 "_Fract" => Token::Keyword(Keyword::Fract),
                 "_Sat" => Token::Keyword(Keyword::Saturated),
-                "typeof" | "__typeof__" => Token::Keyword(Keyword::Typeof),
-                "typeof_unqual" | "__typeof_unqual__" => Token::Keyword(Keyword::TypeofUnqual),
+                "typeof" | "__typeof" | "__typeof__" => Token::Keyword(Keyword::Typeof),
+                "typeof_unqual" | "__typeof_unqual" | "__typeof_unqual__" => {
+                    Token::Keyword(Keyword::TypeofUnqual)
+                }
                 "constexpr" => Token::Keyword(Keyword::Constexpr),
                 "_Imaginary" => Token::Keyword(Keyword::Imaginary),
                 "if" => Token::Keyword(Keyword::If),
