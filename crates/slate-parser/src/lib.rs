@@ -3,6 +3,7 @@ pub mod compiler_args;
 pub mod const_expr;
 pub mod error;
 pub mod files;
+pub mod ir;
 pub mod lexer;
 pub mod parser;
 pub mod pp;
