@@ -19,6 +19,7 @@ int f(int x, int *p) {
   asm("" : "=r,m"(x) : "r"(x));
   asm("" : "=r"(x), "=r,m"(*p));
   asm goto("" : : : : done, missing);
+  asm goto("" : : : : done, done);
   asm goto("" : : : : in_stmt_expr, in_raw_stmt_expr);
   ({ in_stmt_expr: ; });
   x = ({ in_raw_stmt_expr: x; });
@@ -145,14 +146,22 @@ outer:
 // SEMANTIC: 20 │   asm("" : "=r"(x), "=r,m"(*p));
 // SEMANTIC: 21 │   asm goto("" : : : : done, missing);
 // SEMANTIC: ·                             ───────
-// SEMANTIC: 22 │   asm goto("" : : : : in_stmt_expr, in_raw_stmt_expr);
+// SEMANTIC: 22 │   asm goto("" : : : : done, done);
+// SEMANTIC: ╰────
+// SEMANTIC: Error:
+// SEMANTIC: × duplicate use of asm operand name "done"
+// SEMANTIC: ╭─[tests/fixtures/asm-sema.c:22:29]
+// SEMANTIC: 21 │   asm goto("" : : : : done, missing);
+// SEMANTIC: 22 │   asm goto("" : : : : done, done);
+// SEMANTIC: ·                             ────
+// SEMANTIC: 23 │   asm goto("" : : : : in_stmt_expr, in_raw_stmt_expr);
 // SEMANTIC: ╰────
 // SEMANTIC: Error:
 // SEMANTIC: × cannot jump from this asm goto statement to one of its possible targets
-// SEMANTIC: ╭─[tests/fixtures/asm-sema.c:22:3]
-// SEMANTIC: 21 │   asm goto("" : : : : done, missing);
-// SEMANTIC: 22 │   asm goto("" : : : : in_stmt_expr, in_raw_stmt_expr);
+// SEMANTIC: ╭─[tests/fixtures/asm-sema.c:23:3]
+// SEMANTIC: 22 │   asm goto("" : : : : done, done);
+// SEMANTIC: 23 │   asm goto("" : : : : in_stmt_expr, in_raw_stmt_expr);
 // SEMANTIC: ·   ────────────────────────────────────────────────────
-// SEMANTIC: 23 │   ({ in_stmt_expr: ; });
+// SEMANTIC: 24 │   ({ in_stmt_expr: ; });
 // SEMANTIC: ╰────
 // SLATE-FILECHECK-END SEMANTIC

@@ -731,6 +731,16 @@ fn check_asm_operands(
     if let Some((loc, message)) = asm_operand_error(operands) {
         errors.push(error(provenance, loc, message));
     }
+    let mut operand_names = HashSet::new();
+    for label in &operands.labels {
+        if !operand_names.insert(label.value.as_str()) {
+            errors.push(error(
+                provenance,
+                label.expansion,
+                format!("duplicate use of asm operand name \"{}\"", label.value),
+            ));
+        }
+    }
     let mut invalid_jump_scope = false;
     for label in &operands.labels {
         match labels.get(label.value.as_str()) {
