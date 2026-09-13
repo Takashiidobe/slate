@@ -425,7 +425,6 @@ the AST redesign epic.
 
 | Current | Target | Also fixes |
 | --- | --- | --- |
-| `Stmt::Unreachable` added by `reachability::mark_unreachable` | removed | |
 | one `Comment` node per comment | `CommentGroup` | |
 | `Decl::Declaration` holds one declarator; lists split by token hacks at file scope, in blocks, in tag definitions | `Declaration { specifiers, declarators }` everywhere, including `for` init | file-scope tag definitions drop declarators, initializers, storage (`lh7.1.11`); local `int a, b;` becomes `Block` (`lh7.1.12`); `typedef struct {..} T, *PT` drops `PT`; `for (int i = 0, j = 1;;)` fails to parse |
 | `Decl::Typedef`, `Decl::Record`, `Decl::Enum`; `CType::Tagged { body }` inline for local tags | storage `Typedef`; `TagSpecifier::Definition(TagId)` + `TranslationUnit.tags` | anonymous tags unlinkable; local tag body duplicated per declarator; fields get default provenance (`lh7.1.17`) |

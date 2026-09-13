@@ -9,7 +9,6 @@ use crate::const_expr;
 use crate::error::ParseError;
 use crate::lexer::{Keyword, Token, TokenSpanExt};
 use crate::pp::{PPNode, PPNodeKind};
-use crate::reachability::mark_unreachable;
 use std::collections::HashMap;
 
 impl Parser {
@@ -184,9 +183,8 @@ impl Parser {
         }
 
         if let Some(same_line_close) = matching_brace(&sig_tokens, body_index) {
-            let body = mark_unreachable(
-                self.parse_stmts_from_tokens(code, &sig_tokens[body_index + 1..same_line_close])?,
-            );
+            let body =
+                self.parse_stmts_from_tokens(code, &sig_tokens[body_index + 1..same_line_close])?;
             return Ok((
                 FunctionDecl {
                     ret_type,
@@ -240,7 +238,7 @@ impl Parser {
             attributes.extend(trailing_attributes);
         }
 
-        let body = mark_unreachable(self.parse_stmt_list(&nodes[sig_node_count..close_idx])?);
+        let body = self.parse_stmt_list(&nodes[sig_node_count..close_idx])?;
         Ok((
             FunctionDecl {
                 ret_type,
@@ -517,8 +515,7 @@ impl Parser {
         attributes.extend(signature_attributes);
         let close =
             matching_brace(tokens, body_index).ok_or_else(|| fragment.error("expected `}`"))?;
-        let body =
-            mark_unreachable(self.parse_stmts_from_tokens(code, &tokens[body_index + 1..close])?);
+        let body = self.parse_stmts_from_tokens(code, &tokens[body_index + 1..close])?;
         Ok(Some((
             FunctionDecl {
                 ret_type,

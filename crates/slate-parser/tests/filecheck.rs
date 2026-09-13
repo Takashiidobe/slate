@@ -495,8 +495,7 @@ fn summarize_evaluated_decl(decl: &Decl) -> DeclSummary {
                     | Stmt::ComputedGoto(_)
                     | Stmt::NestedFunction(_)
                     | Stmt::Break
-                    | Stmt::Continue
-                    | Stmt::Unreachable(_) => None,
+                    | Stmt::Continue => None,
                 })
                 .collect(),
             signature: None,

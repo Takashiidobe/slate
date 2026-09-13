@@ -390,10 +390,8 @@ test(10, 2, "%d\n", (10, 0));
 // DEFAULT-NEXT:                           else_branch: None,
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       Break,
-// DEFAULT-NEXT:                       Unreachable(
-// DEFAULT-NEXT:                           Block(
-// DEFAULT-NEXT:                               [],
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       Block(
+// DEFAULT-NEXT:                           [],
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Case(
 // DEFAULT-NEXT:                           Const(
@@ -462,10 +460,8 @@ test(10, 2, "%d\n", (10, 0));
 // DEFAULT-NEXT:                           else_branch: None,
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       Break,
-// DEFAULT-NEXT:                       Unreachable(
-// DEFAULT-NEXT:                           Block(
-// DEFAULT-NEXT:                               [],
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       Block(
+// DEFAULT-NEXT:                           [],
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Case(
 // DEFAULT-NEXT:                           Const(
@@ -534,10 +530,8 @@ test(10, 2, "%d\n", (10, 0));
 // DEFAULT-NEXT:                           else_branch: None,
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       Break,
-// DEFAULT-NEXT:                       Unreachable(
-// DEFAULT-NEXT:                           Block(
-// DEFAULT-NEXT:                               [],
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       Block(
+// DEFAULT-NEXT:                           [],
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Case(
 // DEFAULT-NEXT:                           Const(
@@ -606,10 +600,8 @@ test(10, 2, "%d\n", (10, 0));
 // DEFAULT-NEXT:                           else_branch: None,
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       Break,
-// DEFAULT-NEXT:                       Unreachable(
-// DEFAULT-NEXT:                           Block(
-// DEFAULT-NEXT:                               [],
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       Block(
+// DEFAULT-NEXT:                           [],
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Case(
 // DEFAULT-NEXT:                           Const(
@@ -678,10 +670,8 @@ test(10, 2, "%d\n", (10, 0));
 // DEFAULT-NEXT:                           else_branch: None,
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       Break,
-// DEFAULT-NEXT:                       Unreachable(
-// DEFAULT-NEXT:                           Block(
-// DEFAULT-NEXT:                               [],
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       Block(
+// DEFAULT-NEXT:                           [],
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Case(
 // DEFAULT-NEXT:                           Const(
@@ -750,10 +740,8 @@ test(10, 2, "%d\n", (10, 0));
 // DEFAULT-NEXT:                           else_branch: None,
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       Break,
-// DEFAULT-NEXT:                       Unreachable(
-// DEFAULT-NEXT:                           Block(
-// DEFAULT-NEXT:                               [],
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       Block(
+// DEFAULT-NEXT:                           [],
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Case(
 // DEFAULT-NEXT:                           Const(
@@ -822,10 +810,8 @@ test(10, 2, "%d\n", (10, 0));
 // DEFAULT-NEXT:                           else_branch: None,
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       Break,
-// DEFAULT-NEXT:                       Unreachable(
-// DEFAULT-NEXT:                           Block(
-// DEFAULT-NEXT:                               [],
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       Block(
+// DEFAULT-NEXT:                           [],
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Case(
 // DEFAULT-NEXT:                           Const(
@@ -894,10 +880,8 @@ test(10, 2, "%d\n", (10, 0));
 // DEFAULT-NEXT:                           else_branch: None,
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       Break,
-// DEFAULT-NEXT:                       Unreachable(
-// DEFAULT-NEXT:                           Block(
-// DEFAULT-NEXT:                               [],
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       Block(
+// DEFAULT-NEXT:                           [],
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Case(
 // DEFAULT-NEXT:                           Const(
@@ -966,10 +950,8 @@ test(10, 2, "%d\n", (10, 0));
 // DEFAULT-NEXT:                           else_branch: None,
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       Break,
-// DEFAULT-NEXT:                       Unreachable(
-// DEFAULT-NEXT:                           Block(
-// DEFAULT-NEXT:                               [],
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       Block(
+// DEFAULT-NEXT:                           [],
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Case(
 // DEFAULT-NEXT:                           Const(
@@ -1038,10 +1020,8 @@ test(10, 2, "%d\n", (10, 0));
 // DEFAULT-NEXT:                           else_branch: None,
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       Break,
-// DEFAULT-NEXT:                       Unreachable(
-// DEFAULT-NEXT:                           Block(
-// DEFAULT-NEXT:                               [],
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       Block(
+// DEFAULT-NEXT:                           [],
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Case(
 // DEFAULT-NEXT:                           Const(
@@ -1110,10 +1090,8 @@ test(10, 2, "%d\n", (10, 0));
 // DEFAULT-NEXT:                           else_branch: None,
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       Break,
-// DEFAULT-NEXT:                       Unreachable(
-// DEFAULT-NEXT:                           Block(
-// DEFAULT-NEXT:                               [],
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       Block(
+// DEFAULT-NEXT:                           [],
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Default,
 // DEFAULT-NEXT:                       Expr(

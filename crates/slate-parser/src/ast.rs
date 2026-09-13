@@ -139,7 +139,6 @@ pub enum Stmt {
     NestedFunction(Box<FunctionDecl>),
     Break,
     Continue,
-    Unreachable(Box<SpannedStmt>),
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

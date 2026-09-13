@@ -526,7 +526,6 @@ fn walk_stmt<'a>(stmt: &'a SpannedStmt, visit: &mut impl FnMut(BodyNode<'a>)) {
             }
             walk_stmts(body, visit);
         }
-        Stmt::Unreachable(inner) => walk_stmt(inner, visit),
         Stmt::NestedFunction(_)
         | Stmt::Comment { .. }
         | Stmt::ReturnVoid

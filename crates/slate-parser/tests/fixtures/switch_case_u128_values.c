@@ -217,34 +217,30 @@ int main(void) {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Unreachable(
-// DEFAULT-NEXT:                           CaseRange {
-// DEFAULT-NEXT:                               start: Const(
-// DEFAULT-NEXT:                                   WideInteger(
-// DEFAULT-NEXT:                                       WideInt {
-// DEFAULT-NEXT:                                           value: 340282366920938463463374607431768211450,
-// DEFAULT-NEXT:                                           width: 128,
-// DEFAULT-NEXT:                                           signed: false,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                       CaseRange {
+// DEFAULT-NEXT:                           start: Const(
+// DEFAULT-NEXT:                               WideInteger(
+// DEFAULT-NEXT:                                   WideInt {
+// DEFAULT-NEXT:                                       value: 340282366920938463463374607431768211450,
+// DEFAULT-NEXT:                                       width: 128,
+// DEFAULT-NEXT:                                       signed: false,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               end: Const(
-// DEFAULT-NEXT:                                   WideInteger(
-// DEFAULT-NEXT:                                       WideInt {
-// DEFAULT-NEXT:                                           value: 340282366920938463463374607431768211453,
-// DEFAULT-NEXT:                                           width: 128,
-// DEFAULT-NEXT:                                           signed: false,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           end: Const(
+// DEFAULT-NEXT:                               WideInteger(
+// DEFAULT-NEXT:                                   WideInt {
+// DEFAULT-NEXT:                                       value: 340282366920938463463374607431768211453,
+// DEFAULT-NEXT:                                       width: 128,
+// DEFAULT-NEXT:                                       signed: false,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Unreachable(
-// DEFAULT-NEXT:                           Return(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       2,
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       Return(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   2,
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),

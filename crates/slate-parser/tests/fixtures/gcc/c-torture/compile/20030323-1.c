@@ -96,9 +96,7 @@ banana(long citron)
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Unreachable(
-// DEFAULT-NEXT:                           Break,
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       Break,
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Return(

@@ -3,95 +3,6 @@ use crate::const_expr::ConstExpr;
 use crate::lexer::Token;
 use std::collections::{HashMap, HashSet};
 
-pub fn mark_unreachable(body: Vec<SpannedStmt>) -> Vec<SpannedStmt> {
-    let mut result = Vec::with_capacity(body.len());
-    let mut terminated = false;
-    for stmt in body {
-        if is_jump_target(&stmt) {
-            terminated = false;
-        }
-        let stmt = mark_unreachable_in(stmt);
-        if terminated {
-            let loc = stmt.clone();
-            result.push(loc.with_value(Stmt::Unreachable(Box::new(stmt))));
-        } else {
-            terminated = always_terminates(&stmt);
-            result.push(stmt);
-        }
-    }
-    result
-}
-
-fn is_jump_target(stmt: &SpannedStmt) -> bool {
-    matches!(
-        &stmt.value,
-        Stmt::Labeled(_) | Stmt::Case(_) | Stmt::Default
-    )
-}
-
-fn mark_unreachable_in(stmt: SpannedStmt) -> SpannedStmt {
-    let Span {
-        value,
-        spelling,
-        expansion,
-    } = stmt;
-    let value = match value {
-        Stmt::Block(body) => Stmt::Block(mark_unreachable(body)),
-        Stmt::If {
-            condition,
-            then_branch,
-            else_branch,
-        } => Stmt::If {
-            condition,
-            then_branch: mark_unreachable(then_branch),
-            else_branch: else_branch.map(mark_unreachable),
-        },
-        Stmt::While { condition, body } => Stmt::While {
-            condition,
-            body: mark_unreachable(body),
-        },
-        Stmt::DoWhile { body, condition } => Stmt::DoWhile {
-            body: mark_unreachable(body),
-            condition,
-        },
-        Stmt::For {
-            init,
-            condition,
-            increment,
-            body,
-        } => Stmt::For {
-            init: init.map(|stmt| Box::new(mark_unreachable_in(*stmt))),
-            condition,
-            increment,
-            body: mark_unreachable(body),
-        },
-        Stmt::Switch { discriminant, body } => Stmt::Switch {
-            discriminant,
-            body: mark_unreachable(body),
-        },
-        other => other,
-    };
-    Span::new(value, spelling, expansion)
-}
-
-fn always_terminates(stmt: &SpannedStmt) -> bool {
-    match &stmt.value {
-        Stmt::Return(_) | Stmt::ReturnVoid | Stmt::Break | Stmt::Continue | Stmt::Goto(_) => true,
-        Stmt::Block(body) => block_terminates(body),
-        Stmt::If {
-            then_branch,
-            else_branch: Some(else_branch),
-            ..
-        } => block_terminates(then_branch) && block_terminates(else_branch),
-        Stmt::Unreachable(inner) => always_terminates(inner),
-        _ => false,
-    }
-}
-
-fn block_terminates(body: &[SpannedStmt]) -> bool {
-    body.iter().any(always_terminates)
-}
-
 pub fn filter_translation_unit(tu: &TranslationUnit, root_file: FileId) -> TranslationUnit {
     let mut reachability = Reachability::new(tu);
     reachability.mark_roots(root_file);
@@ -263,7 +174,6 @@ impl<'a> Reachability<'a> {
                 self.mark_stmts(body);
             }
             Stmt::NestedFunction(function) => self.mark_function(function),
-            Stmt::Unreachable(inner) => self.mark_stmt(inner),
             Stmt::Comment { .. }
             | Stmt::ReturnVoid
             | Stmt::StaticAssert(_)
