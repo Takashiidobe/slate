@@ -52,6 +52,9 @@ This protocol applies when ending a Beads implementation workflow. It is subordi
 Non-obvious project context lives in `wiki/` (see `llog`). Check it before
 re-deriving something from scratch:
 
+- `wiki/concepts/ast-spec.md` and `wiki/concepts/ir-design.md` — evergreen
+  specs of what the AST means and what it lowers into. Update them in the
+  same change as any AST or IR change.
 - `wiki/concepts/ast-enum-touchpoints.md` — before adding a variant to
   `Stmt`, `Expr`, `ConstExpr`, or `ArraySize`: every file that matches it
   exhaustively, so you don't have to grep the whole crate to find out
