@@ -62,8 +62,10 @@ int main(void) {
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           initializer: Some(
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   StringLit(
-// DEFAULT-NEXT:                       "\\0\\377",
+// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                       StringLit(
+// DEFAULT-NEXT:                           "\\0\\377",
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ),
@@ -100,8 +102,10 @@ int main(void) {
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           initializer: Some(
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   StringLit(
-// DEFAULT-NEXT:                       "\\0\u{10ffff}",
+// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                       StringLit(
+// DEFAULT-NEXT:                           "\\0\u{10ffff}",
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ),

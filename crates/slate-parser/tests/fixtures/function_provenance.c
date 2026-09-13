@@ -4765,8 +4765,10 @@ int main(void) {
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       initializer: Some(
 // DEFAULT-NEXT:                           Expr(
-// DEFAULT-NEXT:                               StringLit(
-// DEFAULT-NEXT:                                   "a",
+// DEFAULT-NEXT:                               Const(
+// DEFAULT-NEXT:                                   StringLit(
+// DEFAULT-NEXT:                                       "a",
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
@@ -4793,8 +4795,10 @@ int main(void) {
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       initializer: Some(
 // DEFAULT-NEXT:                           Expr(
-// DEFAULT-NEXT:                               StringLit(
-// DEFAULT-NEXT:                                   "b",
+// DEFAULT-NEXT:                               Const(
+// DEFAULT-NEXT:                                   StringLit(
+// DEFAULT-NEXT:                                       "b",
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),

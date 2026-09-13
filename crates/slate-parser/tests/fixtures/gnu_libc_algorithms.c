@@ -1191,8 +1191,10 @@ int main(void) {
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       initializer: Some(
 // DEFAULT-NEXT:                           Expr(
-// DEFAULT-NEXT:                               StringLit(
-// DEFAULT-NEXT:                                   "probe",
+// DEFAULT-NEXT:                               Const(
+// DEFAULT-NEXT:                                   StringLit(
+// DEFAULT-NEXT:                                       "probe",
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
@@ -1215,8 +1217,10 @@ int main(void) {
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       initializer: Some(
 // DEFAULT-NEXT:                           Expr(
-// DEFAULT-NEXT:                               StringLit(
-// DEFAULT-NEXT:                                   "--number=7",
+// DEFAULT-NEXT:                               Const(
+// DEFAULT-NEXT:                                   StringLit(
+// DEFAULT-NEXT:                                       "--number=7",
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
@@ -1239,8 +1243,10 @@ int main(void) {
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       initializer: Some(
 // DEFAULT-NEXT:                           Expr(
-// DEFAULT-NEXT:                               StringLit(
-// DEFAULT-NEXT:                                   "-f",
+// DEFAULT-NEXT:                               Const(
+// DEFAULT-NEXT:                                   StringLit(
+// DEFAULT-NEXT:                                       "-f",
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
@@ -2083,8 +2089,10 @@ int main(void) {
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       initializer: Some(
 // DEFAULT-NEXT:                           Expr(
-// DEFAULT-NEXT:                               StringLit(
-// DEFAULT-NEXT:                                   "probe",
+// DEFAULT-NEXT:                               Const(
+// DEFAULT-NEXT:                                   StringLit(
+// DEFAULT-NEXT:                                       "probe",
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
@@ -2107,8 +2115,10 @@ int main(void) {
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       initializer: Some(
 // DEFAULT-NEXT:                           Expr(
-// DEFAULT-NEXT:                               StringLit(
-// DEFAULT-NEXT:                                   "--number=5",
+// DEFAULT-NEXT:                               Const(
+// DEFAULT-NEXT:                                   StringLit(
+// DEFAULT-NEXT:                                       "--number=5",
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
@@ -2131,8 +2141,10 @@ int main(void) {
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       initializer: Some(
 // DEFAULT-NEXT:                           Expr(
-// DEFAULT-NEXT:                               StringLit(
-// DEFAULT-NEXT:                                   "item",
+// DEFAULT-NEXT:                               Const(
+// DEFAULT-NEXT:                                   StringLit(
+// DEFAULT-NEXT:                                       "item",
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),

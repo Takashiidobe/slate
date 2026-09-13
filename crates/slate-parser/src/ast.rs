@@ -100,6 +100,7 @@ pub enum Stmt {
     Expr(SpannedExpr),
     Decl(Declaration),
     StaticAssert(StaticAssert),
+    Attribute(Vec<Attribute>),
     Block(Vec<SpannedStmt>),
     If {
         condition: SpannedExpr,

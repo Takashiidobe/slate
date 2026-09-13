@@ -31,8 +31,10 @@ int main(void) {
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           initializer: Some(
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   StringLit(
-// DEFAULT-NEXT:                       "Hi",
+// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                       StringLit(
+// DEFAULT-NEXT:                           "Hi",
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ),

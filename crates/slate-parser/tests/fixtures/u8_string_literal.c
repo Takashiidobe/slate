@@ -48,8 +48,10 @@ int main(void) {
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       initializer: Some(
 // DEFAULT-NEXT:                           Expr(
-// DEFAULT-NEXT:                               Utf8StringLit(
-// DEFAULT-NEXT:                                   "\\u03a9",
+// DEFAULT-NEXT:                               Const(
+// DEFAULT-NEXT:                                   Utf8StringLit(
+// DEFAULT-NEXT:                                       "\\u03a9",
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),

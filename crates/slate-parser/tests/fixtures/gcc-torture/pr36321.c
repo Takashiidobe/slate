@@ -330,8 +330,10 @@ int main(int argc, char **argv) {
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           initializer: Some(
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   StringLit(
-// DEFAULT-NEXT:                       "pr36321.x",
+// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                       StringLit(
+// DEFAULT-NEXT:                           "pr36321.x",
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ),

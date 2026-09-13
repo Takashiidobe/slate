@@ -75,8 +75,10 @@ int main() {
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           initializer: Some(
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   StringLit(
-// DEFAULT-NEXT:                       "hello",
+// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                       StringLit(
+// DEFAULT-NEXT:                           "hello",
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ),
@@ -491,8 +493,10 @@ int main() {
 // ENABLED-NEXT:           },
 // ENABLED-NEXT:           initializer: Some(
 // ENABLED-NEXT:               Expr(
-// ENABLED-NEXT:                   StringLit(
-// ENABLED-NEXT:                       "hello",
+// ENABLED-NEXT:                   Const(
+// ENABLED-NEXT:                       StringLit(
+// ENABLED-NEXT:                           "hello",
+// ENABLED-NEXT:                       ),
 // ENABLED-NEXT:                   ),
 // ENABLED-NEXT:               ),
 // ENABLED-NEXT:           ),

@@ -20,6 +20,7 @@ DEFINE_RE = re.compile(r"^\s*//\s*SLATE-FILECHECK-DEFINES\s+([A-Za-z0-9_-]+)(?:\
 BEGIN_RE = re.compile(r"^// SLATE-FILECHECK-BEGIN ([A-Za-z0-9_-]+)$")
 ERROR_RE = re.compile(r"^\s*//\s*SLATE-FILECHECK-ERROR\s+([A-Za-z0-9_-]+)$")
 ISYSTEM_RE = re.compile(r"^\s*//\s*SLATE-FILECHECK-ISYSTEM\s+(.*)$")
+QUOTED_C_INCLUDE_RE = re.compile(r'^\s*#\s*include\s*"([^"/]+\.c)"', re.MULTILINE)
 
 
 def isystem_paths(source: str) -> list[str]:
@@ -68,14 +69,24 @@ def fixture_source(source: str) -> str:
     return "\n".join(kept) + "\n"
 
 
+def write_isolated_fixture(directory: Path, fixture: Path, source: str) -> Path:
+    c_sources = {fixture.name, *QUOTED_C_INCLUDE_RE.findall(fixture_source(source))}
+    for sibling in fixture.parent.iterdir():
+        destination = directory / sibling.name
+        if sibling.name in c_sources:
+            destination.write_text(
+                fixture_source(source if sibling == fixture else sibling.read_text(errors="surrogateescape")),
+                errors="surrogateescape",
+            )
+        else:
+            destination.symlink_to(sibling, target_is_directory=sibling.is_dir())
+    return directory / fixture.name
+
+
 def render(repo: Path, fixture: Path, source: str, defines: list[str], isystem: list[str]) -> str:
-    with tempfile.NamedTemporaryFile(
-        mode="w", suffix=".c", prefix=f".{fixture.stem}.filecheck.", dir=fixture.parent,
-        errors="surrogateescape",
-    ) as parsed_fixture:
-        parsed_fixture.write(fixture_source(source))
-        parsed_fixture.flush()
-        command = ["cargo", "run", "--quiet", "--", "parse", parsed_fixture.name]
+    with tempfile.TemporaryDirectory(prefix=f".{fixture.stem}.filecheck.") as directory:
+        parsed_fixture = write_isolated_fixture(Path(directory), fixture, source)
+        command = ["cargo", "run", "--quiet", "--", "parse", str(parsed_fixture)]
         command.extend(f"-D{define.removeprefix('-D')}" for define in defines)
         command.extend(f"-isystem{path}" for path in isystem)
         result = subprocess.run(command, cwd=repo, text=True, capture_output=True, env=_no_color_env())
@@ -87,17 +98,13 @@ def render(repo: Path, fixture: Path, source: str, defines: list[str], isystem: 
 def render_error(
     repo: Path, fixture: Path, source: str, defines: list[str], isystem: list[str]
 ) -> list[str]:
-    with tempfile.NamedTemporaryFile(
-        mode="w", suffix=".c", prefix=f".{fixture.stem}.filecheck.", dir=fixture.parent,
-        errors="surrogateescape",
-    ) as parsed_fixture:
-        parsed_fixture.write(fixture_source(source))
-        parsed_fixture.flush()
-        command = ["cargo", "run", "--quiet", "--", "parse", parsed_fixture.name]
+    with tempfile.TemporaryDirectory(prefix=f".{fixture.stem}.filecheck.") as directory:
+        parsed_fixture = write_isolated_fixture(Path(directory), fixture, source)
+        command = ["cargo", "run", "--quiet", "--", "parse", str(parsed_fixture)]
         command.extend(f"-D{define.removeprefix('-D')}" for define in defines)
         command.extend(f"-isystem{path}" for path in isystem)
         result = subprocess.run(command, cwd=repo, text=True, capture_output=True, env=_no_color_env())
-        temp_display = os.path.relpath(parsed_fixture.name, repo)
+        temp_display = os.path.relpath(parsed_fixture, repo)
     if result.returncode == 0:
         raise RuntimeError(f"expected {fixture} to fail parsing")
     fixture_display = os.path.relpath(fixture, repo)
@@ -110,6 +117,7 @@ def render_error(
 
 
 FILECHECK_LITERAL_RE = re.compile(r"\{\{|\}\}|\[\[")
+TEMP_FILECHECK_PATH_RE = re.compile(r'(["])[^"]*\.filecheck\.[^"]*(["])')
 FILECHECK_LITERAL_ESCAPES = {
     "{{": "{{\\{\\{}}",
     "}}": "{{[}][}]}}",
@@ -118,9 +126,10 @@ FILECHECK_LITERAL_ESCAPES = {
 
 
 def escape_filecheck_literal(line: str) -> str:
-    return FILECHECK_LITERAL_RE.sub(
+    line = FILECHECK_LITERAL_RE.sub(
         lambda match: FILECHECK_LITERAL_ESCAPES[match.group(0)], line
     )
+    return TEMP_FILECHECK_PATH_RE.sub(r"\1{{.*}}\2", line)
 
 
 def generated_blocks(repo: Path, fixture: Path, source: str) -> str:

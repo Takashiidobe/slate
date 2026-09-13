@@ -3042,7 +3042,9 @@ impl<'a> Cursor for DeclaratorParser<'a> {
 
 fn text_starts_with_typedef(text: &str) -> bool {
     let text = text.trim_start();
-    let text = text.strip_prefix("__extension__").map_or(text, str::trim_start);
+    let text = text
+        .strip_prefix("__extension__")
+        .map_or(text, str::trim_start);
     text.starts_with("typedef")
 }
 
@@ -3571,15 +3573,20 @@ impl Parser {
             return Ok(Stmt::LocalLabelDecl(names));
         }
 
-        if tokens.value_at(fragment.pos) == Some(&Token::LBracket)
-            && tokens.value_at(fragment.pos + 1) == Some(&Token::LBracket)
+        if (tokens.value_at(fragment.pos) == Some(&Token::LBracket)
+            && tokens.value_at(fragment.pos + 1) == Some(&Token::LBracket))
+            || matches!(
+                tokens.value_at(fragment.pos),
+                Some(Token::Ident(name)) if matches!(name.as_str(), "__attribute__" | "__attribute")
+            )
         {
-            let (_, position) = self
+            let (attributes, position) = self
                 .parse_attribute_groups(tokens, fragment.pos)
                 .map_err(|error| fragment.error(error))?;
-            fragment.pos = position;
-            fragment.expect(Token::Semi, "expected `;` after attributes")?;
-            return self.parse_one_stmt(fragment);
+            if tokens.value_at(position) == Some(&Token::Semi) {
+                fragment.pos = position + 1;
+                return Ok(Stmt::Attribute(attributes));
+            }
         }
 
         if let Some(Token::Ident(name)) = tokens.value_at(fragment.pos)
@@ -3893,7 +3900,11 @@ pub(crate) fn string_literal_content(token: &Token) -> Option<&str> {
     }
 }
 
-pub(crate) fn concatenated_string_literal(previous: &Token, next: &Token, content: String) -> Token {
+pub(crate) fn concatenated_string_literal(
+    previous: &Token,
+    next: &Token,
+    content: String,
+) -> Token {
     match (previous, next) {
         (Token::StringLit(_), Token::StringLit(_)) => Token::StringLit(content),
         (Token::StringLit(_), other) => match other {

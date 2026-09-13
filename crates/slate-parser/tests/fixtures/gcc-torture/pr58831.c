@@ -461,7 +461,7 @@ int main(void) {
 // DEFAULT-NEXT:                                               "r",
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           StringLit(
-// DEFAULT-NEXT:                                               "tests/fixtures/gcc-torture/.pr58831.filecheck.ztjdgfi3.c",
+// DEFAULT-NEXT:                                               "{{.*}}",
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           Integer(
 // DEFAULT-NEXT:                                               12,

@@ -43,6 +43,8 @@ the wrapper's `.value`.
   compile error. Only touch this file if the new statement actually needs
   special reachability behavior (e.g. it always transfers control, like
   `Goto`).
+- `Stmt::Attribute` is a standalone GNU or C23 attribute declaration; it
+  needs no reachability handling beyond that conservative default.
 
 ## Adding an `Expr` variant
 

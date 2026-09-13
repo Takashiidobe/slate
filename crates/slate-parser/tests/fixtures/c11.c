@@ -1372,8 +1372,10 @@ int main(void) {
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       initializer: Some(
 // DEFAULT-NEXT:                           Expr(
-// DEFAULT-NEXT:                               Utf8StringLit(
-// DEFAULT-NEXT:                                   "\\u03a9",
+// DEFAULT-NEXT:                               Const(
+// DEFAULT-NEXT:                                   Utf8StringLit(
+// DEFAULT-NEXT:                                       "\\u03a9",
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
@@ -1398,8 +1400,10 @@ int main(void) {
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       initializer: Some(
 // DEFAULT-NEXT:                           Expr(
-// DEFAULT-NEXT:                               Utf16StringLit(
-// DEFAULT-NEXT:                                   "\\u03a9",
+// DEFAULT-NEXT:                               Const(
+// DEFAULT-NEXT:                                   Utf16StringLit(
+// DEFAULT-NEXT:                                       "\\u03a9",
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
@@ -1424,8 +1428,10 @@ int main(void) {
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       initializer: Some(
 // DEFAULT-NEXT:                           Expr(
-// DEFAULT-NEXT:                               Utf32StringLit(
-// DEFAULT-NEXT:                                   "\\U0001f642",
+// DEFAULT-NEXT:                               Const(
+// DEFAULT-NEXT:                                   Utf32StringLit(
+// DEFAULT-NEXT:                                       "\\U0001f642",
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),

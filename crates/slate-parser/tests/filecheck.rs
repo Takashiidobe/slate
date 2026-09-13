@@ -164,13 +164,28 @@ fn run_job(job: FixtureJob) {
 
 fn run_fixture(fixture: &Path, prefix: &str, defines: &[String], isystem: &[String], slot: usize) {
     let source = fixture_source(fixture);
-    let parsed_fixture = fixture.with_file_name(format!(
-        ".{}.filecheck.{}.{}.c",
+    let self_include = format!(
+        "#include \"{}\"",
+        fixture.file_name().unwrap().to_string_lossy()
+    );
+    let temp_dir = std::env::temp_dir().join(format!(
+        "slate-parser-filecheck-{}.{}.{}",
         fixture.file_stem().unwrap().to_string_lossy(),
         std::process::id(),
         slot
     ));
-    std::fs::write(&parsed_fixture, source).expect("write fixture without FileCheck metadata");
+    let parsed_fixture = if source.contains(&self_include) {
+        std::fs::create_dir_all(&temp_dir).expect("create isolated self-include fixture directory");
+        temp_dir.join(fixture.file_name().unwrap())
+    } else {
+        fixture.with_file_name(format!(
+            ".{}.filecheck.{}.{}.c",
+            fixture.file_stem().unwrap().to_string_lossy(),
+            std::process::id(),
+            slot
+        ))
+    };
+    std::fs::write(&parsed_fixture, &source).expect("write fixture without FileCheck metadata");
     let mut command = Command::new(env!("CARGO_BIN_EXE_slate-parser"));
     command
         .arg("parse")
@@ -188,6 +203,9 @@ fn run_fixture(fixture: &Path, prefix: &str, defines: &[String], isystem: &[Stri
         .output()
         .expect("run slate-parser filecheck renderer");
     std::fs::remove_file(&parsed_fixture).expect("remove fixture without FileCheck metadata");
+    if source.contains(&self_include) {
+        std::fs::remove_dir(&temp_dir).expect("remove isolated self-include fixture directory");
+    }
     assert!(
         rendered.status.success(),
         "renderer failed for {}:\n{}",
@@ -406,6 +424,7 @@ fn summarize_evaluated_decl(decl: &Decl) -> DeclSummary {
                     | Stmt::Expr(_)
                     | Stmt::Decl(_)
                     | Stmt::StaticAssert(_)
+                    | Stmt::Attribute(_)
                     | Stmt::Block(_)
                     | Stmt::If { .. }
                     | Stmt::While { .. }

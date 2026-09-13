@@ -69,8 +69,10 @@ int main(void) {
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           initializer: Some(
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   StringLit(
-// DEFAULT-NEXT:                       "192.168.190.160",
+// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                       StringLit(
+// DEFAULT-NEXT:                           "192.168.190.160",
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ),
